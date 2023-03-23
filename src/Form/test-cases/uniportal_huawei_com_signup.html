@@ -1,9 +1,10 @@
 <!--
   https://uniportal.huawei.com/accounts/register.do?method=toRegister&nls=en
+  rank: 423
   testRunId: 66
   testResultId: 235023
 -->
-<form name="registerInfoForm" method="post" action="/accounts/register.do" data-ddg-formtype="sign up">
+<form name="registerInfoForm" method="post" action="/accounts/register.do">
   <input type="hidden" name="method" value="toRegister">
   <input type="hidden" name="lang" value="">
   <input type="hidden" name="redirectUrl" value="https%3A%2F%2Fwww.huawei.com">
@@ -13,7 +14,7 @@
   <div id="swap">
     <div id="header_box">
       <div id="header">
-        <a href="http://www.huawei.com" title="HUAWEI"><img src="images/header_logo.png?version=2.0" alt="Logo" border="0"></a>
+        <a href="http://www.huawei.com" title="HUAWEI"></a>
       </div>
     </div>
     <div id="mainbox">
@@ -22,12 +23,12 @@
         <span>
           <!-- modify by cwx341547 2016-03-30 国际化修改-->
 
-          <link rel="stylesheet" href="css/lang-change.css" type="text/css">
-          <script type="text/javascript" src="js/lang-change.js"></script>
+          
+          
           <ul class="topmenu" clearfix="" id="jq_topmenu">
-            <li class="webnav" style="background: none">
+            <li class="webnav">
               <strong class="icon_arr"> English (United States) </strong>
-              <div class="jq_hidebox" style="display: none" block;="">
+              <div class="jq_hidebox" block;="">
                 <div class="language_option_ar_sa_ltr">
                   <a href="javascript:changeLanguage('zh_CN');" title="简体中文 (中国)">
                     简体中文 (中国)
@@ -146,7 +147,7 @@
           </ul>
         </span>
         <span> </span>
-        <span style="direction: ltr">
+        <span>
           <a href="https://uniportal.huawei.com/uniportal?redirect=https%3A%2F%2Fwww.huawei.com&amp;nls=en_US">
             Log In</a>&nbsp;&nbsp;|
         </span>
@@ -156,9 +157,7 @@
       <div id="content">
         <div id="content_top"></div>
 
-        <script type="text/javascript">
-          loadimage(false);
-        </script>
+        
         <div class="register_pw">
           <div class="reset_tab_box">
             <span onclick="switchto('byEmail');" class="set_ontab" id="js_tabon">
@@ -183,7 +182,7 @@
                 <span class="register_redstar">*</span>
               </div>
 
-              <input type="text" name="registerVO.userId" size="30" tabindex="1" value="" onblur="hideTip('ac_tips');checkAccount();" onfocus="showTip('ac_tips');clearSysMsg();" class="inputBgLine register_input" id="registerVO.userId" title="overall type: USERNAME
+              <input type="text" name="registerVO.userId" size="30" tabindex="1" value="" onblur="hideTip('ac_tips');checkAccount();" onfocus="showTip('ac_tips');clearSysMsg();" class="inputBgLine register_input" id="registerVO.userId" autofill-information="overall type: USERNAME
 server type: USERNAME
 heuristic type: UNKNOWN_TYPE
 label: User ID *
@@ -194,18 +193,7 @@ form signature: 6543645576451514179
 form signature in host form: 6543645576451514179
 field frame token: 18618F07A78301DB7EEE562AE9C4A59E
 form renderer id: 3
-field renderer id: 20" autofill-information="overall type: USERNAME
-server type: USERNAME
-heuristic type: UNKNOWN_TYPE
-label: User ID *
-parseable name: registerVO.userId
-section: registerVO.userId_0_20
-field signature: 3809948258
-form signature: 6543645576451514179
-form signature in host form: 6543645576451514179
-field frame token: 18618F07A78301DB7EEE562AE9C4A59E
-form renderer id: 3
-field renderer id: 20" autofill-prediction="USERNAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="514493">
+field renderer id: 20" data-ddg-testresultelementid="514493">
               <span class="redtips white-space-text" id="spanuinfo"> </span>
             </div>
 
@@ -214,14 +202,18 @@ field renderer id: 20" autofill-prediction="USERNAME" data-ddg-inputtype="unknow
                 Email
                 <span class="register_redstar">*</span>
               </div>
-              <input type="text" name="registerVO.email" size="30" tabindex="2" value="" onblur="hideTip('email_tips');checkEmail();" onfocus="hideCheckEmailResult();showTip('email_tips');clearSysMsg();" class="inputBgLine register_input" id="registerVO.email" data-ddg-autofill="true" data-ddg-testresultelementid="514494" style="
-                  background-size: auto 26px !important;
-                  background-position: right center !important;
-                  background-repeat: no-repeat !important;
-                  background-origin: content-box !important;
-                  background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                  transition: background 0s ease 0s !important;
-                " data-manual-scoring="emailAddress">
+              <input type="text" name="registerVO.email" size="30" tabindex="2" value="" onblur="hideTip('email_tips');checkEmail();" onfocus="hideCheckEmailResult();showTip('email_tips');clearSysMsg();" class="inputBgLine register_input" id="registerVO.email" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email *
+parseable name: registerVO.email
+section: registerVO.userId_0_20
+field signature: 2373941158
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 21" data-ddg-testresultelementid="514494" data-manual-scoring="emailAddress">
               <span class="redtips" id="spanmailinfo"> </span>
             </div>
             <!-- <div class="register_oneline" >
@@ -235,8 +227,19 @@ field renderer id: 20" autofill-prediction="USERNAME" data-ddg-inputtype="unknow
                 Password
                 <span class="register_redstar">*</span>
               </div>
-              <input type="password" name="registerVO.password" size="30" tabindex="4" value="" onblur="hideTip('pwd_tips');checkPassword();" onfocus="showTip('pwd_tips');clearSysMsg();" style="padding-right: 40px; width: 195px" class="inputBgLine register_input" id="registerVO.password" data-ddg-testresultelementid="514495" data-manual-scoring="password">
-              <input tabindex="4" type="text" id="showPwd" class="showPwd" oncopy="return false" oncut="return false" onfocus="showTip('pwd_tips');clearSysMsg();" onblur="hideTip('pwd_tips');checkPassword('showPwd');" style="display: none" size="30" title="overall type: UNKNOWN_TYPE
+              <input type="password" name="registerVO.password" size="30" tabindex="4" value="" onblur="hideTip('pwd_tips');checkPassword();" onfocus="showTip('pwd_tips');clearSysMsg();" class="inputBgLine register_input" id="registerVO.password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password *
+parseable name: registerVO.password
+section: registerVO.userId_0_20
+field signature: 2887056776
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 22" data-ddg-testresultelementid="514495" data-manual-scoring="password">
+              <input tabindex="4" type="text" id="showPwd" class="showPwd" oncopy="return false" oncut="return false" onfocus="showTip('pwd_tips');clearSysMsg();" onblur="hideTip('pwd_tips');checkPassword('showPwd');" size="30" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password *
@@ -247,19 +250,8 @@ form signature: 6543645576451514179
 form signature in host form: 6543645576451514179
 field frame token: 18618F07A78301DB7EEE562AE9C4A59E
 form renderer id: 3
-field renderer id: 23" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password *
-parseable name: showPwd
-section: registerVO.userId_0_20
-field signature: 3898578975
-form signature: 6543645576451514179
-form signature in host form: 6543645576451514179
-field frame token: 18618F07A78301DB7EEE562AE9C4A59E
-form renderer id: 3
-field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="514496">
-              <span class="redtips" style="margin-left: -30px">
+field renderer id: 23" data-ddg-testresultelementid="514496">
+              <span class="redtips">
                 <div class="fa-eye-slash" id="pwdeye"></div>
               </span>
               <span class="redtips" id="spanpwdinfo"> </span>
@@ -283,7 +275,18 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 First Name
                 <span class="register_redstar">*</span>
               </div>
-              <input type="text" name="registerVO.givenname" size="30" tabindex="6" value="" onblur="javascript:checkGivenName();createCommonName();" onfocus="clearSysMsg();" class="inputBgLine register_input" id="registerVO.givenname" data-ddg-testresultelementid="514497" data-manual-scoring="firstName">
+              <input type="text" name="registerVO.givenname" size="30" tabindex="6" value="" onblur="javascript:checkGivenName();createCommonName();" onfocus="clearSysMsg();" class="inputBgLine register_input" id="registerVO.givenname" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name *
+parseable name: registerVO.givenname
+section: registerVO.userId_0_20
+field signature: 3327519999
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 24" data-ddg-testresultelementid="514497" data-manual-scoring="firstName">
               <span class="redtips" id="spangivennameinfo"> </span>
             </div>
             <div class="register_oneline">
@@ -291,16 +294,38 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 Last Name
                 <span class="register_redstar">*</span>
               </div>
-              <input type="text" name="registerVO.surname" size="30" tabindex="7" value="" onblur="javascript:checkSurName();createCommonName();" onfocus="clearSysMsg();" class="inputBgLine register_input" id="registerVO.surname" data-ddg-testresultelementid="514498" data-manual-scoring="lastName">
+              <input type="text" name="registerVO.surname" size="30" tabindex="7" value="" onblur="javascript:checkSurName();createCommonName();" onfocus="clearSysMsg();" class="inputBgLine register_input" id="registerVO.surname" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name *
+parseable name: registerVO.surname
+section: registerVO.userId_0_20
+field signature: 1417396848
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 25" data-ddg-testresultelementid="514498" data-manual-scoring="lastName">
               <span class="redtips" id="spansurnameinfo"> </span>
             </div>
 
-            <div class="register_oneline" style="display: none">
+            <div class="register_oneline">
               <div class="register_text">
                 Full Name
                 <span class="register_redstar">*</span>
               </div>
-              <input type="text" name="registerVO.commonname" size="30" tabindex="8" value="" onblur="checkCommonName();" onfocus="clearSysMsg();" class="inputBgLine register_input" id="registerVO.commonname" data-ddg-testresultelementid="514499" data-manual-scoring="fullName">
+              <input type="text" name="registerVO.commonname" size="30" tabindex="8" value="" onblur="checkCommonName();" onfocus="clearSysMsg();" class="inputBgLine register_input" id="registerVO.commonname" autofill-information="overall type: NAME_FULL
+server type: NO_SERVER_DATA
+heuristic type: NAME_FULL
+label: Full Name *
+parseable name: registerVO.commonname
+section: registerVO.userId_0_20
+field signature: 2423273703
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 26" data-ddg-testresultelementid="514499" data-manual-scoring="fullName">
               <span class="redtips" id="spancomnameinfo"> </span>
             </div>
 
@@ -309,7 +334,18 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 Country/Area
                 <span class="register_redstar">*</span>
               </div>
-              <select id="countryCodeSelect" tabindex="9" class="inputBgLine register_select" onchange="setCountryCodeByCountry(this.value)" data-ddg-testresultelementid="514500" data-manual-scoring="addressCountryCode">
+              <select id="countryCodeSelect" tabindex="9" class="inputBgLine register_select" onchange="setCountryCodeByCountry(this.value)" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country/Area *
+parseable name: countryCodeSelect
+section: registerVO.userId_0_20
+field signature: 2765028535
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 27" data-ddg-testresultelementid="514500" data-manual-scoring="addressCountryCode">
                 <option value="">---Select---</option>
                 <option value="Afghanistan (+93)">Afghanistan</option>
                 <option value="Albania (+355)">Albania</option>
@@ -532,19 +568,36 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 Phone Number
                 <!-- <span class="register_redstar">*</span> -->
               </div>
-              <input type="text" name="registerVO.countryCode" size="30" tabindex="10" value="" onkeyup="setCountryByCountryCode(this.value,'')" onblur="checkCountryCodeAndPhone();" onfocus="clearSysMsg();" class="inputBgLine register_countrycode_input" id="registerVO.countryCode" data-ddg-testresultelementid="514501" data-manual-scoring="phone">
-              <input type="text" name="registerVO.officePhone" size="30" tabindex="11" value="" onblur="hideTip('phone_tips');checkCountryCodeAndPhone();" onfocus="showTip('phone_tips');clearSysMsg();" style="
-                  width: 183px;
-                  margin-left: 0px;
-                  padding-left: 2px;
-                  border-left: 0;
-                " class="inputBgLine register_input" id="registerVO.officePhone" data-ddg-testresultelementid="514502" data-manual-scoring="phone">
+              <input type="text" name="registerVO.countryCode" size="30" tabindex="10" value="" onkeyup="setCountryByCountryCode(this.value,'')" onblur="checkCountryCodeAndPhone();" onfocus="clearSysMsg();" class="inputBgLine register_countrycode_input" id="registerVO.countryCode" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone Number
+parseable name: registerVO.countryCode
+section: registerVO.userId_0_20
+field signature: 172000097
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 28" data-ddg-testresultelementid="514501" data-manual-scoring="phone">
+              <input type="text" name="registerVO.officePhone" size="30" tabindex="11" value="" onblur="hideTip('phone_tips');checkCountryCodeAndPhone();" onfocus="showTip('phone_tips');clearSysMsg();" class="inputBgLine register_input" id="registerVO.officePhone" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone Number
+parseable name: registerVO.officePhone
+section: registerVO.userId_0_20
+field signature: 2351553027
+form signature: 6543645576451514179
+form signature in host form: 6543645576451514179
+field frame token: 18618F07A78301DB7EEE562AE9C4A59E
+form renderer id: 3
+field renderer id: 29" data-ddg-testresultelementid="514502" data-manual-scoring="phone">
 
               <span class="redtips" id="spanofficephoneinfo"> </span>
             </div>
             <div class="register_oneline">
               <div class="register_text"></div>
-              <input type="checkbox" tabindex="15" class="agree_input" style="margin-left: 20px" id="registerVO.isVerifiedphone" name="registerVO.isVerifiedphone" value="0" onfocus="clearSysMsg();" onclick="javascript:btnVerifyMobile_onClick(this);" title="overall type: UNKNOWN_TYPE
+              <input type="checkbox" tabindex="15" class="agree_input" id="registerVO.isVerifiedphone" name="registerVO.isVerifiedphone" value="0" onfocus="clearSysMsg();" onclick="javascript:btnVerifyMobile_onClick(this);" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Verify mobile number (You can use a verified number to log in, reset password, and change password.)
@@ -555,22 +608,11 @@ form signature: 6543645576451514179
 form signature in host form: 6543645576451514179
 field frame token: 18618F07A78301DB7EEE562AE9C4A59E
 form renderer id: 3
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Verify mobile number (You can use a verified number to log in, reset password, and change password.)
-parseable name: registerVO.isVerifiedphone
-section: registerVO.userId_0_20
-field signature: 3140446106
-form signature: 6543645576451514179
-form signature in host form: 6543645576451514179
-field frame token: 18618F07A78301DB7EEE562AE9C4A59E
-form renderer id: 3
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="514503">
+field renderer id: 30" data-ddg-testresultelementid="514503">
               Verify mobile number (<b>You can use a verified number to log in, reset password, and
                 change password.</b>)
             </div>
-            <div class="register_oneline" id="isVerifiedphoneTips" style="display: none; padding: 0 0 5px 0">
+            <div class="register_oneline" id="isVerifiedphoneTips">
               <div class="register_text"></div>
               <span class="redtips" id="spanisVerifiedphone">
                 This phone number has already been registered.
@@ -583,7 +625,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 <span class="register_redstar">*</span>
               </div>
               <div class="float_left">
-                <input class="inputBgLine vercode_input1" tabindex="16" type="text" name="registerVO.verifycode" size="8" id="registerVO.verifycode" value="" onblur="checkVerifyCode();" onfocus="clearSysMsg();" title="overall type: UNKNOWN_TYPE
+                <input class="inputBgLine vercode_input1" tabindex="16" type="text" name="registerVO.verifycode" size="8" id="registerVO.verifycode" value="" onblur="checkVerifyCode();" onfocus="clearSysMsg();" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Code in the Image *
@@ -594,36 +636,25 @@ form signature: 6543645576451514179
 form signature in host form: 6543645576451514179
 field frame token: 18618F07A78301DB7EEE562AE9C4A59E
 form renderer id: 3
-field renderer id: 31" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Code in the Image *
-parseable name: registerVO.verifycode
-section: registerVO.userId_0_20
-field signature: 4171563406
-form signature: 6543645576451514179
-form signature in host form: 6543645576451514179
-field frame token: 18618F07A78301DB7EEE562AE9C4A59E
-form renderer id: 3
-field renderer id: 31" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="514504">
+field renderer id: 31" data-ddg-testresultelementid="514504">
               </div>
               <!--tips-->
               <div class="register_tips" id="js_tab_tips">
                 <a onclick="loadimage(true)">
-                  <img class="code_img" border="0" id="verifycodeimage" src="blob:https://uniportal.huawei.com/8df2ac8b-9d9e-4941-bc93-9e059752ae59" style="display: block">
-                  <img class="code_img right" id="verifycodeimageError" style="display: none" border="0" src="/accounts/images/errorMobile.png">
+                  
+                  
                 </a>
               </div>
               <span class="redtip1" id="verifycodeinfo"> </span>
               <div class="clearBoth"></div>
             </div>
 
-            <div class="register_oneline" id="register_verifycode" style="display: none">
+            <div class="register_oneline" id="register_verifycode">
               <div class="register_text">
                 SMS Code
                 <span class="register_redstar">*</span>
               </div>
-              <input class="inputBgLine phone_vercode_input" type="text" tabindex="17" id="registerVO.smsVerifycode" name="registerVO.smsVerifyCode" onfocus="clearSysMsg();" onblur="checkSmsVerifyCode();" size="5" title="overall type: UNKNOWN_TYPE
+              <input class="inputBgLine phone_vercode_input" type="text" tabindex="17" id="registerVO.smsVerifycode" name="registerVO.smsVerifyCode" onfocus="clearSysMsg();" onblur="checkSmsVerifyCode();" size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: SMS Code *
@@ -634,18 +665,7 @@ form signature: 6543645576451514179
 form signature in host form: 6543645576451514179
 field frame token: 18618F07A78301DB7EEE562AE9C4A59E
 form renderer id: 3
-field renderer id: 32" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: SMS Code *
-parseable name: registerVO.smsVerifyCode
-section: registerVO.userId_0_20
-field signature: 3511423161
-form signature: 6543645576451514179
-form signature in host form: 6543645576451514179
-field frame token: 18618F07A78301DB7EEE562AE9C4A59E
-form renderer id: 3
-field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="514505">
+field renderer id: 32" data-ddg-testresultelementid="514505">
               <input id="sendButton" tabindex="18" type="button" class="inputBgLine phone_button" value="Get code" onclick="javascript:sendVerifyCode();">
               <span class="redtips" id="smsverifycodeinfo"> </span>
             </div>
@@ -654,45 +674,45 @@ field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </div>
           <!--以下是提示框,长度由tips_box控制，高度auto,但请控制在120PX以下,位置可通过CSS"top:20px;"控制(放服务器前请删除所有中文注释)-->
 
-          <div class="tips_main" id="ac_tips" style="display: none">
+          <div class="tips_main" id="ac_tips">
             <div class="tips_text">
               User ID must:<br>
-              <img id="dottips1" src="images/dot_blove.gif" border="0" align="absmiddle">Start with a letter or digit.<br>
-              <img id="dottips2" src="images/dot_blove.gif" border="0" align="absmiddle">Use letters, digits, underscores (_), dots (.), or hyphens (-)
+              Start with a letter or digit.<br>
+              Use letters, digits, underscores (_), dots (.), or hyphens (-)
               only.<br>
-              <img id="dottips19" src="images/dot_blove.gif" border="0" align="absmiddle">Example: <b>Jack_Wang</b><br>
+              Example: <b>Jack_Wang</b><br>
             </div>
           </div>
-          <div class="tips_main" id="pwd_tips" style="display: none">
+          <div class="tips_main" id="pwd_tips">
             <div class="tips_text">
               Password must:<br>
-              <img id="dottips5" src="images/dot_blove.gif" border="0" align="absmiddle">Contain at least 8 characters.<br>
-              <img id="dottips7" src="images/dot_blove.gif" border="0" align="absmiddle">Contain letters, digits, and special characters.<br>
-              <img id="dottips20" src="images/dot_blove.gif" border="0" align="absmiddle">Cannot contain the account.<br>
-              <img id="dottips18" src="images/dot_blove.gif" border="0" align="absmiddle">Example: <b>S7*$jEkc</b><br>
+              Contain at least 8 characters.<br>
+              Contain letters, digits, and special characters.<br>
+              Cannot contain the account.<br>
+              Example: <b>S7*$jEkc</b><br>
             </div>
           </div>
-          <div class="tips_main" id="repwd_tips" style="display: none">
+          <div class="tips_main" id="repwd_tips">
             <div class="tips_text">
-              <img id="dottips8" src="images/dot_blove.gif" border="0" align="absmiddle">Please enter the same password as above.
-            </div>
-          </div>
-
-          <div class="tips_main" id="phone_tips" style="display: none">
-            <div class="tips_text">
-              <img id="dottips9" src="images/dot_blove.gif" border="0" align="absmiddle">Please enter your phone number.
+              Please enter the same password as above.
             </div>
           </div>
 
-          <div class="tips_main" id="verifyMobile_tips" style="display: none">
+          <div class="tips_main" id="phone_tips">
             <div class="tips_text">
-              <img id="dottips10" src="images/dot_blove.gif" border="0" align="absmiddle">This phone number has already been registered.
+              Please enter your phone number.
             </div>
           </div>
 
-          <div class="tips_main" id="email_tips" style="display: none">
+          <div class="tips_main" id="verifyMobile_tips">
             <div class="tips_text">
-              <img id="dottips11" src="images/dot_blove.gif" border="0" align="absmiddle">Work email address is recommended.
+              This phone number has already been registered.
+            </div>
+          </div>
+
+          <div class="tips_main" id="email_tips">
+            <div class="tips_text">
+              Work email address is recommended.
               <!--  <br/>
 			<img id="dottips12" src="images/dot_blove.gif" border="0" align="absmiddle"/>Do not use a QQMail address because it may not receive our activation email.	          	           
 		    -->
@@ -701,9 +721,9 @@ field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
           <!--提示框over-->
           <div class="clearBoth"></div>
-          <div class="register_agree" style="padding: 5px 0 0 0">
-            <div class="register_text" style="width: 6px"></div>
-            <input type="checkbox" name="agreement" tabindex="18" value="yes" onclick="javascript:toAgree(this);" style="margin-left: 15px" class="agree_input" id="agreement" title="overall type: UNKNOWN_TYPE
+          <div class="register_agree">
+            <div class="register_text"></div>
+            <input type="checkbox" name="agreement" tabindex="18" value="yes" onclick="javascript:toAgree(this);" class="agree_input" id="agreement" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: * I have read and agree to
@@ -714,18 +734,7 @@ form signature: 6543645576451514179
 form signature in host form: 6543645576451514179
 field frame token: 18618F07A78301DB7EEE562AE9C4A59E
 form renderer id: 3
-field renderer id: 34" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: * I have read and agree to
-parseable name: agreement
-section: registerVO.userId_0_20
-field signature: 3805914131
-form signature: 6543645576451514179
-form signature in host form: 6543645576451514179
-field frame token: 18618F07A78301DB7EEE562AE9C4A59E
-form renderer id: 3
-field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="514506">&nbsp;
+field renderer id: 34" data-ddg-testresultelementid="514506">&nbsp;
             <span class="register_redstar">*</span>
             I have read and agree to
             <a href="javascript:popu(0);">Huawei's Terms and Conditions</a> and
@@ -734,1254 +743,18 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           </div>
 
           <div>
-            <span class="redtip1" style="color: red; padding-left: 180px" id="errMsgNotAgreed">
+            <span class="redtip1" id="errMsgNotAgreed">
             </span>
             <div class="clearBoth"></div>
           </div>
 
-          <input tabindex="19" type="button" class="sub_bottom register_submit" name="regbtn" style="margin: 15px 0 0 176px" value="Register" disabled="" onclick="javascript:userRegister();" id="regbtn">
+          <input tabindex="19" type="button" class="sub_bottom register_submit" name="regbtn" value="Register" disabled="" onclick="javascript:userRegister();" id="regbtn">
         </div>
 
-        <script type="text/javascript">
-          //*******************************************************************************************************************
-          //trackPageView: (必填参数) 默认且不可更改
-          //pageCode:      (必填参数) 将UEM里注册好的页面资产的页面编码拷贝进来，要拷贝完整且不要有空格
-          //sub_page:      (可选参数) 自定义的逻辑页面标识(对应子类)
-          //user_role:     (可选参数) 用户角色
-          //*******************************************************************************************************************
-          initUemConfig({
-            init: function () {
-              uemTrackPageView("P9C5DF8372D4003", "emailRegister");
-            },
-          });
+        
 
-          var language = "en_US";
-
-          var passIMG =
-            '<img id="correctips" src="/accounts/images/icons_right.png" border="0"/>';
-
-          window.onload = function () {
-            //加载完毕，执行代码
-            init();
-            initVerifyMobile();
-            switchPwdValue();
-          };
-          function init() {
-            var select = document.getElementById("countryCodeSelect");
-            select.options[select.options.length] = new Option(
-              "--" + "-Select-" + "--",
-              ""
-            );
-            buildOptions(select, language);
-
-            var countryCode = document.getElementById(
-              "registerVO.countryCode"
-            ).value;
-
-            if (!countryCode) {
-              countryCode = "";
-            }
-
-            if (countryCode) {
-              countryCode = "+" + $.trim(countryCode.replace("+", ""));
-            }
-
-            var lang = "en_US";
-            var countryName = "";
-            if (lang == "ru_RU" && countryCode == "+7") {
-              countryName = "";
-            }
-
-            document.getElementById("registerVO.countryCode").value =
-              countryCode;
-            setCountryByCountryCode(countryCode, countryName);
-
-            //cleanCountryCodeMsgForPC();
-            var agreemnet = document.getElementById("agreement");
-            toAgree(agreemnet);
-          }
-
-          function switchPwdValue() {
-            $("#pwdeye").bind("click", function () {
-              if ($(this).hasClass("fa-eye-slash")) {
-                $(this).removeClass("fa-eye-slash").addClass("fa-eye");
-                $("#pwdContent").find("input").eq(0).hide();
-                $("#showPwd").val($("#pwdContent").find("input").eq(0).val());
-                $("#showPwd").show();
-                //$("#showPwd").focus();
-              } else {
-                $(this).removeClass("fa-eye").addClass("fa-eye-slash");
-                $("#showPwd").hide();
-                $("#pwdContent").find("input").eq(0).val($("#showPwd").val());
-                $("#pwdContent").find("input").eq(0).show();
-                //$("#pwdContent").find("input").eq(0).focus();
-              }
-            });
-          }
-
-          function initVerifyMobile() {
-            var obj = document.getElementById("registerVO.isVerifiedphone");
-            var phone = document.getElementById("registerVO.officePhone").value;
-
-            //验证手机号
-            var errorMessage = isValidPhone(phone);
-            //验证失败
-            if (errorMessage != "") {
-              obj.checked = false;
-              document.getElementById("registerVO.isVerifiedphone").value = "0";
-              return false;
-            }
-            btnVerifyMobile_onClick(obj);
-          }
-          function containXSSCharater(str) {
-            var xss = ["<", ">", '"', "&", "(", ")", "\\"];
-            var code = [
-              "&lt;",
-              "&gt;",
-              "&#34;",
-              "&#38;",
-              "&#40;",
-              "&#41;",
-              "&#92;",
-            ];
-            var char = "";
-            for (var i = 0; i < str.length; ++i) {
-              for (var j = 0; j < xss.length; ++j) {
-                if (str.charAt(i) == xss[j]) {
-                  char += code[j];
-                  xss.splice(j, 1);
-                  code.splice(j, 1);
-                  break;
-                }
-              }
-            }
-            return char;
-          }
-
-          function setCountryCodeByCountry(country) {
-            var input = document.getElementById("registerVO.countryCode");
-            var code = countryCodeOfCountry(country, language);
-            input.value = code;
-            //cleanCountryCodeMsgForPC();
-            cleanCountryCodeMsgForPCEmail();
-          }
-
-          function cleanCountryCodeMsgForPCEmail() {
-            var errorCountryCodeMessage = "Invalid country code.";
-            var countryCode = document.getElementById(
-              "registerVO.countryCode"
-            ).value;
-            var phone = document.getElementById("registerVO.officePhone").value;
-            if (!phone && (!countryCode || countryCode)) {
-              document.getElementById("spanofficephoneinfo").innerHTML = "";
-              return;
-            }
-
-            if (phone && !countryCode) {
-              var errorPhoneMessage = isValidPhone(phone);
-              document.getElementById("spanofficephoneinfo").innerHTML =
-                errorCountryCodeMessage + errorPhoneMessage;
-              return;
-            }
-
-            if (phone && countryCode) {
-              var errorPhoneMessage = isValidPhone(phone);
-              if (errorPhoneMessage != "") {
-                document.getElementById("spanofficephoneinfo").innerHTML =
-                  errorPhoneMessage;
-                return;
-              }
-            }
-
-            document.getElementById("spanofficephoneinfo").innerHTML = passIMG;
-          }
-
-          function checkCountryCodeAndPhone() {
-            var countryCode = document.getElementById(
-              "registerVO.countryCode"
-            ).value;
-            var phone = document.getElementById("registerVO.officePhone").value;
-            var pwd = document.getElementById("registerVO.password").value;
-            if (
-              pwd != null &&
-              pwd != "" &&
-              pwd.toLowerCase() == phone.toLowerCase()
-            ) {
-              document.getElementById("spanpwdinfo").innerHTML =
-                "Your password and mobile number cannot be the same.";
-              return false;
-            }
-            var errorCountryCodeMessage = isValidCountryCode(countryCode);
-            var errorPhoneMessage = isValidPhone(phone);
-            if (errorCountryCodeMessage == "" && errorPhoneMessage == "") {
-              document.getElementById("spanofficephoneinfo").innerHTML =
-                passIMG;
-              return true;
-            }
-
-            document.getElementById("spanofficephoneinfo").innerHTML =
-              errorCountryCodeMessage + errorPhoneMessage;
-            return false;
-          }
-
-          /**
-function setCountryByCountryCode(code) {
-	var select = document.getElementById("countryCodeSelect");
-	var index = indexCountryCode(code);
-	if(index != -1){
-		select.value = select.options[index].value;
-	}
-}*/
-          function setCountryByCountryCode(code, name) {
-            var select = document.getElementById("countryCodeSelect");
-            code = $.trim(code);
-            if ("" == code) {
-              index = 0;
-            } else {
-              code = "+" + code.replace("+", "");
-              index = indexCountryCode(code, name);
-            }
-            if (index != -1) {
-              select.value = select.options[index].value;
-            }
-          }
-
-          function isNumber(ch) {
-            return ch >= "0" && ch <= "9";
-          }
-
-          function isAplha(ch) {
-            return ch >= "A" && ch <= "z";
-          }
-
-          function isValidUid(uid) {
-            //解决多语言译文太长导致页面变形，增加title显示。
-            $("#spanuinfo").removeAttr("title");
-            if (isEmpty(uid)) {
-              return "User ID cannot be empty.";
-            }
-            if (uid.length > 50) {
-              return "User ID cannot exceed 50 characters.";
-            }
-
-            var likeExUser = /^[0-9]{8}$/;
-            if (likeExUser.test(uid)) {
-              return "Enter a user ID other than an 8-digit number.";
-            }
-            var exUser = /^[a-zA-Z]{1,3}[0-9]{1,}$/;
-            var userCharachter = /^([a-zA-Z0-9]|[\.\-_]){0,}$/;
-
-            if (
-              uid.toLowerCase().indexOf("pub_") == 0 ||
-              uid.toLowerCase().indexOf("eta_") == 0 ||
-              uid.toLowerCase().indexOf("igl_") == 0
-            ) {
-              return 'User ID cannot start with "pub_", "eta_", or "igl_".';
-            }
-
-            if (exUser.test(uid)) {
-              return "User ID cannot be comprised of 1 to 3 letters and a number.";
-            }
-
-            if (!(isNumber(uid[0]) || isAplha(uid[0]))) {
-              return "User ID must start with a letter or a digit.";
-            }
-
-            if (!userCharachter.test(uid)) {
-              var msg =
-                "Only letters, digits, and special characters (- _ .) are allowed.";
-
-              $("#spanuinfo").attr(
-                "title",
-                "Only letters, digits, and special characters (- _ .) are allowed."
-              );
-
-              return "Only letters, digits, and special characters (- _ .) are allowed.";
-            }
-
-            return "";
-          }
-
-          function processAccountRequest(xmlHttpRequest) {
-            if (
-              xmlHttpRequest.readyState == 4 &&
-              xmlHttpRequest.status == 200
-            ) {
-              var returnObj = xmlHttpRequest.responseText;
-              if (returnObj == "1") {
-                document.getElementById("spanuinfo").innerHTML =
-                  "The user ID has been registered.";
-              } else if (returnObj == "3") {
-                document.getElementById("spanuinfo").innerHTML =
-                  "Invalid account: null. An account must start with a digit or four letters.";
-              } else if (returnObj == "2") {
-                document.getElementById("spanuinfo").innerHTML =
-                  "The user ID is unavailable. Choose another one.";
-              } else if (returnObj == "4") {
-                document.getElementById("spanuinfo").innerHTML =
-                  "No attempts left. Please try again later.";
-              } else {
-                document.getElementById("spanuinfo").innerHTML =
-                  '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-              }
-            }
-          }
-
-          function checkAccount() {
-            document.getElementById("spanuinfo").innerHTML = "";
-            var uid = document.getElementById("registerVO.userId").value;
-            var errorMessage = isValidUid(uid);
-            if (errorMessage != "") {
-              document.getElementById("spanuinfo").innerHTML = errorMessage;
-            } else {
-              var newUrl = "/accounts/register.do?method=checkAccount";
-              var datasMap = { user_id: uid, method: "checkAccount" };
-              var xmlHttpRequest = $.ajax({
-                type: "post",
-                url: newUrl,
-                data: datasMap,
-                async: false,
-              });
-              processAccountRequest(xmlHttpRequest);
-              /* var xmlHttpRequest = createXMLHttpRequest();
-		if(xmlHttpRequest != null) {
-			var newUrl = "/accounts/register.do?method=checkAccount&user_id="+uid;
-			xmlHttpRequest.open("post", newUrl, true);
-			xmlHttpRequest.send(null);
-			xmlHttpRequest.onreadystatechange = function() {
-				processAccountRequest(xmlHttpRequest);
-			}
-		} */
-            }
-          }
-
-          function isValidPassword(uid, pwd) {
-            var email = document.getElementById("registerVO.email").value;
-            if (isEmpty(pwd)) {
-              return "Password cannot be empty.";
-            }
-
-            if (pwd.length != trim(pwd).length) {
-              return "Password cannot start or end with a space.";
-            }
-
-            if (isContainChinese(pwd)) {
-              return "Password cannot contain Chinese or other multi-byte characters.";
-            }
-
-            if (pwd.length < 8) {
-              return "Password must contain at least 8 characters.";
-            }
-            if (pwd.length > 60) {
-              return "Password cannot exceed 60 characters.";
-            }
-            if (
-              !isEmpty(email) &&
-              document
-                .getElementById("registerVO.password")
-                .value.toLowerCase() ==
-                document.getElementById("registerVO.email").value.toLowerCase()
-            ) {
-              return "Your password and email address cannot be the same.";
-            }
-            var pwdRevert = pwd.split("").reverse().join("");
-            if (!isEmpty(uid) && pwdRevert.toLowerCase() == uid.toLowerCase()) {
-              return "The new password cannot contain the email address or account in reverse order.";
-            }
-            if (
-              !isEmpty(email) &&
-              pwdRevert.toLowerCase() == email.toLowerCase()
-            ) {
-              return "The new password cannot contain the email address or account in reverse order.";
-            }
-
-            if (
-              !isEmpty(uid) &&
-              pwd.toLowerCase().indexOf(uid.toLowerCase()) >= 0
-            ) {
-              return "Password cannot contain your user ID.";
-            }
-
-            if (checkPwdComb(pwd) == 1) {
-              return "Password must contain at least one letter.";
-            } else if (checkPwdComb(pwd) == 2) {
-              return "Password must contain at least one digit.";
-            } else if (checkPwdComb(pwd) == 3) {
-              return "Password must contain at least one special character.";
-            } else {
-              return "";
-            }
-
-            return "";
-          }
-
-          function isContainChinese(str) {
-            if (str.match(/[^\x00-\xff]/gi)) {
-              return true;
-            }
-            return false;
-          }
-
-          function checkPassword(inputId) {
-            var uid = document.getElementById("registerVO.userId").value;
-            var pwd = document.getElementById("registerVO.password").value;
-            if (inputId) {
-              pwd = document.getElementById("showPwd").value;
-              $("#pwdContent").find("input").eq(0).val(pwd);
-            }
-            var errorMessage = isValidPassword(uid, pwd);
-            if (errorMessage != "") {
-              document.getElementById("spanpwdinfo").innerHTML = errorMessage;
-            } else {
-              var xmlHttpRequest = createXMLHttpRequest();
-              if (xmlHttpRequest != null) {
-                var newUrl = "/accounts/register.do?method=checkPassword";
-                xmlHttpRequest.open("post", newUrl, true);
-                xmlHttpRequest.setRequestHeader(
-                  "Content-Type",
-                  "application/x-www-form-urlencoded"
-                );
-                var appurl = GetUrlParam("appurl");
-                xmlHttpRequest.send(
-                  "password=" +
-                    encodeURIComponent(pwd) +
-                    "&appurl=" +
-                    encodeURIComponent(appurl)
-                );
-                xmlHttpRequest.onreadystatechange = function () {
-                  processPasswordRequest(xmlHttpRequest);
-                };
-              }
-            }
-          }
-
-          function GetUrlParam(paraName) {
-            var url = document.location.toString();
-            var arrObj = url.split("?");
-
-            if (arrObj.length > 1) {
-              var arrPara = arrObj[1].split("&");
-              var arr;
-
-              for (var i = 0; i < arrPara.length; i++) {
-                arr = arrPara[i].split("=");
-
-                if (arr != null && arr[0] == paraName) {
-                  return arr[1];
-                }
-              }
-              return "";
-            } else {
-              return "";
-            }
-          }
-
-          function isValidRepassword(pwd, repwd) {
-            if (isEmpty(repwd)) {
-              return "Confirm Password cannot be empty.";
-            }
-            if (pwd != repwd) {
-              return "The two passwords do not match.";
-            }
-            return "";
-          }
-
-          function checkRepassword() {
-            var pwd = document.getElementById("registerVO.password").value;
-            var repwd = document.getElementById("registerVO.repassword").value;
-            var errorMessage = isValidRepassword(pwd, repwd);
-            if (errorMessage != "") {
-              document.getElementById("spanrepwdinfo").innerHTML = errorMessage;
-            } else {
-              document.getElementById("spanrepwdinfo").innerHTML =
-                '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-            }
-          }
-
-          function processPasswordRequest(xmlHttpRequest) {
-            if (
-              xmlHttpRequest.readyState == 4 &&
-              xmlHttpRequest.status == 200
-            ) {
-              var returnObj = xmlHttpRequest.responseText;
-              if (returnObj == 1) {
-                document.getElementById("spanpwdinfo").innerHTML =
-                  "Password not strong enough.";
-              } else {
-                document.getElementById("spanpwdinfo").innerHTML =
-                  '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-              }
-            }
-          }
-
-          function isValidEmail(email) {
-            if (isEmpty(email)) {
-              return "Email cannot be empty.";
-            }
-            if (email.length > 100) {
-              return "Email Address cannot exceed 100 characters.";
-            }
-
-            var exmail =
-              /^[a-zA-Z0-9_\.\-\']+@([a-zA-Z0-9_\-]+\.)+([a-zA-Z0-9]{2,4})+$/;
-            if (!exmail.test(email)) {
-              return "Invalid email address format.";
-            }
-            return "";
-          }
-
-          function hideCheckEmailResult() {
-            document.getElementById("spanmailinfo").innerHTML = "";
-          }
-
-          function checkEmail() {
-            document.getElementById("spanmailinfo").innerHTML = "";
-            var email = document.getElementById("registerVO.email").value;
-            emailTrim = document.getElementById("registerVO.email").value =
-              $.trim(email);
-            email = emailTrim;
-            var errorMessage = isValidEmail(email);
-            if (errorMessage != "") {
-              document.getElementById("spanmailinfo").innerHTML = errorMessage;
-            } else {
-              var newUrl = "/accounts/register.do?method=checkEmail";
-              var datasMap = { email: emailTrim, method: "checkEmail" };
-              var xmlHttpRequest = $.ajax({
-                type: "post",
-                url: newUrl,
-                data: datasMap,
-                async: false,
-              });
-              processEamilRequest(xmlHttpRequest);
-              /* var xmlHttpRequest = createXMLHttpRequest();
-		if(xmlHttpRequest != null) {
-			var newUrl = "/accounts/register.do?method=checkEmail&email="+email;
-			xmlHttpRequest.open("post", newUrl, true);
-			xmlHttpRequest.send(null);
-			xmlHttpRequest.onreadystatechange = function() {
-				processEamilRequest(xmlHttpRequest);
-			}
-		} */
-            }
-          }
-
-          function processEamilRequest(xmlHttpRequest) {
-            if (
-              xmlHttpRequest.readyState == 4 &&
-              xmlHttpRequest.status == 200
-            ) {
-              var returnObj = xmlHttpRequest.responseText;
-              if (returnObj == "1") {
-                document.getElementById("spanmailinfo").innerHTML =
-                  "The email address has been registered.&nbsp" +
-                  '<a href="https://uniportal.huawei.com/uniportal/modifyInfo.do?actionFlag=toGetPassword&getPwdMethod=byEmail&redirect=https%3A%2F%2Fwww.huawei.com&nls=en_US" style="color:red">' +
-                  "Retrieve your password?</a> &nbsp" +
-                  '<a href="https://uniportal.huawei.com/uniportal/help_en.html#FAQ4" style="color:red">' +
-                  "Need help?</a>";
-              } else if (returnObj == "2") {
-                document.getElementById("spanmailinfo").innerHTML =
-                  "The email address has been registered as User ID.&nbsp" +
-                  '<a href="https://uniportal.huawei.com/uniportal/modifyInfo.do?actionFlag=toGetPassword&getPwdMethod=byUid&redirect=https%3A%2F%2Fwww.huawei.com&nls=en_US" style="color:red">' +
-                  "Retrieve your password?</a> &nbsp" +
-                  '<a href="https://uniportal.huawei.com/uniportal/help_en.html#FAQ4" style="color:red">' +
-                  "Need help?</a>";
-              } else if (returnObj == "3") {
-                document.getElementById("spanmailinfo").innerHTML =
-                  "Invalid email address format.&nbsp" +
-                  '<a href="https://uniportal.huawei.com/uniportal/modifyInfo.do?actionFlag=toGetPassword&getPwdMethod=byUid&redirect=https%3A%2F%2Fwww.huawei.com&nls=en_US" style="color:red">' +
-                  "Retrieve your password?</a> &nbsp" +
-                  '<a href="https://uniportal.huawei.com/uniportal/help_en.html#FAQ4" style="color:red">' +
-                  "Need help?</a>";
-              } else if (returnObj == "4") {
-                document.getElementById("spanmailinfo").innerHTML =
-                  "No attempts left. Please try again later.";
-              } else {
-                var message =
-                  '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-                document.getElementById("spanmailinfo").innerHTML = message;
-              }
-            }
-          }
-
-          function isValidPhone(phone) {
-            if (isEmpty(phone)) {
-              return "";
-            }
-
-            var str = /^[0-9]*$/;
-            if (!str.test(phone)) {
-              return "Invalid phone number format.";
-            }
-
-            if (phone.length < 6 || phone.length > 30) {
-              return "Phone Number must contain 6 to 30 digits.";
-            }
-            var isverfied = document.getElementById(
-              "registerVO.isVerifiedphone"
-            );
-            if (isverfied.checked) {
-              var firstChar = phone.substring(0, 1);
-              if (firstChar == "0") {
-                var countryCode = $(
-                  "input[name='registerVO.countryCode']"
-                ).val();
-                if (
-                  "+225" == countryCode ||
-                  "+241" == countryCode ||
-                  "+242" == countryCode
-                ) {
-                  return "";
-                }
-                var select = document.getElementById("countryCodeSelect");
-                return "Mobile Number cannot start with the number 0.";
-              }
-            }
-
-            return "";
-          }
-
-          /*
-function checkCountryCode() {
-	var countryCode =document.getElementById("registerVO.countryCode").value;
-	var errorMessage = isValidCountryCode(countryCode);
-	if(errorMessage != '') {
-		document.getElementById("spanofficephoneinfo").innerHTML = errorMessage;
-		return false;
-	} 
-	document.getElementById("spanofficephoneinfo").innerHTML = '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-    return true;
-}
-*/
-
-          function isValidCountryCode(countryCode) {
-            var error = "Invalid country code.";
-
-            countryCode = $.trim(countryCode);
-            if ("" != countryCode) {
-              countryCode = "+" + $.trim(countryCode.replace("+", ""));
-              $("input[name='registerVO.countryCode']").val(countryCode);
-            }
-
-            if (countryCode.length < 2) {
-              return error;
-            } else if (countryCode.charAt(0) != "+") {
-              return error;
-            }
-            for (var i = 1; i < countryCode.length; ++i) {
-              var ch = countryCode.charAt(i);
-              if (ch < "0" || ch > "9") {
-                return error;
-              }
-            }
-            return "";
-          }
-
-          /*
-function checkOfficePhone(){
-	var phone = document.getElementById("registerVO.officePhone").value;
-	if(phone)
-	{
-		var errorMessage = isValidPhone(phone);
-		if(errorMessage != '') {
-			document.getElementById("spanofficephoneinfo").innerHTML = errorMessage;
-		} else {
-			document.getElementById("spanofficephoneinfo").innerHTML = '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-	    }
-		$("#spanofficephoneinfo").show();
-	}
-	else
-	{
-		$("#spanofficephoneinfo").hide();
-	}
-}
-*/
-
-          function isValidSurName(surname) {
-            if (isEmpty(surname)) {
-              return "Last Name cannot be empty.";
-            }
-            if (surname.length > 50) {
-              return "Last Name cannot exceed 50 characters.";
-            }
-            var temp = surname;
-            if (trim(temp).length != surname.length) {
-              return "Invalid last name format.";
-            }
-            var charater = containXSSCharater(surname);
-            if (charater != "") {
-              return (
-                "Last Name cannot contain the following characters: " + charater
-              );
-            }
-            return "";
-          }
-
-          function checkSurName() {
-            var surname = document.getElementById("registerVO.surname").value;
-            var errorMessage = isValidSurName(surname);
-            if (errorMessage != "") {
-              document.getElementById("spansurnameinfo").innerHTML =
-                errorMessage;
-            } else {
-              document.getElementById("spansurnameinfo").innerHTML =
-                '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-            }
-          }
-
-          function isValidGivenName(givenname) {
-            if (isEmpty(givenname)) {
-              return "First Name cannot be empty.";
-            }
-            if (givenname.length > 50) {
-              return "First Name cannot exceed 50 characters.";
-            }
-            var temp = givenname;
-            if (trim(temp).length != givenname.length) {
-              return "Invalid first name format.";
-            }
-            var charater = containXSSCharater(givenname);
-            if (charater != "") {
-              return (
-                "First Name cannot contain the following characters: " +
-                charater
-              );
-            }
-            return "";
-          }
-
-          function checkGivenName() {
-            var givenname = document.getElementById(
-              "registerVO.givenname"
-            ).value;
-            var errorMessage = isValidGivenName(givenname);
-            if (errorMessage != "") {
-              document.getElementById("spangivennameinfo").innerHTML =
-                errorMessage;
-            } else {
-              document.getElementById("spangivennameinfo").innerHTML =
-                '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-            }
-          }
-
-          function isValidCommonName(commonname) {
-            if (isEmpty(commonname)) {
-              return "Full Name cannot be empty.";
-            }
-            if (commonname.length > 100) {
-              return "Full Name cannot exceed 100 characters.";
-            }
-            var temp = commonname;
-            if (trim(temp).length != commonname.length) {
-              return "Invalid full name format.";
-            }
-            var charater = containXSSCharater(commonname);
-            if (charater != "") {
-              return (
-                "Full Name cannot contain the following characters: " + charater
-              );
-            }
-            return "";
-          }
-
-          function checkCommonName() {
-            var commonname = document.getElementById(
-              "registerVO.commonname"
-            ).value;
-            var errorMessage = isValidCommonName(commonname);
-            if (errorMessage != "") {
-              document.getElementById("spancomnameinfo").innerHTML =
-                errorMessage;
-            } else {
-              document.getElementById("spancomnameinfo").innerHTML =
-                '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-            }
-          }
-
-          function isValidVerifyCode(verifyCode) {
-            if (isEmpty(verifyCode)) {
-              return "Enter the code shown in the image.";
-            }
-            return "";
-          }
-
-          function checkVerifyCode() {
-            var verifyCode = document.getElementById(
-              "registerVO.verifycode"
-            ).value;
-            var errorMessage = isValidVerifyCode(verifyCode);
-            if (errorMessage != "") {
-              document.getElementById("verifycodeinfo").innerHTML =
-                errorMessage;
-            } else {
-              document.getElementById("verifycodeinfo").innerHTML = "";
-            }
-          }
-          function checkSmsVerifyCode() {
-            var verifyCode = document.getElementById(
-              "registerVO.smsVerifycode"
-            ).value;
-            var errorMessage = "";
-            if (isEmpty(verifyCode)) {
-              errorMessage = "SMS Code cannot be empty.";
-            }
-            if (errorMessage != "") {
-              document.getElementById("smsverifycodeinfo").innerHTML =
-                errorMessage;
-              return false;
-            } else {
-              document.getElementById("smsverifycodeinfo").innerHTML = "";
-            }
-            return true;
-          }
-
-          function createCommonName() {
-            var surname = document.getElementById("registerVO.surname").value;
-            var givenname = document.getElementById(
-              "registerVO.givenname"
-            ).value;
-            if (
-              language == "zh" ||
-              language == "zh_CN" ||
-              language == "fr" ||
-              language == "fr_FR" ||
-              language == "ru" ||
-              language == "ru_RU"
-            ) {
-              document.getElementById("registerVO.commonname").value = trim(
-                surname + " " + givenname
-              );
-            } else {
-              document.getElementById("registerVO.commonname").value = trim(
-                givenname + " " + surname
-              );
-            }
-          }
-
-          function touserRegister(obj) {
-            document.registerInfoForm.action =
-              "/accounts/register.do?method=toRegister&nls=" + obj;
-            document.registerInfoForm.submit();
-          }
-
-          function popu(type) {
-            if (type == 1) {
-              var policyFold = "policy/";
-              var policyUrl = policyFold + "policy.jsp";
-              if (language != null && language != "") {
-                var policyV = "v2";
-                policyUrl =
-                  policyFold + "policy_" + policyV + "_" + language + ".jsp";
-              }
-              window.open(
-                policyUrl,
-                "",
-                "width=830,height=630,resizable=no,status=no,toolbar:no,scrollbars=yes"
-              );
-              return;
-            }
-
-            var fold = "registration/";
-            var openurl = fold + "Registration.jsp";
-            if (language != null && language != "") {
-              var agreementV = "v1";
-              openurl =
-                "/accounts/" +
-                fold +
-                "Registration_" +
-                agreementV +
-                "_" +
-                language +
-                ".jsp";
-            }
-            window.open(
-              openurl,
-              "",
-              "width=830,height=630,resizable=no,status=no,toolbar:no,scrollbars=yes"
-            );
-          }
-
-          var formResubmitFlag = false;
-          function isFormResubmit() {
-            if (formResubmitFlag == true) {
-              return false;
-            } else {
-              formResubmitFlag = true;
-              return true;
-            }
-          }
-
-          function userRegister() {
-            if (!checkRegisterForm()) {
-              return;
-            }
-
-            //页面组件埋码
-            uemTrackStructEvent("P9C5DF8372D4003_C9C5E2DBA5BB520");
-
-            //防止表单重复提交
-            if (isFormResubmit()) {
-              var isverfied = document.getElementById(
-                "registerVO.isVerifiedphone"
-              );
-              if (isverfied.checked) {
-                document.getElementById("registerVO.isVerifiedphone").value =
-                  "1";
-              } else {
-                document.getElementById("registerVO.isVerifiedphone").value =
-                  "0";
-              }
-              /*
-		var receiveInfoPush=document.getElementById("receiveInfoPush");
-		if(receiveInfoPush.checked){
-			document.getElementById("registerVO.isReceiveInfoPush").value = "1";
-		}else{
-			document.getElementById("registerVO.isReceiveInfoPush").value = "0";
-		}*/
-              document.registerInfoForm.method.value = "doRegister";
-              document.registerInfoForm.submit();
-            }
-          }
-
-          function checkRegisterForm() {
-            var form = document.registerInfoForm;
-            var errorMessage = "";
-            var staticCheckPass = true;
-            var passIMG =
-              '<img id="correctips" src="images/icons_right.png" border="0" align="absmiddle"/>';
-
-            //User ID
-            if (
-              (errorMessage = isValidUid(form["registerVO.userId"].value)) != ""
-            ) {
-              document.getElementById("spanuinfo").innerHTML = errorMessage;
-              staticCheckPass = false;
-            }
-            //Password
-            if (
-              (errorMessage = isValidPassword(
-                form["registerVO.userId"].value,
-                form["registerVO.password"].value
-              )) != ""
-            ) {
-              document.getElementById("spanpwdinfo").innerHTML = errorMessage;
-              staticCheckPass = false;
-            } else {
-              document.getElementById("spanpwdinfo").innerHTML = passIMG;
-            }
-            //Confirm Password
-            /*
-	if((errorMessage = isValidRepassword(form["registerVO.password"].value,form["registerVO.repassword"].value)) != '') {
-		document.getElementById("spanrepwdinfo").innerHTML = errorMessage;
-		staticCheckPass = false;
-	} else {
-		document.getElementById("spanrepwdinfo").innerHTML = passIMG;
-	}
-	*/
-
-            //Email
-            if (
-              (errorMessage = isValidEmail(form["registerVO.email"].value)) !=
-              ""
-            ) {
-              document.getElementById("spanmailinfo").innerHTML = errorMessage;
-              staticCheckPass = false;
-            }
-
-            //校验国家码和手机号
-            if (!checkCountryCodeAndPhone()) {
-              staticCheckPass = false;
-            }
-
-            /*
-	//Country Code
-	if((errorMessage = isValidCountryCode(form["registerVO.countryCode"].value)) != '') {
-		document.getElementById("spanofficephoneinfo").innerHTML = errorMessage;
-		staticCheckPass = false;
-	} else {
-		document.getElementById("spanofficephoneinfo").innerHTML = passIMG;
-	}
-	
-	//Phone Number
-	var phoneNumber = form["registerVO.officePhone"].value;
-	if(phoneNumber)
-	{
-		if((errorMessage = isValidPhone(form["registerVO.officePhone"].value)) != '') {
-			document.getElementById("spanofficephoneinfo").innerHTML = errorMessage;
-			staticCheckPass = false;
-		} else {
-			document.getElementById("spanofficephoneinfo").innerHTML = passIMG;
-		}
-	}
-	*/
-
-            //Last Name
-            if (
-              (errorMessage = isValidSurName(
-                form["registerVO.surname"].value
-              )) != ""
-            ) {
-              document.getElementById("spansurnameinfo").innerHTML =
-                errorMessage;
-              staticCheckPass = false;
-            } else {
-              document.getElementById("spansurnameinfo").innerHTML = passIMG;
-            }
-            //First Name
-            if (
-              (errorMessage = isValidGivenName(
-                form["registerVO.givenname"].value
-              )) != ""
-            ) {
-              document.getElementById("spangivennameinfo").innerHTML =
-                errorMessage;
-              staticCheckPass = false;
-            } else {
-              document.getElementById("spangivennameinfo").innerHTML = passIMG;
-            }
-
-            /*
-	if((errorMessage = isValidCommonName(form["registerVO.commonname"].value)) != '') {
-		document.getElementById("spancomnameinfo").innerHTML = errorMessage;
-		staticCheckPass = false;
-	}  else {
-		document.getElementById("spancomnameinfo").innerHTML = passIMG;
-	}
-	*/
-
-            var isverfied = document.getElementById(
-              "registerVO.isVerifiedphone"
-            );
-            if (isverfied.checked) {
-              if (!checkSmsVerifyCode()) {
-                staticCheckPass = false;
-              }
-            } else {
-              if (isEmpty(form["registerVO.verifycode"].value)) {
-                document.getElementById("verifycodeinfo").innerHTML =
-                  "Enter the code shown in the image.";
-                staticCheckPass = false;
-              }
-            }
-
-            if (staticCheckPass == false) {
-              window.location.hash = "message";
-              window.location = window.location;
-              //document.getElementById("spanmessage").innerHTML =
-              //	"The information you provided is invalid."
-              checkAccount();
-              checkEmail();
-            }
-            return staticCheckPass;
-          }
-
-          /**
-           *机     能：验证手机号码是否已经验证过
-           *
-           *名     称：btnVerifyMobile_onClick
-           *
-           *参     数：obj   当前对象
-           */
-          function btnVerifyMobile_onClick(obj) {
-            //判断是否需要手机验证
-            if (!obj.checked) {
-              hideTip("register_verifycode");
-              document.getElementById("registerVO.isVerifiedphone").value = "0";
-              return false;
-            }
-
-            var phone = document.getElementById("registerVO.officePhone").value;
-            if (isEmpty(phone)) {
-              document.getElementById("spanofficephoneinfo").innerHTML =
-                "Phone Number cannot be empty.";
-              obj.checked = false;
-              return false;
-            }
-
-            //校验国家码和手机号
-            if (!checkCountryCodeAndPhone()) {
-              obj.checked = false;
-              return false;
-            }
-
-            var countryCode = document.getElementById(
-              "registerVO.countryCode"
-            ).value;
-            var phone = document.getElementById("registerVO.officePhone").value;
-            var telephoneNumber = countryCode + " " + phone;
-            telephoneNumber = escape(encodeURIComponent(telephoneNumber));
-
-            /*
-	//验证手机号
-	var errorMessage = isValidPhone(phone);
-	
-	//验证失败
-	if(errorMessage != ""){
-	  checkOfficePhone();
-	  obj.checked = false;
-	  document.getElementById("registerVO.isVerifiedphone").value="0";
-	  return false;	
-	}
-	*/
-
-            $.ajax({
-              type: "post",
-              url: "/accounts/register.do?method=checkIsVerifiedPhone",
-              datatype: "html",
-              data: "telephoneNumber=" + telephoneNumber,
-              success: function (msg) {
-                //失败
-                if (msg == "1") {
-                  showTip("isVerifiedphoneTips");
-                  obj.checked = false;
-                  hideTip("register_verifycode");
-                  document.getElementById("registerVO.isVerifiedphone").value =
-                    "0";
-                  return false;
-                }
-                //成功
-                else if (msg == "0") {
-                  document.getElementById("registerVO.isVerifiedphone").value =
-                    "1";
-                  showTip("register_verifycode");
-                  hideTip("isVerifiedphoneTips");
-                  //参数校验成功后，显示图形验证码提示信息
-                  validateVerifyCodeCap();
-                }
-              },
-            });
-          }
-
-          function validateVerifyCodeCap() {
-            var verifyCode = $("input[name='registerVO.verifycode']").val();
-            if (isEmpty(verifyCode)) {
-              $("input[name='registerVO.verifycode']").focus();
-              return false;
-            }
-            $("#smsverifycodeinfo").html("");
-            return true;
-          }
-
-          function sendVerifyCode() {
-            var sendButton = document.getElementById("sendButton");
-
-            //校验图形验证码
-            if (!validateVerifyCodeCap()) {
-              return;
-            }
-
-            var countryCode = document.getElementById(
-              "registerVO.countryCode"
-            ).value;
-            //Country Code
-            if ((errorMessage = isValidCountryCode(countryCode)) != "") {
-              document.getElementById("spanofficephoneinfo").innerHTML =
-                errorMessage;
-              return false;
-            }
-            var phone = document.getElementById("registerVO.officePhone").value;
-            var pcode = document.getElementById("pcode").value;
-            //countryCode = encodeURIComponent(countryCode);
-            //phone = encodeURIComponent(phone);
-
-            var errorMessage = isValidPhone(phone);
-            if (errorMessage != "") {
-              document.getElementById("spanofficephoneinfo").innerHTML =
-                errorMessage;
-              return false;
-            }
-
-            //发送请求，将按钮变为不可编辑
-            sendButton.disabled = true;
-            var verifyCode = $("input[name='registerVO.verifycode']").val();
-            var newUrl = "/accounts/sendsms?id=" + new Date().getTime();
-            var datasMap = {
-              mobile: phone,
-              pcode: pcode,
-              countryCode: countryCode,
-              verifyCode: verifyCode,
-              device: getValueById("deviceFingerInfo"),
-              clientType: "1",
-              registerType: "email",
-            };
-            var xmlHttpRequest = $.ajax({
-              type: "post",
-              url: newUrl,
-              data: datasMap,
-              async: false,
-            });
-            processVerifyCodeRequest(xmlHttpRequest);
-            /* var xmlHttpRequest = createXMLHttpRequest();
-	var verifyCode = $("input[name='registerVO.verifycode']").val()
-	if(xmlHttpRequest != null) {
- 
-		//var newUrl = "/accounts/sendsms?countryCode=" + countryCode + "&pcode=" + pcode + "&mobile=" + phone +"&verifyCode="+verifyCode+ "&id=" + (new Date().getTime());
- 
-		var formData = new FormData();
-		formData.append('mobile', mobile);
-		formData.append('pcode', 'pcode');
-		formData.append('countryCode', countryCode);
-		xmlHttpRequest.open("post", newUrl, true);
-		xmlHttpRequest.setRequestHeader("content-type","application/json;charset=UTF-8;");
-		xmlHttpRequest.send(formData);
-		xmlHttpRequest.onreadystatechange = function() {
-			processVerifyCodeRequest(xmlHttpRequest);
-		}
-	} */
-          }
-
-          function processVerifyCodeRequest(request) {
-            var sendButton = document.getElementById("sendButton");
-            if (request.readyState == 4 && request.status == 200) {
-              var returnObj = request.responseText;
-              if (returnObj == "0") {
-                sendButton.disabled = true;
-                ticker();
-                return true;
-              } else if (returnObj == "1") {
-                var msg = "Incorrect verification code.";
-                //刷新图形验证码
-                loadimage(true);
-                $("#verifycodeinfo").html(msg);
-              } else {
-                document.getElementById("spanmessage").innerHTML = returnObj;
-                var sendButton = document.getElementById("sendButton");
-                //刷新图形验证码
-                loadimage(true);
-              }
-              sendButton.disabled = false;
-            }
-
-            return false;
-          }
-
-          function ticker() {
-            var locked = 60;
-            function tick() {
-              var sendButton = document.getElementById("sendButton");
-              if (locked > 0) {
-                --locked;
-                sendButton.value = "Resend(" + locked + ")";
-              } else {
-                sendButton.value = "Get code";
-                sendButton.disabled = false;
-                clearInterval(ticking);
-              }
-            }
-            var ticking = setInterval(tick, 1000);
-          }
-
-          function clearSysMsg() {
-            document.getElementById("spanmessage").innerHTML = "";
-          }
-        </script>
-
-        <div style="
-            border-left: 1px #e8e8e8 solid;
-            border-right: 1px #e8e8e8 solid;
-            padding-top: 50px;
-            border-radius: 0 0 3px 3px;
-          "></div>
-        <div style="height: 2px" id="content_bottom"></div>
+        <div></div>
+        <div id="content_bottom"></div>
       </div>
 
       <div id="footer">
@@ -1990,93 +763,8 @@ function checkOfficePhone(){
       </div>
     </div>
 
-    <script>
-      rejectHijacking(true);
-      var fingerprintReport = function () {
-        try {
-          var options = {
-            preprocessor: null,
-            audio: {
-              timeout: 1000,
-              excludeIOS11: true,
-            },
-            fonts: null,
-            screen: {
-              detectScreenOrientation: true,
-            },
-            plugins: null,
-            extraComponents: [],
-            excludes: {
-              enumerateDevices: true,
-              pixelRatio: true,
-              deviceMemory: true,
-              doNotTrack: true,
-              fontsFlash: true,
-              adBlock: true,
-              fonts: true,
-              plugins: true,
-              screenResolution: true,
-              availableScreenResolution: true,
-            },
-            NOT_AVAILABLE: "not available",
-            ERROR: "error",
-            EXCLUDED: "excluded",
-          };
+    
 
-          Fingerprint2.get(options, function (components) {
-            var murmur = Fingerprint2.x64hash128(
-              components
-                .map(function (pair) {
-                  return pair.value;
-                })
-                .join(),
-              31
-            );
-            document.getElementById("deviceFingerInfo").value = murmur;
-          });
-        } catch (err) {
-          commonExtends.setFingerDefaultValue("deviceFingerInfo");
-        }
-      };
-      //页面元素增加默认值， 防止$() 未执行
-      commonExtends.checkFingerValue("deviceFingerInfo");
-      $(function () {
-        try {
-          fingerprintReport();
-        } catch (e) {}
-      });
-    </script>
-
-    <script>
-      /**
-       *机     能：跳转对应注册页面
-       *
-       *名     称：switchto
-       *
-       *参     数：method   方法名
-       */
-      function switchto(method) {
-        var loc = "/accounts/register.do?method=toRegister&regsiterMethod=";
-        loc += method;
-        loc += "&appurl=" + "https%3A%2F%2Fwww.huawei.com";
-        window.location = loc;
-      }
-
-      /**
-       *机     能：切换语种
-       *
-       *名     称：changeLanguage
-       *
-       *参     数：lang   语种
-       */
-      function changeLanguage(lang) {
-        document.registerInfoForm.method.value = "changeLang";
-        if (null != lang && lang.length > 5) {
-          lang = lang.substr(0, 5);
-        }
-        document.registerInfoForm.lang.value = lang;
-        document.registerInfoForm.submit();
-      }
-    </script>
+    
   </div>
 </form>

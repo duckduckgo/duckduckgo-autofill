@@ -1,9 +1,10 @@
 <!--
   https://reg.usps.com/portal/register
+  rank: 1744
   testRunId: 66
   testResultId: 235582
 -->
-<form id="frm1" name="frm1" action="/entreg/RegistrationPortalAction" method="post" data-ddg-formtype="sign up">
+<form id="frm1" name="frm1" action="/entreg/RegistrationPortalAction" method="post">
   <input type="hidden" name="struts.token.name" value="token">
   <input type="hidden" name="token" value="GIRVM7Y1BYRO7XDBZ7340O4Y4L9PDJNH">
   <input type="hidden" name="route" value="" id="route">
@@ -15,12 +16,12 @@
 
   <input type="hidden" name="validationErrors" id="validation-errors" value="false">
 
-  <div class="container-fluid step-1 grid-row-margin-24" role="main" id="content" style="background-color: #f7f7f7">
+  <div class="container-fluid step-1 grid-row-margin-24" role="main" id="content">
     <div class="section-wrap-rmin">
       <div class="row" id="row-1">
         <div id="step-1-col-1" class="col-xs-1 col-sm-1 col-sm-offset-1 col-md-1 col-md-offset-1 grid-row-margin-top-20 hidden-xs">
-          <img src="/entreg/assets/images/icons/success-icon.png" alt="" style="vertical-align: text-bottom" class="pull-right eligible hidden">
-          <img src="/entreg/assets/images/icons/sorry-icon.png" alt="" style="vertical-align: text-bottom" class="pull-right ineligible hidden">
+          
+          
         </div>
         <div id="step-1-col-2" class="col-xs-12 col-sm-10 col-md-10">
           <div id="address-section">
@@ -31,9 +32,9 @@
                     First, we need to confirm your address is eligible for
                     Informed Delivery.
 
-                    <a role="button" id="username-tip-1" tabindex="6" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-informed-delivery-availability.html" data-toggle="popover" data-original-title=""><img src="/entreg/assets/images/icons/info.png" style="vertical-align: baseline" alt=""></a>
+                    <a role="button" id="username-tip-1" tabindex="6" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-informed-delivery-availability.html" data-toggle="popover" data-original-title=""></a>
                   </p>
-                  <div style="margin: 12px 0" class="small">
+                  <div class="small">
                     All fields required unless specified as optional (OPT).
                   </div>
                 </div>
@@ -48,7 +49,18 @@
                   <div class="form-group">
                     <label id="for-scountry" for="scountry"><span class="required">*</span> Country</label>
 
-                    <select name="scountry" tabindex="7" id="scountry" class="form-control" rel="addressResult" data-ddg-testresultelementid="517302" data-manual-scoring="addressCountryCode">
+                    <select name="scountry" tabindex="7" id="scountry" class="form-control" rel="addressResult" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: ADDRESS_HOME_COUNTRY
+label: * Country
+parseable name: scountry
+section: scountry_0_15
+field signature: 799721284
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 15" data-ddg-testresultelementid="517302" data-manual-scoring="addressCountryCode">
                       <option value="840 UNITED STATES" selected="selected" id="oUS">
                         UNITED STATES
                       </option>
@@ -419,7 +431,19 @@
                       <div class="form-group" id="form-group-taddress">
                         <label id="for-taddress" for="taddress" class="control-label">Street Address 1</label>
 
-                        <input type="text" name="taddress" maxlength="50" value="" tabindex="8" id="taddress" class="form-control" autocorrect="off" autocomplete="off" rel="addressResult" autocapitalize="off" data-ddg-testresultelementid="517303" data-manual-scoring="addressStreet">
+                        <input type="text" name="taddress" maxlength="50" value="" tabindex="8" id="taddress" class="form-control" autocorrect="off" autocomplete="off" rel="addressResult" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: ADDRESS_HOME_LINE1
+heuristic type: ADDRESS_HOME_LINE1
+label: Street Address 1
+parseable name: taddress
+section: scountry_0_15
+field signature: 2771352254
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 16
+autocomplete: off" data-ddg-testresultelementid="517303" data-manual-scoring="addressStreet">
                         <span id="error-taddress" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-taddress"></span>
                       </div>
@@ -428,7 +452,19 @@
                       <div class="form-group" id="form-group-tapt">
                         <label id="for-tapt" for="tapt" class="control-label">Street Address 2 (OPT)</label>
 
-                        <input type="text" name="tapt" maxlength="50" value="" tabindex="9" id="tapt" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" data-ddg-testresultelementid="517304" data-manual-scoring="addressStreet2">
+                        <input type="text" name="tapt" maxlength="50" value="" tabindex="9" id="tapt" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE2
+label: Street Address 2 (OPT)
+parseable name: tapt
+section: scountry_0_15
+field signature: 3138040385
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 17
+autocomplete: off" data-ddg-testresultelementid="517304" data-manual-scoring="addressStreet2">
                         <span id="error-tapt" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-tapt"></span>
                       </div>
@@ -440,7 +476,19 @@
                       <div class="form-group" id="form-group-tcity">
                         <label id="for-tcity" for="tcity" class="control-label">City</label>
 
-                        <input type="text" name="tcity" maxlength="50" value="" tabindex="10" id="tcity" class="form-control" autocorrect="off" autocomplete="off" rel="addressResult" autocapitalize="off" data-ddg-testresultelementid="517305" data-manual-scoring="addressCity">
+                        <input type="text" name="tcity" maxlength="50" value="" tabindex="10" id="tcity" class="form-control" autocorrect="off" autocomplete="off" rel="addressResult" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: City
+parseable name: tcity
+section: scountry_0_15
+field signature: 1944309207
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 18
+autocomplete: off" data-ddg-testresultelementid="517305" data-manual-scoring="addressCity">
                         <span id="error-tcity" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-tcity"></span>
                       </div>
@@ -449,7 +497,18 @@
                       <div class="form-group" id="form-group-sstate">
                         <label id="for-sstate" for="sstate" class="control-label">State</label>
 
-                        <select name="sstate" tabindex="11" id="sstate" class="form-control" rel="addressResult" data-ddg-testresultelementid="517306" data-manual-scoring="addressProvince">
+                        <select name="sstate" tabindex="11" id="sstate" class="form-control" rel="addressResult" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: State
+parseable name: sstate
+section: scountry_0_15
+field signature: 1977135676
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 19" data-ddg-testresultelementid="517306" data-manual-scoring="addressProvince">
                           <option value="" selected="selected">
                             Select State
                           </option>
@@ -529,7 +588,7 @@
                       <div class="form-group" id="form-group-turbanCode">
                         <label id="for-turbanCode" for="turbanCode" class="control-label">Urbanization Code (OPT)</label>
 
-                        <input type="text" name="turbanCode" size="10" maxlength="20" value="" tabindex="12" id="turbanCode" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" title="overall type: UNKNOWN_TYPE
+                        <input type="text" name="turbanCode" size="10" maxlength="20" value="" tabindex="12" id="turbanCode" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Urbanization Code (OPT)
@@ -541,19 +600,7 @@ form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
 field renderer id: 20
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Urbanization Code (OPT)
-parseable name: turbanCode
-section: scountry_0_15
-field signature: 614982941
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 20
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517307">
+autocomplete: off" data-ddg-testresultelementid="517307">
                         <span id="error-turbanCode" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-turbanCode"></span>
                       </div>
@@ -562,7 +609,19 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                       <div class="form-group" id="form-group-tzip">
                         <label id="for-tzip" for="tzip" class="control-label">ZIP Code™ (OPT)</label>
 
-                        <input type="text" name="tzip" maxlength="10" value="" tabindex="13" id="tzip" class="form-control" autocorrect="off" autocomplete="off" rel="addressResult" autocapitalize="off" data-ddg-testresultelementid="517308" data-manual-scoring="addressPostalCode">
+                        <input type="text" name="tzip" maxlength="10" value="" tabindex="13" id="tzip" class="form-control" autocorrect="off" autocomplete="off" rel="addressResult" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: ADDRESS_HOME_ZIP
+heuristic type: ADDRESS_HOME_ZIP
+label: ZIP Code™ (OPT)
+parseable name: tzip
+section: scountry_0_15
+field signature: 1855575208
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 21
+autocomplete: off" data-ddg-testresultelementid="517308" data-manual-scoring="addressPostalCode">
                         <span id="error-tzip" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-tzip"></span>
                       </div>
@@ -583,7 +642,19 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                       <div class="form-group" id="form-group-taddress1">
                         <label id="for-taddress1" for="taddress1" class="control-label"><span class="required">*</span> Address Line 1</label>
 
-                        <input type="text" name="taddress1" maxlength="50" value="" tabindex="14" id="taddress1" class="form-control" autocorrect="off" autocomplete="off" rel="1" autocapitalize="off" data-ddg-testresultelementid="517309" data-manual-scoring="addressStreet">
+                        <input type="text" name="taddress1" maxlength="50" value="" tabindex="14" id="taddress1" class="form-control" autocorrect="off" autocomplete="off" rel="1" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE1
+label: * Address Line 1
+parseable name: taddress1
+section: taddress1_0_22
+field signature: 1981447676
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 22
+autocomplete: off" data-ddg-testresultelementid="517309" data-manual-scoring="addressStreet">
                         <span id="error-taddress1" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-taddress1"></span>
                       </div>
@@ -594,7 +665,19 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                       <div class="form-group" id="form-group-taddress2">
                         <label id="for-taddress2" for="taddress2" class="control-label">Address Line 2</label>
 
-                        <input type="text" name="taddress2" maxlength="50" value="" tabindex="15" id="taddress2" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" data-ddg-testresultelementid="517310" data-manual-scoring="addressStreet2">
+                        <input type="text" name="taddress2" maxlength="50" value="" tabindex="15" id="taddress2" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE2
+label: Address Line 2
+parseable name: taddress2
+section: taddress1_0_22
+field signature: 2374318083
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 23
+autocomplete: off" data-ddg-testresultelementid="517310" data-manual-scoring="addressStreet2">
                         <span id="error-taddress2" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-taddress2"></span>
                       </div>
@@ -605,7 +688,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                       <div class="form-group" id="form-group-taddress3">
                         <label id="for-taddress3" for="taddress3" class="control-label">Address Line 3</label>
 
-                        <input type="text" name="taddress3" maxlength="50" value="" tabindex="16" id="taddress3" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" title="overall type: ADDRESS_HOME_LINE3
+                        <input type="text" name="taddress3" maxlength="50" value="" tabindex="16" id="taddress3" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_LINE3
 server type: NO_SERVER_DATA
 heuristic type: ADDRESS_HOME_LINE3
 label: Address Line 3
@@ -617,19 +700,7 @@ form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
 field renderer id: 24
-autocomplete: off" autofill-information="overall type: ADDRESS_HOME_LINE3
-server type: NO_SERVER_DATA
-heuristic type: ADDRESS_HOME_LINE3
-label: Address Line 3
-parseable name: taddress3
-section: taddress1_0_22
-field signature: 1625021704
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 24
-autocomplete: off" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517311">
+autocomplete: off" data-ddg-testresultelementid="517311">
                         <span id="error-taddress3" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-taddress3"></span>
                       </div>
@@ -640,7 +711,19 @@ autocomplete: off" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="
                       <div class="form-group" id="form-group-tcityInt">
                         <label id="for-tcityInt" for="tcityInt" class="control-label"><span class="required">*</span> City</label>
 
-                        <input type="text" name="tcityInt" maxlength="50" value="" tabindex="17" id="tcityInt" class="form-control" autocorrect="off" autocomplete="off" rel="2" autocapitalize="off" data-ddg-testresultelementid="517312" data-manual-scoring="addressCity">
+                        <input type="text" name="tcityInt" maxlength="50" value="" tabindex="17" id="tcityInt" class="form-control" autocorrect="off" autocomplete="off" rel="2" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: * City
+parseable name: tcityInt
+section: taddress1_0_22
+field signature: 2735433882
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 25
+autocomplete: off" data-ddg-testresultelementid="517312" data-manual-scoring="addressCity">
                         <span id="error-tcityInt" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-tcityInt"></span>
                       </div>
@@ -651,7 +734,19 @@ autocomplete: off" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="
                       <div class="form-group" id="form-group-tprovince">
                         <label id="for-tprovince" for="tprovince" class="control-label">Province</label>
 
-                        <input type="text" name="tprovince" maxlength="50" value="" tabindex="18" id="tprovince" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" data-ddg-testresultelementid="517313" data-manual-scoring="addressProvince">
+                        <input type="text" name="tprovince" maxlength="50" value="" tabindex="18" id="tprovince" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: Province
+parseable name: tprovince
+section: taddress1_0_22
+field signature: 3177937897
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 26
+autocomplete: off" data-ddg-testresultelementid="517313" data-manual-scoring="addressProvince">
                         <span id="error-tprovince" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-tprovince"></span>
                       </div>
@@ -662,7 +757,19 @@ autocomplete: off" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="
                       <div class="form-group" id="form-group-tpostalCode">
                         <label id="for-tpostalCode" for="tpostalCode" class="control-label">Postal Code</label>
 
-                        <input type="text" name="tpostalCode" maxlength="10" value="" tabindex="19" id="tpostalCode" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" data-ddg-testresultelementid="517314" data-manual-scoring="addressPostalCode">
+                        <input type="text" name="tpostalCode" maxlength="10" value="" tabindex="19" id="tpostalCode" class="form-control" autocorrect="off" autocomplete="off" autocapitalize="off" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_ZIP
+label: Postal Code
+parseable name: tpostalCode
+section: taddress1_0_22
+field signature: 3454421212
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 27
+autocomplete: off" data-ddg-testresultelementid="517314" data-manual-scoring="addressPostalCode">
                         <span id="error-tpostalCode" class="error-txt-portal"></span>
                         <span class="sr-only" id="sr-only-error-tpostalCode"></span>
                       </div>
@@ -690,7 +797,7 @@ autocomplete: off" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="
                     First, we need to confirm your address is eligible for
                     Informed Delivery<sup>®</sup>.
 
-                    <a role="button" id="username-tip-2" tabindex="20" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-informed-delivery-availability.html" data-toggle="popover" data-original-title=""><img src="/entreg/assets/images/icons/info.png" style="vertical-align: baseline" alt=""></a>
+                    <a role="button" id="username-tip-2" tabindex="20" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-informed-delivery-availability.html" data-toggle="popover" data-original-title=""></a>
                   </p>
                 </div>
               </div>
@@ -718,9 +825,9 @@ autocomplete: off" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="
                     <span class="sm-header-no-cap"><strong>Original Address</strong></span>
                   </div>
 
-                  <div id="div-ams-same" class="radio" style="margin-top: 10px">
+                  <div id="div-ams-same" class="radio">
                     <label id="for-ams-same" for="ams-same" class="rmin-address">
-                      <input type="radio" id="ams-same" name="address" title="overall type: UNKNOWN_TYPE
+                      <input type="radio" id="ams-same" name="address" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Original Address
@@ -731,18 +838,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Original Address
-parseable name: address
-section: taddress1_0_22
-field signature: 263446779
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517315">
+field renderer id: 28" data-ddg-testresultelementid="517315">
                       <span class="urban"></span>
                       <span class="address1"></span>
                       <span class="address2"></span>
@@ -750,8 +846,8 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <span class="zip"></span>
                     </label>
                   </div>
-                  <div id="a-address-step2-prev-wrap" class="btn-wrap-single visible-xs" style="margin-bottom: 28px">
-                    <a tabindex="21" id="a-address-step2-prev-m" href="#"><span class="glyphicon glyphicon-menu-left icon-red" style="font-weight: bold; font-size: 9px" aria-hidden="true"></span>
+                  <div id="a-address-step2-prev-wrap" class="btn-wrap-single visible-xs">
+                    <a tabindex="21" id="a-address-step2-prev-m" href="#"><span class="glyphicon glyphicon-menu-left icon-red" aria-hidden="true"></span>
                       <strong>Change This Address</strong></a>
                   </div>
                 </div>
@@ -765,13 +861,13 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     </div>
 
                     <div id="returned-addresses-scrollbar">
-                      <div class="scrollbar disable" style="height: 0px">
-                        <div class="track" style="height: 0px">
+                      <div class="scrollbar disable">
+                        <div class="track">
                           <div class="thumb"><div class="end"></div></div>
                         </div>
                       </div>
                       <div class="viewport">
-                        <div class="overview" style="top: 0px">
+                        <div class="overview">
                           <div id="returnedAddresses"></div>
                         </div>
                       </div>
@@ -784,7 +880,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                   <div class="row hidden" id="verification-returned-addresses-btns">
                     <div class="col-xs-12 col-sm-12 col-md-12">
                       <div id="a-address-step2-wrap" class="btn-wrap-single">
-                        <a tabindex="22" id="a-address-step2-prev" class="btn btn-link btn-lg hidden-xs"><span class="glyphicon glyphicon-menu-left icon-red" style="font-weight: bold; font-size: 9px" aria-hidden="true"></span>
+                        <a tabindex="22" id="a-address-step2-prev" class="btn btn-link btn-lg hidden-xs"><span class="glyphicon glyphicon-menu-left icon-red" aria-hidden="true"></span>
                           Change This Address</a>&nbsp;&nbsp;
 
                         <a tabindex="23" id="a-address-step2" class="btn btn-primary btn-lg">Continue</a>
@@ -818,7 +914,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     First, we need to confirm your address is eligible for
                     Informed Delivery<sup>®</sup>.
 
-                    <a role="button" id="username-tip-3" tabindex="24" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-informed-delivery-availability.html" data-toggle="popover" data-original-title=""><img src="/entreg/assets/images/icons/info.png" style="vertical-align: baseline" alt=""></a>
+                    <a role="button" id="username-tip-3" tabindex="24" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-informed-delivery-availability.html" data-toggle="popover" data-original-title=""></a>
                   </p>
                 </div>
               </div>
@@ -840,7 +936,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       </div>
                       <div>
                         <span id="range-address1" class="rmin-address"></span>
-                        <select id="ste-range" class="form-control" style="width: 130px; display: inline-block" title="overall type: UNKNOWN_TYPE
+                        <select id="ste-range" class="form-control" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: There's more than one unit for this address.  Please select your unit. There is more than one house 
@@ -851,18 +947,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: There's more than one unit for this address.  Please select your unit. There is more than one house 
-parseable name: ste-range
-section: taddress1_0_22
-field signature: 932892736
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517316"></select>
+field renderer id: 29" data-ddg-testresultelementid="517316"></select>
                       </div>
                       <div id="range-address2" class="rmin-address"></div>
                       <div>
@@ -873,8 +958,8 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                     </div>
                   </div>
 
-                  <div id="a-address-step3-prev-wrap" class="btn-wrap-single visible-xs" style="margin-bottom: 28px">
-                    <a tabindex="25" id="a-address-step3-prev-m" href="#"><span class="glyphicon glyphicon-menu-left icon-red" style="font-weight: bold; font-size: 9px" aria-hidden="true"></span>
+                  <div id="a-address-step3-prev-wrap" class="btn-wrap-single visible-xs">
+                    <a tabindex="25" id="a-address-step3-prev-m" href="#"><span class="glyphicon glyphicon-menu-left icon-red" aria-hidden="true"></span>
                       <strong>Change This Address</strong></a>
                   </div>
                 </div>
@@ -885,7 +970,7 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12">
                       <div id="a-address-step3-wrap" class="btn-wrap-single">
-                        <a tabindex="26" id="a-address-step3-prev" class="btn btn-link btn-lg hidden-xs"><span class="glyphicon glyphicon-menu-left icon-red" style="font-weight: bold; font-size: 9px" aria-hidden="true"></span>
+                        <a tabindex="26" id="a-address-step3-prev" class="btn btn-link btn-lg hidden-xs"><span class="glyphicon glyphicon-menu-left icon-red" aria-hidden="true"></span>
                           Change This Address</a>&nbsp;&nbsp;
 
                         <a tabindex="27" id="a-address-step3" class="btn btn-primary btn-lg">Continue</a>
@@ -898,7 +983,7 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12">
                   <div id="step3-ams-address-error-msg" class="error hidden">
-                    <div style="margin: 12px 0">
+                    <div>
                       There was a problem while updating your address.
                       <span id="rsMsg-error-msg-step3"></span>
                     </div>
@@ -927,7 +1012,7 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                     <div><strong>Original Address:</strong></div>
                     <div id="div-company-same-match" class="radio">
                       <label id="for-company-same-match" for="company-same-match">
-                        <input type="radio" id="company-same-match" value="same" name="company-match-address" title="overall type: UNKNOWN_TYPE
+                        <input type="radio" id="company-same-match" value="same" name="company-match-address" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Original Address:
@@ -938,18 +1023,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Original Address:
-parseable name: company-match-address
-section: taddress1_0_22
-field signature: 725863023
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517317">
+field renderer id: 30" data-ddg-testresultelementid="517317">
                         <span class="company"></span>
                         <span class="urbancode"></span>
                         <span class="address1"></span>
@@ -967,13 +1041,13 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <div class="found"><strong>Existing Records:</strong></div>
 
                     <div id="returned-matched-addresses-scrollbar">
-                      <div class="scrollbar disable" style="height: 0px">
-                        <div class="track" style="height: 0px">
+                      <div class="scrollbar disable">
+                        <div class="track">
                           <div class="thumb"><div class="end"></div></div>
                         </div>
                       </div>
                       <div class="viewport">
-                        <div class="overview" style="top: 0px">
+                        <div class="overview">
                           <div id="returnedMatchedAddresses"></div>
                         </div>
                       </div>
@@ -1034,13 +1108,13 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <div class="found"><strong>Existing Records:</strong></div>
 
                     <div id="returned-equifax-addresses-scrollbar">
-                      <div class="scrollbar disable" style="height: 0px">
-                        <div class="track" style="height: 0px">
+                      <div class="scrollbar disable">
+                        <div class="track">
                           <div class="thumb"><div class="end"></div></div>
                         </div>
                       </div>
                       <div class="viewport">
-                        <div class="overview" style="top: 0px">
+                        <div class="overview">
                           <div id="returnedEquifaxAddresses"></div>
                         </div>
                       </div>
@@ -1156,7 +1230,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               </div>
               <div class="row grid-row-margin-34">
                 <div class="col-xs-12 col-sm-12 col-md-12">
-                  <a href="#" id="a-address-step6-prev" tabindex="31"><span class="glyphicon glyphicon-menu-left icon-red" style="font-weight: bold; font-size: 9px" aria-hidden="true"></span>
+                  <a href="#" id="a-address-step6-prev" tabindex="31"><span class="glyphicon glyphicon-menu-left icon-red" aria-hidden="true"></span>
                     <strong>Change This Address</strong></a>
                 </div>
               </div>
@@ -1165,7 +1239,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 <div class="col-xs-12 col-sm-6 col-md-8">
                   <div class="checkbox">
                     <label>
-                      <input type="checkbox" name="informedDeliveryOptIn" value="true" tabindex="32" id="informed-delivery-opt-in" title="overall type: UNKNOWN_TYPE
+                      <input type="checkbox" name="informedDeliveryOptIn" value="true" tabindex="32" id="informed-delivery-opt-in" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Change This Address
@@ -1176,18 +1250,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 31" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Change This Address
-parseable name: informedDeliveryOptIn
-section: taddress1_0_22
-field signature: 1551801048
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 31" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517318">
+field renderer id: 31" data-ddg-testresultelementid="517318">
                       <input type="hidden" id="__checkbox_informed-delivery-opt-in" name="__checkbox_informedDeliveryOptIn" value="true">
                       I have read, understand and agree to the
                       <a href="/entreg/assets/html/informed-delivery.html" id="terms-conditions"><strong>Terms and Conditions</strong></a>
@@ -1235,9 +1298,9 @@ field renderer id: 31" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
   <div class="container-fluid step-2 hidden" id="content-2-title">
     <div class="row grid-row-margin-16">
       <div class="col-xs-12 col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2">
-        <h1 id="sign-in-to-your-account-header" class="lg-header" style="margin-bottom: 7px">
+        <h1 id="sign-in-to-your-account-header" class="lg-header">
           <strong>Create Account</strong>
-          <img src="/entreg/assets/images/rmin-step-2.png" alt="step 2">
+          
         </h1>
       </div>
       <div class="col-xs-12 col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2"></div>
@@ -1262,7 +1325,7 @@ field renderer id: 31" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                   <span class="required">*</span> Choose a language preference
                 </label>
                 <div id="language-wrapper">
-                  <select name="slanguage" tabindex="34" id="slanguage" class="form-control" title="overall type: UNKNOWN_TYPE
+                  <select name="slanguage" tabindex="34" id="slanguage" class="form-control" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: * Choose a language preference
@@ -1273,18 +1336,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 33" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: * Choose a language preference
-parseable name: slanguage
-section: taddress1_0_22
-field signature: 2069484811
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517319">
+field renderer id: 33" data-ddg-testresultelementid="517319">
                     <option value="en">English</option>
                     <option value="es">Español</option>
                     <option value="zh">简体中文</option>
@@ -1295,7 +1347,7 @@ field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </div>
               <div class="form-group hidden">
                 <label for="rAccount1" id="for-rAccount1">
-                  <input type="radio" tabindex="-1" id="rAccount1" name="raccount" value="personal" checked="checked" title="overall type: UNKNOWN_TYPE
+                  <input type="radio" tabindex="-1" id="rAccount1" name="raccount" value="personal" checked="checked" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Your password must:
@@ -1306,18 +1358,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 34" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Your password must:
-parseable name: raccount
-section: taddress1_0_22
-field signature: 2428548070
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517320">
+field renderer id: 34" data-ddg-testresultelementid="517320">
                 </label>
               </div>
 
@@ -1325,18 +1366,26 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <div class="form-group has-feedback" id="form-group-tuserName">
                 <label id="for-tuserName" for="tuserName" class="control-label">Username</label>
 
-                <a role="button" id="username-tip" tabindex="35" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-user-name.html" data-toggle="popover" data-original-title=""><img src="/entreg/assets/images/icons/info.png" style="vertical-align: baseline" alt=""></a>
+                <a role="button" id="username-tip" tabindex="35" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-user-name.html" data-toggle="popover" data-original-title=""></a>
 
-                <input type="text" name="tuserName" maxlength="50" value="" tabindex="36" id="tuserName" class="form-control" autocorrect="off" autocomplete="off" aria-describedby="helpBlock" autocapitalize="off" data-original-title="" data-ddg-testresultelementid="517321" data-manual-scoring="username">
+                <input type="text" name="tuserName" maxlength="50" value="" tabindex="36" id="tuserName" class="form-control" autocorrect="off" autocomplete="off" aria-describedby="helpBlock" autocapitalize="off" data-original-title="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: tuserName
+section: taddress1_0_22
+field signature: 432375374
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 35
+autocomplete: off" data-ddg-testresultelementid="517321" data-manual-scoring="username">
 
-                <div id="check-username-available" style="display: none">
-                  <ul style="
-                      list-style-image: url('/entreg/assets/images/icons/success-icon.png');
-                      color: #218748;
-                      margin: 12px 0 0 -12px;
-                    ">
+                <div id="check-username-available">
+                  <ul>
                     <li>
-                      <span style="top: -5px; position: relative">Username available</span>
+                      <span>Username available</span>
                     </li>
                   </ul>
                 </div>
@@ -1346,7 +1395,7 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <span id="check-username-response" class="hidden-xs"></span>
             </div>
 
-            <div id="password-hints-m" style="display: none">
+            <div id="password-hints-m">
               <div class="col-xs-12 col-sm-4 col-md-4 visible-xs">
                 <p><small>Your password must:</small></p>
 
@@ -1378,7 +1427,19 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <div class="form-group" id="form-group-tPassword">
                 <label id="for-tPassword" for="tPassword" class="control-label">Password</label>
 
-                <input type="password" name="password" size="45" maxlength="50" value="" tabindex="37" id="tPassword" class="form-control" autocomplete="off" data-ddg-testresultelementid="517322" data-manual-scoring="password">
+                <input type="password" name="password" size="45" maxlength="50" value="" tabindex="37" id="tPassword" class="form-control" autocomplete="off" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: taddress1_0_22
+field signature: 2051817934
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 36
+autocomplete: off" data-ddg-testresultelementid="517322" data-manual-scoring="password">
                 <span id="error-tPassword" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tPassword"></span>
               </div>
@@ -1386,31 +1447,43 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <div class="form-group" id="form-group-tPasswordRetype">
                 <label id="for-tPasswordRetype" for="tPasswordRetype" class="control-label">Re-Type Password</label>
 
-                <input type="password" name="tpasswordRetype" size="45" maxlength="55" value="" tabindex="38" id="tPasswordRetype" class="form-control" autocomplete="off" aria-describedby="helpBlock" data-ddg-testresultelementid="517323" data-manual-scoring="password">
+                <input type="password" name="tpasswordRetype" size="45" maxlength="55" value="" tabindex="38" id="tPasswordRetype" class="form-control" autocomplete="off" aria-describedby="helpBlock" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Re-Type Password
+parseable name: tpasswordRetype
+section: taddress1_0_22
+field signature: 2034243106
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 37
+autocomplete: off" data-ddg-testresultelementid="517323" data-manual-scoring="password">
                 <span id="error-tPasswordRetype" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tPasswordRetype"></span>
 
-                <ul class="list-unstyled pswd_list_portal" style="margin-top: 3px">
-                  <li class="pswd_info_invalid_portal" id="retype_pswd_info_matching" style="display: none">
+                <ul class="list-unstyled pswd_list_portal">
+                  <li class="pswd_info_invalid_portal" id="retype_pswd_info_matching">
                     Passwords Do Not Match
                   </li>
-                  <li class="pswd_info_valid_portal" id="retype_pswd_info_match" style="display: none">
+                  <li class="pswd_info_valid_portal" id="retype_pswd_info_match">
                     Passwords Successfully Match
                   </li>
-                  <li class="pswd_info_invalid_portal" id="retype_pswd_info_invalid" style="display: none">
+                  <li class="pswd_info_invalid_portal" id="retype_pswd_info_invalid">
                     Invalid Password
                   </li>
-                  <li class="pswd_info_matching_progress" id="retype_pswd_info_matching_progress" style="display: none">
+                  <li class="pswd_info_matching_progress" id="retype_pswd_info_matching_progress">
                     Passwords Matching So Far
                   </li>
-                  <li class="pswd_info_begin" id="retype_pswd_info_begin" style="display: none">
+                  <li class="pswd_info_begin" id="retype_pswd_info_begin">
                     Begin Re-Typing Your Password
                   </li>
                 </ul>
               </div>
             </div>
 
-            <div id="password-hints" style="display: none">
+            <div id="password-hints">
               <div class="col-xs-12 col-sm-4 col-md-4 hidden-xs">
                 <p><small>Your password must:</small></p>
                 <ul class="list-unstyled pswd_list_portal">
@@ -1471,7 +1544,7 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <div class="form-group" id="form-group-ssec1">
                 <label id="for-ssec1" for="ssec1" class="control-label">Security Question 1</label>
 
-                <select name="ssec1" tabindex="39" id="ssec1" class="form-control" rel="2" title="overall type: UNKNOWN_TYPE
+                <select name="ssec1" tabindex="39" id="ssec1" class="form-control" rel="2" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security Question 1
@@ -1482,18 +1555,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 40" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security Question 1
-parseable name: ssec1
-section: taddress1_0_22
-field signature: 3208516056
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517324">
+field renderer id: 40" data-ddg-testresultelementid="517324">
                   <option value="" selected="selected">
                     Select your first security question
                   </option>
@@ -1518,7 +1580,7 @@ field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   </option>
                 </select>
 
-                <select name="ssec3" id="ssec3" class="hidden" title="overall type: UNKNOWN_TYPE
+                <select name="ssec3" id="ssec3" class="hidden" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security Question 1
@@ -1529,18 +1591,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 41" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security Question 1
-parseable name: ssec3
-section: taddress1_0_22
-field signature: 1137208703
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517325">
+field renderer id: 41" data-ddg-testresultelementid="517325">
                   <option value="">Select your first security question</option>
                   <option value="1" id="s3o1">
                     In what city were you born?
@@ -1571,7 +1622,7 @@ field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-tsecAnswer1">
                 <label id="for-tsecAnswer1" for="tsecAnswer1" class="control-label">Answer</label>
 
-                <input type="password" name="tsecAnswer1" maxlength="50" value="" tabindex="40" id="tsecAnswer1" class="form-control inputs" autocomplete="off" rel="doesMatchParent" title="overall type: UNKNOWN_TYPE
+                <input type="password" name="tsecAnswer1" maxlength="50" value="" tabindex="40" id="tsecAnswer1" class="form-control inputs" autocomplete="off" rel="doesMatchParent" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Answer
@@ -1583,26 +1634,14 @@ form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
 field renderer id: 42
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Answer
-parseable name: tsecAnswer1
-section: taddress1_0_22
-field signature: 3444307370
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 42
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517326">
+autocomplete: off" data-ddg-testresultelementid="517326">
                 <span id="error-tsecAnswer1" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tsecAnswer1"></span>
               </div>
               <div class="form-group" id="form-group-tsecAnswer1Match">
                 <label class="control-label" id="for-tsecAnswer1Match" for="tsecAnswer1Match">Re-Type Answer</label>
 
-                <input type="password" name="tsecAnswer1Match" maxlength="50" value="" tabindex="41" id="tsecAnswer1Match" class="form-control" title="overall type: UNKNOWN_TYPE
+                <input type="password" name="tsecAnswer1Match" maxlength="50" value="" tabindex="41" id="tsecAnswer1Match" class="form-control" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Re-Type Answer
@@ -1614,29 +1653,17 @@ form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
 field renderer id: 43
-autocomplete: off" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Re-Type Answer
-parseable name: tsecAnswer1Match
-section: taddress1_0_22
-field signature: 1422836114
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 43
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517327">
+autocomplete: off" data-ddg-testresultelementid="517327">
                 <span id="error-tsecAnswer1Match" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tsecAnswer1Match"></span>
               </div>
             </div>
             <div class="col-xs-12 col-sm-4 col-md-4">
-              <hr style="border-color: #000" class="visible-xs">
+              <hr class="visible-xs">
               <div class="form-group" id="form-group-ssec2">
                 <label id="for-ssec2" for="ssec2" class="control-label">Security Question 2</label>
 
-                <select name="ssec2" tabindex="42" id="ssec2" class="form-control" rel="1" title="overall type: UNKNOWN_TYPE
+                <select name="ssec2" tabindex="42" id="ssec2" class="form-control" rel="1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security Question 2
@@ -1647,18 +1674,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 44" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security Question 2
-parseable name: ssec2
-section: taddress1_0_22
-field signature: 2261564380
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517328">
+field renderer id: 44" data-ddg-testresultelementid="517328">
                   <option value="" selected="selected">
                     Select your second security question
                   </option>
@@ -1691,7 +1707,7 @@ field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-tsecAnswer2">
                 <label id="for-tsecAnswer2" for="tsecAnswer2" class="control-label">Answer</label>
 
-                <input type="password" name="tsecAnswer2" maxlength="50" value="" tabindex="43" id="tsecAnswer2" class="form-control" autocomplete="off" rel="doesMatchParent" title="overall type: UNKNOWN_TYPE
+                <input type="password" name="tsecAnswer2" maxlength="50" value="" tabindex="43" id="tsecAnswer2" class="form-control" autocomplete="off" rel="doesMatchParent" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Answer
@@ -1703,26 +1719,14 @@ form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
 field renderer id: 45
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Answer
-parseable name: tsecAnswer2
-section: taddress1_0_22
-field signature: 3615552836
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 45
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517329">
+autocomplete: off" data-ddg-testresultelementid="517329">
                 <span id="error-tsecAnswer2" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tsecAnswer2"></span>
               </div>
               <div class="form-group" id="form-group-tsecAnswer2Match">
                 <label class="control-label" id="for-tsecAnswer2Match" for="tsecAnswer2Match">Re-Type Answer</label>
 
-                <input type="password" name="tsecAnswer2Match" maxlength="50" value="" tabindex="44" id="tsecAnswer2Match" class="form-control" title="overall type: UNKNOWN_TYPE
+                <input type="password" name="tsecAnswer2Match" maxlength="50" value="" tabindex="44" id="tsecAnswer2Match" class="form-control" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Re-Type Answer
@@ -1734,19 +1738,7 @@ form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
 field renderer id: 46
-autocomplete: off" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Re-Type Answer
-parseable name: tsecAnswer2Match
-section: taddress1_0_22
-field signature: 4008590677
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 46
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517330">
+autocomplete: off" data-ddg-testresultelementid="517330">
                 <span id="error-tsecAnswer2Match" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tsecAnswer2Match"></span>
               </div>
@@ -1783,7 +1775,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
               <div class="form-group" id="form-group-stitle">
                 <label id="for-stitle" for="stitle" class="control-label">Prefix (OPT)</label>
 
-                <select name="stitle" tabindex="45" id="stitle" class="form-control" title="overall type: UNKNOWN_TYPE
+                <select name="stitle" tabindex="45" id="stitle" class="form-control" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Prefix (OPT)
@@ -1794,18 +1786,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 47" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Prefix (OPT)
-parseable name: stitle
-section: taddress1_0_22
-field signature: 2103360022
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517331">
+field renderer id: 47" data-ddg-testresultelementid="517331">
                   <option value=" ">Select</option>
                   <option value="Mr">Mr</option>
                   <option value="Mrs">Mrs</option>
@@ -1822,7 +1803,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-tfName">
                 <label id="for-tfName" for="tfName" class="control-label">First Name</label>
 
-                <input type="text" name="tfName" maxlength="50" value="" tabindex="46" id="tfName" class="form-control" data-ddg-testresultelementid="517332" data-manual-scoring="firstName">
+                <input type="text" name="tfName" maxlength="50" value="" tabindex="46" id="tfName" class="form-control" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: tfName
+section: taddress1_0_22
+field signature: 847158085
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 48" data-ddg-testresultelementid="517332" data-manual-scoring="firstName">
                 <span id="error-tfName" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tfName"></span>
               </div>
@@ -1831,7 +1823,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-tmI">
                 <label id="for-tmI" for="tmI" class="control-label">M.I. (OPT)</label>
 
-                <input type="text" name="tmI" size="1" maxlength="1" value="" tabindex="47" id="tmI" class="form-control" data-ddg-testresultelementid="517333" data-manual-scoring="middleName">
+                <input type="text" name="tmI" size="1" maxlength="1" value="" tabindex="47" id="tmI" class="form-control" autofill-information="overall type: NAME_MIDDLE_INITIAL
+server type: NO_SERVER_DATA
+heuristic type: NAME_MIDDLE_INITIAL
+label: M.I. (OPT)
+parseable name: tmI
+section: taddress1_0_22
+field signature: 1988885054
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 49" data-ddg-testresultelementid="517333" data-manual-scoring="middleName">
                 <span id="error-tmI" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tmI"></span>
               </div>
@@ -1840,7 +1843,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-tlName">
                 <label id="for-tlName" for="tlName" class="control-label">Last Name</label>
 
-                <input type="text" name="tlName" maxlength="50" value="" tabindex="48" id="tlName" class="form-control" data-ddg-testresultelementid="517334" data-manual-scoring="lastName">
+                <input type="text" name="tlName" maxlength="50" value="" tabindex="48" id="tlName" class="form-control" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: tlName
+section: taddress1_0_22
+field signature: 684106127
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 50" data-ddg-testresultelementid="517334" data-manual-scoring="lastName">
                 <span id="error-tlName" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tlName"></span>
               </div>
@@ -1852,7 +1866,7 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-ssuffix">
                 <label id="for-ssuffix" for="ssuffix">Suffix (OPT)</label>
 
-                <select name="ssuffix" tabindex="49" id="ssuffix" class="form-control" title="overall type: UNKNOWN_TYPE
+                <select name="ssuffix" tabindex="49" id="ssuffix" class="form-control" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Suffix (OPT)
@@ -1863,18 +1877,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 51" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Suffix (OPT)
-parseable name: ssuffix
-section: taddress1_0_22
-field signature: 100407574
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517335">
+field renderer id: 51" data-ddg-testresultelementid="517335">
                   <option value=" ">Select</option>
                   <option value="Jr">Jr</option>
                   <option value="Sr">Sr</option>
@@ -1894,7 +1897,18 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 <div id="phone-type-container">
                   <label id="for-sphoneType" for="sphoneType">Type</label>
 
-                  <select name="sphoneType" tabindex="50" id="sphoneType" class="form-control" data-ddg-testresultelementid="517336" data-manual-scoring="addressCountryCode">
+                  <select name="sphoneType" tabindex="50" id="sphoneType" class="form-control" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: UNKNOWN_TYPE
+label: Type
+parseable name: sphoneType
+section: taddress1_0_22
+field signature: 4027872799
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 52" data-ddg-testresultelementid="517336" data-manual-scoring="addressCountryCode">
                     <option value="US" selected="selected">US</option>
                     <option value="INT">Intl.</option>
                   </select>
@@ -1906,7 +1920,18 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div class="form-group" id="form-group-tphone">
                 <label id="for-tphone" for="tphone" class="control-label">Phone Number</label>
 
-                <input type="tel" name="tphone" maxlength="12" value="" tabindex="51" id="tphone" class="form-control" rel="i13" data-ddg-testresultelementid="517337" data-manual-scoring="phone">
+                <input type="tel" name="tphone" maxlength="12" value="" tabindex="51" id="tphone" class="form-control" rel="i13" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: PHONE_HOME_CITY_AND_NUMBER
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone Number
+parseable name: tphone
+section: taddress1_0_22
+field signature: 183416264
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 53" data-ddg-testresultelementid="517337" data-manual-scoring="phone">
 
                 <span id="error-tphone" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-tphone"></span>
@@ -1919,16 +1944,20 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div id="form-group-temail" class="form-group">
                 <label id="for-temail" for="temail" class="control-label">Email Address</label>
 
-                <a role="button" id="email-tip" tabindex="52" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-email-address.html" data-toggle="popover" data-original-title=""><img src="/entreg/assets/images/icons/info.png" style="vertical-align: baseline" alt=""></a>
+                <a role="button" id="email-tip" tabindex="52" title="" data-remotecontent="/entreg/assets/html/tooltips/tool-tip-email-address.html" data-toggle="popover" data-original-title=""></a>
 
-                <input type="email" name="temail" maxlength="50" value="" tabindex="53" id="temail" class="form-control" rel="doesMatchParent" data-ddg-autofill="true" data-ddg-testresultelementid="517338" style="
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input type="email" name="temail" maxlength="50" value="" tabindex="53" id="temail" class="form-control" rel="doesMatchParent" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: temail
+section: taddress1_0_22
+field signature: 2162409402
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 54" data-ddg-testresultelementid="517338" data-manual-scoring="emailAddress">
                 <span id="error-temail" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-temail"></span>
                 <span id="result-temail"></span>
@@ -1938,25 +1967,32 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div id="form-group-temailRetype" class="form-group">
                 <label id="for-temailRetype" for="temailRetype" class="control-label">Re-Type Email Address</label>
 
-                <input type="email" name="temailRetype" maxlength="50" value="" tabindex="54" id="temailRetype" class="form-control" rel="i20" data-ddg-autofill="true" data-ddg-testresultelementid="517339" style="
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input type="email" name="temailRetype" maxlength="50" value="" tabindex="54" id="temailRetype" class="form-control" rel="i20" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Re-Type Email Address
+parseable name: temailRetype
+section: taddress1_0_22
+field signature: 23110641
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 55" data-ddg-testresultelementid="517339" data-manual-scoring="emailAddress">
                 <span id="error-temailRetype" class="error-txt-portal"></span>
                 <span class="sr-only" id="sr-only-error-temailRetype"></span>
-                <input style="
-                    display: none;
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " name="temailVerify" value="" data-ddg-autofill="true" data-ddg-testresultelementid="517340" data-manual-scoring="emailAddress">
+                <input name="temailVerify" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Re-Type Email Address
+parseable name: temailVerify
+section: taddress1_0_22
+field signature: 3120369097
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 56" data-ddg-testresultelementid="517340" data-manual-scoring="emailAddress">
               </div>
             </div>
           </div>
@@ -1980,7 +2016,7 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <div id="communication-preferences-row" class="row">
             <div class="col-xs-12 col-sm-12 col-md-12">
               <div id="checkbox-1" class="checkbox">
-                <label><input type="checkbox" name="cfrmUSPS" value="true" tabindex="54" id="cFrmUSPS" class="checkbox" title="overall type: UNKNOWN_TYPE
+                <label><input type="checkbox" name="cfrmUSPS" value="true" tabindex="54" id="cFrmUSPS" class="checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Get Communications from USPS and Our Partners
@@ -1991,23 +2027,12 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 57" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Get Communications from USPS and Our Partners
-parseable name: cfrmUSPS
-section: taddress1_0_22
-field signature: 1670798834
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517341">
+field renderer id: 57" data-ddg-testresultelementid="517341">
                   <input type="hidden" id="__checkbox_cFrmUSPS" name="__checkbox_cfrmUSPS" value="true">
                   From USPS</label>
               </div>
               <div id="checkbox-2" class="checkbox">
-                <label><input type="checkbox" name="cfrmPartners" value="true" tabindex="54" id="cFrmPartners" class="checkbox" title="overall type: UNKNOWN_TYPE
+                <label><input type="checkbox" name="cfrmPartners" value="true" tabindex="54" id="cFrmPartners" class="checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Get Communications from USPS and Our Partners
@@ -2018,18 +2043,7 @@ form signature: 9727627941948597370
 form signature in host form: 9727627941948597370
 field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
 form renderer id: 1
-field renderer id: 59" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Get Communications from USPS and Our Partners
-parseable name: cfrmPartners
-section: taddress1_0_22
-field signature: 2506440631
-form signature: 9727627941948597370
-form signature in host form: 9727627941948597370
-field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
-form renderer id: 1
-field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517342">
+field renderer id: 59" data-ddg-testresultelementid="517342">
                   <input type="hidden" id="__checkbox_cFrmPartners" name="__checkbox_cfrmPartners" value="true">
                   From USPS Partners</label>
               </div>
@@ -2117,14 +2131,18 @@ field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
             <label for="tEmailVerification" id="for-tEmailVerification" class="control-label"><span class="required">*</span> Re-enter your email
               address</label>
 
-            <input class="form-control" type="text" maxlength="50" name="tEmailVerification" id="tEmailVerification" tabindex="%{#tabindexanchor}" data-ddg-autofill="true" data-ddg-testresultelementid="517343" style="
-                background-size: auto 26px !important;
-                background-position: right center !important;
-                background-repeat: no-repeat !important;
-                background-origin: content-box !important;
-                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                transition: background 0s ease 0s !important;
-              " data-manual-scoring="emailAddress">
+            <input class="form-control" type="text" maxlength="50" name="tEmailVerification" id="tEmailVerification" tabindex="%{#tabindexanchor}" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: * Re-enter your email address
+parseable name: tEmailVerification
+section: taddress1_0_22
+field signature: 3461723091
+form signature: 9727627941948597370
+form signature in host form: 9727627941948597370
+field frame token: 94C140A1F05E9D1A3CCF680DEBFFBD67
+form renderer id: 1
+field renderer id: 62" data-ddg-testresultelementid="517343" data-manual-scoring="emailAddress">
             <div id="email-verification-error" class="hidden">
               <span id="error-tEmailVerification" class="error-txt"><span class="error-txt-blk"><span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span>
                   <span class="sr-only">Error:</span> The email address you

@@ -1,10 +1,11 @@
 <!--
   https://www.passportindia.gov.in/AppOnlineProject/user/RegistrationBaseAction
+  rank: 7880
   testRunId: 66
   testResultId: 238992
 -->
 
-  <table cellpadding="0" cellspacing="0" width="100%" align="center" style="background: silver" role="presentation">
+  <table cellpadding="0" cellspacing="0" width="100%" align="center" role="presentation">
     <tbody>
       <tr>
         <td>
@@ -17,465 +18,9 @@
                       <tbody>
                         <tr>
                           <td colspan="3" valign="top">
-                            <script type="text/javascript" language="JavaScript">
-                              function controlMarquee() {
-                                var marquee =
-                                  document.getElementById("marquee");
-
-                                if (
-                                  document.getElementById(
-                                    "marqueeControlButton"
-                                  ).value == "Pause"
-                                ) {
-                                  document.getElementById(
-                                    "marqueeControlButton"
-                                  ).value = "Start";
-                                  document.getElementById(
-                                    "image1"
-                                  ).style.display = "none";
-                                  document.getElementById(
-                                    "image2"
-                                  ).style.display = "";
-
-                                  marquee.stop();
-                                } else if (
-                                  document.getElementById(
-                                    "marqueeControlButton"
-                                  ).value == "Start"
-                                ) {
-                                  document.getElementById(
-                                    "marqueeControlButton"
-                                  ).value = "Pause";
-                                  document.getElementById(
-                                    "image2"
-                                  ).style.display = "none";
-                                  document.getElementById(
-                                    "image1"
-                                  ).style.display = "";
-
-                                  marquee.start();
-                                }
-                              }
-
-                              function loginSubmit() {
-                                document.getElementById("loginId").click();
-                              }
-                              function registerSubmit() {
-                                document.getElementById("registrId").click();
-                              }
-
-                              function changemysize(myvalue, x) {
-                                // this function is called by the user clicking on a text size choice
-                                // find the div to apply the text resizing to
-                                var div = document.getElementById("outer");
-                                // apply the text size change
-                                div.style.fontSize = myvalue + "px";
-                                // store the text size choice into a cookie
-                                document.cookie = "mysize=" + myvalue;
-
-                                document.getElementById(
-                                  "sml"
-                                ).style.fontWeight = "normal";
-                                document.getElementById(
-                                  "mid"
-                                ).style.fontWeight = "normal";
-                                document.getElementById(
-                                  "big"
-                                ).style.fontWeight = "normal";
-                                x.style.fontWeight = "bold";
-                              }
-
-                              function checkEmpty() {
-                                var val = document.search.query;
-                                var str = val.value.replace(/^\s+|\s+$/g, "");
-                                if (str == "" || str == "Search...") {
-                                  alert("please enter a keyword for search.");
-                                  val.Value = "";
-                                  val.focus();
-                                  return false;
-                                }
-                                var iChars =
-                                  "!@#$%^&*()+=-[]\\';,./{}|\":<>?~_";
-                                for (var i = 0; i < str.length; i++) {
-                                  if (iChars.indexOf(str.charAt(i)) != -1) {
-                                    alert(
-                                      "Please enter only alphanumeric text for the search."
-                                    );
-                                    val.value = "";
-                                    val.Value = "";
-                                    val.focus();
-                                    return false;
-                                  }
-                                }
-                                document.search.submit();
-                                return true;
-                              }
-                              function clickclear(thisfield, defaulttext) {
-                                if (thisfield.value == defaulttext) {
-                                  thisfield.value = "";
-                                  thisfield.style.color = "#000001";
-                                }
-                              }
-                              function clickrecall(thisfield, defaulttext) {
-                                if (
-                                  thisfield.value == defaulttext ||
-                                  thisfield.value == ""
-                                ) {
-                                  thisfield.value = defaulttext;
-                                  thisfield.style.color = "#A8A8A8";
-                                }
-                              }
-
-                              function getInternetExplorerVersion() {
-                                var rv = -1;
-                                if (
-                                  navigator.appName ==
-                                  "Microsoft Internet Explorer"
-                                ) {
-                                  var ua = navigator.userAgent;
-                                  var re = new RegExp(
-                                    "MSIE ([0-9]{1,}[\.0-9]{0,})"
-                                  );
-                                  if (re.exec(ua) != null)
-                                    rv = parseFloat(RegExp.$1);
-                                }
-                                return rv;
-                              }
-                              function checkIEVersion() {
-                                var ver = getInternetExplorerVersion();
-                                if (ver == 7.0) {
-                                  document.getElementById("abtUs").style.width =
-                                    "80px";
-                                  document.getElementById(
-                                    "abtUs1"
-                                  ).style.width = "97px";
-                                  document.getElementById(
-                                    "abtUs2"
-                                  ).style.width = "97px";
-                                  document.getElementById(
-                                    "passOffice"
-                                  ).style.width = "138px";
-                                  document.getElementById(
-                                    "passportoffices1"
-                                  ).style.width = "165px";
-                                  document.getElementById(
-                                    "passportoffices2"
-                                  ).style.width = "165px";
-                                  document.getElementById(
-                                    "funcNResponsibility"
-                                  ).style.width = "192px";
-                                  document.getElementById(
-                                    "feedbackNComplain"
-                                  ).style.width = "192px";
-                                  document.getElementById("cont").style.width =
-                                    "120px";
-                                  document.getElementById("pass").style.width =
-                                    "110px";
-                                  document.getElementById(
-                                    "visaoff"
-                                  ).style.width = "110px";
-                                  document.getElementById(
-                                    "consular"
-                                  ).style.width = "110px";
-                                  document.getElementById(
-                                    "pasgp"
-                                  ).style.display = "none";
-                                }
-                              }
-
-                              function contpasshide() {
-                                document.getElementById("pasgp").style.display =
-                                  "none";
-                              }
-                              function setOnFocus() {
-                                if (
-                                  null != document.getElementById("sethighlite")
-                                ) {
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "aboutus"
-                                  ) {
-                                    document.getElementById(
-                                      "aboutUs"
-                                    ).className = "active";
-                                    //document.getElementById("aboutUs1").className="li";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "passportoffices"
-                                  ) {
-                                    document.getElementById(
-                                      "passportoffices"
-                                    ).className = "active";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "consularservice"
-                                  ) {
-                                    document.getElementById(
-                                      "consularservice"
-                                    ).className = "active";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "visa"
-                                  ) {
-                                    document.getElementById("visa").className =
-                                      "active";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "rti"
-                                  ) {
-                                    document.getElementById("rti").className =
-                                      "active";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "contactus"
-                                  ) {
-                                    document.getElementById(
-                                      "contactus"
-                                    ).className = "active";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "homefocus"
-                                  ) {
-                                    document.getElementById(
-                                      "homefocus"
-                                    ).className = "active";
-                                  }
-                                  if (
-                                    document.getElementById("sethighlite")
-                                      .value == "whatsNew"
-                                  ) {
-                                    document.getElementById(
-                                      "whatsNew"
-                                    ).className = "active";
-                                  }
-                                }
-                              }
-
-                              window.onload = setOnFocus;
-                            </script>
-                            <style>
-                              .Breadcrumbh_Bar {
-                                width: 100%;
-                              }
-                              .Breadcrumbh_Bar .Brown_BG {
-                                background-color: #be5d23;
-                                color: #fff;
-                                font-size: 12px;
-                                font-weight: bold;
-                              }
-                              .Breadcrumbh_Bar .Light_Blue_BG {
-                                background-color: #e9eff3;
-                                font-size: 13px;
-                                color: #242323;
-                              }
-                              .Breadcrumbh_Bar .Content_Bar {
-                                background-color: #e9eff3;
-                                font-size: 12px;
-                                font-weight: bold;
-                                color: #242323;
-                                padding-left: 5px;
-                                padding-right: 5px;
-                                border: #f00 solid 0px;
-                              }
-                              body {
-                                font-family: Arial, Helvetica, sans-serif;
-                                padding: 0px;
-                                margin: 0px;
-                                color: #000;
-                                text-decoration: none;
-                                background-color: #fff;
-                              }
-                            </style>
-                            <script type="text/javascript">
-                              function abouthideS(event) {
-                                if (event.shiftKey == 1) {
-                                  document.getElementById(
-                                    "aboutdply"
-                                  ).style.display = "none";
-                                }
-                              }
-
-                              function aboutdis(e) {
-                                var keyCode = e
-                                  ? e.which
-                                    ? e.which
-                                    : e.keyCode
-                                  : event.keyCode;
-
-                                if (e.keyCode == 13) {
-                                  document.getElementById(
-                                    "aboutdply"
-                                  ).style.display = "block";
-                                }
-                                if (e.keyCode == 38) {
-                                  document.getElementById(
-                                    "aboutdply"
-                                  ).style.display = "none";
-                                }
-                              }
-                              function abouthide() {
-                                document.getElementById(
-                                  "aboutdply"
-                                ).style.display = "none";
-                              }
-                              function passportdis(e) {
-                                var keyCode = e
-                                  ? e.which
-                                    ? e.which
-                                    : e.keyCode
-                                  : event.keyCode;
-
-                                if (e.keyCode == 13) {
-                                  document.getElementById(
-                                    "passportdply"
-                                  ).style.display = "block";
-                                }
-                                if (e.keyCode == 38) {
-                                  document.getElementById(
-                                    "passportdply"
-                                  ).style.display = "none";
-                                }
-                              }
-                              function consulardis(e) {
-                                var keyCode = e
-                                  ? e.which
-                                    ? e.which
-                                    : e.keyCode
-                                  : event.keyCode;
-
-                                if (e.keyCode == 13) {
-                                  document.getElementById(
-                                    "consularSublink"
-                                  ).style.display = "block";
-                                }
-                                if (e.keyCode == 38) {
-                                  document.getElementById(
-                                    "consularSublink"
-                                  ).style.display = "none";
-                                }
-                              }
-
-                              function passporthide() {
-                                document.getElementById(
-                                  "passportdply"
-                                ).style.display = "none";
-                              }
-                              function contactdis(e) {
-                                var keyCode = e
-                                  ? e.which
-                                    ? e.which
-                                    : e.keyCode
-                                  : event.keyCode;
-
-                                if (e.keyCode == 13) {
-                                  document.getElementById(
-                                    "contactdply"
-                                  ).style.display = "block";
-                                }
-                                if (e.keyCode == 38) {
-                                  document.getElementById(
-                                    "contactdply"
-                                  ).style.display = "none";
-                                  document.getElementById(
-                                    "pasgp"
-                                  ).style.display = "none";
-                                }
-                              }
-                              function consularhide() {
-                                document.getElementById(
-                                  "consularSublink"
-                                ).style.display = "none";
-                              }
-                              function contacthide() {
-                                document.getElementById(
-                                  "contactdply"
-                                ).style.display = "none";
-                                document.getElementById("pasgp").style.display =
-                                  "none";
-                              }
-                              function contpassdis(e) {
-                                var keyCode = e
-                                  ? e.which
-                                    ? e.which
-                                    : e.keyCode
-                                  : event.keyCode;
-
-                                if (e.keyCode == 13) {
-                                  document.getElementById(
-                                    "pasgp"
-                                  ).style.display = "block";
-                                }
-                                if (e.keyCode == 38) {
-                                  document.getElementById(
-                                    "pasgp"
-                                  ).style.display = "none";
-                                }
-                              }
-                              function contpassdis(e) {
-                                var keyCode = e
-                                  ? e.which
-                                    ? e.which
-                                    : e.keyCode
-                                  : event.keyCode;
-
-                                if (e.keyCode == 13) {
-                                  document.getElementById(
-                                    "pasgp"
-                                  ).style.display = "block";
-                                }
-                                if (e.keyCode == 38) {
-                                  document.getElementById(
-                                    "pasgp"
-                                  ).style.display = "none";
-                                }
-                              }
-                              //My Change
-                              function passgp() {
-                                var ver = getInternetExplorerVersion();
-                                if (ver == 7.0) {
-                                  if (document.getElementById("pass").focus) {
-                                    document.getElementById(
-                                      "pasgp"
-                                    ).style.display = "block";
-                                    document.getElementById(
-                                      "pasgp"
-                                    ).style.width = "160px";
-                                    document.getElementById(
-                                      "pass1"
-                                    ).style.width = "118px";
-                                    document.getElementById(
-                                      "pass2"
-                                    ).style.width = "118px";
-                                    document.getElementById(
-                                      "pass3"
-                                    ).style.width = "118px";
-                                    document.getElementById(
-                                      "pass5"
-                                    ).style.width = "118px";
-                                    document.getElementById(
-                                      "pass1"
-                                    ).style.right = "-20px";
-                                    document.getElementById(
-                                      "pass2"
-                                    ).style.right = "-20px";
-                                    document.getElementById(
-                                      "pass3"
-                                    ).style.right = "-20px";
-                                    document.getElementById(
-                                      "pass5"
-                                    ).style.right = "-20px";
-                                  }
-                                }
-                              }
-
-                              //MY Change ends
-                            </script>
+                            
+                            
+                            
                           </td>
                         </tr>
                         <tr>
@@ -491,7 +36,7 @@
                                         March&nbsp;&nbsp;16,&nbsp;2023&nbsp;|&nbsp;07:58:05
                                         AM
                                       </td>
-                                      <td style="text-align: center" width="55%">
+                                      <td width="55%">
                                         <table width="100%" role="presentation">
                                           <tbody>
                                             <tr>
@@ -514,21 +59,15 @@
                                                   <tbody>
                                                     <tr>
                                                       <td align="right" valign="top">
-                                                        <a href="#" class="texttoggler" rel="smallview" style="
-                                                            font-size: 10.5px;
-                                                          "><span title="Decrease Font Size"><strong>A-</strong><span class="hide">Decrease Font
+                                                        <a href="#" class="texttoggler" rel="smallview"><span title="Decrease Font Size"><strong>A-</strong><span class="hide">Decrease Font
                                                               Size</span></span></a>
                                                       </td>
                                                       <td align="right" valign="top">
-                                                        <a href="#" rel="normalview" class="texttoggler" style="
-                                                            font-size: 12px;
-                                                          "><span title="Normal Font Size"><strong>A</strong><span class="hide">Normal Font
+                                                        <a href="#" rel="normalview" class="texttoggler"><span title="Normal Font Size"><strong>A</strong><span class="hide">Normal Font
                                                               Size</span></span></a>
                                                       </td>
                                                       <td align="center" valign="middle">
-                                                        <a href="#" rel="largeview" class="texttoggler" style="
-                                                            font-size: 14px;
-                                                          "><span title="Increase Font Size"><strong>A+</strong><span class="hide">Increase Font
+                                                        <a href="#" rel="largeview" class="texttoggler"><span title="Increase Font Size"><strong>A+</strong><span class="hide">Increase Font
                                                               Size</span></span></a>
                                                       </td>
                                                     </tr>
@@ -536,7 +75,7 @@
                                                 </table>
                                               </td>
 
-                                              <td align="center" style="font-size: 14px"></td>
+                                              <td align="center"></td>
                                             </tr>
                                           </tbody>
                                         </table>
@@ -551,14 +90,7 @@
                                   <tbody>
                                     <tr>
                                       <td width="2%">
-                                        <span alt="Indian emblem" style="
-                                            width: 60px;
-                                            height: 88px;
-                                            margin: 5px 1px 0px 6px;
-                                            float: left;
-                                            display: inline;
-                                            background: url(/AppOnlineProject/images/emblem_new.png);
-                                          "></span>
+                                        <span alt="Indian emblem"></span>
                                       </td>
                                       <td width="32%" height="100">
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -569,7 +101,7 @@
                                               </td>
                                             </tr>
                                             <tr>
-                                              <td class="Logo_H4" style="line-height: 20px">
+                                              <td class="Logo_H4">
                                                 PSP Division<br>
                                                 Ministry of External Affairs,
                                                 Government of India
@@ -584,13 +116,7 @@
                                           <tbody>
                                             <tr>
                                               <td align="right" valign="top">
-                                                <span title="Passport Seva" style="
-                                                    width: 165px;
-                                                    float: right;
-                                                    display: inline;
-                                                    height: 73px;
-                                                    background: url(/AppOnlineProject/images/passportSeva.gif);
-                                                  "></span>
+                                                <span title="Passport Seva"></span>
                                               </td>
                                             </tr>
                                             <tr>
@@ -606,12 +132,12 @@
                               <div class="Navigation_Containter">
                                 <div>
                                   <ul class="toplinks" role="navigation">
-                                    <li class="homefocus" style="width: 115px">
-                                      <a style="text-align: center" onkeyup="abouthideS(event)" href="/AppOnlineProject/welcomeLink">Home</a>
+                                    <li class="homefocus">
+                                      <a onkeyup="abouthideS(event)" href="/AppOnlineProject/welcomeLink">Home</a>
                                     </li>
 
-                                    <li id="aboutUs" style="width: 100px" onkeyup="aboutdis(event),passporthide()">
-                                      <a id="abtUs" href="#">About Us&nbsp;<img src="/AppOnlineProject/images/down.gif" alt="arrow down" border="0"></a>
+                                    <li id="aboutUs" onkeyup="aboutdis(event),passporthide()">
+                                      <a id="abtUs" href="#">About Us&nbsp;</a>
                                       <ul id="aboutdply">
                                         <li>
                                           <a id="abtUs1" href="/AppOnlineProject/online/whoAreWe">PSP Division</a>
@@ -621,8 +147,8 @@
                                         </li>
                                       </ul>
                                     </li>
-                                    <li style="width: 150px" id="passportoffices" onkeyup="abouthide(),passportdis(event)">
-                                      <a id="passOffice" href="#">Passport Offices&nbsp;<img src="/AppOnlineProject/images/down.gif" alt="arrow down" border="0"></a>
+                                    <li id="passportoffices" onkeyup="abouthide(),passportdis(event)">
+                                      <a id="passOffice" href="#">Passport Offices&nbsp;</a>
                                       <ul id="passportdply">
                                         <li>
                                           <a id="passportoffices1" href="/AppOnlineProject/online/rpo">Passport Offices in India</a>
@@ -633,17 +159,17 @@
                                       </ul>
                                     </li>
 
-                                    <li id="rti" style="text-align: center; width: 90px" onkeyup="contacthide()">
+                                    <li id="rti" onkeyup="contacthide()">
                                       <a href="/AppOnlineProject/online/rti">RTI</a>
                                     </li>
-                                    <li id="citizenCharter" style="text-align: center; width: 135px" onkeyup="contacthide()">
+                                    <li id="citizenCharter" onkeyup="contacthide()">
                                       <a href="/AppOnlineProject/pdf/Citizen_Charter.pdf" target="_blank">Citizens' Charter</a>
                                     </li>
-                                    <li id="contactus" style="width: 125px" onkeyup="contactdis(event)">
-                                      <a id="cont" href="#">Contact Us&nbsp;<img src="/AppOnlineProject/images/down.gif" alt="arrow down" border="0"></a>
+                                    <li id="contactus" onkeyup="contactdis(event)">
+                                      <a id="cont" href="#">Contact Us&nbsp;</a>
                                       <ul id="contactdply">
                                         <li onkeyup="contpassdis(event)">
-                                          <a id="pass" onmouseover="passgp();" href="#"><img src="/AppOnlineProject/images/left.gif" alt="Left Arrow" border="0" class="contactDiv">Passport</a>
+                                          <a id="pass" onmouseover="passgp();" href="#">Passport</a>
                                           <ul id="pasgp">
                                             <li>
                                               <a id="pass1" href="/AppOnlineProject/online/callCenter">General Information</a>
@@ -667,17 +193,17 @@
                                         </li>
                                       </ul>
                                     </li>
-                                    <li id="whatsNew" onkeyup="contacthide()" style="width: 115px">
+                                    <li id="whatsNew" onkeyup="contacthide()">
                                       <a href="/AppOnlineProject/online/whatsNew">What's New</a>
                                     </li>
                                     <li>
-                                      <form id="searchFormId" name="search" onsubmit="return checkEmpty();" action="/AppOnlineProject/search" method="post" data-ddg-formtype="sign up">
+                                      <form id="searchFormId" name="search" onsubmit="return checkEmpty();" action="/AppOnlineProject/search" method="post">
                                         <label for="searchBox">
-                                          <input type="text" value="Search..." id="searchBox" name="query" title="Search Box" onfocus="clickclear(this, 'Search...')" onblur="clickrecall(this,'Search...')" maxlength="45" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537197">
+                                          <input type="text" value="Search..." id="searchBox" name="query" title="Search Box" onfocus="clickclear(this, 'Search...')" onblur="clickrecall(this,'Search...')" maxlength="45" data-ddg-testresultelementid="537197">
                                         </label>
                                         <div id="button-holder">
                                           <label for="search">
-                                            <input type="submit" id="search" title="Search..." value="" style="background-color: black">
+                                            <input type="submit" id="search" title="Search..." value="">
                                           </label>
                                         </div>
                                       </form>
@@ -702,16 +228,10 @@
                                 <tbody>
                                   <tr>
                                     <td width="8">
-                                      <span style="
-                                          width: 8px;
-                                          float: left;
-                                          display: inline;
-                                          height: 23px;
-                                          background: url(/AppOnlineProject/images/breadcrumbh_arrow.jpg) -0px -5px;
-                                        "></span>
+                                      <span></span>
                                     </td>
                                     <td class="Light_Blue_BG">
-                                      <div class="Content_Bar" style="width: 950px">
+                                      <div class="Content_Bar">
                                         <marquee behavior="scroll" direction="left" id="marquee" onkeydown="this.setAttribute('scrollamount', 0, 0);" onmouseover="this.setAttribute('scrollamount', 0, 0);" onmouseout="this.setAttribute('scrollamount', 6, 0);"><strong>Special weekend drive for Passport
                                             applications submission at PSKs
                                             (under RPO Surat &amp; RPO
@@ -742,9 +262,9 @@
                                       </div>
                                     </td>
                                     <td width="22" align="center" valign="middle" class="Light_Blue_BG">
-                                      <input type="button" value="Pause" id="marqueeControlButton" onclick="controlMarquee();" style="display: none">
-                                      <img id="image3" alt="stop" src="/AppOnlineProject/images/pause.jpg" width="19" height="19" onclick="controlMarquee();">
-                                      <img id="image4" alt="start" width="19" height="19" src="/AppOnlineProject/images/play.png" onclick="controlMarquee();" style="display: none">
+                                      <input type="button" value="Pause" id="marqueeControlButton" onclick="controlMarquee();">
+                                      
+                                      
                                     </td>
                                   </tr>
                                 </tbody>
@@ -759,10 +279,7 @@
                         </tr>
                         <!-- header-->
 
-                        <script type="text/javascript">
-                          documenttextsizer.setup("texttoggler");
-                          checkIEVersion();
-                        </script>
+                        
 
                         <tr>
                           <td colspan="3" valign="top">
@@ -771,264 +288,21 @@
                                 <tr>
                                   <td valign="top">
                                     <!-- Information Corner Dropdown-->
-                                    <script type="text/javascript">
-                                      //Nested Side Bar Menu (Mar 20th, 09)
-                                      //By Dynamic Drive: http://www.dynamicdrive.com/style/
-
-                                      var menuids = ["sidebarmenu1"]; //Enter id(s) of each Side Bar Menu's main UL, separated by commas
-
-                                      function initsidebarmenu() {
-                                        for (
-                                          var x = 0;
-                                          x < menuids.length;
-                                          x++
-                                        ) {
-                                          var ultags = document
-                                            .getElementById(menuids[x])
-                                            .getElementsByTagName("ul");
-                                          for (
-                                            var t = 0;
-                                            t < ultags.length;
-                                            t++
-                                          ) {
-                                            ultags[
-                                              t
-                                            ].parentNode.getElementsByTagName(
-                                              "a"
-                                            )[0].className += " subfolderstyle";
-                                            if (
-                                              ultags[t].parentNode.parentNode
-                                                .id == menuids[x]
-                                            )
-                                              //if this is a first level submenu
-                                              ultags[t].style.left =
-                                                ultags[t].parentNode
-                                                  .offsetWidth +
-                                                "px"; //dynamically position first level submenus to be width of main menu item
-                                            //else if this is a sub level submenu (ul)
-                                            else
-                                              ultags[t].style.left =
-                                                ultags[
-                                                  t - 1
-                                                ].getElementsByTagName("a")[0]
-                                                  .offsetWidth + "px"; //position menu to the right of menu item that activated it
-                                            ultags[t].parentNode.onmouseover =
-                                              function () {
-                                                this.getElementsByTagName(
-                                                  "ul"
-                                                )[0].style.display = "block";
-                                              };
-                                            ultags[t].parentNode.onmouseout =
-                                              function () {
-                                                this.getElementsByTagName(
-                                                  "ul"
-                                                )[0].style.display = "none";
-                                              };
-                                          }
-                                          for (
-                                            var t = ultags.length - 1;
-                                            t > -1;
-                                            t--
-                                          ) {
-                                            //loop through all sub menus again, and use "display:none" to hide menus (to prevent possible page scrollbars
-                                            ultags[t].style.visibility =
-                                              "visible";
-                                            ultags[t].style.display = "none";
-                                          }
-                                        }
-                                      }
-
-                                      if (window.addEventListener)
-                                        window.addEventListener(
-                                          "load",
-                                          initsidebarmenu,
-                                          false
-                                        );
-                                      else if (window.attachEvent)
-                                        window.attachEvent(
-                                          "onload",
-                                          initsidebarmenu
-                                        );
-                                    </script>
+                                    
                                     <!-- Information Corner Dropdown-->
 
-                                    <script type="text/javascript">
-                                      function blinks() {
-                                        var i =
-                                          document.getElementById(
-                                            "blinkFlag"
-                                          ).value;
-                                        if (i == "0") {
-                                          document.getElementById(
-                                            "blinkFlag"
-                                          ).value = "1";
-                                          document.getElementById(
-                                            "blinkAw"
-                                          ).style.display = "block";
-                                        } else {
-                                          document.getElementById(
-                                            "blinkFlag"
-                                          ).value = "0";
-                                          document.getElementById(
-                                            "blinkAw"
-                                          ).style.display = "none";
-                                        }
-                                      }
-
-                                      function popup(mylink, windowname) {
-                                        document.appointment.target = "_blank";
-                                        window.open(
-                                          mylink,
-                                          windowname,
-                                          "width=600,resizable=no,scrollbars=yes"
-                                        );
-                                        return false;
-                                      }
-
-                                      function quickdis(e) {
-                                        var keyCode = e
-                                          ? e.which
-                                            ? e.which
-                                            : e.keyCode
-                                          : event.keyCode;
-
-                                        if (e.keyCode == 40) {
-                                          document.getElementById(
-                                            "quickSub"
-                                          ).style.display = "block";
-                                        }
-                                        if (e.keyCode == 38) {
-                                          document.getElementById(
-                                            "quickSub"
-                                          ).style.display = "none";
-                                        }
-                                      }
-                                      function faqdis(e) {
-                                        var keyCode = e
-                                          ? e.which
-                                            ? e.which
-                                            : e.keyCode
-                                          : event.keyCode;
-
-                                        if (e.keyCode == 40) {
-                                          document.getElementById(
-                                            "faqSub"
-                                          ).style.display = "block";
-                                        }
-                                        if (e.keyCode == 38) {
-                                          document.getElementById(
-                                            "faqSub"
-                                          ).style.display = "none";
-                                        }
-                                      }
-
-                                      function quickhide(e) {
-                                        var keyCode = e
-                                          ? e.which
-                                            ? e.which
-                                            : e.keyCode
-                                          : event.keyCode;
-
-                                        if (e.keyCode == 9) {
-                                          document.getElementById(
-                                            "quickSub"
-                                          ).style.display = "none";
-                                        }
-                                      }
-                                      function faqhide(e) {
-                                        var keyCode = e
-                                          ? e.which
-                                            ? e.which
-                                            : e.keyCode
-                                          : event.keyCode;
-
-                                        if (e.keyCode == 9) {
-                                          document.getElementById(
-                                            "faqSub"
-                                          ).style.display = "none";
-                                        }
-                                      }
-                                      function quickMouseOv() {
-                                        document.getElementById(
-                                          "quickSub"
-                                        ).style.display = "block";
-                                      }
-                                      function quickMouseOu() {
-                                        document.getElementById(
-                                          "quickSub"
-                                        ).style.display = "none";
-                                      }
-                                      function faqMouseOv() {
-                                        document.getElementById(
-                                          "faqSub"
-                                        ).style.display = "block";
-                                      }
-                                      function faqMouseOu() {
-                                        document.getElementById(
-                                          "faqSub"
-                                        ).style.display = "none";
-                                      }
-                                      function passportActdis(e) {
-                                        var keyCode = e
-                                          ? e.which
-                                            ? e.which
-                                            : e.keyCode
-                                          : event.keyCode;
-
-                                        if (e.keyCode == 40) {
-                                          document.getElementById(
-                                            "passportActSub"
-                                          ).style.display = "block";
-                                        }
-                                        if (e.keyCode == 38) {
-                                          document.getElementById(
-                                            "passportActSub"
-                                          ).style.display = "none";
-                                        }
-                                      }
-                                      function passportActMouseOv() {
-                                        document.getElementById(
-                                          "passportActSub"
-                                        ).style.display = "block";
-                                      }
-                                      function passportActMouseOu() {
-                                        document.getElementById(
-                                          "passportActSub"
-                                        ).style.display = "none";
-                                      }
-                                      function passportActhide(e) {
-                                        var keyCode = e
-                                          ? e.which
-                                            ? e.which
-                                            : e.keyCode
-                                          : event.keyCode;
-
-                                        if (e.keyCode == 9) {
-                                          document.getElementById(
-                                            "passportActSub"
-                                          ).style.display = "none";
-                                        }
-                                      }
-
-                                      function pskMap() {
-                                        window.open(
-                                          "/AppOnlineProject/pdf/pskMap.pdf",
-                                          "PSKMap",
-                                          "resizable=1,scrollbars=0,toolbar=0, menubar=0,directories=0"
-                                        );
-                                      }
-                                    </script>
+                                    
 
                                     <div id="main-content" class="block_left">
                                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tbody>
                                           <tr>
                                             <td align="left" valign="top">
-                                              <div class="Information_Corner_Box" style="width: 255px">
+                                              <div class="Information_Corner_Box">
                                                 <div class="Information_Corner_BG">
                                                   <span>Information Corner</span>
                                                 </div>
-                                                <div class="Information_Corner_List" id="information" style="display: block">
+                                                <div class="Information_Corner_List" id="information">
                                                   <div class="sidebarmenu">
                                                     <ul id="sidebarmenu1">
                                                       <li onkeyup="passportActhide(event)">
@@ -1040,12 +314,7 @@
                                                         <a href="/AppOnlineProject/online/PassportAct" class="subfolderstyle">
                                                           Passport Act and Rules
                                                         </a>
-                                                        <ul id="passportActSub" style="
-                                                            z-index: 1;
-                                                            left: 255px;
-                                                            visibility: visible;
-                                                            display: none;
-                                                          ">
+                                                        <ul id="passportActSub">
                                                           <li>
                                                             <a href="/AppOnlineProject/pdf/passports_act.pdf" target="_blank">Passport Act 1967
                                                               <i>(PDF, 220 KB,
@@ -1063,14 +332,10 @@
                                                         </ul>
                                                       </li>
 
-                                                      <li onkeyup="faqdis(event),passportActhide(event)" onmouseover="faqMouseOv()" onmouseout="faqMouseOu()" style="z-index: 1">
+                                                      <li onkeyup="faqdis(event),passportActhide(event)" onmouseover="faqMouseOv()" onmouseout="faqMouseOu()">
                                                         <a href="/AppOnlineProject/online/faqMainPage" target="" title="" class="subfolderstyle">FAQs
                                                         </a>
-                                                        <ul id="faqSub" style="
-                                                            left: 255px;
-                                                            visibility: visible;
-                                                            display: none;
-                                                          ">
+                                                        <ul id="faqSub">
                                                           <li>
                                                             <a href="/AppOnlineProject/online/faqServicesAvailable" target="" title="">
                                                               Services Available
@@ -1181,10 +446,7 @@
                                                           Appointment
                                                           Availability Status
 
-                                                          <b><span style="
-                                                                color: #ff0000;
-                                                                font-size: 10px;
-                                                              ">&nbsp;
+                                                          <b><span>&nbsp;
                                                               <sup>New!</sup>
                                                             </span>
                                                           </b></a>
@@ -1197,16 +459,11 @@
                                                         </a>
                                                       </li>
 
-                                                      <li id="quickG" onkeyup="quickdis(event)" onmouseover="quickMouseOv()" onmouseout="quickMouseOu()" style="z-index: 1">
+                                                      <li id="quickG" onkeyup="quickdis(event)" onmouseover="quickMouseOv()" onmouseout="quickMouseOu()">
                                                         <a href="/AppOnlineProject/online/QuickGuide" class="subfolderstyle">
                                                           Quick Guides
                                                         </a>
-                                                        <ul id="quickSub" style="
-                                                            width: 200px;
-                                                            left: 255px;
-                                                            visibility: visible;
-                                                            display: none;
-                                                          ">
+                                                        <ul id="quickSub">
                                                           <li>
                                                             <a href="http://www.slideshare.net/passportindia/steps-to-apply-for-passport-services/1" target="_blank">
                                                               Apply for passport
@@ -1253,9 +510,7 @@
                                                       </li>
 
                                                       <li>
-                                                        <a href="#" onclick="pskMap();" style="
-                                                            cursor: pointer;
-                                                          ">All India Network of
+                                                        <a href="#" onclick="pskMap();">All India Network of
                                                           Passport Services
                                                         </a>
                                                       </li>
@@ -1263,31 +518,20 @@
                                                   </div>
                                                 </div>
                                               </div>
-                                              <div style="
-                                                  float: left;
-                                                  width: 255px;
-                                                  border: #496cae solid 1px;
-                                                ">
+                                              <div>
                                                 <div class="Information_Corner_BG">
                                                   <span>Forms and Affidavits</span>
                                                 </div>
                                                 <div class="Information_Corner_List">
                                                   <div class="sidebarmenu">
                                                     <ul>
-                                                      <li class="subtooltip" style="
-                                                          height: 30px;
-                                                          line-height: 18px;
-                                                        ">
+                                                      <li class="subtooltip">
                                                         <a href="/AppOnlineProject/online/downloadEFormStatic" target="">
                                                           Download e-Form
                                                         </a>
-                                                        <ul style="
-                                                            margin-left: 58px;
-                                                            visibility: visible;
-                                                            z-index: 1;
-                                                          ">
+                                                        <ul>
                                                           <li>
-                                                            <table style="margin: 0">
+                                                            <table>
                                                               <tbody>
                                                                 <tr>
                                                                   <td>
@@ -1334,11 +578,7 @@
                                                   </div>
                                                 </div>
                                               </div>
-                                              <div style="
-                                                  float: left;
-                                                  width: 255px;
-                                                  border: #496cae solid 1px;
-                                                ">
+                                              <div>
                                                 <div class="Information_Corner_BG">
                                                   <span>Feedback and
                                                     Grievance</span>
@@ -1346,13 +586,8 @@
                                                 <div class="Information_Corner_List">
                                                   <div class="sidebarmenu">
                                                     <ul>
-                                                      <li style="
-                                                          line-height: 25px;
-                                                          background-position-y: 10px;
-                                                        ">
-                                                        <a style="
-                                                            background-position-y: 10px;
-                                                          " href="/AppOnlineProject/pdf/Dissemination_of_Information.pdf" target="_blank">
+                                                      <li>
+                                                        <a href="/AppOnlineProject/pdf/Dissemination_of_Information.pdf" target="_blank">
                                                           How to access
                                                           Information and log
                                                           Grievance</a>
@@ -1376,11 +611,7 @@
                                                 </div>
                                               </div>
 
-                                              <div style="
-                                                  float: left;
-                                                  width: 255px;
-                                                  border: #496cae solid 1px;
-                                                ">
+                                              <div>
                                                 <div class="Information_Corner_BG">
                                                   <span>Value Added Services</span>
                                                 </div>
@@ -1391,56 +622,16 @@
                                                         <table width="100%" cellspacing="0" cellpadding="0">
                                                           <tbody>
                                                             <tr>
-                                                              <td width="55%" height="25" align="left" valign="middle" style="
-                                                                  background-color: #f2f2f2;
-                                                                ">
-                                                                <a style="
-                                                                    border-right: 0px;
-                                                                  " href="/AppOnlineProject/user/mPassportSevaDownload">mPassport
+                                                              <td width="55%" height="25" align="left" valign="middle">
+                                                                <a href="/AppOnlineProject/user/mPassportSevaDownload">mPassport
                                                                   Seva App</a>
                                                               </td>
-                                                              <td width="45%" height="25" align="right" style="
-                                                                  background-color: #f2f2f2;
-                                                                  border-top: #cacaca
-                                                                    1px solid;
-                                                                ">
-                                                                <a style="
-                                                                    display: inline;
-                                                                    padding: 0px
-                                                                      0px 0px
-                                                                      0px;
-                                                                    border: 0px
-                                                                      solid;
-                                                                  " href="https://play.google.com/store/apps/details?id=gov.mea.psp" class="hyperlink" target="_blank" title="Android (External link that opens in a new window)">
-                                                                  <span title="Mobile application" style="
-                                                                      padding-top: 3px;
-                                                                      padding-right: 4px;
-                                                                      width: 21px;
-                                                                      float: left;
-                                                                      display: inline;
-                                                                      height: 27px;
-                                                                      background: url(/AppOnlineProject/images/Valueimages.png) -5px
-                                                                        0;
-                                                                    "></span>
+                                                              <td width="45%" height="25" align="right">
+                                                                <a href="https://play.google.com/store/apps/details?id=gov.mea.psp" class="hyperlink" target="_blank" title="Android (External link that opens in a new window)">
+                                                                  <span title="Mobile application"></span>
                                                                 </a>
-                                                                <a style="
-                                                                    display: inline;
-                                                                    padding: 0px
-                                                                      0px 0px
-                                                                      0px;
-                                                                    border: 0px
-                                                                      solid;
-                                                                  " href="https://itunes.apple.com/us/app/mpassport-seva/id723492146?ls=1&amp;mt=8" class="hyperlink" target="_blank" title="Apple (External link that opens in a new window)">
-                                                                  <span title="Mobile application" style="
-                                                                      padding-right: 4px;
-                                                                      width: 22px;
-                                                                      float: left;
-                                                                      display: inline;
-                                                                      height: 27px;
-                                                                      padding-top: 3px;
-                                                                      background: url(/AppOnlineProject/images/Valueimages.png) -37px
-                                                                        0;
-                                                                    "></span></a>
+                                                                <a href="https://itunes.apple.com/us/app/mpassport-seva/id723492146?ls=1&amp;mt=8" class="hyperlink" target="_blank" title="Apple (External link that opens in a new window)">
+                                                                  <span title="Mobile application"></span></a>
                                                               </td>
                                                             </tr>
                                                           </tbody>
@@ -1456,146 +647,18 @@
                                       </table>
                                     </div>
 
-                                    <script type="text/javascript"></script>
+                                    
                                   </td>
                                   <td valign="top">
-                                    <script type="text/javascript" language="JavaScript" src="/AppOnlineProject/js/dateValidate.js"></script>
-                                    <script type="text/javascript" language="JavaScript" src="/AppOnlineProject/js/userRegistration.js"></script>
+                                    
+                                    
 
-                                    <script type="text/javascript" src="/AppOnlineProject/js/jQuery-min.js"></script>
-                                    <script type="text/javascript" src="/AppOnlineProject/js/jquery-1.11.2.-ui.min.js"></script>
+                                    
+                                    
 
-                                    <script type="text/javascript" src="/AppOnlineProject/js/jquery-1.11.2.min.js"></script>
-                                    <script type="text/javascript" src="/AppOnlineProject/js/jquery-1.11.2.-ui.min.js"></script>
-                                    <script type="text/javascript" language="JavaScript">
-                                      jQuery(function ($) {
-                                        //on document.ready
-
-                                        $("#dob").datepicker({
-                                          showOn: "both",
-                                          buttonImageOnly: true,
-                                          buttonImage:
-                                            "/AppOnlineProject/images/ico_cal.gif",
-                                          dateFormat: "dd/mm/yy",
-                                          changeMonth: true,
-                                          changeYear: true,
-                                          yearRange: "1890:2099",
-                                        });
-                                        $("img.ui-datepicker-trigger").css({
-                                          cursor: "pointer",
-                                          "vertical-align": "middle",
-                                        });
-                                      });
-
-                                      function belongsTo(value) {
-                                        if (value == "1") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/ahmedabadpsk.html",
-                                            "ahmedabad",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        if (value == "36") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/suratpsk.html",
-                                            "surat",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        if (value == "10") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/chandigarhpsk.html",
-                                            "chandigarh",
-                                            "width=700,height=300,left=300,top=100,scrollbars=yes"
-                                          );
-                                        }
-                                        if (value == "27") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/maduraipsk.html",
-                                            "madurai",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        if (value == "38") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/trichypsk.html",
-                                            "trichy",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        if (value == "2") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/amritsarpsk.html",
-                                            "amritsar",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        if (value == "23") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/jaipurPsk.html",
-                                            "jaipur",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        if (value == "37") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/thanepsk.html",
-                                            "thane",
-                                            "width=700,height=300,left=300,top=100"
-                                          );
-                                        }
-                                        //CR-2-Online-05934 Starts
-                                        if (value == "25") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/lucknowpsk.html",
-                                            "lucknow",
-                                            "width=700,height=400,left=300,top=100"
-                                          );
-                                        }
-                                        //CR-2-Online-05934 Ends
-                                        //CR-2-Online-06141 Begins
-                                        if (value == "21") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/jalandharpsk.html",
-                                            "jalandhar",
-                                            "width=700,min-height=450,left=300,top=100"
-                                          );
-                                        }
-                                        //CR-2-Online-06141 Ends
-                                        //CR-2-Online-06174 Begins
-                                        if (value == "8") {
-                                          window.open(
-                                            "/AppOnlineProject/onlineHtml/kolkatapsk.html",
-                                            "kolkata",
-                                            "width=700,min-height=450,left=300,top=100"
-                                          );
-                                        }
-                                        //CR-2-Online-06174 Ends
-                                      }
-
-                                      function checkSubmit(e) {
-                                        if (e && e.keyCode == 13) {
-                                          document
-                                            .getElementById("register")
-                                            .click();
-                                        }
-                                      }
-
-                                      function alertDiplForm(cpvLocation) {
-                                        if (cpvLocation.value != "PO") {
-                                          document.getElementById(
-                                            "dcdrLocation"
-                                          ).value = "";
-                                          document.getElementById(
-                                            "poBlock"
-                                          ).style.display = "none";
-                                        } else {
-                                          document.getElementById(
-                                            "poBlock"
-                                          ).style.display = "";
-                                        }
-                                      }
-                                    </script>
+                                    
+                                    
+                                    
 
                                     <div class="breadcrumb">
                                       <span>You are here :
@@ -1611,13 +674,13 @@
                                       <div class="mandatory_msg">
                                         Fields marked with asterisk (<span class="mandatory">*</span>) are mandatory
                                       </div>
-                                      <div style="line-height: 20px">
+                                      <div>
                                         <strong>Important Information:</strong>
                                         Passport application can be processed at
                                         any PSK/POPSK/PSLK WITHIN INDIA
                                         irrespective of your residential
                                         address.
-                                        <ul style="margin-top: -8px">
+                                        <ul>
                                           <li>
                                             <a href="https://portal1.passportindia.gov.in/AppOnlineProject/online/apptAvailStatus" target="_blank">Click here
                                             </a>
@@ -1632,7 +695,7 @@
                                         </ul>
                                       </div>
                                       <p></p>
-                                      <form id="frmSample" name="frmSample" action="/AppOnlineProject/user/UserRegistrationActionDBAuth" method="post" data-ddg-formtype="sign up">
+                                      <form id="frmSample" name="frmSample" action="/AppOnlineProject/user/UserRegistrationActionDBAuth" method="post">
                                         <table cellpadding="3" cellspacing="0" width="100%" align="center" role="presentation">
                                           <tbody>
                                             <tr>
@@ -1640,25 +703,12 @@
                                             </tr>
                                             <tr>
                                               <td colspan="2">
-                                                <fieldset style="
-                                                    display: inline;
-                                                    border: none;
-                                                  ">
-                                                  <legend style="
-                                                      width: 164px;
-                                                      float: left;
-                                                      text-align: left;
-                                                      margin-left: -2px;
-                                                      color: #000;
-                                                    ">
+                                                <fieldset>
+                                                  <legend>
                                                     Register to apply at<span class="mandatory">*</span>
                                                   </legend>
-                                                  <span style="
-                                                      float: left;
-                                                      width: 150px;
-                                                      margin: -15px 0 0 40px;
-                                                    ">
-                                                    <br><input type="radio" name="cpvLocation" id="cpvLocation13" value="13" onclick="alertDiplForm(this)" title="overall type: UNKNOWN_TYPE
+                                                  <span>
+                                                    <br><input type="radio" name="cpvLocation" id="cpvLocation13" value="13" onclick="alertDiplForm(this)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: CPV Delhi
@@ -1669,19 +719,8 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 45" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: CPV Delhi
-parseable name: cpvLocation
-section: cpvLocation_0_45
-field signature: 3355897439
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537182"><label for="cpvLocation13">CPV Delhi</label>
-                                                    <br><input type="radio" name="cpvLocation" id="cpvLocationPO" checked="checked" value="PO" onclick="alertDiplForm(this)" title="overall type: UNKNOWN_TYPE
+field renderer id: 45" data-ddg-testresultelementid="537182"><label for="cpvLocation13">CPV Delhi</label>
+                                                    <br><input type="radio" name="cpvLocation" id="cpvLocationPO" checked="checked" value="PO" onclick="alertDiplForm(this)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Passport Office
@@ -1692,18 +731,7 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 46" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Passport Office
-parseable name: cpvLocation
-section: cpvLocation_0_45
-field signature: 3355897439
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537183"><label for="cpvLocationPO">Passport Office</label>
+field renderer id: 46" data-ddg-testresultelementid="537183"><label for="cpvLocationPO">Passport Office</label>
                                                     <div id="wwgrp_cpvLocation" class="wwgrp">
                                                       <div id="wwctrl_cpvLocation" class="wwctrl"></div>
                                                     </div>
@@ -1711,22 +739,33 @@ field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                 </fieldset>
                                               </td>
                                               <td>
-                                                <span style="font-size: 10px">Select the 'CPV Delhi' option
+                                                <span>Select the 'CPV Delhi' option
                                                   to apply for
                                                   Diplomatic/Official passport
                                                   at Consular, Passport and Visa
                                                   (CPV) division, Delhi.</span>
                                               </td>
                                             </tr>
-                                            <tr id="poBlock" style="null">
+                                            <tr id="poBlock">
                                               <td width="30%">
-                                                <span style="display: block"><label for="dcdrLocation">Passport Office
+                                                <span><label for="dcdrLocation">Passport Office
                                                     <span class="mandatory">*</span></label>&nbsp;</span>
-                                                <span style="font-size: 10px">(As per Present Residential
+                                                <span>(As per Present Residential
                                                   Address)</span>
                                               </td>
                                               <td>
-                                                <select name="dcdrLocation" id="dcdrLocation" class="dropdown-box" aria-describedby="tibDesc" aria-required="true" data-ddg-testresultelementid="537184" data-manual-scoring="addressCountryCode">
+                                                <select name="dcdrLocation" id="dcdrLocation" class="dropdown-box" aria-describedby="tibDesc" aria-required="true" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Passport Office *
+parseable name: dcdrLocation
+section: cpvLocation_0_45
+field signature: 3993152210
+form signature: 10206801307413941282
+form signature in host form: 10206801307413941282
+field frame token: 273040022BA853231F1D21FB98471F2B
+form renderer id: 5
+field renderer id: 47" data-ddg-testresultelementid="537184" data-manual-scoring="addressCountryCode">
                                                   <option value="">
                                                     ----- Select -----
                                                   </option>
@@ -1848,7 +887,7 @@ field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                   register with 'Delhi' Passport
                                                   Office.</span>
                                               </td>
-                                              <td style="font-size: 10px">
+                                              <td>
                                                 Tibetan Refugees applying for
                                                 Identity Certificate must
                                                 register with 'Delhi' Passport
@@ -1858,10 +897,21 @@ field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
                                             <tr>
                                               <td width="30%">
-                                                <label for="givenName">Given Name&nbsp;<span style="font-size: 10px">(Max 45 Characters)</span><span class="mandatory">*</span></label>
+                                                <label for="givenName">Given Name&nbsp;<span>(Max 45 Characters)</span><span class="mandatory">*</span></label>
                                               </td>
                                               <td width="27%">
-                                                <input type="text" name="givenName" maxlength="45" value="" id="givenName" class="txtbox" onblur="validateName(this.value);" aria-describedby="nameDesc" aria-required="true" data-ddg-testresultelementid="537185" data-manual-scoring="firstName">
+                                                <input type="text" name="givenName" maxlength="45" value="" id="givenName" class="txtbox" onblur="validateName(this.value);" aria-describedby="nameDesc" aria-required="true" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: Given Name (Max 45 Characters)*
+parseable name: givenName
+section: cpvLocation_0_45
+field signature: 3244616418
+form signature: 10206801307413941282
+form signature in host form: 10206801307413941282
+field frame token: 273040022BA853231F1D21FB98471F2B
+form renderer id: 5
+field renderer id: 48" data-ddg-testresultelementid="537185" data-manual-scoring="firstName">
                                                 <div id="wwgrp_givenName" class="wwgrp">
                                                   <div id="wwctrl_givenName" class="wwctrl"></div>
                                                 </div>
@@ -1871,7 +921,7 @@ field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                   (e.g. Dr.,Col.,etc.) are not
                                                   allowed.</span>
                                               </td>
-                                              <td style="font-size: 10px">
+                                              <td>
                                                 <strong>First Name + Middle
                                                   Name</strong>
                                                 <br>Initials and honorifics
@@ -1882,10 +932,21 @@ field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
                                             <tr>
                                               <td>
-                                                <label for="surname">Surname&nbsp;<span style="font-size: 10px">(Max 45 Characters)</span></label>
+                                                <label for="surname">Surname&nbsp;<span>(Max 45 Characters)</span></label>
                                               </td>
                                               <td colspan="2">
-                                                <input type="text" name="surname" maxlength="45" value="" id="surname" class="txtbox" onblur="validateSurname(this.value);" aria-describedby="surnameDesc" data-ddg-testresultelementid="537186" data-manual-scoring="lastName">
+                                                <input type="text" name="surname" maxlength="45" value="" id="surname" class="txtbox" onblur="validateSurname(this.value);" aria-describedby="surnameDesc" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Surname (Max 45 Characters)
+parseable name: surname
+section: cpvLocation_0_45
+field signature: 1412951504
+form signature: 10206801307413941282
+form signature in host form: 10206801307413941282
+field frame token: 273040022BA853231F1D21FB98471F2B
+form renderer id: 5
+field renderer id: 49" data-ddg-testresultelementid="537186" data-manual-scoring="lastName">
                                                 <div id="wwgrp_surname" class="wwgrp">
                                                   <div id="wwctrl_surname" class="wwctrl"></div>
                                                 </div>
@@ -1900,7 +961,7 @@ field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                   (DD/MM/YYYY)<span class="mandatory">*</span></label>
                                               </td>
                                               <td colspan="2">
-                                                <input type="text" name="dob" maxlength="10" value="DD/MM/YYYY" id="dob" class="txtbox hasDatepicker" onclick="clickclear(this, 'DD/MM/YYYY')" onfocus="this.style.color='#000000'" onblur="clickrecall(this,'DD/MM/YYYY');validateDate(this.value);" onkeyup="clickclear(this, 'DD/MM/YYYY')" onchange="clickrecall(this,'DD/MM/YYYY')" autocomplete="off" aria-describedby="dateformatDesc" aria-required="true" title="overall type: UNKNOWN_TYPE
+                                                <input type="text" name="dob" maxlength="10" value="DD/MM/YYYY" id="dob" class="txtbox hasDatepicker" onclick="clickclear(this, 'DD/MM/YYYY')" onfocus="this.style.color='#000000'" onblur="clickrecall(this,'DD/MM/YYYY');validateDate(this.value);" onkeyup="clickclear(this, 'DD/MM/YYYY')" onchange="clickrecall(this,'DD/MM/YYYY')" autocomplete="off" aria-describedby="dateformatDesc" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of Birth (DD/MM/YYYY)*
@@ -1912,22 +973,7 @@ form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
 field renderer id: 50
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of Birth (DD/MM/YYYY)*
-parseable name: dob
-section: cpvLocation_0_45
-field signature: 321908542
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 50
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537187"><img class="ui-datepicker-trigger" src="/AppOnlineProject/images/ico_cal.gif" alt="..." title="..." style="
-                                                    cursor: pointer;
-                                                    vertical-align: middle;
-                                                  ">
+autocomplete: off" data-ddg-testresultelementid="537187">
                                                 <div id="wwgrp_dob" class="wwgrp">
                                                   <div id="wwctrl_dob" class="wwctrl"></div>
                                                 </div>
@@ -1939,20 +985,22 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
 
                                             <tr>
                                               <td>
-                                                <label for="email">E-mail Id<span style="font-size: 10px">&nbsp;(Max 35
+                                                <label for="email">E-mail Id<span>&nbsp;(Max 35
                                                     Characters)</span><span class="mandatory">*</span></label>
                                               </td>
                                               <td colspan="2">
-                                                <input type="text" name="email" maxlength="35" value="" id="email" class="txtbox" onblur="blah3(this.value);" aria-describedby="emailError" aria-required="true" data-ddg-autofill="true" data-ddg-testresultelementid="537188" style="
-                                                    background-size: auto 100% !important;
-                                                    background-position: right
-                                                      center !important;
-                                                    background-repeat: no-repeat !important;
-                                                    background-origin: content-box !important;
-                                                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                                    transition: background 0s
-                                                      ease 0s !important;
-                                                  " data-manual-scoring="emailAddress">
+                                                <input type="text" name="email" maxlength="35" value="" id="email" class="txtbox" onblur="blah3(this.value);" aria-describedby="emailError" aria-required="true" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: E-mail Id (Max 35 Characters)*
+parseable name: email
+section: cpvLocation_0_45
+field signature: 420638584
+form signature: 10206801307413941282
+form signature in host form: 10206801307413941282
+field frame token: 273040022BA853231F1D21FB98471F2B
+form renderer id: 5
+field renderer id: 51" data-ddg-testresultelementid="537188" data-manual-scoring="emailAddress">
                                                 <div id="wwgrp_email" class="wwgrp">
                                                   <div id="wwctrl_email" class="wwctrl"></div>
                                                 </div>
@@ -1962,26 +1010,13 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                             </tr>
                                             <tr>
                                               <td colspan="3">
-                                                <fieldset style="
-                                                    display: inline;
-                                                    border: none;
-                                                  ">
-                                                  <legend style="
-                                                      line-height: 15px;
-                                                      float: left;
-                                                      text-align: right;
-                                                      margin-left: -2px;
-                                                      color: #000;
-                                                    ">
+                                                <fieldset>
+                                                  <legend>
                                                     Do you want your Login Id<br>to
                                                     be same as E-mail Id?
                                                   </legend>
 
-                                                  <span style="
-                                                      float: left;
-                                                      width: 150px;
-                                                      margin: 0 0 0 67px;
-                                                    "><input type="radio" name="emailloginSame" id="emailloginSameyes" value="yes" onclick="blah(this.value)" title="overall type: UNKNOWN_TYPE
+                                                  <span><input type="radio" name="emailloginSame" id="emailloginSameyes" value="yes" onclick="blah(this.value)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes
@@ -1992,19 +1027,8 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 53" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes
-parseable name: emailloginSame
-section: cpvLocation_0_45
-field signature: 3892070181
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537189"><label for="emailloginSameyes">Yes</label>
-                                                    <input type="radio" name="emailloginSame" id="emailloginSameno" checked="checked" value="no" onclick="blah(this.value)" title="overall type: UNKNOWN_TYPE
+field renderer id: 53" data-ddg-testresultelementid="537189"><label for="emailloginSameyes">Yes</label>
+                                                    <input type="radio" name="emailloginSame" id="emailloginSameno" checked="checked" value="no" onclick="blah(this.value)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: No
@@ -2015,18 +1039,7 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 54" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: No
-parseable name: emailloginSame
-section: cpvLocation_0_45
-field signature: 3892070181
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 54" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537190"><label for="emailloginSameno">No</label>
+field renderer id: 54" data-ddg-testresultelementid="537190"><label for="emailloginSameno">No</label>
                                                     <div id="wwgrp_emailloginSame" class="wwgrp">
                                                       <div id="wwctrl_emailloginSame" class="wwctrl"></div>
                                                     </div>
@@ -2037,7 +1050,7 @@ field renderer id: 54" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </tr>
                                             <tr>
                                               <td>
-                                                <input type="submit" id="checkLogin" name="action:UserRegistrationActionDBAuth!validateLogin" value="Check Availability Hidden Button" onclick="txtFocus();" style="display: none">
+                                                <input type="submit" id="checkLogin" name="action:UserRegistrationActionDBAuth!validateLogin" value="Check Availability Hidden Button" onclick="txtFocus();">
                                               </td>
                                             </tr>
 
@@ -2046,7 +1059,7 @@ field renderer id: 54" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                 <label for="loginId">Login Id<span class="mandatory">*</span></label>
                                               </td>
                                               <td>
-                                                <input type="text" name="loginId" maxlength="35" value="" id="loginId" class="txtbox" onblur="validateLoginId(this.value); " aria-describedby="loginIdError" aria-required="true" title="overall type: UNKNOWN_TYPE
+                                                <input type="text" name="loginId" maxlength="35" value="" id="loginId" class="txtbox" onblur="validateLoginId(this.value); " aria-describedby="loginIdError" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Login Id*
@@ -2057,18 +1070,7 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 56" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Login Id*
-parseable name: loginId
-section: cpvLocation_0_45
-field signature: 1434005906
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="537191">
+field renderer id: 56" data-ddg-testresultelementid="537191">
                                                 <div id="wwgrp_loginId" class="wwgrp">
                                                   <div id="wwctrl_loginId" class="wwctrl"></div>
                                                 </div>
@@ -2087,7 +1089,18 @@ field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                                 <label for="pwd">Password<span class="mandatory">*</span></label>
                                               </td>
                                               <td>
-                                                <input type="password" name="pwd" maxlength="14" id="pwd" class="txtbox" onblur="validatePassword(this.value)" aria-describedby="pwdError" aria-required="true" data-ddg-testresultelementid="537192" data-manual-scoring="password">
+                                                <input type="password" name="pwd" maxlength="14" id="pwd" class="txtbox" onblur="validatePassword(this.value)" aria-describedby="pwdError" aria-required="true" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password*
+parseable name: pwd
+section: cpvLocation_0_45
+field signature: 2597353482
+form signature: 10206801307413941282
+form signature in host form: 10206801307413941282
+field frame token: 273040022BA853231F1D21FB98471F2B
+form renderer id: 5
+field renderer id: 57" data-ddg-testresultelementid="537192" data-manual-scoring="password">
                                                 <div id="wwgrp_pwd" class="wwgrp">
                                                   <div id="wwctrl_pwd" class="wwctrl"></div>
                                                 </div>
@@ -2104,7 +1117,18 @@ field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                                 <label for="confirmPwd">Confirm Password<span class="mandatory">*</span></label>
                                               </td>
                                               <td colspan="2">
-                                                <input type="password" name="confirmPwd" maxlength="14" id="confirmPwd" class="txtbox" onblur="validateConfirmPassword(this.value)" aria-describedby="confirmPwdError" aria-required="true" data-ddg-testresultelementid="537193" data-manual-scoring="password">
+                                                <input type="password" name="confirmPwd" maxlength="14" id="confirmPwd" class="txtbox" onblur="validateConfirmPassword(this.value)" aria-describedby="confirmPwdError" aria-required="true" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password*
+parseable name: confirmPwd
+section: cpvLocation_0_45
+field signature: 404795894
+form signature: 10206801307413941282
+form signature in host form: 10206801307413941282
+field frame token: 273040022BA853231F1D21FB98471F2B
+form renderer id: 5
+field renderer id: 58" data-ddg-testresultelementid="537193" data-manual-scoring="password">
                                                 <div id="wwgrp_confirmPwd" class="wwgrp">
                                                   <div id="wwctrl_confirmPwd" class="wwctrl"></div>
                                                 </div>
@@ -2118,7 +1142,7 @@ field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                                 <label for="hintQues">Hint Question<span class="mandatory">*</span></label>
                                               </td>
                                               <td colspan="2">
-                                                <select name="hintQues" id="hintQues" class="dropdown-box" title="overall type: UNKNOWN_TYPE
+                                                <select name="hintQues" id="hintQues" class="dropdown-box" onblur="validateHintQues(this.value);" aria-describedby="hintQuesError" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Hint Question*
@@ -2129,18 +1153,7 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 59" onblur="validateHintQues(this.value);" aria-describedby="hintQuesError" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Hint Question*
-parseable name: hintQues
-section: cpvLocation_0_45
-field signature: 140091638
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537194">
+field renderer id: 59" data-ddg-testresultelementid="537194">
                                                   <option value="">
                                                     ----- Select -----
                                                   </option>
@@ -2179,7 +1192,7 @@ field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                                 <label for="hintAns">Hint Answer<span class="mandatory">*</span></label>
                                               </td>
                                               <td colspan="2">
-                                                <input type="password" name="hintAns" maxlength="35" id="hintAns" class="txtbox" title="overall type: UNKNOWN_TYPE
+                                                <input type="password" name="hintAns" maxlength="35" id="hintAns" class="txtbox" onblur="validateHintAns(this.value);" aria-describedby="hintAnsError" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Hint Answer*
@@ -2190,18 +1203,7 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 60" onblur="validateHintAns(this.value);" aria-describedby="hintAnsError" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Hint Answer*
-parseable name: hintAns
-section: cpvLocation_0_45
-field signature: 3836385876
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="537195">
+field renderer id: 60" data-ddg-testresultelementid="537195">
                                                 <div id="wwgrp_hintAns" class="wwgrp">
                                                   <div id="wwctrl_hintAns" class="wwctrl"></div>
                                                 </div>
@@ -2217,64 +1219,53 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                               </td>
 
                                               <td colspan="1">
-                                                <img width="185" src="/AppOnlineProject/PspTest01Captcha09S.awsti?x=1678933685608" id="captcha" alt="Captcha" title="Enter Captcha"><br>
+                                                <br>
                                               </td>
                                               <td>
-                                                <audio controls="" id="audcap" style="display: none">
+                                                <audio controls="" id="audcap">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap1" style="display: none">
+                                                <audio controls="" id="audcap1">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap2" style="display: none">
+                                                <audio controls="" id="audcap2">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap3" style="display: none">
+                                                <audio controls="" id="audcap3">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap4" style="display: none">
+                                                <audio controls="" id="audcap4">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap5" style="display: none">
+                                                <audio controls="" id="audcap5">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap6" style="display: none">
+                                                <audio controls="" id="audcap6">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap7" style="display: none">
+                                                <audio controls="" id="audcap7">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap8" style="display: none">
+                                                <audio controls="" id="audcap8">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap9" style="display: none">
+                                                <audio controls="" id="audcap9">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
-                                                <audio controls="" id="audcap10" style="display: none">
+                                                <audio controls="" id="audcap10">
                                                   <source src="/AppOnlineProject/Audios/8.mp3" type="audio/mpeg">
                                                 </audio>
 
-                                                <img src="/AppOnlineProject/images/refresh.png" id="refreshImg" alt="Change the picture displayed" title="Change the picture displayed " style="
-                                                    cursor: pointer;
-                                                    width: 23px;
-                                                  " onclick=" document.getElementById('captcha').src = document.getElementById('captcha').src + '?' + (new Date()).getMilliseconds()">
-                                                <br><img src="/AppOnlineProject/images/audio.png" id="audCaptcha" alt="Audio captcha" title="Click this button to listen to a sound based captcha" style="
-                                                    cursor: pointer;
-                                                    margin-top: 11px;
-                                                    width: 27px;
-                                                  " onclick="getAudioCaptcha();">
-                                                <img src="/AppOnlineProject/images/audio.png" id="audCaptchaDup" alt="Audio captcha" title="Click this button to listen to a sound based captcha" style="
-                                                    margin-top: 11px;
-                                                    width: 27px;
-                                                    display: none;
-                                                  ">
+                                                
+                                                <br>
+                                                
                                               </td>
                                             </tr>
 
                                             <tr>
                                               <td>&nbsp;</td>
                                               <td colspan="2">
-                                                <input type="text" name="test123" value="" id="test123" class="txtbox" onblur="validateCaptcha(this.value);" aria-describedby="testError" aria-required="true" title="overall type: UNKNOWN_TYPE
+                                                <input type="text" name="test123" value="" id="test123" class="txtbox" onblur="validateCaptcha(this.value);" aria-describedby="testError" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter Characters Displayed *
@@ -2285,18 +1276,7 @@ form signature: 10206801307413941282
 form signature in host form: 10206801307413941282
 field frame token: 273040022BA853231F1D21FB98471F2B
 form renderer id: 5
-field renderer id: 259" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter Characters Displayed *
-parseable name: test123
-section: cpvLocation_0_45
-field signature: 665324619
-form signature: 10206801307413941282
-form signature in host form: 10206801307413941282
-field frame token: 273040022BA853231F1D21FB98471F2B
-form renderer id: 5
-field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537196">
+field renderer id: 259" data-ddg-testresultelementid="537196">
                                                 <div id="wwgrp_test123" class="wwgrp">
                                                   <div id="wwctrl_test123" class="wwctrl"></div>
                                                 </div>
@@ -2307,7 +1287,7 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                                           </tbody>
                                         </table>
 
-                                        <div class="buttons" style="margin-top: 20px">
+                                        <div class="buttons">
                                           <input type="submit" id="frmSample_register" name="register" value="Register" class="bt" onclick="return checkSpecialChar();">
 
                                           <input type="submit" id="frmSample_clear" name="action:UserRegistrationActionDBAuth!clear" value="Clear" class="bt">
@@ -2315,273 +1295,10 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                                       </form>
                                     </div>
 
-                                    <script type="text/javascript">
-                                      var request;
-                                      var url;
-
-                                      function getAudioCaptcha() {
-                                        //alert('inside audio captcha');
-                                        document.getElementById(
-                                          "refreshImg"
-                                        ).style.display = "none";
-                                        document.getElementById(
-                                          "audCaptcha"
-                                        ).style.display = "none";
-
-                                        url =
-                                          "/AppOnlineProject/user/UserRegistrationActionDBAuth!getAudioCaptchaFiles";
-                                        if (window.ActiveXObject) {
-                                          request = new ActiveXObject(
-                                            "Microsoft.XMLHTTP"
-                                          );
-                                        } else if (window.XMLHttpRequest) {
-                                          request = new XMLHttpRequest();
-                                        }
-                                        request.onreadystatechange = showResult;
-                                        request.open("POST", url, true);
-                                        document.getElementById(
-                                          "audCaptchaDup"
-                                        ).style.display = "none";
-                                        request.send();
-                                      }
-
-                                      function showResult() {
-                                        if (request.readyState == 4) {
-                                          var response = request.responseText;
-                                          //alert('Response::'+request.responseText)
-                                          var elements = response.split(";");
-                                          var audio =
-                                            document.getElementById("audcap");
-                                          document.getElementById(
-                                            "audcap"
-                                          ).src = elements[0];
-                                          document
-                                            .getElementById("audcap")
-                                            .load();
-                                          document
-                                            .getElementById("audcap")
-                                            .play();
-
-                                          //alert('after play::')
-                                          if (null != elements[1]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap1"
-                                              ).src = elements[1];
-                                              document
-                                                .getElementById("audcap1")
-                                                .load();
-                                              document
-                                                .getElementById("audcap1")
-                                                .play();
-                                            }, 1000);
-                                          }
-
-                                          if (null != elements[2]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap2"
-                                              ).src = elements[2];
-                                              document.getElementById(
-                                                "audcap2"
-                                              ).type = "audio/mpeg";
-                                              document
-                                                .getElementById("audcap2")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap2")
-                                                .play();
-                                            }, 2000);
-                                          }
-
-                                          if (null != elements[3]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap3"
-                                              ).src = elements[3];
-
-                                              document
-                                                .getElementById("audcap3")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap3")
-                                                .play();
-                                            }, 3000);
-                                          }
-
-                                          if (null != elements[4]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap4"
-                                              ).src = elements[4];
-
-                                              document
-                                                .getElementById("audcap4")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap4")
-                                                .play();
-                                            }, 4000);
-                                          }
-
-                                          if (null != elements[5]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap5"
-                                              ).src = elements[5];
-
-                                              document
-                                                .getElementById("audcap5")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap5")
-                                                .play();
-                                            }, 5000);
-                                          }
-
-                                          if (null != elements[6]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap6"
-                                              ).src = elements[6];
-
-                                              document
-                                                .getElementById("audcap6")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap6")
-                                                .play();
-                                            }, 6000);
-                                          }
-
-                                          if (null != elements[7]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap7"
-                                              ).src = elements[7];
-
-                                              document
-                                                .getElementById("audcap7")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap7")
-                                                .play();
-                                            }, 7000);
-                                          }
-
-                                          if (null != elements[8]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap8"
-                                              ).src = elements[8];
-
-                                              document
-                                                .getElementById("audcap8")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap8")
-                                                .play();
-                                            }, 8000);
-                                          }
-
-                                          if (null != elements[9]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap9"
-                                              ).src = elements[9];
-
-                                              document
-                                                .getElementById("audcap9")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap9")
-                                                .play();
-                                            }, 9000);
-                                          }
-
-                                          if (null != elements[10]) {
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap10"
-                                              ).src = elements[10];
-
-                                              document
-                                                .getElementById("audcap10")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap10")
-                                                .play();
-                                            }, 10000);
-                                          }
-                                          if (null != elements[12]) {
-                                            alert("inside 12");
-                                            setTimeout(function () {
-                                              document.getElementById(
-                                                "audcap"
-                                              ).src = elements[12];
-
-                                              document
-                                                .getElementById("audcap")
-                                                .load();
-
-                                              document
-                                                .getElementById("audcap")
-                                                .play();
-                                            }, 12000);
-                                          }
-                                        }
-                                        setTimeout(function () {
-                                          document.getElementById(
-                                            "refreshImg"
-                                          ).style.display = "";
-                                          document.getElementById(
-                                            "audCaptcha"
-                                          ).style.display = "";
-                                        }, 10000);
-                                      }
-                                    </script>
-                                    <script type="text/javascript" language="javascript">
-                                      if (
-                                        document.getElementById(
-                                          "emailloginSameyes"
-                                        ).checked
-                                      ) {
-                                        document.getElementById(
-                                          "loginId"
-                                        ).readOnly = true;
-                                      }
-                                      document.getElementById(
-                                        "checkLogin"
-                                      ).style.display = "none";
-                                      document.getElementById("test123").value =
-                                        "";
-                                    </script>
-                                    <script type="text/javascript" language="JavaScript">
-                                      document.forms[
-                                        "frmSample"
-                                      ].dcdrLocation.focus();
-                                    </script>
-                                    <style type="text/css">
-                                      @-moz-document url-prefix() {
-                                        fieldset {
-                                          margin-left: -10px;
-                                        }
-                                      }
-                                      @media screen and (-webkit-min-device-pixel-ratio: 0) {
-                                        fieldset {
-                                          margin-left: -10px;
-                                        }
-                                      }
-                                    </style>
+                                    
+                                    
+                                    
+                                    
                                   </td>
                                 </tr>
                               </tbody>
@@ -2595,37 +1312,9 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
               </tr>
               <tr>
                 <td colspan="3" valign="top" bgcolor="#ffffff" width="100%">
-                  <script type="text/javascript">
-                    function openPolicy(id, ht) {
-                      var a = window.open(
-                        "/AppOnlineProject/onlineHtml/" + id + ".html",
-                        "News",
-                        "scrollbars=yes,menubar=no,height=" +
-                          ht +
-                          ",width=810,resizable=yes,toolbar=no,location=no,status=no,top=15,left=15"
-                      );
-                      a.focus();
-                      return false;
-                    }
+                  
 
-                    function openPopupForSms(mylink, windowname) {
-                      if (!window.focus) return true;
-
-                      var href;
-                      if (typeof mylink == "string") href = mylink;
-                      else href = mylink.href;
-                      var a = window.open(
-                        href,
-                        windowname,
-                        "scrollbars=yes,menubar=no,height=600,width=810,resizable=yes,toolbar=no,location=no,status=no,top=15,left=15"
-                      );
-                      a.focus();
-
-                      return false;
-                    }
-                  </script>
-
-                  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #e5e5e5">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tbody>
                       <tr>
                         <td align="left" valign="top">
@@ -2651,7 +1340,7 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                       </tr>
                       <tr>
                         <td align="left" valign="top">
-                          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #e5e5e5">
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tbody>
                               <tr>
                                 <td width="190" align="left" valign="top" class="Footer_Right_BRD">
@@ -2779,54 +1468,22 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                                         <tbody>
                                           <tr>
                                             <td>
-                                              <a href="http://www.mea.gov.in/mea-on-facebook.htm" target="_blank" title="Facebook(External website that opens in a new window)"><span style="
-                                                    width: 30px;
-                                                    float: left;
-                                                    display: inline;
-                                                    height: 30px;
-                                                    margin-top: 5px;
-                                                    margin-left: 8px;
-                                                    background: url(/AppOnlineProject/images/homeImages.JPG) -307px -30px;
-                                                  "></span><span class="hide">Connect with MEA at Facebook
+                                              <a href="http://www.mea.gov.in/mea-on-facebook.htm" target="_blank" title="Facebook(External website that opens in a new window)"><span></span><span class="hide">Connect with MEA at Facebook
                                                   (External website that opens
                                                   in a new window)</span></a>
                                             </td>
                                             <td>
-                                              <a href="http://www.mea.gov.in/mea-on-twitter.htm" target="_blank" title="Twitter(External website that opens in a new window)"><span style="
-                                                    width: 30px;
-                                                    float: left;
-                                                    display: inline;
-                                                    height: 30px;
-                                                    margin-top: 5px;
-                                                    margin-left: 8px;
-                                                    background: url(/AppOnlineProject/images/homeImages.JPG) -309px -90px;
-                                                  "></span><span class="hide">Connect with MEA at Twitter
+                                              <a href="http://www.mea.gov.in/mea-on-twitter.htm" target="_blank" title="Twitter(External website that opens in a new window)"><span></span><span class="hide">Connect with MEA at Twitter
                                                   (External website that opens
                                                   in a new window)</span></a>
                                             </td>
                                             <td>
-                                              <a href="http://www.mea.gov.in/mea-on-youtube.htm" target="_blank" title="Youtube(External website that opens in a new window)"><span style="
-                                                    width: 30px;
-                                                    float: left;
-                                                    display: inline;
-                                                    height: 30px;
-                                                    margin-top: 5px;
-                                                    margin-left: 8px;
-                                                    background: url(/AppOnlineProject/images/homeImages.JPG) -309px -122px;
-                                                  "></span><span class="hide">Connect with MEA at Youtube
+                                              <a href="http://www.mea.gov.in/mea-on-youtube.htm" target="_blank" title="Youtube(External website that opens in a new window)"><span></span><span class="hide">Connect with MEA at Youtube
                                                   (External website that opens
                                                   in a new window)</span></a>
                                             </td>
                                             <td>
-                                              <a href="http://www.flickr.com/photos/meaindia" target="_blank" title="Flickr(External website that opens in a new window)"><span style="
-                                                    width: 30px;
-                                                    float: left;
-                                                    display: inline;
-                                                    height: 30px;
-                                                    margin-top: 5px;
-                                                    margin-left: 8px;
-                                                    background: url(/AppOnlineProject/images/homeImages.JPG) -307px -60px;
-                                                  "></span><span class="hide">Connect with MEA at Flickr
+                                              <a href="http://www.flickr.com/photos/meaindia" target="_blank" title="Flickr(External website that opens in a new window)"><span></span><span class="hide">Connect with MEA at Flickr
                                                   (External website that opens
                                                   in a new window)</span></a>
                                             </td>
@@ -2843,7 +1500,7 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                       </tr>
                       <tr>
                         <td align="center" valign="middle" class="Footer_Lower_Bar">
-                          <div style="text-align: center; width: 980px" class="copyright">
+                          <div class="copyright">
                             © Content Owned by Ministry of External Affairs,
                             Government of India
                           </div>
@@ -2851,7 +1508,7 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                       </tr>
                       <tr>
                         <td align="left" valign="middle" class="Footer_Lower_Bar">
-                          <div style="width: 980px; text-align: center" class="tcs_web_link">
+                          <div class="tcs_web_link">
                             Site Maintained by&nbsp;<a target="_blank" href="http://www.tcs.com/Pages/default.aspx" title="Tata Consultancy Services Ltd.(External website that opens in a new window)">Tata Consultancy Services Ltd.<span class="hide">Information about Tata Consultancy Services
                                 Limited (External website that opens in a new
                                 window)</span></a>
@@ -2861,7 +1518,7 @@ field renderer id: 259" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
 
                       <tr>
                         <td align="left" valign="middle" class="Footer_Lower_Bar">
-                          <div class="copyright" style="width: 980px; text-align: center">
+                          <div class="copyright">
                             Last Updated on&nbsp;
                           </div>
                         </td>

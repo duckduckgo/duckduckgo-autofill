@@ -1,12 +1,13 @@
 <!--
   https://smobilebotch3.sears.com/login
+  rank: 6797
   testRunId: 66
   testResultId: 238439
 -->
 
-  <div id="gnf_header" style="display: none">#GNF_HEADER#</div>
+  <div id="gnf_header">#GNF_HEADER#</div>
   <a id="pageBottom"></a>
-  <div id="swordfish" infinite-scrolling-listener="" error-listener="" tablet-mode-layout="" class="ng-scope overflow-y-hidden" style="height: 300px; min-height: 800px">
+  <div id="swordfish" infinite-scrolling-listener="" error-listener="" tablet-mode-layout="" class="ng-scope overflow-y-hidden">
     <!-- ngInclude:  -->
     <div id="swordfish-header" class="fixed-position-hack ng-scope position-fixed" ng-include="" src="'common/views/header.tpl.html'">
       <div ng-controller="HeaderCtrl" class="ng-scope">
@@ -19,7 +20,7 @@
           <div class="header-button cart ng-pristine ng-untouched ng-valid" data-flag="cart" ng-model="countCart" tabindex="0" aria-invalid="false">
             <div class="header-btn-tab">
               <div aria-hidden="true" class="button-icon sf-icon-cart" data-title="Cart"></div>
-              <span class="count cart ng-binding" style="display: none">0</span>
+              <span class="count cart ng-binding">0</span>
             </div>
           </div>
           <div class="header-button account ng-pristine ng-untouched ng-valid active" data-flag="account" ng-model="countStatus" tabindex="0" aria-invalid="false">
@@ -40,10 +41,10 @@
       </div>
     </div>
     <!-- ngInclude:  -->
-    <div id="swordfish-menu" class="webkit-overflow-scroll ng-scope overflow-y-auto" ng-include="" src="'common/views/menu.tpl.html'" style="display: none; height: 100%; position: fixed">
+    <div id="swordfish-menu" class="webkit-overflow-scroll ng-scope overflow-y-auto" ng-include="" src="'common/views/menu.tpl.html'">
       <div id="nav-wrapper" ng-controller="MenuCtrl" class="ng-scope">
         <div ng-controller="ShopDepartmentCtrl" class="ng-scope">
-          <nav class="nav-main-menu" data-menu="main" style="display: none">
+          <nav class="nav-main-menu" data-menu="main">
             <a id="shopDepartments" class="menu-item" data-menu-link="" ng-click="categoryApi()" tabindex="0"><span class="button-icon sf-icon-bag"></span>
               <span class="button-text">Shop Departments</span> </a><!-- ngRepeat: (key,val) in MyMenuData.menu --><a ng-repeat="(key,val) in MyMenuData.menu" class="menu-item ng-scope ng-isolate-scope" data-menu-link="0" ng-click="navMainMenuItem(this)" ng-hide="hideMenuLinks(val.title)" tabindex="0" href="" aria-hidden="false"><span class="button-icon sf-icon-repair"></span>
               <span class="button-text ng-binding">Repairs</span></a><!-- end ngRepeat: (key,val) in MyMenuData.menu --><a ng-repeat="(key,val) in MyMenuData.menu" class="menu-item ng-scope ng-isolate-scope" data-menu-link="1" ng-click="navMainMenuItem(this)" ng-hide="hideMenuLinks(val.title)" tabindex="0" href="/deals" aria-hidden="false"><span class="button-icon sf-icon-tags"></span>
@@ -73,53 +74,53 @@
           <!-- ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="0" data-menu-id="1" data-menu-name="Repairs">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="0"><span class="button-icon sf-icon-repair"></span>
-              <span class="button-text ng-binding">Repairs</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Washer Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Dryer Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Refrigerator Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Dishwasher Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Oven Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Repair Appointment Lookup</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Maintain Appliances</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Repairs</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Washer Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Dryer Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Refrigerator Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Dishwasher Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Oven Repair</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Repair Appointment Lookup</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Maintain Appliances</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="1" data-menu-id="2" data-menu-name="Deals &amp; Coupons">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="1"><span class="button-icon sf-icon-tags"></span>
-              <span class="button-text ng-binding">Deals &amp; Coupons</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Deals &amp; Coupons</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="2" data-menu-id="3" data-menu-name="My Orders">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="2"><span class="button-icon sf-icon-ordercenter"></span>
-              <span class="button-text ng-binding">My Orders</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">My Orders</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="3" data-menu-id="4" data-menu-name="Account">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="3"><span class="button-icon sf-icon-person-fill"></span>
-              <span class="button-text ng-binding">Account</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Personal Information</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Membership Rewards</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Point Redemption Center</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Credit card</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Preferred Store</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Product Reviews</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Product Q&amp;A</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Lists</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="false"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent" ng-click="logout('/home')" tabindex="0" aria-hidden="false"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Account</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Personal Information</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Membership Rewards</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Point Redemption Center</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Credit card</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Preferred Store</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Product Reviews</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Product Q&amp;A</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Lists</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="false"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent" ng-click="logout('/home')" tabindex="0" aria-hidden="false"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="4" data-menu-id="5" data-menu-name="Store Finder">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="4"><span class="button-icon sf-icon-pin"></span>
-              <span class="button-text ng-binding">Store Finder</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Store Finder</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="5" data-menu-id="6" data-menu-name="Gift Center">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="5"><span class="button-icon sf-icon-gift"></span>
-              <span class="button-text ng-binding">Gift Center</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Holiday Gifts</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Top Gifts</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Email a Gift Card</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Check Gift Card Balance</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Gift Registry</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Gift Center</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Holiday Gifts</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Top Gifts</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Email a Gift Card</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Check Gift Card Balance</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Gift Registry</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="6" data-menu-id="7" data-menu-name="Parts &amp; Services">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="6"><span class="button-icon sf-icon-repair"></span>
-              <span class="button-text ng-binding">Parts &amp; Services</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Parts &amp; Services</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="7" data-menu-id="8" data-menu-name="Help &amp; Contact Us">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="7"><span class="button-icon sf-icon-help"></span>
-              <span class="button-text ng-binding">Help &amp; Contact Us</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Customer Service</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope ng-hide" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="true"><span class="button-text ng-binding" style="padding-left: 0.5em">Chat</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Accessibility</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Feedback</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">Careers</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding" style="padding-left: 0.5em">About Marketplace</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Help &amp; Contact Us</span> </a><!-- ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Customer Service</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope ng-hide" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="true"><span class="button-text ng-binding">Chat</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Accessibility</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Feedback</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">Careers</span> </a><!-- end ngRepeat: subItem in val.submenu --><a class="menu-item ng-scope ng-isolate-scope" ng-repeat="subItem in val.submenu" ng-click="navSubMenuItem(this)" ng-hide="hideMenuLinks(subItem.title)" tabindex="0" href="" aria-hidden="false"><span class="button-text ng-binding">About Marketplace</span> </a><!-- end ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <nav class="shadow-down nav-sub-menu ng-scope" ng-repeat="(key,val) in MyMenuData.menu" data-menu="8" data-menu-id="10" data-menu-name="Lists">
             <a class="menu-item menu-return-bg disabled" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span> </a><a class="menu-item current" data-menu-link="8"><span class="button-icon sf-icon-menu"></span>
-              <span class="button-text ng-binding">Lists</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text" style="padding-left: 0.5em">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" style="padding-left: 0.5em" aria-hidden="true">Logout</span></a>
+              <span class="button-text ng-binding">Lists</span> </a><!-- ngRepeat: subItem in val.submenu --><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="loadPasswordReset()" tabindex="0" aria-hidden="true"><span class="button-text">Change Password</span> </a><a ng-show="val.title == 'Account'" class="menu-item transparent ng-hide" ng-click="logout('/home')" tabindex="0" aria-hidden="true"><span ng-show="setLogoutMenu()" class="button-text ng-hide" aria-hidden="true">Logout</span></a>
           </nav>
           <!-- end ngRepeat: (key,val) in MyMenuData.menu -->
           <div id="TabletFeedbackModal" universal-modal="" msgtemplate="views_nwcs/tablet-feedback-modal.html" modaltype="default" modaltitle="Leave Feedback" ng-click="openUniversalDialog()" class="ng-scope" role="button" tabindex="0"></div>
           <div id="category-wrapper">
             <nav class="nav-main-show" id="mainShow">
-              <a class="menu-item menu-return-bg disabled" id="vertMainId" ng-click="navReturnToMain()" style="" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span></a>
+              <a class="menu-item menu-return-bg disabled" id="vertMainId" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span><span class="button-text">Main Menu</span></a>
             </nav>
             <nav class="nav-vert-menu">
               <div class="menu-item current">
@@ -128,15 +129,15 @@
               </div>
               <!-- ngRepeat: vert in secondList track by $index -->
             </nav>
-            <nav class="nav-cat-menu" id="catMenu" style="display: none">
-              <a class="menu-item disabled" id="catShopId" ng-click="categoryApi()" style="" tabindex="0"><span class="button-icon sf-icon-bag"></span>
-                <span class="button-text">Shop Departments</span> </a><!-- ngRepeat: menuItem in mainMenu --><a class="menu-item current" id="catNameId" ng-click="currentNodeClicked(seoAppendNode,currentNodeCatGroupId,isViewAll,catAppendNode)" data-automation="" style="height: 48px" tabindex="0"><span class="button-text left ng-binding" style="width: 85%"></span>
-                <span ng-hide="isVerticalNode" class="sftall-icon right" id="right-arrow-icon-white" style="" aria-hidden="false"></span> </a><a ng-hide="true" class="menu-item ng-hide" style="background: #ffffff; font-weight: bold" id="catNameId" ng-click="goBLPage(seoAppendNode,currentNodeCatGroupId,leafNode,catGroupPath)" data-automation="" tabindex="0" aria-hidden="true"><span class="button-text left ng-binding" style="width: 85%; margin-left: 9px">
+            <nav class="nav-cat-menu" id="catMenu">
+              <a class="menu-item disabled" id="catShopId" ng-click="categoryApi()" tabindex="0"><span class="button-icon sf-icon-bag"></span>
+                <span class="button-text">Shop Departments</span> </a><!-- ngRepeat: menuItem in mainMenu --><a class="menu-item current" id="catNameId" ng-click="currentNodeClicked(seoAppendNode,currentNodeCatGroupId,isViewAll,catAppendNode)" data-automation="" tabindex="0"><span class="button-text left ng-binding"></span>
+                <span ng-hide="isVerticalNode" class="sftall-icon right" id="right-arrow-icon-white" aria-hidden="false"></span> </a><a ng-hide="true" class="menu-item ng-hide" id="catNameId" ng-click="goBLPage(seoAppendNode,currentNodeCatGroupId,leafNode,catGroupPath)" data-automation="" tabindex="0" aria-hidden="true"><span class="button-text left ng-binding">
                 </span> </a><!-- ngRepeat: second in secondList track by $index -->
             </nav>
           </div>
           <nav class="nav-main-show" id="brandMainShow">
-            <a class="menu-item menu-return-bg disabled" id="brandMainId" ng-click="navReturnToMain()" style="" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span>
+            <a class="menu-item menu-return-bg disabled" id="brandMainId" ng-click="navReturnToMain()" tabindex="0"><span class="button-icon sf-icon-arrow-l"></span>
               <span class="button-text">Main Menu</span></a>
           </nav>
         </div>
@@ -150,14 +151,14 @@
           <div ng-controller="SearchBarCtrl" class="ng-scope">
             <div id="searchBar" ng-hide="hideSearchBar" class="shadow-down clearfix ng-hide" aria-hidden="true">
               <div id="inputSearchBox">
-                <form ng-submit="callSearch()" id="keywordForm" name="keywordForm" class="ng-pristine ng-valid" data-ddg-formtype="sign in">
+                <form ng-submit="callSearch()" id="keywordForm" name="keywordForm" class="ng-pristine ng-valid">
                   <div class="searchAction ng-hide" id="searchAction" ng-show="searchDirty" ng-hide="searchClean" aria-hidden="true">
                     <button class="form-button primary" id="goButtonId">
                       Go
                     </button>
                   </div>
                   <div class="searchInput">
-                    <input type="text" autofocus="" id="keyword" class="searchBar ng-pristine ng-untouched ng-valid" name="keyword" autocomplete="off" ng-model="keyword" data-automation="searchBarInput" placeholder="find something great..." ng-change="getCachedData()" onclick="angular.element(this).scope().getCachedData()" tabindex="0" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                    <input type="text" autofocus="" id="keyword" class="searchBar ng-pristine ng-untouched ng-valid" name="keyword" autocomplete="off" ng-model="keyword" data-automation="searchBarInput" placeholder="find something great..." ng-change="getCachedData()" onclick="angular.element(this).scope().getCachedData()" tabindex="0" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: find something great...
@@ -169,19 +170,7 @@ form signature in host form: 16497622453368797626
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 1
 field renderer id: 2
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: find something great...
-parseable name: keyword
-section: keyword_0_2
-field signature: 1761316610
-form signature: 16497622453368797626
-form signature in host form: 16497622453368797626
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 1
-field renderer id: 2
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532907">
+autocomplete: off" data-ddg-testresultelementid="532907">
                     <span id="clearId" ng-show="searchDirty" ng-hide="searchClean" ng-click="searchClear()" role="button" tabindex="0" aria-hidden="true" class="ng-hide">clear</span>
                     <span id="closeId" ng-show="searchClean" ng-hide="searchDirty" ng-click="fSearchHide()" role="button" tabindex="0" aria-hidden="false" class="">close</span>
                   </div>
@@ -196,211 +185,55 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
       </div>
       <!-- ngInclude:  -->
       <div id="swordfish-notification" class="overflow-y-hidden ng-scope" ng-include="" src="'common/views/contexual-messaging.tpl.html'">
-        <style class="ng-scope">
-          .chevron::before {
-            border-style: solid;
-            border-width: 0.25em 0.25em 0 0;
-            content: "";
-            display: inline-block;
-            height: 0.88em;
-            left: 1.1em;
-            position: relative;
-            top: 0.15em;
-            transform: rotate(-45deg);
-            vertical-align: top;
-            width: 0.88em;
-            color: #000;
-          }
-          .chevron.bottom:before {
-            top: 0;
-            float: left;
-            margin-top: -4px;
-            transform: rotate(135deg);
-          }
-          .rectangle-4-copy-2 {
-            width: 100%;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px 0 rgba(208, 208, 208, 0.75);
-            text-align: -webkit-center;
-            padding: 8px 20px 10px 20px;
-            margin-bottom: 5px;
-          }
-          .bg {
-            margin-top: 5px;
-            width: 92px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            border-radius: 3px;
-            background-color: #ff4800;
-            box-shadow: 0 2px 0 0 #c23700;
-            padding: 8px 0;
-          }
-          body.kmart #msgTemp8.bg {
-            background-color: #a61111;
-            box-shadow: 0 2px 0 0 #800d0d;
-          }
-          .line-3 {
-            border: 0.5px solid #d0d0d0;
-            margin: 15px 0;
-          }
-          .surpriseContainer {
-            overflow: hidden;
-            width: 100%;
-          }
-          .surprisePoints {
-            float: left;
-            width: 25%;
-          }
-          .surpriseMessage {
-            float: left;
-            width: 75%;
-            padding-left: 5px;
-            text-align: left;
-          }
-          .dollarSign {
-            height: 16px;
-            width: 8px;
-            color: #002859;
-            font-family: "Open Sans";
-            font-size: 12px;
-            font-weight: bold;
-            vertical-align: text-top;
-          }
-          body.kmart #pointsData .dollarSign {
-            color: #137abf;
-          }
-          .pointsNumber {
-            height: 25px;
-            width: 28px;
-            color: #002859;
-            font-family: "Open Sans";
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 0.48px;
-            line-height: 25px;
-            vertical-align: text-top;
-            margin-left: -2px;
-          }
-          body.kmart #pointsData .pointsNumber {
-            color: #137abf;
-          }
-          .messageOne {
-            color: #001733;
-            font-family: "Open Sans";
-            font-size: 14px;
-            line-height: 19px;
-          }
-          .messageTwo {
-            color: #666666;
-            font-family: "Open Sans";
-            font-size: 14px;
-            font-style: italic;
-            margin-top: 3px;
-          }
-          .notPerson {
-            color: #001733;
-            font-family: "Open Sans";
-            font-size: 14px;
-            text-align: left;
-          }
-          .cta2Link {
-            color: #005ccc;
-            text-decoration: underline;
-          }
-          .first-name {
-            font-weight: 600;
-            text-transform: capitalize;
-          }
-          .noBorder {
-            border: 0px;
-            margin: 7px 0 0 0;
-          }
-        </style>
+        
         <div id="contextualMessagingId" ng-controller="ContextualMessagingCtrl" class="ng-scope">
           <div class="clearfix ng-hide" ng-show="showL1Message" id="L1Container" aria-hidden="true">
             <div class="clearfix" ng-click="markViewedMessage(l1MessageData.strategyitems[0]);" role="button" tabindex="0">
               <!-- ngIf: l1MessageData.strategyitems[0].templateId == 7 --><!-- ngIf: l1MessageData.strategyitems[0].templateId == 8 || l1MessageData.strategyitems[0].templateId == 14 || l1MessageData.strategyitems[0].templateId == '14RM' --><!-- ngIf: l1MessageData.strategyitems[0].templateId == 9 --><!-- ngIf: l1MessageData.strategyitems[0].templateId == '' --><!-- ngIf: l1MessageData.strategyitems[0].templateId == 12 -->
             </div>
           </div>
-          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4ErrorMessage &amp;&amp; customCouponStrategyitem.title != ''" style="
-              background: #fae7ea;
-              border: 1px solid #d01833;
-              border-radius: 3px;
-              color: #d01833;
-              font-size: 14px;
-              line-height: 19px;
-              margin: 10px;
-              padding: 14px;
-            " type="success" aria-hidden="true">
+          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4ErrorMessage &amp;&amp; customCouponStrategyitem.title != ''" type="success" aria-hidden="true">
             <button ng-show="closeable" type="button" class="close ng-hide" ng-click="close($event)" tabindex="0" aria-hidden="true">
               <span aria-hidden="true">×</span>
               <span class="sr-only">Close</span>
             </button>
             <div ng-transclude="">
-              <b class="ng-binding ng-scope"></b><span class="ng-binding ng-scope"> </span><br class="ng-scope"><a style="color: #005ccc; text-decoration: underline" ng-href="" class="ng-binding ng-scope"></a>
+              <b class="ng-binding ng-scope"></b><span class="ng-binding ng-scope"> </span><br class="ng-scope"><a ng-href="" class="ng-binding ng-scope"></a>
             </div>
           </div>
-          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4ErrorMessage &amp;&amp; l4MessageData.strategyitems[0].loadCoupon == '4'" style="
-              background: #fff9e6;
-              border: 1px solid #fec70b;
-              border-radius: 3px;
-              color: #001733;
-              font-size: 14px;
-              line-height: 19px;
-              margin: 10px;
-              padding: 14px;
-            " type="success" aria-hidden="true">
+          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4ErrorMessage &amp;&amp; l4MessageData.strategyitems[0].loadCoupon == '4'" type="success" aria-hidden="true">
             <button ng-show="closeable" type="button" class="close ng-hide" ng-click="close($event)" tabindex="0" aria-hidden="true">
               <span aria-hidden="true">×</span>
               <span class="sr-only">Close</span>
             </button>
             <div ng-transclude="">
-              <b class="ng-binding ng-scope"></b><span class="ng-binding ng-scope"> </span><br class="ng-scope"><a style="color: #005ccc; text-decoration: underline" ng-href="" class="ng-binding ng-scope"></a>
+              <b class="ng-binding ng-scope"></b><span class="ng-binding ng-scope"> </span><br class="ng-scope"><a ng-href="" class="ng-binding ng-scope"></a>
             </div>
           </div>
-          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4ErrorMessage &amp;&amp; l4MessageData.strategyitems[0].loadCoupon == '0'" style="
-              background: #fae7ea;
-              border: 1px solid #d01833;
-              border-radius: 3px;
-              color: #d01833;
-              font-size: 14px;
-              line-height: 19px;
-              margin: 10px;
-              padding: 14px;
-            " type="success" aria-hidden="true">
+          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4ErrorMessage &amp;&amp; l4MessageData.strategyitems[0].loadCoupon == '0'" type="success" aria-hidden="true">
             <button ng-show="closeable" type="button" class="close ng-hide" ng-click="close($event)" tabindex="0" aria-hidden="true">
               <span aria-hidden="true">×</span>
               <span class="sr-only">Close</span>
             </button>
             <div ng-transclude="">
-              <b class="ng-binding ng-scope"></b><span class="ng-binding ng-scope"> </span><br class="ng-scope"><a style="color: #005ccc; text-decoration: underline !important" ng-href="" class="ng-binding ng-scope"></a>
+              <b class="ng-binding ng-scope"></b><span class="ng-binding ng-scope"> </span><br class="ng-scope"><a ng-href="" class="ng-binding ng-scope"></a>
             </div>
           </div>
-          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4SPErrorMessage &amp;&amp; customL4Strategyitem.title != ''" style="
-              background: #fae7ea;
-              border: 1px solid #d01833;
-              border-radius: 3px;
-              color: #d01833;
-              font-size: 14px;
-              line-height: 19px;
-              margin: 10px;
-              padding: 14px;
-            " type="success" aria-hidden="true">
+          <div class="alert ng-isolate-scope alert-success ng-hide" ng-class="['alert-' + (type || 'warning'), closeable ? 'alert-dismissible' : null]" role="alert" ng-show="l4SPErrorMessage &amp;&amp; customL4Strategyitem.title != ''" type="success" aria-hidden="true">
             <button ng-show="closeable" type="button" class="close ng-hide" ng-click="close($event)" tabindex="0" aria-hidden="true">
               <span aria-hidden="true">×</span>
               <span class="sr-only">Close</span>
             </button>
             <div ng-transclude="">
-              <span class="ng-binding ng-scope">&nbsp;</span><span style="color: #005ccc; text-decoration: underline !important" ng-click="switchUser(l4MessageData.strategyitems[0].callToAction)" class="ng-binding ng-scope" role="button" tabindex="0"></span>
+              <span class="ng-binding ng-scope">&nbsp;</span><span ng-click="switchUser(l4MessageData.strategyitems[0].callToAction)" class="ng-binding ng-scope" role="button" tabindex="0"></span>
             </div>
           </div>
           <!-- ngIf: showSeeOffers == true --><!-- ngIf: l4MessageData && l4MessageData.strategyitems[0] && l4MessageData.strategyitems[0].templateId == 13 --><!-- ngIf: l4MessageData && l4MessageData.strategyitems[0] && l4MessageData.strategyitems[0].templateId != 13 -->
         </div>
       </div>
       <!-- ngView:  -->
-      <div id="swordfish-view" data-ng-view="" class="ng-scope" style="overflow-y: auto">
-        <div class="ng-scope ng-isolate-scope texture" full-texture="" style="min-height: 250px">
+      <div id="swordfish-view" data-ng-view="" class="ng-scope">
+        <div class="ng-scope ng-isolate-scope texture" full-texture="">
           <ng-switch on="loginStatus"><!-- ngSwitchWhen: guest --><ng-switch ng-switch-when="guest" class="ng-scope"><ng-switch on="guestView"><!-- ngSwitchWhen: login -->
                 <div ng-switch-when="login" class="ng-scope">
                   <div ng-switch="" on="isTablet">
@@ -408,63 +241,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                     <div ng-switch-when="false" class="ng-scope">
                       <!-- ngInclude:  -->
                       <div ng-include="" src="'login/views/login-phone.tpl.html'" class="ng-scope">
-                        <style class="ng-scope">
-                          .form-group {
-                            position: relative;
-                            margin-bottom: 35px;
-                          }
-                          .form-group label,
-                          .form-group input.ng-invalid ~ label,
-                          .form-group input.ng-invalid ~ label {
-                            position: absolute;
-                            pointer-events: none;
-                            left: 8px;
-                            top: 3px;
-                            transition: 0.2s ease all;
-                            -moz-transition: 0.2s ease all;
-                            -webkit-transition: 0.2s ease all;
-                          }
-                          .form-group input.autofill ~ label,
-                          .form-group input:focus ~ label,
-                          .form-group input.ng-dirty ~ label,
-                          .form-group select.autofill ~ label,
-                          .form-group select.ng-dirty ~ label {
-                            top: -30px;
-                            left: 0px;
-                            color: #000000;
-                          }
-                          .form-group input {
-                            overflow: auto !important;
-                          }
-                          .form-group label small {
-                            font-style: italic;
-                          }
-
-                          .list-group {
-                            width: 87% !important;
-                            z-index: 1000;
-                            position: absolute;
-                            top: 43px;
-                          }
-
-                          @media only screen and (max-width: 360px) {
-                            .list-group-item {
-                              font-size: 13px !important;
-                            }
-                          }
-
-                          @media only screen and (max-width: 320px) {
-                            .list-group-item {
-                              font-size: 11px !important;
-                            }
-                          }
-
-                          .list-group-item:hover {
-                            color: #337ab7;
-                            text-shadow: 0 0 1em #337ab7;
-                            cursor: pointer;
-                          }
-                        </style>
+                        
                         <div ng-switch="" on="iOSloginFlag" class="thinWrapper clearfix ng-scope">
                           <!-- ngSwitchWhen: enabled --><!-- ngSwitchWhen: eligible -->
                         </div>
@@ -475,31 +252,35 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                   <div class="panel-heading" ng-keypress="toggleOpen($event)">
                                     <h4 class="panel-title">
                                       <a href="" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" accordion-transclude="heading"><span ng-class="{'text-muted': isDisabled}" class="ng-binding"><span class="groupTitle ng-binding ng-scope">Member Sign In</span></span></a>
-                                      <div style="
-                                          font-size: small;
-                                          position: absolute;
-                                          top: 35px;
-                                        ">
-                                        <a href="" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" accordion-transclude="heading">Not Registered? </a><a style="
-                                            display: inline-block;
-                                            color: #0431b4;
-                                          " ng-click="goToRegistration()" tabindex="0">Join for free</a>
+                                      <div>
+                                        <a href="" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" accordion-transclude="heading">Not Registered? </a><a ng-click="goToRegistration()" tabindex="0">Join for free</a>
                                       </div>
-                                      <span class="arrow ng-scope"><img ng-hide="loginAccordion" src="/images/reviews/downArrow.png" aria-hidden="true" class="ng-hide">
-                                        <img ng-show="loginAccordion" src="/images/Up_Arrow.png" aria-hidden="false" class=""></span>
+                                      <span class="arrow ng-scope">
+                                        </span>
                                     </h4>
                                   </div>
-                                  <div class="panel-collapse in" collapse="!isOpen" aria-expanded="true" aria-hidden="false" style="height: auto">
+                                  <div class="panel-collapse in" collapse="!isOpen" aria-expanded="true" aria-hidden="false">
                                     <div class="panel-body" ng-transclude="">
                                       <accordion-heading class="ng-scope"></accordion-heading>
-                                      <form id="login-form" name="loginForm" ng-submit="attemptLogin(email, password, rememberEmail)" novalidate="" class="css-form ng-pristine ng-scope ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength" autocomplete="on" method="POST" data-ddg-formtype="sign in">
+                                      <form id="login-form" name="loginForm" ng-submit="attemptLogin(email, password, rememberEmail)" novalidate="" class="css-form ng-pristine ng-scope ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength" autocomplete="on" method="POST">
                                         <fieldset ng-show="craftsmanSignUp" aria-hidden="true" class="ng-hide">
-                                          <img style="width: 50%" src="//s7.sears.com/is/image/Sears/craftsman-exclusives">
+                                          
                                         </fieldset>
                                         <label ng-show="isErrorLogin" id="login-error" class="error ng-binding ng-hide" aria-hidden="true"></label>
                                         <p ng-show="isErrorLoginDetails" id="login-error-details" class="error ng-binding ng-hide" aria-hidden="true"></p>
                                         <fieldset>
-                                          <label for="email">Email<small>required</small></label><input type="email" name="email" data-automation="loginInputEmail" ng-model="email" ng-pattern="/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/" update-model-on="blur" required="" class="left ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern" ng-blur="userState(email)" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532908" data-manual-scoring="username">
+                                          <label for="email">Email<small>required</small></label><input type="email" name="email" data-automation="loginInputEmail" ng-model="email" ng-pattern="/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/" update-model-on="blur" required="" class="left ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern" ng-blur="userState(email)" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Emailrequired
+parseable name: email
+section: email_0_9
+field signature: 1029417091
+form signature: 5873152169342900829
+form signature in host form: 5873152169342900829
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 2
+field renderer id: 9" data-ddg-testresultelementid="532908" data-manual-scoring="username">
                                           <span ng-show="loginForm.email.$dirty &amp;&amp; (loginForm.email.$error.email || loginForm.email.$invalid)" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                           <span ng-show="loginForm.email.$dirty &amp;&amp; loginForm.email.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                           <ul class="field-error">
@@ -510,7 +291,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                           </ul>
                                         </fieldset>
                                         <fieldset>
-                                          <label for="password">Password<small>required</small></label><input type="password" name="password" data-automation="loginInputPassword" ng-model="password" ng-minlength="1" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-minlength" ng-hide="showPassword" tabindex="0" aria-hidden="false" aria-required="true" aria-invalid="true" title="overall type: UNKNOWN_TYPE
+                                          <label for="password">Password<small>required</small></label><input type="password" name="password" data-automation="loginInputPassword" ng-model="password" ng-minlength="1" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-minlength" ng-hide="showPassword" tabindex="0" aria-hidden="false" aria-required="true" aria-invalid="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Passwordrequired
@@ -521,19 +302,8 @@ form signature: 5873152169342900829
 form signature in host form: 5873152169342900829
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 2
-field renderer id: 11" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Passwordrequired
-parseable name: password
-section: email_0_9
-field signature: 2051817934
-form signature: 5873152169342900829
-form signature in host form: 5873152169342900829
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 2
-field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="532909">
-                                          <input type="text" name="unmaskedPassword" data-automation="loginInputPassword" ng-model="password" ng-minlength="1" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-minlength ng-hide" autocorrect="off" autocapitalize="off" ng-show="showPassword" tabindex="0" aria-hidden="true" aria-required="true" aria-invalid="true" title="overall type: UNKNOWN_TYPE
+field renderer id: 11" data-ddg-testresultelementid="532909">
+                                          <input type="text" name="unmaskedPassword" data-automation="loginInputPassword" ng-model="password" ng-minlength="1" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-minlength ng-hide" autocorrect="off" autocapitalize="off" ng-show="showPassword" tabindex="0" aria-hidden="true" aria-required="true" aria-invalid="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: 
@@ -544,18 +314,7 @@ form signature: 5873152169342900829
 form signature in host form: 5873152169342900829
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 2
-field renderer id: 12" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: 
-parseable name: unmaskedPassword
-section: email_0_9
-field signature: 3682688985
-form signature: 5873152169342900829
-form signature in host form: 5873152169342900829
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 2
-field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532910">
+field renderer id: 12" data-ddg-testresultelementid="532910">
                                           <span ng-show="(loginForm.password.$dirty &amp;&amp; loginForm.password.$invalid) || (loginForm.unmaskedPassword.$dirty &amp;&amp; loginForm.unmaskedPassword.$invalid)" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                           <span ng-hide="hideCheckMark" ng-show="(loginForm.password.$dirty &amp;&amp; loginForm.password.$valid) || (loginForm.unmaskedPassword.$dirty &amp;&amp; loginForm.unmaskedPassword.$valid)" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                           <ul class="field-error">
@@ -565,7 +324,7 @@ field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                           </ul>
                                         </fieldset>
                                         <fieldset class="fields-checkbox">
-                                          <label for="showPassword"><input type="checkbox" name="showPassword" id="showPassword" data-automation="loginCBShowPassword" ng-model="showPassword" ng-change="omniturePasswordCheckBox(false);" style="display: block !important" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                          <label for="showPassword"><input type="checkbox" name="showPassword" id="showPassword" data-automation="loginCBShowPassword" ng-model="showPassword" ng-change="omniturePasswordCheckBox(false);" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Show Password
@@ -576,18 +335,7 @@ form signature: 5873152169342900829
 form signature in host form: 5873152169342900829
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 2
-field renderer id: 14" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Show Password
-parseable name: showPassword
-section: email_0_9
-field signature: 1225366505
-form signature: 5873152169342900829
-form signature in host form: 5873152169342900829
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 2
-field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532911">
+field renderer id: 14" data-ddg-testresultelementid="532911">
                                             Show Password</label>
                                         </fieldset>
                                         <fieldset>
@@ -596,7 +344,7 @@ field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                           </div>
                                         </fieldset>
                                         <fieldset class="fields-checkbox">
-                                          <label for="rememberEmail"><input type="checkbox" name="rememberEmail" id="rememberEmail" data-automation="loginCBRememberEmail" ng-model="rememberEmail" ng-change="omnitureCheckBox(false);" style="display: block !important" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                          <label for="rememberEmail"><input type="checkbox" name="rememberEmail" id="rememberEmail" data-automation="loginCBRememberEmail" ng-model="rememberEmail" ng-change="omnitureCheckBox(false);" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Remember my email
@@ -607,24 +355,13 @@ form signature: 5873152169342900829
 form signature in host form: 5873152169342900829
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 2
-field renderer id: 17" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Remember my email
-parseable name: rememberEmail
-section: email_0_9
-field signature: 434003560
-form signature: 5873152169342900829
-form signature in host form: 5873152169342900829
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 2
-field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532912">
+field renderer id: 17" data-ddg-testresultelementid="532912">
                                             Remember my email</label>
                                         </fieldset>
                                         <fieldset ng-show="craftsmanSignUp" aria-hidden="true" class="ng-hide">
                                           <hr>
                                           <fieldset class="fields-checkbox">
-                                            <label for="checkboxCraftsman"><input id="checkboxCraftsman" name="checkSet" type="checkbox" ng-model="craftsmanCheckbox" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                            <label for="checkboxCraftsman"><input id="checkboxCraftsman" name="checkSet" type="checkbox" ng-model="craftsmanCheckbox" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Join Craftsman Exclusive
@@ -635,18 +372,7 @@ form signature: 5873152169342900829
 form signature in host form: 5873152169342900829
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 2
-field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Join Craftsman Exclusive
-parseable name: checkSet
-section: email_0_9
-field signature: 3492659616
-form signature: 5873152169342900829
-form signature in host form: 5873152169342900829
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 2
-field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532913">
+field renderer id: 20" data-ddg-testresultelementid="532913">
                                               Join Craftsman Exclusive</label>
                                           </fieldset>
                                           <p>
@@ -657,9 +383,9 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             your preferences at any time).
                                           </p>
                                         </fieldset>
-                                        <div style="margin-top: 20px" id="recaptcha"></div>
+                                        <div id="recaptcha"></div>
                                         <fieldset>
-                                          <h5 ng-controller="FooterCtrl" style="margin: 10px 0 0" class="ng-scope ng-binding">
+                                          <h5 ng-controller="FooterCtrl" class="ng-scope ng-binding">
                                             By signing in, I agree to the
                                             <a ng-click="dotcomLinking('shop-your-way')" tabindex="0">Shop Your Way℠ Program Terms</a>, and the Sears.com
                                             <a ng-click="dotcomLinking('terms')" tabindex="0">Terms of Use</a>
@@ -690,14 +416,14 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                     <h4 class="panel-title">
                                       <a href="" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" accordion-transclude="heading"><span ng-class="{'text-muted': isDisabled}" class="ng-binding"><span ng-show="directToSite" class="ng-scope ng-hide" aria-hidden="true">Set Password</span>
                                           <span ng-hide="directToSite" class="ng-scope" aria-hidden="false">Password Reset</span>
-                                          <span class="arrow ng-scope"><img ng-hide="passwordResetCard" src="/images/reviews/downArrow.png" aria-hidden="false" class="">
-                                            <img ng-show="passwordResetCard" src="/images/Up_Arrow.png" aria-hidden="true" class="ng-hide"></span></span></a>
+                                          <span class="arrow ng-scope">
+                                            </span></span></a>
                                     </h4>
                                   </div>
-                                  <div class="panel-collapse collapse" collapse="!isOpen" aria-expanded="false" aria-hidden="true" style="height: 0px">
+                                  <div class="panel-collapse collapse" collapse="!isOpen" aria-expanded="false" aria-hidden="true">
                                     <div class="panel-body" ng-transclude="">
                                       <accordion-heading class="ng-scope"></accordion-heading>
-                                      <form id="reset-password-form" name="resetPasswordForm" ng-submit="resetPassword(email1,resetPasswordForm.email1.$valid)" class="css-form ng-pristine ng-scope ng-valid-email ng-invalid ng-invalid-required" data-ddg-formtype="sign in">
+                                      <form id="reset-password-form" name="resetPasswordForm" ng-submit="resetPassword(email1,resetPasswordForm.email1.$valid)" class="css-form ng-pristine ng-scope ng-valid-email ng-invalid ng-invalid-required">
                                         <fieldset>
                                           <span ng-show="directToSite" class="subheader-text ng-hide" aria-hidden="true">Just enter your email address below
                                             and we'll send you a link to set
@@ -708,7 +434,7 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                         </fieldset>
                                         <span id="reset-password-error" class="error hide left"></span>
                                         <fieldset>
-                                          <label for="email1">Email<small>required</small></label><input type="email" name="email1" data-automation="resetInputEmail" ng-model="email1" required="" class="left ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required" tabindex="0" aria-required="true" aria-invalid="true" title="overall type: UNKNOWN_TYPE
+                                          <label for="email1">Email<small>required</small></label><input type="email" name="email1" data-automation="resetInputEmail" ng-model="email1" required="" class="left ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Emailrequired
@@ -719,18 +445,7 @@ form signature: 18084501266855638622
 form signature in host form: 18084501266855638622
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 3
-field renderer id: 27" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Emailrequired
-parseable name: email1
-section: email1_0_27
-field signature: 93483515
-form signature: 18084501266855638622
-form signature in host form: 18084501266855638622
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 3
-field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="532914">
+field renderer id: 27" data-ddg-testresultelementid="532914">
                                           <span ng-show="resetPasswordForm.email1.$error.email &amp;&amp; isSubmitted" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                           <span ng-show="resetPasswordForm.email1.$dirty &amp;&amp; resetPasswordForm.email1.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                           <ul class="field-error">
@@ -741,20 +456,11 @@ field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                           </ul>
                                         </fieldset>
                                         <div id="recaptcha3">
-                                          <div style="width: 304px; height: 78px">
+                                          <div>
                                             <div>
-                                              <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI&amp;co=aHR0cHM6Ly9zbW9iaWxlLXZpcC5wcm9kLmNoMy5zLmNvbTo0NDM.&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=normal&amp;cb=j8n8vie5gax6" width="304" height="78" role="presentation" name="a-pmtpmxogdatu" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation"></iframe>
+                                              
                                             </div>
-                                            <textarea id="g-recaptcha-response-1" name="g-recaptcha-response" class="g-recaptcha-response" style="
-                                                width: 250px;
-                                                height: 40px;
-                                                border: 1px solid
-                                                  rgb(193, 193, 193);
-                                                margin: 10px 25px;
-                                                padding: 0px;
-                                                resize: none;
-                                                display: none;
-                                              " title="overall type: UNKNOWN_TYPE
+                                            <textarea id="g-recaptcha-response-1" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Just enter your email address below and we'll send you a link to set your password. Just enter your 
@@ -765,20 +471,9 @@ form signature: 18084501266855638622
 form signature in host form: 18084501266855638622
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 3
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Just enter your email address below and we'll send you a link to set your password. Just enter your 
-parseable name: g-recaptcha-response
-section: email1_0_27
-field signature: 3309787731
-form signature: 18084501266855638622
-form signature in host form: 18084501266855638622
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 3
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532915"></textarea>
+field renderer id: 28" data-ddg-testresultelementid="532915"></textarea>
                                           </div>
-                                          <iframe style="display: none"></iframe>
+                                          
                                         </div>
                                         <hr class="hrPlain">
                                         <fieldset class="fields-action">
@@ -793,7 +488,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                           </div>
                                         </fieldset>
                                       </form>
-                                      <form id="reset-success-form" name="resetSuccessForm" ng-submit="onSubmitted()" style="display: none; text-align: left" class="ng-pristine ng-valid ng-scope">
+                                      <form id="reset-success-form" name="resetSuccessForm" ng-submit="onSubmitted()" class="ng-pristine ng-valid ng-scope">
                                         <fieldset class="subheader-text">
                                           <p ng-show="directToSite" aria-hidden="true" class="ng-hide">
                                             We have emailed you instructions for
@@ -828,14 +523,14 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                   <div class="panel-heading" ng-keypress="toggleOpen($event)">
                                     <h4 class="panel-title">
                                       <a href="" tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" accordion-transclude="heading"><span ng-class="{'text-muted': isDisabled}" class="ng-binding"><span class="groupTitle ng-scope">Register</span>
-                                          <span class="arrow ng-scope"><img ng-hide="registerAccordion" src="/images/reviews/downArrow.png" aria-hidden="false" class="">
-                                            <img ng-show="registerAccordion" src="/images/Up_Arrow.png" aria-hidden="true" class="ng-hide"></span></span></a>
+                                          <span class="arrow ng-scope">
+                                            </span></span></a>
                                     </h4>
                                   </div>
-                                  <div class="panel-collapse collapse" collapse="!isOpen" aria-expanded="false" aria-hidden="true" style="height: 0px">
+                                  <div class="panel-collapse collapse" collapse="!isOpen" aria-expanded="false" aria-hidden="true">
                                     <div class="panel-body" ng-transclude="">
                                       <accordion-heading ng-click="closeResetCard()" class="ng-scope" role="button" tabindex="0"></accordion-heading>
-                                      <form id="register-form" name="registerForm" novalidate="" class="css-form ng-pristine ng-scope ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength ng-valid-maxlength" data-ddg-formtype="sign up">
+                                      <form id="register-form" name="registerForm" novalidate="" class="css-form ng-pristine ng-scope ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength ng-valid-maxlength">
                                         <fieldset ng-hide="true" aria-hidden="true" class="ng-hide">
                                           <p class="subheader-text">
                                             Shop Your Way™ Members earn 10
@@ -845,18 +540,22 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                           </p>
                                         </fieldset>
                                         <fieldset ng-show="craftsmanSignUp" aria-hidden="true" class="ng-hide">
-                                          <img style="width: 50%" src="//s7.sears.com/is/image/Sears/craftsman-exclusives">
+                                          
                                         </fieldset>
-                                        <span id="register-error" class="error hide left" style="margin-bottom: 35px !important"></span>
+                                        <span id="register-error" class="error hide left"></span>
                                         <fieldset class="form-group">
-                                          <input class="ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern" id="email1" type="email" name="email1" data-automation="registrationInputEmail" ng-model="email1" ng-pattern="/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/" update-model-on="blur" required="" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-autofill="true" data-ddg-testresultelementid="532916" style="
-                                              background-size: auto 26px !important;
-                                              background-position: right center !important;
-                                              background-repeat: no-repeat !important;
-                                              background-origin: content-box !important;
-                                              background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                              transition: background 0s ease 0s !important;
-                                            " data-manual-scoring="emailAddress"><label for="email1">Email<small>-required</small></label><span ng-show="registerForm.email1.$dirty &amp;&amp; (registerForm.email1.$error.email || registerForm.email1.$invalid)" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                          <input class="ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern" id="email1" type="email" name="email1" data-automation="registrationInputEmail" ng-model="email1" ng-pattern="/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/" update-model-on="blur" required="" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email-required
+parseable name: email1
+section: email1_0_40
+field signature: 93483515
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 40" data-ddg-testresultelementid="532916" data-manual-scoring="emailAddress"><label for="email1">Email<small>-required</small></label><span ng-show="registerForm.email1.$dirty &amp;&amp; (registerForm.email1.$error.email || registerForm.email1.$invalid)" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                           <span ng-show="registerForm.email1.$dirty &amp;&amp; registerForm.email1.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                           <ul class="field-error">
                                             <li ng-show="registerForm.email1.$dirty &amp;&amp; (registerForm.email1.$error.email || registerForm.email1.$invalid)" aria-hidden="true" class="ng-hide">
@@ -866,14 +565,18 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                           </ul>
                                         </fieldset>
                                         <fieldset class="form-group">
-                                          <input id="email2" type="email" name="email2" data-automation="registrationInputEmail2" ng-model="email2" ng-pattern="/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/" event="blur" email-validate-equals="email1" update-model-on="blur" required="" class="left ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern" ng-blur="userStateRegistration(email1, email2)" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-autofill="true" data-ddg-testresultelementid="532917" style="
-                                              background-size: auto 26px !important;
-                                              background-position: right center !important;
-                                              background-repeat: no-repeat !important;
-                                              background-origin: content-box !important;
-                                              background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                              transition: background 0s ease 0s !important;
-                                            " data-manual-scoring="emailAddress"><label for="email2">Confirm Email<small>-required</small></label><span ng-show="emailsDontMatch || (registerForm.email2.$dirty &amp;&amp; (registerForm.email2.$error.equal || registerForm.email2.$error.email  || registerForm.email2.$invalid))" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                          <input id="email2" type="email" name="email2" data-automation="registrationInputEmail2" ng-model="email2" ng-pattern="/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/" event="blur" email-validate-equals="email1" update-model-on="blur" required="" class="left ng-pristine ng-untouched ng-valid-email ng-invalid ng-invalid-required ng-valid-pattern" ng-blur="userStateRegistration(email1, email2)" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm Email-required
+parseable name: email2
+section: email1_0_40
+field signature: 1923981529
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 42" data-ddg-testresultelementid="532917" data-manual-scoring="emailAddress"><label for="email2">Confirm Email<small>-required</small></label><span ng-show="emailsDontMatch || (registerForm.email2.$dirty &amp;&amp; (registerForm.email2.$error.equal || registerForm.email2.$error.email  || registerForm.email2.$invalid))" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                           <span ng-show="!emailsDontMatch &amp;&amp; (registerForm.email2.$dirty &amp;&amp; !registerForm.email2.$error.equal &amp;&amp; !registerForm.email2.$invalid)" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                           <ul class="field-error">
                                             <li ng-show="registerForm.email2.$dirty &amp;&amp; (registerForm.email2.$error.equal || registerForm.email2.$error.email  || registerForm.email2.$invalid)" aria-hidden="true" class="ng-hide">
@@ -886,7 +589,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                           </ul>
                                         </fieldset>
                                         <fieldset class="form-group">
-                                          <input type="password" name="password" data-automation="registrationInputPassword" ng-model="password" update-model-on="blur" ng-blur="checkPwdValid(password,email2)" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required" ng-hide="showPassword" tabindex="0" aria-hidden="false" aria-required="true" aria-invalid="true" title="overall type: UNKNOWN_TYPE
+                                          <input type="password" name="password" data-automation="registrationInputPassword" ng-model="password" update-model-on="blur" ng-blur="checkPwdValid(password,email2)" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required" ng-hide="showPassword" tabindex="0" aria-hidden="false" aria-required="true" aria-invalid="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Create Password-required
@@ -897,19 +600,8 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 44" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Create Password-required
-parseable name: password
-section: email1_0_40
-field signature: 2051817934
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="532918">
-                                          <input type="text" name="unmaskedPassword" data-automation="registrationInputPassword" ng-model="password" update-model-on="blur" ng-blur="checkPwdValid(password,email2)" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-hide" ng-show="showPassword" tabindex="0" aria-hidden="true" aria-required="true" aria-invalid="true" title="overall type: UNKNOWN_TYPE
+field renderer id: 44" data-ddg-testresultelementid="532918">
+                                          <input type="text" name="unmaskedPassword" data-automation="registrationInputPassword" ng-model="password" update-model-on="blur" ng-blur="checkPwdValid(password,email2)" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-hide" ng-show="showPassword" tabindex="0" aria-hidden="true" aria-required="true" aria-invalid="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: 
@@ -920,18 +612,7 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 45" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: 
-parseable name: unmaskedPassword
-section: email1_0_40
-field signature: 3682688985
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532919"><label for="password">Create Password<small>-required</small></label><span ng-show="pwdIsInvalid" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+field renderer id: 45" data-ddg-testresultelementid="532919"><label for="password">Create Password<small>-required</small></label><span ng-show="pwdIsInvalid" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                           <span ng-show="((registerForm.password.$dirty &amp;&amp; registerForm.password.$valid) || (registerForm.unmaskedPassword.$dirty &amp;&amp; registerForm.unmaskedPassword.$valid)) &amp;&amp; !pwdIsInvalid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                           <ul class="field-text">
                                             <li ng-show="((registerForm.password.$pristine || registerForm.password.$valid) || (registerForm.unmaskedPassword.$pristine || registerForm.unmaskedPassword.$valid)) &amp;&amp; !pwdIsInvalid" aria-hidden="false" class="">
@@ -960,8 +641,8 @@ field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                             </li>
                                           </ul>
                                         </fieldset>
-                                        <fieldset class="fields-checkbox" style="margin-top: -30px">
-                                          <label for="showPassword"><input type="checkbox" name="showPassword" id="showPasswordRegister" data-automation="loginCBShowPassword" ng-model="showPassword" ng-change="omniturePasswordCheckBox(false);" style="display: block !important" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                        <fieldset class="fields-checkbox">
+                                          <label for="showPassword"><input type="checkbox" name="showPassword" id="showPasswordRegister" data-automation="loginCBShowPassword" ng-model="showPassword" ng-change="omniturePasswordCheckBox(false);" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: show Password
@@ -972,28 +653,28 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 47" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: show Password
-parseable name: showPassword
-section: email1_0_40
-field signature: 1225366505
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532920">
+field renderer id: 47" data-ddg-testresultelementid="532920">
                                             show Password</label>
                                         </fieldset>
                                         <div ng-show="showFullRegistration" novalidate="" aria-hidden="true" class="ng-hide">
                                           <fieldset>
-                                            <p style="margin-bottom: 30px" class="subheader-text">
+                                            <p class="subheader-text">
                                               Next Step: Basic Information
                                             </p>
                                           </fieldset>
                                           <fieldset class="form-group">
-                                            <input id="fname" type="text" name="firstName" data-automation="registrationInputFirstName" ng-model="firstName" ng-pattern="/^([a-zA-Z\-]+\s)*[a-zA-Z\-]+$/" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532921" data-manual-scoring="firstName"><label for="firstName">First Name<small>-required</small></label><span ng-show="registerForm.firstName.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                            <input id="fname" type="text" name="firstName" data-automation="registrationInputFirstName" ng-model="firstName" ng-pattern="/^([a-zA-Z\-]+\s)*[a-zA-Z\-]+$/" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name-required
+parseable name: firstName
+section: email1_0_40
+field signature: 1855613035
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 50" data-ddg-testresultelementid="532921" data-manual-scoring="firstName"><label for="firstName">First Name<small>-required</small></label><span ng-show="registerForm.firstName.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                             <span ng-show="registerForm.firstName.$dirty &amp;&amp; registerForm.firstName.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                             <ul class="field-error">
                                               <li ng-show="registerForm.firstName.$dirty &amp;&amp; registerForm.firstName.$error.pattern" aria-hidden="true" class="ng-hide">
@@ -1003,7 +684,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </ul>
                                           </fieldset>
                                           <fieldset class="form-group">
-                                            <input id="lname" type="text" name="lastName" data-automation="registrationInputLastName" ng-model="lastName" ng-pattern="/^([a-zA-Z\-]+\s)*[a-zA-Z\-]+$/" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532922" data-manual-scoring="lastName"><label for="lastName">Last Name<small>-required</small></label><span ng-show="registerForm.lastName.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                            <input id="lname" type="text" name="lastName" data-automation="registrationInputLastName" ng-model="lastName" ng-pattern="/^([a-zA-Z\-]+\s)*[a-zA-Z\-]+$/" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name-required
+parseable name: lastName
+section: email1_0_40
+field signature: 4163345999
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 52" data-ddg-testresultelementid="532922" data-manual-scoring="lastName"><label for="lastName">Last Name<small>-required</small></label><span ng-show="registerForm.lastName.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                             <span ng-show="registerForm.lastName.$dirty &amp;&amp; registerForm.lastName.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                             <ul class="field-error">
                                               <li ng-show="registerForm.lastName.$dirty &amp;&amp; registerForm.lastName.$error.pattern" aria-hidden="true" class="ng-hide">
@@ -1013,33 +705,10 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </ul>
                                           </fieldset>
                                           <fieldset ng-show="isNewMemberSignUpFlowEnabled" class="form-group" aria-hidden="false">
-                                            <div style="
-                                                position: relative;
-                                                display: inline-block;
-                                                width: 100%;
-                                                height: inherit;
-                                              ">
-                                              <div ng-show="isWhyAddress1PopUp" style="
-                                                  position: absolute;
-                                                  left: 82px;
-                                                  top: 42px;
-                                                  z-index: 1;
-                                                  padding: 5px;
-                                                  width: 65%;
-                                                  height: inherit;
-                                                  background-color: white;
-                                                  border: 1px solid black;
-                                                  font-weight: 600;
-                                                " aria-hidden="true" class="ng-hide">
-                                                <div style="
-                                                    display: inline-flex;
-                                                    width: 100%;
-                                                    height: inherit;
-                                                  ">
-                                                  <div style="
-                                                      width: 80%;
-                                                      height: inherit;
-                                                    ">
+                                            <div>
+                                              <div ng-show="isWhyAddress1PopUp" aria-hidden="true" class="ng-hide">
+                                                <div>
+                                                  <div>
                                                     <span><small>We use this to verify
                                                         our members’ identity
                                                         and protect their
@@ -1047,18 +716,23 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                         offers and benefits
                                                         periodically.</small></span>
                                                   </div>
-                                                  <div style="
-                                                      width: 20%;
-                                                      height: inherit;
-                                                    ">
-                                                    <img ng-src="images/xCloseIconForPO.png" style="
-                                                        float: right;
-                                                        margin: 5px;
-                                                      " width="20" height="20" ng-click="isWhyAddress1PopUp = !isWhyAddress1PopUp" role="button" tabindex="0" src="images/xCloseIconForPO.png">
+                                                  <div>
+                                                    
                                                   </div>
                                                 </div>
                                               </div>
-                                              <input id="address1" placeholder="" style="width: 87%" type="text" name="address1" ng-keyup="SmartyStreetsCall($item, auth)" ng-model="address1" ng-pattern="/^[a-z0-9'\.\-\/\#\(\)\,\@ ]*$/i" ng-required="isNewMemberSignUpFlowEnabled" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" required="required" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532923" data-manual-scoring="addressStreet"><span><small><a ng-click="isWhyAddress1PopUp = !isWhyAddress1PopUp" tabindex="0">why?</a></small></span><label style="width: 87%" for="address1">Address 1<small>-required</small><small style="float: right"></small></label><span ng-show="registerForm.address1.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                              <input id="address1" placeholder="" type="text" name="address1" ng-keyup="SmartyStreetsCall($item, auth)" ng-model="address1" ng-pattern="/^[a-z0-9'\.\-\/\#\(\)\,\@ ]*$/i" ng-required="isNewMemberSignUpFlowEnabled" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" required="required" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE1
+label: Address 1-required
+parseable name: address1
+section: email1_0_40
+field signature: 2267517795
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 54" data-ddg-testresultelementid="532923" data-manual-scoring="addressStreet"><span><small><a ng-click="isWhyAddress1PopUp = !isWhyAddress1PopUp" tabindex="0">why?</a></small></span><label for="address1">Address 1<small>-required</small><small></small></label><span ng-show="registerForm.address1.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                               <span ng-show="registerForm.address1.$dirty &amp;&amp; registerForm.address1.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                               <ul class="field-error">
                                                 <li ng-show="registerForm.address1.$dirty &amp;&amp; registerForm.address1.$error.pattern" aria-hidden="true" class="ng-hide">
@@ -1072,7 +746,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </div>
                                           </fieldset>
                                           <fieldset ng-show="isNewMemberSignUpFlowEnabled" class="form-group" aria-hidden="false">
-                                            <input type="text" name="address2" data-automation="registrationInputAddress2" ng-model="address2" ng-pattern="/^[a-z0-9'\.\-\/\#\(\)\,\@ ]*$/i" class="left ng-pristine ng-untouched ng-valid ng-valid-pattern" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532924" data-manual-scoring="addressStreet2"><label style="width: 87%" for="address2">Address 2<small>-optional</small><small style="float: right"></small></label><span ng-show="registerForm.address2.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                            <input type="text" name="address2" data-automation="registrationInputAddress2" ng-model="address2" ng-pattern="/^[a-z0-9'\.\-\/\#\(\)\,\@ ]*$/i" class="left ng-pristine ng-untouched ng-valid ng-valid-pattern" tabindex="0" aria-invalid="false" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE2
+label: Address 2-optional
+parseable name: address2
+section: email1_0_40
+field signature: 1236818338
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 56" data-ddg-testresultelementid="532924" data-manual-scoring="addressStreet2"><label for="address2">Address 2<small>-optional</small><small></small></label><span ng-show="registerForm.address2.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                             <span ng-show="registerForm.address2.$dirty &amp;&amp; registerForm.address2.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                             <ul class="field-error">
                                               <li ng-show="registerForm.address2.$dirty &amp;&amp; registerForm.address2.$error.pattern" aria-hidden="true" class="ng-hide">
@@ -1081,7 +766,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </ul>
                                           </fieldset>
                                           <fieldset ng-show="isNewMemberSignUpFlowEnabled" class="form-group" aria-hidden="false">
-                                            <input type="text" id="city" name="city" wlcc:restrict:input="letterSpaceOnly" ng-pattern="/^[a-zA-Z\s.]*$/" data-automation="registrationInputCity" ng-model="city" ng-dirty="" ng-required="isNewMemberSignUpFlowEnabled" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" tabindex="0" required="required" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532925" data-manual-scoring="addressCity"><label for="city">City/Town<small>-required</small></label><span ng-show="registerForm.city.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                            <input type="text" id="city" name="city" wlcc:restrict:input="letterSpaceOnly" ng-pattern="/^[a-zA-Z\s.]*$/" data-automation="registrationInputCity" ng-model="city" ng-dirty="" ng-required="isNewMemberSignUpFlowEnabled" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern" tabindex="0" required="required" aria-required="true" aria-invalid="true" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: City/Town-required
+parseable name: city
+section: email1_0_40
+field signature: 2098554694
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 58" data-ddg-testresultelementid="532925" data-manual-scoring="addressCity"><label for="city">City/Town<small>-required</small></label><span ng-show="registerForm.city.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                             <span ng-show="registerForm.city.$dirty &amp;&amp; registerForm.city.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                             <ul class="field-error">
                                               <li ng-show="registerForm.city.$dirty &amp;&amp; registerForm.city.$error.pattern" aria-hidden="true" class="ng-hide">
@@ -1089,8 +785,19 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                               </li>
                                             </ul>
                                           </fieldset>
-                                          <fieldset ng-show="isNewMemberSignUpFlowEnabled" style="margin-bottom: 36px" class="form-group" aria-hidden="false">
-                                            <select ng-required="isNewMemberSignUpFlowEnabled" id="stateProv" name="stateProv" ng-model="stateProv" update-model-on="blur" data-automation="registrationInputState" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required" style="width: 225px" tabindex="0" required="required" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532926" data-manual-scoring="addressProvince">
+                                          <fieldset ng-show="isNewMemberSignUpFlowEnabled" class="form-group" aria-hidden="false">
+                                            <select ng-required="isNewMemberSignUpFlowEnabled" id="stateProv" name="stateProv" ng-model="stateProv" update-model-on="blur" data-automation="registrationInputState" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required" tabindex="0" required="required" aria-required="true" aria-invalid="true" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State -required
+parseable name: stateProv
+section: email1_0_40
+field signature: 4148230014
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 60" data-ddg-testresultelementid="532926" data-manual-scoring="addressProvince">
                                               <option value="? undefined:undefined ?"></option>
                                               <option value="AL">
                                                 Alabama
@@ -1234,7 +941,7 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                               <option value="WY">
                                                 Wyoming
                                               </option></select><label for="stateProv">State
-                                              <small style="font-style: italic">-required</small></label><span ng-show="registerForm.stateProv.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                              <small>-required</small></label><span ng-show="registerForm.stateProv.$error.pattern" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                             <span ng-show="registerForm.stateProv.$dirty &amp;&amp; registerForm.stateProv.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                             <ul class="field-error">
                                               <li ng-show="registerForm.stateProv.$dirty &amp;&amp; registerForm.stateProv.$error.pattern" aria-hidden="true" class="ng-hide">
@@ -1244,7 +951,18 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                           </fieldset>
                                           <fieldset class="form-group">
                                             <div id="zipcode-div">
-                                              <input type="tel" id="zipcode" name="zipcode" data-automation="registrationInputZipcode" update-model-on="blur" ng:model="zipcode" ng-init="checkTex(id)" ng-minlength="5" ng-maxlength="5" maxlength="5" wlcc:restrict:input="numberOnly" pattern="[0-9]*" ng-pattern="/\d{5}$/" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength ng-valid-maxlength" tabindex="0" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532927" data-manual-scoring="addressPostalCode"><label for="zipcode">Zip Code<small>-required</small></label><span ng-show="registerForm.zipcode.$dirty &amp;&amp; registerForm.zipcode.$invalid" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                              <input type="tel" id="zipcode" name="zipcode" data-automation="registrationInputZipcode" update-model-on="blur" ng:model="zipcode" ng-init="checkTex(id)" ng-minlength="5" ng-maxlength="5" maxlength="5" wlcc:restrict:input="numberOnly" pattern="[0-9]*" ng-pattern="/\d{5}$/" required="" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength ng-valid-maxlength" tabindex="0" aria-required="true" aria-invalid="true" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_ZIP
+label: Zip Code-required
+parseable name: zipcode
+section: email1_0_40
+field signature: 390262106
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 62" data-ddg-testresultelementid="532927" data-manual-scoring="addressPostalCode"><label for="zipcode">Zip Code<small>-required</small></label><span ng-show="registerForm.zipcode.$dirty &amp;&amp; registerForm.zipcode.$invalid" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                               <span ng-show="registerForm.zipcode.$dirty &amp;&amp; registerForm.zipcode.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                               <ul class="field-error">
                                                 <li ng-show="registerForm.zipcode.$dirty &amp;&amp; registerForm.zipcode.$invalid" aria-hidden="true" class="ng-hide">
@@ -1255,33 +973,10 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </div>
                                           </fieldset>
                                           <fieldset ng-show="isNewMemberSignUpFlowEnabled" class="form-group" aria-hidden="false">
-                                            <div style="
-                                                position: relative;
-                                                display: inline-block;
-                                                width: 100%;
-                                                height: inherit;
-                                              ">
-                                              <div ng-show="isWhyMobilePhonePopUp" style="
-                                                  position: absolute;
-                                                  left: 82px;
-                                                  top: 42px;
-                                                  z-index: 1;
-                                                  padding: 5px;
-                                                  width: 65%;
-                                                  height: inherit;
-                                                  background-color: white;
-                                                  border: 1px solid black;
-                                                  font-weight: 600;
-                                                " aria-hidden="true" class="ng-hide">
-                                                <div style="
-                                                    display: inline-flex;
-                                                    width: 100%;
-                                                    height: inherit;
-                                                  ">
-                                                  <div style="
-                                                      width: 80%;
-                                                      height: inherit;
-                                                    ">
+                                            <div>
+                                              <div ng-show="isWhyMobilePhonePopUp" aria-hidden="true" class="ng-hide">
+                                                <div>
+                                                  <div>
                                                     <span><small>We’ll use this for
                                                         things like FREECASH
                                                         texts and PIN retrieval.
@@ -1290,18 +985,23 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                                         account at the
                                                         register.</small></span>
                                                   </div>
-                                                  <div style="
-                                                      width: 20%;
-                                                      height: inherit;
-                                                    ">
-                                                    <img ng-src="images/xCloseIconForPO.png" style="
-                                                        float: right;
-                                                        margin: 5px;
-                                                      " width="20" height="20" ng-click="isWhyMobilePhonePopUp = !isWhyMobilePhonePopUp" role="button" tabindex="0" src="images/xCloseIconForPO.png">
+                                                  <div>
+                                                    
                                                   </div>
                                                 </div>
                                               </div>
-                                              <input type="tel" name="phone" ng-minlength="10" ng-maxlength="10" ng-pattern="/^(1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})\s*\d{3}(\s*|\-)\d{4}$/" maxlength="10" data-automation="registrationInputPhone" ng-model="phone" ng-required="isNewMemberSignUpFlowEnabled" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength ng-valid-maxlength" tabindex="0" required="required" aria-required="true" aria-invalid="true" data-ddg-testresultelementid="532928" data-manual-scoring="phone"><span><small><a ng-click="isWhyMobilePhonePopUp = !isWhyMobilePhonePopUp" tabindex="0">why?</a></small></span><label for="phone">Mobile Phone Number<small>-required</small></label><span ng-show="registerForm.phone.$dirty &amp;&amp; registerForm.phone.$invalid" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
+                                              <input type="tel" name="phone" ng-minlength="10" ng-maxlength="10" ng-pattern="/^(1\s?)?(\([2-9]\d{2}\)|[2-9]\d{2})\s*\d{3}(\s*|\-)\d{4}$/" maxlength="10" data-automation="registrationInputPhone" ng-model="phone" ng-required="isNewMemberSignUpFlowEnabled" class="left ng-pristine ng-untouched ng-invalid ng-invalid-required ng-valid-pattern ng-valid-minlength ng-valid-maxlength" tabindex="0" required="required" aria-required="true" aria-invalid="true" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Mobile Phone Number-required
+parseable name: phone
+section: email1_0_40
+field signature: 1794903826
+form signature: 577195570374991171
+form signature in host form: 577195570374991171
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 5
+field renderer id: 64" data-ddg-testresultelementid="532928" data-manual-scoring="phone"><span><small><a ng-click="isWhyMobilePhonePopUp = !isWhyMobilePhonePopUp" tabindex="0">why?</a></small></span><label for="phone">Mobile Phone Number<small>-required</small></label><span ng-show="registerForm.phone.$dirty &amp;&amp; registerForm.phone.$invalid" class="sf-icon msg-icon sf-icon-error ng-hide" aria-hidden="true"></span>
                                               <span ng-show="registerForm.phone.$dirty &amp;&amp; registerForm.phone.$valid" class="sf-icon msg-icon sf-icon-check ng-hide" aria-hidden="true"></span>
                                               <ul class="field-error">
                                                 <li ng-show="registerForm.phone.$dirty &amp;&amp; registerForm.phone.$invalid" aria-hidden="true" class="ng-hide">
@@ -1312,11 +1012,7 @@ field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </div>
                                           </fieldset>
                                           <fieldset class="fields-checkbox">
-                                            <label for="regRememberEmail"><input type="checkbox" name="regRememberEmail" id="regRememberEmail" data-automation="registrationCBRememberEmail" ng-model="regRememberEmail" style="
-                                                  display: block !important;
-                                                  margin: 0px;
-                                                  min-width: auto;
-                                                " class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                            <label for="regRememberEmail"><input type="checkbox" name="regRememberEmail" id="regRememberEmail" data-automation="registrationCBRememberEmail" ng-model="regRememberEmail" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Remember my email
@@ -1327,24 +1023,13 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 66" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Remember my email
-parseable name: regRememberEmail
-section: email1_0_40
-field signature: 1295905168
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 66" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532929">
-                                              <span style="margin-left: 5px">Remember my email</span></label>
+field renderer id: 66" data-ddg-testresultelementid="532929">
+                                              <span>Remember my email</span></label>
                                           </fieldset>
                                           <fieldset ng-show="craftsmanSignUp" aria-hidden="true" class="ng-hide">
                                             <hr>
                                             <fieldset class="fields-checkbox">
-                                              <label for="checkboxCraftsman"><input id="checkboxCraftsmanRegister" name="checkSet" type="checkbox" ng-model="craftsmanCheckbox" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                              <label for="checkboxCraftsman"><input id="checkboxCraftsmanRegister" name="checkSet" type="checkbox" ng-model="craftsmanCheckbox" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="false" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Join Craftsman Exclusive
@@ -1355,18 +1040,7 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 69" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Join Craftsman Exclusive
-parseable name: checkSet
-section: email1_0_40
-field signature: 3492659616
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 69" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532930">
+field renderer id: 69" data-ddg-testresultelementid="532930">
                                                 Join Craftsman Exclusive</label>
                                             </fieldset>
                                             <p>
@@ -1378,21 +1052,12 @@ field renderer id: 69" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                             </p>
                                           </fieldset>
                                         </div>
-                                        <div style="margin-top: 10px" id="recaptcha1">
-                                          <div style="width: 304px; height: 78px">
+                                        <div id="recaptcha1">
+                                          <div>
                                             <div>
-                                              <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI&amp;co=aHR0cHM6Ly9zbW9iaWxlLXZpcC5wcm9kLmNoMy5zLmNvbTo0NDM.&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=normal&amp;cb=a2orib4yww6z" width="304" height="78" role="presentation" name="a-xg7rcpho2hwn" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation"></iframe>
+                                              
                                             </div>
-                                            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="
-                                                width: 250px;
-                                                height: 40px;
-                                                border: 1px solid
-                                                  rgb(193, 193, 193);
-                                                margin: 10px 25px;
-                                                padding: 0px;
-                                                resize: none;
-                                                display: none;
-                                              " title="overall type: UNKNOWN_TYPE
+                                            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Shop Your Way™ Members earn 10 points for every qualifying $1, special member pricing and personaliz
@@ -1403,28 +1068,13 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 70" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Shop Your Way™ Members earn 10 points for every qualifying $1, special member pricing and personaliz
-parseable name: g-recaptcha-response
-section: email1_0_40
-field signature: 3309787731
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 70" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532931"></textarea>
+field renderer id: 70" data-ddg-testresultelementid="532931"></textarea>
                                           </div>
                                         </div>
                                         <hr>
                                         <fieldset class="fields-checkbox">
                                           <label for="regTerms"><div ng-show="isNewMemberSignUpFlowEnabled" aria-hidden="false" class="">
-                                              <input type="checkbox" name="regTerms" id="regTerms" data-automation="registrationCBRegTerms" ng-model="regTerms" style="
-                                                  display: block !important;
-                                                  margin: 0px;
-                                                  min-width: auto;
-                                                " checked="checked" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="true" aria-invalid="false" title="overall type: UNKNOWN_TYPE
+                                              <input type="checkbox" name="regTerms" id="regTerms" data-automation="registrationCBRegTerms" ng-model="regTerms" checked="checked" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-checked="true" aria-invalid="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: By joining, I agree to the Shop Your Way™ Program Terms, and the Sears.com Terms of Use and Privacy 
@@ -1435,22 +1085,8 @@ form signature: 577195570374991171
 form signature in host form: 577195570374991171
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 5
-field renderer id: 72" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: By joining, I agree to the Shop Your Way™ Program Terms, and the Sears.com Terms of Use and Privacy 
-parseable name: regTerms
-section: email1_0_40
-field signature: 2337021493
-form signature: 577195570374991171
-form signature in host form: 577195570374991171
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 5
-field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="532932">
-                                              <h5 style="
-                                                  margin-bottom: 8px;
-                                                  margin-left: 25px;
-                                                " class="ng-binding">
+field renderer id: 72" data-ddg-testresultelementid="532932">
+                                              <h5 class="ng-binding">
                                                 By providing my mobile phone
                                                 number, I agree to receive
                                                 recurring autodialed messages
@@ -1498,8 +1134,8 @@ field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
                 <!-- end ngSwitchWhen: --><!-- ngSwitchWhen: directToSite --><!-- ngSwitchWhen: oneToOneMatch --><!-- ngSwitchWhen: oneTimeVerification --><!-- ngSwitchWhen: cancelLinking --><!-- ngSwitchWhen: sharedMembership --><!-- ngSwitchWhen: notification --></ng-switch></ng-switch><!-- end ngSwitchWhen: --><!-- ngSwitchWhen: member --></ng-switch>
         </div>
-        <citi-form-request class="ng-scope"><form action="" method="POST" id="abForm" class="hide ng-pristine ng-valid" data-ddg-formtype="sign up">
-            <input type="text" name="orderId" ng-model="form.orderId" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
+        <citi-form-request class="ng-scope"><form action="" method="POST" id="abForm" class="hide ng-pristine ng-valid">
+            <input type="text" name="orderId" ng-model="form.orderId" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1514,23 +1150,8 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 76" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: .chevron::before {
-		border-style: solid;
-		border-width: 0.25em 0.25em 0 0;
-		content: '';
-		displa
-parseable name: orderId
-section: orderId_0_76
-field signature: 17735686
-form signature: 9339067685877034434
-form signature in host form: 9339067685877034434
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 6
-field renderer id: 76" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532933">
-            <input type="text" name="returnpage" ng-model="form.returnpage" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
+field renderer id: 76" data-ddg-testresultelementid="532933">
+            <input type="text" name="returnpage" ng-model="form.returnpage" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1545,23 +1166,8 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 77" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: .chevron::before {
-		border-style: solid;
-		border-width: 0.25em 0.25em 0 0;
-		content: '';
-		displa
-parseable name: returnpage
-section: orderId_0_76
-field signature: 1555313174
-form signature: 9339067685877034434
-form signature in host form: 9339067685877034434
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 6
-field renderer id: 77" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532934">
-            <input type="text" name="Env" ng-model="form.Env" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
+field renderer id: 77" data-ddg-testresultelementid="532934">
+            <input type="text" name="Env" ng-model="form.Env" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1576,23 +1182,8 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 78" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: .chevron::before {
-		border-style: solid;
-		border-width: 0.25em 0.25em 0 0;
-		content: '';
-		displa
-parseable name: Env
-section: orderId_0_76
-field signature: 715979250
-form signature: 9339067685877034434
-form signature in host form: 9339067685877034434
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 6
-field renderer id: 78" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532935">
-            <input type="text" name="SALE_AMT" ng-model="form.SALE_AMT" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
+field renderer id: 78" data-ddg-testresultelementid="532935">
+            <input type="text" name="SALE_AMT" ng-model="form.SALE_AMT" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1607,35 +1198,88 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 79" autofill-information="overall type: NUMERIC_QUANTITY
+field renderer id: 79" data-ddg-testresultelementid="532936">
+            <input type="text" name="SEARS_EMAIL" ng-model="form.SEARS_EMAIL" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: EMAIL_ADDRESS
 server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
+heuristic type: EMAIL_ADDRESS
 label: .chevron::before {
 		border-style: solid;
 		border-width: 0.25em 0.25em 0 0;
 		content: '';
 		displa
-parseable name: SALE_AMT
+parseable name: SEARS_EMAIL
 section: orderId_0_76
-field signature: 3084988498
+field signature: 866371087
 form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 79" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532936">
-            <input type="text" name="SEARS_EMAIL" ng-model="form.SEARS_EMAIL" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-autofill="true" data-ddg-testresultelementid="532937" style="
-                background-size: auto 26px !important;
-                background-position: right center !important;
-                background-repeat: no-repeat !important;
-                background-origin: content-box !important;
-                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                transition: background 0s ease 0s !important;
-              " data-manual-scoring="emailAddress">
-            <input type="text" name="FIRST_NAME" ng-model="form.FIRST_NAME" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532938" data-manual-scoring="firstName">
-            <input type="text" name="LAST_NAME" ng-model="form.LAST_NAME" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532939" data-manual-scoring="lastName">
-            <input type="text" name="ADDRESS_LINE1" ng-model="form.ADDRESS_LINE1" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532940" data-manual-scoring="addressStreet">
-            <input type="text" name="CITY" ng-model="form.CITY" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532941" data-manual-scoring="addressStreet2">
-            <input type="text" name="STATE" ng-model="form.STATE" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: ADDRESS_HOME_LINE3
+field renderer id: 80" data-ddg-testresultelementid="532937" data-manual-scoring="emailAddress">
+            <input type="text" name="FIRST_NAME" ng-model="form.FIRST_NAME" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: .chevron::before {
+		border-style: solid;
+		border-width: 0.25em 0.25em 0 0;
+		content: '';
+		displa
+parseable name: FIRST_NAME
+section: orderId_0_76
+field signature: 3062227130
+form signature: 9339067685877034434
+form signature in host form: 9339067685877034434
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 6
+field renderer id: 81" data-ddg-testresultelementid="532938" data-manual-scoring="firstName">
+            <input type="text" name="LAST_NAME" ng-model="form.LAST_NAME" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: .chevron::before {
+		border-style: solid;
+		border-width: 0.25em 0.25em 0 0;
+		content: '';
+		displa
+parseable name: LAST_NAME
+section: orderId_0_76
+field signature: 423020052
+form signature: 9339067685877034434
+form signature in host form: 9339067685877034434
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 6
+field renderer id: 82" data-ddg-testresultelementid="532939" data-manual-scoring="lastName">
+            <input type="text" name="ADDRESS_LINE1" ng-model="form.ADDRESS_LINE1" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE1
+label: .chevron::before {
+		border-style: solid;
+		border-width: 0.25em 0.25em 0 0;
+		content: '';
+		displa
+parseable name: ADDRESS_LINE1
+section: orderId_0_76
+field signature: 1919419570
+form signature: 9339067685877034434
+form signature in host form: 9339067685877034434
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 6
+field renderer id: 83" data-ddg-testresultelementid="532940" data-manual-scoring="addressStreet">
+            <input type="text" name="CITY" ng-model="form.CITY" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE2
+label: .chevron::before {
+		border-style: solid;
+		border-width: 0.25em 0.25em 0 0;
+		content: '';
+		displa
+parseable name: CITY
+section: orderId_0_76
+field signature: 2063683567
+form signature: 9339067685877034434
+form signature in host form: 9339067685877034434
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 6
+field renderer id: 84" data-ddg-testresultelementid="532941" data-manual-scoring="addressStreet2">
+            <input type="text" name="STATE" ng-model="form.STATE" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: ADDRESS_HOME_LINE3
 server type: NO_SERVER_DATA
 heuristic type: ADDRESS_HOME_LINE3
 label: .chevron::before {
@@ -1650,39 +1294,24 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 85" autofill-information="overall type: ADDRESS_HOME_LINE3
+field renderer id: 85" data-ddg-testresultelementid="532942">
+            <input type="text" name="ZIP" ng-model="form.ZIP" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: ADDRESS_HOME_ZIP
 server type: NO_SERVER_DATA
-heuristic type: ADDRESS_HOME_LINE3
+heuristic type: ADDRESS_HOME_ZIP
 label: .chevron::before {
 		border-style: solid;
 		border-width: 0.25em 0.25em 0 0;
 		content: '';
 		displa
-parseable name: STATE
+parseable name: ZIP
 section: orderId_0_76
-field signature: 3586242662
+field signature: 4208515632
 form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 85" autofill-prediction="ADDRESS_HOME_LINE3" data-ddg-inputtype="identities.addressProvince" data-ddg-testresultelementid="532942">
-            <input type="text" name="ZIP" ng-model="form.ZIP" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532943" data-manual-scoring="addressPostalCode">
-            <input type="text" name="CUST_SESSION_ID" ng-model="form.CUST_SESSION_ID" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: .chevron::before {
-		border-style: solid;
-		border-width: 0.25em 0.25em 0 0;
-		content: '';
-		displa
-parseable name: CUST_SESSION_ID
-section: orderId_0_76
-field signature: 2114794974
-form signature: 9339067685877034434
-form signature in host form: 9339067685877034434
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 6
-field renderer id: 87" autofill-information="overall type: NUMERIC_QUANTITY
+field renderer id: 86" data-ddg-testresultelementid="532943" data-manual-scoring="addressPostalCode">
+            <input type="text" name="CUST_SESSION_ID" ng-model="form.CUST_SESSION_ID" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1697,8 +1326,8 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 87" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532944">
-            <input type="text" name="MERCHANT_PROCESS_TYPE" ng-model="form.MERCHANT_PROCESS_TYPE" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
+field renderer id: 87" data-ddg-testresultelementid="532944">
+            <input type="text" name="MERCHANT_PROCESS_TYPE" ng-model="form.MERCHANT_PROCESS_TYPE" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1713,23 +1342,8 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 88" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: .chevron::before {
-		border-style: solid;
-		border-width: 0.25em 0.25em 0 0;
-		content: '';
-		displa
-parseable name: MERCHANT_PROCESS_TYPE
-section: orderId_0_76
-field signature: 2650556404
-form signature: 9339067685877034434
-form signature in host form: 9339067685877034434
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 6
-field renderer id: 88" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532945">
-            <input type="text" name="MERCHANT_USER_TYPE" ng-model="form.MERCHANT_USER_TYPE" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: NUMERIC_QUANTITY
+field renderer id: 88" data-ddg-testresultelementid="532945">
+            <input type="text" name="MERCHANT_USER_TYPE" ng-model="form.MERCHANT_USER_TYPE" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: .chevron::before {
@@ -1744,39 +1358,24 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 89" autofill-information="overall type: NUMERIC_QUANTITY
+field renderer id: 89" data-ddg-testresultelementid="532946">
+            <input type="text" name="HOME_PHONE_NBR_1" ng-model="form.HOME_PHONE_NBR_1" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
 server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
+heuristic type: PHONE_HOME_WHOLE_NUMBER
 label: .chevron::before {
 		border-style: solid;
 		border-width: 0.25em 0.25em 0 0;
 		content: '';
 		displa
-parseable name: MERCHANT_USER_TYPE
+parseable name: HOME_PHONE_NBR_1
 section: orderId_0_76
-field signature: 2803008826
+field signature: 1336905906
 form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 89" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="532946">
-            <input type="text" name="HOME_PHONE_NBR_1" ng-model="form.HOME_PHONE_NBR_1" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532947" data-manual-scoring="phone">
-            <input type="text" name="HOME_PHONE_NBR_2" ng-model="form.HOME_PHONE_NBR_2" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" title="overall type: PHONE_HOME_EXTENSION
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_EXTENSION
-label: .chevron::before {
-		border-style: solid;
-		border-width: 0.25em 0.25em 0 0;
-		content: '';
-		displa
-parseable name: HOME_PHONE_NBR_2
-section: orderId_0_76
-field signature: 2299110330
-form signature: 9339067685877034434
-form signature in host form: 9339067685877034434
-field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
-form renderer id: 6
-field renderer id: 91" autofill-information="overall type: PHONE_HOME_EXTENSION
+field renderer id: 90" data-ddg-testresultelementid="532947" data-manual-scoring="phone">
+            <input type="text" name="HOME_PHONE_NBR_2" ng-model="form.HOME_PHONE_NBR_2" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: PHONE_HOME_EXTENSION
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_EXTENSION
 label: .chevron::before {
@@ -1791,12 +1390,27 @@ form signature: 9339067685877034434
 form signature in host form: 9339067685877034434
 field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
 form renderer id: 6
-field renderer id: 91" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="532948">
-            <input type="text" name="HOME_PHONE_NBR_3" ng-model="form.HOME_PHONE_NBR_3" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" data-ddg-testresultelementid="532949" data-manual-scoring="phone">
+field renderer id: 91" data-ddg-testresultelementid="532948">
+            <input type="text" name="HOME_PHONE_NBR_3" ng-model="form.HOME_PHONE_NBR_3" class="ng-pristine ng-untouched ng-valid" tabindex="0" aria-invalid="false" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: .chevron::before {
+		border-style: solid;
+		border-width: 0.25em 0.25em 0 0;
+		content: '';
+		displa
+parseable name: HOME_PHONE_NBR_3
+section: orderId_0_76
+field signature: 1732833448
+form signature: 9339067685877034434
+form signature in host form: 9339067685877034434
+field frame token: CCCC4AC92F90D8CB4F773D7CE928D494
+form renderer id: 6
+field renderer id: 92" data-ddg-testresultelementid="532949" data-manual-scoring="phone">
             <button type="submit"></button></form></citi-form-request>
       </div>
       <!-- ngIf: !isHideBreadcrumb -->
-      <div id="breadcrumb" class="breadcrumb-component ng-scope" ng-controller="breadcrumbCtrl" ng-class="{'with-search': loadMore}" ng-if="!isHideBreadcrumb" style="display: none">
+      <div id="breadcrumb" class="breadcrumb-component ng-scope" ng-controller="breadcrumbCtrl" ng-class="{'with-search': loadMore}" ng-if="!isHideBreadcrumb">
         <shc-breadcrumb data="data" class="ng-isolate-scope"><!-- ngIf: isLoadMore -->
           <!-- ngIf: breadcrumb.length > 1 && isExpand -->
 
@@ -1822,7 +1436,7 @@ field renderer id: 91" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
             <!-- ngSwitchWhen: P -->
             <!-- ngSwitchWhen: E -->
             <!-- ngSwitchDefault:  -->
-            <img id="atcBar" src="/images/products/Loading-bar-add-to-cart.gif">
+            
           </div>
         </div>
       </div>
@@ -1843,75 +1457,17 @@ field renderer id: 91" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
 
   <!--Forter sandbox snippet  -->
 
-  <div id="loadingDim" style="display: none"></div>
-  <div style="
-      visibility: hidden;
-      position: absolute;
-      width: 100%;
-      top: -10000px;
-      left: 0px;
-      right: 0px;
-      transition: visibility 0s linear 0.3s, opacity 0.3s linear;
-      -webkit-transition: visibility 0s linear 0.3s, opacity 0.3s linear;
-      opacity: 0;
-    ">
-    <div style="
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0px;
-        left: 0px;
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        opacity: 0.5;
-      "></div>
-    <div style="
-        margin: 0px auto;
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        position: absolute;
-        border: 1px solid rgb(204, 204, 204);
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        overflow: hidden;
-      ">
-      <iframe title="recaptcha challenge expires in two minutes" src="https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;k=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" name="c-xg7rcpho2hwn" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation" style="width: 100%; height: 100%"></iframe>
+  <div id="loadingDim"></div>
+  <div>
+    <div></div>
+    <div>
+      
     </div>
   </div>
-  <div style="
-      visibility: hidden;
-      position: absolute;
-      width: 100%;
-      top: -10000px;
-      left: 0px;
-      right: 0px;
-      transition: visibility 0s linear 0.3s, opacity 0.3s linear;
-      -webkit-transition: visibility 0s linear 0.3s, opacity 0.3s linear;
-      opacity: 0;
-    ">
-    <div style="
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0px;
-        left: 0px;
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        opacity: 0.5;
-      "></div>
-    <div style="
-        margin: 0px auto;
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        position: absolute;
-        border: 1px solid rgb(204, 204, 204);
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        overflow: hidden;
-      ">
-      <iframe title="recaptcha challenge expires in two minutes" src="https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;k=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" name="c-pmtpmxogdatu" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation" style="width: 100%; height: 100%"></iframe>
+  <div>
+    <div></div>
+    <div>
+      
     </div>
   </div>
 

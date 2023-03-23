@@ -1,30 +1,14 @@
 <!--
   https://www.totaljobs.com/account/register
+  rank: 9987
   testRunId: 66
   testResultId: 240072
 -->
 
-  <script type="text/javascript">
-    var utag_data = {};
-  </script>
+  
 
   <!-- Loading script asynchronously -->
-  <script type="text/javascript">
-    window.utag_cfg_ovrd = window.utag_cfg_ovrd || {};
-    window.utag_cfg_ovrd.readywait = true;
-
-    (function (a, b, c, d) {
-      a = "//tags.tiqcdn.com/utag/stepstone/stepstone-uk/prod/utag.js";
-      b = document;
-      c = "script";
-      d = b.createElement(c);
-      d.src = a;
-      d.type = "text/java" + c;
-      d.async = true;
-      a = b.getElementsByTagName(c)[0];
-      a.parentNode.insertBefore(d, a);
-    })();
-  </script>
+  
   <div id="recruiter-extend"></div>
   <header class="master-row header-row">
     <div class="container">
@@ -102,7 +86,7 @@
                 </button>
 
                 <div id="navbar-desktop-nc-toggle" data-target="#navbar-desktop-nc" data-toggle="collapse" class="navbar-nc-toggle navbar-toggle navbar-always-on collapsed pull-right hidden-xs">
-                  <span style="display: block" class="nc-icon nc-icon-outline navbar-item"></span>
+                  <span class="nc-icon nc-icon-outline navbar-item"></span>
 
                   <div class="hidden-xs">
                     <div class="collapse navbar-collapse always-collapse tj-collapse-menu signin-collapse-menu nc-desktop-container" id="navbar-desktop-nc">
@@ -122,17 +106,17 @@
                 </div>
 
                 <div id="navbar-mobile-nc-toggle" data-target="#navbar-mobile-nc" class="navbar-nc-toggle navbar-toggle navbar-always-on collapsed pull-right hidden-lg hidden-md hidden-sm">
-                  <a href="#" style="display: block" class="nc-icon nc-icon-outline navbar-item"></a>
+                  <a href="#" class="nc-icon nc-icon-outline navbar-item"></a>
                 </div>
 
                 <span class="navbar-toggle navbar-always-on collapsed pull-right navbar-item visible-xs search-icon">
                   <button id="navbar-search-toggle" class="collapsed navbar-search-bar navbar-toggle navbar-item search-icon visible-xs" type="button" data-target="#navbar-search-bar" data-toggle="collapse"></button>
                 </span>
-                <div id="navbar-desktop-search-bar" class="navbar-site-search-bar navbar-search-container" data-ddg-formtype="sign in">
+                <div id="navbar-desktop-search-bar" class="navbar-site-search-bar navbar-search-container">
                   <div class="search-icon"></div>
                   <div id="navbar-desktop-recent-search-container">
                     <div>
-                      <input type="search" id="header-desktop-search-keywords" name="Keywords" placeholder="Job title, skill or company" class="form-control search-keywords ui-autocomplete-input" maxlength="255" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                      <input type="search" id="header-desktop-search-keywords" name="Keywords" placeholder="Job title, skill or company" class="form-control search-keywords ui-autocomplete-input" maxlength="255" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Job title, skill or company
@@ -144,27 +128,38 @@ form signature in host form: 15023814357517860750
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 0
 field renderer id: 5
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Job title, skill or company
-parseable name: Keywords
-section: Keywords_0_5
-field signature: 3827345573
-form signature: 15023814357517860750
-form signature in host form: 15023814357517860750
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 0
-field renderer id: 5
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545051">
+autocomplete: off" data-ddg-testresultelementid="545051">
                       <input type="hidden" id="header-keyword-type" class="form-control search-keyword-type" value="">
                     </div>
                     <div>
-                      <input type="search" id="header-desktop-search-location-text" name="LTxt" placeholder="Town, city or postcode" spellcheck="false" class="form-control search-location-text ui-autocomplete-input" maxlength="255" autocomplete="off" data-ddg-testresultelementid="545052" data-manual-scoring="addressCity">
+                      <input type="search" id="header-desktop-search-location-text" name="LTxt" placeholder="Town, city or postcode" spellcheck="false" class="form-control search-location-text ui-autocomplete-input" maxlength="255" autocomplete="off" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: Town, city or postcode
+parseable name: LTxt
+section: Keywords_0_5
+field signature: 4271708032
+form signature: 15023814357517860750
+form signature in host form: 15023814357517860750
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 0
+field renderer id: 7
+autocomplete: off" data-ddg-testresultelementid="545052" data-manual-scoring="addressCity">
                     </div>
 
                     <div>
-                      <select name="LocationType" class="form-control search-locationsearchtype" id="header-desktop-search-radius" data-ddg-testresultelementid="545053" data-manual-scoring="addressCountryCode">
+                      <select name="LocationType" class="form-control search-locationsearchtype" id="header-desktop-search-radius" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Jobseeker sign in
+parseable name: LocationType
+section: Keywords_0_5
+field signature: 2491316720
+form signature: 15023814357517860750
+form signature in host form: 15023814357517860750
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 0
+field renderer id: 8" data-ddg-testresultelementid="545053" data-manual-scoring="addressCountryCode">
                         <option value="0">0 miles</option>
                         <option value="5">5 miles</option>
                         <option value="10" selected="selected">10 miles</option>
@@ -238,10 +233,10 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                 </ul>
               </div>
               <div class="container collapse navbar-collapse always-collapse tj-collapse-menu navbar-site-search-bar navbar-search-container navbar-search-container-mobile" id="navbar-search-bar">
-                <div class="nav navbar-nav" data-ddg-formtype="sign up">
+                <div class="nav navbar-nav">
                   <div class="row">
                     <div class="col-xs-12">
-                      <input id="header-mobile-search-keywords" type="text" name="Keywords" placeholder="Job title, skill or company" class="form-control search-keywords ui-autocomplete-input" spellcheck="false" autocorrect="off" autocapitalize="off" maxlength="255" autocomplete="off" title="overall type: COMPANY_NAME
+                      <input id="header-mobile-search-keywords" type="text" name="Keywords" placeholder="Job title, skill or company" class="form-control search-keywords ui-autocomplete-input" spellcheck="false" autocorrect="off" autocapitalize="off" maxlength="255" autocomplete="off" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Job title, skill or company
@@ -253,19 +248,7 @@ form signature in host form: 15023814357517860750
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 0
 field renderer id: 10
-autocomplete: off" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Job title, skill or company
-parseable name: Keywords
-section: Keywords_0_5
-field signature: 1794658867
-form signature: 15023814357517860750
-form signature in host form: 15023814357517860750
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 0
-field renderer id: 10
-autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="545054">
+autocomplete: off" data-ddg-testresultelementid="545054">
                       <input type="hidden" id="header-keyword-type" class="form-control search-keyword-type" value="">
                       <div class="clear-keywords">
                         <span>✕</span>
@@ -274,13 +257,36 @@ autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknow
                   </div>
                   <div class="search-location-range row">
                     <div class="search-location col-xs-8">
-                      <input id="header-mobile-search-location" type="text" name="LTxt" placeholder="Town, city or postcode" class="form-control search-location-text ui-autocomplete-input" spellcheck="false" autocorrect="off" autocapitalize="off" maxlength="255" autocomplete="off" data-ddg-testresultelementid="545055" data-manual-scoring="addressCity">
+                      <input id="header-mobile-search-location" type="text" name="LTxt" placeholder="Town, city or postcode" class="form-control search-location-text ui-autocomplete-input" spellcheck="false" autocorrect="off" autocapitalize="off" maxlength="255" autocomplete="off" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_ZIP
+label: Town, city or postcode
+parseable name: LTxt
+section: LTxt_0_12
+field signature: 321578974
+form signature: 15023814357517860750
+form signature in host form: 15023814357517860750
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 0
+field renderer id: 12
+autocomplete: off" data-ddg-testresultelementid="545055" data-manual-scoring="addressCity">
                       <div class="clear-location">
                         <span>✕</span>
                       </div>
                     </div>
                     <div class="search-range col-xs-4">
-                      <select name="LocationType" class="form-control search-locationsearchtype" id="header-mobile-search-radius" data-ddg-testresultelementid="545056" data-manual-scoring="addressCountryCode">
+                      <select name="LocationType" class="form-control search-locationsearchtype" id="header-mobile-search-radius" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Are you hiring? Home Jobs
+parseable name: LocationType
+section: LTxt_0_12
+field signature: 2491316720
+form signature: 15023814357517860750
+form signature in host form: 15023814357517860750
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 0
+field renderer id: 13" data-ddg-testresultelementid="545056" data-manual-scoring="addressCountryCode">
                         <option value="0">0 miles</option>
                         <option value="5">5 miles</option>
                         <option value="10" selected="selected">10 miles</option>
@@ -323,7 +329,7 @@ autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknow
     </div>
   </div>
 
-  <form id="frmMain" method="post" enctype="multipart/form-data" novalidate="novalidate" data-ddg-formtype="sign up">
+  <form id="frmMain" method="post" enctype="multipart/form-data" novalidate="novalidate">
     <input type="hidden" id="isPostBack" value="false">
     <div class="container">
       <div class="row">
@@ -353,7 +359,18 @@ autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknow
                   <label class="form-label" for="firstname">First name:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <input type="text" id="firstname" name="firstname" class="form-control input-lg" placeholder="First name" data-ddg-testresultelementid="545057" data-manual-scoring="firstName">
+                  <input type="text" id="firstname" name="firstname" class="form-control input-lg" placeholder="First name" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First name:
+parseable name: firstname
+section: firstname_0_17
+field signature: 3763331450
+form signature: 2413135268429661031
+form signature in host form: 2413135268429661031
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 1
+field renderer id: 17" data-ddg-testresultelementid="545057" data-manual-scoring="firstName">
                 </div>
               </div>
             </div>
@@ -363,7 +380,18 @@ autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknow
                   <label class="form-label" for="surname">Surname:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <input type="text" id="surname" name="surname" class="form-control input-lg" placeholder="Surname" data-ddg-testresultelementid="545058" data-manual-scoring="lastName">
+                  <input type="text" id="surname" name="surname" class="form-control input-lg" placeholder="Surname" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Surname:
+parseable name: surname
+section: firstname_0_17
+field signature: 1412951504
+form signature: 2413135268429661031
+form signature in host form: 2413135268429661031
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 1
+field renderer id: 18" data-ddg-testresultelementid="545058" data-manual-scoring="lastName">
                 </div>
               </div>
             </div>
@@ -373,14 +401,18 @@ autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknow
                   <label class="form-label" for="email">Email address:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <input type="email" id="email" name="email" class="form-control input-lg" data-invalid-domain="false" data-ddg-autofill="true" data-ddg-testresultelementid="545059" style="
-                      background-size: auto 26px !important;
-                      background-position: right center !important;
-                      background-repeat: no-repeat !important;
-                      background-origin: content-box !important;
-                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                      transition: background 0s ease 0s !important;
-                    " data-manual-scoring="emailAddress">
+                  <input type="email" id="email" name="email" class="form-control input-lg" data-invalid-domain="false" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email address:
+parseable name: email
+section: firstname_0_17
+field signature: 1029417091
+form signature: 2413135268429661031
+form signature in host form: 2413135268429661031
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 1
+field renderer id: 19" data-ddg-testresultelementid="545059" data-manual-scoring="emailAddress">
                 </div>
               </div>
             </div>
@@ -420,7 +452,7 @@ autocomplete: off" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknow
                   <label for="ddlEducation" class="form-label label-btn-row">Highest level of education:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <select id="ddlEducation" name="educationId" class="form-control input-lg" title="overall type: UNKNOWN_TYPE
+                  <select id="ddlEducation" name="educationId" class="form-control input-lg" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Highest level of education:
@@ -431,18 +463,7 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 24" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Highest level of education:
-parseable name: educationId
-section: firstname_0_17
-field signature: 4095839452
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="545060">
+field renderer id: 24" data-ddg-testresultelementid="545060">
                     <option value="">- Please select -</option>
                     <option value="0">None of these</option>
                     <option value="532">A levels /advanced GNVQ</option>
@@ -468,7 +489,7 @@ field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <label class="form-label" for="currentJobTitle">Current/most recent job title:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <input class="form-control input-lg ui-autocomplete-input" type="search" name="currentJobTitle" id="currentJobTitle" placeholder="E.g. Regional Manager, Student" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                  <input class="form-control input-lg ui-autocomplete-input" type="search" name="currentJobTitle" id="currentJobTitle" placeholder="E.g. Regional Manager, Student" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Current/most recent job title:
@@ -480,19 +501,7 @@ form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
 field renderer id: 25
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Current/most recent job title:
-parseable name: currentJobTitle
-section: firstname_0_17
-field signature: 2545436571
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 25
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545061">
+autocomplete: off" data-ddg-testresultelementid="545061">
                 </div>
               </div>
             </div>
@@ -505,7 +514,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                 <div class="col-xs-12 col-sm-6">
                   <div class="btn-group btn-group-justified" data-toggle="buttons">
                     <label for="rdoAnnualRate" class="btn btn-select active">
-                      <input type="radio" name="salaryRangeType" id="rdoAnnualRate" value="annual" title="overall type: UNKNOWN_TYPE
+                      <input type="radio" name="salaryRangeType" id="rdoAnnualRate" value="annual" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Annual
@@ -516,22 +525,11 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Annual
-parseable name: salaryRangeType
-section: firstname_0_17
-field signature: 3362265929
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545062">
+field renderer id: 26" data-ddg-testresultelementid="545062">
                       Annual
                     </label>
                     <label for="rdoDailyRate" class="btn btn-select">
-                      <input type="radio" name="salaryRangeType" id="rdoDailyRate" value="daily" title="overall type: UNKNOWN_TYPE
+                      <input type="radio" name="salaryRangeType" id="rdoDailyRate" value="daily" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Daily
@@ -542,22 +540,11 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 27" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Daily
-parseable name: salaryRangeType
-section: firstname_0_17
-field signature: 3362265929
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545063">
+field renderer id: 27" data-ddg-testresultelementid="545063">
                       Daily
                     </label>
                     <label for="rdoHourlyRate" class="btn btn-select">
-                      <input type="radio" name="salaryRangeType" id="rdoHourlyRate" value="hourly" title="overall type: UNKNOWN_TYPE
+                      <input type="radio" name="salaryRangeType" id="rdoHourlyRate" value="hourly" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Hourly
@@ -568,22 +555,11 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Hourly
-parseable name: salaryRangeType
-section: firstname_0_17
-field signature: 3362265929
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545064">
+field renderer id: 28" data-ddg-testresultelementid="545064">
                       Hourly
                     </label>
                     <label for="rdoNoRate" class="btn btn-select">
-                      <input type="radio" name="salaryRangeType" id="rdoNoRate" value="none" title="overall type: UNKNOWN_TYPE
+                      <input type="radio" name="salaryRangeType" id="rdoNoRate" value="none" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: None
@@ -594,22 +570,11 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: None
-parseable name: salaryRangeType
-section: firstname_0_17
-field signature: 3362265929
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545065">
+field renderer id: 29" data-ddg-testresultelementid="545065">
                       None
                     </label>
                   </div>
-                  <select id="ddlSalaryRange" name="salaryRange" class="form-control input-lg" title="overall type: UNKNOWN_TYPE
+                  <select id="ddlSalaryRange" name="salaryRange" class="form-control input-lg" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Current/most recent salary:
@@ -620,18 +585,7 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Current/most recent salary:
-parseable name: salaryRange
-section: firstname_0_17
-field signature: 3868456778
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="545066">
+field renderer id: 30" data-ddg-testresultelementid="545066">
                     <option value="0">Select annual salary</option>
                     <option value="1">0-9,999</option>
                     <option value="2">10,000-11,999</option>
@@ -670,7 +624,18 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <label class="form-label" for="password">Create a password:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <input type="password" id="password" name="password" class="form-control input-lg" data-pattern="(?=^.{6,32}$)(?=.*\d+)(.*)" data-ddg-testresultelementid="545067" data-manual-scoring="password">
+                  <input type="password" id="password" name="password" class="form-control input-lg" data-pattern="(?=^.{6,32}$)(?=.*\d+)(.*)" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Create a password:
+parseable name: password
+section: firstname_0_17
+field signature: 2051817934
+form signature: 2413135268429661031
+form signature in host form: 2413135268429661031
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 1
+field renderer id: 31" data-ddg-testresultelementid="545067" data-manual-scoring="password">
                   <small class="help-text">Must contain at least 6 characters and a number.</small>
                 </div>
               </div>
@@ -681,7 +646,18 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <label class="form-label" for="confirmpassword">Confirm password:</label>
                 </div>
                 <div class="col-xs-12 col-sm-6">
-                  <input type="password" id="confirmpassword" name="confirmpassword" class="form-control input-lg" data-ddg-testresultelementid="545068" data-manual-scoring="password">
+                  <input type="password" id="confirmpassword" name="confirmpassword" class="form-control input-lg" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm password:
+parseable name: confirmpassword
+section: firstname_0_17
+field signature: 2548554047
+form signature: 2413135268429661031
+form signature in host form: 2413135268429661031
+field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
+form renderer id: 1
+field renderer id: 32" data-ddg-testresultelementid="545068" data-manual-scoring="password">
                 </div>
               </div>
             </div>
@@ -708,7 +684,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
                       <div class="third-party-checkbox">
                         <div class="pull-left">
-                          <input id="thirdPartyMarketingOptIn" name="thirdPartyMarketingOptIn" type="checkbox" ng-model="session.form.thirdPartyMarketingOptIn" value="true" title="overall type: UNKNOWN_TYPE
+                          <input id="thirdPartyMarketingOptIn" name="thirdPartyMarketingOptIn" type="checkbox" ng-model="session.form.thirdPartyMarketingOptIn" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Keep me informed of other relevant goods and services you offer.
@@ -719,18 +695,7 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 33" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Keep me informed of other relevant goods and services you offer.
-parseable name: thirdPartyMarketingOptIn
-section: firstname_0_17
-field signature: 4228021024
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545069">
+field renderer id: 33" data-ddg-testresultelementid="545069">
                         </div>
                         <label for="thirdPartyMarketingOptIn">Keep me informed of other relevant goods and services
                           you offer.</label>
@@ -740,7 +705,7 @@ field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
                 <div class="col-xs-12 col-sm-offset-3 col-sm-9">
                   <div class="checkbox">
-                    <input checked="checked" id="cvdbOptIn" name="cvdbOptIn" type="checkbox" value="true" title="overall type: UNKNOWN_TYPE
+                    <input checked="checked" id="cvdbOptIn" name="cvdbOptIn" type="checkbox" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Want to hear about the latest jobs and apply for new roles in an instant? Spend a few moments regist
@@ -751,18 +716,7 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 34" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Want to hear about the latest jobs and apply for new roles in an instant? Spend a few moments regist
-parseable name: cvdbOptIn
-section: firstname_0_17
-field signature: 2085791831
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545070">
+field renderer id: 34" data-ddg-testresultelementid="545070">
                     <input name="cvdbOptIn" type="hidden" value="false">
                     <small><strong>Share your profile with trusted employers looking for
                         candidates like you</strong></small>
@@ -770,7 +724,7 @@ field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
                 <div class="col-xs-12 col-sm-offset-3 col-sm-9">
                   <div class="checkbox">
-                    <input checked="checked" id="applicationHistoryOptIn" name="applicationHistoryOptIn" type="checkbox" value="true" title="overall type: UNKNOWN_TYPE
+                    <input checked="checked" id="applicationHistoryOptIn" name="applicationHistoryOptIn" type="checkbox" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Want to hear about the latest jobs and apply for new roles in an instant? Spend a few moments regist
@@ -781,18 +735,7 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 36" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Want to hear about the latest jobs and apply for new roles in an instant? Spend a few moments regist
-parseable name: applicationHistoryOptIn
-section: firstname_0_17
-field signature: 2926192567
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545071">
+field renderer id: 36" data-ddg-testresultelementid="545071">
                     <input name="applicationHistoryOptIn" type="hidden" value="false">
                     <small><strong>Help recruiters understand what I'm looking for by
                         making my application history visible.</strong></small>
@@ -800,7 +743,7 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
                 <div class="col-xs-12 col-sm-offset-3 col-sm-9">
                   <div class="checkbox">
-                    <input checked="checked" id="ocaOptIn" name="ocaOptIn" type="checkbox" value="true" title="overall type: UNKNOWN_TYPE
+                    <input checked="checked" id="ocaOptIn" name="ocaOptIn" type="checkbox" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Want to hear about the latest jobs and apply for new roles in an instant? Spend a few moments regist
@@ -811,18 +754,7 @@ form signature: 2413135268429661031
 form signature in host form: 2413135268429661031
 field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
 form renderer id: 1
-field renderer id: 38" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Want to hear about the latest jobs and apply for new roles in an instant? Spend a few moments regist
-parseable name: ocaOptIn
-section: firstname_0_17
-field signature: 395406979
-form signature: 2413135268429661031
-form signature in host form: 2413135268429661031
-field frame token: EAFF7032AB4C0E44D80BF16DB3D92AC5
-form renderer id: 1
-field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="545072">
+field renderer id: 38" data-ddg-testresultelementid="545072">
                     <input name="ocaOptIn" type="hidden" value="false">
                     <small>
                       <strong>Switch on one-click apply to send quicker
@@ -1008,7 +940,7 @@ field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <div class="container">
         <div class="row">
           <div class="col-xs-4 image-container text-center">
-            <img src="/sharedcontent/img/totaljobs/recruiter-header-icon.png" class="desktop-mobile-icon">
+            
           </div>
           <div class="col-xs-8">
             <button type="button" class="closeHeader pull-right" aria-label="Close" data-toggle="collapse" id="recruiter-extend-button"></button>
@@ -1030,441 +962,33 @@ field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         </div>
       </div>
     </div>
-    <script src="/sw-register.js?v=2.0.2447.0"></script>
+    
 
-    <script type="text/javascript">
-      var TotalJobsGroup = TotalJobsGroup || {};
-      TotalJobsGroup.Config = TotalJobsGroup.Config || {};
-      TotalJobsGroup.Config.Global = {
-        AccountDetailsWebServiceUrl:
-          "/account/AccountDetails/GetAccountDetails",
-        LocationWebServiceUrl:
-          "/WebServices/LookupService/LookupService.asmx/GetAutoSuggestLocations",
-        LocationMaxResults: 10,
-        LocationMaxResultsMobile: 5,
-        LocationDelayMilliseconds: 50,
-        KeywordsAutoSuggestUrl: "/jsr/api/autosuggest/keyword",
-        KeywordsAutoSuggestMaxResults: 15,
-        KeywordsAutoSuggestMaxResultsMobile: 5,
-        KeywordsAutoSuggestDelayMilliseconds: 50,
-        PushNotificationSenderId: "974720584953",
-        TealiumModel: {
-          Account: "stepstone",
-          Profile: "stepstone-uk",
-          Environment: "prod",
-        },
-        OptimizelyProjectId: "20561852190",
-        OptimizelyEnabledSites: [2, 4, 10, 76, 80, 9, 77, 7, 40, 50, 60],
-        ServiceWorkerUrl: "/sw-register.js",
-        MobileScreenWidth: 768,
-        JobSeekerUrls: {
-          2: "www.cwjobs.co.uk",
-          4: "www.totaljobs.com",
-          7: "www.jobsite.co.uk",
-          9: "www.milkround.com",
-          10: "www.caterer.com",
-          40: "www.cityjobs.com",
-          50: "www.justengineers.net",
-          60: "www.emedcareers.com",
-          76: "www.retailchoice.com",
-          77: "www.catererglobal.com",
-          80: "www.careerstructure.com",
-          300: "www.nijobs.com",
-          301: "www.irishjobs.ie",
-          302: "www.jobs.ie",
-        },
-      };
-      TotalJobsGroup.Config.Site = { Site: 4 };
-    </script>
-    <script type="text/javascript" src="/sharedcontent/bundles/jquery.js?v=2.0.2447.0"></script>
-    <script type="text/javascript" src="/sharedcontent/bundles/bootstrap.js?v=2.0.2447.0"></script>
+    
+    
+    
 
-    <script src="/search/assets/bundles/recent-searches.js?v=3.0.2771.0"></script>
-    <script type="text/javascript" src="/savedjobs/Scripts/savedjobs.min.js?v=2.0.1007.0"></script>
+    
+    
 
-    <script type="text/javascript" src="/sharedcontent/bundles/signout.js?v=2.0.2447.0"></script>
+    
 
-    <script type="text/javascript" src="/sharedcontent/bundles/headerfooter.js?v=2.0.2447.0"></script>
+    
 
-    <script type="text/javascript" src="/account/bundles/register.js?v=3.1.1844.0"></script>
-    <script type="text/javascript">
-      var registerJson = {
-        salary: {
-          annual: [
-            { id: 0, rateTypeId: 0, range: "Select annual salary" },
-            { id: 1, rateTypeId: 1, range: "0-9,999" },
-            { id: 2, rateTypeId: 1, range: "10,000-11,999" },
-            { id: 3, rateTypeId: 1, range: "12,000-13,999" },
-            { id: 4, rateTypeId: 1, range: "14,000-15,999" },
-            { id: 5, rateTypeId: 1, range: "16,000-17,999" },
-            { id: 6, rateTypeId: 1, range: "18,000-19,999" },
-            { id: 7, rateTypeId: 1, range: "20,000-21,999" },
-            { id: 8, rateTypeId: 1, range: "22,000-23,999" },
-            { id: 9, rateTypeId: 1, range: "24,000-25,999" },
-            { id: 10, rateTypeId: 1, range: "26,000-27,999" },
-            { id: 11, rateTypeId: 1, range: "28,000-29,999" },
-            { id: 12, rateTypeId: 1, range: "30,000-34,999" },
-            { id: 13, rateTypeId: 1, range: "35,000-39,999" },
-            { id: 14, rateTypeId: 1, range: "40,000-44,999" },
-            { id: 15, rateTypeId: 1, range: "45,000-49,999" },
-            { id: 16, rateTypeId: 1, range: "50,000-54,999" },
-            { id: 17, rateTypeId: 1, range: "55,000-59,999" },
-            { id: 18, rateTypeId: 1, range: "60,000-64,999" },
-            { id: 19, rateTypeId: 1, range: "65,000-69,999" },
-            { id: 20, rateTypeId: 1, range: "70,000-74,999" },
-            { id: 21, rateTypeId: 1, range: "75,000-79,999" },
-            { id: 22, rateTypeId: 1, range: "80,000-84,999" },
-            { id: 23, rateTypeId: 1, range: "85,000-89,999" },
-            { id: 24, rateTypeId: 1, range: "90,000-94,999" },
-            { id: 25, rateTypeId: 1, range: "95,000-99,999" },
-            { id: 26, rateTypeId: 1, range: "100,000 and above" },
-          ],
-          daily: [
-            { id: 0, rateTypeId: 0, range: "Select daily rate" },
-            { id: 27, rateTypeId: 4, range: "nil to 40" },
-            { id: 28, rateTypeId: 4, range: "40 to 47" },
-            { id: 29, rateTypeId: 4, range: "48 to 55" },
-            { id: 30, rateTypeId: 4, range: "56 to 63" },
-            { id: 31, rateTypeId: 4, range: "64 to 71" },
-            { id: 32, rateTypeId: 4, range: "72 to 79" },
-            { id: 33, rateTypeId: 4, range: "80 to 87" },
-            { id: 34, rateTypeId: 4, range: "88 to 95" },
-            { id: 35, rateTypeId: 4, range: "96 to 103" },
-            { id: 36, rateTypeId: 4, range: "104 to 111" },
-            { id: 37, rateTypeId: 4, range: "112 to 119" },
-            { id: 38, rateTypeId: 4, range: "120 to 139" },
-            { id: 39, rateTypeId: 4, range: "140 to 159" },
-            { id: 73, rateTypeId: 4, range: "160 to 179" },
-            { id: 74, rateTypeId: 4, range: "180 to 199" },
-            { id: 75, rateTypeId: 4, range: "200 to 219" },
-            { id: 76, rateTypeId: 4, range: "220 to 239" },
-            { id: 77, rateTypeId: 4, range: "240 to 259" },
-            { id: 78, rateTypeId: 4, range: "260 to 279" },
-            { id: 79, rateTypeId: 4, range: "280 to 299" },
-            { id: 80, rateTypeId: 4, range: "300 to 319" },
-            { id: 81, rateTypeId: 4, range: "320 to 339" },
-            { id: 82, rateTypeId: 4, range: "340 to 359" },
-            { id: 83, rateTypeId: 4, range: "360 to 379" },
-            { id: 84, rateTypeId: 4, range: "380 to 399" },
-            { id: 85, rateTypeId: 4, range: "400 to 419" },
-            { id: 86, rateTypeId: 4, range: "420 to 439" },
-            { id: 87, rateTypeId: 4, range: "440 to 459" },
-            { id: 88, rateTypeId: 4, range: "460 to 479" },
-            { id: 89, rateTypeId: 4, range: "480 to 499" },
-            { id: 40, rateTypeId: 4, range: "Above 500" },
-          ],
-          hourly: [
-            { id: 0, rateTypeId: 0, range: "Select hourly rate" },
-            { id: 41, rateTypeId: 5, range: "nil to 5.00" },
-            { id: 42, rateTypeId: 5, range: "5.00 to 5.99" },
-            { id: 43, rateTypeId: 5, range: "6.00 to 6.99" },
-            { id: 44, rateTypeId: 5, range: "7.00 to 7.99" },
-            { id: 45, rateTypeId: 5, range: "8.00 to 8.99" },
-            { id: 46, rateTypeId: 5, range: "9.00 to 9.99" },
-            { id: 47, rateTypeId: 5, range: "10.00 to 10.99" },
-            { id: 48, rateTypeId: 5, range: "11.00 to 11.99" },
-            { id: 49, rateTypeId: 5, range: "12.00 to 12.99" },
-            { id: 50, rateTypeId: 5, range: "13.00 to 13.99" },
-            { id: 51, rateTypeId: 5, range: "14.00 to 14.99" },
-            { id: 52, rateTypeId: 5, range: "15.00 to 17.49" },
-            { id: 53, rateTypeId: 5, range: "17.50 to 19.99" },
-            { id: 54, rateTypeId: 5, range: "20.00 to 22.49" },
-            { id: 55, rateTypeId: 5, range: "22.50 to 24.99" },
-            { id: 56, rateTypeId: 5, range: "25.00 to 27.49" },
-            { id: 57, rateTypeId: 5, range: "27.50 to 29.99" },
-            { id: 58, rateTypeId: 5, range: "30.00 to 32.49" },
-            { id: 59, rateTypeId: 5, range: "32.50 to 34.99" },
-            { id: 60, rateTypeId: 5, range: "35.00 to 37.49" },
-            { id: 61, rateTypeId: 5, range: "37.50 to 39.99" },
-            { id: 62, rateTypeId: 5, range: "40.00 to 42.49" },
-            { id: 63, rateTypeId: 5, range: "42.50 to 44.99" },
-            { id: 64, rateTypeId: 5, range: "45.00 to 47.49" },
-            { id: 65, rateTypeId: 5, range: "47.50 to 49.99" },
-            { id: 66, rateTypeId: 5, range: "50.00 to 52.49" },
-            { id: 67, rateTypeId: 5, range: "52.50 to 54.99" },
-            { id: 68, rateTypeId: 5, range: "55.00 to 57.49" },
-            { id: 69, rateTypeId: 5, range: "57.50 to 59.99" },
-            { id: 70, rateTypeId: 5, range: "60.00 to 62.49" },
-            { id: 71, rateTypeId: 5, range: "62.50 to 64.99" },
-            { id: 72, rateTypeId: 5, range: "Above 65" },
-          ],
-        },
-        fields: {
-          recentJobTitle: { isRequired: true, isDisplayed: true },
-          recentSalary: { isRequired: true, isDisplayed: true },
-          currentStatus: { isRequired: false, isDisplayed: false },
-          desiredLocation: { isRequired: false, isDisplayed: false },
-          schoolLeavingYear: { isRequired: false, isDisplayed: false },
-          industrySectors: { isRequired: false, isDisplayed: false },
-          highestLevelOfEducation: { isRequired: true, isDisplayed: true },
-          cv: { isRequired: true, isDisplayed: true },
-          educationHistory: { isRequired: false, isDisplayed: false },
-          nationality: { isRequired: false, isDisplayed: false },
-          countryOfResidence: { isRequired: false, isDisplayed: false },
-          jobLevel: { isRequired: false, isDisplayed: false },
-          workLocation: { isRequired: false, isDisplayed: false },
-        },
-        currentStatusOptions: {
-          atSchool: ["1554", "1550"],
-          atUni: ["1551", "1552"],
-        },
-      };
-    </script>
+    
+    
 
     <!-- AGNOSTIC ANALYTICS JSON -->
-    <script language="JavaScript" type="text/javascript">
-      var analytics = {
-        SignInPage: null,
-        Campaign: "",
-        PageName: "/account/register",
-        SiteCatEvents: null,
-        IsErrorPage: null,
-        ABTestingCampaign: null,
-        ABTestingVersion: null,
-        LoggedInState: "Anonymous",
-        SiteSection: "JobSeeker-My-Account",
-        SV: null,
-        AccountType: null,
-        RecommendedJobsOrigin: null,
-        ContextData: {},
-        MemberId: null,
-        JobsiteMemberId: null,
-      };
-    </script>
+    
     <!-- END AGNOSTIC ANALYTICS JSON -->
 
-    <script type="text/javascript" src="/account/bundles/account-library/Account.Commons.js?v=3.1.1844.0"></script>
-    <script type="text/javascript" src="/account/bundles/account-library/Account.AccountBenefits.js?v=3.1.1844.0"></script>
+    
+    
   </form>
   <!-- APPMEASUREMENT CODE -->
-  <script type="text/javascript">
-    var s_account = "stepstone-tjg-tj-uk";
-  </script>
-  <script type="text/javascript" src="/CDNCached/AppMeasurementCustom.min.js"></script>
-  <script type="text/javascript">
-    var analytics = analytics || {};
-    var sendTracking = sendTracking !== undefined ? sendTracking : true;
-    var s = s || {};
-    var TotalJobsGroup = TotalJobsGroup || {};
-    TotalJobsGroup.Header = TotalJobsGroup.Header || {};
-    TotalJobsGroup.Header.LoggedInStates = TotalJobsGroup.Header
-      .LoggedInStates || { 0: "Anonymous", 1: "Soft", 2: "Hard" };
-    TotalJobsGroup.Analytics = TotalJobsGroup.Analytics || {};
-
-    var analytics = analytics || {};
-    var TotalJobsGroup = TotalJobsGroup || {};
-    TotalJobsGroup.QueryString = TotalJobsGroup.QueryString || {};
-    TotalJobsGroup.QueryString.GetValue = function (e) {
-      e = e.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-      var a = new RegExp("[\\?&]" + e + "=([^&#]*)", "i"),
-        r = a.exec(location.search);
-      return null === r ? "" : decodeURIComponent(r[1].replace(/\+/g, " "));
-    };
-    TotalJobsGroup.Analytics = TotalJobsGroup.Analytics || {};
-
-    TotalJobsGroup.Analytics.getCampaignCode = (function () {
-      {
-        var __campaignCode = null;
-        return function () {
-          {
-            if (__campaignCode) {
-              {
-                return __campaignCode;
-              }
-            }
-            var referrer =
-              TotalJobsGroup.QueryString.GetValue("referrer") ||
-              document.referrer;
-            __campaignCode =
-              TotalJobsGroup.QueryString.GetValue("DCMP") ||
-              TotalJobsGroup.QueryString.GetValue("wt.mc_id") ||
-              TotalJobsGroup.QueryString.GetValue("CID") ||
-              (referrer.indexOf("google") !== -1 &&
-                TotalJobsGroup.QueryString.GetValue("utm_source").replace(
-                  "google",
-                  "A_OS_GO"
-                )) ||
-              "";
-            return __campaignCode;
-          }
-        };
-      }
-    })();
-
-    TotalJobsGroup.Analytics.getCookie = (function () {
-      return function (cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(";");
-        for (var i = 0; i < ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0) === " ") {
-            c = c.substring(1);
-          }
-          if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-          }
-        }
-        return "empty";
-      };
-    })();
-
-    TotalJobsGroup.Analytics.setMilkroundSubChannel = (function () {
-      return function () {
-        var subChannel = "";
-        if (window.location.host.indexOf("www.milkround") === 0)
-          subChannel = "Graduate";
-        if (
-          window.location.host.indexOf("www.milkround") === 0 &&
-          TotalJobsGroup.Analytics.getCookie("SubBrand") !== "empty"
-        )
-          subChannel = "School Leavers";
-        s.eVar119 = subChannel;
-      };
-    })();
-
-    function fireAnalyticsEvents() {
-      if (!analytics.Campaign) {
-        analytics.Campaign = TotalJobsGroup.Analytics.getCampaignCode();
-      }
-
-      var isPageReload = false;
-      if (
-        window.sessionStorage &&
-        sessionStorage.getItem("isPageReload") === "true"
-      ) {
-        isPageReload = true;
-      }
-
-      if (isPageReload) {
-        // if the page has just been reloaded by us then only fire acceptable events
-        var acceptableEvents = [];
-        if (
-          window.sessionStorage &&
-          sessionStorage.getItem("acceptableEventsOnPageReload")
-        ) {
-          acceptableEvents = sessionStorage
-            .getItem("acceptableEventsOnPageReload")
-            .split(",");
-        }
-
-        if (acceptableEvents.length > 0) {
-          if (analytics.SiteCatEvents) {
-            var siteCatEvents = analytics.SiteCatEvents.split(",").map(
-              function (x) {
-                return x.trim();
-              }
-            );
-            var filteredEvents = siteCatEvents.filter(function (value) {
-              return acceptableEvents.indexOf(value) !== -1;
-            });
-            analytics.SiteCatEvents = filteredEvents.join(",");
-          }
-
-          sessionStorage.removeItem("acceptableEventsOnPageReload");
-        } else {
-          analytics.SiteCatEvents = "";
-        }
-        sessionStorage.removeItem("isPageReload");
-      } else {
-        if (analLib.isFreshUser()) {
-          analytics.SiteCatEvents = analLib.addFreshUserEvent(
-            analytics.SiteCatEvents
-          );
-        }
-      }
-
-      var accountDetails = {
-        getAccountDetails: function (callback) {
-          callback(null);
-          throw new Error("Error, getAccountDetails was not found!");
-        },
-      };
-
-      if (TotalJobsGroup.Header.AccountDetails) {
-        accountDetails = new TotalJobsGroup.Header.AccountDetails(
-          window.jQuery,
-          window.location,
-          TotalJobsGroup.Config.Global,
-          TotalJobsGroup.IsJobsiteBrand
-        );
-      }
-
-      accountDetails.getAccountDetails(function (data) {
-        if (data) {
-          analytics.MemberId = data.MemberId;
-          analytics.JobsiteMemberId = data.JobsiteMemberId;
-          analytics.LoggedInState =
-            TotalJobsGroup.Header.LoggedInStates[data.LoggedInState.toString()];
-        }
-
-        s.trackingServer = "stepstone.d3.sc.omtrdc.net";
-        s.campaign = analLib.getCampaignCode(
-          analytics.Campaign,
-          document.referrer,
-          document.URL
-        );
-        s.channel = analytics.SiteSection;
-        s.eVar1 = analytics.LoggedInState;
-        s.eVar23 = analytics.PageName;
-        s.eVar3 = analLib.getInternalCampaignCodeFromURL("INHSE", document.URL);
-        s.eVar30 = analytics.MemberId;
-        s.eVar4 = s.eVar3;
-        s.eVar5 = s.channel;
-        s.eVar53 = s.campaign;
-        s.eVar58 = s.campaign;
-        s.eVar61 = s.campaign;
-        s.eVar62 = s.campaign;
-        s.eVar67 = analLib.getInternalCampaignCodeFromURL("EL", document.URL);
-        s.events = analytics.SiteCatEvents;
-        s.pageName = analytics.PageName;
-        s.pageType = analytics.IsErrorPage;
-        s.prop1 = s.channel;
-        s.prop27 = analytics.ContextData.prop27;
-        s.prop57 = analytics.SignInPage;
-        s.prop9 = s.campaign;
-
-        if (typeof populateTrackingByResultlist === "function") {
-          populateTrackingByResultlist();
-        }
-
-        var s_code = s.t();
-        if (s_code) {
-          document.write(s_code);
-        }
-      });
-
-      TotalJobsGroup.Analytics.setMilkroundSubChannel();
-    }
-
-    function fireAnalyticsEventsComplete() {
-      // call detach to de-register event handlers
-      document.removeEventListener(
-        "DOMContentLoaded",
-        fireAnalyticsEventsComplete,
-        false
-      );
-      window.removeEventListener("load", fireAnalyticsEventsComplete, false);
-
-      // actually fire ther Analytics events
-      fireAnalyticsEvents();
-    }
-
-    if (sendTracking) {
-      if (
-        document.readyState === "loading" &&
-        window.location.href.indexOf("/apply/confirmation") === -1
-      ) {
-        document.addEventListener(
-          "DOMContentLoaded",
-          fireAnalyticsEventsComplete,
-          false
-        );
-        window.addEventListener("load", fireAnalyticsEventsComplete, false);
-      } else {
-        fireAnalyticsEventsComplete();
-      }
-    }
-  </script>
+  
+  
+  
   <noscript><img
       src="//stepstone.d3.sc.omtrdc.net/b/ss/stepstone-tjg-tj-uk/1/H.25.2--NS/0?pageName=/register&[AQB]&cdp=4&[AQE]"
       height="1"
@@ -1474,18 +998,18 @@ field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
   /></noscript>
   <!-- END APPMEASUREMENT CODE -->
 
-  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-1" tabindex="0" style="display: none"></ul>
+  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-1" tabindex="0"></ul>
   <span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span>
-  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" tabindex="0" style="display: none"></ul>
+  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" tabindex="0"></ul>
   <span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span>
-  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-3" tabindex="0" style="display: none"></ul>
+  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-3" tabindex="0"></ul>
   <span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span>
-  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-4" tabindex="0" style="display: none"></ul>
+  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-4" tabindex="0"></ul>
   <span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span>
-  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-5" tabindex="0" style="display: none"></ul>
+  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-5" tabindex="0"></ul>
   <span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span>
   <div id="accountBenefitsModalContainer"></div>
-  <div id="saved-job-toast" style="display: none">
+  <div id="saved-job-toast">
     <div id="saved-job-toast-title">Saved job(s)</div>
     <div id="saved-job-toast-link">
       <a href="/savedjobs/">View saved jobs</a>

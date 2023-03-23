@@ -1,5 +1,6 @@
 <!--
   https://www.foodcity.com/register
+  rank: 6127
   testRunId: 66
   testResultId: 238104
 -->
@@ -13,53 +14,15 @@
     ></iframe
   ></noscript>
 
-  <script src="/js/vendor/ua-parser-min.js"></script>
+  
 
-  <script>
-    var uaParser = new UAParser();
-    var browserObj = uaParser.getBrowser();
-    var userOs = uaParser.getOS();
-    var sendUserTlsNotification;
-    var vic = vic || {};
+  
 
-    vic.userOs = userOs["name"];
-    vic.sendTlsNotification = false;
-
-    if (
-      (browserObj["name"] == "IE" && parseFloat(browserObj["version"]) < 11) ||
-      (browserObj["name"] == "Chrome" &&
-        parseFloat(browserObj["version"]) < 22) ||
-      (browserObj["name"] == "Firefox" &&
-        parseFloat(browserObj["version"]) < 24) ||
-      (browserObj["name"] == "Safari" &&
-        parseFloat(browserObj["version"]) < 7) ||
-      (browserObj["name"] == "Opera" &&
-        parseFloat(browserObj["version"]) < 12.1) ||
-      (browserObj["name"] == "Mobile Safari" &&
-        parseFloat(browserObj["version"]) < 5.1) ||
-      (userOs["name"] == "Android" && parseFloat(userOs["version"]) < 4.4)
-    ) {
-      vic.sendTlsNotification = true;
-    }
-  </script>
-
-  <script>
-    var initLoginTimer;
-    initLoginTimer = false;
-  </script>
+  
 
   <a class="sr-only sr-only-focusable" href="#main" onfocus="$(this).removeClass('sr-only')" onblur="$(this).addClass('sr-only')" onclick="aa.utils.stopPost(event); history.pushState(null, null, '#main'); $('#main').attr('tabIndex','-1').focus();">Skip to content</a>
 
-  <style type="text/css">
-    #protag-link span {
-      text-decoration: underline;
-    }
-    #protag-link span:hover,
-    #protag-link span:focus,
-    #protag-link span:active {
-      text-decoration: underline;
-    }
-  </style>
+  
 
   <div id="header" class="header" role="navigation">
     <div class="header-top">
@@ -118,25 +81,25 @@
     </div>
     <div class="header-middle">
       <div class="container-fluid">
-        <div class="header-middle__mobile-nav__wrap" style="flex-flow: row; justify-content: space-between">
+        <div class="header-middle__mobile-nav__wrap">
           <!-- burger bars -->
-          <div class="header-middle__mobile-nav col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none" style="flex-grow: 0; padding-left: 0">
+          <div class="header-middle__mobile-nav col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none">
             <div class="header-middle__header-burger header-middle__centered d-lg-none d-xl-none" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
               <i class="fc fc-burger-bar"></i>
             </div>
           </div>
 
-          <div class="header-middle__mobile-nav col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none" style="flex-grow: 0; padding: 0">
+          <div class="header-middle__mobile-nav col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none">
             <div class="header-logo header-middle__header-logo">
               <div class="header-middle__centered">
                 <a class="logo-container" href="/">
-                  <img alt="Food City Logo" src="/images/food-city-logo.svg">
+                  
                 </a>
               </div>
             </div>
           </div>
 
-          <div class="header-middle__mobile-nav col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none" style="flex-grow: 0; padding: 0">
+          <div class="header-middle__mobile-nav col d-xs-block d-sm-block d-md-none d-lg-none d-xl-none">
             <!-- list/cart -->
             <div id="shopping" class="shopping pl-2">
               <div id="shopping-list" class="shopping-list pr-0">
@@ -148,16 +111,7 @@
 
                 <div id="headerListTriangle" class="triangle-div-up is-hidden"></div>
 
-                <script>
-                  var add = function () {
-                    $("#side-list").click(function () {
-                      $("#foo").css({
-                        "data-target": "#list-sidebar",
-                        "data-toggle": "collapse",
-                      });
-                    });
-                  };
-                </script>
+                
               </div>
 
               <!-- cart -->
@@ -189,7 +143,7 @@
               <div class="header-logo header-middle__header-logo d-none d-xs-none d-sm-none d-md-block d-lg-block d-xl-block">
                 <div class="header-middle__centered">
                   <a class="logo-container" href="/">
-                    <img alt="Food City Logo" src="/images/food-city-logo.svg">
+                    
                   </a>
                 </div>
               </div>
@@ -228,7 +182,7 @@
                       </ul>
                     </div>
                     <div id="siteSearchInputWrap" class="site-search-input-wrap">
-                      <input id="site-search-input" class="form-control site-search-input ui-autocomplete-input" placeholder="What can we help you find today?" value="" name="Search" type="search" aria-label="Search" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                      <input id="site-search-input" class="form-control site-search-input ui-autocomplete-input" placeholder="What can we help you find today?" value="" name="Search" type="search" aria-label="Search" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: What can we help you find today?
@@ -240,19 +194,7 @@ form signature in host form: 9835880222128337681
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 3
 field renderer id: 28
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: What can we help you find today?
-parseable name: Search
-section: Search_0_28
-field signature: 4239386699
-form signature: 9835880222128337681
-form signature in host form: 9835880222128337681
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 3
-field renderer id: 28
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="530392">
+autocomplete: off" data-ddg-testresultelementid="530392">
                     </div>
                     <i id="iconClear" class="fc fc-close"></i>
                     <div class="site-search-input__button search-submit">
@@ -264,7 +206,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                 </div>
 
                 <div id="auto-search-result">
-                  <ul id="ui-id-1" tabindex="0" class="ui-menu ui-widget ui-widget-content ui-autocomplete site-search-autocomplete ui-front" unselectable="on" style="display: none"></ul>
+                  <ul id="ui-id-1" tabindex="0" class="ui-menu ui-widget ui-widget-content ui-autocomplete site-search-autocomplete ui-front" unselectable="on"></ul>
                 </div>
               </form>
 
@@ -279,16 +221,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
                   <div id="headerListTriangle" class="triangle-div-up is-hidden"></div>
 
-                  <script>
-                    var add = function () {
-                      $("#side-list").click(function () {
-                        $("#foo").css({
-                          "data-target": "#list-sidebar",
-                          "data-toggle": "collapse",
-                        });
-                      });
-                    };
-                  </script>
+                  
                 </div>
 
                 <!-- cart -->
@@ -318,15 +251,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
         </div>
       </div>
     </div>
-    <script type="text/javascript">
-      if (document.readyState === "complete") {
-        aa.reserved_times.refreshHeaderReservedTime();
-      } else {
-        $(document).ready(function () {
-          aa.reserved_times.refreshHeaderReservedTime();
-        });
-      }
-    </script>
+    
     <div class="nav header header-bottom row no-gutters d-lg-none">
       <span class="header-bottom__pickup col-12 text-center">
         <div onclick="aa.store_selector.showStoreSelector({}, function(){ window.location.reload(); });">
@@ -379,7 +304,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             <ul class="main-navigation__submenu accordion">
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page" onclick="window.location='/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page" onclick="window.location='/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page'" data-has-children="false">
                     <span>Weekly Ad</span>
                   </a>
                 </div>
@@ -395,9 +320,9 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
                 <div class="submenu-level2">
                   <div id="submenu-Departments" class="collapse show" aria-labelledby="#submenu-Departments-tab">
-                    <ul class="list-group submenu3" style="padding-left: 1rem">
+                    <ul class="list-group submenu3">
                       <li class="list-group-item">
-                        <div class="submenu-level2-section" style="line-height: 1 !important">
+                        <div class="submenu-level2-section">
                           <span class="submenu-level2-section-divider">
                             &nbsp;
                           </span>
@@ -434,7 +359,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                       </li>
 
                       <li class="list-group-item">
-                        <div class="submenu-level2-section" style="line-height: 1 !important">
+                        <div class="submenu-level2-section">
                           <span class="submenu-level2-section-divider">
                             &nbsp;
                           </span>
@@ -643,7 +568,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             <ul class="main-navigation__submenu accordion">
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/coupons/mycoupons/" onclick="window.location='/coupons/mycoupons/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/coupons/mycoupons/" onclick="window.location='/coupons/mycoupons/'" data-has-children="false">
                     <span>Digital Coupons</span>
                   </a>
                 </div>
@@ -659,7 +584,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
                 <div class="submenu-level2">
                   <div id="submenu-ValuCard" class="collapse" aria-labelledby="#submenu-ValuCard-tab">
-                    <ul class="list-group submenu3" style="padding-left: 1rem">
+                    <ul class="list-group submenu3">
                       <li class="list-group-item">
                         <a class="" href="/savings-rewards/valucard/">
                           About ValuCard
@@ -676,7 +601,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/fuel/" onclick="window.location='/fuel/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/fuel/" onclick="window.location='/fuel/'" data-has-children="false">
                     <span>Fuel Bucks</span>
                   </a>
                 </div>
@@ -684,7 +609,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/content/240/" onclick="window.location='/content/240/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/content/240/" onclick="window.location='/content/240/'" data-has-children="false">
                     <span>Mobile App</span>
                   </a>
                 </div>
@@ -692,7 +617,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/savings-clubs/" onclick="window.location='/savings-rewards/savings-clubs/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/savings-clubs/" onclick="window.location='/savings-rewards/savings-clubs/'" data-has-children="false">
                     <span>Savings Clubs</span>
                   </a>
                 </div>
@@ -700,7 +625,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/our-brands/" onclick="window.location='/savings-rewards/our-brands/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/our-brands/" onclick="window.location='/savings-rewards/our-brands/'" data-has-children="false">
                     <span>Food City Brands</span>
                   </a>
                 </div>
@@ -708,7 +633,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/sweepstakes/" onclick="window.location='/savings-rewards/sweepstakes/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/sweepstakes/" onclick="window.location='/savings-rewards/sweepstakes/'" data-has-children="false">
                     <span>Sweepstakes</span>
                   </a>
                 </div>
@@ -716,7 +641,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/promotions/" onclick="window.location='/savings-rewards/promotions/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/savings-rewards/promotions/" onclick="window.location='/savings-rewards/promotions/'" data-has-children="false">
                     <span>Promotions</span>
                   </a>
                 </div>
@@ -724,7 +649,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p'" data-has-children="false">
                     <span>Current GoCart Offers</span>
                   </a>
                 </div>
@@ -735,7 +660,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             <ul class="main-navigation__submenu accordion">
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p'" data-has-children="false">
                     <span>Recipes</span>
                   </a>
                 </div>
@@ -743,7 +668,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/content/273/" onclick="window.location='/content/273/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/content/273/" onclick="window.location='/content/273/'" data-has-children="false">
                     <span>Prepared Foods</span>
                   </a>
                 </div>
@@ -751,7 +676,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p'" data-has-children="false">
                     <span>Meal Planner</span>
                   </a>
                 </div>
@@ -759,7 +684,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/recipes-planning/event-planning/" onclick="window.location='/recipes-planning/event-planning/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/recipes-planning/event-planning/" onclick="window.location='/recipes-planning/event-planning/'" data-has-children="false">
                     <span>Catering</span>
                   </a>
                 </div>
@@ -767,7 +692,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/community/events/q-smoke-pit/" onclick="window.location='/community/events/q-smoke-pit/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/community/events/q-smoke-pit/" onclick="window.location='/community/events/q-smoke-pit/'" data-has-children="false">
                     <span>The Q Smoke Pit</span>
                   </a>
                 </div>
@@ -778,7 +703,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             <ul class="main-navigation__submenu accordion">
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="https://foodcityweb.rxtouch.com/foodcity/web2/default/" onclick="window.open('https://foodcityweb.rxtouch.com/foodcity/web2/default/');" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="https://foodcityweb.rxtouch.com/foodcity/web2/default/" onclick="window.open('https://foodcityweb.rxtouch.com/foodcity/web2/default/');" data-has-children="false">
                     <span>Refill/Transfer Prescriptions</span>
                   </a>
                 </div>
@@ -786,7 +711,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/pharmacy/pharmacy-app/" onclick="window.location='/pharmacy/pharmacy-app/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/pharmacy/pharmacy-app/" onclick="window.location='/pharmacy/pharmacy-app/'" data-has-children="false">
                     <span>Pharmacy App</span>
                   </a>
                 </div>
@@ -802,7 +727,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
                 <div class="submenu-level2">
                   <div id="submenu-PharmacySavings" class="collapse" aria-labelledby="#submenu-PharmacySavings-tab">
-                    <ul class="list-group submenu3" style="padding-left: 1rem">
+                    <ul class="list-group submenu3">
                       <li class="list-group-item">
                         <a class="" href="/fuel/"> Fuel Bucks </a>
                       </li>
@@ -827,7 +752,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/content/48/" onclick="window.location='/content/48/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/content/48/" onclick="window.location='/content/48/'" data-has-children="false">
                     <span>Immunizations/Vaccines</span>
                   </a>
                 </div>
@@ -835,7 +760,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/content/284/" onclick="window.location='/content/284/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/content/284/" onclick="window.location='/content/284/'" data-has-children="false">
                     <span>Covid Vaccine</span>
                   </a>
                 </div>
@@ -843,7 +768,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/content/107/" onclick="window.location='/content/107/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/content/107/" onclick="window.location='/content/107/'" data-has-children="false">
                     <span>Dietitian</span>
                   </a>
                 </div>
@@ -851,7 +776,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/content/279/" onclick="window.location='/content/279/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/content/279/" onclick="window.location='/content/279/'" data-has-children="false">
                     <span>MDBox</span>
                   </a>
                 </div>
@@ -862,7 +787,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             <ul class="main-navigation__submenu accordion">
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/community/news/" onclick="window.location='/community/news/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/community/news/" onclick="window.location='/community/news/'" data-has-children="false">
                     <span>News</span>
                   </a>
                 </div>
@@ -870,7 +795,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/community/events/" onclick="window.location='/community/events/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/community/events/" onclick="window.location='/community/events/'" data-has-children="false">
                     <span>Events</span>
                   </a>
                 </div>
@@ -878,7 +803,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/schoolbucks/" onclick="window.location='/schoolbucks/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/schoolbucks/" onclick="window.location='/schoolbucks/'" data-has-children="false">
                     <span>School Bucks</span>
                   </a>
                 </div>
@@ -886,7 +811,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/community/local-growers/" onclick="window.location='/community/local-growers/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/community/local-growers/" onclick="window.location='/community/local-growers/'" data-has-children="false">
                     <span>Local Growers</span>
                   </a>
                 </div>
@@ -894,7 +819,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="https://foodcitycareers.com/" onclick="window.open('https://foodcitycareers.com/');" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="https://foodcitycareers.com/" onclick="window.open('https://foodcitycareers.com/');" data-has-children="false">
                     <span>Join Our Team</span>
                   </a>
                 </div>
@@ -902,7 +827,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/community/giving-back/" onclick="window.location='/community/giving-back/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/community/giving-back/" onclick="window.location='/community/giving-back/'" data-has-children="false">
                     <span>Giving Back</span>
                   </a>
                 </div>
@@ -910,7 +835,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
               <li class="link-top-level nav-item">
                 <div class="w-100">
-                  <a class="nav-link submenu-link d-flex" href="/community/fundraisers/" onclick="window.location='/community/fundraisers/'" data-has-children="false" style="padding-right: 3rem">
+                  <a class="nav-link submenu-link d-flex" href="/community/fundraisers/" onclick="window.location='/community/fundraisers/'" data-has-children="false">
                     <span>Fundraising</span>
                   </a>
                 </div>
@@ -932,7 +857,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
       <ul id="m-main-nav-menu" class="nav flex-column">
         <li class="nav-item level1 mb-5">
-          <a class="nav-link d-flex m-level-1" href="index.php?vica=ctl_notification&amp;vicb=showNotifications&amp;vicc=p" style="position: relative">
+          <a class="nav-link d-flex m-level-1" href="index.php?vica=ctl_notification&amp;vicb=showNotifications&amp;vicc=p">
             Notifications
           </a>
 
@@ -956,7 +881,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
           <ul id="m-level-2-Shop" class="nav collapse">
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page" onclick="window.location='/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page" onclick="window.location='/circulars/weekly//?searchDisplay=page&amp;Clear=1&amp;searchDisplay=page'">
                 <span>Weekly Ad</span>
               </a>
             </li>
@@ -1218,7 +1143,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
           <ul id="m-level-2-SavingsRewards" class="nav collapse">
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/coupons/mycoupons/" onclick="window.location='/coupons/mycoupons/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/coupons/mycoupons/" onclick="window.location='/coupons/mycoupons/'">
                 <span>Digital Coupons</span>
               </a>
             </li>
@@ -1250,43 +1175,43 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/fuel/" onclick="window.location='/fuel/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/fuel/" onclick="window.location='/fuel/'">
                 <span>Fuel Bucks</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/content/240/" onclick="window.location='/content/240/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/content/240/" onclick="window.location='/content/240/'">
                 <span>Mobile App</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/savings-clubs/" onclick="window.location='/savings-rewards/savings-clubs/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/savings-clubs/" onclick="window.location='/savings-rewards/savings-clubs/'">
                 <span>Savings Clubs</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/our-brands/" onclick="window.location='/savings-rewards/our-brands/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/our-brands/" onclick="window.location='/savings-rewards/our-brands/'">
                 <span>Food City Brands</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/sweepstakes/" onclick="window.location='/savings-rewards/sweepstakes/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/sweepstakes/" onclick="window.location='/savings-rewards/sweepstakes/'">
                 <span>Sweepstakes</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/promotions/" onclick="window.location='/savings-rewards/promotions/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/savings-rewards/promotions/" onclick="window.location='/savings-rewards/promotions/'">
                 <span>Promotions</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_cart_total_promo&amp;vicb=showActivePromoEvents&amp;vicc=p'">
                 <span>Current GoCart Offers</span>
               </a>
             </li>
@@ -1300,31 +1225,31 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
           <ul id="m-level-2-RecipesPlanning" class="nav collapse">
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showMealRecipeCenter&amp;vicc=p'">
                 <span>Recipes</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/content/273/" onclick="window.location='/content/273/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/content/273/" onclick="window.location='/content/273/'">
                 <span>Prepared Foods</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p" onclick="window.location='/index.php?vica=ctl_meal_planner&amp;vicb=showUserPlans&amp;vicc=p'">
                 <span>Meal Planner</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/recipes-planning/event-planning/" onclick="window.location='/recipes-planning/event-planning/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/recipes-planning/event-planning/" onclick="window.location='/recipes-planning/event-planning/'">
                 <span>Catering</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/community/events/q-smoke-pit/" onclick="window.location='/community/events/q-smoke-pit/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/community/events/q-smoke-pit/" onclick="window.location='/community/events/q-smoke-pit/'">
                 <span>The Q Smoke Pit</span>
               </a>
             </li>
@@ -1338,13 +1263,13 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
           <ul id="m-level-2-PharmacyWellness" class="nav collapse">
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="https://foodcityweb.rxtouch.com/foodcity/web2/default/" onclick="window.location='https://foodcityweb.rxtouch.com/foodcity/web2/default/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="https://foodcityweb.rxtouch.com/foodcity/web2/default/" onclick="window.location='https://foodcityweb.rxtouch.com/foodcity/web2/default/'">
                 <span>Refill/Transfer Prescriptions</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/pharmacy/pharmacy-app/" onclick="window.location='/pharmacy/pharmacy-app/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/pharmacy/pharmacy-app/" onclick="window.location='/pharmacy/pharmacy-app/'">
                 <span>Pharmacy App</span>
               </a>
             </li>
@@ -1388,25 +1313,25 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/content/48/" onclick="window.location='/content/48/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/content/48/" onclick="window.location='/content/48/'">
                 <span>Immunizations/Vaccines</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/content/284/" onclick="window.location='/content/284/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/content/284/" onclick="window.location='/content/284/'">
                 <span>Covid Vaccine</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/content/107/" onclick="window.location='/content/107/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/content/107/" onclick="window.location='/content/107/'">
                 <span>Dietitian</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/content/279/" onclick="window.location='/content/279/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/content/279/" onclick="window.location='/content/279/'">
                 <span>MDBox</span>
               </a>
             </li>
@@ -1420,43 +1345,43 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
 
           <ul id="m-level-2-Community" class="nav collapse">
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/community/news/" onclick="window.location='/community/news/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/community/news/" onclick="window.location='/community/news/'">
                 <span>News</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/community/events/" onclick="window.location='/community/events/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/community/events/" onclick="window.location='/community/events/'">
                 <span>Events</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/schoolbucks/" onclick="window.location='/schoolbucks/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/schoolbucks/" onclick="window.location='/schoolbucks/'">
                 <span>School Bucks</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/community/local-growers/" onclick="window.location='/community/local-growers/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/community/local-growers/" onclick="window.location='/community/local-growers/'">
                 <span>Local Growers</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="https://foodcitycareers.com/" onclick="window.location='https://foodcitycareers.com/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="https://foodcitycareers.com/" onclick="window.location='https://foodcitycareers.com/'">
                 <span>Join Our Team</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/community/giving-back/" onclick="window.location='/community/giving-back/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/community/giving-back/" onclick="window.location='/community/giving-back/'">
                 <span>Giving Back</span>
               </a>
             </li>
 
             <li class="nav-item level2">
-              <a class="nav-link submenu-link d-flex collapsed" href="/community/fundraisers/" onclick="window.location='/community/fundraisers/'" style="padding-right: 3rem">
+              <a class="nav-link submenu-link d-flex collapsed" href="/community/fundraisers/" onclick="window.location='/community/fundraisers/'">
                 <span>Fundraising</span>
               </a>
             </li>
@@ -1496,17 +1421,17 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
               </p>
             </div>
           </div>
-          <div id="sidecart-body-foot-wrap" class="sidecart-body-foot-wrap hasCartPromo" style="max-height: 1024px">
+          <div id="sidecart-body-foot-wrap" class="sidecart-body-foot-wrap hasCartPromo">
             <div class="list-wrapper" data-simplebar="init">
-              <div class="simplebar-wrapper" style="margin: 0px">
+              <div class="simplebar-wrapper">
                 <div class="simplebar-height-auto-observer-wrapper">
                   <div class="simplebar-height-auto-observer"></div>
                 </div>
                 <div class="simplebar-mask">
-                  <div class="simplebar-offset" style="right: 0px; bottom: 0px">
-                    <div class="simplebar-content" style="padding: 0px; height: auto; overflow: hidden">
+                  <div class="simplebar-offset">
+                    <div class="simplebar-content">
                       <div class="d-block m-auto text-center p-3">
-                        <img src="../../images/empty-state/noProductsCart.png" alt="Your cart is empty.">
+                        
                         <div class="col-12">
                           <p>No Products Yet</p>
                         </div>
@@ -1519,19 +1444,13 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                     </div>
                   </div>
                 </div>
-                <div class="simplebar-placeholder" style="width: 0px; height: 0px"></div>
+                <div class="simplebar-placeholder"></div>
               </div>
-              <div class="simplebar-track simplebar-horizontal" style="visibility: hidden">
-                <div class="simplebar-scrollbar" style="
-                    transform: translate3d(0px, 0px, 0px);
-                    visibility: hidden;
-                  "></div>
+              <div class="simplebar-track simplebar-horizontal">
+                <div class="simplebar-scrollbar"></div>
               </div>
-              <div class="simplebar-track simplebar-vertical" style="visibility: hidden">
-                <div class="simplebar-scrollbar" style="
-                    transform: translate3d(0px, 0px, 0px);
-                    visibility: hidden;
-                  "></div>
+              <div class="simplebar-track simplebar-vertical">
+                <div class="simplebar-scrollbar"></div>
               </div>
             </div>
           </div>
@@ -1541,7 +1460,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
               <i class="fc fc-close stick-tr p-3" onclick="aa.ui.goCartPromoClosed(this);"></i>
               <div class="row m-">
                 <div class="col-7">
-                  <img src="/images/gocart/fc-gocart-logo-condensed.jpg" alt="Food City - Go Cart Curbside Pickup">
+                  
 
                   <p class="cart__sidebar__cart-promo__text text-primary mb-1 pt-3">
                     You are <strong class="text-secondary">$50.00</strong> away
@@ -1549,7 +1468,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                   </p>
                 </div>
                 <div class="col-5 text-center pl-0 pr-4">
-                  <img src="images/cart-total-promo/fc-fuel-bucks-logo.jpg" alt="Cart total promo image">
+                  
                 </div>
               </div>
             </div>
@@ -1560,94 +1479,22 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
               </button>
             </div>
           </div>
-          <div dir="ltr" class="resize-sensor" style="
-              pointer-events: none;
-              position: absolute;
-              inset: 0px;
-              overflow: hidden;
-              z-index: -1;
-              visibility: hidden;
-              max-width: 100%;
-            ">
-            <div class="resize-sensor-expand" style="
-                pointer-events: none;
-                position: absolute;
-                inset: 0px;
-                overflow: hidden;
-                z-index: -1;
-                visibility: hidden;
-                max-width: 100%;
-              ">
-              <div style="
-                  position: absolute;
-                  left: 0px;
-                  top: 0px;
-                  transition: all 0s ease 0s;
-                "></div>
+          <div dir="ltr" class="resize-sensor">
+            <div class="resize-sensor-expand">
+              <div></div>
             </div>
-            <div class="resize-sensor-shrink" style="
-                pointer-events: none;
-                position: absolute;
-                inset: 0px;
-                overflow: hidden;
-                z-index: -1;
-                visibility: hidden;
-                max-width: 100%;
-              ">
-              <div style="
-                  position: absolute;
-                  left: 0px;
-                  top: 0px;
-                  transition: all 0s ease 0s;
-                  width: 200%;
-                  height: 200%;
-                "></div>
+            <div class="resize-sensor-shrink">
+              <div></div>
             </div>
           </div>
         </div>
       </div>
-      <div dir="ltr" class="resize-sensor" style="
-          pointer-events: none;
-          position: absolute;
-          inset: 0px;
-          overflow: hidden;
-          z-index: -1;
-          visibility: hidden;
-          max-width: 100%;
-        ">
-        <div class="resize-sensor-expand" style="
-            pointer-events: none;
-            position: absolute;
-            inset: 0px;
-            overflow: hidden;
-            z-index: -1;
-            visibility: hidden;
-            max-width: 100%;
-          ">
-          <div style="
-              position: absolute;
-              left: 0px;
-              top: 0px;
-              transition: all 0s ease 0s;
-            "></div>
+      <div dir="ltr" class="resize-sensor">
+        <div class="resize-sensor-expand">
+          <div></div>
         </div>
-        <div class="resize-sensor-shrink" style="
-            pointer-events: none;
-            position: absolute;
-            inset: 0px;
-            overflow: hidden;
-            z-index: -1;
-            visibility: hidden;
-            max-width: 100%;
-          ">
-          <div style="
-              position: absolute;
-              left: 0px;
-              top: 0px;
-              transition: all 0s ease 0s;
-              width: 200%;
-              height: 200%;
-            "></div>
+        <div class="resize-sensor-shrink">
+          <div></div>
         </div>
       </div>
     </div>
@@ -1668,17 +1515,17 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             </div>
           </div>
 
-          <div id="list__sidebar__list__wrap" class="list__sidebar__list__wrap" style="max-height: 1024px">
+          <div id="list__sidebar__list__wrap" class="list__sidebar__list__wrap">
             <div class="list__sidebar__list" data-simplebar="init">
-              <div class="simplebar-wrapper" style="margin: 0px">
+              <div class="simplebar-wrapper">
                 <div class="simplebar-height-auto-observer-wrapper">
                   <div class="simplebar-height-auto-observer"></div>
                 </div>
                 <div class="simplebar-mask">
-                  <div class="simplebar-offset" style="right: 0px; bottom: 0px">
-                    <div class="simplebar-content" style="padding: 0px; height: auto; overflow: hidden">
+                  <div class="simplebar-offset">
+                    <div class="simplebar-content">
                       <div class="d-block m-auto text-center p-3">
-                        <img src="../../images/empty-state/noItemsList.png" alt="Your list is empty.">
+                        
                         <div class="col-12">
                           <p>No Items In Your List</p>
                         </div>
@@ -1686,19 +1533,13 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                     </div>
                   </div>
                 </div>
-                <div class="simplebar-placeholder" style="width: 0px; height: 0px"></div>
+                <div class="simplebar-placeholder"></div>
               </div>
-              <div class="simplebar-track simplebar-horizontal" style="visibility: hidden">
-                <div class="simplebar-scrollbar" style="
-                    transform: translate3d(0px, 0px, 0px);
-                    visibility: hidden;
-                  "></div>
+              <div class="simplebar-track simplebar-horizontal">
+                <div class="simplebar-scrollbar"></div>
               </div>
-              <div class="simplebar-track simplebar-vertical" style="visibility: hidden">
-                <div class="simplebar-scrollbar" style="
-                    transform: translate3d(0px, 0px, 0px);
-                    visibility: hidden;
-                  "></div>
+              <div class="simplebar-track simplebar-vertical">
+                <div class="simplebar-scrollbar"></div>
               </div>
             </div>
           </div>
@@ -1727,48 +1568,12 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
           </div>
         </div>
       </div>
-      <div dir="ltr" class="resize-sensor" style="
-          pointer-events: none;
-          position: absolute;
-          inset: 0px;
-          overflow: hidden;
-          z-index: -1;
-          visibility: hidden;
-          max-width: 100%;
-        ">
-        <div class="resize-sensor-expand" style="
-            pointer-events: none;
-            position: absolute;
-            inset: 0px;
-            overflow: hidden;
-            z-index: -1;
-            visibility: hidden;
-            max-width: 100%;
-          ">
-          <div style="
-              position: absolute;
-              left: 0px;
-              top: 0px;
-              transition: all 0s ease 0s;
-            "></div>
+      <div dir="ltr" class="resize-sensor">
+        <div class="resize-sensor-expand">
+          <div></div>
         </div>
-        <div class="resize-sensor-shrink" style="
-            pointer-events: none;
-            position: absolute;
-            inset: 0px;
-            overflow: hidden;
-            z-index: -1;
-            visibility: hidden;
-            max-width: 100%;
-          ">
-          <div style="
-              position: absolute;
-              left: 0px;
-              top: 0px;
-              transition: all 0s ease 0s;
-              width: 200%;
-              height: 200%;
-            "></div>
+        <div class="resize-sensor-shrink">
+          <div></div>
         </div>
       </div>
     </div>
@@ -1780,7 +1585,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
         <div class="col p-0">
           <aside role="complementary" class="footer-signup d-flex">
             <div class="h1">
-              <img src="/images/subscribe-save.svg" alt="Subscribe and Save">
+              
               <div class="tagline col-sm-12 d-md-none d-lg-none d-xl-none">
                 Get exclusive specials, coupons and more sent to your email or
                 phone!
@@ -1796,9 +1601,9 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
               <div class="signup-form col-12">
                 <div class="row">
                   <article class="col-12 col-md col-xl-5 no-gutters pr-0 pl-md-0">
-                    <form onsubmit="aa.account.emailSignup(event, $('#deal-signup-email'));" class="deal-signup" data-ddg-formtype="sign up">
+                    <form onsubmit="aa.account.emailSignup(event, $('#deal-signup-email'));" class="deal-signup">
                       <div class="input-group input-group-lg action">
-                        <input id="deal-signup-email" name="email" type="email" class="form-control deal-signup__email" placeholder="Enter Your Email Address" aria-label="Enter Your Email Address" aria-describedby="emailSignupInputLabel" data-validaton-label="Email Address" title="overall type: UNKNOWN_TYPE
+                        <input id="deal-signup-email" name="email" type="email" class="form-control deal-signup__email" placeholder="Enter Your Email Address" aria-label="Enter Your Email Address" aria-describedby="emailSignupInputLabel" data-validaton-label="Email Address" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter Your Email Address
@@ -1809,25 +1614,7 @@ form signature: 18234691952323640971
 form signature in host form: 18234691952323640971
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 4
-field renderer id: 36" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter Your Email Address
-parseable name: email
-section: email_0_36
-field signature: 1029417091
-form signature: 18234691952323640971
-form signature in host form: 18234691952323640971
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 4
-field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" style="
-                            background-size: auto 26px !important;
-                            background-position: right center !important;
-                            background-repeat: no-repeat !important;
-                            background-origin: content-box !important;
-                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                            transition: background 0s ease 0s !important;
-                          " data-ddg-testresultelementid="530393">
+field renderer id: 36" data-ddg-testresultelementid="530393">
                         <input type="hidden" name="12795011d958af55feb340e8067c3313f5f2f1ca7c23151758e5b7164f09f73d04f45a6f4d958f0b6782f201ab735ecb990bcb665059952449e69cbf6db60af1" value="8f2161ba175e7447b28cdc1e74ff22292c6a28c568329202c3196c27a41de1ddaae875a8a06b07a9ff45a7d73be5ffc81bf386a0b291fc6b9164648b6dcb1f19">
                         <span id="emailSignupInputLabel" class="sr-only">Signup form for weekly deals sent via email to your
                           inbox.
@@ -1849,9 +1636,9 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                   </div>
 
                   <article class="col-12 col-md col-xl-5 no-gutters pr-0">
-                    <form onsubmit="aa.account.smsTAC(event);" class="deal-signup" data-ddg-formtype="sign up">
+                    <form onsubmit="aa.account.smsTAC(event);" class="deal-signup">
                       <div class="input-group input-group-lg action">
-                        <input id="deal-signup-phone" name="phone" type="tel" class="form-control deal-signup__phone" aria-label="Enter Your Phone Number" aria-describedby="smsSignupInputLabel" placeholder="Enter Your Phone Number" pattern="^(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})\s?-?\s?(\d{4})$" title="overall type: UNKNOWN_TYPE
+                        <input id="deal-signup-phone" name="phone" type="tel" class="form-control deal-signup__phone" aria-label="Enter Your Phone Number" aria-describedby="smsSignupInputLabel" placeholder="Enter Your Phone Number" pattern="^(?:\d{1}\s)?\(?(\d{3})\)?-?\s?(\d{3})\s?-?\s?(\d{4})$" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter Your Phone Number
@@ -1862,18 +1649,7 @@ form signature: 13178251965549772890
 form signature in host form: 13178251965549772890
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 5
-field renderer id: 39" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter Your Phone Number
-parseable name: phone
-section: phone_0_39
-field signature: 1794903826
-form signature: 13178251965549772890
-form signature in host form: 13178251965549772890
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 5
-field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="530394">
+field renderer id: 39" data-ddg-testresultelementid="530394">
                         <input type="hidden" name="12795011d958af55feb340e8067c3313f5f2f1ca7c23151758e5b7164f09f73d04f45a6f4d958f0b6782f201ab735ecb990bcb665059952449e69cbf6db60af1" value="8f2161ba175e7447b28cdc1e74ff22292c6a28c568329202c3196c27a41de1ddaae875a8a06b07a9ff45a7d73be5ffc81bf386a0b291fc6b9164648b6dcb1f19">
                         <span id="smsSignupInputLabel" class="sr-only">Signup form for weekly deals sent via SMS text
                           message to your phone.
@@ -2064,11 +1840,11 @@ field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                 </div>
 
                 <a class="download-app-link" href="https://itunes.apple.com/us/app/food-city-mobile/id1159433518" target="_blank" title="Food City iOS Mobile App Download">
-                  <img src="/images/apps/app-store.png" alt="Download on the App Store">
+                  
                   <span class="sr-only">Food City iOS Mobile App Download</span>
                 </a>
                 <a class="download-app-link" href="https://play.google.com/store/apps/details?id=com.foodcity.mobile" target="_blank" title="Food City Android Mobile App Download">
-                  <img src="/images/apps/google-play.png" alt="Get it on Google Play">
+                  
                   <span class="sr-only">Food City Android Mobile App Download</span>
                 </a>
               </li>
@@ -2191,7 +1967,7 @@ field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
             <div class="">
               <div id="login-form__card" class="login-form__card m-auto">
                 <div class="card-header pb-0">
-                  <a href="/"><img class="login-form__logo" alt="Food City Logo" src="/images/food-city-logo.svg"></a>
+                  <a href="/"></a>
                   <span id="loginModalLabel" class="sr-only">Login/Registration Form</span>
                 </div>
 
@@ -2212,7 +1988,7 @@ field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                   <div class="tab-content">
                     <div id="nav-login" class="tab-pane mt-40 fade active show" role="tabpanel" aria-labelledby="nav-login-tab">
-                      <form id="login_form" class="form-columned clearfix" role="form" novalidate="" onsubmit="event.preventDefault();" data-ddg-formtype="sign in">
+                      <form id="login_form" class="form-columned clearfix" role="form" novalidate="" onsubmit="event.preventDefault();">
                         <div class="form-container col-12 px-0">
                           <h3 id="login-prompt-message"></h3>
                           <fieldset>
@@ -2222,13 +1998,37 @@ field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                             <div class="row no-gutters">
                               <div class="form-group col-12 px-0">
                                 <label for="login_email">Email</label>
-                                <input type="email" class="form-control" id="login_email" name="email" autocomplete="off" value="" required="" data-ddg-testresultelementid="530395" data-manual-scoring="username">
+                                <input type="email" class="form-control" id="login_email" name="email" autocomplete="off" value="" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: UNKNOWN_TYPE
+label: Email
+parseable name: email
+section: email_0_51
+field signature: 1029417091
+form signature: 6083906487879785537
+form signature in host form: 6083906487879785537
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 7
+field renderer id: 51
+autocomplete: off" data-ddg-testresultelementid="530395" data-manual-scoring="username">
                               </div>
                             </div>
                             <div class="row no-gutters">
                               <div class="form-group col-12 px-0">
                                 <label for="login_password">Password</label>
-                                <input type="password" class="form-control" id="login_password" name="password" autocomplete="off" required="" data-ddg-testresultelementid="530396" data-manual-scoring="password">
+                                <input type="password" class="form-control" id="login_password" name="password" autocomplete="off" required="" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: email_0_51
+field signature: 2051817934
+form signature: 6083906487879785537
+form signature in host form: 6083906487879785537
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 7
+field renderer id: 52
+autocomplete: off" data-ddg-testresultelementid="530396" data-manual-scoring="password">
                               </div>
                             </div>
                           </fieldset>
@@ -2238,7 +2038,7 @@ field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                               <span class="forgot-password"><a class="font-italic" href="index.php?vica=ctl_user&amp;vicb=showForgotPass&amp;vicc=p">Forgot your Password?</a></span>
 
                               <div class="custom-control custom-checkbox remember-me mt-3">
-                                <a class="check-styled checked" id="check_0"></a><input id="loginRememberMe" type="checkbox" name="loginRememberMe" checked="" class="custom-control-input text-primary setup-checkbox" title="overall type: UNKNOWN_TYPE
+                                <a class="check-styled checked" id="check_0"></a><input id="loginRememberMe" type="checkbox" name="loginRememberMe" checked="" class="custom-control-input text-primary setup-checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Remember Me
@@ -2249,24 +2049,7 @@ form signature: 6083906487879785537
 form signature in host form: 6083906487879785537
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 7
-field renderer id: 53" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Remember Me
-parseable name: loginRememberMe
-section: email_0_51
-field signature: 2209715907
-form signature: 6083906487879785537
-form signature in host form: 6083906487879785537
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 7
-field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" style="
-                                    position: absolute;
-                                    left: -1px;
-                                    top: 3px;
-                                    z-index: -1;
-                                    visibility: hidden;
-                                  " data-ddg-testresultelementid="530397">
+field renderer id: 53" data-ddg-testresultelementid="530397">
                                 <label for="loginRememberMe" class="custom-control-label">Remember Me</label>
                               </div>
                             </div>
@@ -2284,8 +2067,8 @@ field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" style="
                           <input type="hidden" id="loginRecaptchaToken" name="recaptchaToken" value="">
                           <input type="hidden" name="recaptchaVersion" value="3">
 
-                          <div class="row padded" style="margin-top: 30px">
-                            <div class="col-12 text-center" style="opacity: 0.6">
+                          <div class="row padded">
+                            <div class="col-12 text-center">
                               This site is protected by reCAPTCHA and the Google
                               <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>
                               and
@@ -2293,7 +2076,7 @@ field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" style="
                               apply.
                             </div>
 
-                            <div class="loginRegisterFormFeedback m-auto alert alert-" role="alert" style="display: none !important"></div>
+                            <div class="loginRegisterFormFeedback m-auto alert alert-" role="alert"></div>
                           </div>
                         </div>
 
@@ -2301,12 +2084,12 @@ field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" style="
                       </form>
                     </div>
                     <div id="nav-register" class="tab-pane mt-18 fade show" role="tabpanel" aria-labelledby="nav-register-tab">
-                      <button id="btnRegisterBack" class="btn form__btn-back" style="display: none" type="button" data-toggle="collapse" data-target="#register-verification-code-notification-preference" onclick="$('#login-register-tabs').show();$(this).hide();$('.login-form__card').removeClass('register-form--active');$('#registerLoyaltyCardRequestRadio, #registerLoyaltyCardExistingRadio').prop('checked', false);$('#register-verify-loyalty-account, #register-form').collapse('hide');" aria-controls="register-verification-code-notification-preference" aria-selected="false">
+                      <button id="btnRegisterBack" class="btn form__btn-back" type="button" data-toggle="collapse" data-target="#register-verification-code-notification-preference" onclick="$('#login-register-tabs').show();$(this).hide();$('.login-form__card').removeClass('register-form--active');$('#registerLoyaltyCardRequestRadio, #registerLoyaltyCardExistingRadio').prop('checked', false);$('#register-verify-loyalty-account, #register-form').collapse('hide');" aria-controls="register-verification-code-notification-preference" aria-selected="false">
                         <label class="sr-only" for="btnRegisterBack">Back to first registration step</label>
                         <i class="fc fc-chevron-left"></i>
                       </button>
 
-                      <form id="register" class="form-columned clearfix" role="form" autocomplete="off" action="index.php?vica=ctl_user&amp;vicb=sendReg&amp;vicc=p" method="post" novalidate="" data-ddg-formtype="sign up">
+                      <form id="register" class="form-columned clearfix" role="form" autocomplete="off" action="index.php?vica=ctl_user&amp;vicb=sendReg&amp;vicc=p" method="post" novalidate="">
                         <div class="row no-gutters">
                           <div class="form-container tab-content px-0 w-100">
                             <fieldset id="register-verification-code-notification-preference" class="collapse show" data-parent="#register" aria-labelledby="navRegisterSetLabel1">
@@ -2319,7 +2102,7 @@ field renderer id: 53" autofill-prediction="UNKNOWN_TYPE" style="
                                   </legend>
 
                                   <div class="custom-control custom-radio custom-control-inline">
-                                    <a href="#radio_0" class="radio-styled" id="radio_0" rel="rg-notificationPreference"></a><input type="radio" id="registerPhoneRadio" name="notificationPreference" class="custom-control-input setup-radio" onclick="$('#registerPhoneRow').show();$('#registrationType').val('sms');" title="overall type: UNKNOWN_TYPE
+                                    <a href="#radio_0" class="radio-styled" id="radio_0" rel="rg-notificationPreference"></a><input type="radio" id="registerPhoneRadio" name="notificationPreference" class="custom-control-input setup-radio" onclick="$('#registerPhoneRow').show();$('#registrationType').val('sms');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Text message
@@ -2330,29 +2113,12 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 61" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Text message
-parseable name: notificationPreference
-section: notificationPreference_0_61
-field signature: 270504223
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 61" autofill-prediction="UNKNOWN_TYPE" style="
-                                        position: absolute;
-                                        left: -1px;
-                                        top: 3px;
-                                        z-index: -1;
-                                        visibility: hidden;
-                                      " data-ddg-testresultelementid="530398">
+field renderer id: 61" data-ddg-testresultelementid="530398">
                                     <label class="custom-control-label" for="registerPhoneRadio">Text message</label>
                                   </div>
 
                                   <div class="custom-control custom-radio custom-control-inline">
-                                    <a href="#radio_1" class="radio-styled checked" id="radio_1" rel="rg-notificationPreference"></a><input type="radio" id="registerEmailRadio" name="notificationPreference" class="custom-control-input setup-radio" checked="" onclick="$('#registerPhoneRow').hide();$('#registrationType').val('email');" title="overall type: UNKNOWN_TYPE
+                                    <a href="#radio_1" class="radio-styled checked" id="radio_1" rel="rg-notificationPreference"></a><input type="radio" id="registerEmailRadio" name="notificationPreference" class="custom-control-input setup-radio" checked="" onclick="$('#registerPhoneRow').hide();$('#registrationType').val('email');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Email
@@ -2363,51 +2129,49 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 62" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Email
-parseable name: notificationPreference
-section: notificationPreference_0_61
-field signature: 270504223
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" style="
-                                        position: absolute;
-                                        left: -1px;
-                                        top: 3px;
-                                        z-index: -1;
-                                        visibility: hidden;
-                                      " data-ddg-testresultelementid="530399">
+field renderer id: 62" data-ddg-testresultelementid="530399">
                                     <label class="custom-control-label" for="registerEmailRadio">Email</label>
                                   </div>
                                 </div>
                               </div>
 
-                              <div id="registerPhoneRow" class="row no-gutters" style="display: none">
+                              <div id="registerPhoneRow" class="row no-gutters">
                                 <div class="form-group col-12 px-0">
                                   <label for="registerPhone" class="required">Phone Number</label>
-                                  <input type="phone" class="form-control" id="registerPhone" name="phone" required="" data-ddg-testresultelementid="530400" data-manual-scoring="phone">
+                                  <input type="phone" class="form-control" id="registerPhone" name="phone" required="" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: PHONE_HOME_CITY_AND_NUMBER
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone Number
+parseable name: phone
+section: notificationPreference_0_61
+field signature: 1635119699
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 63" data-ddg-testresultelementid="530400" data-manual-scoring="phone">
                                 </div>
                               </div>
 
                               <div id="registerEmailRow" class="row no-gutters">
                                 <div class="form-group col-12 px-0">
                                   <label for="registerEmail" class="required">Email Address</label>
-                                  <input type="email" class="form-control" id="registerEmail" name="email" required="" data-ddg-autofill="true" style="
-                                      background-size: auto 26px !important;
-                                      background-position: right center !important;
-                                      background-repeat: no-repeat !important;
-                                      background-origin: content-box !important;
-                                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                      transition: background 0s ease 0s !important;
-                                    " data-ddg-testresultelementid="530401" data-manual-scoring="emailAddress">
+                                  <input type="email" class="form-control" id="registerEmail" name="email" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: email
+section: notificationPreference_0_61
+field signature: 1029417091
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 64" data-ddg-testresultelementid="530401" data-manual-scoring="emailAddress">
                                 </div>
                               </div>
 
-                              <div class="row" style="margin: 0">
+                              <div class="row">
                                 <div class="col d-flex">
                                   <span class="text-secondary align-self-end form__footnote">* required fields</span>
                                 </div>
@@ -2419,7 +2183,7 @@ field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" style="
                                         Next
                                       </button>
                                     </span>
-                                    <p id="processMsg" style="display: none">
+                                    <p id="processMsg">
                                       Logging in please wait...
                                     </p>
                                   </div>
@@ -2433,7 +2197,7 @@ field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" style="
                                   <a href="terms_and_privacy_policy/"><u>Terms of use &amp; Privacy policy</u></a>
                                 </div>
 
-                                <div class="col-12 text-center mt-3" style="opacity: 0.6">
+                                <div class="col-12 text-center mt-3">
                                   This site is protected by reCAPTCHA and the
                                   Google
                                   <a href="https://policies.google.com/privacy" target="_blank">Privacy Policy</a>
@@ -2463,7 +2227,7 @@ field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" style="
                               <div class="row no-gutters">
                                 <div class="form-group col-12 px-0">
                                   <label for="registerVerificationCode" class="">Verification Code</label>
-                                  <input id="registerVerificationCode" class="form-control" type="text" name="code" required="" title="overall type: UNKNOWN_TYPE
+                                  <input id="registerVerificationCode" class="form-control" type="text" name="code" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Verification Code
@@ -2474,18 +2238,7 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 71" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Verification Code
-parseable name: code
-section: notificationPreference_0_61
-field signature: 1102667637
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 71" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530402">
+field renderer id: 71" data-ddg-testresultelementid="530402">
                                 </div>
                               </div>
 
@@ -2497,7 +2250,7 @@ field renderer id: 71" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                         Submit
                                       </button>
                                     </span>
-                                    <p id="processMsg" style="display: none">
+                                    <p id="processMsg">
                                       Verifying existing ValuCard please wait...
                                     </p>
                                   </div>
@@ -2575,7 +2328,7 @@ field renderer id: 71" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                 <div class="row">
                                   <div class="form-group col mb-3">
                                     <div class="custom-control custom-radio custom-control-inline mb-2">
-                                      <a href="#radio_2" class="radio-styled" id="radio_2" rel="rg-loyaltyCardRequest"></a><input id="registerLoyaltyCardRequestRadio" class="custom-control-input setup-radio" name="loyaltyCardRequest" type="radio" data-target="#register-form" data-toggle="collapse" aria-expanded="false" aria-controls="register-form" onclick="$('.login-form__card').addClass('register-form--active');" title="overall type: UNKNOWN_TYPE
+                                      <a href="#radio_2" class="radio-styled" id="radio_2" rel="rg-loyaltyCardRequest"></a><input id="registerLoyaltyCardRequestRadio" class="custom-control-input setup-radio" name="loyaltyCardRequest" type="radio" data-target="#register-form" data-toggle="collapse" aria-expanded="false" aria-controls="register-form" onclick="$('.login-form__card').addClass('register-form--active');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Request a ValuCard
@@ -2586,29 +2339,12 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 77" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Request a ValuCard
-parseable name: loyaltyCardRequest
-section: notificationPreference_0_61
-field signature: 4202339174
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 77" autofill-prediction="UNKNOWN_TYPE" style="
-                                          position: absolute;
-                                          left: -1px;
-                                          top: 3px;
-                                          z-index: -1;
-                                          visibility: hidden;
-                                        " data-ddg-testresultelementid="530403">
+field renderer id: 77" data-ddg-testresultelementid="530403">
                                       <label class="custom-control-label" for="registerLoyaltyCardRequestRadio">Request a ValuCard</label>
                                     </div>
 
                                     <div class="custom-control custom-radio custom-control-inline mb-2">
-                                      <a href="#radio_3" class="radio-styled" id="radio_3" rel="rg-loyaltyCardRequest"></a><input id="registerLoyaltyCardExistingRadio" class="custom-control-input setup-radio" name="loyaltyCardRequest" type="radio" data-target="#register-verify-loyalty-account" data-toggle="collapse" aria-expanded="false" aria-controls="register-verify-loyalty-account" onclick="$('.login-form__card').removeClass('register-form--active');" title="overall type: UNKNOWN_TYPE
+                                      <a href="#radio_3" class="radio-styled" id="radio_3" rel="rg-loyaltyCardRequest"></a><input id="registerLoyaltyCardExistingRadio" class="custom-control-input setup-radio" name="loyaltyCardRequest" type="radio" data-target="#register-verify-loyalty-account" data-toggle="collapse" aria-expanded="false" aria-controls="register-verify-loyalty-account" onclick="$('.login-form__card').removeClass('register-form--active');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I have an existing ValuCard
@@ -2619,24 +2355,7 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 78" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I have an existing ValuCard
-parseable name: loyaltyCardRequest
-section: notificationPreference_0_61
-field signature: 4202339174
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 78" autofill-prediction="UNKNOWN_TYPE" style="
-                                          position: absolute;
-                                          left: -1px;
-                                          top: 3px;
-                                          z-index: -1;
-                                          visibility: hidden;
-                                        " data-ddg-testresultelementid="530404">
+field renderer id: 78" data-ddg-testresultelementid="530404">
                                       <!-- #register-account -->
                                       <label class="custom-control-label" for="registerLoyaltyCardExistingRadio">I have an existing ValuCard</label>
                                     </div>
@@ -2649,7 +2368,7 @@ field renderer id: 78" autofill-prediction="UNKNOWN_TYPE" style="
                                   <div class="row">
                                     <div class="form-group col mb-3">
                                       <label for="registerExistingLoyaltyNumber" class="required">Your Card Number</label>
-                                      <input id="registerExistingLoyaltyNumber" class="form-control" name="VIC_registerExistingLoyaltyNumber" type="text" autocomplete="off" value="" required="" title="overall type: UNKNOWN_TYPE
+                                      <input id="registerExistingLoyaltyNumber" class="form-control" name="VIC_registerExistingLoyaltyNumber" type="text" autocomplete="off" value="" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Your Card Number
@@ -2661,26 +2380,26 @@ form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
 field renderer id: 80
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Your Card Number
-parseable name: VIC_registerExistingLoyaltyNumber
-section: notificationPreference_0_61
-field signature: 2743021541
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 80
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530406">
+autocomplete: off" data-ddg-testresultelementid="530406">
                                     </div>
                                   </div>
 
                                   <div class="row">
                                     <div class="form-group col mb-3">
                                       <label for="registerExistingLoyaltyLastName" class="required">Last Name on Account</label>
-                                      <input id="registerExistingLoyaltyLastName" class="form-control" name="VIC_registerExistingLoyaltyLastName" type="text" autocomplete="off" value="" required="" data-ddg-testresultelementid="530408" data-manual-scoring="lastName">
+                                      <input id="registerExistingLoyaltyLastName" class="form-control" name="VIC_registerExistingLoyaltyLastName" type="text" autocomplete="off" value="" required="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name on Account
+parseable name: VIC_registerExistingLoyaltyLastName
+section: notificationPreference_0_61
+field signature: 1619545125
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 81
+autocomplete: off" data-ddg-testresultelementid="530408" data-manual-scoring="lastName">
                                     </div>
                                   </div>
 
@@ -2735,21 +2454,56 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                       <div class="row no-gutters">
                                         <div class="form-group col-12 px-0">
                                           <label for="registerFirstName" class="required">First name</label>
-                                          <input id="registerFirstName" class="form-control" name="VIC_FirstName" type="text" autocomplete="off" value="" required="" data-ddg-testresultelementid="530409" data-manual-scoring="firstName">
+                                          <input id="registerFirstName" class="form-control" name="VIC_FirstName" type="text" autocomplete="off" value="" required="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First name
+parseable name: VIC_FirstName
+section: notificationPreference_0_61
+field signature: 130557336
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 85
+autocomplete: off" data-ddg-testresultelementid="530409" data-manual-scoring="firstName">
                                         </div>
                                       </div>
 
                                       <div class="row no-gutters">
                                         <div class="form-group col-12 px-0">
                                           <label for="registerLastName" class="required">Last Name</label>
-                                          <input id="registerLastName" class="form-control" name="VIC_LastName" type="text" value="" autocomplete="off" required="" data-ddg-testresultelementid="530410" data-manual-scoring="lastName">
+                                          <input id="registerLastName" class="form-control" name="VIC_LastName" type="text" value="" autocomplete="off" required="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: UNKNOWN_TYPE
+label: Last Name
+parseable name: VIC_LastName
+section: notificationPreference_0_61
+field signature: 485993688
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 86
+autocomplete: off" data-ddg-testresultelementid="530410" data-manual-scoring="lastName">
                                         </div>
                                       </div>
 
                                       <div class="row no-gutters">
                                         <div class="form-group col-12 px-0">
                                           <label for="registerEmail2" class="required">Email Address</label>
-                                          <input id="registerEmail2" class="form-control" name="VIC_EMailAddress" type="email" value="" required="" readonly="" data-ddg-testresultelementid="530411" data-manual-scoring="emailAddress">
+                                          <input id="registerEmail2" class="form-control" name="VIC_EMailAddress" type="email" value="" required="" readonly="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: VIC_EMailAddress
+section: notificationPreference_0_61
+field signature: 1493933467
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 87" data-ddg-testresultelementid="530411" data-manual-scoring="emailAddress">
                                         </div>
                                       </div>
                                     </div>
@@ -2762,22 +2516,70 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                       <div class="row no-gutters">
                                         <div class="form-group col-12 px-0">
                                           <label for="registerAddress" class="required">Address</label>
-                                          <input id="registerAddress" class="form-control" name="VIC_Street1" type="text" value="" autocomplete="off" required="" data-ddg-testresultelementid="530412" data-manual-scoring="addressStreet">
+                                          <input id="registerAddress" class="form-control" name="VIC_Street1" type="text" value="" autocomplete="off" required="" autofill-information="overall type: ADDRESS_HOME_STREET_ADDRESS
+server type: ADDRESS_HOME_STREET_ADDRESS
+heuristic type: ADDRESS_HOME_LINE1
+label: Address
+parseable name: VIC_Street1
+section: notificationPreference_0_61
+field signature: 552257440
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 88
+autocomplete: off" data-ddg-testresultelementid="530412" data-manual-scoring="addressStreet">
                                         </div>
                                       </div>
                                       <div class="row no-gutters">
                                         <div class="form-group col-12 px-0">
                                           <label for="registerCity" class="required">City</label>
-                                          <input id="registerCity" class="form-control" name="VIC_City" type="text" value="" autocomplete="off" required="" data-ddg-testresultelementid="530413" data-manual-scoring="addressCity">
+                                          <input id="registerCity" class="form-control" name="VIC_City" type="text" value="" autocomplete="off" required="" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: City
+parseable name: VIC_City
+section: notificationPreference_0_61
+field signature: 2503765401
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 89
+autocomplete: off" data-ddg-testresultelementid="530413" data-manual-scoring="addressCity">
                                         </div>
                                       </div>
 
                                       <div class="row no-gutters">
                                         <div class="form-group col-6">
                                           <label class="sr-only" for="frmStateS" tabindex="-1">autofill-helper</label>
-                                          <input class="sr-only" id="frmStateS" placeholder="NY" autocomplete="off" tabindex="-1" data-ddg-testresultelementid="530414" data-manual-scoring="addressProvince">
+                                          <input class="sr-only" id="frmStateS" placeholder="NY" autocomplete="off" tabindex="-1" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: autofill-helper
+parseable name: frmStateS
+section: notificationPreference_0_61
+field signature: 1392071359
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 90
+autocomplete: off" data-ddg-testresultelementid="530414" data-manual-scoring="addressProvince">
                                           <label for="registration_state" class="required">State/Province</label>
-                                          <select id="registration_state" class="form-control" name="VIC_StateName" autocomplete="off" required="" onchange="if([&quot;KY&quot;, &quot;TN&quot;, &quot;VA&quot;, &quot;GA&quot;, &quot;AL&quot;].indexOf($(this).val()) < 0) { $(&quot;#outOfStateWarning&quot;).collapse(&quot;show&quot;); } else { $(&quot;#outOfStateWarning&quot;).collapse(&quot;hide&quot;); };" data-ddg-testresultelementid="530415" data-manual-scoring="addressProvince">
+                                          <select id="registration_state" class="form-control" name="VIC_StateName" autocomplete="off" required="" onchange="if([&quot;KY&quot;, &quot;TN&quot;, &quot;VA&quot;, &quot;GA&quot;, &quot;AL&quot;].indexOf($(this).val()) < 0) { $(&quot;#outOfStateWarning&quot;).collapse(&quot;show&quot;); } else { $(&quot;#outOfStateWarning&quot;).collapse(&quot;hide&quot;); };" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province
+parseable name: VIC_StateName
+section: notificationPreference_0_61
+field signature: 2658215685
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 91
+autocomplete: off" data-ddg-testresultelementid="530415" data-manual-scoring="addressProvince">
                                             <option disabled="" selected="" value="">
                                               State
                                             </option>
@@ -2875,18 +2677,26 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
 
                                         <div class="form-group col-6">
                                           <label for="registerZip" class="required">Zip Code</label>
-                                          <input id="registerZip" class="form-control" name="VIC_PostalCode" type="text" value="" autocomplete="off" required="" data-ddg-testresultelementid="530416" data-manual-scoring="addressPostalCode">
+                                          <input id="registerZip" class="form-control" name="VIC_PostalCode" type="text" value="" autocomplete="off" required="" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: ADDRESS_HOME_ZIP
+heuristic type: ADDRESS_HOME_ZIP
+label: Zip Code
+parseable name: VIC_PostalCode
+section: notificationPreference_0_61
+field signature: 1509457414
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 92
+autocomplete: off" data-ddg-testresultelementid="530416" data-manual-scoring="addressPostalCode">
                                         </div>
                                       </div>
                                       <div id="outOfStateWarning" class="row no-gutters collapse">
                                         <div class="form-group col-12">
                                           <p class="alert alert-info dfac py-0">
                                             <i class="fa fa-info-circle text-info"></i>
-                                            <span style="
-                                                display: inline-block;
-                                                padding: 0.5rem 1rem 0.5rem;
-                                                font-weight: 600;
-                                              ">
+                                            <span>
                                               Food City stores are located in
                                               AL, GA, KY, TN, and VA
                                             </span>
@@ -2899,7 +2709,18 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                           <div class="row no-gutters">
                                             <div class="form-group col-12">
                                               <label for="registerPrimaryPhone" class="required">Phone Number</label>
-                                              <input id="registerPrimaryPhone" class="form-control" name="VIC_Phone2" type="phone" required="" data-ddg-testresultelementid="530417" data-manual-scoring="phone">
+                                              <input id="registerPrimaryPhone" class="form-control" name="VIC_Phone2" type="phone" required="" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: PHONE_HOME_CITY_AND_NUMBER
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone Number
+parseable name: VIC_Phone2
+section: notificationPreference_0_61
+field signature: 2635991367
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 93" data-ddg-testresultelementid="530417" data-manual-scoring="phone">
                                             </div>
                                           </div>
                                         </div>
@@ -2914,12 +2735,36 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                       <div class="row no-gutters">
                                         <div class="form-group col-12 px-0">
                                           <label for="registration_password" class="required">Password</label>
-                                          <input id="registration_password" class="form-control" name="VIC_Password" type="password" value="" data-trigger="focus" autocomplete="off" oninput="aa.account.validatePassword($(this));" required="" data-ddg-testresultelementid="530418" data-manual-scoring="password">
+                                          <input id="registration_password" class="form-control" name="VIC_Password" type="password" value="" data-trigger="focus" autocomplete="off" oninput="aa.account.validatePassword($(this));" required="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: VIC_Password
+section: notificationPreference_0_61
+field signature: 2255203994
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 94
+autocomplete: off" data-ddg-testresultelementid="530418" data-manual-scoring="password">
                                         </div>
 
                                         <div class="form-group col-12 px-0">
                                           <label for="registerPasswordConfirm" class="required">Re-type Password</label>
-                                          <input type="password" class="form-control" id="registerPasswordConfirm" name="password_confirm" value="" autocomplete="off" oninput="aa.account.validatePasswordPair($('#registration_password'), $(this));" data-ddg-testresultelementid="530419" data-manual-scoring="password">
+                                          <input type="password" class="form-control" id="registerPasswordConfirm" name="password_confirm" value="" autocomplete="off" oninput="aa.account.validatePasswordPair($('#registration_password'), $(this));" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Re-type Password
+parseable name: password_confirm
+section: notificationPreference_0_61
+field signature: 392508346
+form signature: 7901015804543537606
+form signature in host form: 7901015804543537606
+field frame token: 66B67EF52F698120AAF7076C40A0C8CE
+form renderer id: 8
+field renderer id: 95
+autocomplete: off" data-ddg-testresultelementid="530419" data-manual-scoring="password">
                                         </div>
                                       </div>
                                     </div>
@@ -2933,7 +2778,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                                   <div class="row mt-5">
                                     <div class="col-12 col-md-6 mb-3">
                                       <div class="custom-control custom-checkbox">
-                                        <a class="check-styled checked" id="check_1"></a><input id="registerFcEmail" class="custom-control-input text-primary setup-checkbox" name="VIC_SendEmail" type="checkbox" checked="" title="overall type: UNKNOWN_TYPE
+                                        <a class="check-styled checked" id="check_1"></a><input id="registerFcEmail" class="custom-control-input text-primary setup-checkbox" name="VIC_SendEmail" type="checkbox" checked="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Keep me up to date with emails from Foodcity.com
@@ -2944,24 +2789,7 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 96" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Keep me up to date with emails from Foodcity.com
-parseable name: VIC_SendEmail
-section: notificationPreference_0_61
-field signature: 4290064140
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 96" autofill-prediction="UNKNOWN_TYPE" style="
-                                            position: absolute;
-                                            left: -1px;
-                                            top: 3px;
-                                            z-index: -1;
-                                            visibility: hidden;
-                                          " data-ddg-testresultelementid="530420">
+field renderer id: 96" data-ddg-testresultelementid="530420">
                                         <label class="custom-control-label pl-2" for="registerFcEmail">Keep me up to date with emails from
                                           Foodcity.com</label>
                                       </div>
@@ -2969,7 +2797,7 @@ field renderer id: 96" autofill-prediction="UNKNOWN_TYPE" style="
 
                                     <div class="col-12 col-md-6 mb-3">
                                       <div class="custom-control custom-checkbox">
-                                        <a class="check-styled checked" id="check_2"></a><input id="registerInfoCollect" class="custom-control-input text-primary setup-checkbox" name="registerInfoCollect" type="checkbox" checked="" title="overall type: UNKNOWN_TYPE
+                                        <a class="check-styled checked" id="check_2"></a><input id="registerInfoCollect" class="custom-control-input text-primary setup-checkbox" name="registerInfoCollect" type="checkbox" checked="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I understand that Food City uses information collected when I shop to help make their stores, produc
@@ -2980,24 +2808,7 @@ form signature: 7901015804543537606
 form signature in host form: 7901015804543537606
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 8
-field renderer id: 97" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I understand that Food City uses information collected when I shop to help make their stores, produc
-parseable name: registerInfoCollect
-section: notificationPreference_0_61
-field signature: 378692200
-form signature: 7901015804543537606
-form signature in host form: 7901015804543537606
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 8
-field renderer id: 97" autofill-prediction="UNKNOWN_TYPE" style="
-                                            position: absolute;
-                                            left: -1px;
-                                            top: 3px;
-                                            z-index: -1;
-                                            visibility: hidden;
-                                          " data-ddg-testresultelementid="530421">
+field renderer id: 97" data-ddg-testresultelementid="530421">
                                         <label class="custom-control-label pl-2" for="registerInfoCollect">I understand that Food City uses
                                           information collected when I shop to
                                           help make their stores, products and
@@ -3018,100 +2829,9 @@ field renderer id: 97" autofill-prediction="UNKNOWN_TYPE" style="
                                   <input id="registration_code" type="hidden" name="registration_code" value="">
                                 </fieldset>
 
-                                <script>
-                                  var regFormRunWhenReady = function () {
-                                    // phone number formatter
-                                    $('input[type="phone"]')
-                                      .formatter({
-                                        pattern: "({{999}}) {{999}} - {{9999}}",
-                                        persistent: false,
-                                      })
-                                      .resetPattern();
-                                    $('input[type="phone"]').on(
-                                      "input",
-                                      function (el) {
-                                        // autofill detection and reformatting
-                                        $('input[type="phone"]')
-                                          .formatter({
-                                            pattern:
-                                              "({{999}}) {{999}} - {{9999}}",
-                                            persistent: false,
-                                          })
-                                          .resetPattern();
-                                      }
-                                    );
+                                
 
-                                    // zip formatter
-                                    $("#registerZip")
-                                      .formatter({
-                                        pattern: "{{99999}}",
-                                        persistent: false,
-                                      })
-                                      .resetPattern();
-                                    $("#registerZip").on(
-                                      "input",
-                                      function (el) {
-                                        // autofill detection and reformatting
-                                        $("#registerZip")
-                                          .formatter({
-                                            pattern: "{{99999}}",
-                                            persistent: false,
-                                          })
-                                          .resetPattern();
-                                      }
-                                    );
-
-                                    // loyalty number formatter
-                                    $(
-                                      "#registerExistingLoyaltyNumber"
-                                    ).formatter({
-                                      pattern: "{{9}}-{{9999}}-{{999999}}",
-                                      persistent: false,
-                                    });
-
-                                    //state autofill helper
-                                    $("#frmStateS").on("change", function () {
-                                      if ($("#frmStateS").val() != "") {
-                                        var $options = $(
-                                          "#registration_state"
-                                        ).children();
-                                        $options.each(function () {
-                                          var $option = $(this);
-                                          if (
-                                            $("#frmStateS").val() ==
-                                            $option.text()
-                                          ) {
-                                            $("#registration_state").val(
-                                              $option.val()
-                                            );
-                                            return false;
-                                          }
-                                        });
-                                      }
-                                    });
-                                  };
-                                  if (document.readyState === "complete") {
-                                    regFormRunWhenReady();
-                                  } else {
-                                    $(document).ready(function () {
-                                      regFormRunWhenReady();
-                                    });
-                                  }
-                                </script>
-
-                                <style>
-                                  .btn-modal-confirm {
-                                    font-size: 1.14285714286rem;
-                                    padding: 0.5em 2.75em;
-                                    /* color: #53565a; */
-                                    font-weight: 400;
-                                    border-radius: 4px;
-                                    -webkit-box-shadow: 0 2px 3px
-                                      rgb(0 0 0 / 5%);
-                                    box-shadow: 0 2px 3px rgb(0 0 0 / 5%);
-                                    border: 1px solid #d7dae2;
-                                  }
-                                </style>
+                                
                                 <div id="modal-dialog-register-confirm" class="modal fade primary" tabindex="-1" role="dialog" aria-labelledby="register-confirm-heading" aria-hidden="true">
                                   <div class="modal-dialog">
                                     <article class="modal-content">
@@ -3123,10 +2843,7 @@ field renderer id: 97" autofill-prediction="UNKNOWN_TYPE" style="
                                       </header>
 
                                       <section class="modal-body">
-                                        <h2 id="register-confirm-heading" style="
-                                            text-align: center;
-                                            margin-bottom: 1em;
-                                          ">
+                                        <h2 id="register-confirm-heading">
                                           Confirm Your Information
                                         </h2>
 
@@ -3214,12 +2931,12 @@ field renderer id: 97" autofill-prediction="UNKNOWN_TYPE" style="
         <div class="modal-body">
           <h2 id="updateSchoolLabel" class="col-12">Update School</h2>
 
-          <form class="form-columned clearfix" role="form" autocomplete="" data-ddg-formtype="sign up">
+          <form class="form-columned clearfix" role="form" autocomplete="">
             <legend>Your School:</legend>
             <div id="schoolListSearchInputRow" class="row no-gutters">
               <div class="form-group col-12">
                 <label for="school_name">School</label>
-                <input type="text" onkeyup="aa.account.filterSchools();" class="form-control" id="school_name" name="school_name" placeholder="" value="" required="" title="overall type: UNKNOWN_TYPE
+                <input type="text" onkeyup="aa.account.filterSchools();" class="form-control" id="school_name" name="school_name" placeholder="" value="" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: School
@@ -3230,18 +2947,7 @@ form signature: 11239873637461901804
 form signature in host form: 11239873637461901804
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 9
-field renderer id: 107" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: School
-parseable name: school_name
-section: school_name_0_107
-field signature: 14950719
-form signature: 11239873637461901804
-form signature in host form: 11239873637461901804
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 9
-field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530422">
+field renderer id: 107" data-ddg-testresultelementid="530422">
               </div>
             </div>
             <div class="row" id="schoolList">
@@ -3446,7 +3152,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
 
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-01.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3466,7 +3172,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
 
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-02.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3484,7 +3190,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
 
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-03.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3499,7 +3205,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-05.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3518,7 +3224,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-07.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3535,7 +3241,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-08.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3552,7 +3258,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-06.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3567,7 +3273,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-04.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3583,7 +3289,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-09.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3600,7 +3306,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </h2>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-10.png" alt="">
+                    
                   </div>
                 </div>
               </section>
@@ -3624,18 +3330,18 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 </div>
                 <div class="row walk-through-figure-row">
                   <div class="col walk-through-figure">
-                    <img class="walk-through-img" src="images/walk-through/walk-through-11.png" alt="">
+                    
                   </div>
                 </div>
               </section>
             </div>
           </div>
 
-          <a class="btn btn__slider-control slick-prev btn__slider-control__left slick-arrow carousel-control-prev dfac collapse" href="#walkThroughCarousel" aria-label="prev" type="button" onclick="aa.walkThrough.slide(this, 'left');" style="" aria-disabled="false" data-slide="prev">
+          <a class="btn btn__slider-control slick-prev btn__slider-control__left slick-arrow carousel-control-prev dfac collapse" href="#walkThroughCarousel" aria-label="prev" type="button" onclick="aa.walkThrough.slide(this, 'left');" aria-disabled="false" data-slide="prev">
             <i class="fc fc-chevron-left"></i> <span class="sr-only">Prev</span>
           </a>
 
-          <a class="btn btn__slider-control slick-next btn__slider-control__right slick-arrow carousel-control-next dfac" href="#walkThroughCarousel" aria-label="Next" type="button" onclick="aa.walkThrough.slide(this, 'right');" style="" aria-disabled="false" data-slide="next">
+          <a class="btn btn__slider-control slick-next btn__slider-control__right slick-arrow carousel-control-next dfac" href="#walkThroughCarousel" aria-label="Next" type="button" onclick="aa.walkThrough.slide(this, 'right');" aria-disabled="false" data-slide="next">
             <i class="fc fc-chevron-right"></i>
             <span class="sr-only">Next</span>
           </a>
@@ -3647,18 +3353,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
           </button>
         </footer>
       </article>
-      <script>
-        var setupWalkThrough = function () {
-          aa.walkThrough.init();
-        };
-        if (document.readyState === "complete") {
-          setupWalkThrough();
-        } else {
-          $(document).ready(function () {
-            setupWalkThrough();
-          });
-        }
-      </script>
+      
     </div>
   </div>
 
@@ -3754,26 +3449,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
     </article>
   </div>
 
-  <script type="text/javascript">
-    function initReservedTimesPickupDatePicker() {
-      var maxDaysInAdvance = 30;
-      var defaultDate = $("#txtReservedTimesPickupDate").val();
-
-      $("#txtReservedTimesPickupDate").datepicker({
-        defaultDate: defaultDate,
-        minDate: 0,
-        maxDate: maxDaysInAdvance,
-        beforeShow: function () {
-          $("#ui-datepicker-div").on("click", function (event) {
-            aa.utils.stopPost(event);
-          });
-        },
-        onSelect: function (date) {
-          aa.ui.order.reloadPickupTimes(date, $("#cbReservedTimesPickupTime"));
-        },
-      });
-    }
-  </script>
+  
   <div id="item-options-modal" class="modal fade primary text-center" tabindex="-1" role="dialog" aria-labelledby="filtersContainerModalLabel" aria-hidden="true">
     <div class="modal-dialog shadow-both">
       <div class="modal-content">
@@ -3815,7 +3491,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
         </div>
         <div class="modal-body">
           <div class="text-center">
-            <img src="images/meals-recipes/success-blue-circle-check.png" alt="check mark image">
+            
             <p class="success-title">Success</p>
             <p class="success-message mb-0">Ingredients added to list.</p>
           </div>
@@ -3825,7 +3501,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
   </div>
   <div id="group-code-items-modal" class="modal modal-dialog-flipp-to-cart" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content" style="">
+      <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
@@ -3849,7 +3525,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
           <h2 id="addAnotherCardLabel" class="col-12">
             Add a Card to Your Account
           </h2>
-          <form class="form-columned clearfix" role="form" autocomplete="off" data-ddg-formtype="sign up">
+          <form class="form-columned clearfix" role="form" autocomplete="off">
             <div class="form-container col-12">
               <fieldset>
                 <legend>ValuCard Information</legend>
@@ -3857,7 +3533,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 <div class="row">
                   <div class="form-group col-12">
                     <label for="addcard_card_no" class="required">Card Number</label>
-                    <input type="text" class="form-control" id="addcard_card_no" name="card_no" value="" required="" title="overall type: UNKNOWN_TYPE
+                    <input type="text" class="form-control" id="addcard_card_no" name="card_no" value="" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Card Number
@@ -3868,25 +3544,14 @@ form signature: 4093412456536836414
 form signature in host form: 4093412456536836414
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 10
-field renderer id: 135" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Card Number
-parseable name: card_no
-section: card_no_0_135
-field signature: 479848467
-form signature: 4093412456536836414
-form signature in host form: 4093412456536836414
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 10
-field renderer id: 135" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530423">
+field renderer id: 135" data-ddg-testresultelementid="530423">
                   </div>
                 </div>
 
                 <div class="row">
                   <div class="form-group col-12">
                     <label for="addcard_card_relationship" class="required">Card Holder Relationship</label>
-                    <select id="addcard_card_relationship" class="form-control" name="addcard_card_relationship" required="" title="overall type: UNKNOWN_TYPE
+                    <select id="addcard_card_relationship" class="form-control" name="addcard_card_relationship" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Card Holder Relationship
@@ -3897,18 +3562,7 @@ form signature: 4093412456536836414
 form signature in host form: 4093412456536836414
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 10
-field renderer id: 136" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Card Holder Relationship
-parseable name: addcard_card_relationship
-section: card_no_0_135
-field signature: 987890885
-form signature: 4093412456536836414
-form signature in host form: 4093412456536836414
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 10
-field renderer id: 136" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530424">
+field renderer id: 136" data-ddg-testresultelementid="530424">
                       <option value="" selected="" disabled="">
                         Select Relationship
                       </option>
@@ -3923,7 +3577,7 @@ field renderer id: 136" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                 <div class="row">
                   <div class="form-group col-12">
                     <div class="custom-control custom-checkbox">
-                      <a class="check-styled" id="check_3"></a><input id="addcard_card_make_primary" class="custom-control-input text-primary setup-checkbox" name="addcard_card_make_primary" type="checkbox" value="" title="overall type: UNKNOWN_TYPE
+                      <a class="check-styled" id="check_3"></a><input id="addcard_card_make_primary" class="custom-control-input text-primary setup-checkbox" name="addcard_card_make_primary" type="checkbox" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Make this Card My Primary ValuCard
@@ -3934,39 +3588,14 @@ form signature: 4093412456536836414
 form signature in host form: 4093412456536836414
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 10
-field renderer id: 137" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Make this Card My Primary ValuCard
-parseable name: addcard_card_make_primary
-section: card_no_0_135
-field signature: 887074730
-form signature: 4093412456536836414
-form signature in host form: 4093412456536836414
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 10
-field renderer id: 137" autofill-prediction="UNKNOWN_TYPE" style="
-                          position: absolute;
-                          left: -1px;
-                          top: 3px;
-                          z-index: -1;
-                          visibility: hidden;
-                        " data-ddg-testresultelementid="530425">
+field renderer id: 137" data-ddg-testresultelementid="530425">
                       <label for="addcard_card_make_primary" class="custom-control-label">Make this Card My Primary ValuCard</label>
                     </div>
                   </div>
                 </div>
 
                 <div class="row">
-                  <div class="form-group col-12" style="
-                      color: #ff8400;
-                      border-color: #ff8400;
-                      border-radius: 10px;
-                      border-style: solid;
-                      border-width: 3px;
-                      box-shadow: 0px 5px 5px #cccccc;
-                      padding: 5px;
-                    ">
+                  <div class="form-group col-12">
                     *If the last name and address do not match, the card will
                     not be linked; please call customer service at 276-623-5100.
                   </div>
@@ -4006,13 +3635,11 @@ field renderer id: 137" autofill-prediction="UNKNOWN_TYPE" style="
 
   <div class="modal fade transparent-bg" id="sys-modal-page-load-spinner" tabindex="-1" role="dialog" aria-labelledby="sysModalPageLoadLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <article class="modal-content" style="height: 65px">
+      <article class="modal-content">
         <div class="page-load-spinner-wrap">
           <div id="sysModalPageLoadLabel" class="sr-only">Loading</div>
 
-          <svg class="svgSpinner" width="70px" height="70px" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-            <circle class="path" fill="none" stroke-width="12" stroke-linecap="round" cx="36" cy="36" r="30"></circle>
-          </svg>
+          
         </div>
       </article>
     </div>
@@ -4058,7 +3685,7 @@ CDN Resources:
 
 -->
 
-  <a class="check-styled" id="check_4"></a><input type="checkbox" id="helpboxCheck" title="overall type: UNKNOWN_TYPE
+  <a class="check-styled" id="check_4"></a><input type="checkbox" id="helpboxCheck" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: 
@@ -4069,29 +3696,12 @@ form signature: 12245699255885981548
 form signature in host form: 12245699255885981548
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 0
-field renderer id: 143" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: 
-parseable name: helpboxCheck
-section: helpboxCheck_0_143
-field signature: 2644806365
-form signature: 12245699255885981548
-form signature in host form: 12245699255885981548
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 0
-field renderer id: 143" autofill-prediction="UNKNOWN_TYPE" class="setup-checkbox" style="
-      position: absolute;
-      left: -1px;
-      top: 3px;
-      z-index: -1;
-      visibility: hidden;
-    " data-ddg-testresultelementid="530426">
+field renderer id: 143" class="setup-checkbox" data-ddg-testresultelementid="530426">
   <label id="help-btn" class="help-btn" for="helpboxCheck">
     <i class="fa fa-comment comment"> </i>
     <i class="fc fc-close close"> </i>
   </label>
-  <div id="helpbox" class="wrapper" data-ddg-formtype="sign up">
+  <div id="helpbox" class="wrapper">
     <div class="main pt-0">
       <div class="header">
         <h6>Food City Answers</h6>
@@ -4105,8 +3715,8 @@ field renderer id: 143" autofill-prediction="UNKNOWN_TYPE" class="setup-checkbox
               <p class="msg">Hello! How can I help you today?</p>
             </div>
 
-            <div style="font-size: 1.25rem">
-              <i class="fa fa-user text-secondary" style="padding-top: 2rem"></i>
+            <div>
+              <i class="fa fa-user text-secondary"></i>
             </div>
           </div>
         </div>
@@ -4114,7 +3724,7 @@ field renderer id: 143" autofill-prediction="UNKNOWN_TYPE" class="setup-checkbox
 
       <nav class="navbar bg-white navbar-expand-sm d-flex justify-content-between">
         <fieldset id="chatUser">
-          <input id="chatUserInput" type="text number" name="text" class="form-control" placeholder="Type a message..." title="overall type: UNKNOWN_TYPE
+          <input id="chatUserInput" type="text number" name="text" class="form-control" placeholder="Type a message..." autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Type a message...
@@ -4125,18 +3735,7 @@ form signature: 12245699255885981548
 form signature in host form: 12245699255885981548
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 0
-field renderer id: 145" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Type a message...
-parseable name: text
-section: helpboxCheck_0_143
-field signature: 2818009469
-form signature: 12245699255885981548
-form signature in host form: 12245699255885981548
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 0
-field renderer id: 145" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530427">
+field renderer id: 145" data-ddg-testresultelementid="530427">
           <input type="hidden" name="e79e32be18017bcbd96a4dd32ea6f01c8cf6e7465170646dadd45e54c12c30f44e986efd0bf15dd2f98311fdecfc4806264910653f7bd7b9ee1b65193e8532c9" value="9a679a0e26667acf9f8b3bc9bf97b7f7003358e58a13b032331640bf31f52dda69192668b27fa315a53e6b3f3d526f4abe560108a3a6f86433ed587615f04596">
         </fieldset>
         <div class="icondiv d-flex justify-content-end align-content-center text-center ml-2">
@@ -4146,188 +3745,37 @@ field renderer id: 145" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
     </div>
   </div>
 
-  <script src="/js/vendor/chart.js"></script>
-  <script src="/js/vendor/plugins.js"></script>
-  <script async="" defer="" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUJHt5HdoxlCiSP0lzSxI2NhuQoCfDsug"></script>
-  <script src="/js/vendor/ResizeSensor.js"></script>
-  <script src="/js/vendor/stickybar.js"></script>
-  <script src="/js/vendor/dragula/dragula-min.js"></script>
-  <script src="/js/vendor/jquery-card.js"></script>
-  <script src="/js/vendor/he.js"></script>
-  <script type="application/javascript" src="/js/master-8f947fab.js"></script>
-  <script type="application/javascript" src="/js/vendor/detect-zoom-min.js"></script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-  <script>
-    // functions to run after page load
-    var pageLoadContingency = function () {
-      aa.init.afterReload();
-    };
+  
 
-    var globalModuleContingency = function () {};
-
-    // check that page has loaded and run contingencies
-    if (document.readyState === "complete") {
-      pageLoadContingency();
-      globalModuleContingency();
-    } else {
-      window.addEventListener("load", pageLoadContingency);
-      $(document).ready(function () {
-        globalModuleContingency();
-      });
-    }
-
-    window.addEventListener("load", function () {
-      $("#myrecipes-search-input").keyup(aa.mealplan.searchMyRecipes);
-    });
-    // documentation for the following snippet: https://github.com/tysonmatanich/viewportSize - sking 2020-02-28 16:42:40
-    // (function(window){window.viewportTesterSettings={position:'bottom-right',layout:'side-by-side',textColor:'#ffffff',backgroundColor:'#008000',fontFamily:'sans-serif',fontSize:'16px',opacity:'0.9'};var s=document.createElement('script');s.type='text/javascript';s.src='https://tysonmatanich.github.io/viewportTester/viewportTester.js?v='+(Math.random()+'').replace('.','');document.getElementsByTagName('body')[0].appendChild(s);})(this);
-  </script>
-
-  <script type="text/javascript">
-    (function () {
-      aa.recaptcha.SITE_KEY_V2 = "6Lep3MkbAAAAACIOVsiDt6684LVVDpNJpxDwp9xJ";
-      aa.recaptcha.SITE_KEY_V3 = "6Lf51skbAAAAAHepqHJOuygG2bFj_d1Ul2EUwce0";
-    })();
-  </script>
+  
 
   <input type="hidden" id="canPromptForPendingOrders" value="1">
   <input type="hidden" id="hasPendingOrders" value="0">
   <input type="hidden" id="setStoreDestination" value="index.php">
 
   <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-messaging.js"></script>
-  <script>
-    var firebaseConfig = {
-      apiKey: "AIzaSyAq3A82PjyTK_KQ6QlonCLPp-W936rJMTk",
-      authDomain: "k-va-t.firebaseapp.com",
-      databaseURL: "https://k-va-t.firebaseio.com",
-      projectId: "k-va-t",
-      storageBucket: "k-va-t.appspot.com",
-      messagingSenderId: "350037813132",
-      appId: "1:350037813132:web:20b621c18550a816fed8a9",
-      measurementId: "G-MDWLJ8X9EZ",
-    };
-
-    let messaging = {};
-
-    if (firebase.messaging.isSupported()) {
-      firebase.initializeApp(firebaseConfig);
-
-      messaging = firebase.messaging();
-
-      messaging
-        .requestPermission()
-        .then(function () {
-          console.log("Notifications permission granted");
-          console.log(
-            messaging.getToken().then(function (currentToken) {
-              console.log(currentToken);
-            })
-          );
-        })
-        .catch(function (err) {
-          console.log("Notifications permission denied");
-        });
-
-      messaging.onTokenRefresh(function () {
-        messaging.getToken().then(function (refreshedToken) {
-          console.log("Token refreshed");
-          setTokenSentToServer(false);
-          sendTokenToServer(refreshedToken, "");
-        });
-      });
-    }
-
-    function sendTokenToServer(currentToken, loyaltyNumber) {
-      var OS = getOS();
-      var requestData = {
-        OSName: OS,
-        OSVersion: "Web",
-        AppVersion: "2.0.0",
-        InstanceID: currentToken,
-        LoyaltyNumber: loyaltyNumber,
-      };
-
-      if (!isTokenSentToServer()) {
-        $.ajax({
-          type: "POST",
-          url: "https://campaigns-api.aisleahead.com?vica=ctl_push_notifications&vicb=saveInstanceID&vicc=a",
-          data: requestData,
-          dataType: "json",
-        });
-        setTokenSentToServer(true);
-      }
-    }
-
-    function isTokenSentToServer() {
-      return window.localStorage.getItem("sentToServer" === "1");
-    }
-
-    function setTokenSentToServer(sent) {
-      window.localStorage.setItem("sentToServer", sent ? "1" : "0");
-    }
-
-    function subscribeToTopic(currentToken, topic) {
-      var requestData = {
-        Topic: topic,
-        InstanceID: currentToken,
-      };
-
-      $.ajax({
-        type: "POST",
-        url: "https://campaigns-api.aisleahead.com?vica=ctl_push_notifications&vicb=subscribeToTopic&vicc=a",
-        data: requestData,
-        dataType: "json",
-      });
-    }
-
-    function unsubscribeFromTopic(currentToken, topic) {
-      var requestData = {
-        Topic: topic,
-        InstanceID: currentToken,
-      };
-
-      $.ajax({
-        type: "POST",
-        url: "https://campaigns-api.aisleahead.com?vica=ctl_push_notifications&vicb=unsubscribeFromTopic&vicc=a",
-        data: requestData,
-        dataType: "json",
-      });
-    }
-
-    function getInstanceIDInfo(currentToken) {
-      var requestData = {
-        InstanceID: currentToken,
-      };
-
-      $.ajax({
-        type: "POST",
-        url: "https://campaigns-api.aisleahead.com?vica=ctl_push_notifications&vicb=getIIDInfo&vicc=a",
-        data: requestData,
-        dataType: "json",
-      });
-    }
-  </script>
+  
+  
+  
 
   <div>
-    <div class="grecaptcha-badge" data-style="bottomright" style="
-        width: 256px;
-        height: 60px;
-        display: block;
-        transition: right 0.3s ease 0s;
-        position: fixed;
-        bottom: 14px;
-        right: -186px;
-        box-shadow: gray 0px 0px 5px;
-        border-radius: 2px;
-        overflow: hidden;
-      ">
+    <div class="grecaptcha-badge" data-style="bottomright">
       <div class="grecaptcha-logo">
-        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6Lf51skbAAAAAHepqHJOuygG2bFj_d1Ul2EUwce0&amp;co=aHR0cHM6Ly93d3cuZm9vZGNpdHkuY29tOjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=invisible&amp;cb=1pw3wc1ig6s0" width="256" height="60" role="presentation" name="a-k162nr23wv8o" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+        
       </div>
       <div class="grecaptcha-error"></div>
-      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Loading
@@ -4338,28 +3786,9 @@ form signature: 12245699255885981548
 form signature in host form: 12245699255885981548
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 0
-field renderer id: 150" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Loading
-parseable name: g-recaptcha-response
-section: helpboxCheck_0_143
-field signature: 3309787731
-form signature: 12245699255885981548
-form signature in host form: 12245699255885981548
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 0
-field renderer id: 150" autofill-prediction="UNKNOWN_TYPE" style="
-          width: 250px;
-          height: 40px;
-          border: 1px solid rgb(193, 193, 193);
-          margin: 10px 25px;
-          padding: 0px;
-          resize: none;
-          display: none;
-        " data-ddg-testresultelementid="530428"></textarea>
+field renderer id: 150" data-ddg-testresultelementid="530428"></textarea>
     </div>
-    <iframe style="display: none"></iframe>
+    
   </div>
   <div role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></div>
   <div id="global-modal-container-container">
@@ -4438,19 +3867,19 @@ field renderer id: 150" autofill-prediction="UNKNOWN_TYPE" style="
           </header>
 
           <section class="modal-body">
-            <h2 id="modal-dialog-add-recipe-to-cal-label" style="margin-bottom: 1em">
+            <h2 id="modal-dialog-add-recipe-to-cal-label">
               Add Recipe to My Calendar
             </h2>
 
             <div class="row">
               <div class="col-xxs-12">
-                <form class="form-columned clearfix" role="form" autocomplete="off" method="post" action="index.php?vica=ctl_recipes&amp;vicb=addMealCat&amp;vicc=p" data-ddg-formtype="sign up">
+                <form class="form-columned clearfix" role="form" autocomplete="off" method="post" action="index.php?vica=ctl_recipes&amp;vicb=addMealCat&amp;vicc=p">
                   <div class="form-container">
                     <div class="fieldset">
                       <div class="form-group col-xxs-12">
                         <label for="modal_dialog_add_recipe_date" class="required">Choose a Date</label>
 
-                        <input id="modal_dialog_add_recipe_date" class="form-control" name="recipe_date" type="text" value="03/16/2023" placeholder="e.g., 03/16/2023" required="" title="overall type: UNKNOWN_TYPE
+                        <input id="modal_dialog_add_recipe_date" class="form-control" name="recipe_date" type="text" value="03/16/2023" placeholder="e.g., 03/16/2023" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Choose a Date
@@ -4461,18 +3890,7 @@ form signature: 2137546477767719597
 form signature in host form: 2137546477767719597
 field frame token: 66B67EF52F698120AAF7076C40A0C8CE
 form renderer id: 6
-field renderer id: 47" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Choose a Date
-parseable name: recipe_date
-section: recipe_date_0_47
-field signature: 1279659958
-form signature: 2137546477767719597
-form signature in host form: 2137546477767719597
-field frame token: 66B67EF52F698120AAF7076C40A0C8CE
-form renderer id: 6
-field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530429">
+field renderer id: 47" data-ddg-testresultelementid="530429">
                       </div>
                     </div>
                   </div>

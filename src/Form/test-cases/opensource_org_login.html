@@ -1,9 +1,10 @@
 <!--
   https://opensource.org/join
+  rank: 2044
   testRunId: 66
   testResultId: 235794
 -->
-<form action="https://members.opensource.org/join/?civiwp=CiviCRM&amp;q=civicrm%2Fcontribute%2Ftransact" method="post" name="Main" id="Main" class="CRM_Contribute_Form_Contribution_Main" enctype="multipart/form-data" data-warn-changes="true" novalidate="novalidate" data-ddg-formtype="sign up">
+<form action="https://members.opensource.org/join/?civiwp=CiviCRM&amp;q=civicrm%2Fcontribute%2Ftransact" method="post" name="Main" id="Main" class="CRM_Contribute_Form_Contribution_Main" enctype="multipart/form-data" data-warn-changes="true" novalidate="novalidate">
   <div>
     <input name="qfKey" type="hidden" value="CRMContributeControllerContribution44s1k0zrcfi8swck0wsoo0kgs0kgow0o8ko4c8o00ggss8o00k_3194">
     <input name="entryURL" type="hidden" value="https://members.opensource.org/join/?civiwp=CiviCRM&amp;amp;q=civicrm%2Fcontribute%2Ftransact&amp;id=1&amp;reset=1">
@@ -16,33 +17,7 @@
     <input name="MAX_FILE_SIZE" type="hidden" value="524288000">
   </div>
 
-  <script type="text/javascript">
-    // Putting these functions directly in template so they are available for standalone forms
-    function useAmountOther() {
-      var priceset = 0;
-
-      for (i = 0; i < document.Main.elements.length; i++) {
-        element = document.Main.elements[i];
-        if (element.type == "radio" && element.name == priceset) {
-          if (element.value == "0") {
-            element.click();
-          } else {
-            element.checked = false;
-          }
-        }
-      }
-    }
-
-    function clearAmountOther() {
-      var priceset = 0;
-      if (priceset) {
-        cj(priceset).val("");
-        cj(priceset).blur();
-      }
-      if (document.Main.amount_other == null) return; // other_amt field not present; do nothing
-      document.Main.amount_other.value = "";
-    }
-  </script>
+  
 
   <div class="crm-contribution-page-id-1 crm-block crm-contribution-main-form-block" data-page-id="1" data-page-template="main">
     <div id="intro_text" class="crm-public-form-item crm-section intro_text-section">
@@ -80,7 +55,7 @@
                 </div>
                 <div class="content membership_amount-content">
                   <div class="price-set-row membership_amount-row1">
-                    <span class="price-set-option-content highlight"><input price="[&quot;price_5&quot;,&quot;50||&quot;]" data-amount="50.000000000" data-currency="USD" data-price-field-values="{&quot;10&quot;:{&quot;id&quot;:&quot;10&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Individual&quot;,&quot;label&quot;:&quot;Supporting&quot;,&quot;amount&quot;:&quot;50.000000000&quot;,&quot;weight&quot;:&quot;1&quot;,&quot;membership_type_id&quot;:&quot;1&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;1&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;},&quot;63&quot;:{&quot;id&quot;:&quot;63&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Professional&quot;,&quot;label&quot;:&quot;Professional&quot;,&quot;amount&quot;:&quot;300.000000000&quot;,&quot;weight&quot;:&quot;2&quot;,&quot;membership_type_id&quot;:&quot;8&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;0&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;}}" visibility="1" onclick="return showHideAutoRenew(1);" membership-type="1" class="crm-form-radio" value="10" type="radio" id="CIVICRM_QFID_10_price_5" name="price_5" checked="checked" title="overall type: UNKNOWN_TYPE
+                    <span class="price-set-option-content highlight"><input price="[&quot;price_5&quot;,&quot;50||&quot;]" data-amount="50.000000000" data-currency="USD" data-price-field-values="{&quot;10&quot;:{&quot;id&quot;:&quot;10&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Individual&quot;,&quot;label&quot;:&quot;Supporting&quot;,&quot;amount&quot;:&quot;50.000000000&quot;,&quot;weight&quot;:&quot;1&quot;,&quot;membership_type_id&quot;:&quot;1&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;1&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;},&quot;63&quot;:{&quot;id&quot;:&quot;63&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Professional&quot;,&quot;label&quot;:&quot;Professional&quot;,&quot;amount&quot;:&quot;300.000000000&quot;,&quot;weight&quot;:&quot;2&quot;,&quot;membership_type_id&quot;:&quot;8&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;0&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;}}" visibility="1" onclick="return showHideAutoRenew(1);" membership-type="1" class="crm-form-radio" value="10" type="radio" id="CIVICRM_QFID_10_price_5" name="price_5" checked="checked" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Supporting - $ 50.00
@@ -91,21 +66,10 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 55" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Supporting - $ 50.00
-parseable name: price_5
-section: price_5_0_55
-field signature: 4169866883
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 55" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518629"><label for="CIVICRM_QFID_10_price_5"><span class="crm-price-amount-label">Supporting</span><span class="crm-price-amount-label-separator">&nbsp;-&nbsp;</span><span class="crm-price-amount-amount">$ 50.00</span></label></span>
+field renderer id: 55" data-ddg-testresultelementid="518629"><label for="CIVICRM_QFID_10_price_5"><span class="crm-price-amount-label">Supporting</span><span class="crm-price-amount-label-separator">&nbsp;-&nbsp;</span><span class="crm-price-amount-amount">$ 50.00</span></label></span>
                   </div>
                   <div class="price-set-row membership_amount-row2">
-                    <span class="price-set-option-content"><input price="[&quot;price_5&quot;,&quot;300||&quot;]" data-amount="300.000000000" data-currency="USD" data-price-field-values="{&quot;10&quot;:{&quot;id&quot;:&quot;10&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Individual&quot;,&quot;label&quot;:&quot;Supporting&quot;,&quot;amount&quot;:&quot;50.000000000&quot;,&quot;weight&quot;:&quot;1&quot;,&quot;membership_type_id&quot;:&quot;1&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;1&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;},&quot;63&quot;:{&quot;id&quot;:&quot;63&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Professional&quot;,&quot;label&quot;:&quot;Professional&quot;,&quot;amount&quot;:&quot;300.000000000&quot;,&quot;weight&quot;:&quot;2&quot;,&quot;membership_type_id&quot;:&quot;8&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;0&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;}}" visibility="1" onclick="return showHideAutoRenew(8);" membership-type="8" class="crm-form-radio" value="63" type="radio" id="CIVICRM_QFID_63_price_5" name="price_5" title="overall type: UNKNOWN_TYPE
+                    <span class="price-set-option-content"><input price="[&quot;price_5&quot;,&quot;300||&quot;]" data-amount="300.000000000" data-currency="USD" data-price-field-values="{&quot;10&quot;:{&quot;id&quot;:&quot;10&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Individual&quot;,&quot;label&quot;:&quot;Supporting&quot;,&quot;amount&quot;:&quot;50.000000000&quot;,&quot;weight&quot;:&quot;1&quot;,&quot;membership_type_id&quot;:&quot;1&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;1&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;},&quot;63&quot;:{&quot;id&quot;:&quot;63&quot;,&quot;price_field_id&quot;:&quot;5&quot;,&quot;name&quot;:&quot;Professional&quot;,&quot;label&quot;:&quot;Professional&quot;,&quot;amount&quot;:&quot;300.000000000&quot;,&quot;weight&quot;:&quot;2&quot;,&quot;membership_type_id&quot;:&quot;8&quot;,&quot;membership_num_terms&quot;:&quot;1&quot;,&quot;is_default&quot;:&quot;0&quot;,&quot;is_active&quot;:&quot;1&quot;,&quot;financial_type_id&quot;:&quot;2&quot;,&quot;non_deductible_amount&quot;:&quot;0.00&quot;,&quot;visibility_id&quot;:&quot;1&quot;}}" visibility="1" onclick="return showHideAutoRenew(8);" membership-type="8" class="crm-form-radio" value="63" type="radio" id="CIVICRM_QFID_63_price_5" name="price_5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Professional - $ 300.00
@@ -116,25 +80,14 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 56" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Professional - $ 300.00
-parseable name: price_5
-section: price_5_0_55
-field signature: 4169866883
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518630"><label for="CIVICRM_QFID_63_price_5"><span class="crm-price-amount-label">Professional</span><span class="crm-price-amount-label-separator">&nbsp;-&nbsp;</span><span class="crm-price-amount-amount">$ 300.00</span></label></span>
+field renderer id: 56" data-ddg-testresultelementid="518630"><label for="CIVICRM_QFID_63_price_5"><span class="crm-price-amount-label">Professional</span><span class="crm-price-amount-label-separator">&nbsp;-&nbsp;</span><span class="crm-price-amount-amount">$ 300.00</span></label></span>
                   </div>
                 </div>
                 <div id="allow_auto_renew">
                   <div class="crm-section auto-renew">
                     <div class="label"></div>
-                    <div class="content" id="auto_renew_section" style="display: block">
-                      <input id="auto_renew" name="auto_renew" type="checkbox" value="1" class="crm-form-checkbox" title="overall type: UNKNOWN_TYPE
+                    <div class="content" id="auto_renew_section">
+                      <input id="auto_renew" name="auto_renew" type="checkbox" value="1" class="crm-form-checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Please renew my membership automatically.
@@ -145,20 +98,9 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 57" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Please renew my membership automatically.
-parseable name: auto_renew
-section: price_5_0_55
-field signature: 2887444712
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518631">&nbsp;<label for="auto_renew">Please renew my membership automatically.</label>
+field renderer id: 57" data-ddg-testresultelementid="518631">&nbsp;<label for="auto_renew">Please renew my membership automatically.</label>
                     </div>
-                    <div class="content" id="force_renew" style="display: none">
+                    <div class="content" id="force_renew">
                       Membership will renew automatically.
                     </div>
                   </div>
@@ -170,7 +112,7 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                   <label for="price_24">Additional Donation Amount</label>
                 </div>
                 <div class="content other_amount-content">
-                  <input price="[71,&quot;1||&quot;]" size="4" name="price_24" type="text" id="price_24" class="four crm-form-text" title="overall type: NUMERIC_QUANTITY
+                  <input price="[71,&quot;1||&quot;]" size="4" name="price_24" type="text" id="price_24" class="four crm-form-text" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: Additional Donation Amount
@@ -181,18 +123,7 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 58" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: Additional Donation Amount
-parseable name: price_24
-section: price_5_0_55
-field signature: 117285524
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 58" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="518632">
+field renderer id: 58" data-ddg-testresultelementid="518632">
                 </div>
 
                 <div class="clear"></div>
@@ -202,483 +133,26 @@ field renderer id: 58" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype
                 <div id="pricelabel" class="label hiddenElement">
                   <span id="amount_sum_label">Total Amount</span>
                 </div>
-                <div class="content calc-value" style="display: none" id="pricevalue">
+                <div class="content calc-value" id="pricevalue">
                   $ 50.00
                 </div>
               </div>
 
-              <script type="text/javascript">
-                var thousandMarker = ",";
-                var separator = ".";
-                var symbol = "$";
-                // moneyFormat is part of a temporary fix. it should
-                // not be expected to be present in future versions
-                // see https://github.com/civicrm/civicrm-core/pull/19151
-
-                var moneyFormat = "$ 1,234.56";
-                var optionSep = "|";
-
-                // Recalculate the total fees based on user selection
-                cj("#priceset [price]").each(function () {
-                  var elementType = cj(this).attr("type");
-                  if (this.tagName == "SELECT") {
-                    elementType = "select-one";
-                  }
-
-                  switch (elementType) {
-                    case "checkbox":
-                      cj(this).click(function () {
-                        calculateCheckboxLineItemValue(this);
-                        display(calculateTotalFee());
-                      });
-                      calculateCheckboxLineItemValue(this);
-                      break;
-
-                    case "radio":
-                      cj(this).click(function () {
-                        calculateRadioLineItemValue(this);
-                        display(calculateTotalFee());
-                      });
-                      calculateRadioLineItemValue(this);
-                      break;
-
-                    case "text":
-                      cj(this)
-                        .bind("keyup", function () {
-                          calculateText(this);
-                        })
-                        .bind("blur", function () {
-                          calculateText(this);
-                        });
-                      //default calculation of element.
-                      calculateText(this);
-                      break;
-
-                    case "select-one":
-                      calculateSelectLineItemValue(this);
-
-                      cj(this).change(function () {
-                        calculateSelectLineItemValue(this);
-                        display(calculateTotalFee());
-                      });
-                      break;
-                  }
-
-                  display(calculateTotalFee());
-                });
-
-                /**
-                 * Calculate the value of the line item for a radio value.
-                 */
-                function calculateCheckboxLineItemValue(priceElement) {
-                  eval("var option = " + cj(priceElement).attr("price"));
-                  optionPart = option[1].split(optionSep);
-                  price = parseFloat(0);
-                  if (cj(priceElement).prop("checked")) {
-                    price = parseFloat(optionPart[0]);
-                  }
-                  cj(priceElement).data("line_raw_total", price);
-                }
-
-                /**
-                 * Calculate the value of the line item for a radio value.
-                 */
-                function calculateRadioLineItemValue(priceElement) {
-                  eval("var option = " + cj(priceElement).attr("price"));
-                  optionPart = option[1].split(optionSep);
-                  var lineTotal = parseFloat(optionPart[0]);
-                  cj(priceElement).data("line_raw_total", lineTotal);
-                  var radionGroupName = cj(priceElement).attr("name");
-                  // Reset all unchecked options to having a data value of 0.
-                  cj(
-                    "input[name=" + radionGroupName + "]:radio:unchecked"
-                  ).each(function () {
-                    cj(this).data("line_raw_total", 0);
-                  });
-                }
-
-                /**
-                 * Calculate the value of the line item for a select value.
-                 */
-                function calculateSelectLineItemValue(priceElement) {
-                  eval("var selectedText = " + cj(priceElement).attr("price"));
-                  var price = parseFloat("0");
-                  var option = cj(priceElement).val();
-                  if (option) {
-                    optionPart = selectedText[option].split(optionSep);
-                    price = parseFloat(optionPart[0]);
-                  }
-                  cj(priceElement).data("line_raw_total", price);
-                }
-
-                /**
-                 * Calculate the value of the line item for a text box.
-                 */
-                function calculateText(priceElement) {
-                  //CRM-16034 - comma acts as decimal in price set text pricing
-                  //CRM-19937 - dollar sign easy mistake to make by users.
-                  var textval = parseFloat(
-                    cj(priceElement)
-                      .val()
-                      .replace(thousandMarker, "")
-                      .replace(symbol, "")
-                  );
-
-                  if (isNaN(textval)) {
-                    textval = parseFloat(0);
-                  }
-                  eval("var option = " + cj(priceElement).attr("price"));
-                  optionPart = option[1].split(optionSep);
-                  addprice = parseFloat(optionPart[0]);
-                  var curval = textval * addprice;
-                  cj(priceElement).data("line_raw_total", curval);
-                  display(calculateTotalFee());
-                }
-
-                /**
-                 * Calculate the total fee for the visible priceset.
-                 */
-                function calculateTotalFee() {
-                  var totalFee = 0;
-                  cj("#priceset [price]").each(function () {
-                    totalFee = totalFee + cj(this).data("line_raw_total");
-                  });
-                  return totalFee;
-                }
-
-                /**
-                 * Display calculated amount.
-                 */
-                function display(totalfee) {
-                  // totalfee is monetary, round it to 2 decimal points so it can
-                  // go as a float - CRM-13491
-                  totalfee = Math.round(totalfee * 100) / 100;
-                  // dev/core#1019 Use the moneyFormat assigned to the template as an interim fix
-                  // to support forms using a currency other that the site default. Also make sure to
-                  // support various currency formatting options,
-                  // temporary measure - pending
-                  // our preferred fix.
-                  // see https://github.com/civicrm/civicrm-core/pull/19151
-                  var totalFormattedFee = CRM.formatMoney(
-                    totalfee,
-                    false,
-                    moneyFormat
-                  );
-                  cj("#pricevalue").html(totalFormattedFee);
-
-                  cj("#total_amount").val(totalfee);
-                  cj("#pricevalue")
-                    .data("raw-total", totalfee)
-                    .trigger("change");
-
-                  if (totalfee < 0) {
-                    cj("table#pricelabel").addClass("disabled");
-                  } else {
-                    cj("table#pricelabel").removeClass("disabled");
-                  }
-
-                  if (typeof skipPaymentMethod == "function") {
-                    // Advice to anyone who, like me, feels hatred towards this if construct ... if you remove the if you
-                    // get an error on participant 2 of a event that requires approval & permits multiple registrants.
-                    skipPaymentMethod();
-                  }
-                }
-              </script>
+              
             </div>
           </fieldset>
         </div>
       </div>
 
-      <script type="text/javascript">
-        CRM.$(function ($) {
-          //if price set is set we use below below code to show for showing auto renew
-          var autoRenewOption = "1";
-          var autoRenew = $("#auto_renew_section");
-          var autoRenewCheckbox = $("#auto_renew");
-          var forceRenew = $("#force_renew");
-          autoRenew.hide();
-          forceRenew.hide();
-          if (autoRenewOption == 1) {
-            autoRenew.show();
-          } else if (autoRenewOption == 2) {
-            autoRenewCheckbox.prop("checked", true);
-            autoRenewCheckbox.attr("readonly", true);
-            autoRenew.hide();
-            forceRenew.show();
-          }
-        });
-      </script>
+      
 
-      <script type="text/javascript">
-        CRM.$(function ($) {
-          showHideAutoRenew(null);
-        });
-        function showHideAutoRenew(memTypeId) {
-          var priceSetName = "price_" + "5";
-          var considerUserInput = "";
-          if (memTypeId) considerUserInput = false;
-          if (!memTypeId)
-            memTypeId = cj(
-              "input:radio[name=" + priceSetName + "]:checked"
-            ).attr("membership-type");
-
-          //does this page has only one membership type.
-          var singleMembership = "";
-          if (!memTypeId && singleMembership)
-            memTypeId = cj("input:radio[name=" + priceSetName + "]").attr(
-              "membership-type"
-            );
-          var renewOptions = {
-            autoRenewMembershipType_1: 1,
-            autoRenewMembershipType_8: 1,
-            autoRenewMembershipType_2: 1,
-          };
-          var currentOption = eval(
-            "renewOptions." + "autoRenewMembershipType_" + memTypeId
-          );
-          var autoRenew = cj("#auto_renew_section");
-          var autoRenewC = cj('input[name="auto_renew"]');
-          var forceRenew = cj("#force_renew");
-
-          var readOnly = false;
-          var isChecked = false;
-          if (currentOption == 0) {
-            isChecked = false;
-            forceRenew.hide();
-            autoRenew.hide();
-          }
-          if (currentOption == 1) {
-            forceRenew.hide();
-            autoRenew.show();
-
-            //uncomment me, if we'd like
-            //to load auto_renew checked.
-            //isChecked = true;
-          } else if (currentOption == 2 || currentOption == 4) {
-            autoRenew.hide();
-            forceRenew.show();
-            isChecked = readOnly = true;
-          }
-
-          if (considerUserInput) isChecked = autoRenew.prop("checked");
-
-          //its a normal recur contribution.
-          if (
-            cj("is_recur") &&
-            cj('input:radio[name="is_recur"]:checked').val() == 1
-          ) {
-            isChecked = false;
-            autoRenew.hide();
-            forceRenew.hide();
-          }
-
-          autoRenewC.attr("readonly", readOnly);
-          autoRenewC.prop("checked", isChecked);
-        }
-
-        CRM.$(function ($) {
-          //keep read only always checked.
-          cj("#auto_renew").click(function () {
-            if (cj(this).attr("readonly")) {
-              cj(this).prop("checked", true);
-            }
-          });
-        });
-      </script>
+      
     </div>
 
     <div id="onBehalfOfOrg" class="crm-public-form-item crm-section">
       <div class="crm-public-form-item" id="on-behalf-block"></div>
 
-      <script type="text/javascript">
-        CRM.$(function ($) {
-          var orgOption = $("input:radio[name=org_option]:checked").attr("id");
-          var onBehalfRequired = "$onBehalfRequired";
-          var onbehalfof_id = $("#onbehalfof_id");
-          var is_for_organization = $("#is_for_organization");
-
-          selectCreateOrg(orgOption, false);
-
-          if (is_for_organization.length) {
-            showHideOnBehalfOfBlock();
-
-            is_for_organization.on("change", function () {
-              showHideOnBehalfOfBlock();
-            });
-          }
-
-          function showHideOnBehalfOfBlock() {
-            $("#on-behalf-block").toggle(is_for_organization.is(":checked"));
-
-            if (is_for_organization.is(":checked")) {
-              $("#onBehalfOfOrg select.crm-select2").removeClass(
-                "crm-no-validate"
-              );
-            } else {
-              $("#onBehalfOfOrg select.crm-select2").addClass(
-                "crm-no-validate"
-              );
-            }
-          }
-
-          $("input:radio[name='org_option']").click(function () {
-            var orgOption = $(this).attr("id");
-            selectCreateOrg(orgOption, true);
-          });
-
-          onbehalfof_id
-            .change(function () {
-              setLocationDetails($(this).val());
-            })
-            .change();
-
-          if (onbehalfof_id.length) {
-            setLocationDetails(onbehalfof_id.val());
-          }
-
-          function resetValues() {
-            // Don't trip chain-select when clearing values
-            $(".crm-chain-select-control", "#select_org div").select2(
-              "val",
-              ""
-            );
-            $("input[type=text], select, textarea", "#select_org div")
-              .not(".crm-chain-select-control, #onbehalfof_id")
-              .val("")
-              .change();
-            $("input[type=radio], input[type=checkbox]", "#select_org div")
-              .prop("checked", false)
-              .change();
-
-            $("#on-behalf-block input")
-              .not("input[type=checkbox], input[type=radio], #onbehalfof_id")
-              .val("");
-            // clear checkboxes and radio
-            $("#on-behalf-block")
-              .find("input[type=checkbox], input[type=radio]")
-              .not("input[name=org_option]")
-              .attr("checked", false);
-          }
-
-          function selectCreateOrg(orgOption, reset) {
-            if (orgOption == "CIVICRM_QFID_0_org_option") {
-              $("#onbehalfof_id").show().change();
-              $("input#onbehalf_organization_name").hide();
-            } else if (orgOption == "CIVICRM_QFID_1_org_option") {
-              $("input#onbehalf_organization_name").show();
-              $("#onbehalfof_id").hide();
-              reset = true;
-            }
-
-            if (reset) {
-              resetValues();
-            }
-          }
-
-          function setLocationDetails(contactID, reset) {
-            resetValues();
-            var locationUrl = "" + contactID;
-            var submittedOnBehalfInfo = "";
-            var submittedCID = "";
-
-            if (submittedOnBehalfInfo) {
-              submittedOnBehalfInfo = $.parseJSON(submittedOnBehalfInfo);
-
-              if (submittedCID == contactID) {
-                $.each(submittedOnBehalfInfo, function (key, value) {
-                  //handle checkboxes
-                  if (typeof value === "object") {
-                    $.each(value, function (k, v) {
-                      $("#onbehalf_" + key + "_" + k).prop("checked", v);
-                    });
-                  } else if ($("#onbehalf_" + key).length) {
-                    $("#onbehalf_" + key).val(value);
-                  }
-                  //radio buttons
-                  else if ($("input[name='onbehalf[" + key + "]']").length) {
-                    $("input[name='onbehalf[" + key + "]']").val([value]);
-                  }
-                });
-                return;
-              }
-            }
-
-            $.ajax({
-              url: locationUrl,
-              dataType: "json",
-              success: function (data, status) {
-                for (var ele in data) {
-                  if ($("#" + ele).hasClass("crm-chain-select-target")) {
-                    $("#" + ele)
-                      .data("newVal", data[ele].value)
-                      .off(".autofill")
-                      .on("crmOptionsUpdated.autofill", function () {
-                        $(this)
-                          .off(".autofill")
-                          .val($(this).data("newVal"))
-                          .change();
-                      });
-                  } else if ($("#" + ele).data("select2")) {
-                    $("#" + ele).select2("val", data[ele].value);
-                  }
-                  if (data[ele].type == "Radio") {
-                    if (data[ele].value) {
-                      var fldName = ele.replace("onbehalf_", "");
-                      $("input[name='onbehalf[" + fldName + "]']")
-                        .filter("[value='" + data[ele].value + "']")
-                        .prop("checked", true);
-                    }
-                  } else if (data[ele].type == "CheckBox") {
-                    for (var selectedOption in data[ele].value) {
-                      var fldName = ele.replace("onbehalf_", "");
-                      $(
-                        "input[name='onbehalf[" +
-                          fldName +
-                          "][" +
-                          selectedOption +
-                          "]']"
-                      ).prop("checked", "checked");
-                    }
-                  } else if (data[ele].type == "AdvMulti-Select") {
-                    var customFld = ele.replace("onbehalf_", "");
-                    // remove empty value if any
-                    $(
-                      "#onbehalf\\[" + customFld + '\\]-f option[value=""]'
-                    ).remove();
-                    $(
-                      "#onbehalf\\[" + customFld + '\\]-t option[value=""]'
-                    ).remove();
-
-                    for (var selectedOption in data[ele].value) {
-                      // remove selected values from left and selected values to right
-                      $(
-                        "#onbehalf\\[" +
-                          customFld +
-                          '\\]-f option[value="' +
-                          selectedOption +
-                          '"]'
-                      )
-                        .remove()
-                        .appendTo("#onbehalf\\[" + customFld + "\\]-t");
-                      $("#onbehalf_" + customFld).val(selectedOption);
-                    }
-                  } else {
-                    // do not set defaults to file type fields
-                    if ($("#" + ele).attr("type") != "file") {
-                      $("#" + ele)
-                        .val(data[ele].value)
-                        .change();
-                    }
-                  }
-                }
-              },
-              error: function (XMLHttpRequest, textStatus, errorThrown) {
-                CRM.console("error", "HTTP error status: ", textStatus);
-              },
-            });
-          }
-        });
-      </script>
+      
     </div>
 
     <div class="crm-public-form-item crm-section cms_user-section">
@@ -701,7 +175,7 @@ field renderer id: 58" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype
                   </label></label>
               </div>
               <div class="content">
-                <input name="cms_name" type="text" id="cms_name" class="crm-form-text required" title="overall type: UNKNOWN_TYPE
+                <input name="cms_name" type="text" id="cms_name" class="crm-form-text required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Username * Username *
@@ -712,20 +186,9 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 60" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Username * Username *
-parseable name: cms_name
-section: price_5_0_55
-field signature: 3132972712
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="518633">
+field renderer id: 60" data-ddg-testresultelementid="518633">
                 <a id="checkavailability" href="#" onclick="return false;"><strong>Check Availability</strong></a>
-                <span id="msgbox" style="display: none"></span><br>
+                <span id="msgbox"></span><br>
                 <span class="description">Punctuation is not allowed in a Username with the exception
                   of periods, hyphens and underscores.</span>
               </div>
@@ -734,125 +197,7 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
       </fieldset>
 
-      <script type="text/javascript">
-        function showMessage(frm) {
-          var cId = "";
-          if (cId) {
-            alert("You are logged-in user");
-            frm.checked = false;
-          } else {
-            var siteName = "https://members.opensource.org/";
-            alert(
-              "Please login if you have an account on this site with the link " +
-                siteName
-            );
-          }
-        }
-
-        var lastName = null;
-        cj("#checkavailability").click(function () {
-          var cmsUserName = cj.trim(cj("#cms_name").val());
-          if (lastName == cmsUserName) {
-            /*if user checking the same user name more than one times. avoid the ajax call*/
-            return;
-          }
-          /*don't allow special character and for joomla minimum username length is two*/
-
-          var spchar = "\<|\>|\"|'|\%|\;|\(|\)|\&|\\\\|\/";
-
-          var r = new RegExp("[" + spchar + "]", "i");
-          /*regular expression \\ matches a single backslash. this becomes r = /\\/ or r = new RegExp("\\\\").*/
-          if (r.exec(cmsUserName)) {
-            alert("Your username contains invalid characters");
-            return;
-          }
-
-          if (cmsUserName) {
-            /*take all messages in javascript variable*/
-            var check = "Checking...";
-            var available = "This username is currently available.";
-            var notavailable = "This username is taken.";
-            var errorMsg =
-              "Error checking username. Please reload the form and try again.";
-
-            //remove all the class add the messagebox classes and start fading
-            cj("#msgbox")
-              .removeClass()
-              .addClass("cmsmessagebox")
-              .css({
-                color: "#000",
-                backgroundColor: "#FFC",
-                border: "1px solid #c93",
-              })
-              .text(check)
-              .fadeIn("slow");
-
-            //check the username exists or not from ajax
-            var contactUrl =
-              "https://members.opensource.org/join/?civiwp=CiviCRM&q=civicrm%2Fajax%2Fcmsuser";
-
-            var checkUserParams = {
-              cms_name: cj("#cms_name").val(),
-              ts: "1678930952",
-              sig: "psb9_0f4bb2d19d159af98794f2c4b72da883",
-              for: "civicrm/ajax/cmsuser",
-            };
-            cj.post(
-              contactUrl,
-              checkUserParams,
-              function (data) {
-                if (data.name == "no") {
-                  /*if username not avaiable*/
-                  cj("#msgbox").fadeTo(200, 0.1, function () {
-                    cj(this)
-                      .html(notavailable)
-                      .addClass("cmsmessagebox")
-                      .css({
-                        color: "#CC0000",
-                        backgroundColor: "#F7CBCA",
-                        border: "1px solid #CC0000",
-                      })
-                      .fadeTo(900, 1);
-                  });
-                } else if (data.name == "error") {
-                  /*if username not avaiable*/
-                  cj("#msgbox").fadeTo(200, 0.1, function () {
-                    cj(this)
-                      .html(errorMsg)
-                      .addClass("cmsmessagebox")
-                      .css({
-                        color: "#CC0000",
-                        backgroundColor: "#F7CBCA",
-                        border: "1px solid #CC0000",
-                      })
-                      .fadeTo(900, 1);
-                  });
-                } else {
-                  cj("#msgbox").fadeTo(200, 0.1, function () {
-                    cj(this)
-                      .html(available)
-                      .addClass("cmsmessagebox")
-                      .css({
-                        color: "#008000",
-                        backgroundColor: "#C9FFCA",
-                        border: "1px solid #349534",
-                      })
-                      .fadeTo(900, 1);
-                  });
-                }
-              },
-              "json"
-            );
-            lastName = cmsUserName;
-          } else {
-            cj("#msgbox")
-              .removeClass()
-              .text("")
-              .css({ backgroundColor: "#FFFFFF", border: "0px #FFFFFF" })
-              .fadeIn("fast");
-          }
-        });
-      </script>
+      
     </div>
     <div class="crm-public-form-item crm-section premium_block-section"></div>
 
@@ -868,7 +213,18 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </label>
           </div>
           <div class="content">
-            <input maxlength="64" size="30" name="first_name" type="text" id="first_name" class="big crm-form-text required" data-ddg-testresultelementid="518634" data-manual-scoring="firstName">
+            <input maxlength="64" size="30" name="first_name" type="text" id="first_name" class="big crm-form-text required" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name *
+parseable name: first_name
+section: price_5_0_55
+field signature: 1938669551
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 62" data-ddg-testresultelementid="518634" data-manual-scoring="firstName">
           </div>
           <div class="clear"></div>
         </div>
@@ -881,7 +237,18 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </label>
           </div>
           <div class="content">
-            <input maxlength="64" size="30" name="last_name" type="text" id="last_name" class="big crm-form-text required" data-ddg-testresultelementid="518635" data-manual-scoring="lastName">
+            <input maxlength="64" size="30" name="last_name" type="text" id="last_name" class="big crm-form-text required" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name *
+parseable name: last_name
+section: price_5_0_55
+field signature: 3389759488
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 63" data-ddg-testresultelementid="518635" data-manual-scoring="lastName">
           </div>
           <div class="clear"></div>
         </div>
@@ -894,14 +261,18 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </label>
           </div>
           <div class="content">
-            <input maxlength="254" size="30" name="email-Primary" type="text" id="email-Primary" class="big crm-form-text required" data-ddg-autofill="true" style="
-                background-size: auto 26px !important;
-                background-position: right center !important;
-                background-repeat: no-repeat !important;
-                background-origin: content-box !important;
-                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                transition: background 0s ease 0s !important;
-              " data-ddg-testresultelementid="518636" data-manual-scoring="emailAddress">
+            <input maxlength="254" size="30" name="email-Primary" type="text" id="email-Primary" class="big crm-form-text required" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email *
+parseable name: email-Primary
+section: price_5_0_55
+field signature: 1942444993
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 64" data-ddg-testresultelementid="518636" data-manual-scoring="emailAddress">
           </div>
           <div class="clear"></div>
         </div>
@@ -911,7 +282,18 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <label for="street_address-1">Street Address</label>
           </div>
           <div class="content">
-            <input maxlength="96" size="45" name="street_address-1" type="text" id="street_address-1" class="huge crm-form-text" data-ddg-testresultelementid="518637" data-manual-scoring="addressStreet">
+            <input maxlength="96" size="45" name="street_address-1" type="text" id="street_address-1" class="huge crm-form-text" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE1
+label: Street Address
+parseable name: street_address-1
+section: price_5_0_55
+field signature: 4096942016
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 65" data-ddg-testresultelementid="518637" data-manual-scoring="addressStreet">
           </div>
           <div class="clear"></div>
         </div>
@@ -921,7 +303,18 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <label for="city-1">City</label>
           </div>
           <div class="content">
-            <input maxlength="64" size="30" name="city-1" type="text" id="city-1" class="big crm-form-text" data-ddg-testresultelementid="518638" data-manual-scoring="addressCity">
+            <input maxlength="64" size="30" name="city-1" type="text" id="city-1" class="big crm-form-text" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: City
+parseable name: city-1
+section: price_5_0_55
+field signature: 915283295
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 66" data-ddg-testresultelementid="518638" data-manual-scoring="addressCity">
           </div>
           <div class="clear"></div>
         </div>
@@ -934,22 +327,58 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </label>
           </div>
           <div class="content">
-            <div class="select2-container crm-select2 crm-chain-select-control crm-form-select required" id="s2id_country-1" style="width: 357px">
+            <div class="select2-container crm-select2 crm-chain-select-control crm-form-select required" id="s2id_country-1">
               <a href="javascript:void(0)" class="select2-choice" tabindex="-1">
                 <span class="select2-chosen" id="select2-chosen-1">United States</span><abbr class="select2-search-choice-close"></abbr>
                 <span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a><label for="s2id_autogen1" class="select2-offscreen">
-                Country * </label><input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-1" id="s2id_autogen1" data-ddg-testresultelementid="518639" data-manual-scoring="addressCountryCode">
+                Country * </label><input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-1" id="s2id_autogen1" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country
+     *
+parseable name: s2id_autogen1
+section: price_5_0_55
+field signature: 3197321182
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 80" data-ddg-testresultelementid="518639" data-manual-scoring="addressCountryCode">
               <div class="select2-drop select2-display-none select2-with-searchbox crm-container crm-public">
                 <div class="select2-search">
                   <label for="s2id_autogen1_search" class="select2-offscreen">
                     Country *
                   </label>
-                  <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-1" id="s2id_autogen1_search" placeholder="" data-ddg-testresultelementid="518640" data-manual-scoring="addressCountryCode">
+                  <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-1" id="s2id_autogen1_search" placeholder="" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country
+     *
+parseable name: s2id_autogen1_search
+section: price_5_0_55
+field signature: 3945270864
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 81
+autocomplete: off" data-ddg-testresultelementid="518640" data-manual-scoring="addressCountryCode">
                 </div>
                 <ul class="select2-results" role="listbox" id="select2-results-1"></ul>
               </div>
             </div>
-            <select class="crm-select2 crm-chain-select-control crm-form-select required" placeholder="- select Country -" name="country-1" data-target="state_province-1" id="country-1" tabindex="-1" style="display: none" data-ddg-testresultelementid="518641" data-manual-scoring="addressCountryCode">
+            <select class="crm-select2 crm-chain-select-control crm-form-select required" placeholder="- select Country -" name="country-1" data-target="state_province-1" id="country-1" tabindex="-1" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country *
+parseable name: country-1
+section: price_5_0_55
+field signature: 3805019084
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 67" data-ddg-testresultelementid="518641" data-manual-scoring="addressCountryCode">
               <option value="">- select Country -</option>
               <option value="1228" selected="selected">United States</option>
               <option value="1001">Afghanistan</option>
@@ -1212,14 +641,25 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <label for="state_province-1">State/Province</label>
           </div>
           <div class="content">
-            <div class="select2-container crm-select2 crm-chain-select-target crm-form-select" id="s2id_state_province-1" style="width: 285px">
+            <div class="select2-container crm-select2 crm-chain-select-target crm-form-select" id="s2id_state_province-1">
               <a href="javascript:void(0)" class="select2-choice select2-default" tabindex="-1">
                 <span class="select2-chosen" id="select2-chosen-2">- select State/Province -</span><abbr class="select2-search-choice-close"></abbr>
-                <span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a><label for="s2id_autogen2" class="select2-offscreen">State/Province</label><input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-2" id="s2id_autogen2" data-ddg-testresultelementid="518642" data-manual-scoring="addressProvince">
+                <span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a><label for="s2id_autogen2" class="select2-offscreen">State/Province</label><input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-2" id="s2id_autogen2" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province
+parseable name: s2id_autogen2
+section: price_5_0_55
+field signature: 3511397617
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 82" data-ddg-testresultelementid="518642" data-manual-scoring="addressProvince">
               <div class="select2-drop select2-display-none select2-with-searchbox crm-container crm-public">
                 <div class="select2-search">
                   <label for="s2id_autogen2_search" class="select2-offscreen">State/Province</label>
-                  <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-2" id="s2id_autogen2_search" placeholder="" title="overall type: SEARCH_TERM
+                  <input type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="select2-input" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-owns="select2-results-2" id="s2id_autogen2_search" placeholder="" autofill-information="overall type: SEARCH_TERM
 server type: NO_SERVER_DATA
 heuristic type: SEARCH_TERM
 label: State/Province
@@ -1231,24 +671,23 @@ form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
 field renderer id: 83
-autocomplete: off" autofill-information="overall type: SEARCH_TERM
-server type: NO_SERVER_DATA
-heuristic type: SEARCH_TERM
-label: State/Province
-parseable name: s2id_autogen2_search
-section: price_5_0_55
-field signature: 535866227
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 83
-autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="identities.addressProvince" data-ddg-testresultelementid="518643">
+autocomplete: off" data-ddg-testresultelementid="518643">
                 </div>
                 <ul class="select2-results" role="listbox" id="select2-results-2"></ul>
               </div>
             </div>
-            <select data-callback="civicrm/ajax/jqState" data-empty-prompt="Choose country first" data-none-prompt="- N/A -" class="crm-select2 crm-chain-select-target crm-form-select" data-select-prompt="- select State/Province -" data-name="state_province-1" name="state_province-1" id="state_province-1" tabindex="-1" style="display: none" data-ddg-testresultelementid="518644" data-manual-scoring="addressProvince">
+            <select data-callback="civicrm/ajax/jqState" data-empty-prompt="Choose country first" data-none-prompt="- N/A -" class="crm-select2 crm-chain-select-target crm-form-select" data-select-prompt="- select State/Province -" data-name="state_province-1" name="state_province-1" id="state_province-1" tabindex="-1" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province
+parseable name: state_province-1
+section: price_5_0_55
+field signature: 988389074
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 68" data-ddg-testresultelementid="518644" data-manual-scoring="addressProvince">
               <option value="">- select State/Province -</option>
               <option value="1000">Alabama</option>
               <option value="1001">Alaska</option>
@@ -1320,7 +759,18 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="identit
             <label for="postal_code-1">Postal Code</label>
           </div>
           <div class="content">
-            <input maxlength="64" size="6" name="postal_code-1" type="text" id="postal_code-1" class="six crm-form-text" data-ddg-testresultelementid="518645" data-manual-scoring="addressPostalCode">
+            <input maxlength="64" size="6" name="postal_code-1" type="text" id="postal_code-1" class="six crm-form-text" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_ZIP
+label: Postal Code
+parseable name: postal_code-1
+section: price_5_0_55
+field signature: 665858881
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 69" data-ddg-testresultelementid="518645" data-manual-scoring="addressPostalCode">
           </div>
           <div class="clear"></div>
         </div>
@@ -1337,15 +787,27 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="identit
 
                   <td>
                     <div class="group-wrapper">
-                      <div class="crm-section name_other-section" style="display: none">
+                      <div class="crm-section name_other-section">
                         <div class="label">
                           <label for="name_other">Name</label>
                         </div>
                         <div class="content">
-                          <input size="20" maxlength="10" autocomplete="off" name="name_other" type="text" id="name_other" class="medium crm-form-text" data-ddg-testresultelementid="518646" data-manual-scoring="fullName">
+                          <input size="20" maxlength="10" autocomplete="off" name="name_other" type="text" id="name_other" class="medium crm-form-text" autofill-information="overall type: NAME_FULL
+server type: NO_SERVER_DATA
+heuristic type: NAME_FULL
+label: Name
+parseable name: name_other
+section: price_5_0_55
+field signature: 1332141336
+form signature: 18375235263442942799
+form signature in host form: 18375235263442942799
+field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
+form renderer id: 4
+field renderer id: 70
+autocomplete: off" data-ddg-testresultelementid="518646" data-manual-scoring="fullName">
                         </div>
                       </div>
-                      <input type="hidden" name="group[241]" value=""><input skiplabel="1" id="group_241" name="group[241]" type="checkbox" value="1" class="crm-form-checkbox" title="overall type: UNKNOWN_TYPE
+                      <input type="hidden" name="group[241]" value=""><input skiplabel="1" id="group_241" name="group[241]" type="checkbox" value="1" class="crm-form-checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Newsletter
@@ -1356,18 +818,7 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 72" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Newsletter
-parseable name: group[241]
-section: price_5_0_55
-field signature: 252128459
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518647">Newsletter
+field renderer id: 72" data-ddg-testresultelementid="518647">Newsletter
                       <div class="description">
                         Sign-up to to receive OSI's newsletter.
                       </div>
@@ -1385,7 +836,7 @@ field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
             <label>Would you like a membership pin sent to you?</label>
           </div>
           <div class="content">
-            <input data-crm-custom="membership_details:pin_requested" class="crm-form-radio" value="1" type="radio" id="CIVICRM_QFID_1_custom_49" name="custom_49" title="overall type: UNKNOWN_TYPE
+            <input data-crm-custom="membership_details:pin_requested" class="crm-form-radio" value="1" type="radio" id="CIVICRM_QFID_1_custom_49" name="custom_49" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes
@@ -1396,18 +847,7 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 73" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes
-parseable name: custom_49
-section: price_5_0_55
-field signature: 2333685181
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 73" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518648"><label for="CIVICRM_QFID_1_custom_49">Yes</label>&nbsp;<input data-crm-custom="membership_details:pin_requested" class="crm-form-radio" value="0" type="radio" id="CIVICRM_QFID_0_custom_49" name="custom_49" title="overall type: UNKNOWN_TYPE
+field renderer id: 73" data-ddg-testresultelementid="518648"><label for="CIVICRM_QFID_1_custom_49">Yes</label>&nbsp;<input data-crm-custom="membership_details:pin_requested" class="crm-form-radio" value="0" type="radio" id="CIVICRM_QFID_0_custom_49" name="custom_49" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: No
@@ -1418,350 +858,28 @@ form signature: 18375235263442942799
 form signature in host form: 18375235263442942799
 field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
 form renderer id: 4
-field renderer id: 74" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: No
-parseable name: custom_49
-section: price_5_0_55
-field signature: 2333685181
-form signature: 18375235263442942799
-form signature in host form: 18375235263442942799
-field frame token: B798D19DCBE3D00D7CF496EA8AAFFBA3
-form renderer id: 4
-field renderer id: 74" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518649"><label for="CIVICRM_QFID_0_custom_49">No</label>
-            <a href="#" class="crm-hover-button crm-clear-link" style="visibility: hidden" title="Clear"><i class="crm-i fa-times" aria-hidden="true"></i></a>
+field renderer id: 74" data-ddg-testresultelementid="518649"><label for="CIVICRM_QFID_0_custom_49">No</label>
+            <a href="#" class="crm-hover-button crm-clear-link" title="Clear"><i class="crm-i fa-times" aria-hidden="true"></i></a>
           </div>
           <div class="clear"></div>
         </div>
       </fieldset>
 
-      <script type="text/javascript">
-        CRM.$(function ($) {
-          $("#selector tr:even").addClass("odd-row");
-          $("#selector tr:odd ").addClass("even-row");
-        });
-      </script>
+      
     </div>
 
     <div id="billing-payment-block">
-      <script type="text/javascript">
-        CRM.config.creditCardTypes = {
-          Visa: {
-            label: "Visa",
-            name: "Visa",
-            css_key: "visa",
-            pattern: "4(?:[0-9]{12}|[0-9]{15})",
-          },
-          MasterCard: {
-            label: "MasterCard",
-            name: "MasterCard",
-            css_key: "mastercard",
-            pattern:
-              "(5[1-5][0-9]{2}|2[3-6][0-9]{2}|22[3-9][0-9]|222[1-9]|27[0-1][0-9]|2720)[0-9]{12}",
-          },
-          Amex: {
-            label: "Amex",
-            name: "Amex",
-            css_key: "amex",
-            pattern: "3[47][0-9]{13}",
-          },
-          Discover: {
-            label: "Discover",
-            name: "Discover",
-            css_key: "discover",
-            pattern: "6011[0-9]{12}",
-          },
-        };
-      </script>
+      
       <div id="payment_information"></div>
-      <script type="text/javascript">
-        CRM.$(function ($) {
-          // build list of ids to track changes on
-          var address_fields = {
-            street_address: "1",
-            city: "1",
-            country: "1",
-            state_province: "1",
-            postal_code: "1",
-          };
-          var input_ids = {};
-          var select_ids = {};
-          var orig_id, field, field_name;
+      
 
-          // build input ids
-          $(".billing_name_address-section input").each(function (i) {
-            orig_id = $(this).attr("id");
-            field = orig_id.split("-");
-            field_name = field[0].replace("billing_", "");
-            if (field[1]) {
-              if (address_fields[field_name]) {
-                input_ids["#" + field_name + "-" + address_fields[field_name]] =
-                  "#" + orig_id;
-              }
-            }
-          });
-          if ($("#first_name").length)
-            input_ids["#first_name"] = "#billing_first_name";
-          if ($("#middle_name").length)
-            input_ids["#middle_name"] = "#billing_middle_name";
-          if ($("#last_name").length)
-            input_ids["#last_name"] = "#billing_last_name";
-
-          // build select ids
-          $(".billing_name_address-section select").each(function (i) {
-            orig_id = $(this).attr("id");
-            field = orig_id.split("-");
-            field_name = field[0].replace("billing_", "").replace("_id", "");
-            if (field[1]) {
-              if (address_fields[field_name]) {
-                select_ids[
-                  "#" + field_name + "-" + address_fields[field_name]
-                ] = "#" + orig_id;
-              }
-            }
-          });
-
-          // detect if billing checkbox should default to checked
-          var checked = true;
-          for (var id in input_ids) {
-            orig_id = input_ids[id];
-            if ($(id).val() != $(orig_id).val()) {
-              checked = false;
-              break;
-            }
-          }
-          for (var id in select_ids) {
-            orig_id = select_ids[id];
-            if ($(id).val() != $(orig_id).val()) {
-              checked = false;
-              break;
-            }
-          }
-          if (checked) {
-            $("#billingcheckbox")
-              .prop("checked", true)
-              .data("crm-initial-value", true);
-            if (!CRM.billing || CRM.billing.billingProfileIsHideable) {
-              $(".billing_name_address-group").hide();
-            }
-          }
-
-          // onchange handlers for non-billing fields
-          for (var id in input_ids) {
-            orig_id = input_ids[id];
-            $(id).change(function () {
-              var id = "#" + $(this).attr("id");
-              var orig_id = input_ids[id];
-
-              // if billing checkbox is active, copy other field into billing field
-              if ($("#billingcheckbox").prop("checked")) {
-                $(orig_id).val($(id).val());
-              }
-            });
-          }
-          for (var id in select_ids) {
-            orig_id = select_ids[id];
-            $(id).change(function () {
-              var id = "#" + $(this).attr("id");
-              var orig_id = select_ids[id];
-
-              // if billing checkbox is active, copy other field into billing field
-              if ($("#billingcheckbox").prop("checked")) {
-                $(orig_id + " option").prop("selected", false);
-                $(orig_id + ' option[value="' + $(id).val() + '"]').prop(
-                  "selected",
-                  true
-                );
-                $(orig_id).change();
-              }
-            });
-          }
-
-          // toggle show/hide
-          var billingCheckboxElement = $("#billingcheckbox");
-          billingCheckboxElement.click(function () {
-            billingCheckboxChanged(billingCheckboxElement);
-          });
-
-          billingCheckboxElement.change(function () {
-            billingCheckboxChanged(billingCheckboxElement);
-          });
-
-          function billingCheckboxChanged(billingCheckbox) {
-            if (billingCheckbox.prop("checked")) {
-              if (!CRM.billing || CRM.billing.billingProfileIsHideable) {
-                $(".billing_name_address-group").hide(200);
-              }
-
-              // copy all values
-              for (var id in input_ids) {
-                orig_id = input_ids[id];
-                $(orig_id).val($(id).val());
-              }
-              for (var id in select_ids) {
-                orig_id = select_ids[id];
-                $(orig_id + " option").prop("selected", false);
-                $(orig_id + ' option[value="' + $(id).val() + '"]').prop(
-                  "selected",
-                  true
-                );
-                $(orig_id).change();
-              }
-            } else {
-              $(".billing_name_address-group").show(200);
-            }
-          }
-
-          // remove spaces, dashes from credit card number
-          $("#credit_card_number").change(function () {
-            var cc = $("#credit_card_number")
-              .val()
-              .replace(/ /g, "")
-              .replace(/-/g, "");
-            $("#credit_card_number").val(cc);
-          });
-        });
-      </script>
-
-      <script type="text/javascript" src="https://members.opensource.org/wp-content/plugins/civicrm/civicrm/templates/CRM/Core/BillingBlock.js?r=q6KApen_US"></script>
+      
     </div>
 
-    <script type="text/javascript">
-      /**
-       * Show or hide payment options.
-       *
-       * @param bool $isHide
-       *   Should the block be hidden.
-       */
-      function showHidePayment(isHide) {
-        var payment_options = cj(".payment_options-group");
-        var payment_processor = cj("div.payment_processor-section");
-        var payment_information = cj("div#payment_information");
-        // I've added a hide for billing block. But, actually the issue
-        // might be that the unselecting of the processor should cause it
-        // to be hidden (or removed) in which case it can go from this function.
-        var billing_block = cj("div#billing-payment-block");
-        if (isHide) {
-          payment_options.hide();
-          payment_processor.hide();
-          payment_information.hide();
-          billing_block.hide();
-          // Ensure that jquery validation doesn't block submission when we don't need to fill in the billing details section
-          cj("#billing-payment-block select.crm-select2").addClass(
-            "crm-no-validate"
-          );
-          // also unset selected payment methods
-          cj('input[name="payment_processor_id"]').removeProp("checked");
-        } else {
-          payment_options.show();
-          payment_processor.show();
-          payment_information.show();
-          billing_block.show();
-          cj("#billing-payment-block select.crm-select2").removeClass(
-            "crm-no-validate"
-          );
-          // also set selected payment methods
-          cj('input[name="payment_processor_id"][checked=checked]').prop(
-            "checked",
-            true
-          );
-        }
-      }
-
-      /**
-       * Hides or shows billing and payment options block depending on whether payment is required.
-       *
-       * In general incomplete orders or $0 orders do not require a payment block.
-       */
-      function skipPaymentMethod() {
-        var isHide = false;
-        var isMultiple = null;
-        var alwaysShowFlag = isMultiple && cj("#additional_participants").val();
-        var alwaysHideFlag = cj("#bypass_payment").val() == 1;
-        var total_amount_tmp = cj("#pricevalue").data("raw-total");
-        // Hide billing questions if this is free
-        if (!alwaysShowFlag && total_amount_tmp == 0) {
-          isHide = true;
-        } else {
-          isHide = false;
-        }
-        if (alwaysHideFlag) {
-          isHide = true;
-        }
-        showHidePayment(isHide);
-      }
-      skipPaymentMethod();
-
-      CRM.$(function ($) {
-        function buildPaymentBlock(type) {
-          var $form = $("#billing-payment-block").closest("form");
-
-          var payment_instrument_id = $("#payment_instrument_id").val();
-
-          var currency = "USD";
-          currency = currency == "" ? $("#currency").val() : currency;
-
-          var dataUrl =
-            "https://members.opensource.org/join/?civiwp=CiviCRM&q=civicrm%2Fpayment%2Fform&formName=Main&is_back_office=&id=1&pre_profile_id=10&processor_id=" +
-            type;
-
-          if (typeof CRM.vars != "undefined") {
-            if (typeof CRM.vars.coreForm != "undefined") {
-              if (typeof CRM.vars.coreForm.contact_id != "undefined") {
-                dataUrl = dataUrl + "&cid=" + CRM.vars.coreForm.contact_id;
-              }
-
-              if (typeof CRM.vars.coreForm.checksum != "undefined") {
-                dataUrl = dataUrl + "&cs=" + CRM.vars.coreForm.checksum;
-              }
-            }
-          }
-          dataUrl =
-            dataUrl +
-            "&payment_instrument_id=" +
-            payment_instrument_id +
-            "&currency=" +
-            currency;
-
-          // Processors like pp-express will hide the form submit buttons, so re-show them when switching
-          $(".crm-submit-buttons", $form)
-            .show()
-            .find("input")
-            .prop("disabled", true);
-          CRM.loadPage(dataUrl, { target: "#billing-payment-block" });
-        }
-
-        $("[name=payment_processor_id], #currency").on(
-          "change.paymentBlock",
-          function () {
-            var payment_processor_id =
-              $("[name=payment_processor_id]:checked").val() == undefined
-                ? $("[name=payment_processor_id]").val()
-                : $("[name=payment_processor_id]:checked").val();
-            if (payment_processor_id != undefined) {
-              buildPaymentBlock(payment_processor_id);
-            }
-          }
-        );
-
-        $("#payment_instrument_id").on("change.paymentBlock", function () {
-          buildPaymentBlock(0);
-        });
-
-        $("#billing-payment-block").on("crmLoad", function () {
-          $(".crm-submit-buttons input").prop("disabled", false);
-        });
-      });
-    </script>
+    
 
     <div class="crm-public-form-item crm-group custom_post_profile-group">
-      <script type="text/javascript">
-        CRM.$(function ($) {
-          $("#selector tr:even").addClass("odd-row");
-          $("#selector tr:odd ").addClass("even-row");
-        });
-      </script>
+      
     </div>
 
     <div id="crm-submit-buttons" class="crm-submit-buttons">
@@ -1771,105 +889,7 @@ field renderer id: 74" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </button>
     </div>
   </div>
-  <script type="text/javascript">
-    cj('input[name="soft_credit_type_id"]').on("change", function () {
-      enableHonorType();
-    });
+  
 
-    function enableHonorType() {
-      var selectedValue = cj('input[name="soft_credit_type_id"]:checked');
-      if (selectedValue.val() > 0) {
-        cj("#honorType").show();
-      } else {
-        cj("#honorType").hide();
-      }
-    }
-
-    cj('input[id="is_recur"]').on("change", function () {
-      toggleRecur();
-    });
-
-    function toggleRecur() {
-      var isRecur = cj('input[id="is_recur"]:checked');
-      var allowAutoRenew = "1";
-      var quickConfig = 1;
-      if (allowAutoRenew && cj("#auto_renew") && quickConfig) {
-        showHideAutoRenew(null);
-      }
-
-      var frequencyUnit = cj("#frequency_unit");
-      var frequencyInerval = cj("#frequency_interval");
-      var installments = cj("#installments");
-      isDisabled = false;
-
-      if (isRecur.val() > 0) {
-        cj("#recurHelp").show();
-        frequencyUnit.prop("disabled", false).addClass("required");
-        frequencyInerval.prop("disabled", false).addClass("required");
-        installments.prop("disabled", false);
-        cj("#amount_sum_label").text("Regular Amount");
-      } else {
-        cj("#recurHelp").hide();
-        frequencyUnit.prop("disabled", true).removeClass("required");
-        frequencyInerval.prop("disabled", true).removeClass("required");
-        installments.prop("disabled", true);
-        cj("#amount_sum_label").text("Total Amount");
-      }
-    }
-
-    function pcpAnonymous() {
-      // clear nickname field if anonymous is true
-      if (document.getElementsByName("pcp_is_anonymous")[1].checked) {
-        document.getElementById("pcp_roll_nickname").value = "";
-      }
-      if (!document.getElementsByName("pcp_display_in_roll")[0].checked) {
-        cj("#nickID").hide();
-        cj("#nameID").hide();
-        cj("#personalNoteID").hide();
-      } else {
-        if (document.getElementsByName("pcp_is_anonymous")[0].checked) {
-          cj("#nameID").show();
-          cj("#nickID").show();
-          cj("#personalNoteID").show();
-        } else {
-          cj("#nameID").show();
-          cj("#nickID").hide();
-          cj("#personalNoteID").hide();
-        }
-      }
-    }
-
-    CRM.$(function ($) {
-      enableHonorType();
-      toggleRecur();
-      skipPaymentMethod();
-    });
-
-    CRM.$(function ($) {
-      // highlight price sets
-      function updatePriceSetHighlight() {
-        $("#priceset .price-set-row span").removeClass("highlight");
-        $("#priceset .price-set-row input:checked")
-          .parent()
-          .addClass("highlight");
-      }
-      $('#priceset input[type="radio"]').change(updatePriceSetHighlight);
-      updatePriceSetHighlight();
-
-      // Update pledge contribution amount when pledge checkboxes change
-      $("input[name^='pledge_amount']").on("change", function () {
-        var total = 0;
-        $("input[name^='pledge_amount']:checked").each(function () {
-          total += Number($(this).attr("amount"));
-        });
-        $("input[name^='price_']").val(total.toFixed(2));
-      });
-    });
-  </script>
-
-  <script type="text/javascript">
-    CRM.$(function ($) {
-      $("form.CRM_Contribute_Form_Contribution_Main").crmValidate();
-    });
-  </script>
+  
 </form>

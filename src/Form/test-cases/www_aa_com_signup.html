@@ -1,5 +1,6 @@
 <!--
   https://www.aa.com/loyalty/enrollment/enroll?from=Nav&anchorEvent=false&anchorLocation=Navigation+Menu&url=/loyalty/enrollment/enroll&_locale=en_US&reportedTitle=AAdvantage+Enroll+Now
+  rank: 1812
   testRunId: 66
   testResultId: 235632
 -->
@@ -39,12 +40,9 @@
     </div>
   </div>
 
-  <script type="text/javascript">
-    var vpnr_cancelMessage = "CANCEL";
-    var vpnr_okMessage = "OK";
-  </script>
+  
 
-  <script type="text/javascript" src="/assets/js/common/aa-utility-menu.min.js"></script>
+  
 
   <input type="hidden" name="loginURL" id="loginURL" value="/loyalty/login;jsessionid=B723CC70F11545BBEEB512C4A45248E4?uri=%2floyalty%2flogin&amp;previousPage=&amp;bookingPathStateId=&amp;marketId=">
 
@@ -82,18 +80,29 @@
               <div id="language-selector" data-behavior="dropdown-wrapper" class="js-dropdown-wrapper">
                 <a href="#" data-behavior="dropdown-trigger" class="js-dropdown-trigger">
                   <span class="aa-language-select-indicator">
-                    <img alt="United States" src="/content/images/chrome/rebrand/aa-icons-flags-sprite.png">
+                    
                   </span>
                   English
-                  <img alt="Click to change language and/or country / region" src="/content/images/chrome/rebrand/down-arrow.png" class="dropdown-indicator">
+                  
                 </a>
               </div>
-              <div data-behavior="dropdown-panel" style="display: none" class="js-dropdown-panel">
-                <form id="splashForm" method="post" action="/international/mclaSplashSubmit.do;jsessionid=B723CC70F11545BBEEB512C4A45248E4" data-ddg-formtype="sign up">
+              <div data-behavior="dropdown-panel" class="js-dropdown-panel">
+                <form id="splashForm" method="post" action="/international/mclaSplashSubmit.do;jsessionid=B723CC70F11545BBEEB512C4A45248E4">
                   <label for="aa-country-selector">
                     Select Country / Region
 
-                    <select name="countryselector" size="1" id="aa-country-selector" data-ddg-testresultelementid="517536" data-manual-scoring="addressCountryCode">
+                    <select name="countryselector" size="1" id="aa-country-selector" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: UNKNOWN_TYPE
+label: Select Country / Region
+parseable name: countryselector
+section: countryselector_0_20
+field signature: 3182614947
+form signature: 9736205919813582397
+form signature in host form: 9736205919813582397
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 2
+field renderer id: 20" data-ddg-testresultelementid="517536" data-manual-scoring="addressCountryCode">
                       <option value="en_AI">Anguilla</option>
 
                       <option value="en_AG">Antigua And Barbuda</option>
@@ -242,7 +251,7 @@
                   <label for="aa-language-selector">
                     Select Language
 
-                    <select name="languageselector" size="1" id="aa-language-selector" title="overall type: UNKNOWN_TYPE
+                    <select name="languageselector" size="1" id="aa-language-selector" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Select Language
@@ -253,18 +262,7 @@ form signature: 9736205919813582397
 form signature in host form: 9736205919813582397
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 2
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Select Language
-parseable name: languageselector
-section: countryselector_0_20
-field signature: 3568479584
-form signature: 9736205919813582397
-form signature in host form: 9736205919813582397
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 2
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517537">
+field renderer id: 21" data-ddg-testresultelementid="517537">
                       <option value="url=https://www.aa.com?locale=en_US" selected="selected">
                         English
                       </option>
@@ -276,7 +274,7 @@ field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   </label>
 
                   <div class="customComponent">
-                    <input type="checkbox" name="localePreferenceSaved" value="on" id="aa-country-language-save" title="overall type: UNKNOWN_TYPE
+                    <input type="checkbox" name="localePreferenceSaved" value="on" id="aa-country-language-save" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Remember this selection?
@@ -287,25 +285,14 @@ form signature: 9736205919813582397
 form signature in host form: 9736205919813582397
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 2
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Remember this selection?
-parseable name: localePreferenceSaved
-section: countryselector_0_20
-field signature: 491785782
-form signature: 9736205919813582397
-form signature in host form: 9736205919813582397
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 2
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517538">
+field renderer id: 22" data-ddg-testresultelementid="517538">
                     <label for="aa-country-language-save">
                       <span class="control"></span>
                       Remember this selection?
                     </label>
                   </div>
 
-                  <div id="locale-change-alert" class="alert alert-small alert-success" style="display: none">
+                  <div id="locale-change-alert" class="alert alert-small alert-success">
                     <p>
                       <span class="aa-icon-alert-sm" aria-hidden="true"></span>
                       We'll redirect you to the home page of the country /
@@ -324,18 +311,14 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </form>
               </div>
 
-              <script>
-                function deleteBackCall() {
-                  window.history.pushState("", "", "/homePage.do");
-                }
-              </script>
+              
             </li>
 
             <li id="aa-site-search" class="menu-item-utility hidden-phone">
               <form id="utilitySearchForm">
                 <label for="aa-search-field">
                   <span class="hidden-accessible">Search AA.com®</span>
-                  <input id="aa-search-field" type="search" name="q" maxlength="1000" placeholder="Search AA.com®" title="overall type: UNKNOWN_TYPE
+                  <input id="aa-search-field" type="search" name="q" maxlength="1000" placeholder="Search AA.com®" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Search AA.com®
@@ -346,18 +329,7 @@ form signature: 12258997413526919837
 form signature in host form: 12258997413526919837
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 3
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Search AA.com®
-parseable name: q
-section: q_0_30
-field signature: 2300586618
-form signature: 12258997413526919837
-form signature in host form: 12258997413526919837
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 3
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517539">
+field renderer id: 30" data-ddg-testresultelementid="517539">
                 </label>
                 <button type="submit" id="aa-search-button" class="btn-search widget" value="Go">
                   <span class="icon icon-18 icon-search" aria-hidden="true"></span>
@@ -383,12 +355,12 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <div id="main-navigation" class="row-noBreak pageslide-row" tabindex="-1">
         <div class="hidden-phone">
           <a class="aa-logo span4 span-phone9" href="/homePage.do" onclick="deleteVirtualPNR()">
-            <img src="/content/images/chrome/rebrand/aa-logo.png" alt="American Airlines - homepage">
+            
           </a>
         </div>
 
         <a class="aa-logo mobile-logo is-hidden visible-phone" href="/homePage.do" onclick="deleteVirtualPNR()">
-          <img src="/content/images/chrome/rebrand/aa-logo.png" alt=" American Airlines - homepage ">
+          
         </a>
 
         <div class="mobile-nav is-hidden visible-phone">
@@ -625,65 +597,12 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           <a id="close" href="#" aria-label="Close menu"><span> </span></a>
         </nav>
         <a id="header-one-world-logo" href="/i18n/travel-info/partner-airlines/oneworld-airline-partners.jsp" class="right hidden-phone aa-pop-win-new" target="_blank" rel="noopener noreferrer">
-          <img style="vertical-align: middle" alt="oneworld link opens in a new window" src="/content/images/chrome/rebrand/oneworld.png">
+          
         </a>
       </div>
     </div>
 
-    <script>
-      _affirm_config = {
-        public_api_key: "",
-        script: "",
-      };
-      (function (m, g, n, d, a, e, h, c) {
-        var b = m[n] || {},
-          k = document.createElement(e),
-          p = document.getElementsByTagName(e)[0],
-          l = function (a, b, c) {
-            return function () {
-              a[b]._.push([c, arguments]);
-            };
-          };
-        b[d] = l(b, d, "set");
-        var f = b[d];
-        b[a] = {};
-        b[a]._ = [];
-        f._ = [];
-        b._ = [];
-        b[a][h] = l(b, a, h);
-        b[c] = function () {
-          b._.push([h, arguments]);
-        };
-        a = 0;
-        for (
-          c =
-            "set add save post open empty reset on off trigger ready setProduct".split(
-              " "
-            );
-          a < c.length;
-          a++
-        )
-          f[c[a]] = l(b, d, c[a]);
-        a = 0;
-        for (c = ["get", "token", "url", "items"]; a < c.length; a++)
-          f[c[a]] = function () {};
-        k.async = !0;
-        k.src = g[e];
-        p.parentNode.insertBefore(k, p);
-        delete g[e];
-        f(g);
-        m[n] = b;
-      })(
-        window,
-        _affirm_config,
-        "affirm",
-        "checkout",
-        "ui",
-        "script",
-        "ready",
-        "jsReady"
-      );
-    </script>
+    
 
     <!--[if lte IE 9]>
       <script
@@ -692,108 +611,13 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         type="text/javascript"
       ></script>
     <![endif]-->
-    <script type="text/javascript" src="https://customer.cludo.com/scripts/bundles/search-script.min.js"></script>
+    
 
-    <script type="text/javascript">
-      var localeLanguage = "en";
-      var engineId = "10000632";
-      var customerId = "10000426";
-
-      var cludoStylesheet = document.createElement("link");
-      cludoStylesheet.rel = "stylesheet";
-      cludoStylesheet.type = "text/css";
-      cludoStylesheet.href =
-        "https://customer.cludo.com/css/" +
-        customerId +
-        "/cludo-search.min.css";
-      document.head.appendChild(cludoStylesheet);
-
-      var CludoSearch;
-
-      window.addEventListener("load", function () {
-        var cludoSettings = {
-          customerId: customerId,
-          engineId: engineId,
-          searchUrl: "/search",
-          language: localeLanguage,
-          searchInputs: ["utilitySearchForm", "siteSearchForm"],
-          loading:
-            "<img src='/content/images/chrome/rebrand/aa-flight-icon.png' alt='american airlines logo' class='loading' role='progressbar' /><div class='loading-more-text' tabindex='-1'>Loading...</div><img src='/content/images/chrome/icons/loading.gif' alt='Loading' class='loading-more' role='progressbar' />",
-          hideSearchFilters: true,
-          hideResultsCount: true,
-          focusOnResultsAfterSearch: true,
-          disableAutocomplete: true,
-          paramsPrefix: "",
-          richAutocomplete: true,
-          customCallbackAfterSearch: sendAnalyticsAfterSearch,
-        };
-        CludoSearch = new Cludo(cludoSettings);
-        CludoSearch.init();
-      });
-
-      function sendAnalyticsAfterSearch() {
-        if (utag != null) {
-          utag.view({
-            internal_search_keyword: CludoSearch.params.query,
-            channel: utag_data.channel,
-            page_name: utag_data.page_name,
-            login_status: utag_data.login_status,
-            site_country: utag_data.site_country,
-            site_language: utag_data.site_language,
-            site_indicator: utag_data.site_indicator,
-            tealium_environment: utag_data.tealium_environment,
-            tealium_profile: utag_data.tealium_profile,
-            server: utag_data.server,
-            error_id: utag_data.error_id,
-            loyalty_balance: utag_data.loyalty_balance,
-            loyalty_id: utag_data.loyalty_id,
-            loyalty_tier: utag_data.loyalty_tier,
-            gd_treatment_code: utag_data.gd_treatment_code,
-            partner_code_info: utag_data.partner_code_info,
-            time_stamp: getTimestamp(),
-          });
-        }
-      }
-
-      const getTimestamp = function () {
-        const today = new Date();
-        const month = padTS(today.getMonth() + 1);
-        const day = padTS(today.getDate());
-        const year = padTS(today.getFullYear());
-        const hours = padTS(today.getHours());
-        const minutes = padTS(today.getMinutes());
-        const secs = padTS(today.getSeconds());
-
-        return (
-          month +
-          "/" +
-          day +
-          "/" +
-          year +
-          " " +
-          hours +
-          ":" +
-          minutes +
-          ":" +
-          secs
-        );
-      };
-
-      const padTS = function (field) {
-        return field.toString().length === 1 ? "0" + field : field;
-      };
-    </script>
+    
   </header>
   <!--googleon: all-->
 
-  <script>
-    var asappHeaders = {
-      _CSRF: "9OW6-X2WR-J6JT-SQDC-RJZR-K1KV-HZLE-OZH2",
-    };
-
-    var chatAPIHostname = "american-airlines.asapp.com";
-    var chatAppId = "american-airlines";
-  </script>
+  
 
   <main id="main" class="container" role="main" aria-label="main content">
     <div id="aa-content-frame" tabindex="-1">
@@ -836,7 +660,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
       <h1>Your information</h1>
 
-      <form id="enrollmentInformationForm" novalidate="novalidate" action="/loyalty/enrollment/enroll;jsessionid=B723CC70F11545BBEEB512C4A45248E4?from=Nav&amp;anchorEvent=false&amp;anchorLocation=Navigation+Menu&amp;url=/loyalty/enrollment/enroll&amp;_locale=en_US&amp;reportedTitle=AAdvantage+Enroll+Now" method="POST" autocomplete="off" data-ddg-formtype="sign up">
+      <form id="enrollmentInformationForm" novalidate="novalidate" action="/loyalty/enrollment/enroll;jsessionid=B723CC70F11545BBEEB512C4A45248E4?from=Nav&amp;anchorEvent=false&amp;anchorLocation=Navigation+Menu&amp;url=/loyalty/enrollment/enroll&amp;_locale=en_US&amp;reportedTitle=AAdvantage+Enroll+Now" method="POST" autocomplete="off">
         <section class="section">
           <p>
             Become a member and enjoy exclusive promotions and endless
@@ -885,26 +709,59 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
             <div class="span3">
               <label for="personalInformationForm.firstName">
                 First name <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="personalInformationForm.firstName" name="personalInformationForm.firstName" type="text" value="" maxlength="30" data-ddg-testresultelementid="517540" data-manual-scoring="firstName">
+                <input id="personalInformationForm.firstName" name="personalInformationForm.firstName" type="text" value="" maxlength="30" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First name , required.
+parseable name: personalInformationForm.firstName
+section: personalInformationForm.firstName_0_35
+field signature: 780694563
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 35" data-ddg-testresultelementid="517540" data-manual-scoring="firstName">
               </label>
             </div>
             <div class="span3">
               <label for="personalInformationForm.middleName">
                 <span>Middle name</span>
-                <input id="personalInformationForm.middleName" name="personalInformationForm.middleName" type="text" value="" maxlength="30" data-ddg-testresultelementid="517541" data-manual-scoring="middleName">
+                <input id="personalInformationForm.middleName" name="personalInformationForm.middleName" type="text" value="" maxlength="30" autofill-information="overall type: NAME_MIDDLE
+server type: NO_SERVER_DATA
+heuristic type: NAME_MIDDLE
+label: Middle name
+parseable name: personalInformationForm.middleName
+section: personalInformationForm.firstName_0_35
+field signature: 192567905
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 36" data-ddg-testresultelementid="517541" data-manual-scoring="middleName">
               </label>
             </div>
             <div class="span3">
               <label for="personalInformationForm.lastName">
                 Last name <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="personalInformationForm.lastName" name="personalInformationForm.lastName" type="text" value="" maxlength="29" data-ddg-testresultelementid="517542" data-manual-scoring="lastName">
+                <input id="personalInformationForm.lastName" name="personalInformationForm.lastName" type="text" value="" maxlength="29" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last name , required.
+parseable name: personalInformationForm.lastName
+section: personalInformationForm.firstName_0_35
+field signature: 2564447668
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 37" data-ddg-testresultelementid="517542" data-manual-scoring="lastName">
               </label>
             </div>
             <div class="span3">
               <label for="personalInformationForm.suffix">
                 Suffix
 
-                <select id="personalInformationForm.suffix" name="personalInformationForm.suffix" title="overall type: UNKNOWN_TYPE
+                <select id="personalInformationForm.suffix" name="personalInformationForm.suffix" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Suffix
@@ -915,18 +772,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 38" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Suffix
-parseable name: personalInformationForm.suffix
-section: personalInformationForm.firstName_0_35
-field signature: 2752987078
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517543">
+field renderer id: 38" data-ddg-testresultelementid="517543">
                   <option value="" selected="selected">
                     Select your suffix
                   </option>
@@ -957,7 +803,7 @@ field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                       <span class="hidden-accessible">Date of birth month</span>
                       <span class="hidden-accessible">, required.</span>
 
-                      <select id="personalInformationForm.dateOfBirth.month" name="personalInformationForm.dateOfBirth.month" class="js-change-dob" title="overall type: UNKNOWN_TYPE
+                      <select id="personalInformationForm.dateOfBirth.month" name="personalInformationForm.dateOfBirth.month" class="js-change-dob" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of birth month , required.
@@ -968,18 +814,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 40" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of birth month , required.
-parseable name: personalInformationForm.dateOfBirth.month
-section: personalInformationForm.firstName_0_35
-field signature: 3368009405
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.birthdayMonth" data-ddg-testresultelementid="517544">
+field renderer id: 40" data-ddg-testresultelementid="517544">
                         <option value="-1000" selected="selected">Month</option>
                         <option value="0">Jan</option>
                         <option value="1">Feb</option>
@@ -1002,7 +837,7 @@ field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                       <span class="hidden-accessible">Date of birth day</span>
                       <span class="hidden-accessible">, required.</span>
 
-                      <select id="personalInformationForm.dateOfBirth.day" name="personalInformationForm.dateOfBirth.day" class="js-change-dob" title="overall type: UNKNOWN_TYPE
+                      <select id="personalInformationForm.dateOfBirth.day" name="personalInformationForm.dateOfBirth.day" class="js-change-dob" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of birth day , required.
@@ -1013,18 +848,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 41" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of birth day , required.
-parseable name: personalInformationForm.dateOfBirth.day
-section: personalInformationForm.firstName_0_35
-field signature: 917507718
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.birthdayDay" data-ddg-testresultelementid="517545">
+field renderer id: 41" data-ddg-testresultelementid="517545">
                         <option value="-1000" selected="selected">Day</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -1066,7 +890,7 @@ field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                       <span class="hidden-accessible">Date of birth year</span>
                       <span class="hidden-accessible">, required.</span>
 
-                      <select id="personalInformationForm.dateOfBirth.year" name="personalInformationForm.dateOfBirth.year" class="js-change-dob" title="overall type: UNKNOWN_TYPE
+                      <select id="personalInformationForm.dateOfBirth.year" name="personalInformationForm.dateOfBirth.year" class="js-change-dob" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of birth year , required.
@@ -1077,18 +901,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 42" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of birth year , required.
-parseable name: personalInformationForm.dateOfBirth.year
-section: personalInformationForm.firstName_0_35
-field signature: 266439512
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.birthdayYear" data-ddg-testresultelementid="517546">
+field renderer id: 42" data-ddg-testresultelementid="517546">
                         <option value="-1000" selected="selected">Year</option>
                         <option value="2023">2023</option>
                         <option value="2022">2022</option>
@@ -1224,7 +1037,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
               <label for="personalInformationForm.gender">
                 Gender <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
 
-                <select id="personalInformationForm.gender" name="personalInformationForm.gender" title="overall type: UNKNOWN_TYPE
+                <select id="personalInformationForm.gender" name="personalInformationForm.gender" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Gender , required.
@@ -1235,18 +1048,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 43" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Gender , required.
-parseable name: personalInformationForm.gender
-section: personalInformationForm.firstName_0_35
-field signature: 1908354511
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 43" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517547">
+field renderer id: 43" data-ddg-testresultelementid="517547">
                   <option value="G" selected="selected">
                     Select your gender
                   </option>
@@ -1269,7 +1071,7 @@ field renderer id: 43" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <div class="row-form">
             <div class="span3">
               <div class="customComponent">
-                <input id="addressTypeHome" name="addressInformationForm.addressType" type="radio" value="HOM" checked="checked" title="overall type: UNKNOWN_TYPE
+                <input id="addressTypeHome" name="addressInformationForm.addressType" type="radio" value="HOM" checked="checked" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Home Home Address
@@ -1280,25 +1082,14 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 44" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Home Home Address
-parseable name: addressInformationForm.addressType
-section: personalInformationForm.firstName_0_35
-field signature: 1029634326
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517548">
+field renderer id: 44" data-ddg-testresultelementid="517548">
                 <label for="addressTypeHome" class="pillbox">
                   <span aria-hidden="true">Home</span>
                   <span class="hidden-accessible">Home Address</span>
                 </label>
               </div>
               <div class="customComponent">
-                <input id="addressTypeBusiness" name="addressInformationForm.addressType" type="radio" value="BUS" title="overall type: UNKNOWN_TYPE
+                <input id="addressTypeBusiness" name="addressInformationForm.addressType" type="radio" value="BUS" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Business Business Address
@@ -1309,18 +1100,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 45" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Business Business Address
-parseable name: addressInformationForm.addressType
-section: personalInformationForm.firstName_0_35
-field signature: 1029634326
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517549">
+field renderer id: 45" data-ddg-testresultelementid="517549">
                 <label for="addressTypeBusiness" class="pillbox">
                   <span aria-hidden="true">Business</span>
                   <span class="hidden-accessible">Business Address</span>
@@ -1333,7 +1113,7 @@ field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <label for="addressInformationForm.businessName">
                 Business name
                 <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="addressInformationForm.businessName" name="addressInformationForm.businessName" type="text" value="" maxlength="30" title="overall type: COMPANY_NAME
+                <input id="addressInformationForm.businessName" name="addressInformationForm.businessName" type="text" value="" maxlength="30" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Business name , required.
@@ -1344,25 +1124,25 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 46" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Business name , required.
-parseable name: addressInformationForm.businessName
-section: personalInformationForm.firstName_0_35
-field signature: 2010468239
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517550">
+field renderer id: 46" data-ddg-testresultelementid="517550">
               </label>
             </div>
             <div class="span3">
               <label for="addressInformationForm.country">
                 Country / region
                 <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <select id="addressInformationForm.country" name="addressInformationForm.country" class="js-change" data-ddg-testresultelementid="517551" data-manual-scoring="addressCountryCode">
+                <select id="addressInformationForm.country" name="addressInformationForm.country" class="js-change" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country / region , required.
+parseable name: addressInformationForm.country
+section: personalInformationForm.firstName_0_35
+field signature: 1065606775
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 47" data-ddg-testresultelementid="517551" data-manual-scoring="addressCountryCode">
                   <option value="" selected="selected">
                     Select your country / region
                   </option>
@@ -1612,13 +1392,35 @@ field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
             <div class="span3">
               <label for="addressInformationForm.address1">
                 Address 1 <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="addressInformationForm.address1" name="addressInformationForm.address1" type="text" value="" maxlength="30" data-ddg-testresultelementid="517552" data-manual-scoring="addressStreet">
+                <input id="addressInformationForm.address1" name="addressInformationForm.address1" type="text" value="" maxlength="30" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: ADDRESS_HOME_LINE1
+heuristic type: ADDRESS_HOME_LINE1
+label: Address 1 , required.
+parseable name: addressInformationForm.address1
+section: personalInformationForm.firstName_0_35
+field signature: 3660191472
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 48" data-ddg-testresultelementid="517552" data-manual-scoring="addressStreet">
               </label>
             </div>
             <div class="span3">
               <label for="addressInformationForm.address2">
                 Address 2
-                <input id="addressInformationForm.address2" name="addressInformationForm.address2" type="text" value="" maxlength="30" data-ddg-testresultelementid="517553" data-manual-scoring="addressStreet2">
+                <input id="addressInformationForm.address2" name="addressInformationForm.address2" type="text" value="" maxlength="30" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE2
+label: Address 2
+parseable name: addressInformationForm.address2
+section: personalInformationForm.firstName_0_35
+field signature: 120724079
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 49" data-ddg-testresultelementid="517553" data-manual-scoring="addressStreet2">
               </label>
             </div>
           </div>
@@ -1626,13 +1428,35 @@ field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
             <div class="span3">
               <label for="addressInformationForm.city">
                 City <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="addressInformationForm.city" name="addressInformationForm.city" type="text" value="" maxlength="50" data-ddg-testresultelementid="517554" data-manual-scoring="addressCity">
+                <input id="addressInformationForm.city" name="addressInformationForm.city" type="text" value="" maxlength="50" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: City , required.
+parseable name: addressInformationForm.city
+section: personalInformationForm.firstName_0_35
+field signature: 1946115240
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 50" data-ddg-testresultelementid="517554" data-manual-scoring="addressCity">
               </label>
             </div>
             <div class="span3">
               <label for="addressInformationForm.usState" class="js-state" data-country="US">
                 State <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <select id="addressInformationForm.usState" name="addressInformationForm.usState" data-ddg-testresultelementid="517555" data-manual-scoring="addressProvince">
+                <select id="addressInformationForm.usState" name="addressInformationForm.usState" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: State , required.
+parseable name: addressInformationForm.usState
+section: personalInformationForm.firstName_0_35
+field signature: 934624060
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 51" data-ddg-testresultelementid="517555" data-manual-scoring="addressProvince">
                   <option value="">Select a state</option>
                   <option value="AL">Alabama</option>
                   <option value="AK">Alaska</option>
@@ -1699,7 +1523,18 @@ field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
               </label>
               <label for="addressInformationForm.caState" class="js-state is-hidden" data-country="CA">
                 Province <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <select id="addressInformationForm.caState" name="addressInformationForm.caState" data-ddg-testresultelementid="517556" data-manual-scoring="addressProvince">
+                <select id="addressInformationForm.caState" name="addressInformationForm.caState" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: Province , required.
+parseable name: addressInformationForm.caState
+section: personalInformationForm.firstName_0_35
+field signature: 3120832825
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 52" data-ddg-testresultelementid="517556" data-manual-scoring="addressProvince">
                   <option value="">Select a province</option>
                   <option value="AB">Alberta</option>
                   <option value="NT">Northwest Territories</option>
@@ -1721,7 +1556,18 @@ field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
               <label for="addressInformationForm.postalCode" class="js-postalCode">
                 Postal code
                 <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="addressInformationForm.postalCode" name="addressInformationForm.postalCode" type="text" value="" maxlength="10" data-ddg-testresultelementid="517557" data-manual-scoring="addressPostalCode">
+                <input id="addressInformationForm.postalCode" name="addressInformationForm.postalCode" type="text" value="" maxlength="10" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: ADDRESS_HOME_ZIP
+heuristic type: ADDRESS_HOME_ZIP
+label: Postal code , required.
+parseable name: addressInformationForm.postalCode
+section: personalInformationForm.firstName_0_35
+field signature: 2427563976
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 53" data-ddg-testresultelementid="517557" data-manual-scoring="addressPostalCode">
               </label>
             </div>
           </div>
@@ -1736,28 +1582,36 @@ field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                 <label for="emailPhoneForm.email">
                   Primary email
                   <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                  <input id="emailPhoneForm.email" name="emailPhoneForm.email" type="email" value="" maxlength="55" data-ddg-autofill="true" data-ddg-testresultelementid="517558" style="
-                      background-size: auto 26px !important;
-                      background-position: right center !important;
-                      background-repeat: no-repeat !important;
-                      background-origin: content-box !important;
-                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                      transition: background 0s ease 0s !important;
-                    " data-manual-scoring="emailAddress">
+                  <input id="emailPhoneForm.email" name="emailPhoneForm.email" type="email" value="" maxlength="55" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Primary email , required.
+parseable name: emailPhoneForm.email
+section: personalInformationForm.firstName_0_35
+field signature: 1684223443
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 54" data-ddg-testresultelementid="517558" data-manual-scoring="emailAddress">
                 </label>
               </div>
               <div class="span3">
                 <label for="emailPhoneForm.confirmEmail">
                   Confirm primary email
                   <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                  <input id="emailPhoneForm.confirmEmail" name="emailPhoneForm.confirmEmail" type="email" value="" maxlength="55" data-ddg-autofill="true" data-ddg-testresultelementid="517559" style="
-                      background-size: auto 26px !important;
-                      background-position: right center !important;
-                      background-repeat: no-repeat !important;
-                      background-origin: content-box !important;
-                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                      transition: background 0s ease 0s !important;
-                    " data-manual-scoring="emailAddress">
+                  <input id="emailPhoneForm.confirmEmail" name="emailPhoneForm.confirmEmail" type="email" value="" maxlength="55" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Confirm primary email , required.
+parseable name: emailPhoneForm.confirmEmail
+section: personalInformationForm.firstName_0_35
+field signature: 766503012
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 55" data-ddg-testresultelementid="517559" data-manual-scoring="emailAddress">
                 </label>
               </div>
             </div>
@@ -1767,7 +1621,7 @@ field renderer id: 46" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                 <label for="emailPhoneForm.phones0.type">
                   Primary phone type
                   <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                  <select id="emailPhoneForm.phones0.type" name="emailPhoneForm.phones[0].type" class="js-change js-phoneType" data-index="0" title="overall type: UNKNOWN_TYPE
+                  <select id="emailPhoneForm.phones0.type" name="emailPhoneForm.phones[0].type" class="js-change js-phoneType" data-index="0" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Primary phone type , required.
@@ -1778,18 +1632,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 56" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Primary phone type , required.
-parseable name: emailPhoneForm.phones[0].type
-section: personalInformationForm.firstName_0_35
-field signature: 1747853169
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517560">
+field renderer id: 56" data-ddg-testresultelementid="517560">
                     <option value="" selected="selected">
                       Select a phone type
                     </option>
@@ -1817,7 +1660,18 @@ field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                           <span class="hidden-accessible">, required.</span>
 
                           <div class="selectbox-overlay"></div>
-                          <select id="emailPhoneForm.phones0.countryCodeReadonly" name="emailPhoneForm.phones0.countryCodeReadonly" readonly="readonly" tabindex="-1" data-ddg-testresultelementid="517561" data-manual-scoring="addressCountryCode">
+                          <select id="emailPhoneForm.phones0.countryCodeReadonly" name="emailPhoneForm.phones0.countryCodeReadonly" readonly="readonly" tabindex="-1" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country / region code , required.
+parseable name: emailPhoneForm.phones0.countryCodeReadonly
+section: emailPhoneForm.phones0.countryCodeReadonly_0_83
+field signature: 764692092
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 83" data-ddg-testresultelementid="517561" data-manual-scoring="addressCountryCode">
                             <option value="" selected="">Select</option>
                           </select> </label><label for="emailPhoneForm.phones0.countryCode" class="selectbox-label">
                           <span class="hidden-accessible">
@@ -1825,7 +1679,7 @@ field renderer id: 56" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                           </span>
                           <span class="hidden-accessible">, required.</span>
 
-                          <select id="emailPhoneForm.phones0.countryCode" name="emailPhoneForm.phones[0].countryCode" size="10" title="overall type: PHONE_HOME_COUNTRY_CODE
+                          <select id="emailPhoneForm.phones0.countryCode" name="emailPhoneForm.phones[0].countryCode" size="10" autofill-information="overall type: PHONE_HOME_COUNTRY_CODE
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_COUNTRY_CODE
 label: Country / region code , required.
@@ -1836,18 +1690,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 58" autofill-information="overall type: PHONE_HOME_COUNTRY_CODE
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_COUNTRY_CODE
-label: Country / region code , required.
-parseable name: emailPhoneForm.phones[0].countryCode
-section: emailPhoneForm.phones0.countryCodeReadonly_0_83
-field signature: 2716353554
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 58" autofill-prediction="PHONE_HOME_COUNTRY_CODE" data-ddg-inputtype="identities.addressCountryCode" data-ddg-testresultelementid="517562">
+field renderer id: 58" data-ddg-testresultelementid="517562">
                             <option value="" selected="selected" data-shortname="
                                             Select
                                         ">
@@ -2789,21 +2632,25 @@ field renderer id: 58" autofill-prediction="PHONE_HOME_COUNTRY_CODE" data-ddg-in
                       <label for="emailPhoneForm.phones0.number">
                         <span class="hidden-accessible"> Number </span>
                         <span class="hidden-accessible">, required.</span>
-                        <input id="emailPhoneForm.phones0.number" name="emailPhoneForm.phones[0].number" class="js-phoneNumber" placeholder="Number" type="tel" value="" maxlength="15" data-ddg-autofill="true" data-ddg-testresultelementid="517563" style="
-                            background-size: auto 26px !important;
-                            background-position: right center !important;
-                            background-repeat: no-repeat !important;
-                            background-origin: content-box !important;
-                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                            transition: background 0s ease 0s !important;
-                          " data-manual-scoring="phone">
+                        <input id="emailPhoneForm.phones0.number" name="emailPhoneForm.phones[0].number" class="js-phoneNumber" placeholder="Number" type="tel" value="" maxlength="15" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: PHONE_HOME_CITY_AND_NUMBER
+heuristic type: PHONE_HOME_CITY_AND_NUMBER
+label: Number , required.
+parseable name: emailPhoneForm.phones[0].number
+section: emailPhoneForm.phones0.countryCodeReadonly_0_83
+field signature: 1974236109
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 59" data-ddg-testresultelementid="517563" data-manual-scoring="phone">
                       </label>
                     </div>
                     <div class="span2 span-phone4 is-hidden" id="phones0-ext">
                       <label for="emailPhoneForm.phones0.extension">
                         <span class="hidden-accessible"> Extension </span>
 
-                        <input id="emailPhoneForm.phones0.extension" name="emailPhoneForm.phones[0].extension" class="js-phoneExt" placeholder="Ext" type="tel" value="" maxlength="5" title="overall type: PHONE_HOME_EXTENSION
+                        <input id="emailPhoneForm.phones0.extension" name="emailPhoneForm.phones[0].extension" class="js-phoneExt" placeholder="Ext" type="tel" value="" maxlength="5" autofill-information="overall type: PHONE_HOME_EXTENSION
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_EXTENSION
 label: Extension
@@ -2814,25 +2661,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 60" autofill-information="overall type: PHONE_HOME_EXTENSION
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_EXTENSION
-label: Extension
-parseable name: emailPhoneForm.phones[0].extension
-section: emailPhoneForm.phones0.countryCodeReadonly_0_83
-field signature: 1833371161
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 60" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="517564" style="
-                            background-size: auto 26px !important;
-                            background-position: right center !important;
-                            background-repeat: no-repeat !important;
-                            background-origin: content-box !important;
-                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                            transition: background 0s ease 0s !important;
-                          ">
+field renderer id: 60" data-ddg-testresultelementid="517564">
                       </label>
                     </div>
                   </div>
@@ -2849,7 +2678,7 @@ field renderer id: 60" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
                 <label for="emailPhoneForm.phones1.type">
                   Secondary phone type
                   <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                  <select id="emailPhoneForm.phones1.type" name="emailPhoneForm.phones[1].type" class="js-change js-phoneType" data-index="1" title="overall type: UNKNOWN_TYPE
+                  <select id="emailPhoneForm.phones1.type" name="emailPhoneForm.phones[1].type" class="js-change js-phoneType" data-index="1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Secondary phone type , required.
@@ -2860,18 +2689,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 62" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Secondary phone type , required.
-parseable name: emailPhoneForm.phones[1].type
-section: emailPhoneForm.phones0.countryCodeReadonly_0_83
-field signature: 3325212097
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="517565">
+field renderer id: 62" data-ddg-testresultelementid="517565">
                     <option value="" selected="selected">
                       Select a phone type
                     </option>
@@ -2899,7 +2717,18 @@ field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                           <span class="hidden-accessible">, required.</span>
 
                           <div class="selectbox-overlay"></div>
-                          <select id="emailPhoneForm.phones1.countryCodeReadonly" name="emailPhoneForm.phones1.countryCodeReadonly" readonly="readonly" tabindex="-1" data-ddg-testresultelementid="517566" data-manual-scoring="addressCountryCode">
+                          <select id="emailPhoneForm.phones1.countryCodeReadonly" name="emailPhoneForm.phones1.countryCodeReadonly" readonly="readonly" tabindex="-1" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country / region code , required.
+parseable name: emailPhoneForm.phones1.countryCodeReadonly
+section: emailPhoneForm.phones1.countryCodeReadonly_0_85
+field signature: 3912193086
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 85" data-ddg-testresultelementid="517566" data-manual-scoring="addressCountryCode">
                             <option value="" selected="">Select</option>
                           </select> </label><label for="emailPhoneForm.phones1.countryCode" class="selectbox-label">
                           <span class="hidden-accessible">
@@ -2907,7 +2736,7 @@ field renderer id: 62" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                           </span>
                           <span class="hidden-accessible">, required.</span>
 
-                          <select id="emailPhoneForm.phones1.countryCode" name="emailPhoneForm.phones[1].countryCode" size="10" title="overall type: PHONE_HOME_COUNTRY_CODE
+                          <select id="emailPhoneForm.phones1.countryCode" name="emailPhoneForm.phones[1].countryCode" size="10" autofill-information="overall type: PHONE_HOME_COUNTRY_CODE
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_COUNTRY_CODE
 label: Country / region code , required.
@@ -2918,18 +2747,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 64" autofill-information="overall type: PHONE_HOME_COUNTRY_CODE
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_COUNTRY_CODE
-label: Country / region code , required.
-parseable name: emailPhoneForm.phones[1].countryCode
-section: emailPhoneForm.phones1.countryCodeReadonly_0_85
-field signature: 2485480212
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 64" autofill-prediction="PHONE_HOME_COUNTRY_CODE" data-ddg-inputtype="identities.addressCountryCode" data-ddg-testresultelementid="517567">
+field renderer id: 64" data-ddg-testresultelementid="517567">
                             <option value="" selected="selected" data-shortname="
                                             Select
                                         ">
@@ -3871,21 +3689,25 @@ field renderer id: 64" autofill-prediction="PHONE_HOME_COUNTRY_CODE" data-ddg-in
                       <label for="emailPhoneForm.phones1.number">
                         <span class="hidden-accessible"> Number </span>
                         <span class="hidden-accessible">, required.</span>
-                        <input id="emailPhoneForm.phones1.number" name="emailPhoneForm.phones[1].number" class="js-phoneNumber" placeholder="Number" type="tel" value="" maxlength="15" data-ddg-autofill="true" data-ddg-testresultelementid="517568" style="
-                            background-size: auto 26px !important;
-                            background-position: right center !important;
-                            background-repeat: no-repeat !important;
-                            background-origin: content-box !important;
-                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                            transition: background 0s ease 0s !important;
-                          " data-manual-scoring="phone">
+                        <input id="emailPhoneForm.phones1.number" name="emailPhoneForm.phones[1].number" class="js-phoneNumber" placeholder="Number" type="tel" value="" maxlength="15" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_CITY_AND_NUMBER
+label: Number , required.
+parseable name: emailPhoneForm.phones[1].number
+section: emailPhoneForm.phones1.countryCodeReadonly_0_85
+field signature: 1295228469
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 65" data-ddg-testresultelementid="517568" data-manual-scoring="phone">
                       </label>
                     </div>
                     <div class="span2 span-phone4 is-hidden" id="phones1-ext">
                       <label for="emailPhoneForm.phones1.extension">
                         <span class="hidden-accessible"> Extension </span>
 
-                        <input id="emailPhoneForm.phones1.extension" name="emailPhoneForm.phones[1].extension" class="js-phoneExt" placeholder="Ext" type="tel" value="" maxlength="5" title="overall type: PHONE_HOME_EXTENSION
+                        <input id="emailPhoneForm.phones1.extension" name="emailPhoneForm.phones[1].extension" class="js-phoneExt" placeholder="Ext" type="tel" value="" maxlength="5" autofill-information="overall type: PHONE_HOME_EXTENSION
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_EXTENSION
 label: Extension
@@ -3896,25 +3718,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 66" autofill-information="overall type: PHONE_HOME_EXTENSION
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_EXTENSION
-label: Extension
-parseable name: emailPhoneForm.phones[1].extension
-section: emailPhoneForm.phones1.countryCodeReadonly_0_85
-field signature: 1724306083
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 66" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="517569" style="
-                            background-size: auto 26px !important;
-                            background-position: right center !important;
-                            background-repeat: no-repeat !important;
-                            background-origin: content-box !important;
-                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                            transition: background 0s ease 0s !important;
-                          ">
+field renderer id: 66" data-ddg-testresultelementid="517569">
                       </label>
                     </div>
                   </div>
@@ -3952,7 +3756,18 @@ field renderer id: 66" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
                 <label for="yourAccountForm.password">
                   <span class="label-text">Password
                     <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span></span>
-                  <input id="yourAccountForm.password" name="yourAccountForm.password" type="password" value="" maxlength="16" data-ddg-testresultelementid="517570" data-manual-scoring="password">
+                  <input id="yourAccountForm.password" name="yourAccountForm.password" type="password" value="" maxlength="16" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password , required.
+parseable name: yourAccountForm.password
+section: emailPhoneForm.phones0.countryCodeReadonly_0_83
+field signature: 1252035974
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 70" data-ddg-testresultelementid="517570" data-manual-scoring="password">
                 </label>
 
                 <button type="button" class="btn-link" data-href="#passwordRequirementsTooltip" data-behavior="tooltip">
@@ -3979,7 +3794,18 @@ field renderer id: 66" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
               <label for="yourAccountForm.confirmPassword">
                 Confirm password
                 <span class="icon-required" aria-hidden="true"></span><span class="hidden-accessible">, required.</span>
-                <input id="yourAccountForm.confirmPassword" name="yourAccountForm.confirmPassword" type="password" value="" maxlength="16" data-ddg-testresultelementid="517571" data-manual-scoring="password">
+                <input id="yourAccountForm.confirmPassword" name="yourAccountForm.confirmPassword" type="password" value="" maxlength="16" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm password , required.
+parseable name: yourAccountForm.confirmPassword
+section: emailPhoneForm.phones0.countryCodeReadonly_0_83
+field signature: 1179980983
+form signature: 5603373561379289116
+form signature in host form: 5603373561379289116
+field frame token: 8C45221223011E42037C22D8753AA9D6
+form renderer id: 4
+field renderer id: 72" data-ddg-testresultelementid="517571" data-manual-scoring="password">
               </label>
             </div>
           </div>
@@ -3991,7 +3817,7 @@ field renderer id: 66" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
           <div class="text-left text-left-phone">
             <div class="width11 enrollment-your-info-email-consent-container">
               <div class="customComponent">
-                <input id="emailConsentForm.acceptEmailConsentTermAndConditions" name="emailConsentForm.acceptEmailConsentTermAndConditions" type="checkbox" value="true" checked="checked" title="overall type: UNKNOWN_TYPE
+                <input id="emailConsentForm.acceptEmailConsentTermAndConditions" name="emailConsentForm.acceptEmailConsentTermAndConditions" type="checkbox" value="true" checked="checked" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Email AAdvantage promotions, vacation picks and flight deals.
@@ -4002,18 +3828,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 74" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Email AAdvantage promotions, vacation picks and flight deals.
-parseable name: emailConsentForm.acceptEmailConsentTermAndConditions
-section: emailPhoneForm.phones0.countryCodeReadonly_0_83
-field signature: 582253153
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 74" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517572"><input type="hidden" name="_emailConsentForm.acceptEmailConsentTermAndConditions" value="on">
+field renderer id: 74" data-ddg-testresultelementid="517572"><input type="hidden" name="_emailConsentForm.acceptEmailConsentTermAndConditions" value="on">
                 <label for="emailConsentForm.acceptEmailConsentTermAndConditions" class="enrollment-your-info-email-consent-container__checkbox">
                   <span class="control"></span>
                 </label>
@@ -4051,7 +3866,7 @@ field renderer id: 74" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <span id="tcpart2">.</span>
 
               <div class="customComponent">
-                <input id="acceptTermAndConditions" name="acceptTermAndConditions" type="checkbox" value="true" title="overall type: UNKNOWN_TYPE
+                <input id="acceptTermAndConditions" name="acceptTermAndConditions" type="checkbox" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I agree to the AAdvantage terms and conditions , required.
@@ -4062,18 +3877,7 @@ form signature: 5603373561379289116
 form signature in host form: 5603373561379289116
 field frame token: 8C45221223011E42037C22D8753AA9D6
 form renderer id: 4
-field renderer id: 76" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I agree to the AAdvantage terms and conditions , required.
-parseable name: acceptTermAndConditions
-section: emailPhoneForm.phones0.countryCodeReadonly_0_83
-field signature: 3444415696
-form signature: 5603373561379289116
-form signature in host form: 5603373561379289116
-field frame token: 8C45221223011E42037C22D8753AA9D6
-form renderer id: 4
-field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="517573"><input type="hidden" name="_acceptTermAndConditions" value="on">
+field renderer id: 76" data-ddg-testresultelementid="517573"><input type="hidden" name="_acceptTermAndConditions" value="on">
                 <label for="acceptTermAndConditions">
                   <span class="icon-arrow-right" aria-hidden="true"></span>
                   <span class="control"></span>
@@ -4194,15 +3998,15 @@ field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           <!-- 3 ads -->
           <div class="list-standard">
             <a href="https://creditcards.aa.com/citi-platinum-card-american-airlines-wand/?reportedLocation=&amp;reportedTitle=&amp;_locale=en_US&amp;utm_medium=referral&amp;utm_source=aa&amp;utm_campaign=footer#" target="_blank">
-              <img alt="Citi / AAdvantage credit card. Opens another site in a new window that may not meet accessibility guidelines." src="/content/images/homepage/footer/en_US/footer-citi-public-07142022.png">
+              
             </a>
 
             <a href="https://www.aa.com/aadvantage-program/buy-gift-transfer/en_US/home/buy?reportedLocation=&amp;reportedTitle=&amp;_locale=en_US&amp;cint=DSP||20190919|BGT|ADV|FTR||HPFTR_BUY#" target="_blank">
-              <img alt="https://www.aa.com/aadvantage-program/buy-gift-transfer/en_US/home/buy?cint=DSP||20230101|MKT|USMCOC|BNR||US_LYLTY_AWRN_BGT_FOOTER" src="/content/images/homepage/footer/en_US/footer-bgt-01012023.png">
+              
             </a>
 
             <a href="/car;jsessionid=B723CC70F11545BBEEB512C4A45248E4?reportedLocation=&amp;reportedTitle=&amp;_locale=en_US&amp;promo_id=Avis_Budget&amp;src=ABLeftNav#" target="_blank">
-              <img alt="Save up to 35% with Avis and Budget. Opens another site in a new window that may not meet accessibility guidelines" src="/content/images/homepage/footer/en_US/footer-avis-budget-10012022.png">
+              
             </a>
           </div>
         </div>
@@ -4214,224 +4018,66 @@ field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           AA.com<sup>®</sup></span>
       </div>
       <div class="social">
-        <a href="http://facebook.com/aa" target="_blank"><img alt="Follow us on Facebook, Opens another site in a new window that may not meet accessibility guidelines" src="/content/images/chrome/rebrand/icon-footer-facebook.png"></a>
+        <a href="http://facebook.com/aa" target="_blank"></a>
 
-        <a href="http://youtube.com/americanairlines" target="_blank"><img alt="Follow us on YouTube - Opens another site in a new window that may not meet accessibility guidelines" src="/content/images/chrome/rebrand/icon-footer-youtube.png"></a>
+        <a href="http://youtube.com/americanairlines" target="_blank"></a>
 
-        <a href="http://twitter.com/americanair" target="_blank"><img alt="Follow us on Twitter - Opens another site in a new window that may not meet accessibility guidelines" src="/content/images/chrome/rebrand/icon-footer-twitter.png"></a>
+        <a href="http://twitter.com/americanair" target="_blank"></a>
       </div>
     </div>
   </footer>
 
   <!-- sharedWeb//f_jsCoreBottom -->
 
-  <script type="text/javascript" src="/assets/js/common/browser.min.js"></script>
-  <script type="text/javascript" src="/assets/js/vendor/jquery-ui.min.js"></script>
+  
+  
 
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-textbox-message.min.js"></script>
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-cookie.min.js"></script>
+  
+  
 
-  <script type="text/javascript" src="/assets/js/legacy/utilities/aa-utilities-2.1.min.js"></script>
+  
 
-  <script type="text/javascript" src="/assets/js/common/aacom-2.0.min.js"></script>
+  
 
-  <script type="text/javascript" src="/assets/js/legacy/utilities/aa-utils.min.js"></script>
+  
 
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-airport-auto-complete.min.js"></script>
+  
 
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-footer-ads.min.js"></script>
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-country-lan-select.min.js"></script>
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-dropdown-panel.min.js"></script>
+  
+  
+  
 
-  <script type="text/javascript" src="/assets/js/common/aacom-ui-1.0.0.min.js"></script>
+  
 
-  <script type="text/javascript">
-    //<![CDATA[
-    /* Add any internationalized messages to the Sandbox prototype so they
-     * can be used by our instance of the Sandbox
-     * Dependency - aacom-ui-x.x.x.js must be loaded previously
-     * key/value pairs must be sent as object literals
-     * single message format {'key':'value'}
-     * multiple message format {'key1':'value1', 'key2':'value2'};
-     * sharedWeb
-     */
-    AAcom.prototype.setProperty({
-      "user.locale": "en_US",
-      "label.siteSearch.textboxmessage": "Search AA.com®",
-      "dialog.closeText": "Close window",
-      "account.isSecure": "false",
-      "autoComplete.noResult": "No search results.",
-      "autoComplete.oneResult":
-        "1 result is available, use up and down arrow keys to navigate.",
-      "autoComplete.manyResult":
-        "{0} results are available, use up and down arrow keys to navigate.",
-      "calendar.hiddenText":
-        "View Calendar: To navigate the calendar, use the shift and control keys with the arrow keys. For more information, press the question mark key.",
-      "calendar.instructions":
-        "Shift + Option or Alt + Left: Move to the previous month. Shift + Option or Alt + Right: Move to the next month. Shift + CTRL + PAGE UP: Move to the previous year. Shift + CTRL + PAGE DOWN: Move to the next year.",
-      "calendar.nextMonth": "Next Month",
-      "calendar.previousMonth": "Previous Month",
-      "calendar.selected": "Selected",
-      "global.error":
-        "This feature is temporarily unavailable. We apologize for this inconvenience. Please try again later.",
-      "global.text.findFlights": "???find.flights.header???",
-      "global.text.passengers": "Passengers",
-      "global.text.chooseSeats": "???button.seatMap.chooseSeats???",
-      "global.text.selected": ", Selected",
-      loadingTxt: "Loading...",
-      updatingTxt: "Updating...",
-      processingTxt: "Processing...",
-      savingTxt: "Saving...",
-      "tooltip.closeText": "Close pop-up",
-      "session.expired.title": "Your session expired",
-      "session.expired.message":
-        "Any confirmed transactions are saved, but you'll need to restart any searches or unfinished transactions.",
-      "session.expired.button": "Back to home",
-      "session.expired.app.button": "Start over",
-      "session.warning.button": "Continue session",
-      "dialog.close.button": "Close",
-      "slider.previousText": "Previous",
-      "slider.nextText": "Next",
-      "tabs.currentlySelectedText": "currently selected tab",
-      "profile.reactivate.modal.button.reactivate": "Reactivate miles",
-      "profile.reactivate.modal.button.dismiss": "Remind me later",
-      "profile.reactivate.modal.link.nothanks": "No thanks",
-    });
-    //]]>
-  </script>
+  
 
-  <script type="text/javascript" src="/assets/js/modules/browser-detect.min.js"></script>
-  <script type="text/javascript" src="/assets/js/modules/ajax.min.js"></script>
-  <script type="text/javascript" src="/assets/js/modules/utilities.min.js"></script>
-  <script type="text/javascript" src="/assets/js/modules/common-setup.min.js"></script>
-  <script type="text/javascript" src="/assets/js/common/core-2.0.0.min.js"></script>
+  
+  
+  
+  
+  
 
-  <script type="text/javascript" src="/assets/js/legacy/plugins/aa-phone-country-code.min.js"></script>
-  <script type="text/javascript" src="/assets/js/loyalty/loyalty-information.min.js"></script>
-  <script type="text/javascript" src="/assets/js/loyalty/enrollment-information.min.js"></script>
+  
+  
+  
 
-  <script type="text/javascript">
-    var closeButton = "Close",
-      cancelButton = "Cancel",
-      submitButton = "Submit",
-      continueButton = "Continue",
-      ignoreChangesButton = "Ignore changes",
-      globalError =
-        "Our system is having trouble. Please try again or come back later.",
-      globalErrorHeading = "Our system is having trouble",
-      globalErrorMessage = "Please try again or come back later.",
-      saveButton = "Save",
-      yesButton = "Yes",
-      noButton = "No",
-      addCompanionTxt = "Add a companion",
-      editCompanionTxt = "Edit a companion",
-      addCardTxt = "Add card",
-      editCardTxt = "Edit card",
-      loadingTxt = "Loading...",
-      updatingTxt = "Updating...",
-      savingTxt = "Saving...",
-      choiceRewardDefaultTitle = "Choose your reward",
-      backToWalletText = "« Back to wallet";
+  
 
-    AAcom.prototype.setProperty({
-      "btn.close": "Close",
-      "btn.cancel": "Cancel",
-      "btn.submit": "Submit",
-      "btn.continue": "Continue",
-      "btn.ignoreChanges": "Ignore changes",
-      "btn.save": "Save",
-      "btn.yes": "Yes",
-      "btn.no": "No",
-      "busy.loading": "Loading...",
-      "busy.updating": "Updating...",
-      "busy.saving": "Saving...",
-      "message.addCompanion": "Add a companion",
-      "message.editCompanion": "Edit a companion",
-      "message.addCard": "Add card",
-      "message.editCard": "Edit card",
-      "message.globalError":
-        "Our system is having trouble. Please try again or come back later.",
-      adultConsentText:
-        "Email AAdvantage promotions, vacation picks and flight deals.",
-      minorConsentText:
-        "Email your monthly mileage statement with the latest AAdvantage news.",
-      adultConsentSubscriptionText:
-        "In addition to any email subscriptions, you’ll receive transactional emails like flight alerts, check-in reminders and account updates.",
-      nonChineseTAndCText: ".",
-      chineseTAndCText:
-        "and consent to my data associated with the loyalty program being transferred to the United States.",
-    });
-  </script>
+  
+  
 
-  <script type="text/javascript">
-    var RecaptchaOptions = {
-      custom_translations: {
-        play_again: "Play sound again",
-        cant_hear_this: "Download sound as MP3",
-        image_alt_text: "",
-      },
-      lang: "en",
-      theme: "custom",
-      custom_theme_widget: "recaptcha_widget",
-    };
-    /* Recaptcha workaround:
-     * Recaptcha fails to populate the google inserted hidden fields into the request.
-     * This workaround is to copy that value into a user defined hidden field.
-     */
-    jQuery(document).on("submit", "#enrollmentInformationForm", function () {
-      var challangeKey = jQuery("#recaptcha_challenge_field").val();
-      jQuery("#m_recaptcha_challenge_field").val(challangeKey);
-    });
+  
 
-    jQuery(document).ready(function () {
-      jQuery("#captchaEnterYouHear").click(function (e) {
-        e.preventDefault();
-        Recaptcha.switch_type("audio");
-        customSpanText("recaptcha_response_span", "Enter characters you hear");
-      });
-
-      jQuery("#captchaReload").click(function (e) {
-        e.preventDefault();
-        Recaptcha.reload();
-      });
-
-      jQuery("#captchaEnterWords").click(function (e) {
-        e.preventDefault();
-        Recaptcha.switch_type("image");
-        customSpanText("recaptcha_response_span", "Enter the code in the box");
-      });
-    });
-  </script>
-  <script type="text/javascript" src="https://www.google.com/recaptcha/api/challenge?k=6LeCsMISAAAAAIEswr5tyBSuKj_rbRBHc5LuKBGB&amp;nocookie=1"></script>
-
-  <script>
-    AAcom.prototype.setProperty({
-      sessionTimeOut: "900",
-      sessionExpiresWarningInterval: "120000",
-      isFinalDisplay: "",
-      isDisplayVirtualPNRModal: "",
-      bookingPathStateId: "",
-    });
-  </script>
-
-  <script type="text/javascript">
-    custom_var = "0|0|0|en_US|1A06F445-1903-4D15-83CE-B59A331806A3";
-  </script>
+  
 
   <span role="status" aria-atomic="true" aria-live="polite" class="hidden-accessible" id="ariaLiveReaderContainer"></span>
   <noscript><img
       src="https://www.aa.com/akam/13/pixel_49313154?a=dD0xZjZhOGZmODQ4ZjRhYWM4MmM0NDhkNzI5M2FhMDk1NjM4ZGIxM2E0JmpzPW9mZg=="
       style="visibility: hidden; position: absolute; left: -999px; top: -999px"
   /></noscript>
-  <script type="text/javascript" src="/XPMDS9u50/L2-P0/8PlP1/xjle7Y7g/OzX7p2Yw5kiD/KU9gNQMC/Ukk/CejQ2HwM"></script>
+  
 
-  <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons" tabindex="-1" role="dialog" aria-describedby="modal_deleteVPNRModal" aria-labelledby="ui-id-1" style="
-      height: auto;
-      width: 582px;
-      top: -2066.34px;
-      left: 242px;
-      display: none;
-    ">
+  <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons" tabindex="-1" role="dialog" aria-describedby="modal_deleteVPNRModal" aria-labelledby="ui-id-1">
     <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
       <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="" id="modal_deleteVPNRModalDialogClose">
         <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">Close window</span>
@@ -4440,7 +4086,7 @@ field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         Log in and restart your reservation?
       </h2>
     </div>
-    <div id="modal_deleteVPNRModal" class="aa-dialog-content-pad ui-dialog-content ui-widget-content" style="width: auto; min-height: 0px; max-height: none; height: auto">
+    <div id="modal_deleteVPNRModal" class="aa-dialog-content-pad ui-dialog-content ui-widget-content">
       <div class="aa-dialog-content-wrapper">
         <p>
           Click OK to log in and restart your reservation.<br><br>Click
@@ -4457,13 +4103,7 @@ field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
     </div>
   </div>
-  <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons" tabindex="-1" role="dialog" aria-describedby="sessionTimeOutDialog" style="
-      height: auto;
-      width: 582px;
-      top: -2061.34px;
-      left: 242px;
-      display: none;
-    " aria-labelledby="ui-id-2">
+  <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons" tabindex="-1" role="dialog" aria-describedby="sessionTimeOutDialog" aria-labelledby="ui-id-2">
     <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
       <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close" role="button" aria-disabled="false" title="" id="sessionTimeOutDialogClose">
         <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span><span class="ui-button-text">Close window</span>
@@ -4472,13 +4112,7 @@ field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         Your session is about to expire
       </h2>
     </div>
-    <div id="sessionTimeOutDialog" class="app-min-height js-spring is-hidden aa-dialog-content-pad ui-dialog-content ui-widget-content" style="
-        display: block;
-        width: auto;
-        min-height: 0px;
-        max-height: none;
-        height: auto;
-      ">
+    <div id="sessionTimeOutDialog" class="app-min-height js-spring is-hidden aa-dialog-content-pad ui-dialog-content ui-widget-content">
       <div class="aa-dialog-content-wrapper">
         <div id="sessionTimeOutTitle" class="is-hidden">
           Your session is about to expire
@@ -4499,5 +4133,5 @@ field renderer id: 76" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
     </div>
   </div>
-  <iframe src="https://" style="display: none"></iframe>
+  
 

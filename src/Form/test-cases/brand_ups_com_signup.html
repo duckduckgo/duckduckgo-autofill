@@ -1,20 +1,12 @@
 <!--
   https://brand.ups.com/en-us/register.html
+  rank: 9140
   testRunId: 66
   testResultId: 239673
 -->
 
   <!-- Add browser info to html tag. For IE only -->
-  <script type="text/javascript">
-    if (
-      !!(
-        navigator.userAgent.indexOf("MSIE ") > 0 ||
-        !!navigator.userAgent.match(/Trident.*rv\:11\./)
-      )
-    ) {
-      document.querySelector("html").classList.add("ie");
-    }
-  </script>
+  
 
   <!-- 9fbef606107a605d69c0edbcd8029e5d_brand_operations  -->
   <!-- 9fbef606107a605d69c0edbcd8029e5d_brand_operations  -->
@@ -22,13 +14,13 @@
     <!-- 9fbef606107a605d69c0edbcd8029e5d_brand_operations  -->
 
     <div id="dummy-critical-alert"></div>
-    <div class="header-container" style="top: 0px">
+    <div class="header-container">
       <div class="container">
         <a href="/en-us/login.html">
           <div class="header-brand">
             <div class="brand-logo">
               <div>
-                <img src="/content/dam/brand/Basic/logo.svg" alt="UPS® Brand Central">
+                
               </div>
             </div>
             <div class="logo-title no-subtitle">
@@ -47,45 +39,10 @@
 <script type="text/javascript" src="/etc/clientlibs/ups-aem/slickjs/slick.js"></script> 
  -->
 
-  <script type="text/javascript">
-    var loggeduser = "anonymous",
-      loggeduser_uuid = "anonymous",
-      temp_uuid = localStorage.getItem("ups_uuid"),
-      pagetype = document.getElementById("pageType");
+  
 
-    if ("loginPageComp" !== pagetype) {
-      if (temp_uuid) {
-        loggeduser_uuid = temp_uuid;
-      }
-    }
-
-    var utag_data = {
-      page_country_code: "US",
-      page_language: "en_US",
-      page_type: "confirmation",
-      aem_uuid: loggeduser_uuid,
-      site_area: "Brand",
-      site_sub_area: "Registration",
-      page_id: "brand/en-us/register.html",
-      referring_url: "brand/en-us/register.html",
-      assets_downloaded: "",
-    };
-  </script>
-
-  <script src="//tags.tiqcdn.com/utag/ups/ups-brandexchange/prod/utag.sync.js" type="text/javascript" charset="utf-8"></script>
-  <script type="text/javascript">
-    (function (a, b, c, d) {
-      a = "//tags.tiqcdn.com/utag/ups/ups-brandexchange/prod/utag.js";
-      b = document;
-      c = "script";
-      d = b.createElement(c);
-      d.src = a;
-      d.type = "text/java" + c;
-      d.async = true;
-      a = b.getElementsByTagName(c)[0];
-      a.parentNode.insertBefore(d, a);
-    })();
-  </script>
+  
+  
 
   <input type="hidden" id="instanceType" value="publish">
   <input type="hidden" id="signOutUrl" value="/content/brand/en-us/login.html">
@@ -133,7 +90,7 @@
                   <br>
                 </div>
                 <!-- end .ups-rte -->
-                <form class="reset-password-form form-inline" autocomplete="off" method="POST" data-ddg-formtype="sign in">
+                <form class="reset-password-form form-inline" autocomplete="off" method="POST">
                   <div class="form-group">
                     <p class="form-error invalid-input hide"></p>
                     <p class="form-error unmatched-input hide">
@@ -142,10 +99,34 @@
                   </div>
                   <div class="row">
                     <div class="form-group">
-                      <input type="password" maxlength="26" class="new-login-password" name="new-login-password" placeholder="New Password" required="" autocomplete="off" data-ddg-testresultelementid="542170" data-manual-scoring="password">
+                      <input type="password" maxlength="26" class="new-login-password" name="new-login-password" placeholder="New Password" required="" autocomplete="off" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: New Password
+parseable name: new-login-password
+section: new-login-password_0_5
+field signature: 702701385
+form signature: 10461294120109822791
+form signature in host form: 10461294120109822791
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 1
+field renderer id: 5
+autocomplete: off" data-ddg-testresultelementid="542170" data-manual-scoring="password">
                     </div>
                     <div class="form-group">
-                      <input type="password" maxlength="26" id="new-login-password2" name="new-login-password2" placeholder="Re-enter New Password" required="" autocomplete="off" data-ddg-testresultelementid="542171" data-manual-scoring="password">
+                      <input type="password" maxlength="26" id="new-login-password2" name="new-login-password2" placeholder="Re-enter New Password" required="" autocomplete="off" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Re-enter New Password
+parseable name: new-login-password2
+section: new-login-password_0_5
+field signature: 3047627640
+form signature: 10461294120109822791
+form signature in host form: 10461294120109822791
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 1
+field renderer id: 6
+autocomplete: off" data-ddg-testresultelementid="542171" data-manual-scoring="password">
                     </div>
                   </div>
                   <div class="form-group form-group-cta">
@@ -216,12 +197,12 @@
         <div class="ups-account-registration">
           <div class="form-sections-container">
             <div class="form-required-text"><p>All Fields Required</p></div>
-            <form id="account-registration-form" autocomplete="off" method="POST" novalidate="novalidate" data-ddg-formtype="sign up">
+            <form id="account-registration-form" autocomplete="off" method="POST" novalidate="novalidate">
               <!-- class="form-has-error -->
               <div class="form-section">
                 <input type="hidden" id="pageType" value="userRegistrationPage">
-                <div id="fade" class="hideCustomElement ups-hidden_elements" style="display: none"></div>
-                <div id="loader" class="hideCustomElement ups-hidden_elements" style="display: none"></div>
+                <div id="fade" class="hideCustomElement ups-hidden_elements"></div>
+                <div id="loader" class="hideCustomElement ups-hidden_elements"></div>
                 <h3 class="form-section-title">Who are you?</h3>
                 <div class="form-section-content">
                   <div id="account-registration-type">
@@ -236,7 +217,7 @@
                         <ul>
                           <li>
                             <div class="radio">
-                              <input type="radio" name="account-type" id="radio1" value="customer" class="customer" checked="" title="overall type: UNKNOWN_TYPE
+                              <input type="radio" name="account-type" id="radio1" value="customer" class="customer" checked="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Customer or Organization looking for the UPS Branding
@@ -247,18 +228,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 9" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Customer or Organization looking for the UPS Branding
-parseable name: account-type
-section: account-type_0_9
-field signature: 2492307086
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542172">
+field renderer id: 9" data-ddg-testresultelementid="542172">
                               <label for="radio1">
                                 <span data-toggle="tooltip" data-placement="auto" title="" data-original-title="Select this option to start a brand request to use UPS logos or photos. ">
                                   Customer or Organization looking for the UPS
@@ -268,7 +238,7 @@ field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelem
                           </li>
                           <li>
                             <div class="radio">
-                              <input type="radio" name="account-type" id="radio2" value="employee" class="employee" title="overall type: UNKNOWN_TYPE
+                              <input type="radio" name="account-type" id="radio2" value="employee" class="employee" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: UPS Employee (UPS email address required)
@@ -279,18 +249,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 10" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: UPS Employee (UPS email address required)
-parseable name: account-type
-section: account-type_0_9
-field signature: 2492307086
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542173">
+field renderer id: 10" data-ddg-testresultelementid="542173">
                               <label for="radio2">
                                 <span data-toggle="tooltip" data-placement="auto" title="" data-original-title="Select this option to access to a curated selection of PowerPoint® templates, guidelines, and photos for UPS business needs (most UPSers will be in this category). ">UPS Employee (UPS email address
                                   required)</span>
@@ -299,7 +258,7 @@ field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                           </li>
                           <li>
                             <div class="radio">
-                              <input type="radio" name="account-type" id="radio3" value="communication-employee" class="communication-employee" title="overall type: UNKNOWN_TYPE
+                              <input type="radio" name="account-type" id="radio3" value="communication-employee" class="communication-employee" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: UPS Communication Employee
@@ -310,18 +269,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 11" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: UPS Communication Employee
-parseable name: account-type
-section: account-type_0_9
-field signature: 2492307086
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542174">
+field renderer id: 11" data-ddg-testresultelementid="542174">
                               <label for="radio3">
                                 <span data-toggle="tooltip" data-placement="auto" title="" data-original-title="Select this option if you create UPS branded materials on a daily basis. ">UPS Communication Employee</span>
                               </label>
@@ -329,7 +277,7 @@ field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                           </li>
                           <li>
                             <div class="radio">
-                              <input type="radio" name="account-type" id="radio4" value="marketing-agency" class="marketing-agency" title="overall type: UNKNOWN_TYPE
+                              <input type="radio" name="account-type" id="radio4" value="marketing-agency" class="marketing-agency" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Approved Marketing Agency
@@ -340,18 +288,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 12" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Approved Marketing Agency
-parseable name: account-type
-section: account-type_0_9
-field signature: 2492307086
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542175">
+field renderer id: 12" data-ddg-testresultelementid="542175">
                               <label for="radio4">
                                 <span data-toggle="tooltip" data-placement="auto" title="" data-original-title="Select this option if you are an agency that has been approved to create UPS Branded materials.">Approved Marketing Agency</span>
                               </label>
@@ -359,7 +296,7 @@ field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                           </li>
                           <li>
                             <div class="radio">
-                              <input type="radio" name="account-type" id="radio5" value="ups-store-users" class="upsstore_user" title="overall type: UNKNOWN_TYPE
+                              <input type="radio" name="account-type" id="radio5" value="ups-store-users" class="upsstore_user" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: UPS Store user
@@ -370,18 +307,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 13" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: UPS Store user
-parseable name: account-type
-section: account-type_0_9
-field signature: 2492307086
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 13" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542176">
+field renderer id: 13" data-ddg-testresultelementid="542176">
                               <label for="radio5">
                                 <span data-toggle="tooltip" data-placement="auto" title="" data-original-title="Select this option if you are a UPS Store or UPS Store Agency user.">UPS Store user</span>
                               </label>
@@ -389,7 +315,7 @@ field renderer id: 13" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                           </li>
                           <li>
                             <div class="radio">
-                              <input type="radio" name="account-type" id="radio6" value="dap-store-users" class="dap_user" title="overall type: UNKNOWN_TYPE
+                              <input type="radio" name="account-type" id="radio6" value="dap-store-users" class="dap_user" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Digital Access Program (DAP)
@@ -400,18 +326,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 14" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Digital Access Program (DAP)
-parseable name: account-type
-section: account-type_0_9
-field signature: 2492307086
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542177">
+field renderer id: 14" data-ddg-testresultelementid="542177">
                               <label for="radio6">
                                 <span data-toggle="tooltip" data-placement="auto" title="" data-original-title="Select this option if you are a DAP user.">Digital Access Program (DAP)</span>
                               </label>
@@ -446,45 +361,89 @@ field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="customerfirstname" data-errormsg="First name is a required field" placeholder="First Name" data-ddg-testresultelementid="542178" data-manual-scoring="firstName">
+                            <input type="text" name="customerfirstname" data-errormsg="First name is a required field" placeholder="First Name" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: customerfirstname
+section: account-type_0_9
+field signature: 3969458429
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 15" data-ddg-testresultelementid="542178" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="customerlastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" data-ddg-testresultelementid="542179" data-manual-scoring="lastName">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" id="customeremail" name="customeremail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" data-other="Incorrect Email format" data-upsers="Please register as UPS Employee." placeholder="E-mail" autocomplete="off" data-ddg-autofill="true" data-ddg-testresultelementid="542180" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
-                          </div>
-                        </div>
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" name="customerconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" data-ddg-autofill="true" data-ddg-testresultelementid="542181" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" name="customerlastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: customerlastname
+section: account-type_0_9
+field signature: 1776258602
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 16" data-ddg-testresultelementid="542179" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" pattern="[a-z]{1,15}" id="customerpassword" name="customerpassword" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." data-required="Password  is a required field" placeholder="Password" autocomplete="off" data-ddg-testresultelementid="542182" data-manual-scoring="password">
+                            <input type="email" id="customeremail" name="customeremail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" data-other="Incorrect Email format" data-upsers="Please register as UPS Employee." placeholder="E-mail" autocomplete="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: customeremail
+section: account-type_0_9
+field signature: 4283858228
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 17
+autocomplete: off" data-ddg-testresultelementid="542180" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="email" name="customerconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Confirm E-mail
+parseable name: customerconfirmemail
+section: account-type_0_9
+field signature: 3306338479
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 18
+autocomplete: off" data-ddg-testresultelementid="542181" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="password" maxlength="26" pattern="[a-z]{1,15}" id="customerpassword" name="customerpassword" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." data-required="Password  is a required field" placeholder="Password" autocomplete="off" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: customerpassword
+section: account-type_0_9
+field signature: 544631539
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 19
+autocomplete: off" data-ddg-testresultelementid="542182" data-manual-scoring="password">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -496,7 +455,19 @@ field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="customerconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" autocomplete="off" data-ddg-testresultelementid="542183" data-manual-scoring="password">
+                            <input type="password" maxlength="26" name="customerconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" autocomplete="off" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password
+parseable name: customerconfirmpassword
+section: account-type_0_9
+field signature: 822362370
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 20
+autocomplete: off" data-ddg-testresultelementid="542183" data-manual-scoring="password">
                           </div>
                         </div>
                       </div>
@@ -519,26 +490,53 @@ field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="employeefirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" data-ddg-testresultelementid="542184" data-manual-scoring="firstName">
+                            <input type="text" name="employeefirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: employeefirstname
+section: employeefirstname_0_21
+field signature: 2732207339
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 21" data-ddg-testresultelementid="542184" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="employeelastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" data-ddg-testresultelementid="542185" data-manual-scoring="lastName">
+                            <input type="text" name="employeelastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: employeelastname
+section: employeefirstname_0_21
+field signature: 1002858288
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 22" data-ddg-testresultelementid="542185" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-8">
                           <div class="form-group input-with-dropdown employeeemail_dropdown">
-                            <input type="text" id="employeeemail" name="employeeemail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" data-list-id="emaildomainlist" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542186" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" id="employeeemail" name="employeeemail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" data-list-id="emaildomainlist" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: employeeemail
+section: employeefirstname_0_21
+field signature: 716563018
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 23
+autocomplete: off" data-ddg-testresultelementid="542186" data-manual-scoring="emailAddress">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" data-id="emaildomainlist" title="@ups.com">
                                 <span class="filter-option pull-left">@ups.com</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -580,7 +578,7 @@ field renderer id: 14" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" id="emaildomainlist" name="emaildomainlist" tabindex="-98" data-size="5" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" id="emaildomainlist" name="emaildomainlist" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
@@ -591,18 +589,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 24" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
-parseable name: emaildomainlist
-section: employeefirstname_0_21
-field signature: 644976699
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542187">
+field renderer id: 24" data-ddg-testresultelementid="542187">
                                 <option value="@europe.ups.com">
                                   @europe.ups.com
                                 </option>
@@ -652,14 +639,19 @@ field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                       <div class="row">
                         <div class="grid-col-8">
                           <div class="form-group input-with-dropdown employeeemail_dropdown">
-                            <input type="text" id="employeeemailconfirm" name="employeeemailconfirm" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="E-mail Confirm" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542188" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" id="employeeemailconfirm" name="employeeemailconfirm" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="E-mail Confirm" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail Confirm
+parseable name: employeeemailconfirm
+section: employeefirstname_0_21
+field signature: 2462846843
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 25
+autocomplete: off" data-ddg-testresultelementid="542188" data-manual-scoring="emailAddress">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" data-id="emailconfirmdomainlist" title="@ups.com">
                                 <span class="filter-option pull-left">@ups.com</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -701,7 +693,7 @@ field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" id="emailconfirmdomainlist" name="emailconfirmdomainlist" tabindex="-98" data-size="5" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" id="emailconfirmdomainlist" name="emailconfirmdomainlist" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
@@ -712,18 +704,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
-parseable name: emailconfirmdomainlist
-section: employeefirstname_0_21
-field signature: 4027324458
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542189">
+field renderer id: 26" data-ddg-testresultelementid="542189">
                                 <option value="@europe.ups.com">
                                   @europe.ups.com
                                 </option>
@@ -772,7 +753,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" id="employeepassword" maxlength="26" name="employeepassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" id="employeepassword" maxlength="26" name="employeepassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -784,19 +765,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 27
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: employeepassword
-section: employeefirstname_0_21
-field signature: 2573363928
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 27
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542190">
+autocomplete: off" data-ddg-testresultelementid="542190">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -808,7 +777,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="employeeconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" maxlength="26" name="employeeconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Confirm Password
@@ -820,19 +789,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 28
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Confirm Password
-parseable name: employeeconfirmpassword
-section: employeefirstname_0_21
-field signature: 466823313
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 28
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542191">
+autocomplete: off" data-ddg-testresultelementid="542191">
                           </div>
                         </div>
                       </div>
@@ -911,7 +868,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                             </p>
                           </div>
                           <div class="checkbox">
-                            <input type="checkbox" name="employeeassettcagree" id="asset-terms-conditions-1" value="agree" data-errormsg="Terms Conditions is a required field" required="" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" name="employeeassettcagree" id="asset-terms-conditions-1" value="agree" data-errormsg="Terms Conditions is a required field" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I agree to the &quot;Terms and Conditions&quot;
@@ -922,18 +879,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I agree to the &quot;Terms and Conditions&quot;
-parseable name: employeeassettcagree
-section: employeefirstname_0_21
-field signature: 326025376
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542192">
+field renderer id: 29" data-ddg-testresultelementid="542192">
                             <label for="asset-terms-conditions-1">
                               I agree to the "Terms and Conditions"
                             </label>
@@ -960,45 +906,77 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="communicationemployeefirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" data-ddg-testresultelementid="542193" data-manual-scoring="firstName">
+                            <input type="text" name="communicationemployeefirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: communicationemployeefirstname
+section: employeefirstname_0_21
+field signature: 3300598106
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 30" data-ddg-testresultelementid="542193" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="communicationemployeelastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" data-ddg-testresultelementid="542194" data-manual-scoring="lastName">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" id="communicationemployeeemail" name="communicationemployeeemail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542195" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
-                          </div>
-                        </div>
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" name="communicationemployeeconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542196" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" name="communicationemployeelastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: communicationemployeelastname
+section: employeefirstname_0_21
+field signature: 2616493769
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 31" data-ddg-testresultelementid="542194" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" id="communicationemployeepassword" name="communicationemployeepassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="email" id="communicationemployeeemail" name="communicationemployeeemail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: communicationemployeeemail
+section: employeefirstname_0_21
+field signature: 3825338530
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 32
+autocomplete: off" data-ddg-testresultelementid="542195" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="email" name="communicationemployeeconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm E-mail
+parseable name: communicationemployeeconfirmemail
+section: employeefirstname_0_21
+field signature: 1907217537
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 33
+autocomplete: off" data-ddg-testresultelementid="542196" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="password" maxlength="26" id="communicationemployeepassword" name="communicationemployeepassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -1010,19 +988,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 34
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: communicationemployeepassword
-section: employeefirstname_0_21
-field signature: 1704277434
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 34
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542197">
+autocomplete: off" data-ddg-testresultelementid="542197">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -1034,7 +1000,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="communicationemployeeconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" maxlength="26" name="communicationemployeeconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Confirm Password
@@ -1046,19 +1012,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 35
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Confirm Password
-parseable name: communicationemployeeconfirmpassword
-section: employeefirstname_0_21
-field signature: 2945691846
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 35
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542198">
+autocomplete: off" data-ddg-testresultelementid="542198">
                           </div>
                         </div>
                       </div>
@@ -1774,7 +1728,18 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" data-errormsg="Country  is a required field" name="communicationemployeecountry" id="communicationemployeecountry" size="243" tabindex="-98" data-size="5" data-ddg-testresultelementid="542199" data-manual-scoring="addressCountryCode">
+                              <select class="selectpicker form-select" data-errormsg="Country  is a required field" name="communicationemployeecountry" id="communicationemployeecountry" size="243" tabindex="-98" data-size="5" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country or Territory AfghanistanAland IslandsAlbaniaAlgeria
+parseable name: communicationemployeecountry
+section: employeefirstname_0_21
+field signature: 3871857310
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 36" data-ddg-testresultelementid="542199" data-manual-scoring="addressCountryCode">
                                 <option class="bs-title-option" value="">
                                   Country or Territory
                                 </option>
@@ -2330,11 +2295,22 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="communicationemployeecity" data-errormsg="City  is a required field" placeholder="City" required="" data-ddg-testresultelementid="542200" data-manual-scoring="addressCity">
+                            <input type="text" name="communicationemployeecity" data-errormsg="City  is a required field" placeholder="City" required="" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: City
+parseable name: communicationemployeecity
+section: employeefirstname_0_21
+field signature: 117498017
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 37" data-ddg-testresultelementid="542200" data-manual-scoring="addressCity">
                           </div>
                         </div>
                         <div class="grid-col-4">
-                          <div class="form-group ups-hidden_elements" id="comm_usa_states" style="display: none">
+                          <div class="form-group ups-hidden_elements" id="comm_usa_states">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle bs-placeholder btn-default" data-toggle="dropdown" role="button" title="State/Province">
                                 <span class="filter-option pull-left">State/Province</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -2496,7 +2472,18 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" name="communicationemployeestateprovinceusa" data-errormsg="State Province  is a required field" size="51" tabindex="-98" data-size="5" data-ddg-testresultelementid="542201" data-manual-scoring="addressProvince">
+                              <select class="selectpicker form-select" name="communicationemployeestateprovinceusa" data-errormsg="State Province  is a required field" size="51" tabindex="-98" data-size="5" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province AlabamaAlaskaArizonaArkansas
+parseable name: communicationemployeestateprovinceusa
+section: employeefirstname_0_21
+field signature: 3867920723
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 38" data-ddg-testresultelementid="542201" data-manual-scoring="addressProvince">
                                 <option class="bs-title-option" value="">
                                   State/Province
                                 </option>
@@ -2554,7 +2541,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                               </select>
                             </div>
                           </div>
-                          <div class="form-group ups-hidden_elements" id="comm_canada_states" style="display: none">
+                          <div class="form-group ups-hidden_elements" id="comm_canada_states">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle bs-placeholder btn-default" data-toggle="dropdown" role="button" title="State/Province">
                                 <span class="filter-option pull-left">State/Province</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -2602,7 +2589,18 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" size="13" name="communicationemployeestateprovincecanada" data-errormsg="State Province  is a required field" tabindex="-98" data-size="5" data-ddg-testresultelementid="542202" data-manual-scoring="addressProvince">
+                              <select class="selectpicker form-select" size="13" name="communicationemployeestateprovincecanada" data-errormsg="State Province  is a required field" tabindex="-98" data-size="5" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province AlbertaBritish ColumbiaManitobaNew Brunswick
+parseable name: communicationemployeestateprovincecanada
+section: employeefirstname_0_21
+field signature: 979832702
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 39" data-ddg-testresultelementid="542202" data-manual-scoring="addressProvince">
                                 <option class="bs-title-option" value="">
                                   State/Province
                                 </option>
@@ -2628,7 +2626,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="communicationemployeedepartment" data-errormsg="Department  is a required field" placeholder="Department" required="" title="overall type: UNKNOWN_TYPE
+                            <input type="text" name="communicationemployeedepartment" data-errormsg="Department  is a required field" placeholder="Department" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Department
@@ -2639,18 +2637,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 40" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Department
-parseable name: communicationemployeedepartment
-section: employeefirstname_0_21
-field signature: 662304320
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542203">
+field renderer id: 40" data-ddg-testresultelementid="542203">
                           </div>
                         </div>
                         <div class="grid-col-4">
@@ -2694,7 +2681,7 @@ field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" data-errormsg="Industry Segment  is a required field" name="communicationemployeeindustry" size="10" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Industry Segment Aerospace and DefenseAutomotiveConsumer ServicesGovernment
@@ -2705,18 +2692,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 41" data-errormsg="Industry Segment  is a required field" name="communicationemployeeindustry" size="10" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Industry Segment Aerospace and DefenseAutomotiveConsumer ServicesGovernment
-parseable name: communicationemployeeindustry
-section: employeefirstname_0_21
-field signature: 3999770517
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542204">
+field renderer id: 41" data-ddg-testresultelementid="542204">
                                 <option class="bs-title-option" value="">
                                   Industry Segment
                                 </option>
@@ -2812,7 +2788,7 @@ field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </p>
                           </div>
                           <div class="checkbox">
-                            <input type="checkbox" name="communicationemployeeassettcagree" id="asset-terms-conditions-2" value="agree" required="" data-errormsg="Terms Conditions is a required field" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" name="communicationemployeeassettcagree" id="asset-terms-conditions-2" value="agree" required="" data-errormsg="Terms Conditions is a required field" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I agree to the &quot;Terms and Conditions&quot;
@@ -2823,18 +2799,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 42" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I agree to the &quot;Terms and Conditions&quot;
-parseable name: communicationemployeeassettcagree
-section: employeefirstname_0_21
-field signature: 2440761559
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542205">
+field renderer id: 42" data-ddg-testresultelementid="542205">
                             <label for="asset-terms-conditions-2">
                               I agree to the "Terms and Conditions"
                             </label>
@@ -2861,45 +2826,77 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="marketingagencyfirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" data-ddg-testresultelementid="542206" data-manual-scoring="firstName">
+                            <input type="text" name="marketingagencyfirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: marketingagencyfirstname
+section: employeefirstname_0_21
+field signature: 4283943795
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 43" data-ddg-testresultelementid="542206" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="marketingagencylastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" data-ddg-testresultelementid="542207" data-manual-scoring="lastName">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" id="marketingagencyemail" name="marketingagencyemail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542208" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
-                          </div>
-                        </div>
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" name="marketingagencyconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542209" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" name="marketingagencylastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: marketingagencylastname
+section: employeefirstname_0_21
+field signature: 1630071885
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 44" data-ddg-testresultelementid="542207" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" id="marketingagencypassword" name="marketingagencypassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="email" id="marketingagencyemail" name="marketingagencyemail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: marketingagencyemail
+section: employeefirstname_0_21
+field signature: 3367855873
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 45
+autocomplete: off" data-ddg-testresultelementid="542208" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="email" name="marketingagencyconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm E-mail
+parseable name: marketingagencyconfirmemail
+section: employeefirstname_0_21
+field signature: 3603049855
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 46
+autocomplete: off" data-ddg-testresultelementid="542209" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="password" maxlength="26" id="marketingagencypassword" name="marketingagencypassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -2911,19 +2908,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 47
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: marketingagencypassword
-section: employeefirstname_0_21
-field signature: 3311277092
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 47
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542210">
+autocomplete: off" data-ddg-testresultelementid="542210">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -2935,7 +2920,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="marketingagencyconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" maxlength="26" name="marketingagencyconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Confirm Password
@@ -2947,19 +2932,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 48
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Confirm Password
-parseable name: marketingagencyconfirmpassword
-section: employeefirstname_0_21
-field signature: 1976989258
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 48
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542211">
+autocomplete: off" data-ddg-testresultelementid="542211">
                           </div>
                         </div>
                       </div>
@@ -3002,7 +2975,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" data-errormsg="Agency Type  is a required field" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" data-errormsg="Agency Type  is a required field" required="" name="marketingagencytype" id="mtype" size="5" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Agency Type CreativeMarketingPublic AffairsPublic Relations
@@ -3013,18 +2986,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 49" required="" name="marketingagencytype" id="mtype" size="5" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Agency Type CreativeMarketingPublic AffairsPublic Relations
-parseable name: marketingagencytype
-section: employeefirstname_0_21
-field signature: 1805204281
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 49" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542212">
+field renderer id: 49" data-ddg-testresultelementid="542212">
                                 <option class="bs-title-option" value="">
                                   Agency Type
                                 </option>
@@ -3039,7 +3001,7 @@ field renderer id: 49" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="marketingagencycompany" data-errormsg="Company Name  is a required field" placeholder="Company Name" required="" title="overall type: COMPANY_NAME
+                            <input type="text" name="marketingagencycompany" data-errormsg="Company Name  is a required field" placeholder="Company Name" required="" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Company Name
@@ -3050,18 +3012,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 50" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Company Name
-parseable name: marketingagencycompany
-section: employeefirstname_0_21
-field signature: 3063503963
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542213">
+field renderer id: 50" data-ddg-testresultelementid="542213">
                           </div>
                         </div>
                         <div class="grid-col-4"></div>
@@ -3765,7 +3716,18 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" required="" name="marketingagencycountry" data-errormsg="Country  is a required field" id="marketingagencycountry" size="243" tabindex="-98" data-size="5" data-ddg-testresultelementid="542214" data-manual-scoring="addressCountryCode">
+                              <select class="selectpicker form-select" required="" name="marketingagencycountry" data-errormsg="Country  is a required field" id="marketingagencycountry" size="243" tabindex="-98" data-size="5" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country or Territory AfghanistanAland IslandsAlbaniaAlgeria
+parseable name: marketingagencycountry
+section: employeefirstname_0_21
+field signature: 965390759
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 51" data-ddg-testresultelementid="542214" data-manual-scoring="addressCountryCode">
                                 <option class="bs-title-option" value="">
                                   Country or Territory
                                 </option>
@@ -4321,11 +4283,22 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="marketingagencycity" data-errormsg="City  is a required field" placeholder="City" required="" data-ddg-testresultelementid="542215" data-manual-scoring="addressCity">
+                            <input type="text" name="marketingagencycity" data-errormsg="City  is a required field" placeholder="City" required="" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: City
+parseable name: marketingagencycity
+section: employeefirstname_0_21
+field signature: 548928730
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 52" data-ddg-testresultelementid="542215" data-manual-scoring="addressCity">
                           </div>
                         </div>
                         <div class="grid-col-4">
-                          <div class="form-group ups-hidden_elements" id="agency_usa_states" style="display: none">
+                          <div class="form-group ups-hidden_elements" id="agency_usa_states">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle bs-placeholder btn-default" data-toggle="dropdown" role="button" title="State/Province">
                                 <span class="filter-option pull-left">State/Province</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -4487,7 +4460,18 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" name="marketingagencystateprovinceusa" size="51" data-errormsg="State Province  is a required field" tabindex="-98" data-size="5" data-ddg-testresultelementid="542216" data-manual-scoring="addressProvince">
+                              <select class="selectpicker form-select" name="marketingagencystateprovinceusa" size="51" data-errormsg="State Province  is a required field" tabindex="-98" data-size="5" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province AlabamaAlaskaArizonaArkansas
+parseable name: marketingagencystateprovinceusa
+section: employeefirstname_0_21
+field signature: 520721216
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 53" data-ddg-testresultelementid="542216" data-manual-scoring="addressProvince">
                                 <option class="bs-title-option" value="">
                                   State/Province
                                 </option>
@@ -4545,7 +4529,7 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                               </select>
                             </div>
                           </div>
-                          <div class="form-group ups-hidden_elements" id="agency_canada_states" style="display: none">
+                          <div class="form-group ups-hidden_elements" id="agency_canada_states">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle bs-placeholder btn-default" data-toggle="dropdown" role="button" title="State/Province">
                                 <span class="filter-option pull-left">State/Province</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -4593,7 +4577,18 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" name="marketingagencystateprovincecanada" size="13" data-errormsg="State Province  is a required field" tabindex="-98" data-size="5" data-ddg-testresultelementid="542217" data-manual-scoring="addressProvince">
+                              <select class="selectpicker form-select" name="marketingagencystateprovincecanada" size="13" data-errormsg="State Province  is a required field" tabindex="-98" data-size="5" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province AlbertaBritish ColumbiaManitobaNew Brunswick
+parseable name: marketingagencystateprovincecanada
+section: employeefirstname_0_21
+field signature: 3134422022
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 54" data-ddg-testresultelementid="542217" data-manual-scoring="addressProvince">
                                 <option class="bs-title-option" value="">
                                   State/Province
                                 </option>
@@ -4619,7 +4614,18 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                       <div class="row">
                         <div class="grid-col-8">
                           <div class="form-group">
-                            <input type="text" name="marketingagencyupscontactname" data-errormsg="UPS Contact Name  is a required field" placeholder="UPS Contact Name*" required="" data-ddg-testresultelementid="542218" data-manual-scoring="fullName">
+                            <input type="text" name="marketingagencyupscontactname" data-errormsg="UPS Contact Name  is a required field" placeholder="UPS Contact Name*" required="" autofill-information="overall type: NAME_FULL
+server type: NO_SERVER_DATA
+heuristic type: NAME_FULL
+label: UPS Contact Name*
+parseable name: marketingagencyupscontactname
+section: employeefirstname_0_21
+field signature: 1757764450
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 55" data-ddg-testresultelementid="542218" data-manual-scoring="fullName">
                           </div>
                         </div>
 
@@ -4628,14 +4634,18 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                       <div class="row">
                         <div class="grid-col-8">
                           <div class="form-group input-with-dropdown ups-contact-email-dropdown">
-                            <input type="text" id="marketingagencyupscontactemail" name="marketingagencyupscontactemail" data-errormsg="Incorrect Email format" data-required="UPS Contact Email  is a required field" placeholder="UPS Contact Email*" data-list-id="emaildomainlist_upsContactEmail" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542219" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" id="marketingagencyupscontactemail" name="marketingagencyupscontactemail" data-errormsg="Incorrect Email format" data-required="UPS Contact Email  is a required field" placeholder="UPS Contact Email*" data-list-id="emaildomainlist_upsContactEmail" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: UPS Contact Email*
+parseable name: marketingagencyupscontactemail
+section: employeefirstname_0_21
+field signature: 495833371
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 56" data-ddg-testresultelementid="542219" data-manual-scoring="emailAddress">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" data-id="emaildomainlist_upsContactEmail" title="@ups.com">
                                 <span class="filter-option pull-left">@ups.com</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -4677,7 +4687,7 @@ field renderer id: 50" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" size="11" id="emaildomainlist_upsContactEmail" name="emaildomainlistmktagency" tabindex="-98" data-size="5" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" size="11" id="emaildomainlist_upsContactEmail" name="emaildomainlistmktagency" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
@@ -4688,18 +4698,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 57" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
-parseable name: emaildomainlistmktagency
-section: employeefirstname_0_21
-field signature: 2261257714
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542220">
+field renderer id: 57" data-ddg-testresultelementid="542220">
                                 <option value="@europe.ups.com">
                                   @europe.ups.com
                                 </option>
@@ -4754,7 +4753,7 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                 MCA, or MGSA)?
                               </p>
                               <div class="radio">
-                                <input type="radio" name="marketingagencyupsagreement" id="ups-aagreement-radio1" value="yes" checked="" title="overall type: UNKNOWN_TYPE
+                                <input type="radio" name="marketingagencyupsagreement" id="ups-aagreement-radio1" value="yes" checked="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes
@@ -4765,22 +4764,11 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 58" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes
-parseable name: marketingagencyupsagreement
-section: employeefirstname_0_21
-field signature: 109298473
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 58" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542221">
+field renderer id: 58" data-ddg-testresultelementid="542221">
                                 <label for="ups-aagreement-radio1"> Yes </label>
                               </div>
                               <div class="radio">
-                                <input type="radio" name="marketingagencyupsagreement" id="ups-agreement-radio2" value="no" title="overall type: UNKNOWN_TYPE
+                                <input type="radio" name="marketingagencyupsagreement" id="ups-agreement-radio2" value="no" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: No
@@ -4791,18 +4779,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 59" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: No
-parseable name: marketingagencyupsagreement
-section: employeefirstname_0_21
-field signature: 109298473
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542222">
+field renderer id: 59" data-ddg-testresultelementid="542222">
                                 <label for="ups-agreement-radio2"> No </label>
                               </div>
                             </div>
@@ -4971,7 +4948,7 @@ field renderer id: 59" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             </p>
                           </div>
                           <div class="checkbox">
-                            <input type="checkbox" name="marketingagencyassettcagree" id="asset-terms-conditions-3" value="agree" required="" data-errormsg="Terms Conditions is a required field" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" name="marketingagencyassettcagree" id="asset-terms-conditions-3" value="agree" required="" data-errormsg="Terms Conditions is a required field" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I agree to the &quot;Terms and Conditions&quot;
@@ -4982,18 +4959,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 60" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I agree to the &quot;Terms and Conditions&quot;
-parseable name: marketingagencyassettcagree
-section: employeefirstname_0_21
-field signature: 725451151
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542223">
+field renderer id: 60" data-ddg-testresultelementid="542223">
                             <label for="asset-terms-conditions-3">
                               I agree to the "Terms and Conditions"
                             </label>
@@ -5020,45 +4986,77 @@ field renderer id: 60" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="upsstore_userFirstname" data-errormsg="First name is a required field" placeholder="First Name" data-ddg-testresultelementid="542224" data-manual-scoring="firstName">
+                            <input type="text" name="upsstore_userFirstname" data-errormsg="First name is a required field" placeholder="First Name" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: upsstore_userFirstname
+section: employeefirstname_0_21
+field signature: 2669889564
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 61" data-ddg-testresultelementid="542224" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="upsstore_userLastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" data-ddg-testresultelementid="542225" data-manual-scoring="lastName">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" id="upsstore_userEmail" name="upsstore_userEmail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" data-other="Incorrect Email format" data-upsers="Please register as UPS Employee." placeholder="E-mail" autocomplete="off" data-ddg-autofill="true" data-ddg-testresultelementid="542226" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
-                          </div>
-                        </div>
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" name="upsstore_userConfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" data-ddg-autofill="true" data-ddg-testresultelementid="542227" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" name="upsstore_userLastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: upsstore_userLastname
+section: employeefirstname_0_21
+field signature: 1848949434
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 62" data-ddg-testresultelementid="542225" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" pattern="[a-z]{1,15}" id="upsstore_userPassword" name="upsstore_userPassword" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." data-required="Password  is a required field" placeholder="Password" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="email" id="upsstore_userEmail" name="upsstore_userEmail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" data-other="Incorrect Email format" data-upsers="Please register as UPS Employee." placeholder="E-mail" autocomplete="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: upsstore_userEmail
+section: employeefirstname_0_21
+field signature: 1769305311
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 63
+autocomplete: off" data-ddg-testresultelementid="542226" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="email" name="upsstore_userConfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm E-mail
+parseable name: upsstore_userConfirmemail
+section: employeefirstname_0_21
+field signature: 1142516940
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 64
+autocomplete: off" data-ddg-testresultelementid="542227" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="password" maxlength="26" pattern="[a-z]{1,15}" id="upsstore_userPassword" name="upsstore_userPassword" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." data-required="Password  is a required field" placeholder="Password" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -5070,19 +5068,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 65
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: upsstore_userPassword
-section: employeefirstname_0_21
-field signature: 1326635246
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 65
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542228">
+autocomplete: off" data-ddg-testresultelementid="542228">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -5094,7 +5080,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="upsstore_userConfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" maxlength="26" name="upsstore_userConfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Confirm Password
@@ -5106,19 +5092,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 66
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Confirm Password
-parseable name: upsstore_userConfirmpassword
-section: employeefirstname_0_21
-field signature: 2059225280
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 66
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542229">
+autocomplete: off" data-ddg-testresultelementid="542229">
                           </div>
                         </div>
                       </div>
@@ -5129,8 +5103,8 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                               <button type="button" class="btn dropdown-toggle bs-placeholder btn-default" data-toggle="dropdown" role="button" data-id="upsstore_regSubType" title="Type">
                                 <span class="filter-option pull-left">Type</span>&nbsp;<span class="icon icon-wedge-down"></span>
                               </button>
-                              <div class="dropdown-menu open" role="combobox" style="height: auto">
-                                <ul class="dropdown-menu inner" role="listbox" aria-expanded="false" style="height: auto">
+                              <div class="dropdown-menu open" role="combobox">
+                                <ul class="dropdown-menu inner" role="listbox" aria-expanded="false">
                                   <li data-original-index="1">
                                     <a tabindex="0" class="" data-tokens="null" role="option" aria-disabled="false" aria-selected="false"><span class="text">The UPS Store</span><span class="icon icon-check check-mark"></span></a>
                                   </li>
@@ -5139,7 +5113,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" data-errormsg="Type is a required field" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" data-errormsg="Type is a required field" required="" name="upsstore_regSubType" id="upsstore_regSubType" size="2" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Type The UPS StoreThe UPS Store Agency
@@ -5150,18 +5124,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 67" required="" name="upsstore_regSubType" id="upsstore_regSubType" size="2" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Type The UPS StoreThe UPS Store Agency
-parseable name: upsstore_regSubType
-section: employeefirstname_0_21
-field signature: 542624413
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 67" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542230">
+field renderer id: 67" data-ddg-testresultelementid="542230">
                                 <option class="bs-title-option" value="">
                                   Type
                                 </option>
@@ -5251,7 +5214,7 @@ field renderer id: 67" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </p>
                           </div>
                           <div class="checkbox">
-                            <input type="checkbox" name="upsstore_assettcagree" id="asset-terms-conditions-4" value="agree" data-errormsg="Terms Conditions is a required field" required="" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" name="upsstore_assettcagree" id="asset-terms-conditions-4" value="agree" data-errormsg="Terms Conditions is a required field" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I agree to the &quot;Terms and Conditions&quot;
@@ -5262,18 +5225,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 68" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I agree to the &quot;Terms and Conditions&quot;
-parseable name: upsstore_assettcagree
-section: employeefirstname_0_21
-field signature: 1647527201
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 68" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542231">
+field renderer id: 68" data-ddg-testresultelementid="542231">
                             <label for="asset-terms-conditions-4">
                               I agree to the "Terms and Conditions"
                             </label>
@@ -5300,45 +5252,77 @@ field renderer id: 68" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="historicaluserfirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" data-ddg-testresultelementid="542232" data-manual-scoring="firstName">
+                            <input type="text" name="historicaluserfirstname" data-errormsg="First name is a required field" placeholder="First Name" required="" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: historicaluserfirstname
+section: employeefirstname_0_21
+field signature: 1446078763
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 69" data-ddg-testresultelementid="542232" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="historicaluserlastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" data-ddg-testresultelementid="542233" data-manual-scoring="lastName">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" id="historicaluseremail" name="historicaluseremail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542234" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
-                          </div>
-                        </div>
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" name="historicaluserconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542235" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" name="historicaluserlastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" required="" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: historicaluserlastname
+section: employeefirstname_0_21
+field signature: 1172965265
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 70" data-ddg-testresultelementid="542233" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" id="historicaluserpassword" name="historicaluserpassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="email" id="historicaluseremail" name="historicaluseremail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" placeholder="E-mail" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: historicaluseremail
+section: employeefirstname_0_21
+field signature: 4011269226
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 71
+autocomplete: off" data-ddg-testresultelementid="542234" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="email" name="historicaluserconfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm E-mail
+parseable name: historicaluserconfirmemail
+section: employeefirstname_0_21
+field signature: 2733620112
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 72
+autocomplete: off" data-ddg-testresultelementid="542235" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="password" maxlength="26" id="historicaluserpassword" name="historicaluserpassword" data-required="Password  is a required field" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." placeholder="Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -5350,19 +5334,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 73
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: historicaluserpassword
-section: employeefirstname_0_21
-field signature: 982665401
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 73
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542236">
+autocomplete: off" data-ddg-testresultelementid="542236">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -5374,7 +5346,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="historicaluserconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" maxlength="26" name="historicaluserconfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" required="" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Confirm Password
@@ -5386,19 +5358,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 74
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Confirm Password
-parseable name: historicaluserconfirmpassword
-section: employeefirstname_0_21
-field signature: 2068839269
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 74
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542237">
+autocomplete: off" data-ddg-testresultelementid="542237">
                           </div>
                         </div>
                       </div>
@@ -5421,45 +5381,77 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="dapuserFirstname" data-errormsg="First name is a required field" placeholder="First Name" data-ddg-testresultelementid="542238" data-manual-scoring="firstName">
+                            <input type="text" name="dapuserFirstname" data-errormsg="First name is a required field" placeholder="First Name" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: dapuserFirstname
+section: employeefirstname_0_21
+field signature: 168799738
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 75" data-ddg-testresultelementid="542238" data-manual-scoring="firstName">
                           </div>
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="text" name="dapuserLastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" data-ddg-testresultelementid="542239" data-manual-scoring="lastName">
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" id="dapuserEmail" name="dapuserEmail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" data-other="Incorrect Email format" data-upsers="Please register as UPS Employee." placeholder="E-mail" autocomplete="off" data-ddg-autofill="true" data-ddg-testresultelementid="542240" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
-                          </div>
-                        </div>
-                        <div class="grid-col-4">
-                          <div class="form-group">
-                            <input type="email" name="dapuserConfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" data-ddg-autofill="true" data-ddg-testresultelementid="542241" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" name="dapuserLastname" data-errormsg="Last Name  is a required field" placeholder="Last Name" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: dapuserLastname
+section: employeefirstname_0_21
+field signature: 2109641374
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 76" data-ddg-testresultelementid="542239" data-manual-scoring="lastName">
                           </div>
                         </div>
                       </div>
                       <div class="row">
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" pattern="[a-z]{1,15}" id="dapuserPassword" name="dapuserPassword" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." data-required="Password  is a required field" placeholder="Password" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="email" id="dapuserEmail" name="dapuserEmail" data-errormsg="Incorrect Email format" data-required="Email  is a required field" data-other="Incorrect Email format" data-upsers="Please register as UPS Employee." placeholder="E-mail" autocomplete="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: dapuserEmail
+section: employeefirstname_0_21
+field signature: 3847057205
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 77
+autocomplete: off" data-ddg-testresultelementid="542240" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="email" name="dapuserConfirmemail" data-errormsg="Confirm Email should be same as Email" data-required="Confirm Email  is a required field" placeholder="Confirm E-mail" autocomplete="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm E-mail
+parseable name: dapuserConfirmemail
+section: employeefirstname_0_21
+field signature: 3206919433
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 78
+autocomplete: off" data-ddg-testresultelementid="542241" data-manual-scoring="emailAddress">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="grid-col-4">
+                          <div class="form-group">
+                            <input type="password" maxlength="26" pattern="[a-z]{1,15}" id="dapuserPassword" name="dapuserPassword" data-errormsg="Password must be between 8-26 characters and must contain all 4 of the following: lower case letters, upper case letters, numbers and special characters (!@#$%*) e.g. ABCdef#123." data-required="Password  is a required field" placeholder="Password" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -5471,19 +5463,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 79
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: dapuserPassword
-section: employeefirstname_0_21
-field signature: 1491907224
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 79
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542242">
+autocomplete: off" data-ddg-testresultelementid="542242">
                             <span class="form-tooltip">Tips for Password</span>
                             <div class="info-icon">
                               <span class="tool-tip">Password must be between 8-26 characters and
@@ -5495,7 +5475,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                         </div>
                         <div class="grid-col-4">
                           <div class="form-group">
-                            <input type="password" maxlength="26" name="dapuserConfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" autocomplete="off" title="overall type: UNKNOWN_TYPE
+                            <input type="password" maxlength="26" name="dapuserConfirmpassword" data-errormsg="Confirm Password should be same as password" data-required="Confirm Password  is a required field" placeholder="Confirm Password" autocomplete="off" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Confirm Password
@@ -5507,19 +5487,7 @@ form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
 field renderer id: 80
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Confirm Password
-parseable name: dapuserConfirmpassword
-section: employeefirstname_0_21
-field signature: 250483301
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 80
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542243">
+autocomplete: off" data-ddg-testresultelementid="542243">
                           </div>
                         </div>
                       </div>
@@ -5541,7 +5509,18 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                       <div class="row">
                         <div class="grid-col-8">
                           <div class="form-group">
-                            <input type="text" name="dapuserupscontactname" data-errormsg="UPS Contact Name  is a required field" placeholder="UPS Contact Name*" required="" data-ddg-testresultelementid="542244" data-manual-scoring="fullName">
+                            <input type="text" name="dapuserupscontactname" data-errormsg="UPS Contact Name  is a required field" placeholder="UPS Contact Name*" required="" autofill-information="overall type: NAME_FULL
+server type: NO_SERVER_DATA
+heuristic type: NAME_FULL
+label: UPS Contact Name*
+parseable name: dapuserupscontactname
+section: employeefirstname_0_21
+field signature: 3647751107
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 81" data-ddg-testresultelementid="542244" data-manual-scoring="fullName">
                           </div>
                         </div>
 
@@ -5550,14 +5529,18 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                       <div class="row">
                         <div class="grid-col-8">
                           <div class="form-group input-with-dropdown dap-user-ups-contact-email-dropdown">
-                            <input type="text" id="dapuserupscontactemail" name="dapuserupscontactemail" data-errormsg="Incorrect Email format" data-required="UPS Contact Email  is a required field" placeholder="UPS Contact Email*" data-list-id="emaildomainlist_dapuserupsContactEmail" required="" data-ddg-autofill="true" data-ddg-testresultelementid="542245" style="
-                                background-size: auto 26px !important;
-                                background-position: right center !important;
-                                background-repeat: no-repeat !important;
-                                background-origin: content-box !important;
-                                background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                transition: background 0s ease 0s !important;
-                              " data-manual-scoring="emailAddress">
+                            <input type="text" id="dapuserupscontactemail" name="dapuserupscontactemail" data-errormsg="Incorrect Email format" data-required="UPS Contact Email  is a required field" placeholder="UPS Contact Email*" data-list-id="emaildomainlist_dapuserupsContactEmail" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: UPS Contact Email*
+parseable name: dapuserupscontactemail
+section: employeefirstname_0_21
+field signature: 3201960055
+form signature: 8098504114475553975
+form signature in host form: 8098504114475553975
+field frame token: 72D0C51F87C9E36589A3803FD0221A19
+form renderer id: 2
+field renderer id: 82" data-ddg-testresultelementid="542245" data-manual-scoring="emailAddress">
                             <div class="btn-group bootstrap-select form-select">
                               <button type="button" class="btn dropdown-toggle btn-default" data-toggle="dropdown" role="button" data-id="emaildomainlist_dapuserupsContactEmail" title="@ups.com">
                                 <span class="filter-option pull-left">@ups.com</span>&nbsp;<span class="icon icon-wedge-down"></span>
@@ -5599,7 +5582,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
                                   </li>
                                 </ul>
                               </div>
-                              <select class="selectpicker form-select" size="11" id="emaildomainlist_dapuserupsContactEmail" name="emaildomainlistdapuser" tabindex="-98" data-size="5" title="overall type: UNKNOWN_TYPE
+                              <select class="selectpicker form-select" size="11" id="emaildomainlist_dapuserupsContactEmail" name="emaildomainlistdapuser" tabindex="-98" data-size="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
@@ -5610,18 +5593,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 83" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: @ups.com @europe.ups.com@mbe.com@motorcargo.com@overnite.com
-parseable name: emaildomainlistdapuser
-section: employeefirstname_0_21
-field signature: 1205219019
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 83" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542246">
+field renderer id: 83" data-ddg-testresultelementid="542246">
                                 <option value="@europe.ups.com">
                                   @europe.ups.com
                                 </option>
@@ -5742,7 +5714,7 @@ field renderer id: 83" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </p>
                           </div>
                           <div class="checkbox">
-                            <input type="checkbox" name="dapstore_assettcagree" id="asset-terms-conditions-5" value="agree" data-errormsg="Terms Conditions is a required field" required="" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" name="dapstore_assettcagree" id="asset-terms-conditions-5" value="agree" data-errormsg="Terms Conditions is a required field" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I agree to
@@ -5754,19 +5726,7 @@ form signature: 8098504114475553975
 form signature in host form: 8098504114475553975
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 2
-field renderer id: 84" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I agree to
-														the &quot;Terms and Conditions&quot;
-parseable name: dapstore_assettcagree
-section: employeefirstname_0_21
-field signature: 2851047870
-form signature: 8098504114475553975
-form signature in host form: 8098504114475553975
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 2
-field renderer id: 84" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542247">
+field renderer id: 84" data-ddg-testresultelementid="542247">
                             <label for="asset-terms-conditions-5">
                               I agree to the "Terms and Conditions"
                             </label>
@@ -5792,7 +5752,7 @@ field renderer id: 84" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                   Sign Up
                 </button>
               </div>
-              <div id="errorBlock" class="error-msg ups-hidden_elements" style="display: none"></div>
+              <div id="errorBlock" class="error-msg ups-hidden_elements"></div>
 
               <input type="hidden" name="g-recaptcha-response" class="g-recaptcha-registration__token">
               <div data-sitekey="6Ldo9nIiAAAAAN1-13xr55IF1y1f6JrFs_MJx9DD" class="g-recaptcha-registration__sitekey"></div>
@@ -5861,28 +5821,17 @@ field renderer id: 84" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
   <!-- 9fbef606107a605d69c0edbcd8029e5d_brand_operations  -->
 
-  <script src="/etc.clientlibs/ups-aem/clientlibs/clientlib-thirdparty.lc-3299479c5b28037210180a34ba4b1b80-lc.min.js"></script>
-  <script src="/etc.clientlibs/ups-aem/clientlibs/clientlib-site.lc-d0d423d94b73222bde9afde66cba4422-lc.min.js"></script>
-  <script src="/etc.clientlibs/ups-aem/clientlibs/ups-common/main.lc-10ed288259f58097f665bf6d0ce412e1-lc.min.js"></script>
+  
+  
+  
 
   <div>
-    <div class="grecaptcha-badge" data-style="bottomright" style="
-        width: 256px;
-        height: 60px;
-        display: block;
-        transition: right 0.3s ease 0s;
-        position: fixed;
-        bottom: 14px;
-        right: -186px;
-        box-shadow: gray 0px 0px 5px;
-        border-radius: 2px;
-        overflow: hidden;
-      ">
+    <div class="grecaptcha-badge" data-style="bottomright">
       <div class="grecaptcha-logo">
-        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/enterprise/anchor?ar=1&amp;k=6Ldo9nIiAAAAAN1-13xr55IF1y1f6JrFs_MJx9DD&amp;co=aHR0cHM6Ly9icmFuZC51cHMuY29tOjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=invisible&amp;cb=sn0cxdwi8bis" width="256" height="60" role="presentation" name="a-qoy9osb6k4ku" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+        
       </div>
       <div class="grecaptcha-error"></div>
-      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Retrieving Assets...
@@ -5893,27 +5842,8 @@ form signature: 16513211345526988205
 form signature in host form: 16513211345526988205
 field frame token: 72D0C51F87C9E36589A3803FD0221A19
 form renderer id: 0
-field renderer id: 133" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Retrieving Assets...
-parseable name: g-recaptcha-response
-section: g-recaptcha-response_0_133
-field signature: 3309787731
-form signature: 16513211345526988205
-form signature in host form: 16513211345526988205
-field frame token: 72D0C51F87C9E36589A3803FD0221A19
-form renderer id: 0
-field renderer id: 133" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542248" style="
-          width: 250px;
-          height: 40px;
-          border: 1px solid rgb(193, 193, 193);
-          margin: 10px 25px;
-          padding: 0px;
-          resize: none;
-          display: none;
-        "></textarea>
+field renderer id: 133" data-ddg-testresultelementid="542248"></textarea>
     </div>
-    <iframe style="display: none"></iframe>
+    
   </div>
 

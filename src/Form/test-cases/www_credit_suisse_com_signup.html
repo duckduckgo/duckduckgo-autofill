@@ -1,9 +1,10 @@
 <!--
   https://www.credit-suisse.com/us/en/mycreditsuisse/register.html
+  rank: 7312
   testRunId: 66
   testResultId: 238672
 -->
-<form name="frmContact" id="frmContact" action="https://my.credit-suisse.com:443/myweb/p/registerProfile.action;MyWebPublicSessionId=-DXoO26RqV2b-zO8NXQJ33w9zAUxKyKlt7kJpnWC8nbkB7xpUMYq!1319916759!1678933454481" method="post" data-ddg-formtype="sign up">
+<form name="frmContact" id="frmContact" action="https://my.credit-suisse.com:443/myweb/p/registerProfile.action;MyWebPublicSessionId=-DXoO26RqV2b-zO8NXQJ33w9zAUxKyKlt7kJpnWC8nbkB7xpUMYq!1319916759!1678933454481" method="post">
   <div class="hidden">
     <span class="error-title">The following errors occurred</span>
   </div>
@@ -21,212 +22,55 @@
 
 
 -->
-        <script type="text/javascript">
-          $(document).ready(function () {
-            $("#domicile").change(function () {
-              var selectedLanguage = [];
-              var domicile = $("#domicile").val();
-              var select = $("#preferredLanguage");
-              select.find("option").remove();
-              if (domicile == "AT") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-              } else if (domicile == "BS") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "CH") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "DE") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-              } else if (domicile == "ES") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("ES").html("Spanish")
-                );
-              } else if (domicile == "FR") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-              } else if (domicile == "GI") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "GG") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "IT") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "LI") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "LU") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else if (domicile == "MC") {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("DE").html("German")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("FR").html("French")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("IT").html("Italian")
-                );
-              } else {
-                $("#preferredLanguage").append(
-                  $("<option/>").val("").html("Please Select")
-                );
-                $("#preferredLanguage").append(
-                  $("<option/>").val("EN").html("English")
-                );
-              }
-            });
-          });
-        </script>
+        
 
         <div class="fm-row fm-grid-2cols">
           <label for="firstName" class="fm-label">
             First Name
-            <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+            
           </label>
           <span class="error-message">Please provide a first name value.</span>
-          <input type="text" id="firstName" name="profile.firstName" class="fm-text required" value="" data-ddg-testresultelementid="534747" data-manual-scoring="firstName">
+          <input type="text" id="firstName" name="profile.firstName" class="fm-text required" value="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: profile.firstName
+section: profile.firstName_0_3
+field signature: 2210805602
+form signature: 4170633417994725356
+form signature in host form: 4170633417994725356
+field frame token: 8756E703F18953A34EC6C4A8CFD6760E
+form renderer id: 1
+field renderer id: 3" data-ddg-testresultelementid="534747" data-manual-scoring="firstName">
         </div>
 
         <div class="fm-row fm-grid-2cols">
           <label for="lastName" class="fm-label">
             Last Name
-            <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+            
           </label>
           <span class="error-message">Please provide a last name value.</span>
-          <input type="text" id="lastName" name="profile.lastName" class="fm-text required" value="" data-ddg-testresultelementid="534748" data-manual-scoring="lastName">
+          <input type="text" id="lastName" name="profile.lastName" class="fm-text required" value="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: profile.lastName
+section: profile.firstName_0_3
+field signature: 2640714415
+form signature: 4170633417994725356
+form signature in host form: 4170633417994725356
+field frame token: 8756E703F18953A34EC6C4A8CFD6760E
+form renderer id: 1
+field renderer id: 4" data-ddg-testresultelementid="534748" data-manual-scoring="lastName">
         </div>
 
         <div class="fm-row fm-grid-2cols">
           <span rel="gender" class="fm-label">
             Gender
-            <img src="/myweb/p//wui/3/forms/img/form_stern.gif" alt="*mandatory field"></span>
+            </span>
           <span class="error-message">Please provide a gender.</span>
 
-          <input type="radio" name="profile.gender" id="gender" value="MALE" class="fm-radio fm-input-inline required" title="overall type: UNKNOWN_TYPE
+          <input type="radio" name="profile.gender" id="gender" value="MALE" class="fm-radio fm-input-inline required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Male
@@ -237,20 +81,9 @@ form signature: 4170633417994725356
 form signature in host form: 4170633417994725356
 field frame token: 8756E703F18953A34EC6C4A8CFD6760E
 form renderer id: 1
-field renderer id: 5" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Male
-parseable name: profile.gender
-section: profile.firstName_0_3
-field signature: 3865271198
-form signature: 4170633417994725356
-form signature in host form: 4170633417994725356
-field frame token: 8756E703F18953A34EC6C4A8CFD6760E
-form renderer id: 1
-field renderer id: 5" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="534749"><label for="gendergender" class="fm-label-inline fm-label-right">Male</label>
+field renderer id: 5" data-ddg-testresultelementid="534749"><label for="gendergender" class="fm-label-inline fm-label-right">Male</label>
 
-          <input type="radio" name="profile.gender" id="genderFEMALE" value="FEMALE" class="fm-radio fm-input-inline required" title="overall type: UNKNOWN_TYPE
+          <input type="radio" name="profile.gender" id="genderFEMALE" value="FEMALE" class="fm-radio fm-input-inline required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Female
@@ -261,39 +94,32 @@ form signature: 4170633417994725356
 form signature in host form: 4170633417994725356
 field frame token: 8756E703F18953A34EC6C4A8CFD6760E
 form renderer id: 1
-field renderer id: 6" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Female
-parseable name: profile.gender
-section: profile.firstName_0_3
-field signature: 3865271198
-form signature: 4170633417994725356
-form signature in host form: 4170633417994725356
-field frame token: 8756E703F18953A34EC6C4A8CFD6760E
-form renderer id: 1
-field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="534750"><label for="gendergenderFEMALE" class="fm-label-inline fm-label-right">Female</label>
+field renderer id: 6" data-ddg-testresultelementid="534750"><label for="gendergenderFEMALE" class="fm-label-inline fm-label-right">Female</label>
         </div>
 
         <div class="fm-row fm-grid-2cols">
           <label for="email" class="fm-label">
             Email
-            <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+            
           </label>
           <span class="error-message">Please provide an email address.</span>
-          <input type="text" id="email" name="profile.email.email" class="fm-text required email" value="" data-ddg-autofill="true" data-ddg-testresultelementid="534751" style="
-              background-size: auto 26px !important;
-              background-position: right center !important;
-              background-repeat: no-repeat !important;
-              background-origin: content-box !important;
-              background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-              transition: background 0s ease 0s !important;
-            " data-manual-scoring="emailAddress">
+          <input type="text" id="email" name="profile.email.email" class="fm-text required email" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: profile.email.email
+section: profile.firstName_0_3
+field signature: 1624752308
+form signature: 4170633417994725356
+form signature in host form: 4170633417994725356
+field frame token: 8756E703F18953A34EC6C4A8CFD6760E
+form renderer id: 1
+field renderer id: 7" data-ddg-testresultelementid="534751" data-manual-scoring="emailAddress">
         </div>
 
         <div class="fm-row fm-grid-2cols">
           <label for="userName" class="fm-label"> Username </label>
-          <input type="text" id="userName" name="profile.userName" class="fm-text" value="" title="overall type: UNKNOWN_TYPE
+          <input type="text" id="userName" name="profile.userName" class="fm-text" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Username
@@ -304,28 +130,28 @@ form signature: 4170633417994725356
 form signature in host form: 4170633417994725356
 field frame token: 8756E703F18953A34EC6C4A8CFD6760E
 form renderer id: 1
-field renderer id: 8" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Username
-parseable name: profile.userName
-section: profile.firstName_0_3
-field signature: 348089001
-form signature: 4170633417994725356
-form signature in host form: 4170633417994725356
-field frame token: 8756E703F18953A34EC6C4A8CFD6760E
-form renderer id: 1
-field renderer id: 8" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="534752">
+field renderer id: 8" data-ddg-testresultelementid="534752">
         </div>
 
         <div class="fm-row fm-grid-2cols">
           <label for="domicile" class="fm-label">
             Domicile
-            <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+            
           </label>
           <span class="error-message">Please select a domicile.</span>
 
-          <select name="profile.domicile" id="domicile" class="fm-text fm-select required" data-ddg-testresultelementid="534753" data-manual-scoring="addressCountryCode">
+          <select name="profile.domicile" id="domicile" class="fm-text fm-select required" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: UNKNOWN_TYPE
+label: Domicile
+parseable name: profile.domicile
+section: profile.firstName_0_3
+field signature: 3949791492
+form signature: 4170633417994725356
+form signature in host form: 4170633417994725356
+field frame token: 8756E703F18953A34EC6C4A8CFD6760E
+form renderer id: 1
+field renderer id: 9" data-ddg-testresultelementid="534753" data-manual-scoring="addressCountryCode">
             <option value="">Switzerland</option>
             <option value="AF">Afghanistan</option>
             <option value="AL">Albania</option>
@@ -574,11 +400,11 @@ field renderer id: 8" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
         <div class="fm-row fm-grid-2cols">
           <label for="preferredLanguage" class="fm-label">
             Preferred Language
-            <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+            
           </label>
           <span class="error-message">Please select a language.</span>
 
-          <select name="profile.language" id="preferredLanguage" class="fm-text fm-select required" title="overall type: UNKNOWN_TYPE
+          <select name="profile.language" id="preferredLanguage" class="fm-text fm-select required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Preferred Language
@@ -589,18 +415,7 @@ form signature: 4170633417994725356
 form signature in host form: 4170633417994725356
 field frame token: 8756E703F18953A34EC6C4A8CFD6760E
 form renderer id: 1
-field renderer id: 10" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Preferred Language
-parseable name: profile.language
-section: profile.firstName_0_3
-field signature: 2622006041
-form signature: 4170633417994725356
-form signature in host form: 4170633417994725356
-field frame token: 8756E703F18953A34EC6C4A8CFD6760E
-form renderer id: 1
-field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="534754">
+field renderer id: 10" data-ddg-testresultelementid="534754">
             <option value="">Please select</option>
             <option value="EN">English</option>
             <option value="DE">German</option>
@@ -660,73 +475,45 @@ field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         <div class="fm-row fm-grid-2cols">
           <label for="newPassword" class="fm-label">
             Password
-            <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+            
           </label>
           <span class="error-message">Please provide a password.</span>
-          <input type="password" id="newPassword" name="password" class="fm-password required" onkeyup="passwordChecker()" value="" data-ddg-testresultelementid="534755" data-manual-scoring="password">
-          <div style="color: #eb2e35; padding-top: 5px">
+          <input type="password" id="newPassword" name="password" class="fm-password required" onkeyup="passwordChecker()" value="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: profile.firstName_0_3
+field signature: 2051817934
+form signature: 4170633417994725356
+form signature in host form: 4170633417994725356
+field frame token: 8756E703F18953A34EC6C4A8CFD6760E
+form renderer id: 1
+field renderer id: 19" data-ddg-testresultelementid="534755" data-manual-scoring="password">
+          <div>
             <p id="passwordRuleRealValidationTitle"></p>
             <ul id="passwordRuleRealValidation"></ul>
-            <script>
-              function passwordChecker() {
-                $("#passwordRuleRealValidationTitle").html("");
-                $("#passwordRuleRealValidation").html("");
-                var password = $("#newPassword").val();
-                var message = "";
-                if (
-                  password.length >= 5 &&
-                  !password.match(
-                    /^(?=.{10,80})(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$/
-                  )
-                ) {
-                  $("#passwordRuleRealValidationTitle").html(
-                    $("#passwordRuleValueTitle").val()
-                  );
-                  if (!password.match(/^(?=.{10,80}).*$/))
-                    message +=
-                      '<li style="font-size: 12px;color: #eb2e35; padding-top: 2px;" >' +
-                      $("#passwordRuleValue1").val() +
-                      "</li>";
-                  if (!password.match(/^(?=.*[a-z]).*$/))
-                    message +=
-                      '<li style="font-size: 12px;color: #eb2e35; padding-top: 2px;" >' +
-                      $("#passwordRuleValue2").val() +
-                      "</li>";
-                  if (!password.match(/^(?=.*[A-Z]).*$/))
-                    message +=
-                      '<li style="font-size: 12px;color: #eb2e35; padding-top: 2px;" >' +
-                      $("#passwordRuleValue3").val() +
-                      "</li>";
-                  if (!password.match(/^(?=.*[0-9]).*$/))
-                    message +=
-                      '<li style="font-size: 12px;color: #eb2e35; padding-top: 2px;" >' +
-                      $("#passwordRuleValue4").val() +
-                      "</li>";
-                  if (
-                    !password.match(/^(?=.{10,80})(?=.*[a-z])(?=.*[A-Z]).*$/)
-                  ) {
-                    message +=
-                      '<li style="font-size: 12px;color: #eb2e35; padding-top: 2px;" >' +
-                      $("#passwordRuleValue5").val() +
-                      "</li>";
-                    message +=
-                      '<li style="font-size: 12px;color: #eb2e35; padding-top: 2px;" >' +
-                      $("#passwordRuleValue6").val() +
-                      "</li>";
-                  }
-                  $("#passwordRuleRealValidation").html(message);
-                }
-              }
-            </script>
+            
           </div>
 
           <div class="fm-row fm-grid-2cols">
             <label for="confirmedPassword" class="fm-label">
               Confirm Password
-              <img src="/myweb/p/wui/3/forms/img/form_stern.gif" alt="*mandatory field">
+              
             </label>
             <span class="error-message">The password must be confirmed.</span>
-            <input type="password" id="confirmedPassword" name="confirmedPassword" class="fm-password required" value="" data-ddg-testresultelementid="534756" data-manual-scoring="password">
+            <input type="password" id="confirmedPassword" name="confirmedPassword" class="fm-password required" value="" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password
+parseable name: confirmedPassword
+section: profile.firstName_0_3
+field signature: 891755748
+form signature: 4170633417994725356
+form signature in host form: 4170633417994725356
+field frame token: 8756E703F18953A34EC6C4A8CFD6760E
+form renderer id: 1
+field renderer id: 20" data-ddg-testresultelementid="534756" data-manual-scoring="password">
           </div>
         </div>
       </div>
@@ -828,7 +615,7 @@ field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       </div>
       <div class="fm-grouping-box fm-disclaimer">
         <div class="fm-row">
-          <input type="checkbox" name="profile.disclaimerAccepted" id="disclaimerAccepted" class="fm-checkbox required" value="true" title="overall type: UNKNOWN_TYPE
+          <input type="checkbox" name="profile.disclaimerAccepted" id="disclaimerAccepted" class="fm-checkbox required" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: To register for a My Credit Suisse profile I accept the terms of use.
@@ -839,18 +626,7 @@ form signature: 4170633417994725356
 form signature in host form: 4170633417994725356
 field frame token: 8756E703F18953A34EC6C4A8CFD6760E
 form renderer id: 1
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: To register for a My Credit Suisse profile I accept the terms of use.
-parseable name: profile.disclaimerAccepted
-section: profile.firstName_0_3
-field signature: 3038915127
-form signature: 4170633417994725356
-form signature in host form: 4170633417994725356
-field frame token: 8756E703F18953A34EC6C4A8CFD6760E
-form renderer id: 1
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="534757">
+field renderer id: 21" data-ddg-testresultelementid="534757">
           <label for="disclaimerAccepted">
             To register for a My Credit Suisse profile I accept the terms of
             use.
@@ -865,7 +641,7 @@ field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
     <div class="fm-buttonbar">
       <input type="submit" value="Register" class="fm-btn fm-btn-submit">
 
-      <input type="reset" value="Cancel" class="fm-btn" data-ddg-inputtype="unknown" data-ddg-testresultelementid="534758">
+      <input type="reset" value="Cancel" class="fm-btn" data-ddg-testresultelementid="534758">
     </div>
   </div>
   <input type="hidden" name="struts.token.name" value="token">

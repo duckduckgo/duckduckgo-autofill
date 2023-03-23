@@ -1,9 +1,10 @@
 <!--
   https://secure.gofile.co.uk/register/
+  rank: 1051
   testRunId: 66
   testResultId: 235095
 -->
-<form action="/register/" method="post" id="register_form" name="register_form" autocomplete="off" data-ddg-formtype="sign up">
+<form action="/register/" method="post" id="register_form" name="register_form" autocomplete="off">
   <input type="hidden" name="scw" id="scw" value="1920">
   <input type="hidden" name="sch" id="sch" value="1080">
   <input type="hidden" name="scd" id="scd" value="24">
@@ -17,120 +18,84 @@
   <input type="hidden" name="lip" id="lip" value="6ae507c8-792b-4359-846d-32830c09565b.local,174.6.14.188">
   <input name="token" value="cde317b21ee08a5fe106c078592ec844db56e316" type="hidden">
   <fieldset class="fieldset">
-    <style>
-      #code p {
-        text-align: left;
-      }
-
-      #code input {
-        width: 290px;
-        float: left;
-      }
-
-      #code label {
-        width: 90px;
-        margin: 13px 0 13px 0;
-        line-height: 34px;
-        float: right;
-        background: #f80;
-        cursor: pointer;
-        color: white;
-        box-shadow: 0 0 4px 1px #666;
-      }
-
-      #code label:hover {
-        box-shadow: 0 0 4px 1px #69f;
-      }
-
-      #code_success {
-        margin: 5px 0 10px 0;
-      }
-
-      #step2,
-      #step3 {
-        display: block;
-        clear: both;
-      }
-
-      #secure_imgs img {
-        display: inline-block;
-        height: 32px;
-        margin: 0 5px;
-      }
-
-      footer {
-        border-top: 1px solid #ccc;
-        margin: 0 auto;
-        padding: 20px;
-        text-align: center;
-      }
-
-      .spinner.loading {
-        padding: 0;
-        position: relative;
-        text-align: center;
-        margin: 10px 0;
-        top: 10px;
-        left: -20px;
-        display: none;
-        height: 68px;
-      }
-      .spinner.loading:before {
-        content: "";
-        height: 30px;
-        width: 30px;
-        position: absolute;
-        border-width: 8px;
-        border-style: solid;
-        border-color: #f80 #ccc #ccc;
-        border-radius: 100%;
-        animation: rotation 0.7s infinite linear;
-      }
-      @keyframes rotation {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(359deg);
-        }
-      }
-    </style>
+    
     <div class="field" id="name_field">
       <span class="error"></span>
       <label for="name">Your Name</label>
-      <input placeholder="Your Name" id="name" name="register_name" type="text" autocomplete="off" value="" data-ddg-testresultelementid="514834" data-manual-scoring="firstName">
+      <input placeholder="Your Name" id="name" name="register_name" type="text" autocomplete="off" value="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: UNKNOWN_TYPE
+label: Your Name
+parseable name: register_name
+section: register_name_0_40
+field signature: 2215315776
+form signature: 9945497163565724751
+form signature in host form: 9945497163565724751
+field frame token: 7CC8EC9A78F313FAEAE749FC765FEB66
+form renderer id: 4
+field renderer id: 40
+autocomplete: off" data-ddg-testresultelementid="514834" data-manual-scoring="firstName">
     </div>
     <div class="field" id="surname_field">
       <span class="error"></span>
       <label for="surname">Your Surname</label>
-      <input id="surname" name="register_surname" placeholder="Your Surname" type="text" autocomplete="off" value="" data-ddg-testresultelementid="514835" data-manual-scoring="lastName">
+      <input id="surname" name="register_surname" placeholder="Your Surname" type="text" autocomplete="off" value="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: UNKNOWN_TYPE
+label: Your Surname
+parseable name: register_surname
+section: register_name_0_40
+field signature: 4123556481
+form signature: 9945497163565724751
+form signature in host form: 9945497163565724751
+field frame token: 7CC8EC9A78F313FAEAE749FC765FEB66
+form renderer id: 4
+field renderer id: 41
+autocomplete: off" data-ddg-testresultelementid="514835" data-manual-scoring="lastName">
     </div>
     <div class="field" id="email_field">
       <span class="error"></span>
       <label for="email">Email Address</label>
-      <input id="email" name="register_email" type="text" placeholder="your@email.com" autocomplete="off" value="" data-ddg-autofill="true" data-ddg-testresultelementid="514836" style="
-          background-size: auto 26px !important;
-          background-position: right center !important;
-          background-repeat: no-repeat !important;
-          background-origin: content-box !important;
-          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-          transition: background 0s ease 0s !important;
-        " data-manual-scoring="emailAddress">
+      <input id="email" name="register_email" type="text" placeholder="your@email.com" autocomplete="off" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: register_email
+section: register_name_0_40
+field signature: 1360422442
+form signature: 9945497163565724751
+form signature in host form: 9945497163565724751
+field frame token: 7CC8EC9A78F313FAEAE749FC765FEB66
+form renderer id: 4
+field renderer id: 42
+autocomplete: off" data-ddg-testresultelementid="514836" data-manual-scoring="emailAddress">
     </div>
     <div class="field" id="pass_field">
       <span class="error"></span>
       <label for="pass">Create a Password</label>
-      <input id="pass" name="register_pass" type="password" placeholder="" autocomplete="off" value="" data-ddg-testresultelementid="514837" data-manual-scoring="password">
+      <input id="pass" name="register_pass" type="password" placeholder="" autocomplete="off" value="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Create a Password
+parseable name: register_pass
+section: register_name_0_40
+field signature: 1191716377
+form signature: 9945497163565724751
+form signature in host form: 9945497163565724751
+field frame token: 7CC8EC9A78F313FAEAE749FC765FEB66
+form renderer id: 4
+field renderer id: 43
+autocomplete: off" data-ddg-testresultelementid="514837" data-manual-scoring="password">
     </div>
     <div class="field" id="captcha_field">
       <span class="error"></span>
       <label for="g-recaptcha">Please confirm</label>
       <div id="g-recaptcha" class="g-recaptcha" data-sitekey="6LeoiZUbAAAAAOy6hzMZUrwrLVxqx7KNktACbBQt">
-        <div style="width: 304px; height: 78px">
+        <div>
           <div>
-            <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LeoiZUbAAAAAOy6hzMZUrwrLVxqx7KNktACbBQt&amp;co=aHR0cHM6Ly9zZWN1cmUuZ29maWxlLmNvLnVrOjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=normal&amp;cb=5owaaagsnyyq" width="304" height="78" role="presentation" name="a-edm54qfz0be8" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+            
           </div>
-          <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+          <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Please confirm
@@ -141,41 +106,22 @@ form signature: 9945497163565724751
 form signature in host form: 9945497163565724751
 field frame token: 7CC8EC9A78F313FAEAE749FC765FEB66
 form renderer id: 4
-field renderer id: 45" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Please confirm
-parseable name: g-recaptcha-response
-section: register_name_0_40
-field signature: 3309787731
-form signature: 9945497163565724751
-form signature in host form: 9945497163565724751
-field frame token: 7CC8EC9A78F313FAEAE749FC765FEB66
-form renderer id: 4
-field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="514838" style="
-              width: 250px;
-              height: 40px;
-              border: 1px solid rgb(193, 193, 193);
-              margin: 10px 25px;
-              padding: 0px;
-              resize: none;
-              display: none;
-            "></textarea>
+field renderer id: 45" data-ddg-testresultelementid="514838"></textarea>
         </div>
-        <iframe style="display: none"></iframe>
+        
       </div>
     </div>
-    <div style="height: 88px; width: auto; overflow: visible; clear: both">
+    <div>
       <input type="submit" class="login-button" name="start" id="checkout_btn" value="GET STARTED" onclick="goog_report_conversion(); $('#checkout_btn').hide(); $('#spinner').show();">
       <div id="spinner" class="spinner loading"></div>
     </div>
 
-    <p style="font-size: 14px"><strong></strong></p>
-    <p style="margin-bottom: 20px">
+    <p><strong></strong></p>
+    <p>
       <br>By registering for this service, you agree to our<br><a href="https://gofile.co.uk/terms-and-conditions/" target="_blank">terms &amp; conditions</a>
       and
       <a href="https://gofile.co.uk/your-privacy/" target="_blank">privacy policy</a>.
     </p>
-    <img src="/images/seal.png" alt="Satisfaction Guaranteed">
+    
   </fieldset>
 </form>

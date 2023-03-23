@@ -1,207 +1,17 @@
 <!--
   https://www.letpub.com/register
+  rank: 8000
   testRunId: 66
   testResultId: 239053
 -->
 
   <!-- start header -->
 
-  <div id="_brand2" itemprop="brand" itemscope="" itemtype="http://schema.org/Brand" class="header" data-ddg-formtype="sign up">
+  <div id="_brand2" itemprop="brand" itemscope="" itemtype="http://schema.org/Brand" class="header">
     <!--03052020 Ray new CSS settings-->
-    <style>
-      .head_notification {
-        width: 100%;
-        position: absolute;
-        overflow: hidden;
-        font-family: Gill Sans, sans-serif;
-        background-color: #3b5998; //#99ace0;
-        color: #ffffff;
-        padding-top: 2.5px;
-        padding-bottom: 3px;
-        z-index: 999;
-        box-shadow: 0 8px 6px -6px black;
-      }
-      #left_notibar {
-        overflow: hidden;
-        text-align: center;
-        height: 18px;
-      }
-      #right_notibar {
-        float: right;
-        width: 30px;
-        height: 18px;
-        text-align: center;
-      }
-      .ShowHide a {
-        color: #ffffff;
-        text-decoration: none;
-      }
-      .ShowHide a:hover {
-        text-decoration: underline;
-      }
-      .noti_link {
-        text-decoration: none;
-        font-family: Gill Sans, sans-serif;
-        font-size: 15px;
-        font-style: italic;
-      }
+    
 
-      a,
-      select {
-        font-family: Gill Sans, sans-serif;
-      }
-
-      span > a {
-        position: relative;
-        color: white;
-        text-decoration: none;
-      }
-
-      span > a:hover {
-        color: white;
-      }
-      span > a:before {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        bottom: 0;
-        left: 0;
-        background-color: white;
-        visibility: hidden;
-        -webkit-transform: scaleX(0);
-        transform: scaleX(0);
-        -webkit-transition: all 0.3s ease-in-out 0s;
-        transition: all 0.3s ease-in-out 0s;
-      }
-
-      span > a:hover:before {
-        visibility: visible;
-        -webkit-transform: scaleX(1);
-        transform: scaleX(1);
-      }
-
-      .language_select {
-        margin-top: 44px;
-        float: right;
-        color: #3b5998;
-        font-size: 14.5px;
-      }
-      .head_login {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        margin: 4px 2px;
-        border: none;
-        background-color: #3b5998;
-        color: white;
-        font-size: 12.5px;
-        float: right;
-        margin-top: 44px;
-      }
-      .head_submit {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        border: none;
-        background-color: orange;
-        color: white;
-        font-size: 12.5px;
-        float: right;
-        margin-top: 44px;
-      }
-      .head_submit_2 {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        border: none;
-        background-color: orange;
-        float: right;
-        color: white;
-        font-size: 12.5px;
-        margin-top: 48.5px;
-      }
-      .head_account {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        border: none;
-        background-color: #3b5998;
-        float: right;
-        color: white;
-        font-size: 12.5px;
-        margin-top: 48px;
-      }
-      .head_logout {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        border: none;
-        background-color: #3b5998;
-        color: white;
-        font-size: 12.5px;
-        float: right;
-        margin-top: 48px;
-      }
-      .head_RC {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        margin: 4px 2px;
-        border: none;
-        background-color: #72c6a1;
-        color: white;
-        font-size: 12.5px;
-        float: right;
-        margin-top: 44px;
-      }
-      .head_RC_2 {
-        border-radius: 5px;
-        padding: 3.5px 14px;
-        margin: 4px 2px;
-        border: none;
-        background-color: #72c6a1;
-        color: white;
-        font-size: 12.5px;
-        float: right;
-        margin-top: 48.5px;
-      }
-      .head_space {
-        border-radius: 5px;
-        padding: 1px 2px;
-        margin: 2px 1px;
-        border: none;
-        background-color: white;
-        color: white;
-        float: right;
-        margin-top: 48.5px;
-      }
-      .head_space2 {
-        border-radius: 5px;
-        padding: 6px 12px;
-        margin: 2px 1px;
-        border: none;
-        background-color: white;
-        color: white;
-        float: right;
-        margin-top: 48.5px;
-      }
-      .togCheck {
-        display: none;
-      }
-
-      .togContent {
-        max-height: 0;
-        opacity: 0;
-        visibility: hidden;
-        transition: max-height 0.5s;
-      }
-      .togCheck:checked + .togContent {
-        max-height: 100vh;
-        opacity: 1;
-        visibility: visible;
-      }
-    </style>
-
-    <script>
-      function Notification_Hide(HideID) {
-        HideID.style.display = "none";
-      }
-    </script>
+    
 
     <!--<div class="head_notification" id="Bar">
   <div id="right_notibar">
@@ -216,7 +26,7 @@
 </div>-->
 
     <span class="head_space">&nbsp;</span>
-    <select class="language_select" onchange="window.location.href=this.value" title="overall type: UNKNOWN_TYPE
+    <select class="language_select" onchange="window.location.href=this.value" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: .head_notification{ 
@@ -231,107 +41,75 @@ form signature: 293892750876450985
 form signature in host form: 293892750876450985
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 0
-field renderer id: 17" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: .head_notification{ 
-  width:100%;
-  position:absolute;
-  overflow: hidden;
-  font-family: Gill Sans
-parseable name: 
-section: _0_17
-field signature: 4203909268
-form signature: 293892750876450985
-form signature in host form: 293892750876450985
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 0
-field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537481">
-      <option style="color: #3b5998" value="#">Languages</option>
-      <option style="color: #3b5998" value="https://www.letpub.com">
+field renderer id: 17" data-ddg-testresultelementid="537481">
+      <option value="#">Languages</option>
+      <option value="https://www.letpub.com">
         English
       </option>
-      <option style="color: #3b5998" value="https://www.letpub.com.cn">
+      <option value="https://www.letpub.com.cn">
         中文
       </option>
-      <option style="color: #3b5998" value="https://www.letpub.com.es">
+      <option value="https://www.letpub.com.es">
         Español
       </option>
-      <option style="color: #3b5998" value="https://www.letpub.tw">
+      <option value="https://www.letpub.tw">
         繁體中文
       </option>
-      <option style="color: #3b5998" value="https://www.letpub.co.kr/">
+      <option value="https://www.letpub.co.kr/">
         한국어
       </option>
-      <option style="color: #3b5998" value="https://www.letpub.jp">
+      <option value="https://www.letpub.jp">
         日本語
       </option>
-      <option style="color: #3b5998" value="https://www.letpub.com.br/">
+      <option value="https://www.letpub.com.br/">
         Português
       </option>
     </select>
     <span class="head_space">&nbsp;</span>
-    <span class="head_RC"><a style="color: white" target="_blank" href="https://www.researchcreative.com/">Research Creative</a></span>
+    <span class="head_RC"><a target="_blank" href="https://www.researchcreative.com/">Research Creative</a></span>
     <span class="head_space2">&nbsp;</span>
-    <span class="head_login"><a style="color: white" href="/login">My Account</a></span>
+    <span class="head_login"><a href="/login">My Account</a></span>
     <span class="head_space">&nbsp;</span>
-    <span class="head_submit"><a style="color: white" href="/index.php?page=submit_manuscript&amp;preselected_class=manuscript&amp;preselected_service=expert_scientific_editing&amp;signature_revision_protection=No">Submit My Manuscript</a></span>
+    <span class="head_submit"><a href="/index.php?page=submit_manuscript&amp;preselected_class=manuscript&amp;preselected_service=expert_scientific_editing&amp;signature_revision_protection=No">Submit My Manuscript</a></span>
 
     <div class="top">
       <div class="intop w1100">
-        <div style="height: 3px"></div>
-        <span style="float: left"><a href="/" style="display: inline-block; margin: 0px" title="LetPub"><img itemprop="logo" style="display: inline-block; z-index: -999; width: 170px" src="/images-201510-English/logo_10092020.jpg" alt="Letpub, Scientific Editing Services, Manuscript Editing Service"></a></span>
-        <span style="float: right">
-          <div style="display: block">
-            <div id="logged_in_1" style="display: inline"></div>
-            <div id="logged_in_2" style="display: inline">
+        <div></div>
+        <span><a href="/" title="LetPub"></a></span>
+        <span>
+          <div>
+            <div id="logged_in_1"></div>
+            <div id="logged_in_2">
               <!--<a href="/index.php?page=login" class="login_a"></a>
             <a href="/index.php?page=register" class="sign_a"></a>-->
             </div>
             <!--<a href="/index.php?page=partnership_and_publisher" class="pulisher_a"></a>
             <a class="big submit_a" href="/index.php?page=submit_manuscript" onclick="gtag_report_conversion('https://www.letpub.com/index.php?page=submit_manuscript');"></a>-->
-            <script type="text/javascript">
-              $(function () {
-                $(".search .big").click(function () {
-                  if ($(".sea-input").css("display") == "none") {
-                    $(".sea-input").stop(true, true).show(600);
-                  } else {
-                    $(".sea-input").stop(true, true).hide(600);
-                  }
-                });
-              });
-            </script>
+            
           </div>
         </span>
       </div>
     </div>
     <!-- 20200319, add margin-left:227px; for nav_ul to fix menu width to be center -->
     <div class="nav">
-      <div class="innav w1100" style="box-sizing: border-box">
-        <ul class="nav_ul" style="
-            width: 1100px;
-            height: 45px;
-            box-sizing: border-box;
-            position: relative;
-            right: 0px;
-            margin-left: 227px;
-          ">
+      <div class="innav w1100">
+        <ul class="nav_ul">
           <li>
-            <a href="#" onclick="return false;" style="cursor: default">Services</a>
+            <a href="#" onclick="return false;">Services</a>
             <ul class="sub_nav">
               <li>
-                <a href="/editing-services-overview" style="font-weight: bold">Editing Services</a>
+                <a href="/editing-services-overview">Editing Services</a>
                 <div class="min_sub_nav">
                   <a href="/language-editing-service">&nbsp;&nbsp; Language Editing</a>
                   <a href="/scientific-editing-service">&nbsp;&nbsp; Scientific Editing</a>
-                  <a href="/grant-editing-service">&nbsp;&nbsp; Grant Editing<sup style="color: orange; font-style: italic">
+                  <a href="/grant-editing-service">&nbsp;&nbsp; Grant Editing<sup>
                       new</sup></a>
                   <a href="/translation-service">&nbsp;&nbsp; Translation</a>
                   <!--expand menu-->
-                  <label style="color: white; font-size: 14px; color: orange" for="check" class="togButton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;More
+                  <label for="check" class="togButton">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;More
                     Services +
                   </label>
-                  <input type="checkbox" class="togCheck" id="check" title="overall type: UNKNOWN_TYPE
+                  <input type="checkbox" class="togCheck" id="check" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: More Services +
@@ -342,18 +120,7 @@ form signature: 293892750876450985
 form signature in host form: 293892750876450985
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 0
-field renderer id: 18" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: More Services +
-parseable name: check
-section: _0_17
-field signature: 162819167
-form signature: 293892750876450985
-form signature in host form: 293892750876450985
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 0
-field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="537482">
+field renderer id: 18" data-ddg-testresultelementid="537482">
                   <div class="togContent">
                     <a href="/response-letter-editing-service">&nbsp;&nbsp; Response Letter Editing</a>
                     <a href="/review-promotion-tenure-documents">&nbsp;&nbsp; Annual Review &amp; Tenure Files</a>
@@ -364,7 +131,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               </li>
 
               <li>
-                <a href="/publication-support-services" style="font-weight: bold">Publication Support<i class="arrow"></i></a>
+                <a href="/publication-support-services">Publication Support<i class="arrow"></i></a>
                 <div class="right_min_sub_nav_upper">
                   <a href="/journal-recommendation-service">&nbsp;Journal Recommendation</a>
                   <a href="/manuscript-formatting-service">&nbsp;Manuscript Formatting</a>
@@ -376,7 +143,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               </li>
 
               <li>
-                <a href="/scientific-illustration-overview" style="font-weight: bold">Scientific Illustration<i class="arrow"></i></a>
+                <a href="/scientific-illustration-overview">Scientific Illustration<i class="arrow"></i></a>
                 <div class="right_min_sub_nav_upper">
                   <a href="/journal-cover-design-service">&nbsp;Journal Cover Design</a>
                   <a href="/graphical-abstract-service">&nbsp;Graphical Abstract</a>
@@ -386,7 +153,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               </li>
 
               <li>
-                <a href="/scientific-videos-overview" style="font-weight: bold">Scientific Videos<i class="arrow"></i></a>
+                <a href="/scientific-videos-overview">Scientific Videos<i class="arrow"></i></a>
                 <div class="right_min_sub_nav_upper">
                   <a href="/video-abstract-service">&nbsp;Video Abstract</a>
                   <a href="/explainer-video-service">&nbsp;Explainer Video</a>
@@ -394,7 +161,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
               </li>
               <li>
-                <a href="/prepay" style="font-weight: bold; color: orange">Prepay</a>
+                <a href="/prepay">Prepay</a>
               </li>
             </ul>
           </li>
@@ -411,8 +178,8 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           </li>
 
           <li>
-            <a href="#" onclick="return false;" style="cursor: default">Partnerships</a>
-            <ul class="sub_nav" style="display: none">
+            <a href="#" onclick="return false;">Partnerships</a>
+            <ul class="sub_nav">
               <li>
                 <a href="/institutional-provider">Institutional Provider</a>
               </li>
@@ -434,7 +201,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           </li>
 
           <li>
-            <a style="color: orange" href="/resources">Resources</a>
+            <a href="/resources">Resources</a>
             <ul class="sub_nav">
               <li><a href="/journal-selector">Journal Selector Tool</a></li>
               <li><a href="/learning-nexus">Learning Nexus</a></li>
@@ -443,24 +210,10 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         </ul>
       </div>
     </div>
-    <script src="/js-201510-English/nav.js" type="text/javascript"></script>
+    
 
     <!-- Hotjar Tracking Code for https://www.letpub.com/ -->
-    <script>
-      (function (h, o, t, j, a, r) {
-        h.hj =
-          h.hj ||
-          function () {
-            (h.hj.q = h.hj.q || []).push(arguments);
-          };
-        h._hjSettings = { hjid: 2571701, hjsv: 6 };
-        a = o.getElementsByTagName("head")[0];
-        r = o.createElement("script");
-        r.async = 1;
-        r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-        a.appendChild(r);
-      })(window, document, "https://static.hotjar.com/c/hotjar-", ".js?sv=");
-    </script>
+    
 
     <meta itemprop="name" content="LetPub">
   </div>
@@ -473,128 +226,80 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
   <!-- start content -->
 
-  <div id="container" style="
-      width: 1100px;
-      margin: 0px auto; /*margin-top:152px;*/
-      margin-top: 160px;
-      margin-bottom: 20px;
-      display: block;
-    ">
-    <style>
-      .mandatory {
-        color: red;
-        font-size: 22px;
-      }
-
-      .internal_space {
-        height: 7px;
-      }
-
-      .internal_space_2 {
-        height: 14px;
-      }
-
-      .list_of_select {
-        height: 48px;
-        margin-left: 8.7%;
-        width: 80%;
-        padding: 12px 20px;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        color: grey;
-        font-size: 15px;
-      }
-
-      input[type="text"] {
-        width: 80%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-      input[type="password"] {
-        width: 80%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-
-      #custom_scrollbar::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      /* Track */
-      #custom_scrollbar::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-        -webkit-border-radius: 10px;
-        border-radius: 10px;
-      }
-
-      /* Handle */
-      #custom_scrollbar::-webkit-scrollbar-thumb {
-        -webkit-border-radius: 10px;
-        border-radius: 10px;
-        background: orange;
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-      }
-      #custom_scrollbar::-webkit-scrollbar-thumb:window-inactive {
-        background: rgba(255, 0, 0, 0.4);
-      }
-    </style>
+  <div id="container">
+    
 
     <br><br>
-    <div class="card" style="width: 40rem; margin-left: auto; margin-right: auto">
+    <div class="card">
       <div class="card-body">
-        <form id="userform" action="content/index.php?action=addCustomer_en" method="post" data-ddg-formtype="sign up">
+        <form id="userform" action="content/index.php?action=addCustomer_en" method="post">
           <center>
-            <h5 style="font-size: 22px" class="card-title">
+            <h5 class="card-title">
               User Registration
             </h5>
           </center>
           <hr>
           <center>
-            <h6 style="font-size: 17px" class="card-subtitle mb-2 text-muted">
+            <h6 class="card-subtitle mb-2 text-muted">
               If you have a LetPub account, please
-              <a href="./login" style="color: orange; text-decoration: none">login</a>
+              <a href="./login">login</a>
             </h6>
           </center>
           <br>
           <!-- not using scroll bar <div style="height:350px; overflow-x:hidden; overflow-y:scroll;" id="custom_scrollbar" class="card-text">-->
           <div class="card-text">
             <center>
-              <input placeholder="Email (serves as your LetPub username)" id="email" class="input_1" name="email" size="35" type="text" data-ddg-autofill="true" data-ddg-testresultelementid="537483" style="
-                  background-size: auto 26px !important;
-                  background-position: right center !important;
-                  background-repeat: no-repeat !important;
-                  background-origin: content-box !important;
-                  background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                  transition: background 0s ease 0s !important;
-                " data-manual-scoring="emailAddress">
+              <input placeholder="Email (serves as your LetPub username)" id="email" class="input_1" name="email" size="35" type="text" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email (serves as your LetPub username)
+parseable name: email
+section: email_0_19
+field signature: 420638584
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 19" data-ddg-testresultelementid="537483" data-manual-scoring="emailAddress">
               <em class="mandatory">*</em>
             </center>
             <div class="internal_space"></div>
             <center>
-              <input placeholder="Password" id="password" class="input_1" name="password" size="35" type="password" data-ddg-testresultelementid="537484" data-manual-scoring="password">
+              <input placeholder="Password" id="password" class="input_1" name="password" size="35" type="password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: email_0_19
+field signature: 2051817934
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 20" data-ddg-testresultelementid="537484" data-manual-scoring="password">
               <em class="mandatory">*</em>
             </center>
             <div class="internal_space"></div>
             <center>
-              <input placeholder="Confirm Password" id="repassword" class="input_1" name="repassword" size="35" type="password" data-ddg-testresultelementid="537485" data-manual-scoring="password">
+              <input placeholder="Confirm Password" id="repassword" class="input_1" name="repassword" size="35" type="password" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password
+parseable name: repassword
+section: email_0_19
+field signature: 888640432
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 21" data-ddg-testresultelementid="537485" data-manual-scoring="password">
               <em class="mandatory">*</em>
             </center>
             <div class="internal_space"></div>
-            <div style="width: 90%; margin-left: auto; margin-right: auto" class="container">
+            <div class="container">
               <div class="row">
                 <div class="col-sm">
-                  <select style="margin-top: 8px" class="list_of_select" id="name_prefix" name="name_prefix" title="overall type: UNKNOWN_TYPE
+                  <select class="list_of_select" id="name_prefix" name="name_prefix" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: User Registration If you have a LetPub account, please
@@ -605,18 +310,7 @@ form signature: 2380430583473437887
 form signature in host form: 2380430583473437887
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 2
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: User Registration If you have a LetPub account, please
-parseable name: name_prefix
-section: email_0_19
-field signature: 4200334740
-form signature: 2380430583473437887
-form signature in host form: 2380430583473437887
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 2
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.fullName" data-ddg-testresultelementid="537486">
+field renderer id: 22" data-ddg-testresultelementid="537486">
                     <option selected="selected" value="">Title</option>
                     <option value="Professor">Professor</option>
                     <option value="Dr.">Dr.</option>
@@ -628,17 +322,50 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                   <em class="mandatory">*</em>
                 </div>
                 <div class="col-sm">
-                  <input style="margin-left: 7px" placeholder="First Name" id="name" class="input_1" name="name" size="35" type="text" data-ddg-testresultelementid="537487" data-manual-scoring="firstName">
+                  <input placeholder="First Name" id="name" class="input_1" name="name" size="35" type="text" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: name
+section: email_0_19
+field signature: 3489289364
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 23" data-ddg-testresultelementid="537487" data-manual-scoring="firstName">
                   <em class="mandatory">*</em>
                 </div>
                 <div class="col-sm">
-                  <input style="margin-left: 7px" placeholder="Last Name" id="lastname" class="input_1" name="lastname" size="35" type="text" data-ddg-testresultelementid="537488" data-manual-scoring="lastName">
+                  <input placeholder="Last Name" id="lastname" class="input_1" name="lastname" size="35" type="text" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: lastname
+section: email_0_19
+field signature: 3494530716
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 24" data-ddg-testresultelementid="537488" data-manual-scoring="lastName">
                   <em class="mandatory">*</em>
                 </div>
               </div>
             </div>
             <div class="internal_space"></div>
-            <select class="list_of_select" name="country" id="country" data-ddg-testresultelementid="537489" data-manual-scoring="addressCountryCode">
+            <select class="list_of_select" name="country" id="country" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: User Registration If you have a LetPub account, please
+parseable name: country
+section: email_0_19
+field signature: 2799270304
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 25" data-ddg-testresultelementid="537489" data-manual-scoring="addressCountryCode">
               <option value="">Select Country/Region</option>
               <option value="1">Afghanistan</option>
               <option value="2">Akrotiri</option>
@@ -902,7 +629,7 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
             <em class="mandatory">*</em>
             <div class="internal_space_2"></div>
             <center>
-              <input placeholder="Institution" id="org_name" class="input_1" name="org_name" size="35" type="text" title="overall type: UNKNOWN_TYPE
+              <input placeholder="Institution" id="org_name" class="input_1" name="org_name" size="35" type="text" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Institution
@@ -913,27 +640,27 @@ form signature: 2380430583473437887
 form signature in host form: 2380430583473437887
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 2
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Institution
-parseable name: org_name
-section: email_0_19
-field signature: 2386167320
-form signature: 2380430583473437887
-form signature in host form: 2380430583473437887
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 2
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537490">
+field renderer id: 26" data-ddg-testresultelementid="537490">
               <em class="mandatory">*</em>
             </center>
             <div class="internal_space"></div>
             <center>
-              <input placeholder="Phone Number" id="telephone" class="input_1" name="telephone" size="35" type="text" data-ddg-testresultelementid="537491" data-manual-scoring="phone">
+              <input placeholder="Phone Number" id="telephone" class="input_1" name="telephone" size="35" type="text" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone Number
+parseable name: telephone
+section: email_0_19
+field signature: 3860194788
+form signature: 2380430583473437887
+form signature in host form: 2380430583473437887
+field frame token: 8588C6B641DC704E36CD451839D5F9F6
+form renderer id: 2
+field renderer id: 27" data-ddg-testresultelementid="537491" data-manual-scoring="phone">
               <em class="mandatory">*</em>
             </center>
             <div class="internal_space_2"></div>
-            <select class="list_of_select" id="knowletpub" name="knowletpub" title="overall type: UNKNOWN_TYPE
+            <select class="list_of_select" id="knowletpub" name="knowletpub" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: User Registration If you have a LetPub account, please
@@ -944,18 +671,7 @@ form signature: 2380430583473437887
 form signature in host form: 2380430583473437887
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 2
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: User Registration If you have a LetPub account, please
-parseable name: knowletpub
-section: email_0_19
-field signature: 2729049544
-form signature: 2380430583473437887
-form signature in host form: 2380430583473437887
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 2
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537492">
+field renderer id: 28" data-ddg-testresultelementid="537492">
               <option selected="selected">How did you hear about LetPub</option>
               <option value="Conference">Conference</option>
               <option value="Referral">Colleague</option>
@@ -969,7 +685,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <em class="mandatory">*</em>
             <div class="internal_space_2"></div>
             <center>
-              <input placeholder="Referral Code" id="code" class="input_1" name="code" size="35" type="text" title="overall type: UNKNOWN_TYPE
+              <input placeholder="Referral Code" id="code" class="input_1" name="code" size="35" type="text" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Referral Code
@@ -980,25 +696,14 @@ form signature: 2380430583473437887
 form signature in host form: 2380430583473437887
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 2
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Referral Code
-parseable name: code
-section: email_0_19
-field signature: 1102667637
-form signature: 2380430583473437887
-form signature in host form: 2380430583473437887
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 2
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537493">
+field renderer id: 29" data-ddg-testresultelementid="537493">
               <em class="mandatory">&nbsp;</em>
             </center>
             <div class="internal_space"></div>
-            <div style="margin-left: 6.5%" class="container">
+            <div class="container">
               <div class="row">
                 <div class="col-sm">
-                  <input id="register_securecode" name="register_securecode" class="input_1" style="width: 100%" type="text" title="overall type: UNKNOWN_TYPE
+                  <input id="register_securecode" name="register_securecode" class="input_1" type="text" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Refresh
@@ -1009,30 +714,13 @@ form signature: 2380430583473437887
 form signature in host form: 2380430583473437887
 field frame token: 8588C6B641DC704E36CD451839D5F9F6
 form renderer id: 2
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Refresh
-parseable name: register_securecode
-section: email_0_19
-field signature: 3721882323
-form signature: 2380430583473437887
-form signature in host form: 2380430583473437887
-field frame token: 8588C6B641DC704E36CD451839D5F9F6
-form renderer id: 2
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="537494">
+field renderer id: 30" data-ddg-testresultelementid="537494">
                 </div>
                 <div class="col-sm">
-                  <img style="width: 95%; margin-top: 10px" alt="" border="0" src="./securecode.php" onclick="this.src = './securecode.php?code=' + Math.random();" title="Click for update" id="reviewimgcode">
+                  
                 </div>
                 <div class="col-sm">
-                  <button onclick="document.getElementById('reviewimgcode').src='./securecode.php?code=' + Math.random();" title="Click for update" style="
-                      color: white;
-                      width: 91px;
-                      font-size: 14px;
-                      margin-top: 15px;
-                      cursor: pointer;
-                    " type="button" class="btn btn-warning">
+                  <button onclick="document.getElementById('reviewimgcode').src='./securecode.php?code=' + Math.random();" title="Click for update" type="button" class="btn btn-warning">
                     Refresh
                   </button>
                 </div>
@@ -1042,7 +730,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
             <!--click submit & enter key submit-->
             <center>
-              <span type="hidden" name="userversion" id="userversion" value="en" class="login_page_login"><a style="font-size: 20px" onclick="formSubmit();" href="#">Create Account</a></span>
+              <span type="hidden" name="userversion" id="userversion" value="en" class="login_page_login"><a onclick="formSubmit();" href="#">Create Account</a></span>
             </center>
             <br>
             <!--click submit & enter key submit-->
@@ -1051,186 +739,13 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       </div>
     </div>
 
-    <script type="text/javascript" src="javascripts/jqueryxxx.js"></script>
-    <script type="text/javascript" src="javascripts/util.js"></script>
-    <script type="text/javascript">
-      <!--
-      customResponse("#customResponse");
-      //-->
-    </script>
+    
+    
+    
 
-    <script type="text/javascript">
-      // <![CDATA[
-      function checkForm() {
-        if (!$("#email").val()) {
-          alert("Email address cannot be empty!");
-          $("#email").focus();
-          return false;
-        } else {
-          if (!($("#email").val().indexOf("@") > 0)) {
-            alert("Email format incorrect!");
-            $("#email").focus();
-            return false;
-          }
-          /*  return $.ajax({
-                       url:"content/index.php?action=checkUserName",
-                       data:'email='+$("#email").val(),
-                       success:function(data){
-					        if(data.indexOf("TRUE")!=-1){
-								alert("该用户已经注册！");
-								$("#email").focus();
-								return false;
-							}
-                       }
-                } );*/
-        }
-        if (!$("#password").val() || !$("#repassword").val()) {
-          alert("Password cannot be empty!");
-          $("#password").focus();
-          return false;
-        } else if ($("#password").val() != $("#repassword").val()) {
-          alert("Please confirm the two passwords are identical!");
-          $("#password").focus();
-          return false;
-        }
-        if (!$("#name").val()) {
-          alert("First Name cannot be empty!");
-          $("#name").focus();
-          return false;
-        }
-        if (!$("#lastname").val()) {
-          alert("Last Name cannot be empty!");
-          $("#lastname").focus();
-          return false;
-        }
-        if (!$("#org_name").val()) {
-          alert("Institution cannot be empty!");
-          $("#org_name").focus();
-          return false;
-        }
-        if (!$("#name_prefix").val()) {
-          alert("Title cannot be empty!");
-          $("#name_prefix").focus();
-          return false;
-        }
-        if (!$("#name_prefix").val()) {
-          alert("Title cannot be empty!");
-          $("#name_prefix").focus();
-          return false;
-        }
-        if (!$("#telephone").val()) {
-          alert("Phone number cannot be empty!");
-          $("#telephone").focus();
-          return false;
-        }
-        if (!$("#register_securecode").val()) {
-          alert("Security code cannot be empty!");
-          $("#register_securecode").focus();
-          return false;
-        }
-        return true;
-      }
-      function formSubmit() {
-        if (checkForm()) {
-          $("#loading").show();
-          $.ajax({
-            url: "content/index.php?action=addCustomer_en",
-            data: $("#userform").serialize(),
-            success: function (data) {
-              if (data.indexOf("SUCCESS") >= 0) {
-                alert("Account registration finished!");
-                window.location.href = "index.php?page=index";
-              }
-              if (data.indexOf("EXIST") >= 0) {
-                alert(
-                  "Email already exists. You may login to your account associated with this email!"
-                );
-                //window.location.href='index.php?page=index';
-                $("#loading").hide();
-                $("#email").focus();
-              }
-
-              if (data.indexOf("WRONGEMAIL") >= 0) {
-                alert("Bad email format!");
-                $("#loading").hide();
-                $("#email").focus();
-              }
-
-              if (data.indexOf("WRONGFAIL") >= 0) {
-                alert("Registration failed! " + data.replace("WRONGFAIL", ""));
-                //window.location.href='index.php?page=index';
-                $("#loading").hide();
-                $("#email").focus();
-              }
-
-              if (data.indexOf("bad request too many") >= 0) {
-                alert(
-                  "Registration failed, too many registrations with your IP address!"
-                );
-                //window.location.href='index.php?page=index';
-                $("#loading").hide();
-                $("#email").focus();
-              }
-
-              if (data.indexOf("bad request too fast") >= 0) {
-                alert(
-                  "Registration failed, request too fast from your IP address!"
-                );
-                //window.location.href='index.php?page=index';
-                $("#loading").hide();
-                $("#email").focus();
-              }
-
-              if (data.indexOf("WRONGSECURITYCODE") >= 0) {
-                alert("Sorry, security code is wrong!");
-                //window.location.href='index.php?page=index';
-                $("#loading").hide();
-                $("#register_securecode").focus();
-              }
-            },
-          });
-        }
-      }
-      function getOrg() {
-        //alert($("#province").val()+"："+$("#org_type").val());
-        if ($("#province").val() && $("#org_type").val()) {
-          $.ajax({
-            url: "content/index.php?action=getOrg",
-            data: encodeURI(
-              "type=" +
-                $("#org_type").val() +
-                "&province=" +
-                $("#province").val()
-            ),
-            success: function (data) {
-              $("#org_name").html(
-                ' <option selected="selected" value="">-- 选择名称 -- </option> '
-              );
-              var options = data.split(";");
-              for (var option in options) {
-                $("#org_name").append(
-                  "<option>" + options[option] + "</option>"
-                );
-              }
-            },
-          });
-        } else {
-          if (!$("#province").val()) {
-            alert("请选择所在地或者机构类型");
-          }
-        }
-      }
-      // ]]>
-    </script>
-    <div id="loading" style="
-        position: relative;
-        left: -300px;
-        width: 100%;
-        height: 100px;
-        background: none repeat scroll 0% 0%;
-        display: none;
-      ">
-      <img alt="" src="images/loading.gif"> Loading......
+    
+    <div id="loading">
+       Loading......
     </div>
   </div>
 
@@ -1267,44 +782,22 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
   <!--footer updated 03/31/2020-->
   <div class="wMax">
-    <style>
-      #wechatqr {
-        width: 200px;
-        height: 200px;
-        background: url(/images_en/letpub-wechat-qr.png);
-        background-position: center;
-        z-index: 999;
-        position: absolute;
-        right: 25%;
-        display: none;
-      }
-      a {
-        text-decoration: none;
-      }
-    </style>
-    <script>
-      //wechat
-      function displayImage() {
-        document.getElementById("wechatqr").style.display = "block";
-      }
-      function hiddenImage() {
-        document.getElementById("wechatqr").style.display = "none";
-      }
-    </script>
+    
+    
 
     <!-- Site footer-->
     <div id="wechatQRcode"></div>
-    <footer class="con-general" style="font-family: Gill Sans, sans-serif">
-      <div style="background-color: #f8f8f8" class="footer">
+    <footer class="con-general">
+      <div class="footer">
         <div class="clearfix"></div>
-        <hr style="border: 0.3px solid #bebebe">
-        <div style="margin-left: auto; margin-right: auto; margin-top: 2px" class="contain">
+        <hr>
+        <div class="contain">
           <div class="col">
-            <h1 style="text-align: left; color: black; font-weight: bold">
+            <h1>
               Services
             </h1>
             <br>
-            <ul style="text-align: left">
+            <ul>
               <li>
                 <a href="/editing-services-overview">• Editing Services</a>
               </li>
@@ -1324,10 +817,10 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </ul>
           </div>
           <div class="col">
-            <a href="/quality-assurance"><h1 style="text-align: left; color: black; font-weight: bold">
+            <a href="/quality-assurance"><h1>
                 Quality
               </h1></a><br>
-            <ul style="text-align: left">
+            <ul>
               <li><a href="/testimonials">• Testimonials</a></li>
               <br>
               <li><a href="/design-gallery">• Design Gallery</a></li>
@@ -1343,10 +836,10 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </ul>
           </div>
           <div class="col">
-            <a href="/partnership-and-publisher"><h1 style="text-align: left; color: black; font-weight: bold">
+            <a href="/partnership-and-publisher"><h1>
                 Partnerships
               </h1></a><br>
-            <ul style="text-align: left">
+            <ul>
               <li>
                 <a href="https://publisher.letpub.com/">• Publisher Dashboard</a>
               </li>
@@ -1357,10 +850,10 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </ul>
           </div>
           <div class="col">
-            <a href="/about-us"><h1 style="text-align: left; color: black; font-weight: bold">
+            <a href="/about-us"><h1>
                 About us
               </h1></a><br>
-            <ul style="text-align: left">
+            <ul>
               <li><a href="/news-en">• News</a></li>
               <br>
               <li><a href="/contact-us">• Contact</a></li>
@@ -1368,10 +861,10 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </ul>
           </div>
           <div class="col">
-            <a href="/core"><h1 style="text-align: left; color: black; font-weight: bold">
+            <a href="/core"><h1>
                 Core
               </h1></a><br>
-            <ul style="text-align: left">
+            <ul>
               <li><a href="/journal-selector">• Journal Selector Tool</a></li>
               <br>
               <li><a href="/learning-nexus">• Learning Nexus</a></li>
@@ -1379,26 +872,26 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </ul>
           </div>
           <div class="col social">
-            <h1 style="color: black; font-weight: bold">Follow us</h1>
+            <h1>Follow us</h1>
             <br>
             <ul>
               <li>
-                <a href="https://www.facebook.com/Accdon-LLC-109663920487759 " title="facebook" target="_blank"><img alt="letpub facebook" style="width: 32px; border-radius: 15px" src="/images/fb_icon.png"></a>
+                <a href="https://www.facebook.com/Accdon-LLC-109663920487759 " title="facebook" target="_blank"></a>
               </li>
               <!--<li> <a href="https://twitter.com/LetPub" target="_blank"><img alt="letpub twitter" width="32" style="width: 34px; border-radius:12px;"src="/images/twitter.jpg"></a></li>-->
               <li>
-                <a href="https://www.linkedin.com/company/accdon/" target="_blank"><img alt="letpub linkedin" width="32" style="width: 32px" src="/images/gin_62.png"></a>
+                <a href="https://www.linkedin.com/company/accdon/" target="_blank"></a>
               </li>
               <br>
               <li>
-                <a href="https://www.instagram.com/letpub_/ " target="_blank"><img alt="letpub instagram" style="width: 31.5px" src="/images/instagram_logo.png"></a>
+                <a href="https://www.instagram.com/letpub_/ " target="_blank"></a>
               </li>
               <li>
-                <a href="https://www.youtube.com/channel/UCUY6F7TSQu6_XFknHTZ_DNg" target="_blank"><img alt="letpub youtube" style="width: 31.5px; border-radius: 15px" src="/images/youtube_icon.png"></a>
+                <a href="https://www.youtube.com/channel/UCUY6F7TSQu6_XFknHTZ_DNg" target="_blank"></a>
               </li>
               <li>
                 <div id="wechatqr" aria-label="We Chat QR Code" onclick="hiddenImage()"></div>
-                <a href="#wechatQRcode" onclick="displayImage()"><img style="width: 31.5px; border-radius: 10px" src="/images/wechat_icon.png"></a>
+                <a href="#wechatQRcode" onclick="displayImage()"></a>
               </li>
             </ul>
           </div>
@@ -1406,15 +899,15 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
       </div>
     </footer>
-    <div class="con-general" style="width: 100%; background-color: #f8f8f8">
+    <div class="con-general">
       <br>
       <center>
-        <p style="color: black; font-size: 14px">
+        <p>
           © 2010-2023 &nbsp;ACCDON LLC&nbsp;400 5<sup>th</sup> Ave, Suite 530,
           Waltham, MA 02451, USA<br>
-          <a style="color: black; font-size: 14px" href="./pdf/LetPubPrivacyPolicy v2020.pdf" target="blank" download="LetPub Privacy Policy">Privacy</a>
+          <a href="./pdf/LetPubPrivacyPolicy v2020.pdf" target="blank" download="LetPub Privacy Policy">Privacy</a>
           •
-          <a style="color: black; font-size: 14px" href="/pdf/LetPub Terms and Conditions 210817.pdf" target="blank" download="LetPub Terms and Conditions">Terms of Service</a>
+          <a href="/pdf/LetPub Terms and Conditions 210817.pdf" target="blank" download="LetPub Terms and Conditions">Terms of Service</a>
         </p>
       </center>
       <br><br>
@@ -1444,74 +937,22 @@ hide ft-tp for page custom_animated_video
   <!--footer-->
 
   <!-- Google tag (gtag.js) new GA4 added 3/2/2023 -->
-  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-1SXE5JJREM"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+  
+  
 
-    gtag("config", "G-1SXE5JJREM");
-  </script>
-
-  <script>
-    (function (i, s, o, g, r, a, m) {
-      i["GoogleAnalyticsObject"] = r;
-      (i[r] =
-        i[r] ||
-        function () {
-          (i[r].q = i[r].q || []).push(arguments);
-        }),
-        (i[r].l = 1 * new Date());
-      (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
-      a.async = 1;
-      a.src = g;
-      m.parentNode.insertBefore(a, m);
-    })(
-      window,
-      document,
-      "script",
-      "https://www.google-analytics.com/analytics.js",
-      "ga"
-    );
-
-    ga("create", "UA-24986895-1", "auto");
-    ga("send", "pageview");
-  </script>
+  
 
   <!-- Global site tag (gtag.js) - AdWords: 801349066 -->
-  <script async="" src="https://www.googletagmanager.com/gtag/js?id=AW-801349066"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-
-    gtag("config", "AW-801349066");
-  </script>
+  
+  
 
   <!-- Event snippet for online submission conversion page In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. 
 onclick="return gtag_report_conversion('http://example.com/your-link');" 
 -->
-  <script>
-    function gtag_report_conversion(url) {
-      var callback = function () {
-        if (typeof url != "undefined") {
-          window.location = url;
-        }
-      };
-      gtag("event", "conversion", {
-        send_to: "AW-801349066/DOyNCLPnpbEBEMq7jv4C",
-        event_callback: callback,
-      });
-      return false;
-    }
-  </script>
+  
 
   <!--tidio-->
-  <script src="//code.tidio.co/m2w2bev865r9exwn8s0vcolytf2r7elv.js" async=""></script>
+  
 
-  <iframe id="tidio-chat-code" title="Tidio Chat code" style="display: none"></iframe>
+  
 

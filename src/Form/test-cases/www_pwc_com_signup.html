@@ -1,5 +1,6 @@
 <!--
   https://www.pwc.com/content/pwc/userReg/register.html
+  rank: 1374
   testRunId: 66
   testResultId: 235298
 -->
@@ -15,16 +16,16 @@
           <div class="ixfsection experiencefragment section">
             <div class="mod-ixf-page-section"></div>
 
-            <section style="height: " class="cmp-experiencefragment cmp-experiencefragment-- fullwidth">
+            <section class="cmp-experiencefragment cmp-experiencefragment-- fullwidth">
               <div class="xfpage page basicpage page-primary-col--red page-secondary-col--red page-tertiary-col--red">
                 <div id="container-35fdda0e4a" class="cmp-container">
                   <div class="aem-Grid aem-Grid--12 aem-Grid--default--12">
                     <div class="embedscript aem-GridColumn aem-GridColumn--default--12">
                       <!-- SDI include (path: /content/experience-fragments/pwc/gx/en/header/gx-en/master/_jcr_content/root/embedscript.dynamic.html, resourceType: pwc/components/modernized/content/embedscript) -->
 
-                      <link rel="stylesheet" type="text/css" href="/gx/en/assets/css/base-new.css">
+                      
 
-                      <script type="text/javascript" src="/content/pwc/script/gx/en/contact.js"></script>
+                      
                     </div>
                     <div class="slim-page-header-v2 parbase aem-GridColumn aem-GridColumn--default--12">
                       <!-- SDI include (path: /content/experience-fragments/pwc/gx/en/header/gx-en/master/_jcr_content/root/slim_page_header_v2.dynamic.html, resourceType: pwc/components/modernized/content/slim-page-header-v2) -->
@@ -34,14 +35,14 @@
                           <input type="hidden" id="checkUserLoginOrNot" value="false">
                           <a tabindex="3" href="/gx/en" aria-label="PwC" class="slim-logo search-hide levelOneLink">
                           </a>
-                          <img class="mobile-search-btn" alt="Site Search" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/search-icon.svg">
+                          
                           <div id="slim-hamburger" class="slim-hamburger-ico" aria-label="Menu ">
                             <span></span>
                             <span></span>
                             <span></span>
                           </div>
-                          <div class="slim-navigation" style="">
-                            <nav class="nav-primary search-hide" data-tab-index-start="9" aria-label="Main Navigation" style="max-width: 779px">
+                          <div class="slim-navigation">
+                            <nav class="nav-primary search-hide" data-tab-index-start="9" aria-label="Main Navigation">
                               <a aria-controls="industries-subnav-1" link-href="https://www.pwc.com/gx/en/industries.html" href="#" data-has-subnav="true" data-nav-index="1" class="levelOneLink" nextpage-canonical-url="https://www.pwc.com/gx/en/industries.html" navigation-title="Industries" tabindex="10">Industries</a>
 
                               <a aria-controls="services-subnav-2" link-href="https://www.pwc.com/gx/en/services.html" href="#" data-has-subnav="true" data-nav-index="2" class="levelOneLink" nextpage-canonical-url="https://www.pwc.com/gx/en/services.html" navigation-title="Services" tabindex="11">Services</a>
@@ -52,95 +53,27 @@
 
                               <a aria-controls="careers-subnav-5" link-href="https://www.pwc.com/gx/en/careers.html" href="#" data-has-subnav="true" data-nav-index="5" class="levelOneLink" nextpage-canonical-url="https://www.pwc.com/gx/en/careers.html" navigation-title="Careers" tabindex="14">Careers</a>
 
-                              <div class="nav-more" style="display: none" tabindex="15">
+                              <div class="nav-more" tabindex="15">
                                 <p>More</p>
                                 <div class="levelOneLink nav-more-dropdown"></div>
                               </div>
                             </nav>
 
                             <nav class="nav-secondary search-hide" aria-label="Secondary Navigation">
-                              <script id="overlay-template" type="text/x-handlebars-template">
-                                <div class="authenticated-user-options hidden">
-                                  <div class="user-option-list">
-                                    <a
-                                      tabindex="3"
-                                      class="register myaccount levelOneLink"
-                                      href="{{myAccountHref}}"
-                                    >My Account</a>
-                                    <a
-                                      tabindex="4"
-                                      class="sign-in signout levelOneLink"
-                                      onclick="logOffUser(window.location.href)"
-                                    >Sign Out</a>
-                                  </div>
-                                </div>
-                                <div class="user-options hidden">
-                                  <a
-                                    tabindex="3"
-                                    class="sign-in userreg levelOneLink"
-                                    href="{{signInHref}}"
-                                  > Sign in</a>
-                                  <a
-                                    tabindex="4"
-                                    class="register userreg levelOneLink"
-                                    href="{{createAccountHref}}"
-                                  > Register</a>
-                                </div>
-                              </script>
+                              
 
                               <div class="login-data"></div>
                               <div class="location-options">
-                                <script id="language-selector-template" type="text/x-handlebars-template">
-                                  <div class="options-language">
-                                      <button tabindex="7" class="open-lang-options">{{languageCode}} <img alt="" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/Chevron.svg"></button>
-                                      <img class="close-options" alt="" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/close-icon-white.svg">
-                                  </div>
-                                  <div class="slim-language-selector" id="langDialog" aria-label="{{langSelectorTitleText}}" role="dialog" aria-modal="true">
-                                      <p>{{langSelectorTitleText}}</p>
-                                      <div class="language-selector-list levelOneLink " id="lstLang" role="listbox" aria-labelledby="langDialog">
-                                          {{#each languageSelectorData.alternateLanguages}}
-                                          <a id="lang_{{@index}}" role="option" {{#if this.isCurrentLanguage}} class="is-active" {{/if}} href="{{this.linkURL}}" data-lang="{{this.linkText}}"> {{this.linkText}} </a>
-                                          {{/each}}
-                                      </div>
-                                  </div>
-                                </script>
+                                
 
-                                <script id="territory-selector-template" type="text/x-handlebars-template">
-                                  <button tabindex="6">
-                                  	<span>{{currentPageTerritoryName}} <img alt="" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/Chevron.svg"></span>
-                                  	<img class="close-options" alt="" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/close-icon-white.svg">
-                                  </button>
-                                  <!-- territory dialog box starts here -->
-                                  <div class="territory-selector" aria-label="{{findATerritoryText}}" id="lst-territory-selector" role="dialog" aria-modal="true">
-                                  	<div class="territory-selector-search">
-                                  			<label class="sr-only" for="searchField"> {{findATerritoryText}} </label>
-                                  			<input id="countrySearch" class="levelOneLink" name="country" type="text" placeholder="{{findATerritoryText}}">
-                                  	</div>
-                                  	<div class="territory-selector-list levelOneLink" id="lstTerritory" role="listbox" aria-labelledby="lst-territory-selector">
-                                  		{{#each territories}}
-                                  		{{#if territoryFinder}}
-                                                     <a id="option_{{@index}}" role="option" class="{{#ifEquals name 'Global'}}region-global {{/ifEquals}}{{#ifEquals name ../currentPageTerritoryName}}is-active {{/ifEquals}}"
-                                                     href="{{domain}}" data-value="{{name}}">{{name}}</a>
-                                  		{{#each alias}}
-                                                     <a id="option_{{this}}_{{@index}}" role="option" class="{{#ifEquals name 'Global'}}region-global {{/ifEquals}}{{#ifEquals ../name ../../currentPageTerritoryName}}is-active {{/ifEquals}}"
-                                                     href="{{../domain}}" data-value="{{this}}">{{this}}</a>
-                                  		{{/each}}
-                                  		{{#if @last}}
-                                  		<p id="option_noresult" role="option" class="territory-no-results">{{territoryNotFoundText}}</p>
-                                  		{{/if}}
-                                  		{{/if}}
-                                  		{{/each}}
-
-                                  	</div>
-                                  </div>
-                                </script>
+                                
 
                                 <div class="lo-backsplash"></div>
-                                <span class="option-country levelOneLink" data-ddg-formtype="sign up">
+                                <span class="option-country levelOneLink">
                                   <button tabindex="6">
                                     <span>Global
-                                      <img alt="" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/Chevron.svg"></span>
-                                    <img class="close-options" alt="" src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors/resources/images/slim-header-v2/close-icon-white.svg">
+                                      </span>
+                                    
                                   </button>
                                   <!-- territory dialog box starts here -->
                                   <div class="territory-selector" aria-label="Find a country or region" id="lst-territory-selector" role="dialog" aria-modal="true">
@@ -148,7 +81,7 @@
                                       <label class="sr-only" for="searchField">
                                         Find a country or region
                                       </label>
-                                      <input id="countrySearch" class="levelOneLink" name="country" type="text" placeholder="Find a country or region" title="overall type: UNKNOWN_TYPE
+                                      <input id="countrySearch" class="levelOneLink" name="country" type="text" placeholder="Find a country or region" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Find a country or region
@@ -159,18 +92,7 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 57" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Find a country or region
-parseable name: country
-section: country_0_57
-field signature: 3654076265
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.addressCountryCode" data-ddg-testresultelementid="515855">
+field renderer id: 57" data-ddg-testresultelementid="515855">
                                     </div>
                                     <div class="territory-selector-list levelOneLink" id="lstTerritory" role="listbox" aria-labelledby="lst-territory-selector">
                                       <a id="option_75" role="option" class="region-global is-active" href="https://www.pwc.com/gx" data-value="Global">Global</a>
@@ -190,8 +112,8 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                                 Search
                               </button>
                               <div class="search-hide searchbox">
-                                <form id="slimSearchForm" role="search" action="https://www.pwc.com/gx/en/search.html" method="get" data-ddg-formtype="sign up">
-                                  <input id="slimSearch" class="slim-search" type="text" name="searchfield" placeholder="Search for industries, products, services and more" data-ddg-inputtype="unknown" data-ddg-testresultelementid="515876">
+                                <form id="slimSearchForm" role="search" action="https://www.pwc.com/gx/en/search.html" method="get">
+                                  <input id="slimSearch" class="slim-search" type="text" name="searchfield" placeholder="Search for industries, products, services and more" data-ddg-testresultelementid="515876">
                                   <input type="hidden" name="pwcSiteSection" autocomplete="off">
                                   <input type="hidden" name="pwcLang" value="" autocomplete="off">
                                   <input type="hidden" name="pwcGeo" value="" autocomplete="off">
@@ -203,16 +125,7 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                           </div>
                         </header>
 
-                        <script id="breadcrumb-template" type="text/x-handlebars-template">
-                          <button class="slimnav-v2-bc-toggle is-hidden">
-                            <label class="sr-only">Show full breadcrumb</label>
-                          </button>
-                          <div class="slimnav-v2-breadcrumbs">
-                            {{#each breadcrumbs}}
-                              <a href="{{this.linkURL}}">{{this.linkText}}</a>
-                            {{/each}}
-                          </div>
-                        </script>
+                        
                         <div class="slimnav-breadcrumb is-visible"></div>
 
                         <div class="slimheader-sublevel-slide" data-nav-level="2">
@@ -568,7 +481,7 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/industries/consumer-markets/consumer-insights-survey/archive/consumer-insights-survey-june-2022.html" nextpage-canonical-url="https://www.pwc.com/gx/en/industries/consumer-markets/consumer-insights-survey/archive/consumer-insights-survey-june-2022.html" navigation-title="Global Consumer Insights Pulse Survey - June 2022">
-                                    <img src="/gx/en/consumer-markets/consumers-respond-to-waves-of-disruption/images/teaser-final.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>
                                       Global Consumer Insights Pulse Survey -
                                       June 2022
@@ -578,14 +491,14 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/industries/capital-projects-infrastructure/publications/achieving-net-zero-infrastructure.html" nextpage-canonical-url="https://www.pwc.com/gx/en/industries/capital-projects-infrastructure/publications/achieving-net-zero-infrastructure.html" navigation-title="Achieving net zero infrastructure">
-                                    <img src="/gx/en/net-zero-assets/solar-teaser-image.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>Achieving net zero infrastructure</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/industries/industrial-manufacturing/coo-pulse-survey.html" nextpage-canonical-url="https://www.pwc.com/gx/en/industries/industrial-manufacturing/coo-pulse-survey.html" navigation-title="Manufacturing COO Pulse Survey">
-                                    <img src="/gx/en/hero/hero-2020/im-hero-2020.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>Manufacturing COO Pulse Survey</p>
                                   </a>
                                 </div>
@@ -975,7 +888,7 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/services/tax/tax-legal-people-considerations-ukraine-russia.html" nextpage-canonical-url="https://www.pwc.com/gx/en/services/tax/tax-legal-people-considerations-ukraine-russia.html" navigation-title="Ukraine: Tax, Legal and People considerations">
-                                    <img src="/gx/en/assets/image/pink-tile-670.png.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>
                                       Ukraine: Tax, Legal and People
                                       considerations
@@ -985,14 +898,14 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/issues/cybersecurity/digital-trust-insights-2021.html" nextpage-canonical-url="https://www.pwc.com/gx/en/issues/cybersecurity/digital-trust-insights-2021.html" navigation-title="Digital Trust Insights Survey 2022">
-                                    <img src="/us/en/services/consulting/cybersecurity/library/assets/2020-dti-pulse-survey-animation.gif.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>Digital Trust Insights Survey 2022</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/services/deals/trends.html" nextpage-canonical-url="https://www.pwc.com/gx/en/services/deals/trends.html" navigation-title="M&amp;A industry trends report ">
-                                    <img src="/gx/en/services/deals/trends/xindustry-teaser-image.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>M&amp;A industry trends report</p>
                                   </a>
                                 </div>
@@ -1229,21 +1142,21 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/issues/c-suite-insights/the-leadership-agenda.html" nextpage-canonical-url="https://www.pwc.com/gx/en/issues/c-suite-insights/the-leadership-agenda.html" navigation-title="The Leadership Agenda">
-                                    <img src="/gx/en/issues/tla/content/landing-thumbnail.png.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>The Leadership Agenda</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/issues/c-suite-insights/ceo-survey-2023.html" nextpage-canonical-url="https://www.pwc.com/gx/en/issues/c-suite-insights/ceo-survey-2023.html" navigation-title="26th Annual Global CEO Survey">
-                                    <img src="/gx/en/ceo-survey/2023/main/content/CEO26_Thumbnail_670x377.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>26th Annual Global CEO Survey</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/strategy-business.html" nextpage-canonical-url="https://www.pwc.com/gx/en/strategy-business.html" navigation-title="strategy+business — a PwC publication">
-                                    <img src="/gx/en/strategy-and-business/assets/s+b-featured-tile-670x377.png.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>strategy+business — a PwC publication</p>
                                   </a>
                                 </div>
@@ -1594,21 +1507,21 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/the-new-equation.html" nextpage-canonical-url="https://www.pwc.com/gx/en/the-new-equation.html" navigation-title="The New Equation">
-                                    <img src="/gx/en/the-new-equation-homepage-assets/tne_featured_nav.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>The New Equation</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/about/global-annual-review-2021.html" nextpage-canonical-url="https://www.pwc.com/gx/en/about/global-annual-review-2021.html" navigation-title="PwC's Global Annual Review">
-                                    <img src="/gx/en/about-pwc/global-annual-review-2021/content/thumbnails/gar-landing-thumbnail.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>PwC's Global Annual Review</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/about/corporate-sustainability/environmental-stewardship/net-zero.html" nextpage-canonical-url="https://www.pwc.com/gx/en/about/corporate-sustainability/environmental-stewardship/net-zero.html" navigation-title="Committing to Net Zero by 2030">
-                                    <img src="/gx/en/about/assets/net-zero.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>Committing to Net Zero by 2030</p>
                                   </a>
                                 </div>
@@ -1671,14 +1584,14 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/the-new-equation.html" nextpage-canonical-url="https://www.pwc.com/gx/en/the-new-equation.html" navigation-title="The New Equation">
-                                    <img src="/gx/en/the-new-equation-homepage-assets/tne_featured_nav.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>The New Equation</p>
                                   </a>
                                 </div>
 
                                 <div class="slim-featured-item">
                                   <a class="featuredLink" href="https://www.pwc.com/gx/en/about/global-annual-review-2021.html" nextpage-canonical-url="https://www.pwc.com/gx/en/about/global-annual-review-2021.html" navigation-title="PwC's Global Annual Review">
-                                    <img src="/gx/en/about-pwc/global-annual-review-2021/content/thumbnails/gar-landing-thumbnail.jpg.pwcimage.150.100.jpg" alt="">
+                                    
                                     <p>PwC's Global Annual Review</p>
                                   </a>
                                 </div>
@@ -1708,270 +1621,9 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                       <input type="hidden" name="mod_createAccountHref" class="mod_createAccountHref">
                       <input type="hidden" name="mod_userLoginStatus" class="mod_userLoginStatus">
 
-                      <script>
-                        //Analytics : Triggers loginSuccessful event on inter user's login
-                        $(document).ready(function () {
-                          var prepareUserRegLinks;
-                          var internal_login_status_cookie = Cookies.get(
-                            "internal-login-status"
-                          );
-                          if (internal_login_status_cookie) {
-                            $(document).trigger("loginSuccessful");
-                            rmvCookie("internal-login-status", "/");
-                          }
+                      
 
-                          //PR-2366: User Access Control landing page's requestAccess button link updates based on user's request.
-                          if ($("#access-control-section").length > 0) {
-                            var accessControlSection = $(
-                              "#access-control-section"
-                            );
-                            var accessControlButtonWrapper = $(
-                              "#access-control-section"
-                            ).find($("#pwc-access-button"));
-                            var accessControlButton = $(
-                              accessControlButtonWrapper
-                            ).find("a");
-                            const requestClasses = {
-                              requestAccess: "request-access",
-                              requestPending: "request-pending",
-                              requestApproved: "request-approved",
-                            };
-                            $(accessControlSection)
-                              .find(".help-block")
-                              .html(
-                                "Some error occured with creating access control request"
-                              );
-                            var userLoginStatus,
-                              approvalStatus = "";
-
-                            var currentPagePath = $(".currentPagePath").val();
-                            var currLocale = "en_gx";
-                            var randomNo = Math.round(
-                              new Date().getTime() + Math.random() * 100
-                            );
-                            var datapp =
-                              "currentPagePath=" +
-                              encodeURIComponent(currentPagePath) +
-                              "&currLocale=" +
-                              encodeURIComponent(currLocale) +
-                              "&" +
-                              randomNo +
-                              "=";
-
-                            $.ajax("/bin/dpe/logindata", {
-                              data: datapp,
-                              type: "GET",
-                              dataType: "json",
-                              contentType: "application/json; charset=utf-8",
-                              mimeType: "application/json; charset=utf-8",
-                              success: function (rawData, status, xhr) {
-                                SuccessCode = rawData.SuccessCode;
-                                switch (SuccessCode) {
-                                  case "[0000]":
-                                    $(accessControlSection)
-                                      .find($("#accessControl_GeneralError"))
-                                      .hide();
-                                    userLoginStatus = rawData.userLoginStatus;
-                                    if (
-                                      rawData.approvalStatus &&
-                                      rawData.approvalStatus !== "undefined"
-                                    ) {
-                                      approvalStatus = rawData.approvalStatus;
-                                    }
-                                    $(".mod_userLoginStatus").attr(
-                                      "value",
-                                      userLoginStatus
-                                    );
-                                    prepareUserRegLinks(
-                                      userLoginStatus,
-                                      approvalStatus
-                                    );
-                                    break;
-                                  case "[1111]":
-                                  default:
-                                    $(accessControlSection)
-                                      .find($("#accessControl_GeneralError"))
-                                      .show();
-                                }
-                              },
-                              error: function (xhr, status, err) {
-                                $(accessControlSection)
-                                  .find($("#accessControl_GeneralError"))
-                                  .show();
-                                $(accessControlButton).button("reset");
-
-                                prepareUserRegLinks(false, approvalStatus);
-                              },
-                            });
-
-                            prepareUserRegLinks = function (
-                              userLoginStatus,
-                              approvalStatus
-                            ) {
-                              if (!userLoginStatus) {
-                                if ($(".mod_signInHref").val() == "") {
-                                  $(".mod_signInHref").val(
-                                    $(".login-data .sign-in.userreg").attr(
-                                      "href"
-                                    )
-                                  );
-                                }
-                                if ($(".mod_createAccountHref").val() == "") {
-                                  $(".mod_createAccountHref").val(
-                                    $(".login-data .register.userreg").attr(
-                                      "href"
-                                    )
-                                  );
-                                }
-                                $(accessControlButton).attr(
-                                  "href",
-                                  $(".mod_signInHref").val()
-                                );
-                                $(accessControlSection)
-                                  .find("#access-control-footer a")
-                                  .attr(
-                                    "href",
-                                    $(".mod_createAccountHref").val()
-                                  );
-                              } else {
-                                accessControlSection
-                                  .removeClass("promo-banner--logged-out")
-                                  .addClass("promo-banner--logged-in");
-                                switch (approvalStatus) {
-                                  case "":
-                                  case "rejected":
-                                    var reqObj = new Object();
-                                    reqObj.accessControlRequestedGroup =
-                                      $(accessControlSection).data(
-                                        "accessControlGroup"
-                                      );
-                                    reqObj.accessControlLandingPage =
-                                      currentPagePath;
-                                    reqObj.accessControlRequestedPage =
-                                      $(accessControlButton).attr("href");
-                                    reqObj.locale = "en_gx";
-                                    $(accessControlButton).attr(
-                                      "href",
-                                      "javascript:void(0);"
-                                    );
-                                    $("#pwc-access-button a").click(
-                                      function () {
-                                        if (
-                                          $(
-                                            accessControlButtonWrapper
-                                          ).hasClass(
-                                            requestClasses.requestAccess
-                                          )
-                                        ) {
-                                          $(accessControlButton).button(
-                                            "loading"
-                                          );
-                                          reqObj.accessControlRequestedTime =
-                                            "1678905102242";
-                                          $.ajax("/bin/requestAccessServlet", {
-                                            data: JSON.stringify(reqObj),
-                                            type: "POST",
-                                            dataType: "json",
-                                            contentType:
-                                              "application/json; charset=utf-8",
-                                            mimeType:
-                                              "application/json; charset=utf-8",
-                                            success: function (
-                                              rawData,
-                                              status,
-                                              xhr
-                                            ) {
-                                              SuccessCode =
-                                                rawData.result.SuccessCode;
-                                              $(accessControlButton).button(
-                                                "reset"
-                                              );
-                                              switch (SuccessCode) {
-                                                case "[0000]":
-                                                  $(accessControlSection)
-                                                    .find(
-                                                      $(
-                                                        "#accessControl_GeneralError"
-                                                      )
-                                                    )
-                                                    .hide();
-                                                  $(accessControlButtonWrapper)
-                                                    .removeClass(
-                                                      requestClasses.requestAccess
-                                                    )
-                                                    .addClass(
-                                                      requestClasses.requestPending
-                                                    );
-                                                  $(accessControlButton).html(
-                                                    "Access pending approval"
-                                                  );
-                                                  break;
-                                                case "[1111]":
-                                                default:
-                                                  $(accessControlSection)
-                                                    .find(
-                                                      $(
-                                                        "#accessControl_GeneralError"
-                                                      )
-                                                    )
-                                                    .show();
-                                              }
-                                            },
-                                            error: function (xhr, status, err) {
-                                              $(accessControlSection)
-                                                .find(
-                                                  $(
-                                                    "#accessControl_GeneralError"
-                                                  )
-                                                )
-                                                .show();
-                                              $(accessControlButton).button(
-                                                "reset"
-                                              );
-                                            },
-                                          });
-                                        }
-                                      }
-                                    );
-                                    break;
-                                  case "pending-approval":
-                                    $(accessControlButtonWrapper)
-                                      .removeClass(requestClasses.requestAccess)
-                                      .addClass(requestClasses.requestPending);
-                                    $(accessControlButton).html(
-                                      "Access pending approval"
-                                    );
-                                    $(accessControlButton).attr(
-                                      "href",
-                                      "javascript:void(0);"
-                                    );
-                                    break;
-                                  case "approved":
-                                    $(accessControlButtonWrapper)
-                                      .removeClass(requestClasses.requestAccess)
-                                      .addClass(requestClasses.requestApproved);
-                                    $(accessControlButton)
-                                      .addClass("unlocked")
-                                      .removeClass("locked");
-                                    break;
-                                  default:
-                                    $(accessControlButton).attr(
-                                      "href",
-                                      "javascript:void(0);"
-                                    );
-                                }
-                              }
-                            };
-                          }
-                        });
-                      </script>
-
-                      <script>
-                        var cookieI18nValues = {};
-                        cookieI18nValues.cookieDescription =
-                          "This site uses cookies to collect information about your browsing activities in order to provide you with more relevant content and promotional materials, and help us understand your interests and enhance the site. By continuing to browse this site you agree to the use of cookies. Visit our <a href=https:\/\/www.pwc.com\/gx\/en\/legal\u002Dnotices\/cookie\u002Dpolicy.html>cookie policy<\/a> to learn more.";
-                        cookieI18nValues.cookieAcceptButton = "I understand";
-                      </script>
+                      
                     </div>
                   </div>
                 </div>
@@ -1984,646 +1636,26 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
     <div class="centerPar">
       <div>
-        <section id="title" class="no-background__mobile page-section page-section--col-primary page-section--col-dark fullwidth videobghost" data-wcmmode="false" data-parallax="true" style="
-            height: ;
-            background-size: inherit;
-            background-position: ;
-            background-image: ;
-            background-color: ;
-          ">
+        <section id="title" class="no-background__mobile page-section page-section--col-primary page-section--col-dark fullwidth videobghost" data-wcmmode="false" data-parallax="true">
           <div class="parsys sectionpar"></div>
         </section>
       </div>
       <div></div>
 
       <div>
-        <section id="content-free-1-0c8f" class="page-section page-section--col-white fullwidth videobghost" data-wcmmode="false" data-parallax="true" style="
-            height: ;
-            background-size: inherit;
-            background-position: ;
-            background-image: ;
-            background-color: ;
-          ">
+        <section id="content-free-1-0c8f" class="page-section page-section--col-white fullwidth videobghost" data-wcmmode="false" data-parallax="true">
           <div class="parsys sectionpar">
             <div class="register parbase section">
-              <link rel="stylesheet" href="/etc.clientlibs/pwc/clientlibs/component/userreg/clientlibs.min.886f00bf9316fb95e3ed36bd8428d28f.css" type="text/css">
-              <script src="/etc.clientlibs/pwc/components/modernized/common/mod-clientlibs/modernization-navigation.min.010f2c713a8d8c96ef30fd2ba3b707aa.js"></script>
-              <script src="/etc.clientlibs/pwc/clientlibs/component/userreg/clientlibs.min.0e5476e0a576394afbf8887bd677af4e.js"></script>
+              
+              
+              
 
               <input type="hidden" id="existingEmail" name="existingEmail" value="">
-              <script>
-                function isValidPassword(password) {
-                  var firstName = $("#first_name").val();
-                  var lastName = $("#last_name").val();
-                  var pattern = new RegExp(
-                    /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[A-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])|(?=.*\d)(?=.*[a-z])(?=.*[\W_])).*/
-                  );
-                  var isvalid = true;
-                  isvalid = pattern.test(password);
-                  if (firstName != "") {
-                    if (
-                      password.toLowerCase().indexOf(firstName.toLowerCase()) >=
-                      0
-                    )
-                      isvalid = false;
-                  }
-                  if (lastName != "") {
-                    if (
-                      password.toLowerCase().indexOf(lastName.toLowerCase()) >=
-                      0
-                    )
-                      isvalid = false;
-                  }
-                  return isvalid;
-                }
-
-                function getUrlVars() {
-                  var vars = [],
-                    hash;
-                  var hashes = window.location.href
-                    .slice(window.location.href.indexOf("?") + 1)
-                    .split("&");
-                  for (var i = 0; i < hashes.length; i++) {
-                    hash = hashes[i].split("=");
-                    vars.push(hash[0]);
-                    vars[hash[0]] = hash[1];
-                  }
-                  return vars;
-                }
-
-                function isBlacklistedPwcEmail(emailAddress) {
-                  var blacklistedPwcEmails = toJavascriptArray(
-                    ", pwc.com, *.pwc.com"
-                  );
-                  var domain = emailAddress.replace(/.*@/, "").toLowerCase();
-                  var found = false;
-                  var pattern = "*.";
-                  for (
-                    var i = 0;
-                    i < blacklistedPwcEmails.length && !found;
-                    i++
-                  ) {
-                    var element = blacklistedPwcEmails[i].trim().toLowerCase();
-                    if (element.length > 0) {
-                      var target = element.substring(1);
-                      /* Check pattern and if the entered value's end(caluclated from target's length) matches with the given string(target).*/
-                      if (
-                        (element.substring(0, 2) === pattern &&
-                          domain.substr(target.length * -1) === target) ||
-                        element === domain
-                      ) {
-                        found = true;
-                        break;
-                      }
-                    }
-                  }
-                  return found;
-                }
-
-                function toJavascriptArray(array) {
-                  array = array.replace("[", "");
-                  array = array.replace("]", "");
-                  return array.split(",");
-                }
-
-                $(document).ready(function () {
-                  $("#breadcrumbWrapper div div div ul li a").attr("href", "#");
-                  //Digital Data First Interaction and Interaction of fields
-                  $("#register :input").one("focus", function () {
-                    createObject("user.regevent", "registration-start");
-                    registerEvent($(this).attr("id"));
-                  });
-                  cancelRegistration(
-                    "#register-cancel",
-                    "user.event",
-                    "registration-cancel"
-                  );
-                  marketingClickCheckbox(
-                    "#marketingconsent-yes",
-                    "user.event",
-                    "subscription-signup"
-                  );
-
-                  $("form").bind("keypress", function (e) {
-                    if (e.keyCode == 13) {
-                      $("#register-submit").click();
-                    }
-                  });
-                  /*$('#register-cancel').click(function () {
-            window.history.back();
-        });*/
-
-                  $("#chkPwdToggle").click(function () {
-                    var chk = $("#chkPwdToggle");
-                    if (chk.is(":checked"))
-                      $("#reg_password").prop("type", "text");
-                    else $("#reg_password").prop("type", "password");
-                  });
-                  var userEmail = Cookies.get("userEmail");
-                  var isFederated =
-                    Cookies.get("isFederated") != null
-                      ? Cookies.get("isFederated")
-                      : false;
-                  if (userEmail && isFederated) {
-                    $("#email_address").val(userEmail);
-                    $("#reg_pwd").hide();
-                  }
-
-                  deleteCookie("userEmail", "/");
-                  deleteCookie("isFederated", "/");
-
-                  $("#email_address").blur(function () {
-                    if ($("#email_address").val() === "") {
-                      $("#msg_regReqEmail").hide();
-                      $("#msg_regInvalidEmailFormat").hide();
-                      $("#msg_regEmailExist").hide();
-                      $("#msg_regGeneralError").hide();
-                      $("#msg_regBlacklistedPwcEmail").hide();
-                      $("#msg_regReqEmail").show();
-                      $("#reg_email").removeClass("has-success");
-                      $("#reg_email").addClass("has-error");
-                    } else {
-                      var emailID = $("#email_address").val();
-                      $("#msg_regReqEmail").hide();
-                      $("#msg_regInvalidEmailFormat").hide();
-
-                      $("#msg_regGeneralError").hide();
-                      $("#msg_regBlacklistedPwcEmail").hide();
-
-                      if (!isValidEmailAddress(emailID)) {
-                        $("#msg_regReqEmail").hide();
-                        $("#msg_regInvalidEmailFormat").show();
-                        $("#reg_email").removeClass("has-success");
-                        $("#reg_email").addClass("has-error");
-                      } else if (isBlacklistedPwcEmail(emailID)) {
-                        $("#msg_regReqEmail").hide();
-                        $("#msg_regBlacklistedPwcEmail").show();
-                        $("#reg_email").removeClass("has-success");
-                        $("#reg_email").addClass("has-error");
-                      } else {
-                        $("#msg_regReqEmail").hide();
-                        $("#reg_email").removeClass("has-error");
-                        $("#reg_email").addClass("has-success");
-
-                        if ($("#existingEmail").val() != emailID) {
-                          $("#msg_regEmailExist").hide();
-                        } else if ($("#existingEmail").val() == emailID) {
-                          $("#msg_regEmailExist").show();
-                          $("#reg_email").addClass("has-error");
-                          $("#reg_email").removeClass("has-success");
-                        }
-
-                        var dataObj = new Object();
-                        dataObj.email_address = $("#email_address")
-                          .val()
-                          .trim();
-                        $.ajax("/bin/dpe/federated/validator", {
-                          data: JSON.stringify(dataObj),
-                          type: "POST",
-                          dataType: "json",
-                          contentType: "application/json; charset=utf-8",
-                          mimeType: "application/json; charset=utf-8",
-                          success: function (rawData, status, xhr) {
-                            var response_message = "";
-                            try {
-                              isFederated = rawData.result.isFederated;
-                              if (isFederated) {
-                                $("#reg_pwd").hide();
-                              } else {
-                                $("#reg_pwd").show();
-                              }
-                            } catch (err) {
-                              console.log(err);
-                              $("#msg_loginGeneralError").show();
-                            }
-                          },
-                          error: function (xhr, status, err) {
-                            $("#msg_regGeneralError").show();
-                          },
-                        });
-                        return false;
-                      }
-                    }
-                  });
-                  $("#last_name").blur(function () {
-                    if ($("#last_name").val() === "") {
-                      $("#msg_regReq_lastName").show();
-                      $("#reg_lastName").removeClass("has-success");
-                      $("#reg_lastName").addClass("has-error");
-                    } else {
-                      $("#msg_regReq_lastName").hide();
-                      $("#reg_lastName").removeClass("has-error");
-                      $("#reg_lastName").addClass("has-success");
-                    }
-                  });
-                  $("#first_name").blur(function () {
-                    if ($("#first_name").val() === "") {
-                      $("#msg_regReq_firstName").show();
-                      $("#reg_firstName").removeClass("has-success");
-                      $("#reg_firstName").addClass("has-error");
-                    } else {
-                      $("#msg_regReq_firstName").hide();
-                      $("#reg_firstName").removeClass("has-error");
-                      $("#reg_firstName").addClass("has-success");
-                    }
-                  });
-                  $("#reg_password").blur(function () {
-                    if ($("#reg_password").val() === "") {
-                      $("#msg_regReq_pwd").show();
-                      $("#msg_regReq_pwdPolicy").hide();
-                      $("#reg_pwd").removeClass("has-success");
-                      $("#reg_pwd").addClass("has-error");
-                    } else {
-                      $("#msg_regReq_pwd").hide();
-
-                      var isValidPwD = isValidPassword(
-                        $("#reg_password").val()
-                      );
-                      if (!isValidPwD) {
-                        $("#msg_regReq_pwdPolicy").show();
-                        $("#msg_regReq_pwd").hide();
-                        $("#reg_pwd").removeClass("has-success");
-                        $("#reg_pwd").addClass("has-error");
-                      } else {
-                        $("#msg_regReq_pwdPolicy").hide();
-                        $("#msg_regReq_pwd").hide();
-                        $("#reg_pwd").removeClass("has-error");
-                        $("#reg_pwd").addClass("has-success");
-                      }
-                    }
-                  });
-                  $("#organization").blur(function () {
-                    if ($("#organization").val() === "") {
-                      $("#msg_regReq_orgnization").show();
-                      $("#reg_org").removeClass("has-success");
-                      $("#reg_org").addClass("has-error");
-                    } else {
-                      $("#msg_regReq_orgnization").hide();
-                      $("#reg_org").removeClass("has-error");
-                      $("#reg_org").addClass("has-success");
-                    }
-                  });
-                  $("#jobTitle").blur(function () {
-                    if ($("#jobTitle").val() === "") {
-                      $("#msg_regReq_jobtitle").show();
-                      $("#reg_jobtitle").removeClass("has-success");
-                      $("#reg_jobtitle").addClass("has-error");
-                    } else {
-                      $("#msg_regReq_jobtitle").hide();
-                      $("#reg_jobtitle").removeClass("has-error");
-                      $("#reg_jobtitle").addClass("has-success");
-                    }
-                  });
-
-                  $("#country").blur(function () {
-                    if ($("#country").val() === "") {
-                      $("#msg_regReq_country").show();
-                      $("#reg_country").removeClass("has-success");
-                      $("#reg_country").addClass("has-error");
-                    } else {
-                      $("#msg_regReq_country").hide();
-                      $("#reg_country").removeClass("has-error");
-                      $("#reg_country").addClass("has-success");
-                    }
-                  });
-
-                  $("#chkAgreement").click(function () {
-                    var agreement_chk = $("#chkAgreement");
-                    if (agreement_chk.is(":checked")) {
-                      $("#agreement_chk_indicator").removeClass("has-error");
-                      $("#msg_regReq_agreeement").hide();
-                    } else {
-                      $("#agreement_chk_indicator").addClass("has-error");
-                      $("#msg_regReq_agreeement").show();
-                    }
-                  });
-                  $("#register-submit").click(function () {
-                    $(".help-block").hide();
-                    $("#message", "#register").html("");
-                    $(".pwc-forms__field").removeClass("has-error");
-                    $(".pwc-forms__field").removeClass("has-success");
-                    var userID = $("#email_address", "#register").val().trim();
-                    var password =
-                      isFederated == false
-                        ? $("#reg_password", "#register").val().trim()
-                        : "";
-                    var firstName = $("#first_name", "#register").val().trim();
-                    var lastName = $("#last_name", "#register").val().trim();
-                    var organization = $("#organization", "#register")
-                      .val()
-                      .trim();
-                    var jobTitle = $("#jobTitle", "#register").val().trim();
-                    var country = $("#country", "#register").val().trim();
-                    var valid = true;
-                    var validation_message = "";
-                    var mkt_yes = $("#marketingconsent-yes");
-                    var mkt_no = $("#marketingconsent-no");
-                    var cnt_mandatory = $(
-                      "#MarketingConsentUserRegMandatory"
-                    ).val();
-                    if (cnt_mandatory == "true") {
-                      if (mkt_yes.is(":checked") || mkt_no.is(":checked")) {
-                        $(".mkt_cnt_yes").removeClass("has-error");
-                        $(".mkt_cnt_no").removeClass("has-error");
-                        $("#msg_mkt_cnt_agreeement").hide();
-                      } else {
-                        valid = false;
-                        $(".mkt_cnt_yes").addClass("has-error");
-                        $(".mkt_cnt_no").addClass("has-error");
-                        $("#msg_mkt_cnt_agreeement").show();
-                      }
-                    }
-                    if (userID == null || userID.length == 0) {
-                      valid = false;
-                      $("#msg_regReqEmail").show();
-                      $("#reg_email").addClass("has-error");
-                    } else {
-                      if (!isValidEmailAddress(userID)) {
-                        valid = false;
-                        $("#msg_regInvalidEmailFormat").show();
-                        $("#reg_email").removeClass("has-success");
-                        $("#reg_email").addClass("has-error");
-                      } else if (isBlacklistedPwcEmail(userID)) {
-                        valid = false;
-                        $("#msg_regBlacklistedPwcEmail").show();
-                        $("#reg_email").removeClass("has-success");
-                        $("#reg_email").addClass("has-error");
-                      } else {
-                        $("#reg_email").addClass("has-success");
-                      }
-                    }
-                    if (!isFederated) {
-                      if (password == null || password.length == 0) {
-                        valid = false;
-                        $("#msg_regReq_pwd").show();
-                        $("#reg_pwd").addClass("has-error");
-                      } else {
-                        if (!isValidPassword(password)) {
-                          valid = false;
-                          $("#msg_regReq_pwdPolicy").show();
-                          $("#reg_pwd").removeClass("has-success");
-                          $("#reg_pwd").addClass("has-error");
-                        } else {
-                          $("#reg_pwd").addClass("has-success");
-                        }
-                      }
-                    }
-                    if (firstName == null || firstName.length == 0) {
-                      valid = false;
-                      $("#msg_regReq_firstName").show();
-                      $("#reg_firstName").addClass("has-error");
-                    } else {
-                      $("#reg_firstName").addClass("has-success");
-                    }
-                    if (lastName == null || lastName.length == 0) {
-                      $("#msg_regReq_lastName").show();
-                      $("#reg_lastName").addClass("has-error");
-                      valid = false;
-                    } else {
-                      $("#reg_lastName").addClass("has-success");
-                    }
-                    if (country == null || country.length == 0) {
-                      valid = false;
-                      $("#msg_regReq_country").show();
-                      $("#reg_country").addClass("has-error");
-                    } else {
-                      $("#reg_country").addClass("has-success");
-                    }
-                    if (organization == null || organization.length == 0) {
-                      valid = false;
-                      $("#msg_regReq_orgnization").show();
-                      $("#reg_org").addClass("has-error");
-                    } else {
-                      $("#reg_org").addClass("has-success");
-                    }
-                    if (jobTitle == null || jobTitle.length == 0) {
-                      valid = false;
-                      $("#msg_regReq_jobtitle").show();
-                      $("#reg_jobtitle").addClass("has-error");
-                    } else {
-                      $("#reg_jobtitle").addClass("has-success");
-                    }
-                    var agreement_chk = $("#chkAgreement");
-                    if (agreement_chk.is(":checked")) {
-                      $("#agreement_chk_indicator").removeClass("has-error");
-                      $("#msg_regReq_agreeement").hide();
-                    } else {
-                      valid = false;
-                      $("#agreement_chk_indicator").addClass("has-error");
-                      $("#msg_regReq_agreeement").show();
-                    }
-
-                    if (!valid) {
-                      //Analytics
-                      $(document).trigger("registerInvalid");
-
-                      $(
-                        ".pwc-forms__field.has-error:visible:first .form-control:first"
-                      ).on("focus", function () {
-                        var ele = $(this);
-                        var slimheaderHeight = $("#menuBarWrapper").height();
-                        $("html, body").animate(
-                          {
-                            scrollTop: ele.offset().top - slimheaderHeight - 65,
-                          },
-                          800
-                        );
-                      });
-                      $(
-                        ".pwc-forms__field.has-error:visible:first .form-control:first"
-                      ).focus();
-                      return;
-                    }
-
-                    //Analytics
-                    $(document).trigger("registerValid");
-
-                    $("#register-submit").button("loading");
-                    var userObj = new Object();
-                    userObj.email_address = $("#email_address", "#register")
-                      .val()
-                      .trim();
-                    userObj.first_name = $("#first_name", "#register")
-                      .val()
-                      .trim()
-                      .replace("&", "")
-                      .replace("<", "")
-                      .replace(">", "");
-                    userObj.last_name = $("#last_name", "#register")
-                      .val()
-                      .trim()
-                      .replace("&", "")
-                      .replace("<", "")
-                      .replace(">", "");
-                    userObj.organization = $("#organization", "#register")
-                      .val()
-                      .trim()
-                      .replace("&", "")
-                      .replace("<", "")
-                      .replace(">", "");
-                    userObj.jobTitle = $("#jobTitle", "#register")
-                      .val()
-                      .trim()
-                      .replace("&", "")
-                      .replace("<", "")
-                      .replace(">", "");
-                    userObj.country = $("#country", "#register")
-                      .val()
-                      .trim()
-                      .replace("&", "")
-                      .replace("<", "")
-                      .replace(">", "");
-                    userObj.password =
-                      isFederated == false
-                        ? $("#reg_password", "#register").val().trim()
-                        : "";
-                    userObj.userMarketingID = $("#userMarketingID")
-                      .val()
-                      .trim();
-                    userObj.url = getUrlVars()["redirectUrl"];
-                    userObj.domain = window.document.location.host;
-                    userObj.parentPagePath = getUrlVars()["parentPagePath"];
-                    userObj.locale = "en_gx";
-                    userObj.redirectUrl = getUrlVars()["redirectUrl"];
-                    userObj.marketingConsent =
-                      $("#regMarketingConsent input:checkbox:checked").attr(
-                        "value"
-                      ) || $("#regMarketingConsent").data("noselect");
-                    userObj.isFederated = isFederated;
-                    $.ajax("/bin/registeruser", {
-                      data: JSON.stringify(userObj),
-                      type: "POST",
-                      dataType: "json",
-                      contentType: "application/json; charset=utf-8",
-                      mimeType: "application/json; charset=utf-8",
-                      success: function (rawData, status, xhr) {
-                        var response_message = "";
-                        try {
-                          //var result = JSON.parse(rawData);
-                          var errorCode = rawData.result.ErrorCode;
-                          var errorMessage = rawData.result.ErrorMessage;
-                          if (errorCode == "[0000]") {
-                            //Digital Data Analytics For All field have values
-                            createObject("user.event", "registration-complete");
-                            //$('#message','#register').css('color', '#404041').css('font-weight', 'normal');
-                            var url = rawData.result.redirectUrl;
-                            var redirecturl = getUrlVars()["redirectUrl"];
-                            $("#reg-submit-form").hide();
-                            $("#reg-thankyou").show();
-                            $("#link_continue").prop("href", url);
-                            $("#hiddenFrm", "#register").attr(
-                              "src",
-                              "register.html?reg=true"
-                            );
-
-                            //Analytics
-                            var data = { captureNoSelection: true };
-                            $("#regMarketingConsent").trigger("change", data);
-                            //Analytics
-                            $(document).trigger("registerComplete");
-                          } else if (errorCode == "[1001]") {
-                            $("#msg_regEmailExist").show();
-                            $("#existingEmail").val(userObj.email_address);
-                            $("#reg_email").removeClass("has-success");
-                            $("#reg_email").addClass("has-error");
-                          } else if (errorCode == "[1011]") {
-                            $("#msg_regEmailExist").hide();
-                            $("#msg_regReq_pwdPolicy").show();
-                            $("#reg_email").removeClass("has-error");
-                            $("#reg_email").addClass("has-success");
-                            $("#reg_pwd").removeClass("has-success");
-                            $("#reg_pwd").addClass("has-error");
-                          } else if (errorCode == "[0100]") {
-                            $("#msg_regReqEmail").hide();
-                            $("#msg_regEmailExist").hide();
-                            $("#msg_regBlacklistedPwcEmail").show();
-                            $("#reg_email").removeClass("has-success");
-                            $("#reg_email").addClass("has-error");
-                          } else if (errorCode == "[3002]") {
-                            var encryptedEmailID =
-                              rawData.result.encryptedEmailID;
-                            var redirecturl = getUrlVars()["redirectUrl"];
-                            var parentPagePath = getUrlVars()["parentPagePath"];
-                            var encodedRedirectUrl = encodeURIComponent(
-                              "/content/pwc/userReg/resend-activation.html" +
-                                "?locale=" +
-                                "en_gx" +
-                                "&redirectUrl=" +
-                                redirecturl +
-                                "&parentPagePath=" +
-                                parentPagePath +
-                                "&userID=" +
-                                encryptedEmailID +
-                                "&referer=" +
-                                "/" +
-                                "&sourcePage=registration"
-                            );
-                            var decodedRedirectUrl =
-                              decodeURIComponent(encodedRedirectUrl);
-                            window.location.replace(decodedRedirectUrl);
-                          } else {
-                            $("#msg_regEmailExist").hide();
-                            $("#msg_regGeneralError").show();
-                            $("#reg_email").removeClass("has-success");
-                            $("#reg_email").addClass("has-error");
-                          }
-                        } catch (err) {
-                          $("#msg_regEmailExist").hide();
-                          $("#msg_regGeneralError").show();
-                          $("#reg_email").removeClass("has-success");
-                          $("#reg_email").addClass("has-error");
-                        } finally {
-                          $("#register-submit").button("reset");
-                          //$("#reg_email").removeClass("has-success");
-                          //$("#reg_email").addClass("has-error");
-                        }
-                        $(
-                          ".pwc-forms__field.has-error:visible:first .form-control:first"
-                        ).on("focus", function () {
-                          var ele = $(this);
-                          var slimheaderHeight = $("#menuBarWrapper").height();
-                          $("html, body").animate(
-                            {
-                              scrollTop:
-                                ele.offset().top - slimheaderHeight - 65,
-                            },
-                            800
-                          );
-                        });
-                        $(
-                          ".pwc-forms__field.has-error:visible:first .form-control:first"
-                        ).focus();
-                        return;
-                      },
-                      error: function (xhr, status, err) {
-                        $("#msg_regGeneralError").show();
-                        $("#register-submit").button("reset");
-                      },
-                    });
-                  });
-                }); // end ready
-              </script>
+              
 
               <div class="dpe-component-wrapper pwc-regis">
                 <!-- include dynamic styles block to apply background photo on desktop / xxx on mobile -->
-                <style type="text/css">
-                  @media (min-width: 992px) {
-                    .pwc-regis {
-                      background: url(../../../../../../etc.clientlibs/pwc/clientlibs/components-colors/resources/images/registration/content/pwc-reg-background01.jpg)
-                        50% 50% no-repeat;
-                      background-size: cover;
-                    }
-                  }
-
-                  #wrapper #menuBarWrapper nav#breadcrumbWrapper ul.breadcrumb {
-                    display: none;
-                  }
-
-                  /*        #wrapper .centerPar { padding-top: 85px; }*/
-                  #wrapper .dpe-component-wrapper nav#footerBreadcrumbWrapper {
-                    display: none;
-                  }
-                </style>
+                
                 <div class="pwc-regis__local-nav">
                   <div class="container">
                     <a class="pwc-regis__back" href="/" title="Back to previous page" tabindex="0">
@@ -2670,83 +1702,108 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                             <div class="row">
                               <div class="col-sm-6 column-rtl">
                                 <div class="dpe-component-wrapper pwc-forms">
-                                  <form name="register" id="register" data-ddg-formtype="sign up">
+                                  <form name="register" id="register">
                                     <div class="pwc-forms__field pwc-forms__field--email form-group" id="reg_email">
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="email_address">User Email (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReqEmail" style="display: none">
+                                      <p class="help-block" id="msg_regReqEmail">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
 
-                                      <p class="help-block" id="msg_regInvalidEmailFormat" style="display: none">
+                                      <p class="help-block" id="msg_regInvalidEmailFormat">
                                         <strong>Email address is not valid
                                         </strong>
                                       </p>
-                                      <p class="help-block" id="msg_regBlacklistedPwcEmail" style="display: none">
+                                      <p class="help-block" id="msg_regBlacklistedPwcEmail">
                                         <strong>PwC email addresses cannot be used
                                           for website registration. Please use a
                                           non-PwC email address.
                                         </strong>
                                       </p>
-                                      <p class="help-block" id="msg_regEmailExist" style="display: none">
+                                      <p class="help-block" id="msg_regEmailExist">
                                         <strong>Email address already in use, please
-                                          <a href="https://www.pwc.com/gx/en/content/pwc/userReg/login.en_gx.html?redirectUrl=B-8M80eOnYE_bamYT2vu3oXIzX4sSeJ2p4zmZn32dr0=&amp;referrer=B-8M80eOnYE_bamYT2vu3oXIzX4sSeJ2p4zmZn32dr0=&amp;parentPagePath=/content/pwc/gx/en" style="
-                                              border-bottom: 1px solid #7d7d7d;
-                                              font-weight: bold;
-                                              text-decoration: none;
-                                            " rel="nofollow">sign in</a>
+                                          <a href="https://www.pwc.com/gx/en/content/pwc/userReg/login.en_gx.html?redirectUrl=B-8M80eOnYE_bamYT2vu3oXIzX4sSeJ2p4zmZn32dr0=&amp;referrer=B-8M80eOnYE_bamYT2vu3oXIzX4sSeJ2p4zmZn32dr0=&amp;parentPagePath=/content/pwc/gx/en" rel="nofollow">sign in</a>
                                         </strong>
                                       </p>
-                                      <p class="help-block" id="msg_regGeneralError" style="display: none">
+                                      <p class="help-block" id="msg_regGeneralError">
                                         <strong>Failed to Register! </strong>
                                       </p>
-                                      <input type="email" class="form-control" id="email_address" data-analytics-field-name="User Email" required="" data-ddg-autofill="true" data-ddg-testresultelementid="515856" style="
-                                          background-size: auto 26px !important;
-                                          background-position: right center !important;
-                                          background-repeat: no-repeat !important;
-                                          background-origin: content-box !important;
-                                          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                          transition: background 0s ease 0s !important;
-                                        " data-manual-scoring="emailAddress">
+                                      <input type="email" class="form-control" id="email_address" data-analytics-field-name="User Email" required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: User Email
+                                                    (Mandatory)
+parseable name: email_address
+section: email_address_0_36
+field signature: 2303879918
+form signature: 15834893303466434767
+form signature in host form: 15834893303466434767
+field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
+form renderer id: 4
+field renderer id: 36" data-ddg-testresultelementid="515856" data-manual-scoring="emailAddress">
                                     </div>
                                     <input type="hidden" id="userMarketingID" name="userMarketingID" value="">
                                     <div class="pwc-forms__field pwc-forms__field--email form-group" id="reg_firstName">
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="first_name">First Name (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReq_firstName" style="display: none">
+                                      <p class="help-block" id="msg_regReq_firstName">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
-                                      <input type="text" class="form-control" id="first_name" data-analytics-field-name="First Name" required="" data-ddg-testresultelementid="515857" data-manual-scoring="firstName">
+                                      <input type="text" class="form-control" id="first_name" data-analytics-field-name="First Name" required="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+                                                    (Mandatory)
+parseable name: first_name
+section: email_address_0_36
+field signature: 1938669551
+form signature: 15834893303466434767
+form signature in host form: 15834893303466434767
+field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
+form renderer id: 4
+field renderer id: 38" data-ddg-testresultelementid="515857" data-manual-scoring="firstName">
                                     </div>
 
                                     <div class="pwc-forms__field pwc-forms__field--email form-group" id="reg_lastName">
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="last_name">Last Name (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReq_lastName" style="display: none">
+                                      <p class="help-block" id="msg_regReq_lastName">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
-                                      <input type="text" class="form-control" id="last_name" data-analytics-field-name="Last Name" required="" data-ddg-testresultelementid="515858" data-manual-scoring="lastName">
+                                      <input type="text" class="form-control" id="last_name" data-analytics-field-name="Last Name" required="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+                                                    (Mandatory)
+parseable name: last_name
+section: email_address_0_36
+field signature: 3389759488
+form signature: 15834893303466434767
+form signature in host form: 15834893303466434767
+field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
+form renderer id: 4
+field renderer id: 39" data-ddg-testresultelementid="515858" data-manual-scoring="lastName">
                                     </div>
 
                                     <div class="pwc-forms__field pwc-forms__field--password form-group" id="reg_pwd">
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="reg_password">Create Password (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReq_pwd" style="display: none">
+                                      <p class="help-block" id="msg_regReq_pwd">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
-                                      <p class="help-block" id="msg_regReq_pwdPolicy" style="display: none">
+                                      <p class="help-block" id="msg_regReq_pwdPolicy">
                                         <strong>Your password must contain a minimum
                                           of 8 characters; it cannot include
                                           your First name or Last name. It must
@@ -2758,8 +1815,20 @@ field renderer id: 57" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                                       </p>
                                       <div class="pwc-form-password">
                                         <div class="inputs">
-                                          <input type="password" class="form-control" id="reg_password" name="password" aria-describedby="registerPasswordContextBlock" required="" data-analytics-field-name="Create password" data-ddg-testresultelementid="515859" data-manual-scoring="password">
-                                          <input type="text" class="form-control" id="reg_password_text" style="display: none" data-analytics-field-name="Create password" title="overall type: UNKNOWN_TYPE
+                                          <input type="password" class="form-control" id="reg_password" name="password" aria-describedby="registerPasswordContextBlock" required="" data-analytics-field-name="Create password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Create Password
+                                                    (Mandatory)
+parseable name: password
+section: email_address_0_36
+field signature: 2051817934
+form signature: 15834893303466434767
+form signature in host form: 15834893303466434767
+field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
+form renderer id: 4
+field renderer id: 40" data-ddg-testresultelementid="515859" data-manual-scoring="password">
+                                          <input type="text" class="form-control" id="reg_password_text" data-analytics-field-name="Create password" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Show
@@ -2770,23 +1839,12 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 41" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Show
-parseable name: reg_password_text
-section: email_address_0_36
-field signature: 2040861315
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="515860">
+field renderer id: 41" data-ddg-testresultelementid="515860">
                                         </div>
                                         <div class="pass-control">
                                           <label class="control control--checkbox">
                                             <span class="label-text">Show</span>
-                                            <input type="checkbox" class="show-pass" data-field-id="registerPassword" id="chkPwdToggle" title="overall type: UNKNOWN_TYPE
+                                            <input type="checkbox" class="show-pass" data-field-id="registerPassword" id="chkPwdToggle" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Show
@@ -2797,18 +1855,7 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 42" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Show
-parseable name: chkPwdToggle
-section: email_address_0_36
-field signature: 471824423
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515861">
+field renderer id: 42" data-ddg-testresultelementid="515861">
                                             <div class="control__indicator"></div>
                                           </label>
                                         </div>
@@ -2827,12 +1874,24 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="country">Countries or regions (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReq_country" style="display: none">
+                                      <p class="help-block" id="msg_regReq_country">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
-                                      <select class="form-control" id="country" data-analytics-field-name="Country" data-ddg-testresultelementid="515862" data-manual-scoring="addressCountryCode">
+                                      <select class="form-control" id="country" data-analytics-field-name="Country" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Countries or regions
+                                                    (Mandatory)
+parseable name: country
+section: email_address_0_36
+field signature: 2799270304
+form signature: 15834893303466434767
+form signature in host form: 15834893303466434767
+field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
+form renderer id: 4
+field renderer id: 43" data-ddg-testresultelementid="515862" data-manual-scoring="addressCountryCode">
                                         <option value="" selected="selected">
                                           Select country or region
                                         </option>
@@ -3183,12 +2242,12 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="organization">Organization (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReq_orgnization" style="display: none">
+                                      <p class="help-block" id="msg_regReq_orgnization">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
-                                      <input type="text" class="form-control" id="organization" name="organization" data-analytics-field-name="Organization" register="" title="overall type: COMPANY_NAME
+                                      <input type="text" class="form-control" id="organization" name="organization" data-analytics-field-name="Organization" register="" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Organization
@@ -3200,30 +2259,18 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 44" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Organization
-                                                    (Mandatory)
-parseable name: organization
-section: email_address_0_36
-field signature: 1237572692
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 44" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="515863">
+field renderer id: 44" data-ddg-testresultelementid="515863">
                                     </div>
                                     <div class="pwc-forms__field pwc-forms__field--text form-group" id="reg_jobtitle">
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
                                       <label for="jobTitle">Job Title (Mandatory)
                                       </label>
-                                      <p class="help-block" id="msg_regReq_jobtitle" style="display: none">
+                                      <p class="help-block" id="msg_regReq_jobtitle">
                                         <strong>Please ensure all required fields are
                                           filled in
                                         </strong>
                                       </p>
-                                      <input type="text" class="form-control" id="jobTitle" name="jobTitle" data-analytics-field-name="Job Title" register="" title="overall type: UNKNOWN_TYPE
+                                      <input type="text" class="form-control" id="jobTitle" name="jobTitle" data-analytics-field-name="Job Title" register="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Job Title
@@ -3235,19 +2282,7 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 45" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Job Title
-                                                    (Mandatory)
-parseable name: jobTitle
-section: email_address_0_36
-field signature: 3951082119
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="515864">
+field renderer id: 45" data-ddg-testresultelementid="515864">
                                     </div>
 
                                     <div class="pwc-forms__field pwc-forms__field--text form-group marketingconsent-section" id="regMarketingConsent" data-noselect="No-selection" data-analytics-field-default-value="no-selection">
@@ -3255,7 +2290,7 @@ field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                       <div class="field-label">
                                         Marketing Consent
                                       </div>
-                                      <p class="help-block" id="msg_mkt_cnt_agreeement" style="display: none">
+                                      <p class="help-block" id="msg_mkt_cnt_agreeement">
                                         <strong>Please indicate whether you would
                                           like PwC member firms to contact you
                                           for marketing purposes
@@ -3264,7 +2299,7 @@ field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                                       <label class="control control--checkbox marketingconsent-label" for="marketingconsent-yes"><span class="label-text">Yes, members of the PwC network can
                                           send me details about their products,
                                           insights, and events.</span>
-                                        <input type="checkbox" id="marketingconsent-yes" name="marketingconsent" class="control-check marketingconsent-yes" value="Opt-in" data-analytics-field-value="opt-in" title="overall type: UNKNOWN_TYPE
+                                        <input type="checkbox" id="marketingconsent-yes" name="marketingconsent" class="control-check marketingconsent-yes" value="Opt-in" data-analytics-field-value="opt-in" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes, members of the PwC network can send me details about their products, insights, and events.
@@ -3275,25 +2310,14 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 47" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes, members of the PwC network can send me details about their products, insights, and events.
-parseable name: marketingconsent
-section: email_address_0_36
-field signature: 1827906582
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515865">
+field renderer id: 47" data-ddg-testresultelementid="515865">
                                         <div class="control__indicator mkt_cnt_yes"></div>
                                       </label>
                                       <label class="control control--checkbox marketingconsent-label" for="marketingconsent-no"><span class="label-text">No, please do not include me in
                                           marketing mailings and remove me from
                                           promotional emails and communications
                                           from members of the PwC Network.</span>
-                                        <input type="checkbox" id="marketingconsent-no" name="marketingconsent" class="control-check marketingconsent-no" value="Opt-out" data-analytics-field-value="opt-out" title="overall type: UNKNOWN_TYPE
+                                        <input type="checkbox" id="marketingconsent-no" name="marketingconsent" class="control-check marketingconsent-no" value="Opt-out" data-analytics-field-value="opt-out" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: No, please do not include me in marketing mailings and remove me from promotional emails and communi
@@ -3304,21 +2328,10 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 48" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: No, please do not include me in marketing mailings and remove me from promotional emails and communi
-parseable name: marketingconsent
-section: email_address_0_36
-field signature: 1827906582
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515866">
+field renderer id: 48" data-ddg-testresultelementid="515866">
                                         <div class="control__indicator mkt_cnt_no"></div>
                                       </label>
-                                      <div class="pwc-tooltip marketingconsent-tooltip" style="cursor: default">
+                                      <div class="pwc-tooltip marketingconsent-tooltip">
                                         <div class="pwc-tooltip__arrow"></div>
                                         <button class="pwc-tooltip__close">
                                           <span class="sr-only">Close</span>
@@ -3339,7 +2352,7 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
                                     <div class="pwc-forms__field pwc-forms__field--text form-group agreement-section" id="reg_agreement">
                                       <!-- If "error" append this class "has-error" along with the below <p> text, if success replace class "has-error" with "has-success" and remove the below error mgs <p> -->
-                                      <p class="help-block" id="msg_regReq_agreeement" style="display: none">
+                                      <p class="help-block" id="msg_regReq_agreeement">
                                         <strong>You must confirm, by ticking the box,
                                           that you have read the terms and
                                           conditions and privacy statement
@@ -3347,7 +2360,7 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                         </strong>
                                       </p>
                                       <label class="control control--checkbox">
-                                        <input type="checkbox" class="show-pass" data-field-id="registerAgreement" id="chkAgreement" title="overall type: UNKNOWN_TYPE
+                                        <input type="checkbox" class="show-pass" data-field-id="registerAgreement" id="chkAgreement" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: You must confirm, by ticking the box, that you have read the terms and conditions and privacy statem
@@ -3358,21 +2371,21 @@ form signature: 15834893303466434767
 form signature in host form: 15834893303466434767
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 4
-field renderer id: 50" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: You must confirm, by ticking the box, that you have read the terms and conditions and privacy statem
-parseable name: chkAgreement
-section: email_address_0_36
-field signature: 171566255
-form signature: 15834893303466434767
-form signature in host form: 15834893303466434767
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 4
-field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515867">
+field renderer id: 50" data-ddg-testresultelementid="515867">
                                         <div class="control__indicator" id="agreement_chk_indicator"></div>
 
-                                        <input type="text" class="form-control" id="agree_ment_id" name="agreement" data-ddg-testresultelementid="515868" data-manual-scoring="addressProvince">
+                                        <input type="text" class="form-control" id="agree_ment_id" name="agreement" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: You must confirm, by ticking the box, that you have read the terms and conditions and privacy statem
+parseable name: agreement
+section: email_address_0_36
+field signature: 3299037490
+form signature: 15834893303466434767
+form signature in host form: 15834893303466434767
+field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
+form renderer id: 4
+field renderer id: 51" data-ddg-testresultelementid="515868" data-manual-scoring="addressProvince">
                                       </label>
                                       <div class="context-block">
                                         <p>
@@ -3424,7 +2437,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
                 <!-- End of registration form -->
 
-                <div id="reg-thankyou" class="container" style="display: none">
+                <div id="reg-thankyou" class="container">
                   <!-- Start of registration thank you -->
                   <div class="row">
                     <div class="col-xs-12 col-xs-push-0 col-md-6 col-md-push-3">
@@ -3465,7 +2478,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
 
       <div>
-        <section id="cta-1" class="black page-section page-section--col-primary fullwidth page-section--col-dark" style="height: ">
+        <section id="cta-1" class="black page-section page-section--col-primary fullwidth page-section--col-dark">
           <div class="parsys sectionpar">
             <div class="section"><div class="new"></div></div>
             <div class="iparys_inherited">
@@ -3477,7 +2490,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <div></div>
 
       <div>
-        <section id="cta-2" class="black page-section page-section--col-primary fullwidth page-section--col-dark" style="height: ">
+        <section id="cta-2" class="black page-section page-section--col-primary fullwidth page-section--col-dark">
           <div class="parsys sectionpar">
             <div class="section"><div class="new"></div></div>
             <div class="iparys_inherited">
@@ -3488,38 +2501,10 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
 
       <div>
-        <section id="related-links" class="page-section page-section--col-white fullwidth videobghost" data-wcmmode="false" data-parallax="true" style="
-            height: ;
-            background-size: inherit;
-            background-position: ;
-            background-image: ;
-            background-color: ;
-          ">
+        <section id="related-links" class="page-section page-section--col-white fullwidth videobghost" data-wcmmode="false" data-parallax="true">
           <div class="parsys sectionpar">
             <div class="relatedcontent collection list parbase section">
-              <script>
-                var currentPagePath = "\/content\/pwc\/userReg\/register";
-                $(document).ready(function () {
-                  $(".related-content__item-link").click(function (event) {
-                    var contentLink = $(this).attr("href");
-                    var contentType = contentLink.substring(
-                      contentLink.indexOf(".") + 1,
-                      contentLink.length
-                    );
-                    contentType = contentType == "html" ? "Page" : contentType;
-                    var contentName = $(this)
-                      .find(".related-content__item-heading")
-                      .html();
-                    createObject("content.relatedContentType", contentType);
-                    createObject("content.relatedContentName", contentName);
-                  });
-                  clickWithStopPropagation(
-                    ".related-content__item-link",
-                    "content.originalContent",
-                    currentPagePath
-                  );
-                });
-              </script>
+              
             </div>
           </div>
         </section>
@@ -3532,7 +2517,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <div></div>
 
       <div>
-        <section id="bottom-kick-isection" class="black page-section page-section--col-white fullwidth" style="height: ">
+        <section id="bottom-kick-isection" class="black page-section page-section--col-white fullwidth">
           <div class="parsys sectionpar">
             <div class="bk-parsys-wrapper container">
               <div class="row">
@@ -3554,7 +2539,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           <div class="ixfsection experiencefragment section">
             <div class="mod-ixf-page-section"></div>
 
-            <section style="height: " class="cmp-experiencefragment cmp-experiencefragment-- fullwidth">
+            <section class="cmp-experiencefragment cmp-experiencefragment-- fullwidth">
               <div class="xfpage page basicpage page-primary-col--red page-secondary-col--red page-tertiary-col--red">
                 <div id="container-18d290c98d" class="cmp-container">
                   <div class="aem-Grid aem-Grid--12 aem-Grid--default--12">
@@ -3603,7 +2588,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       and/or one or more of its member firms,
                                       each of which is a separate legal entity.
                                       Please see
-                                      <a href="https://www.pwc.com/structure" style="text-decoration: underline">www.pwc.com/structure</a>
+                                      <a href="https://www.pwc.com/structure">www.pwc.com/structure</a>
                                       for further details.
                                     </p>
                                     <!-- optional disclaimer links -->
@@ -3647,88 +2632,14 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
     </div>
 
-    <script src="/etc.clientlibs/pwc/clientlibs/rebrand-clientlibs/components-colors.min.dfdc026fd114a3c0feff93e4f5ecd533.js"></script>
-    <script src="/etc.clientlibs/pwc/clientlibs/longform/script.min.6efa0d1363ebcfb49232d50cc54583a1.js"></script>
+    
+    
 
-    <script src="/etc.clientlibs/pwc/clientlibs/clientlib-vue/vue-bundle.min.48fb76484e9ba075b8eb29d8f8f3c852.js"></script>
+    
 
-    <link rel="stylesheet" href="/etc.clientlibs/pwc/clientlibs/clientlib-vue/vue-bundle.min.1a8f2ef7a553f1ed34f774bc992b7995.css" type="text/css">
+    
 
-    <script>
-      var getCookieByMatch = function (regex) {
-        var _cookies = document.cookie.split(/;\s*/),
-          _cookieArray = [],
-          i;
-        for (i = 0; i < _cookies.length; i++) {
-          if (_cookies[i].match(regex)) {
-            _cookieArray.push(_cookies[i]);
-          }
-        }
-        return _cookieArray;
-      };
-
-      function getUserMarketingID(value) {
-        const _regex = /^(.*)\|MCMID\|(\d+)\|(.*)/gm;
-        if (
-          (_matchedArray = _regex.exec(value)) !== null &&
-          _matchedArray.length >= 3
-        ) {
-          return _matchedArray[2];
-        }
-      }
-
-      function setCookie(cname, cvalue, exdays, path) {
-        var expires = "expires=0";
-        if (exdays != 0) {
-          var d = new Date();
-          d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-          expires = "expires=" + d.toGMTString();
-        }
-        document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/;";
-      }
-
-      $.each(getCookieByMatch("AMCV_"), function (index, val) {
-        var cookie = val.split("=");
-        if (
-          cookie.length >= 2 &&
-          typeof Cookies.get("pwc-id") !== "undefined"
-        ) {
-          var userID = getUserMarketingID(decodeURIComponent(cookie[1]));
-          var existingID = Cookies.get("userMID");
-          if (typeof existingID === "undefined" || existingID != userID) {
-            var userMCMObj = new Object();
-            userMCMObj.userMarketingID = userID;
-            userMCMObj.isSetMarketingIDRequest = true;
-            $.ajax("/bin/extendedprofile/update", {
-              data: JSON.stringify(userMCMObj),
-              type: "POST",
-              dataType: "json",
-              contentType: "application/json; charset=utf-8",
-              mimeType: "application/json; charset=utf-8",
-              success: function (rawData, status, xhr) {
-                var responseCode = rawData.result.code;
-                if (responseCode === "1001") {
-                  setCookie("userMID", userID, 1, "/");
-                }
-              },
-              error: function (xhr) {
-                console.log("Response is ", xhr);
-              },
-            });
-          }
-        }
-      });
-
-      $(document).ready(function () {
-        $.each(getCookieByMatch("AMCV_"), function (index, val) {
-          var cookie = val.split("=");
-          var userID = getUserMarketingID(decodeURIComponent(cookie[1]));
-          $('input[name="userMarketingID"]').each(function () {
-            $(this).val(userID);
-          });
-        });
-      });
-    </script>
+    
   </div>
 
   <div id="onetrust-consent-sdk">
@@ -3738,21 +2649,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         <!-- Cookie Button -->
         <div id="onetrust-cookie-btn-container">
           <button class="ot-link-btn" id="onetrust-cookie-btn" role="button" aria-label="Cookies">
-            <svg width="65" height="65" viewBox="-2 -2 35 35" xmlns="http://www.w3.org/2000/svg">
-              <title>Cookies Button</title>
-              <g fill="none" fill-rule="evenodd">
-                <circle cx="15" cy="15" r="16.5" fill="#2e3643"></circle>
-                <circle cx="15" cy="15" r="14.5" fill="#fff"></circle>
-                <circle cx="15" cy="15" r="14" fill="#2e3643"></circle>
-                <path d="M25 14.95V15c0 5.523-4.477 10-10 10S5 20.523 5 15c0-4.842 3.442-8.881 8.013-9.803A3.5 3.5 0 0 0 16.13 8.98a4 4 0 0 0 6.025 4.39A2.501 2.501 0 0 0 25 14.95z" stroke="#323F4E" stroke-width=".5" fill="#FFF"></path>
-                <circle fill="#BDBDBD" cx="10" cy="12" r="2"></circle>
-                <circle fill="#BDBDBD" cx="12.5" cy="19.5" r="1.5"></circle>
-                <circle fill="#BDBDBD" cx="20" cy="18" r="2"></circle>
-                <circle fill="#6CC04A" cx="14" cy="14" r="1"></circle>
-                <circle fill="#6CC04A" cx="17" cy="22" r="1"></circle>
-                <circle fill="#6CC04A" cx="9" cy="18" r="1"></circle>
-              </g>
-            </svg>
+            
           </button>
         </div>
         <div class="banner-content">
@@ -3802,19 +2699,17 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
     </div>
     <div id="onetrust-pc-sdk" class="otPcPanel ot-hide ot-fade-in right" lang="en-ET" aria-label="Preference center" role="region">
-      <div role="alertdialog" aria-modal="true" aria-describedby="ot-pc-desc" style="height: 100%" aria-label="Cookies:<br>The choice is yours">
+      <div role="alertdialog" aria-modal="true" aria-describedby="ot-pc-desc" aria-label="Cookies:<br>The choice is yours">
         <!-- PC Header -->
         <div class="ot-pc-header">
           <div class="ot-pc-logo" role="img" aria-label="Company Logo">
-            <img alt="Company Logo" src="https://cdn.cookielaw.org/logos/f13f2198-97ab-4c25-a5cd-0fca8ada2e21/da8b286e-60a4-48b4-997e-fc085b00537d/pwc_logo.png">
+            
           </div>
         </div>
         <div id="ot-pc-content" class="ot-pc-scrollbar">
           <div class="ot-optout-signal ot-hide">
             <div class="ot-optout-icon">
-              <svg xmlns="http://www.w3.org/2000/svg">
-                <path class="ot-floating-button__svg-fill" d="M14.588 0l.445.328c1.807 1.303 3.961 2.533 6.461 3.688 2.015.93 4.576 1.746 7.682 2.446 0 14.178-4.73 24.133-14.19 29.864l-.398.236C4.863 30.87 0 20.837 0 6.462c3.107-.7 5.668-1.516 7.682-2.446 2.709-1.251 5.01-2.59 6.906-4.016zm5.87 13.88a.75.75 0 00-.974.159l-5.475 6.625-3.005-2.997-.077-.067a.75.75 0 00-.983 1.13l4.172 4.16 6.525-7.895.06-.083a.75.75 0 00-.16-.973z" fill="#FFF" fill-rule="evenodd"></path>
-              </svg>
+              
             </div>
             <span></span>
           </div>
@@ -3852,7 +2747,7 @@ field renderer id: 50" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 Analytical/Performance Cookies
               </h4>
               <div class="ot-tgl">
-                <input type="checkbox" name="ot-group-id-2" id="ot-group-id-2" aria-checked="false" role="switch" class="category-switch-handler" data-optanongroupid="2" aria-labelledby="ot-header-id-2" title="overall type: UNKNOWN_TYPE
+                <input type="checkbox" name="ot-group-id-2" id="ot-group-id-2" aria-checked="false" role="switch" class="category-switch-handler" data-optanongroupid="2" aria-labelledby="ot-header-id-2" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Analytical/Performance Cookies
@@ -3863,18 +2758,7 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 93" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Analytical/Performance Cookies
-parseable name: ot-group-id-2
-section: country_0_57
-field signature: 574516408
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 93" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515869">
+field renderer id: 93" data-ddg-testresultelementid="515869">
                 <label class="ot-switch" for="ot-group-id-2"><span class="ot-switch-nob" aria-checked="false" role="switch"></span>
                   <span class="ot-label-txt">Analytical/Performance Cookies</span></label>
               </div>
@@ -3891,7 +2775,7 @@ field renderer id: 93" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 Marketing &amp; Social Media Cookies
               </h4>
               <div class="ot-tgl">
-                <input type="checkbox" name="ot-group-id-4" id="ot-group-id-4" aria-checked="false" role="switch" class="category-switch-handler" data-optanongroupid="4" aria-labelledby="ot-header-id-4" title="overall type: UNKNOWN_TYPE
+                <input type="checkbox" name="ot-group-id-4" id="ot-group-id-4" aria-checked="false" role="switch" class="category-switch-handler" data-optanongroupid="4" aria-labelledby="ot-header-id-4" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Marketing &amp; Social Media Cookies
@@ -3902,18 +2786,7 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 94" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Marketing &amp; Social Media Cookies
-parseable name: ot-group-id-4
-section: country_0_57
-field signature: 3712538687
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 94" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515870">
+field renderer id: 94" data-ddg-testresultelementid="515870">
                 <label class="ot-switch" for="ot-group-id-4"><span class="ot-switch-nob" aria-checked="false" role="switch"></span>
                   <span class="ot-label-txt">Marketing &amp; Social Media Cookies</span></label>
               </div>
@@ -3937,24 +2810,15 @@ field renderer id: 94" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           <div id="ot-pc-hdr">
             <div id="ot-lst-title">
               <button class="ot-link-btn back-btn-handler" aria-label="Back">
-                <svg id="ot-back-arw" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 444.531 444.531" xml:space="preserve">
-                  <title>Back Button</title>
-                  <g>
-                    <path fill="#656565" d="M213.13,222.409L351.88,83.653c7.05-7.043,10.567-15.657,10.567-25.841c0-10.183-3.518-18.793-10.567-25.835
-          l-21.409-21.416C323.432,3.521,314.817,0,304.637,0s-18.791,3.521-25.841,10.561L92.649,196.425
-          c-7.044,7.043-10.566,15.656-10.566,25.841s3.521,18.791,10.566,25.837l186.146,185.864c7.05,7.043,15.66,10.564,25.841,10.564
-          s18.795-3.521,25.834-10.564l21.409-21.412c7.05-7.039,10.567-15.604,10.567-25.697c0-10.085-3.518-18.746-10.567-25.978
-          L213.13,222.409z"></path>
-                  </g>
-                </svg>
+                
               </button>
               <h3>Back</h3>
             </div>
-            <div class="ot-lst-subhdr" data-ddg-formtype="sign up">
+            <div class="ot-lst-subhdr">
               <div class="ot-search-cntr">
                 <p role="status" class="ot-scrn-rdr"></p>
                 <label for="vendor-search-handler" class="ot-scrn-rdr"></label>
-                <input id="vendor-search-handler" type="text" name="vendor-search-handler" title="overall type: UNKNOWN_TYPE
+                <input id="vendor-search-handler" type="text" name="vendor-search-handler" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Filter IconClear
@@ -3965,37 +2829,12 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 68" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Filter IconClear
-parseable name: vendor-search-handler
-section: country_0_57
-field signature: 607556517
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 68" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="515871">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 -30 110 110" aria-hidden="true">
-                  <title>Search Icon</title>
-                  <path fill="#2e3644" d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23
-            s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92
-            c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17
-            s-17-7.626-17-17S14.61,6,23.984,6z"></path>
-                </svg>
+field renderer id: 68" data-ddg-testresultelementid="515871">
+                
               </div>
               <div class="ot-fltr-cntr">
                 <button id="filter-btn-handler" aria-label="Filter" aria-haspopup="true">
-                  <svg role="presentation" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 402.577 402.577" xml:space="preserve">
-                    <title>Filter Icon</title>
-                    <g>
-                      <path fill="#fff" d="M400.858,11.427c-3.241-7.421-8.85-11.132-16.854-11.136H18.564c-7.993,0-13.61,3.715-16.846,11.136
-      c-3.234,7.801-1.903,14.467,3.999,19.985l140.757,140.753v138.755c0,4.955,1.809,9.232,5.424,12.854l73.085,73.083
-      c3.429,3.614,7.71,5.428,12.851,5.428c2.282,0,4.66-0.479,7.135-1.43c7.426-3.238,11.14-8.851,11.14-16.845V172.166L396.861,31.413
-      C402.765,25.895,404.093,19.231,400.858,11.427z"></path>
-                    </g>
-                  </svg>
+                  
                 </button>
               </div>
               <div id="ot-anchor"></div>
@@ -4006,7 +2845,7 @@ field renderer id: 68" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                     <div class="ot-fltr-opts">
                       <div class="ot-fltr-opt">
                         <div class="ot-chkbox">
-                          <input id="chkbox-id" type="checkbox" aria-checked="false" class="category-filter-handler" title="overall type: UNKNOWN_TYPE
+                          <input id="chkbox-id" type="checkbox" aria-checked="false" class="category-filter-handler" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: checkbox label
@@ -4017,18 +2856,7 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 88" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: checkbox label
-parseable name: chkbox-id
-section: country_0_57
-field signature: 1153445598
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 88" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515872">
+field renderer id: 88" data-ddg-testresultelementid="515872">
                           <label for="chkbox-id"><span class="ot-label-txt">checkbox label</span></label>
                           <span class="ot-label-status">label</span>
                         </div>
@@ -4052,7 +2880,7 @@ field renderer id: 88" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </div>
                 <div class="ot-sel-all-chkbox">
                   <div class="ot-chkbox" id="ot-selall-hostcntr">
-                    <input id="select-all-hosts-groups-handler" type="checkbox" aria-checked="false" title="overall type: UNKNOWN_TYPE
+                    <input id="select-all-hosts-groups-handler" type="checkbox" aria-checked="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: checkbox label
@@ -4063,23 +2891,12 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 89" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: checkbox label
-parseable name: select-all-hosts-groups-handler
-section: country_0_57
-field signature: 3735759945
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 89" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515873">
+field renderer id: 89" data-ddg-testresultelementid="515873">
                     <label for="select-all-hosts-groups-handler"><span class="ot-label-txt">checkbox label</span></label>
                     <span class="ot-label-status">label</span>
                   </div>
                   <div class="ot-chkbox" id="ot-selall-vencntr">
-                    <input id="select-all-vendor-groups-handler" type="checkbox" aria-checked="false" title="overall type: UNKNOWN_TYPE
+                    <input id="select-all-vendor-groups-handler" type="checkbox" aria-checked="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: checkbox label
@@ -4090,23 +2907,12 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 90" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: checkbox label
-parseable name: select-all-vendor-groups-handler
-section: country_0_57
-field signature: 2682096146
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 90" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515874">
+field renderer id: 90" data-ddg-testresultelementid="515874">
                     <label for="select-all-vendor-groups-handler"><span class="ot-label-txt">checkbox label</span></label>
                     <span class="ot-label-status">label</span>
                   </div>
                   <div class="ot-chkbox" id="ot-selall-licntr">
-                    <input id="select-all-vendor-leg-handler" type="checkbox" aria-checked="false" title="overall type: UNKNOWN_TYPE
+                    <input id="select-all-vendor-leg-handler" type="checkbox" aria-checked="false" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: checkbox label
@@ -4117,18 +2923,7 @@ form signature: 12989189151014587367
 form signature in host form: 12989189151014587367
 field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
 form renderer id: 0
-field renderer id: 91" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: checkbox label
-parseable name: select-all-vendor-leg-handler
-section: country_0_57
-field signature: 3296464326
-form signature: 12989189151014587367
-form signature in host form: 12989189151014587367
-field frame token: 14B492462F4C63DDF7D26CBC5C2658B2
-form renderer id: 0
-field renderer id: 91" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="515875">
+field renderer id: 91" data-ddg-testresultelementid="515875">
                     <label for="select-all-vendor-leg-handler"><span class="ot-label-txt">checkbox label</span></label>
                     <span class="ot-label-status">label</span>
                   </div>
@@ -4149,12 +2944,12 @@ field renderer id: 91" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
             </button>
           </div>
           <div class="ot-pc-footer-logo">
-            <a href="https://www.onetrust.com/products/cookie-consent/" target="_blank" rel="noopener noreferrer" aria-label="Powered by OneTrust Opens in a new Tab"><img alt="Powered by Onetrust" src="https://cdn.cookielaw.org/logos/static/powered_by_logo.svg" title="Powered by OneTrust Opens in a new Tab"></a>
+            <a href="https://www.onetrust.com/products/cookie-consent/" target="_blank" rel="noopener noreferrer" aria-label="Powered by OneTrust Opens in a new Tab"></a>
           </div>
         </div>
         <!-- Cookie subgroup container --><!-- Vendor list link --><!-- Cookie lost link --><!-- Toggle HTML element --><!-- Checkbox HTML --><!-- Arrow SVG element --><!-- plus minus--><!-- Accordion basic element --><span class="ot-scrn-rdr" aria-atomic="true" aria-live="polite"></span><!-- Vendor Service container and item template -->
       </div>
-      <iframe class="ot-text-resize" title="onetrust-text-resize" style="position: absolute; top: -50000px; width: 100em" aria-hidden="true"></iframe>
+      
     </div>
     <div id="ot-sdk-btn-floating" title="Manage cookie settings" class="ot-floating-button ot-hide">
       <div class="ot-floating-button__front custom-persistent-icon">
@@ -4163,18 +2958,7 @@ field renderer id: 91" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <div class="ot-floating-button__back custom-persistent-icon">
         <button type="button" class="ot-floating-button__close" aria-label="Close Preferences" aria-hidden="true">
           <!--?xml version="1.0" encoding="UTF-8"?-->
-          <svg role="presentation" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-              <g id="Banner_02" class="ot-floating-button__svg-fill" transform="translate(-318.000000, -725.000000)" fill="#ffffff" fill-rule="nonzero">
-                <g id="Group-2" transform="translate(305.000000, 712.000000)">
-                  <g id="icon/16px/white/close">
-                    <polygon id="Line1" points="13.3333333 14.9176256 35.0823744 36.6666667 36.6666667 35.0823744 14.9176256 13.3333333"></polygon>
-                    <polygon id="Line2" transform="translate(25.000000, 25.000000) scale(-1, 1) translate(-25.000000, -25.000000) " points="13.3333333 14.9176256 35.0823744 36.6666667 36.6666667 35.0823744 14.9176256 13.3333333"></polygon>
-                  </g>
-                </g>
-              </g>
-            </g>
-          </svg>
+          
         </button>
       </div>
     </div>

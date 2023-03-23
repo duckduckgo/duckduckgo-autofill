@@ -1,5 +1,6 @@
 <!--
   https://www.airtel.in/s/selfcare/account/verifyOtp
+  rank: 6132
   testRunId: 66
   testResultId: 238107
 -->
@@ -9,321 +10,25 @@
 DO NOT TRANSLATE anything inside the SCRIPT tag except the quoted 
 string warningString.  i.e. var warningString = "Translate this string";
 --->
-  <script language="JavaScript">
-    // <!--var errMsg = "%ERROR%";-->
-    var errMsg = "";
-
-    if (
-      errMsg != null &&
-      errMsg != "" &&
-      window.location.href.indexOf("/account/login.html") == -1
-    ) {
-      errMsg = errMsg.substring(errMsg.indexOf(" ") + 1);
-      if (errMsg.indexOf("Authentication failed") != -1) {
-        pkmsfailure();
-        alert(
-          "Authentication failed! You have keyed in an invalid user name, password or client certificate."
-        );
-      } else {
-        alert(errMsg);
-      }
-      window.location.href = document.referrer;
-    }
-
-    var warningString =
-      "<B>WARNING:</B> To maintain your login session, make sure that your browser is configured to accept Cookies.";
-    document.cookie = "acceptsCookies=yes";
-    if (document.cookie == "") {
-      document.write(warningString);
-    } else {
-      document.cookie =
-        "acceptsCookies=yes; expires=Fri, 13-Apr-1970 00:00:00 GMT";
-    }
-  </script>
+  
   <noscript>
     <b>WARNING:</b> To maintain your login session, make sure that<br />
     your browser is configured to accept Cookies.
   </noscript>
   <!--- END Cookie check block --->
-  <script language="JavaScript">
-    function popupwindow(url, title, w, h) {
-      var left = screen.width / 2 - w / 2;
-      var top = screen.height / 2 - h / 2;
-      return window.open(
-        url,
-        title,
-        "scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, copyhistory=no, width=" +
-          w +
-          ", height=" +
-          h +
-          ", top=" +
-          top +
-          ", left=" +
-          left
-      );
-    }
+  
 
-    function popupwindowTC(url, title, w, h) {
-      var left = screen.width / 2 - w / 2;
-      var top = screen.height / 2 - h / 1.5;
-      return window.open(
-        url,
-        title,
-        "scrollbars=yes, titlebar=no, toolbar=no, location=no, directories=no, status=no, menubar=no, copyhistory=no, resizable=no, width=" +
-          w +
-          ", height=" +
-          h +
-          ", top=" +
-          top +
-          ", left=" +
-          left
-      );
-    }
-  </script>
+  
 
-  <script type="text/javascript">
-    function ClearForm() {
-      document.loginForm.reset();
-    }
+  
 
-    jQuery(document).ready(function ($) {
-      $(".carousel").carousel({
-        interval: 4000,
-      });
-      $(".show-pass").click(function () {
-        if ($("input#paswordReg").attr("type") == "password") {
-          $("input#paswordReg").attr({ type: "text" });
-          $(".show-pass").html("Hide");
-        } else {
-          $("input#paswordReg").attr({ type: "password" });
-          $(".show-pass").html("Show");
-        }
-      });
-      $(".show-pass2").click(function () {
-        if ($("input#pasword").attr("type") == "password") {
-          $("input#pasword").attr({ type: "text" });
-          $(".show-pass2").html("Hide");
-        } else {
-          $("input#pasword").attr({ type: "password" });
-          $(".show-pass2").html("Show");
-        }
-      });
-
-      // Rana Code
-      $("#number-one").keyup(function () {
-        if (this.value.length > 1) {
-          $("#getOtp").show();
-        } else {
-          $("#getOtp").hide();
-        }
-      });
-
-      // reset error message
-      $("#number-one").on("input", function (event) {
-        var numberInputValue = $(this).val && $(this).val();
-        if (numberInputValue > 1 && $("#norequired"))
-          $("#norequired").css("display", "none");
-        if (!numberInputValue.length) {
-          clearWarningsAndErrors();
-        }
-      });
-
-      $("#number-oneFP").on("input", function (event) {
-        var inputValueLength =
-          ($(this) && $(this).val() && $(this).val().length) < 10;
-        if (inputValueLength) {
-          if ($("#paswordFP")) {
-            $("#paswordFP").val("");
-          }
-          if ($("#FPButton")) {
-            $("#FPButton").removeAttr("disabled");
-          }
-          if ($("#otpsentDivFP")) {
-            $("#otpsentDivFP").css("display", "none");
-          }
-          if ($("#mobOTPFieldFP")) {
-            $("#mobOTPFieldFP").css("display", "none");
-          }
-          if ($("#signInFP")) {
-            $("#signInFP").css("display", "none");
-          }
-          if ($("#genericErrLoginFP")) {
-            $("#genericErrLoginFP").css("display", "none");
-          }
-          if ($("#otpLimitFP")) {
-            $("#otpLimitFP").css("display", "none");
-          }
-          if ($("#genericErr1FP")) {
-            $("#genericErr1FP").css("display", "none");
-          }
-          if ($("#notFoundUserIdFP")) {
-            $("#notFoundUserIdFP").css("display", "none");
-          }
-          if ($("#serviceInstanceSpanFP")) {
-            $("#serviceInstanceSpanFP").css("display", "none");
-          }
-          if ($("#otpgeneratedFP")) {
-            $("#otpgeneratedFP").css("display", "none");
-          }
-        }
-        if ($("#norequiredFP")) {
-          $("#norequiredFP").css("display", "none");
-        }
-      });
-
-      $("#paswordFP").keyup(function () {
-        var userId = document.getElementById("number-oneFP").value;
-        if (userId.length === 10 && this.value && this.value.length === 4) {
-          $("#FPProceed").removeClass("btn-gray");
-          $("#FPProceed").removeAttr("disabled");
-        } else {
-          $("#FPProceed").addClass("btn-gray");
-          $("#FPProceed").attr("disabled", true);
-        }
-      });
-
-      $("#pasword").keyup(function () {
-        if (this.value.length > 0) {
-          $("#showPass2").show();
-        } else {
-          $("#showPass2").hide();
-        }
-      });
-      $("#paswordReg").keyup(function () {
-        if (this.value.length > 0) {
-          $("#showPass").show();
-        } else {
-          $("#showPass").hide();
-        }
-      });
-    });
-    function passwordFocus() {
-      $("#pasCriteria").css("display", "block");
-    }
-    function passwordOutFocus() {
-      $("#pasCriteria").css("display", "none");
-    }
-    function passwordValidate() {
-      //	alert("OOOOOO");//filled class
-      var password = document.getElementById("paswordReg").value;
-      if (password) {
-        //password lenth
-        if (password && password.length > 8 && password.length < 16) {
-          $("#pasCriteria1").addClass("filled");
-        } else {
-          $("#pasCriteria1").removeClass("filled");
-        }
-        if (password.match(/\d/) || password.match(/[^a-zA-Z\d]/)) {
-          $("#pasCriteria2").addClass("filled");
-        } else {
-          $("#pasCriteria2").removeClass("filled");
-        }
-      } else {
-        $("#pasCriteria1").removeClass("filled");
-        $("#pasCriteria2").removeClass("filled");
-      }
-    }
-
-    function isSpecial(str) {
-      return /[@~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?1234567890]/g.test(str);
-    }
-
-    $(".filed-mopas").keydown(function (event) {
-      // Allow: backspace, delete, tab, escape, and enter
-      if (
-        event.keyCode == 46 ||
-        event.keyCode == 8 ||
-        event.keyCode == 9 ||
-        event.keyCode == 27 ||
-        event.keyCode == 13 ||
-        // Allow: Ctrl+A
-        (event.keyCode == 65 && event.ctrlKey === true) ||
-        // Allow: home, end, left, right
-        (event.keyCode >= 35 && event.keyCode <= 39)
-      ) {
-        // let it happen, don't do anything
-        return;
-      } else {
-        // Ensure that it is a number and stop the keypress
-        if (
-          event.shiftKey ||
-          ((event.keyCode < 48 || event.keyCode > 57) &&
-            (event.keyCode < 96 || event.keyCode > 105))
-        ) {
-          event.preventDefault();
-        }
-      }
-    });
-
-    function validateOtpOnChange(event) {
-      if (event && event.target && event.target.value) {
-        event.target.value = event.target.value.replace(/[^0-9]/g, "");
-      }
-    }
-  </script>
-
-  <script>
-    $("#number-oneFP").focusin(function () {
-      $("#genericErr1FP").css("display", "none");
-      $("#otpLimitFP").css("display", "none");
-      $("#genericErrLoginFP").css("display", "none");
-      $("#norequiredFP").css("display", "none");
-      $("#mobOTPFieldFP").css("display", "none");
-      $("#otpsentDivFP").css("display", "none");
-    });
-
-    $("#regPasword").focusin(function () {
-      $("#regWarning").css("display", "none");
-      $("#regWarningPic").css("display", "none");
-      $("#regOtpNotSent").css("display", "none");
-      $("#regOtpSentLomit").css("display", "none");
-      $("#regOtpLimDay").css("display", "none");
-      $("#regOtpCommon").css("display", "none");
-      $("#wrongOtp").css("display", "none");
-    });
-
-    $("#number-oneReg").focusin(function () {
-      $("#genericErrLogin").css("display", "none");
-      $("#genericErrReg").css("display", "none");
-      $("#norequired").css("display", "none");
-      $("#mobNoWarning").css("display", "none");
-      $("#genericErr").css("display", "none");
-    });
-
-    $("#number-one").focusin(function () {
-      $("#genericErrLogin").css("display", "none");
-      $("#genericErrReg").css("display", "none");
-      $("#norequired").css("display", "none");
-      $("#mobNoWarning").css("display", "none");
-      $("#genericErr").css("display", "none");
-    });
-
-    $("#pasword").focusin(function () {
-      $("#passwordWarningReg").css("display", "none");
-      $("#pwdValidation").css("display", "none");
-      $("#passwordrequired").css("display", "none");
-      $("#passwordWarning").css("display", "none");
-      $("#mobOTPField").css("display", "none");
-      $("#pasword").removeClass("placeholder");
-    });
-
-    $("#paswordReg").focusin(function () {
-      $("#passwordWarningReg1").css("display", "none");
-      $("#pwdValidation").css("display", "none");
-      $("#passwordrequired").css("display", "none");
-      $("#passwordWarning").css("display", "none");
-      $("#mobOTPField").css("display", "none");
-      $("#pasword").removeClass("placeholder");
-    });
-  </script>
-
-  <div id="inner_Wrapper" style="display: block">
-    <h1 style="height: 0px; visibility: hidden">
+  <div id="inner_Wrapper">
+    <h1>
       Track usage analysis &amp; history
     </h1>
 
     <!-- Forgot Password -->
-    <div id="forgotContainer" class="container-fluid" style="display: none">
+    <div id="forgotContainer" class="container-fluid">
       <div class="row fs-overlay p-0">
         <div class="col-xs-12 col-sm-12 col-md-12">
           <a onclick="cancelForgotPassword();"><span class="icon-close i-t-0 close-top"><i class="icon icon-outlined-cross"></i></span></a>
@@ -337,7 +42,7 @@ string warningString.  i.e. var warningString = "Translate this string";
                 </h3>
               </div>
               <div class="col-md-8 col-sm-8 col-xs-12 col-height regis-wrap">
-                <form name="forgetPassword" method="post" action="" class="main-content form_gapping" data-ddg-formtype="sign in">
+                <form name="forgetPassword" method="post" action="" class="main-content form_gapping">
                   <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 mb-30">
                       <h5>Reset your Password</h5>
@@ -348,7 +53,7 @@ string warningString.  i.e. var warningString = "Translate this string";
                       <label class="label-login">Enter Mobile Number</label>
                       <!--                                                <span>(For SMS Communication)</span>-->
                       <div class="cont">
-                        <input value="" type="text" id="number-oneFP" title="overall type: UNKNOWN_TYPE
+                        <input value="" type="text" id="number-oneFP" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter Mobile Number
@@ -359,45 +64,34 @@ form signature: 4761133326085184990
 form signature in host form: 4761133326085184990
 field frame token: A1A4FF8B32501920C616CAB105F120A6
 form renderer id: 2
-field renderer id: 16" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter Mobile Number
-parseable name: number-oneFP
-section: number-oneFP_0_16
-field signature: 2457869007
-form signature: 4761133326085184990
-form signature in host form: 4761133326085184990
-field frame token: A1A4FF8B32501920C616CAB105F120A6
-form renderer id: 2
-field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530585">
+field renderer id: 16" data-ddg-testresultelementid="530585">
                         <button class="btn btn-go btn-sm" type="button" id="FPButton" onclick="initiateOTPFP();">
                           Go
                         </button>
-                        <p id="otpsentDivFP" style="display: none">
+                        <p id="otpsentDivFP">
                           OTP has been sent on your registered mobile number
                         </p>
-                        <p style="display: none" id="otpgeneratedFP"></p>
-                        <p style="display: none" id="serviceInstanceSpanFP"></p>
-                        <p class="error-msg" id="notFoundUserIdFP" style="display: none">
-                          <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Please enter your correct mobile number.
+                        <p id="otpgeneratedFP"></p>
+                        <p id="serviceInstanceSpanFP"></p>
+                        <p class="error-msg" id="notFoundUserIdFP">
+                          <i class="icon-outlined-warning"></i>Please enter your correct mobile number.
                         </p>
-                        <p class="error-msg" id="genericErr1FP" style="display: none">
-                          <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! Your request could not be processed. Please
+                        <p class="error-msg" id="genericErr1FP">
+                          <i class="icon-outlined-warning"></i>Sorry! Your request could not be processed. Please
                           try again later.
                         </p>
-                        <p class="error-msg" id="otpLimitFP" style="display: none; color: red">
-                          <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! You have reached the maximum limit for
+                        <p class="error-msg" id="otpLimitFP">
+                          <i class="icon-outlined-warning"></i>Sorry! You have reached the maximum limit for
                           requesting an OTP. Please try again later.
                         </p>
-                        <p style="display: none" id="signInFP"></p>
-                        <p style="display: none; color: red" id="genericErrLoginFP" class="hideErr">
+                        <p id="signInFP"></p>
+                        <p id="genericErrLoginFP" class="hideErr">
                           User not registered. Please register
                         </p>
-                        <p class="error-msg" id="norequiredFP" style="display: none">
-                          <i class="hideErr" style="margin: 0 4px 2px 0px"></i>This field is required to continue.
+                        <p class="error-msg" id="norequiredFP">
+                          <i class="hideErr"></i>This field is required to continue.
                         </p>
-                        <p class="error-msg" id="mobOTPFieldFP" style="display: none; color: red">
+                        <p class="error-msg" id="mobOTPFieldFP">
                           The mobile number or OTP is incorrect, please try
                           again.
                         </p>
@@ -406,7 +100,7 @@ field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                     <div class="form-group">
                       <label class="label-login"> Enter OTP</label>
                       <div class="cont">
-                        <input value="" type="text" id="paswordFP" maxlength="4" title="overall type: UNKNOWN_TYPE
+                        <input value="" type="text" id="paswordFP" maxlength="4" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter OTP
@@ -417,18 +111,7 @@ form signature: 4761133326085184990
 form signature in host form: 4761133326085184990
 field frame token: A1A4FF8B32501920C616CAB105F120A6
 form renderer id: 2
-field renderer id: 18" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter OTP
-parseable name: paswordFP
-section: number-oneFP_0_16
-field signature: 3603078665
-form signature: 4761133326085184990
-form signature in host form: 4761133326085184990
-field frame token: A1A4FF8B32501920C616CAB105F120A6
-form renderer id: 2
-field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530587">
+field renderer id: 18" data-ddg-testresultelementid="530587">
                         <a href="#" onclick="generateOTPNewFP();" class="link-a">Resend OTP</a>
                       </div>
                     </div>
@@ -458,7 +141,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     <!-- /Forgot Password -->
 
     <!-- Forget set password -->
-    <div class="container-fluid" id="setFPassword" style="display: none">
+    <div class="container-fluid" id="setFPassword">
       <div class="row fs-overlay p-0">
         <div class="col-xs-12 col-sm-12 col-md-12">
           <a onclick="cancelForgotPassword();"><span class="icon-close i-t-0 close-top"><i class="icon icon-outlined-cross"></i></span></a>
@@ -472,33 +155,55 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 </h3>
               </div>
               <div class="col-md-8 col-sm-8 col-xs-12 col-height regis-wrap">
-                <form method="post" name="resteFP" action="" class="main-content form_gapping" data-ddg-formtype="sign in">
+                <form method="post" name="resteFP" action="" class="main-content form_gapping">
                   <div class="row">
                     <div class="col-xs-12 col-sm-12 col-md-12 mb-30">
                       <h5>Reset your Password</h5>
                     </div>
                   </div>
                   <div class="col-xs-12 col-sm-6 col-md-5 pl-0 pr-0 clmn-size40">
-                    <p class="error-msg" id="FPassWarning" style="display: none">
+                    <p class="error-msg" id="FPassWarning">
                       Password should have 9-15 characters.
                     </p>
-                    <p class="error-msg" id="FPassWarning2" style="display: none">
+                    <p class="error-msg" id="FPassWarning2">
                       Password should at least one alphabet, one number and one
                       special character.
                     </p>
-                    <p class="error-msg" id="FPassErrorMessage" style="display: none"></p>
+                    <p class="error-msg" id="FPassErrorMessage"></p>
                     <div class="form-group success-msg">
                       <label class="label-login">Enter New Password</label>
                       <!--                                                <span>(For SMS Communication)</span>-->
                       <div class="cont">
-                        <input value="" type="password" name="newPassword" id="newPassword" data-ddg-testresultelementid="530589" data-manual-scoring="password">
+                        <input value="" type="password" name="newPassword" id="newPassword" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Enter New Password
+parseable name: newPassword
+section: newPassword_0_24
+field signature: 2764606371
+form signature: 15562825405576076248
+form signature in host form: 15562825405576076248
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 3
+field renderer id: 24" data-ddg-testresultelementid="530589" data-manual-scoring="password">
                       </div>
                     </div>
                     <div class="form-group success-msg">
                       <label class="label-login">Confirm New Password</label>
                       <!--                                                <span>(For SMS Communication)</span>-->
                       <div class="cont">
-                        <input value="" type="password" name="cfmPassword" id="cfmPassword" data-ddg-testresultelementid="530591" data-manual-scoring="password">
+                        <input value="" type="password" name="cfmPassword" id="cfmPassword" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm New Password
+parseable name: cfmPassword
+section: newPassword_0_24
+field signature: 1866401371
+form signature: 15562825405576076248
+form signature in host form: 15562825405576076248
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 3
+field renderer id: 25" data-ddg-testresultelementid="530591" data-manual-scoring="password">
                       </div>
                     </div>
                   </div>
@@ -521,11 +226,11 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     <!-- /Forget set password -->
 
     <!-- Forget Password Hint --->
-    <div class="content-wrap signUp" style="display: none" id="hintareaDivFP">
+    <div class="content-wrap signUp" id="hintareaDivFP">
       <section class="bg-white">
-        <form name="form" data-ddg-formtype="sign in">
+        <form name="form">
           <article>
-            <div class="row container-fluid" id="hintareaFP" style="display: block">
+            <div class="row container-fluid" id="hintareaFP">
               <div class="hint-container col-sm-8 col-sm-offset-0">
                 <div class="row gap-horiz-2p">
                   <div class="row gap-vert-3p">
@@ -533,7 +238,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
                     <br>
 
-                    <div id="hintexistingFP" style="display: block">
+                    <div id="hintexistingFP">
                       <p class="color-red bold gap-vert-1p">
                         Please answer the question listed below to proceed.
                       </p>
@@ -548,7 +253,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                         </div>
 
                         <div class="col-sm-7 form-group">
-                          <input id="hintanspromptFP" onkeydown="if (event.keyCode==13) validateHintAnswerFP();" name="name" type="text" placeholder="Enter Answer" ng-model="email" title="overall type: UNKNOWN_TYPE
+                          <input id="hintanspromptFP" onkeydown="if (event.keyCode==13) validateHintAnswerFP();" name="name" type="text" placeholder="Enter Answer" ng-model="email" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter Answer
@@ -559,21 +264,10 @@ form signature: 10306656026519945153
 form signature in host form: 10306656026519945153
 field frame token: A1A4FF8B32501920C616CAB105F120A6
 form renderer id: 4
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter Answer
-parseable name: name
-section: name_0_26
-field signature: 3489289364
-form signature: 10306656026519945153
-form signature in host form: 10306656026519945153
-field frame token: A1A4FF8B32501920C616CAB105F120A6
-form renderer id: 4
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.fullName" data-ddg-testresultelementid="530593">
+field renderer id: 26" data-ddg-testresultelementid="530593">
                           <!-- <p class="message"></p> -->
                           <label class="gap-top-2p">
-                            <span class="input-error first-letter-caseUp" style="display: none">Your Answer is invalid. Please try again.</span>
+                            <span class="input-error first-letter-caseUp">Your Answer is invalid. Please try again.</span>
                           </label>
                         </div>
                       </div>
@@ -591,9 +285,9 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
               </div>
             </div>
 
-            <div class="leftBox" id="hintBlockedFP" style="display: none">
+            <div class="leftBox" id="hintBlockedFP">
               <div>
-                <img width="562" height="6" src="/common/images/box1_top.jpg" alt="box top">
+                
               </div>
               <div class="boxGray">
                 <div class="securityQuestion">
@@ -612,11 +306,11 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
               </div>
             </div>
 
-            <div class="hint-container col-sm-8 col-sm-offset-0" id="resetconfirm1" style="display: none">
+            <div class="hint-container col-sm-8 col-sm-offset-0" id="resetconfirm1">
               <!--	<div><img width="562" height="6" alt="box top" src="/common/images/box1_top.jpg"></div> -->
               <div class="boxGray">
                 <p>
-                  <img width="31" height="30" alt="login to my account" src="/common/images/login-to-my-account.gif" class="color-red bold gap-vert-1p">
+                  
                   don't know the answer
                 </p>
 
@@ -628,19 +322,19 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                 </p>
                 <br>
                 <p><strong>Would you like us to reset your account?</strong></p>
-                <a href="javascript:void(0)" onclick="retryHint()"><img width="198" height="33" alt="No, i will try to answer " src="/common/images/will_try_answer.gif"></a>
-                <a href="javascript:void(0)" onclick="deleteProfileNew()"><img width="188" height="33" alt="yes reset my account" src="/common/images/yes_reset.gif"></a>
+                <a href="javascript:void(0)" onclick="retryHint()"></a>
+                <a href="javascript:void(0)" onclick="deleteProfileNew()"></a>
                 <div></div>
                 <div></div>
               </div>
               <!--	<div><img width="562" height="6" alt="box Bot" src="/common/images/box1_bot.jpg"></div> -->
             </div>
 
-            <div class="leftBox" id="resetsuccess" style="display: none">
+            <div class="leftBox" id="resetsuccess">
               <!--	<div><img width="562" height="6" alt="box top" src="/common/images/box1_top.jpg"></div> -->
               <div class="boxGray">
                 <h2>
-                  <img width="31" height="30" alt="login to my account" src="/common/images/login-to-my-account.gif">
+                  
                   account reset
                 </h2>
 
@@ -653,9 +347,9 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
             </div>
             <!-- Left Section End -->
 
-            <div style="display: none">
+            <div>
               <div>
-                <img width="285" height="6" src="/common/images/box_blue_top.jpg" alt="bot Top">
+                
               </div>
               <div class="blueBox">
                 <h2>Sign in Help</h2>
@@ -668,7 +362,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                 </ul>
               </div>
               <div align="center">
-                <a href="javascript:void(0)" onclick="popupwindowTC('http://www.airtel.in/airtel_my_account/','demo','1050','610')"><img src="/common/images/you-tube-thumbnail.jpg" alt="demo video"></a>
+                <a href="javascript:void(0)" onclick="popupwindowTC('http://www.airtel.in/airtel_my_account/','demo','1050','610')"></a>
               </div>
             </div>
             <!-- Right Section End -->
@@ -687,13 +381,13 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
         </div>
         <div class="container-fluid large-menu">
           <div class="navbar-header">
-            <a class="navbar-brand" target="_self" href="http://www.airtel.in/"><img alt="airtel_logo" src="/common/paymentBank/images/airtel-logo.png"></a>
+            <a class="navbar-brand" target="_self" href="http://www.airtel.in/"></a>
           </div>
         </div>
       </nav>
     </header>
 
-    <div class="main-content-wrapper" id="mainBody" style="display: block">
+    <div class="main-content-wrapper" id="mainBody">
       <div class="ui-tab container-fluid pl-0 pr-0">
         <div class="row row-eq-height" id="div2">
           <div class="col-xs-12 col-sm-6 col-md-6 pl-0 pr-0">
@@ -705,7 +399,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     <h2>Manage <span>all your accounts.</span></h2>
                   </div>
                   <div class="image hidden-xs">
-                    <img src="/common/paymentBank/images/postpaid-digitaltv-broadband_240px.png">
+                    
                   </div>
                 </div>
                 <div class="item active">
@@ -713,7 +407,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     <h2>Avail <span>Thanks Benefits</span></h2>
                   </div>
                   <div class="image hidden-xs">
-                    <img src="/common/paymentBank/images/thanks-benefit.svg">
+                    
                   </div>
                 </div>
                 <div class="item">
@@ -721,7 +415,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     <h2>Track usage <span>analysis &amp; history.</span></h2>
                   </div>
                   <div class="image hidden-xs">
-                    <img src="/common/paymentBank/images/illustration-search-files_240px.png">
+                    
                   </div>
                 </div>
                 <div class="item">
@@ -729,7 +423,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     <h2>Set favorite <span>payment options.</span></h2>
                   </div>
                   <div class="image hidden-xs">
-                    <img src="/common/paymentBank/images/illustration-payment_240px.png">
+                    
                   </div>
                 </div>
                 <div class="item">
@@ -740,7 +434,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     </h2>
                   </div>
                   <div class="image hidden-xs">
-                    <img src="/common/paymentBank/images/illustration-smartphone-action_240px.png">
+                    
                   </div>
                 </div>
                 <div class="item">
@@ -751,7 +445,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     </h2>
                   </div>
                   <div class="image hidden-xs">
-                    <img src="/common/paymentBank/images/illustration-4g-sim_240px.png">
+                    
                   </div>
                 </div>
               </div>
@@ -763,19 +457,19 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
             <div class="tab-content clearfix">
               <div class="tab-pane active" id="login">
                 <!--success message-->
-                <div class="success-wrapper" id="otpsentDiv" style="display: none">
+                <div class="success-wrapper" id="otpsentDiv">
                   <a href="javascript:void(0)" onclick="document.getElementById('otpsentDiv').style.display = 'none';return false;" class="close" data-dismiss="alert"><i class="icon-outlined-cross"></i></a>
 
                   <h3>One time password sent.</h3>
                   <p id="serviceInstanceSpan"></p>
                   <p id="mobileOTPemail"></p>
                 </div>
-                <div class="success-wrapper" id="forgetPwdSuccess" style="display: none">
+                <div class="success-wrapper" id="forgetPwdSuccess">
                   <a href="javascript:void(0)" onclick="document.getElementById('forgetPwdSuccess').style.display = 'none';return false;" class="close" data-dismiss="alert"><i class="icon-outlined-cross"></i></a>
 
                   <h3>Password Updated Successfully.</h3>
                 </div>
-                <div class="success-wrapper" id="forgetPwdFailure" style="display: none">
+                <div class="success-wrapper" id="forgetPwdFailure">
                   <a href="javascript:void(0)" onclick="document.getElementById('forgetPwdSuccess').style.display = 'none';return false;" class="close" data-dismiss="alert"><i class="icon-outlined-cross"></i></a>
 
                   <h3>oops something went wrong, try again later.</h3>
@@ -783,95 +477,109 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                 <!--success message-->
                 <div class="login-wrapper">
                   <div class="form-wrapper">
-                    <form name="loginForm" method="POST" action="" data-ddg-formtype="sign in">
+                    <form name="loginForm" method="POST" action="">
                       <div class="field">
                         <div class="ff-wrapper pb-20">
-                          <p class="error-msg" id="genericErr" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>These fields are required to continue.
+                          <p class="error-msg" id="genericErr">
+                            <i class="icon-outlined-warning"></i>These fields are required to continue.
                           </p>
-                          <p class="error-msg" id="norequired" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>This field is required to continue.
+                          <p class="error-msg" id="norequired">
+                            <i class="icon-outlined-warning"></i>This field is required to continue.
                           </p>
-                          <p class="error-msg" id="invalid-service-id-and-rtn" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Oops! You have entered invalid mobile number or
+                          <p class="error-msg" id="invalid-service-id-and-rtn">
+                            <i class="icon-outlined-warning"></i>Oops! You have entered invalid mobile number or
                             service ID.
                           </p>
-                          <p class="error-msg" id="invalid-credentials-error" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>The mobile number or password is incorrect, please
+                          <p class="error-msg" id="invalid-credentials-error">
+                            <i class="icon-outlined-warning"></i>The mobile number or password is incorrect, please
                             try again.
                           </p>
-                          <p class="error-msg" id="max-login-attempt-reached-error" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Too many failed login attempts. Please try again
+                          <p class="error-msg" id="max-login-attempt-reached-error">
+                            <i class="icon-outlined-warning"></i>Too many failed login attempts. Please try again
                             after 30 minutes.
                           </p>
-                          <p class="error-msg" id="mobNoField" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>The mobile number or OTP is incorrect, please try
+                          <p class="error-msg" id="mobNoField">
+                            <i class="icon-outlined-warning"></i>The mobile number or OTP is incorrect, please try
                             again.
                           </p>
-                          <p class="error-msg" id="mobOTPField" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>The mobile number or OTP is incorrect, please try
+                          <p class="error-msg" id="mobOTPField">
+                            <i class="icon-outlined-warning"></i>The mobile number or OTP is incorrect, please try
                             again.
                           </p>
 
-                          <p class="error-msg" id="genericErrLogin" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>User not registered. Please register
+                          <p class="error-msg" id="genericErrLogin">
+                            <i class="icon-outlined-warning"></i>User not registered. Please register
                           </p>
-                          <p class="error-msg" id="genericErr1" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! Your request could not be processed. Please
+                          <p class="error-msg" id="genericErr1">
+                            <i class="icon-outlined-warning"></i>Sorry! Your request could not be processed. Please
                             try again later.
                           </p>
-                          <p class="error-msg" id="genericErrRecaptcha" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! Your request could not be processed. Please
+                          <p class="error-msg" id="genericErrRecaptcha">
+                            <i class="icon-outlined-warning"></i>Sorry! Your request could not be processed. Please
                             reload and try again later.
                           </p>
-                          <p class="error-msg" id="otpLimit" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! You have reached the maximum limit for
+                          <p class="error-msg" id="otpLimit">
+                            <i class="icon-outlined-warning"></i>Sorry! You have reached the maximum limit for
                             requesting/Validating an OTP. Please try again
                             later.
                           </p>
 
-                          <input name="mobileNumber" id="number-one" maxlength="20" type="text" placeholder="Mobile No./ Service ID" class="filed-mo-si" tabindex="1" autocomplete="off" data-ddg-testresultelementid="530595" data-manual-scoring="phone">
-                          <span class="icon_alert" id="mobNoWarning" style="display: none"></span>
+                          <input name="mobileNumber" id="number-one" maxlength="20" type="text" placeholder="Mobile No./ Service ID" class="filed-mo-si" tabindex="1" autocomplete="off" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: PHONE_HOME_WHOLE_NUMBER
+heuristic type: UNKNOWN_TYPE
+label: Sorry!
+															You have reached the maximum limit for requesting/Validating an OTP. Please tr
+parseable name: mobileNumber
+section: mobileNumber_0_28
+field signature: 2986498076
+form signature: 13500935716411724682
+form signature in host form: 13500935716411724682
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 5
+field renderer id: 28
+autocomplete: off" data-ddg-testresultelementid="530595" data-manual-scoring="phone">
+                          <span class="icon_alert" id="mobNoWarning"></span>
                           <a href="javascript:void(0)" onclick="popupwindow('/common/registration-overlay.html','800','600');analyticsLoginPage('locate these details')" tabindex="-1">
                             <span class="guide-text">LOCATE THESE DETAILS
                               <i class="icn-details"></i></span></a>
                         </div>
-                        <p class="error-msg" id="passwordrequired2" style="display: none">
-                          <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Please enter valid password.
+                        <p class="error-msg" id="passwordrequired2">
+                          <i class="icon-outlined-warning"></i>Please enter valid password.
                         </p>
-                        <p class="error-msg" id="passwordWarning2" style="display: none">
-                          <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Please input your password
+                        <p class="error-msg" id="passwordWarning2">
+                          <i class="icon-outlined-warning"></i>Please input your password
                         </p>
 
-                        <p class="error-msg" id="passwordWarning" style="display: none">
-                          <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Please input your OTP.
+                        <p class="error-msg" id="passwordWarning">
+                          <i class="icon-outlined-warning"></i>Please input your OTP.
                         </p>
                         <div class="ff-wrapper">
                           <!-- <input name="password" id="pasword" autocomplete="off" maxlength="15" type="password" placeholder="Password / OTP"
 														 onkeydown="if (event.keyCode==13) checkUserMobNew();" tabindex="2" /> -->
-                          <input name="password" id="pasword" autocomplete="off" maxlength="4" type="password" pattern="[0-9]*" inputmode="numeric" placeholder="OTP" onkeydown="if (event.keyCode==13) checkUserMobNew();" tabindex="2" onkeyup="validateOtpOnChange(event)" data-ddg-testresultelementid="530597" data-manual-scoring="password">
-                          <span class="link-a show-pass2" id="showPass2" style="display: none">Show</span>
-                          <span id="passwordrequired" style="display: none" class="icon_alert left94"></span>
+                          <input name="password" id="pasword" autocomplete="off" maxlength="4" type="password" pattern="[0-9]*" inputmode="numeric" placeholder="OTP" onkeydown="if (event.keyCode==13) checkUserMobNew();" tabindex="2" onkeyup="validateOtpOnChange(event)" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: OTP
+parseable name: password
+section: mobileNumber_0_28
+field signature: 2051817934
+form signature: 13500935716411724682
+form signature in host form: 13500935716411724682
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 5
+field renderer id: 29
+autocomplete: off" data-ddg-testresultelementid="530597" data-manual-scoring="password">
+                          <span class="link-a show-pass2" id="showPass2">Show</span>
+                          <span id="passwordrequired" class="icon_alert left94"></span>
                           <span class="guide-text one_time_password_red" onclick="initiateOTP()" id="getOTPSpan">CLICK TO GET ONE TIME PASSWORD (OTP)</span>
                         </div>
                         <div id="recaptcha" class="g-recaptcha" data-sitekey="6LdfN6MZAAAAAOzjjeAIDcHQkGHDdVBLb2IFdvbR" data-callback="verifyRecaptcha" data-error-callback="onRecaptchaError" data-expired-callback="onExpire" data-size="invisible">
-                          <div class="grecaptcha-badge" data-style="bottomright" style="
-                              width: 256px;
-                              height: 60px;
-                              display: block;
-                              transition: right 0.3s ease 0s;
-                              position: fixed;
-                              bottom: 14px;
-                              right: -186px;
-                              box-shadow: gray 0px 0px 5px;
-                              border-radius: 2px;
-                              overflow: hidden;
-                            ">
+                          <div class="grecaptcha-badge" data-style="bottomright">
                             <div class="grecaptcha-logo">
-                              <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LdfN6MZAAAAAOzjjeAIDcHQkGHDdVBLb2IFdvbR&amp;co=aHR0cHM6Ly93d3cuYWlydGVsLmluOjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=invisible&amp;cb=ve4h6r3q1s97" width="256" height="60" role="presentation" name="a-i6wcpcaryftj" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+                              
                             </div>
                             <div class="grecaptcha-error"></div>
-                            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+                            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: oops something went wrong, try again later.
@@ -882,28 +590,9 @@ form signature: 13500935716411724682
 form signature in host form: 13500935716411724682
 field frame token: A1A4FF8B32501920C616CAB105F120A6
 form renderer id: 5
-field renderer id: 48" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: oops something went wrong, try again later.
-parseable name: g-recaptcha-response
-section: mobileNumber_0_28
-field signature: 3309787731
-form signature: 13500935716411724682
-form signature in host form: 13500935716411724682
-field frame token: A1A4FF8B32501920C616CAB105F120A6
-form renderer id: 5
-field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="530598" style="
-                                width: 250px;
-                                height: 40px;
-                                border: 1px solid rgb(193, 193, 193);
-                                margin: 10px 25px;
-                                padding: 0px;
-                                resize: none;
-                                display: none;
-                              "></textarea>
+field renderer id: 48" data-ddg-testresultelementid="530598"></textarea>
                           </div>
-                          <iframe style="display: none"></iframe>
+                          
                         </div>
                         <div class="action">
                           <a onclick="checkUserMobNew();" onkeydown="if (event.keyCode==13) checkUserMobNew();" type="submit" class="btn-primary" id="loginButtonSpan" tabindex="3">LOGIN</a>
@@ -929,9 +618,9 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           </div>
         </div>
         <!-- Adding REG OTP SECTION -->
-        <div class="content-wrap" id="regOtpDiv" style="display: none">
+        <div class="content-wrap" id="regOtpDiv">
           <section class="bg-white reg-otp">
-            <form name="form" data-ddg-formtype="sign in">
+            <form name="form">
               <article>
                 <div class="row container-fluid">
                   <div class="col-lg-5 col-md-5 hidden-sm hidden-xs left-block">
@@ -942,7 +631,7 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <p class="para-left gap-top-1p">
                       A One Time Password (OTP) was sent to the number
                     </p>
-                    <p style="display: inline-block" id="serviceInstanceSpanReg"></p>
+                    <p id="serviceInstanceSpanReg"></p>
                     . Didn't get it?
                     <a><span onclick="resendOTPReg();" class="resend-otp">
                         RESEND OTP?
@@ -971,51 +660,51 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <section class="no-gap-top">
                       <article>
                         <div class="container">
-                          <p class="error-msg ml-15" id="wrongOtp" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Oops! The OTP you have keyed in is invalid. Please
+                          <p class="error-msg ml-15" id="wrongOtp">
+                            <i class="icon-outlined-warning"></i>Oops! The OTP you have keyed in is invalid. Please
                             try again.
                           </p>
-                          <p class="error-msg ml-15" id="regWarning" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Incorrect OTP. Please try again.
+                          <p class="error-msg ml-15" id="regWarning">
+                            <i class="icon-outlined-warning"></i>Incorrect OTP. Please try again.
                           </p>
-                          <p class="error-msg" id="mobOTPFieldOTP" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>The mobile number or OTP is incorrect, please try
+                          <p class="error-msg" id="mobOTPFieldOTP">
+                            <i class="icon-outlined-warning"></i>The mobile number or OTP is incorrect, please try
                             again.
                           </p>
-                          <p class="error-msg" id="genericErr1Reg" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! Your request could not be processed. Please
+                          <p class="error-msg" id="genericErr1Reg">
+                            <i class="icon-outlined-warning"></i>Sorry! Your request could not be processed. Please
                             try again later.
                           </p>
-                          <p class="error-msg ml-15" id="regOtpSent" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>We have sent a new One Time Password (OTP) to your
+                          <p class="error-msg ml-15" id="regOtpSent">
+                            <i class="icon-outlined-warning"></i>We have sent a new One Time Password (OTP) to your
                             mobile number
                           </p>
-                          <p class="error-msg ml-15" id="regOtpSentMail" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>We have sent a new One Time Password (OTP) to your
+                          <p class="error-msg ml-15" id="regOtpSentMail">
+                            <i class="icon-outlined-warning"></i>We have sent a new One Time Password (OTP) to your
                             mobile number as well as registered email
                           </p>
-                          <p class="error-msg ml-15" id="regOtpNotSent" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! We are unable to send an OTP to your mobile
+                          <p class="error-msg ml-15" id="regOtpNotSent">
+                            <i class="icon-outlined-warning"></i>Sorry! We are unable to send an OTP to your mobile
                             number at this time. Please try again later.
                           </p>
-                          <p class="error-msg ml-15" id="regOtpSentLomit" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! You have reached the maximum limit for
+                          <p class="error-msg ml-15" id="regOtpSentLomit">
+                            <i class="icon-outlined-warning"></i>Sorry! You have reached the maximum limit for
                             requesting an OTP. Please try again later.
                           </p>
-                          <p class="error-msg ml-15" id="regOtpLimDay" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! You have reached the maximum limit for
+                          <p class="error-msg ml-15" id="regOtpLimDay">
+                            <i class="icon-outlined-warning"></i>Sorry! You have reached the maximum limit for
                             requesting an OTP. Please try again after 24 hours.
                           </p>
-                          <p class="error-msg ml-15" id="regOtpCommon" style="display: none">
-                            <i class="icon-outlined-warning" style="margin: 0 4px 2px 0px"></i>Sorry! Your request could not be processed at the
+                          <p class="error-msg ml-15" id="regOtpCommon">
+                            <i class="icon-outlined-warning"></i>Sorry! Your request could not be processed at the
                             moment. Please try again later.
                           </p>
                           <div class="col-sm-7 form-group no-gap-left">
                             <label class="field-title">ONE TIME PASSWORD
-                              <div class="icon-input-error" style="display: none" id="regWarningPic"></div>
+                              <div class="icon-input-error" id="regWarningPic"></div>
                             </label>
 
-                            <input id="regPasword" maxlength="4" class="filed-mopas" name="name" type="text" placeholder="Enter OTP" onkeydown="if (event.keyCode==13) event.preventDefault();" title="overall type: UNKNOWN_TYPE
+                            <input id="regPasword" maxlength="4" class="filed-mopas" name="name" type="text" placeholder="Enter OTP" onkeydown="if (event.keyCode==13) event.preventDefault();" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: ONE TIME PASSWORD
@@ -1026,20 +715,9 @@ form signature: 10306656026519945153
 form signature in host form: 10306656026519945153
 field frame token: A1A4FF8B32501920C616CAB105F120A6
 form renderer id: 6
-field renderer id: 37" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: ONE TIME PASSWORD
-parseable name: name
-section: name_0_37
-field signature: 3489289364
-form signature: 10306656026519945153
-form signature in host form: 10306656026519945153
-field frame token: A1A4FF8B32501920C616CAB105F120A6
-form renderer id: 6
-field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.fullName" data-ddg-testresultelementid="530599">
+field renderer id: 37" data-ddg-testresultelementid="530599">
                             <label class="gap-top-2p">
-                              <span style="display: none" class="input-error first-letter-caseUp">Incorrect OTP. Please try again.</span>
+                              <span class="input-error first-letter-caseUp">Incorrect OTP. Please try again.</span>
                             </label>
                           </div>
 
@@ -1076,7 +754,7 @@ field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 submit-otp hidden">
                   <div class="row-fluid">
-                    <img src="/common/assets/images/bills-payments/Mobile-FindNumber_airtel_selfcare.png">
+                    
                   </div>
                   <div class="row-fluid visible-sm visible-xs gap-top-2p">
                     <br>
@@ -1100,18 +778,18 @@ field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
       </div>
       <!-- REG OTP SECTION END --->
       <!-- Ajit Hint Area Start -->
-      <div class="content-wrap signUp" style="display: none" id="hintareaDiv">
+      <div class="content-wrap signUp" id="hintareaDiv">
         <section class="bg-white">
-          <form name="form" data-ddg-formtype="sign in">
+          <form name="form">
             <article>
-              <div class="row container-fluid" id="hintarea" style="display: none">
+              <div class="row container-fluid" id="hintarea">
                 <div class="hint-container col-sm-8 col-sm-offset-0">
                   <div class="row gap-horiz-2p">
                     <div class="row title-wrapper gap-vert-2p">
                       <div class="title-container col-lg-12 col-md-12 col-sm-6 col-xs-4 no-gap-horiz border-bottom">
                         <ul>
                           <li class="gap-right-2p">
-                            <img src="/common/assets/images/icon-outlined-phone-local-red.png">
+                            
                           </li>
                           <li>
                             <h6>Sign In</h6>
@@ -1123,21 +801,32 @@ field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     <div class="row gap-vert-3p">
                       <div class="col-xs-12 visible-sm visible-xs"><br></div>
 
-                      <div class="col-sm-6 col-xs-12 col-sm-offset-right-6 form-group no-gap-left" style="display: none">
+                      <div class="col-sm-6 col-xs-12 col-sm-offset-right-6 form-group no-gap-left">
                         <label class="field-title">Your mobile number:
-                          <div class="icon-input-error" style="display: none">
-                            <img src="/common/assets/images/ps/icon-warning_20px.png">
+                          <div class="icon-input-error">
+                            
                           </div>
                         </label>
 
-                        <input disabled="disabled" id="loginusername1" name="name" type="text" placeholder="Enter your email" ng-model="email" data-ddg-testresultelementid="530600" data-manual-scoring="phone">
+                        <input disabled="disabled" id="loginusername1" name="name" type="text" placeholder="Enter your email" ng-model="email" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Your mobile number:
+parseable name: name
+section: name_0_41
+field signature: 3489289364
+form signature: 2893063853886349445
+form signature in host form: 2893063853886349445
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 7
+field renderer id: 41" data-ddg-testresultelementid="530600" data-manual-scoring="phone">
                         <!-- <p class="message"></p> -->
                         <label class="gap-top-2p">
-                          <span class="input-error first-letter-caseUp" style="display: none">Your email ID is invalid. Please try again.</span>
+                          <span class="input-error first-letter-caseUp">Your email ID is invalid. Please try again.</span>
                         </label>
                       </div>
 
-                      <div id="hintnew" style="display: block">
+                      <div id="hintnew">
                         <p class="color-red bold gap-vert-1p">
                           Please set your custom security question.
                         </p>
@@ -1157,13 +846,13 @@ field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                         <div class="col-sm-12 no-gap-horiz">
                           <div class="col-sm-7 col-sm-offset-right-1 form-group no-gap-left">
                             <label class="field-title">Question
-                              <div class="icon-input-error" style="display: none">
-                                <img src="/common/assets/images/ps/icon-warning_20px.png">
+                              <div class="icon-input-error">
+                                
                               </div>
                             </label>
 
                             <!-- <input required name="name" type="text" placeholder="Enter your email" ng-model="email"> -->
-                            <select class="appearence-menulist" id="hintques" name="" title="overall type: UNKNOWN_TYPE
+                            <select class="appearence-menulist" id="hintques" name="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Question
@@ -1174,18 +863,7 @@ form signature: 2893063853886349445
 form signature in host form: 2893063853886349445
 field frame token: A1A4FF8B32501920C616CAB105F120A6
 form renderer id: 7
-field renderer id: 42" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Question
-parseable name: hintques
-section: name_0_41
-field signature: 2617843574
-form signature: 2893063853886349445
-form signature in host form: 2893063853886349445
-field frame token: A1A4FF8B32501920C616CAB105F120A6
-form renderer id: 7
-field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530601">
+field renderer id: 42" data-ddg-testresultelementid="530601">
                               <option value="1">
                                 What is your date of birth(dd/mm/yyyy)?
                               </option>
@@ -1219,22 +897,33 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </select>
                             <!-- <p class="message"></p> -->
                             <label class="gap-top-2p">
-                              <span class="input-error first-letter-caseUp" style="display: none">Your Question is invalid. Please try
+                              <span class="input-error first-letter-caseUp">Your Question is invalid. Please try
                                 again.</span>
                             </label>
                           </div>
 
                           <div class="col-sm-4 form-group">
                             <label class="field-title">Answer
-                              <div class="icon-input-error" style="display: none">
-                                <img src="/common/assets/images/ps/icon-warning_20px.png">
+                              <div class="icon-input-error">
+                                
                               </div>
                             </label>
 
-                            <input name="name" type="text" placeholder="Enter Answer" ng-model="email" id="hintans" onkeydown="if (event.keyCode==13) validateHintNew();" data-ddg-testresultelementid="530602" data-manual-scoring="fullName">
+                            <input name="name" type="text" placeholder="Enter Answer" ng-model="email" id="hintans" onkeydown="if (event.keyCode==13) validateHintNew();" autofill-information="overall type: NAME_FULL
+server type: NO_SERVER_DATA
+heuristic type: NAME_FULL
+label: Answer
+parseable name: name
+section: name_0_41
+field signature: 3489289364
+form signature: 2893063853886349445
+form signature in host form: 2893063853886349445
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 7
+field renderer id: 43" data-ddg-testresultelementid="530602" data-manual-scoring="fullName">
                             <!-- <p class="message"></p> -->
                             <label class="gap-top-2p">
-                              <span class="input-error first-letter-caseUp" style="display: none">Your Answer is invalid. Please try again.</span>
+                              <span class="input-error first-letter-caseUp">Your Answer is invalid. Please try again.</span>
                             </label>
                           </div>
                         </div>
@@ -1245,7 +934,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                         </div>
                       </div>
 
-                      <div id="hintexisting" style="display: block">
+                      <div id="hintexisting">
                         <p class="color-red bold gap-vert-1p">
                           Please answer the question listed below to proceed.
                         </p>
@@ -1266,10 +955,21 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 										   </div>
 									  </label>  -->
 
-                            <input id="hintansprompt" onkeydown="if (event.keyCode==13) validateHintAnswer();" name="name" type="text" placeholder="Enter Answer" ng-model="email" data-ddg-testresultelementid="530603" data-manual-scoring="fullName">
+                            <input id="hintansprompt" onkeydown="if (event.keyCode==13) validateHintAnswer();" name="name" type="text" placeholder="Enter Answer" ng-model="email" autofill-information="overall type: NAME_FULL
+server type: NO_SERVER_DATA
+heuristic type: NAME_FULL
+label: Enter Answer
+parseable name: name
+section: name_0_41
+field signature: 3489289364
+form signature: 2893063853886349445
+form signature in host form: 2893063853886349445
+field frame token: A1A4FF8B32501920C616CAB105F120A6
+form renderer id: 7
+field renderer id: 44" data-ddg-testresultelementid="530603" data-manual-scoring="fullName">
                             <!-- <p class="message"></p> -->
                             <label class="gap-top-2p">
-                              <span class="input-error first-letter-caseUp" style="display: none">Your Answer is invalid. Please try again.</span>
+                              <span class="input-error first-letter-caseUp">Your Answer is invalid. Please try again.</span>
                             </label>
                           </div>
                         </div>
@@ -1285,9 +985,9 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 </div>
               </div>
 
-              <div class="leftBox" id="hintBlocked" style="display: none">
+              <div class="leftBox" id="hintBlocked">
                 <div>
-                  <img width="562" height="6" src="/common/images/box1_top.jpg" alt="box top">
+                  
                 </div>
                 <div class="boxGray">
                   <div class="securityQuestion">
@@ -1306,11 +1006,11 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 </div>
               </div>
 
-              <div class="hint-container col-sm-8 col-sm-offset-0" id="resetconfirm" style="display: none">
+              <div class="hint-container col-sm-8 col-sm-offset-0" id="resetconfirm">
                 <!--	<div><img width="562" height="6" alt="box top" src="/common/images/box1_top.jpg"></div> -->
                 <div class="boxGray">
                   <p>
-                    <img width="31" height="30" alt="login to my account" src="/common/images/login-to-my-account.gif" class="color-red bold gap-vert-1p">
+                    
                     don't know the answer
                   </p>
 
@@ -1324,19 +1024,19 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <p>
                     <strong>Would you like us to reset your account?</strong>
                   </p>
-                  <a href="javascript:void(0)" onclick="retryHint()"><img width="198" height="33" alt="No, i will try to answer " src="/common/images/will_try_answer.gif"></a>
-                  <a href="javascript:void(0)" onclick="deleteProfileNew()"><img width="188" height="33" alt="yes reset my account" src="/common/images/yes_reset.gif"></a>
+                  <a href="javascript:void(0)" onclick="retryHint()"></a>
+                  <a href="javascript:void(0)" onclick="deleteProfileNew()"></a>
                   <div></div>
                   <div></div>
                 </div>
                 <!--	<div><img width="562" height="6" alt="box Bot" src="/common/images/box1_bot.jpg"></div> -->
               </div>
 
-              <div class="leftBox" id="resetsuccess" style="display: none">
+              <div class="leftBox" id="resetsuccess">
                 <!--	<div><img width="562" height="6" alt="box top" src="/common/images/box1_top.jpg"></div> -->
                 <div class="boxGray">
                   <h2>
-                    <img width="31" height="30" alt="login to my account" src="/common/images/login-to-my-account.gif">
+                    
                     account reset
                   </h2>
 
@@ -1349,9 +1049,9 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </div>
               <!-- Left Section End -->
 
-              <div style="display: none">
+              <div>
                 <div>
-                  <img width="285" height="6" src="/common/images/box_blue_top.jpg" alt="bot Top">
+                  
                 </div>
                 <div class="blueBox">
                   <h2>Sign in Help</h2>
@@ -1364,7 +1064,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   </ul>
                 </div>
                 <div align="center">
-                  <a href="javascript:void(0)" onclick="popupwindowTC('http://www.airtel.in/airtel_my_account/','demo','1050','610')"><img src="/common/images/you-tube-thumbnail.jpg" alt="demo video"></a>
+                  <a href="javascript:void(0)" onclick="popupwindowTC('http://www.airtel.in/airtel_my_account/','demo','1050','610')"></a>
                 </div>
               </div>
               <!-- Right Section End -->
@@ -1389,7 +1089,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       </div>
       <div class="row airtelapp-wrapper">
         <div class="col-xs-12 col-sm-6 col-md-6 pl-0 pr-0 pull-right mob-app">
-          <img src="/common/paymentBank/images/samsung-galaxy-note-edge-mountain-communications-vail-avon-eagle1_654x609px.png">
+          
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6">
           <h6>Airtel Thanks App</h6>
@@ -1400,25 +1100,25 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </p>
           <ul class="scan-wrap hidden-xs">
             <li>
-              <a href="http://www.airtel.in/5/qr" target="_blank"><img src="/common/paymentBank/images/QR-Code_70x73px.png"></a>
+              <a href="http://www.airtel.in/5/qr" target="_blank"></a>
             </li>
             <li>Scan the code to access from your device</li>
           </ul>
-          <div class="col-xs-12 col-sm-6 col-md-6 pl-0 pr-0 visible-xs" style="display: none">
-            <a href="#" style="display: none" class="link-arrow">SCAN CODE TO GET APP</a>
+          <div class="col-xs-12 col-sm-6 col-md-6 pl-0 pr-0 visible-xs">
+            <a href="#" class="link-arrow">SCAN CODE TO GET APP</a>
           </div>
         </div>
       </div>
       <div class="row text-center appstore-wrap visible-xs">
         <div class="col-xs-12 col-sm-6 col-md-6 bor-right appStore">
-          <a href="https://itunes.apple.com/us/app/my-airtel/id543184334?ls=1&amp;mt=8" target="_blank"><img src="/common/paymentBank/images/itunes-app-store-logo_172x60px.png"></a>
+          <a href="https://itunes.apple.com/us/app/my-airtel/id543184334?ls=1&amp;mt=8" target="_blank"></a>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-6 bor-left googlePlay">
-          <a href="http://c00.adobe.com/v3/61f07ef1daddfc43ea3621fc5d1856bbea49bdf514b076d588aedc51bd8b558c/start?a_i_id=543184334&amp;a_i_lo=in&amp;a_g_id=com.myairtelapp&amp;a_dd=g&amp;ctxa.referrer.campaign.name=Direct+Download&amp;ctxa.referrer.campaign.source=Website&amp;ctxa.referrer.campaign.medium=NA&amp;ctxa.referrer.campaign.content=NA" target="_blank"><img src="/common/paymentBank/images/andriod-app-store-logo_203x60px.png"></a>
+          <a href="http://c00.adobe.com/v3/61f07ef1daddfc43ea3621fc5d1856bbea49bdf514b076d588aedc51bd8b558c/start?a_i_id=543184334&amp;a_i_lo=in&amp;a_g_id=com.myairtelapp&amp;a_dd=g&amp;ctxa.referrer.campaign.name=Direct+Download&amp;ctxa.referrer.campaign.source=Website&amp;ctxa.referrer.campaign.medium=NA&amp;ctxa.referrer.campaign.content=NA" target="_blank"></a>
         </div>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="accrodian-menu" style="display: none" id="div4">
+        <div class="accrodian-menu" id="div4">
           <h2>Need Help?</h2>
           <div class="col-xs-12 col-sm-12 col-md-12">
             <input type="checkbox" checked="">
@@ -1460,7 +1160,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
   </div>
   <!-- No service Div --->
-  <div id="noServiceDiv" style="display: none">
+  <div id="noServiceDiv">
     <div class="bg-white">
       <header id="noServices">
         <nav id="airtelMegaMenu" class="navbar navbar-default dropdown">
@@ -1471,7 +1171,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </div>
           <div class="container-fluid large-menu">
             <div class="navbar-header">
-              <a class="navbar-brand" target="_self" href="http://www.airtel.in/"><img alt="airtel_logo" src="/common/paymentBank/images/airtel-logo.png"></a>
+              <a class="navbar-brand" target="_self" href="http://www.airtel.in/"></a>
             </div>
           </div>
         </nav>
@@ -1480,7 +1180,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         <div class="row">
           <div class="col-md-6 col-sm-12 col-xs-12">
             <div class="sorry">
-              <img src="/common/paymentBank/images/unsuccess.jpg" border="0">
+              
               <p>
                 <span class="yello_color">Sorry!</span>No service is
                 <span class="grey_color">associated with </span><span class="grey_color" id="serviceInstanceField"></span>
@@ -1532,7 +1232,7 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         <div class="container-fluid main_wrapper footerleftpadd">
           <div class="row">
             <div class="col-md-6 col-sm-7 col-xs-12 rightali pull-right">
-              <a href="javascript:void(0);" class="nopadd f_b_i"><img src="/common/paymentBank/images/dimond.jpg" border="0"></a><a href="javascript:void(0);" class="rightgap"><img src="/common/paymentBank/images/norton.jpg" border="0"></a>
+              <a href="javascript:void(0);" class="nopadd f_b_i"></a><a href="javascript:void(0);" class="rightgap"></a>
             </div>
             <div class="col-md-6 col-sm-5 col-xs-12">
               <p>© 2019 Airtel India. All right reserved.</p>
@@ -1545,20 +1245,17 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
   <!--footer-->
 
-  <footer class="Simplified footerPre" id="footer" style="display: block">
+  <footer class="Simplified footerPre" id="footer">
     <div class="container">
       <div class="row">
         <div class="col-sm-4 text-right-sm pull-right-sm">
-          <img src="/common/paymentBank/images/bsi-assurance-iso-22301.png" alt="bsi Assurance Mark ISO 22301">
-          <img class="margin-left-20" src="/common/paymentBank/images/norton-certificate.png" alt="Norton Certificates">
+          
+          
         </div>
         <div class="col-sm-8 small bottom-link">
           <p class="small mt-10 mb-10">
             © <span id="year">2023</span>
-            <script>
-              document.getElementById("year").innerHTML =
-                new Date().getFullYear();
-            </script>
+            
             <noscript> 2019 </noscript>
             &nbsp;<span data-i18n="airtel_india_all_rights_reserved" module-id="common">Airtel India. All Rights Reserved.</span>
           </p>
@@ -1567,34 +1264,22 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
   </footer>
 
-  <div id="headerdiv" style="display: none"></div>
-  <div id="wrapper" style="display: block"></div>
+  <div id="headerdiv"></div>
+  <div id="wrapper"></div>
 
   <div id="shadow">
     <div id="shadow1">
-      <div id="popup1" class="popup1 marginTop" style="display: none"></div>
+      <div id="popup1" class="popup1 marginTop"></div>
     </div>
   </div>
 
-  <div id="wrapperMobile" style="display: none"></div>
+  <div id="wrapperMobile"></div>
 
-  <div id="footerdiv" style="display: none"></div>
-  <script language="JavaScript">
-    callPageLoad();
-  </script>
+  <div id="footerdiv"></div>
+  
 
   <!-- Google Tag Manager by tatvic -->
-  <script>
-    dataLayer = [
-      {
-        tatvicVar1: "",
-        tatvicVar2: "",
-        tatvicVar3: "",
-        tatvicVar4: "",
-        tatvicVar5: "",
-      },
-    ];
-  </script>
+  
   <noscript>
     <iframe
       src="//www.googletagmanager.com/ns.html?id=GTM-3BNG"
@@ -1604,57 +1289,15 @@ field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     >
     </iframe>
   </noscript>
-  <script>
-    (function (w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({
-        "gtm.start": new Date().getTime(),
-        event: "gtm.js",
-      });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l != "dataLayer" ? "&l=" + l : "";
-      j.async = true;
-      j.src = "//www.googletagmanager.com/gtm.js?id=" + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, "script", "dataLayer", "GTM-3BNG");
-  </script>
+  
   <!-- End Google Tag Manager by tatvic-->
-  <script type="text/javascript" src="/common/js/loginflow.js?version=1626072165185"></script>
-  <script src="https://www.google.com/recaptcha/api.js" async="" defer=""></script>
+  
+  
 
-  <div style="
-      visibility: hidden;
-      position: absolute;
-      width: 100%;
-      top: -10000px;
-      left: 0px;
-      right: 0px;
-      transition: visibility 0s linear 0.3s, opacity 0.3s linear 0s;
-      opacity: 0;
-    ">
-    <div style="
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0px;
-        left: 0px;
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        opacity: 0.5;
-      "></div>
-    <div style="
-        margin: 0px auto;
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        position: absolute;
-        border: 1px solid rgb(204, 204, 204);
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        overflow: hidden;
-      ">
-      <iframe title="recaptcha challenge expires in two minutes" src="https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;k=6LdfN6MZAAAAAOzjjeAIDcHQkGHDdVBLb2IFdvbR" name="c-i6wcpcaryftj" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox" style="width: 100%; height: 100%"></iframe>
+  <div>
+    <div></div>
+    <div>
+      
     </div>
   </div>
 

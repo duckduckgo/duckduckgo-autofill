@@ -1,5 +1,6 @@
 <!--
   https://www.meted.ucar.edu/registration.php
+  rank: 6225
   testRunId: 66
   testResultId: 238169
 -->
@@ -25,12 +26,10 @@
   <div id="header_wrap">
     <div id="header">
       <h1>
-        <a href="/index.php"><img src="/images/logo.png" alt="MetEd"></a>
+        <a href="/index.php"></a>
       </h1>
       <p id="languages">
-        <script language="JavaScript" type="text/javascript">
-          document.write(langswitch);
-        </script>
+        
         <span class="here"><a href="#">English</a></span>
         <span><a href="https://www.meted.ucar.edu/registration_es.php">Español</a></span>
       </p>
@@ -64,32 +63,15 @@
     <div id="title_search" class="group">
       <h2>Join the MetEd Community</h2>
       <div id="search">
-        <script type="text/javascript">
-          function checkInput(form) {
-            var inputString = form.q.value;
-            //check for script tags
-            var script1 = /<script/;
-            var script2 = /&lt;script/;
-
-            if (
-              inputString.search(script1) >= 0 ||
-              inputString.search(script2) >= 0
-            ) {
-              alert("Please enter a valid search term.");
-              return false;
-            } else {
-              javascript: document.googleSearch.submit();
-            }
-          }
-        </script>
-        <form name="googleSearch" action="/search/search_results.php" method="get" data-ddg-formtype="sign up">
+        
+        <form name="googleSearch" action="/search/search_results.php" method="get">
           <input type="hidden" name="hq" value="site:meted.ucar.edu">
           <!-- Google CSE Search Box Begins  -->
           <input name="cx" value="012446052473863902991:r8nkgnwzzsc" type="hidden">
           <input name="cof" value="FORID:11" type="hidden">
-          <input name="q" id="q" value="" type="text" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530879">
+          <input name="q" id="q" value="" type="text" data-ddg-testresultelementid="530879">
           <input type="button" id="search_submit" class="button light" value="Search" onclick="checkInput(this.form);">
-          <script type="text/javascript" src="/search/google_cse-searchbox.js"></script>
+          
           <!-- Google CSE Search Box Ends -->
         </form>
       </div>
@@ -107,7 +89,7 @@
         </h4>
 
         <div id="reg_forms">
-          <form action="./registrationComplete.php" method="post" id="registration" name="registration" class="forms" data-ddg-formtype="sign up">
+          <form action="./registrationComplete.php" method="post" id="registration" name="registration" class="forms">
             <h4>Start Here</h4>
             <p>
               All fields labeled with (<span class="required">*</span>) are
@@ -115,7 +97,7 @@
             </p>
             <ul>
               <li>
-                <input class="checkbox" type="checkbox" value="yes" name="ageReq" title="overall type: UNKNOWN_TYPE
+                <input class="checkbox" type="checkbox" value="yes" name="ageReq" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I am at least age 16*
@@ -126,35 +108,39 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 11" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I am at least age 16*
-parseable name: ageReq
-section: ageReq_0_11
-field signature: 3370841827
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="530848">
+field renderer id: 11" data-ddg-testresultelementid="530848">
                 <label class="inline" for="ageReq">I am at least age 16<span class="required">*</span></label>
               </li>
               <li>
                 <label for="email"><span class="required">*</span><strong>Email</strong></label>
-                <input class="medium" type="text" id="email" name="email" size="40" data-ddg-autofill="true" data-ddg-testresultelementid="530849" style="
-                    background-size: auto 100% !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input class="medium" type="text" id="email" name="email" size="40" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: *Email
+parseable name: email
+section: ageReq_0_11
+field signature: 420638584
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 12" data-ddg-testresultelementid="530849" data-manual-scoring="emailAddress">
                 <label for="email"><span id="emailCheck"></span></label>
               </li>
               <li>
                 <label for="username"><span class="required">*</span><strong>Create a Username</strong></label>
-                <input class="small" type="text" name="username" id="username" size="20" data-ddg-testresultelementid="530850" data-manual-scoring="username">
+                <input class="small" type="text" name="username" id="username" size="20" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: *Create a Username
+parseable name: username
+section: ageReq_0_11
+field signature: 239111655
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 13" data-ddg-testresultelementid="530850" data-manual-scoring="username">
                 <label for="username"><span id="usernameCheck"></span></label>
               </li>
               <li>
@@ -163,29 +149,84 @@ field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     lesson certificates or share your quiz scores with your
                     supervisor or instructor.</label></span>
                 <span>
-                  <input class="small" type="text" name="firstName" size="20" data-ddg-testresultelementid="530851" data-manual-scoring="firstName">
+                  <input class="small" type="text" name="firstName" size="20" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: Your Name First
+parseable name: firstName
+section: ageReq_0_11
+field signature: 1855613035
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 14" data-ddg-testresultelementid="530851" data-manual-scoring="firstName">
                   <label for="firstName">First</label>
                 </span>
                 <span>
-                  <input class="small" type="text" name="lastName" size="20" data-ddg-testresultelementid="530852" data-manual-scoring="lastName">
+                  <input class="small" type="text" name="lastName" size="20" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last
+parseable name: lastName
+section: ageReq_0_11
+field signature: 4163345999
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 15" data-ddg-testresultelementid="530852" data-manual-scoring="lastName">
                   <label for="lastName">Last</label>
                 </span>
               </li>
               <li>
                 <label for="password"><strong>Create a Password</strong></label>
                 <span>
-                  <input class="small" type="password" name="password" size="20" data-ddg-testresultelementid="530853" data-manual-scoring="password">
+                  <input class="small" type="password" name="password" size="20" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Create a Password *Password
+parseable name: password
+section: ageReq_0_11
+field signature: 2051817934
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 16" data-ddg-testresultelementid="530853" data-manual-scoring="password">
                   <label for="password"><span class="required">*</span>Password</label>
                 </span>
                 <span>
-                  <input class="small" type="password" name="passwordVerify" size="20" data-ddg-testresultelementid="530854" data-manual-scoring="password">
+                  <input class="small" type="password" name="passwordVerify" size="20" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: *Confirm password
+parseable name: passwordVerify
+section: ageReq_0_11
+field signature: 1908795268
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 17" data-ddg-testresultelementid="530854" data-manual-scoring="password">
                   <label for="passwordVerify"><span class="required">*</span>Confirm password</label>
                 </span>
               </li>
               <li>
                 <label for="city"><strong>Location</strong></label>
                 <span>
-                  <select id="country" name="country" class="select small" data-ddg-testresultelementid="530855" data-manual-scoring="addressCountryCode">
+                  <select id="country" name="country" class="select small" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: ADDRESS_HOME_COUNTRY
+label: *Country or Region
+parseable name: country
+section: ageReq_0_11
+field signature: 2799270304
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 18" data-ddg-testresultelementid="530855" data-manual-scoring="addressCountryCode">
                     <option value="" selected="selected"></option>
                     <option value="1">Afghanistan</option>
                     <option value="2">Albania</option>
@@ -421,11 +462,33 @@ field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </span>
 
                 <span>
-                  <input id="city" type="text" class="small" name="city" data-ddg-testresultelementid="530856" data-manual-scoring="addressCity">
+                  <input id="city" type="text" class="small" name="city" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: Location City
+parseable name: city
+section: ageReq_0_11
+field signature: 2098554694
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 19" data-ddg-testresultelementid="530856" data-manual-scoring="addressCity">
                   <label for="city">City</label>
                 </span>
                 <span>
-                  <select id="state" name="state" class="select small" data-ddg-testresultelementid="530857" data-manual-scoring="addressProvince">
+                  <select id="state" name="state" class="select small" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: State/Territory/Province
+parseable name: state
+section: ageReq_0_11
+field signature: 1878375253
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 20" data-ddg-testresultelementid="530857" data-manual-scoring="addressProvince">
                     <option value=""></option>
                   </select>
                   <label id="stateLabel" for="state">State/Territory/Province</label>
@@ -434,7 +497,7 @@ field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <li>
                 <div>
                   <label for="organization"><strong>Affiliation</strong></label>
-                  <select id="organization" class="select medium" name="organization" onchange="showSubCategory( this.form )" title="overall type: UNKNOWN_TYPE
+                  <select id="organization" class="select medium" name="organization" onchange="showSubCategory( this.form )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Affiliation *Main Affiliation
@@ -445,18 +508,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Affiliation *Main Affiliation
-parseable name: organization
-section: ageReq_0_11
-field signature: 1600596533
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530858">
+field renderer id: 21" data-ddg-testresultelementid="530858">
                     <option value=""></option>
                     <option id="NOAA" value="NOAA">
                       NOAA (National Oceanic and Atmospheric Administration)
@@ -509,9 +561,9 @@ field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
               <!-- *************************** sub affiliations ******************************************************* -->
               <!-- NOAA -->
-              <li id="subOrg_NOAA" style="display: none">
+              <li id="subOrg_NOAA">
                 <label for="noaa_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetNOAA_subs" class="requiredSubCat select medium" name="noaa_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetNOAA_subs" class="requiredSubCat select medium" name="noaa_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Branch
@@ -522,18 +574,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Branch
-parseable name: noaa_sub_affiliation
-section: ageReq_0_11
-field signature: 156692926
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530859">
+field renderer id: 22" data-ddg-testresultelementid="530859">
                   <option value=""></option>
                   <option value="National Weather Service">
                     National Weather Service
@@ -566,9 +607,9 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- U.S. Dept of Defense -->
-              <li id="subOrg_DOD" style="display: none">
+              <li id="subOrg_DOD">
                 <label for="us_defense_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetDOD_subs" class="requiredSubCat select small" name="us_defense_sub_affiliation" onchange="showNavySubs( this.form )" title="overall type: UNKNOWN_TYPE
+                <select id="targetDOD_subs" class="requiredSubCat select small" name="us_defense_sub_affiliation" onchange="showNavySubs( this.form )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Branch
@@ -579,18 +620,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 23" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Branch
-parseable name: us_defense_sub_affiliation
-section: ageReq_0_11
-field signature: 2270945240
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530860">
+field renderer id: 23" data-ddg-testresultelementid="530860">
                   <option value=""></option>
                   <option value="Air Force">Air Force</option>
                   <option value="Navy">Navy</option>
@@ -605,9 +635,9 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- Environment Canada -->
-              <li id="subOrg_Canada" style="display: none">
+              <li id="subOrg_Canada">
                 <label for="Canada_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetCanada_subs" class="requiredSubCat select small" name="Canada_sub_affiliation" onchange="showMSCsubs( this.form )" title="overall type: UNKNOWN_TYPE
+                <select id="targetCanada_subs" class="requiredSubCat select small" name="Canada_sub_affiliation" onchange="showMSCsubs( this.form )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Branch
@@ -618,18 +648,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 24" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Branch
-parseable name: Canada_sub_affiliation
-section: ageReq_0_11
-field signature: 3262549388
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530861">
+field renderer id: 24" data-ddg-testresultelementid="530861">
                   <option value=""></option>
                   <option value="Meteorological Service of Canada">
                     Meteorological Service of Canada
@@ -640,9 +659,9 @@ field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- Education -->
-              <li id="subOrg_Education" style="display: none">
+              <li id="subOrg_Education">
                 <label for="education_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetEducation_subs" class="requiredSubCat select small" name="education_sub_affiliation" onchange="showK12EducatorSubs( this.form )" title="overall type: UNKNOWN_TYPE
+                <select id="targetEducation_subs" class="requiredSubCat select small" name="education_sub_affiliation" onchange="showK12EducatorSubs( this.form )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Affiliation Subcategory
@@ -653,18 +672,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 25" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Affiliation Subcategory
-parseable name: education_sub_affiliation
-section: ageReq_0_11
-field signature: 33796639
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530862">
+field renderer id: 25" data-ddg-testresultelementid="530862">
                   <option value=""></option>
                   <option value="College/University Student">
                     College/University Student
@@ -686,9 +694,9 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- DOI (U.S. Department of Interior) -->
-              <li id="subOrg_DOI" style="display: none">
+              <li id="subOrg_DOI">
                 <label for="DOI_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetDOI_subs" class="requiredSubCat select small" name="DOI_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetDOI_subs" class="requiredSubCat select small" name="DOI_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Agency
@@ -699,18 +707,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Agency
-parseable name: DOI_sub_affiliation
-section: ageReq_0_11
-field signature: 2827729018
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530863">
+field renderer id: 26" data-ddg-testresultelementid="530863">
                   <option value=""></option>
                   <option value="Bureau of Indian Affairs">
                     Bureau of Indian Affairs
@@ -749,9 +746,9 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- USDA ( U.S. Department of Agriculture) -->
-              <li id="subOrg_USDA" style="display: none">
+              <li id="subOrg_USDA">
                 <label for="USDA_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetUSDA_subs" class="requiredSubCat select small" name="USDA_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetUSDA_subs" class="requiredSubCat select small" name="USDA_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Agency
@@ -762,18 +759,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 27" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Agency
-parseable name: USDA_sub_affiliation
-section: ageReq_0_11
-field signature: 536552339
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530864">
+field renderer id: 27" data-ddg-testresultelementid="530864">
                   <option value=""></option>
                   <option value="Forest Service">Forest Service</option>
                   <option value="Other">Other</option>
@@ -782,9 +768,9 @@ field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- DHS (U.S. Department of Homeland Security) -->
-              <li id="subOrg_DHS" style="display: none">
+              <li id="subOrg_DHS">
                 <label for="DHS_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetDHS_subs" class="requiredSubCat select small" name="DHS_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetDHS_subs" class="requiredSubCat select small" name="DHS_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Agency
@@ -795,18 +781,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Agency
-parseable name: DHS_sub_affiliation
-section: ageReq_0_11
-field signature: 3736279719
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530865">
+field renderer id: 28" data-ddg-testresultelementid="530865">
                   <option value=""></option>
                   <option value="FEMA (Federal Emergency Management Administration)">
                     FEMA (Federal Emergency Management Administration)
@@ -818,9 +793,9 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- DOT (U.S. Department of Transportion) -->
-              <li id="subOrg_DOT" style="display: none">
+              <li id="subOrg_DOT">
                 <label for="DOT_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetDOT_subs" class="requiredSubCat select small" name="DOT_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetDOT_subs" class="requiredSubCat select small" name="DOT_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Agency
@@ -831,18 +806,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Agency
-parseable name: DOT_sub_affiliation
-section: ageReq_0_11
-field signature: 3154729630
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530866">
+field renderer id: 29" data-ddg-testresultelementid="530866">
                   <option value=""></option>
                   <option value="FAA (Federal Aviation Administration)">
                     FAA (Federal Aviation Administration)
@@ -856,9 +820,9 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- Other U.S. Government -->
-              <li id="subOrg_OtherUSGovt" style="display: none">
+              <li id="subOrg_OtherUSGovt">
                 <label for="us_govt_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetOtherUSGovt_subs" class="requiredSubCat select small" name="us_govt_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetOtherUSGovt_subs" class="requiredSubCat select small" name="us_govt_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Agency
@@ -869,18 +833,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Agency
-parseable name: us_govt_sub_affiliation
-section: ageReq_0_11
-field signature: 671304400
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530867">
+field renderer id: 30" data-ddg-testresultelementid="530867">
                   <option value=""></option>
                   <option value="NASA (National Aeronautics and Space Administration)">
                     NASA (National Aeronautics and Space Administration)
@@ -906,9 +859,20 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- U.S. State or Local Govt -->
-              <li id="subOrg_USLocal" style="display: none">
+              <li id="subOrg_USLocal">
                 <label for="us_state_govt_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetUSLocal_subs" class="requiredSubCat select small" name="us_state_govt_sub_affiliation" onchange="setSubCat( this.form, this )" data-ddg-testresultelementid="530868" data-manual-scoring="addressProvince">
+                <select id="targetUSLocal_subs" class="requiredSubCat select small" name="us_state_govt_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: Sub-Affiliation *Affiliation Subcategory
+parseable name: us_state_govt_sub_affiliation
+section: us_state_govt_sub_affiliation_0_31
+field signature: 2494566357
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 31" data-ddg-testresultelementid="530868" data-manual-scoring="addressProvince">
                   <option value=""></option>
                   <option value="Emergency Manager">Emergency Manager</option>
                   <option value="Environmental or Health Professional">
@@ -931,9 +895,9 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- U.S. Private Sector -->
-              <li id="subOrg_USPrivate" style="display: none">
+              <li id="subOrg_USPrivate">
                 <label for="us_private_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetUSprivate_subs" class="requiredSubCat select small" name="us_private_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetUSprivate_subs" class="requiredSubCat select small" name="us_private_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Field
@@ -944,18 +908,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 32" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Field
-parseable name: us_private_sub_affiliation
-section: us_state_govt_sub_affiliation_0_31
-field signature: 2901473224
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530869">
+field renderer id: 32" data-ddg-testresultelementid="530869">
                   <option value=""></option>
                   <option value="Broadcasting">Broadcasting</option>
                   <option value="Aviation">Aviation</option>
@@ -970,12 +923,12 @@ field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- Bureau of Meteorology (Australia) -->
-              <li id="subOrg_BOM" style="display: none"></li>
+              <li id="subOrg_BOM"></li>
 
               <!-- Other international meteorological services -->
-              <li id="subOrg_IntMet" style="display: none">
+              <li id="subOrg_IntMet">
                 <label for="IntMet_sub_affiliation"><strong>Sub-Affiliation</strong></label>
-                <select id="targetIntMet_subs" class="requiredSubCat select small" name="IntMet_sub_affiliation" onchange="setSubCat( this.form, this )" title="overall type: UNKNOWN_TYPE
+                <select id="targetIntMet_subs" class="requiredSubCat select small" name="IntMet_sub_affiliation" onchange="setSubCat( this.form, this )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Field
@@ -986,18 +939,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 33" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Field
-parseable name: IntMet_sub_affiliation
-section: us_state_govt_sub_affiliation_0_31
-field signature: 2978696827
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530870">
+field renderer id: 33" data-ddg-testresultelementid="530870">
                   <option value=""></option>
                   <option value="Royal Navy FOST HM">Royal Navy FOST HM</option>
                   <option value="Other">Other</option>
@@ -1006,19 +948,19 @@ field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!-- UCAR -->
-              <li id="subOrg_UCAR" style="display: none"></li>
+              <li id="subOrg_UCAR"></li>
 
               <!-- Weather enthusiast -->
-              <li id="subOrg_Enthusiast" style="display: none"></li>
+              <li id="subOrg_Enthusiast"></li>
 
               <!-- Other -->
-              <li id="subOrg_Other" style="display: none"></li>
+              <li id="subOrg_Other"></li>
 
               <!-- NOAA sub category -->
-              <li id="subOrg_NOAA_sub" style="display: none">
+              <li id="subOrg_NOAA_sub">
                 <label for="targetNOAAid_subs" align="right"><span class="required">*</span>NOAA LMS User
                   Name:&nbsp;</label>
-                <input type="text" id="targetNOAAid_subs" name="targetNOAAid_subs" class="small" value="" size="30" maxlength="100" title="overall type: UNKNOWN_TYPE
+                <input type="text" id="targetNOAAid_subs" name="targetNOAAid_subs" class="small" value="" size="30" maxlength="100" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: *NOAA LMS User Name:
@@ -1029,25 +971,14 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 34" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: *NOAA LMS User Name:
-parseable name: targetNOAAid_subs
-section: us_state_govt_sub_affiliation_0_31
-field signature: 1439049635
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="530871">
+field renderer id: 34" data-ddg-testresultelementid="530871">
                 (Left of "@" in your e-mail address)
               </li>
 
               <!-- Navy sub categories -->
-              <li id="subOrg_NavyUIC_subs" style="display: none">
+              <li id="subOrg_NavyUIC_subs">
                 <label for="targetNavyUIC_subs"><strong>Sub-Affiliation</strong></label>
-                <select id="targetNavyUIC_subs" class="select small" name="targetNavyUIC_subs" onchange="checkNavyUIC( this.form )" title="overall type: UNKNOWN_TYPE
+                <select id="targetNavyUIC_subs" class="select small" name="targetNavyUIC_subs" onchange="checkNavyUIC( this.form )" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *UIC
@@ -1058,18 +989,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 35" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *UIC
-parseable name: targetNavyUIC_subs
-section: us_state_govt_sub_affiliation_0_31
-field signature: 1284235245
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 35" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530872">
+field renderer id: 35" data-ddg-testresultelementid="530872">
                   <option value=""></option>
                   <option value="Other">Other</option>
                   <option value="00065">00065</option>
@@ -1152,9 +1072,9 @@ field renderer id: 35" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </li>
 
               <!--  Navy sub categories - OTHER option -->
-              <li id="subOrg_NavyOther_subs" style="display: none">
+              <li id="subOrg_NavyOther_subs">
                 <label for="targetNavyOther_subs" align="right">Other UIC:&nbsp;</label>
-                <input type="text" id="targetNavyOther_subs" name="targetNavyOther_subs" class="small" value="" size="30" maxlength="30" title="overall type: UNKNOWN_TYPE
+                <input type="text" id="targetNavyOther_subs" name="targetNavyOther_subs" class="small" value="" size="30" maxlength="30" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Other UIC:
@@ -1165,24 +1085,13 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 36" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Other UIC:
-parseable name: targetNavyOther_subs
-section: us_state_govt_sub_affiliation_0_31
-field signature: 2778536276
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530873">
+field renderer id: 36" data-ddg-testresultelementid="530873">
               </li>
 
               <!-- MSC sub categories -->
-              <li id="subOrg_MSC_subs" style="display: none">
+              <li id="subOrg_MSC_subs">
                 <label for="targetMSC_subs"><strong>Sub-Affiliation</strong></label>
-                <select id="targetMSC_subs" class="select small" name="subOrg_MSC_subs" title="overall type: UNKNOWN_TYPE
+                <select id="targetMSC_subs" class="select small" name="subOrg_MSC_subs" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Sub-Affiliation *Office
@@ -1193,18 +1102,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 37" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Sub-Affiliation *Office
-parseable name: subOrg_MSC_subs
-section: us_state_govt_sub_affiliation_0_31
-field signature: 1916861227
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="530874">
+field renderer id: 37" data-ddg-testresultelementid="530874">
                   <option value=""></option>
 
                   <option value="Atlantic Storm Prediction Centre">
@@ -1293,7 +1191,7 @@ field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 	</li>             	 
 	-->
               <!--  K-12 Educator subs -->
-              <li id="subOrg_Education_subs" style="display: none">
+              <li id="subOrg_Education_subs">
                 <p>
                   As a K-12 educator, you have the ability to register up to 50
                   accounts to be used by your students if you want to keep track
@@ -1312,20 +1210,24 @@ field renderer id: 37" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                     with your supervisor or instructor, enter their email
                     address here.
                     <a href="./resources_supervisors.php">Learn More</a></label>
-                  <input id="supervisorEmail" type="text" class="small" name="supervisorEmail" size="20" maxlength="50" data-ddg-autofill="true" data-ddg-testresultelementid="530875" style="
-                      background-size: auto 100% !important;
-                      background-position: right center !important;
-                      background-repeat: no-repeat !important;
-                      background-origin: content-box !important;
-                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                      transition: background 0s ease 0s !important;
-                    " data-manual-scoring="emailAddress">
+                  <input id="supervisorEmail" type="text" class="small" name="supervisorEmail" size="20" maxlength="50" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Supervisor / Instructor Email If you want to automatically share your MetEd quiz scores with your su
+parseable name: supervisorEmail
+section: supervisorEmail_0_38
+field signature: 352542081
+form signature: 4539263019369164320
+form signature in host form: 4539263019369164320
+field frame token: 5B0661892D6D9DA6231DE641CD34266A
+form renderer id: 2
+field renderer id: 38" data-ddg-testresultelementid="530875" data-manual-scoring="emailAddress">
                 </span>
               </li>
 
               <li>
                 <div>
-                  <input id="privacyPolicy" class="checkbox" type="checkbox" value="yes" name="privacyPolicy" title="overall type: UNKNOWN_TYPE
+                  <input id="privacyPolicy" class="checkbox" type="checkbox" value="yes" name="privacyPolicy" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes, my progress and quiz results may be shared with my employer, organization, or institution.
@@ -1336,24 +1238,13 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 39" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes, my progress and quiz results may be shared with my employer, organization, or institution.
-parseable name: privacyPolicy
-section: supervisorEmail_0_38
-field signature: 3260767221
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="530876">
+field renderer id: 39" data-ddg-testresultelementid="530876">
                   <label class="inline" for="privacyPolicy">Yes, my progress and quiz results may be shared with my
                     employer, organization, or institution.</label>
                 </div>
 
                 <div>
-                  <input id="mailList" class="checkbox" type="checkbox" value="yes" name="mailList" title="overall type: UNKNOWN_TYPE
+                  <input id="mailList" class="checkbox" type="checkbox" value="yes" name="mailList" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes, add me to the email list to receive new publication release statements in English from the COME
@@ -1364,24 +1255,13 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 40" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes, add me to the email list to receive new publication release statements in English from the COME
-parseable name: mailList
-section: supervisorEmail_0_38
-field signature: 349166853
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="530877">
+field renderer id: 40" data-ddg-testresultelementid="530877">
                   <label class="inline" for="mailList">Yes, add me to the email list to receive new publication
                     release statements in English from the COMET<sup>®</sup>
                     Program</label>
                 </div>
                 <div>
-                  <input id="mailList_es" class="checkbox" type="checkbox" value="yes" name="mailList_es" title="overall type: UNKNOWN_TYPE
+                  <input id="mailList_es" class="checkbox" type="checkbox" value="yes" name="mailList_es" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Yes, add me to the email list to receive quarterly updates in Spanish from the COMET® Program.
@@ -1392,18 +1272,7 @@ form signature: 4539263019369164320
 form signature in host form: 4539263019369164320
 field frame token: 5B0661892D6D9DA6231DE641CD34266A
 form renderer id: 2
-field renderer id: 41" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Yes, add me to the email list to receive quarterly updates in Spanish from the COMET® Program.
-parseable name: mailList_es
-section: supervisorEmail_0_38
-field signature: 730083725
-form signature: 4539263019369164320
-form signature in host form: 4539263019369164320
-field frame token: 5B0661892D6D9DA6231DE641CD34266A
-form renderer id: 2
-field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="530878">
+field renderer id: 41" data-ddg-testresultelementid="530878">
                   <label class="inline" for="mailList_es">Yes, add me to the email list to receive quarterly updates
                     in Spanish from the COMET<sup>®</sup> Program.</label>
                 </div>
@@ -1585,14 +1454,14 @@ field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           1989.
         </p>
         <p>
-          <a href="http://www.comet.ucar.edu/"><img src="/images/footer_comet_logo.png" alt="COMET Logo"></a>
+          <a href="http://www.comet.ucar.edu/"></a>
         </p>
         <p>
           COMET and MetEd are proud to be a part of
           <a href="http://www.ucp.ucar.edu/">UCAR Community Programs</a>.
         </p>
         <p>
-          <a href="http://www.ucp.ucar.edu/"><img src="/images/footer_ucp_logo.jpg" alt="UCP Logo"></a>
+          <a href="http://www.ucp.ucar.edu/"></a>
         </p>
       </div>
     </div>

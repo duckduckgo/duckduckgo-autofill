@@ -1,5 +1,6 @@
 <!--
   https://guest.nasa.gov
+  rank: 297
   testRunId: 66
   testResultId: 234410
 -->
@@ -7,14 +8,14 @@
   <div>
     <header id="header" role="banner">
       <div id="header-content" class="container">
-        <div style="float: left">
+        <div>
           <a id="masthead" title="NASA Guest" href="/">
-            <img src="/img/nasa-logo.png" alt="NASA Logo">
+            
             <span class="masthead-title">Guest Account Services</span>
           </a>
         </div>
-        <div style="float: right; margin-top: 50px">
-          <a href="/help" style="color: #ffffff">Need Help?</a>
+        <div>
+          <a href="/help">Need Help?</a>
         </div>
       </div>
     </header>
@@ -32,40 +33,88 @@
         <div class="row">
           <div class="col-6">
             <h1 class="h4 gray-label">Sign Up</h1>
-            <form id="create-guest-user-form" action="/create-guest-user" method="POST" data-parsley-validate="true" novalidate="" data-ddg-formtype="sign up">
+            <form id="create-guest-user-form" action="/create-guest-user" method="POST" data-parsley-validate="true" novalidate="">
               <input type="hidden" name="_csrf" value="e90e1213-3d6a-4980-9795-551fc7fd357a">
               <fieldset>
                 <div class="row">
                   <div class="col-5">
                     <label for="firstName"><i class="fas fa-asterisk required-field"></i>First
                       Name</label>
-                    <input type="text" class="form-control" placeholder="First Name" maxlength="100" required="true" data-parsley-required-message="A First Name is required." data-parsley-namescheck="true" data-parsley-namescheck-message="The First Name must only contain Latin letters, spaces, apostrophes or dashes." id="firstName" name="firstName" value="" data-ddg-testresultelementid="510610" data-manual-scoring="firstName">
+                    <input type="text" class="form-control" placeholder="First Name" maxlength="100" required="true" data-parsley-required-message="A First Name is required." data-parsley-namescheck="true" data-parsley-namescheck-message="The First Name must only contain Latin letters, spaces, apostrophes or dashes." id="firstName" name="firstName" value="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: firstName
+section: firstName_0_3
+field signature: 1855613035
+form signature: 9462475258003162706
+form signature in host form: 9462475258003162706
+field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
+form renderer id: 1
+field renderer id: 3" data-ddg-testresultelementid="510610" data-manual-scoring="firstName">
                   </div>
                   <div class="col-2">
                     <label for="middleName">MI</label>
-                    <input type="text" class="form-control" placeholder="MI" maxlength="100" data-parsley-middlenamecheck="true" data-parsley-middlenamecheck-message="Please leave the Middle Name blank if there is no middle name or initial." data-parsley-namescheck="true" data-parsley-namescheck-message="The Middle Name must only contain Latin letters, spaces, apostrophes or dashes." id="middleName" name="middleName" value="" data-ddg-testresultelementid="510611" data-manual-scoring="middleName">
+                    <input type="text" class="form-control" placeholder="MI" maxlength="100" data-parsley-middlenamecheck="true" data-parsley-middlenamecheck-message="Please leave the Middle Name blank if there is no middle name or initial." data-parsley-namescheck="true" data-parsley-namescheck-message="The Middle Name must only contain Latin letters, spaces, apostrophes or dashes." id="middleName" name="middleName" value="" autofill-information="overall type: NAME_MIDDLE_INITIAL
+server type: NAME_MIDDLE_INITIAL
+heuristic type: NAME_MIDDLE_INITIAL
+label: MI
+parseable name: middleName
+section: firstName_0_3
+field signature: 735322929
+form signature: 9462475258003162706
+form signature in host form: 9462475258003162706
+field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
+form renderer id: 1
+field renderer id: 4" data-ddg-testresultelementid="510611" data-manual-scoring="middleName">
                   </div>
                   <div class="col-5">
                     <label for="lastName"><i class="fas fa-asterisk required-field"></i>Last
                       Name</label>
-                    <input type="text" class="form-control" placeholder="Last Name" required="true" maxlength="100" data-parsley-required-message="A Last Name is required." data-parsley-namescheck="true" data-parsley-namescheck-message="The Last Name must only contain Latin letters, spaces, apostrophes or dashes." id="lastName" name="lastName" value="" data-ddg-testresultelementid="510612" data-manual-scoring="lastName">
+                    <input type="text" class="form-control" placeholder="Last Name" required="true" maxlength="100" data-parsley-required-message="A Last Name is required." data-parsley-namescheck="true" data-parsley-namescheck-message="The Last Name must only contain Latin letters, spaces, apostrophes or dashes." id="lastName" name="lastName" value="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: lastName
+section: firstName_0_3
+field signature: 4163345999
+form signature: 9462475258003162706
+form signature in host form: 9462475258003162706
+field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
+form renderer id: 1
+field renderer id: 5" data-ddg-testresultelementid="510612" data-manual-scoring="lastName">
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-7">
                     <label for="email"><i class="fas fa-asterisk required-field"></i>Email</label>
-                    <input type="text" class="form-control" placeholder="Email" required="true" maxlength="255" data-parsley-required-message="An email address is required." data-parsley-priority-enabled="true" data-parsley-emailcheck="true" data-parsley-emailcheck-message="Please enter an email address in a valid format. Ex: john.doe@gmail.com" id="email" name="email" value="" data-ddg-autofill="true" data-ddg-testresultelementid="510613" style="
-                        background-size: auto 26px !important;
-                        background-position: right center !important;
-                        background-repeat: no-repeat !important;
-                        background-origin: content-box !important;
-                        background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                        transition: background 0s ease 0s !important;
-                      " data-manual-scoring="emailAddress">
+                    <input type="text" class="form-control" placeholder="Email" required="true" maxlength="255" data-parsley-required-message="An email address is required." data-parsley-priority-enabled="true" data-parsley-emailcheck="true" data-parsley-emailcheck-message="Please enter an email address in a valid format. Ex: john.doe@gmail.com" id="email" name="email" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: email
+section: firstName_0_3
+field signature: 420638584
+form signature: 9462475258003162706
+form signature in host form: 9462475258003162706
+field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
+form renderer id: 1
+field renderer id: 6" data-ddg-testresultelementid="510613" data-manual-scoring="emailAddress">
                   </div>
                   <div class="col-5">
                     <label for="citizenship"><i class="fas fa-asterisk required-field"></i>Citizenship</label>
-                    <select class="form-select" required="true" data-parsley-required-message="Citizenship is required." style="width: 200px" id="citizenship" name="citizenship" data-ddg-testresultelementid="510614" data-manual-scoring="addressCountryCode">
+                    <select class="form-select" required="true" data-parsley-required-message="Citizenship is required." id="citizenship" name="citizenship" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: ADDRESS_HOME_COUNTRY
+heuristic type: UNKNOWN_TYPE
+label: Citizenship
+parseable name: citizenship
+section: firstName_0_3
+field signature: 1359266970
+form signature: 9462475258003162706
+form signature in host form: 9462475258003162706
+field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
+form renderer id: 1
+field renderer id: 7" data-ddg-testresultelementid="510614" data-manual-scoring="addressCountryCode">
                       <option value="">Select Country</option>
                       <option value="AF">AFGHANISTAN</option>
                       <option value="AX">ALAND ISLANDS</option>
@@ -338,7 +387,7 @@
                 </div>
                 <div class="row">
                   <div class="col-12">
-                    <label class="checkbox-inline"><input type="checkbox" value="Y" id="age-checkbox" data-parsley-multiple="age-checkbox" title="overall type: UNKNOWN_TYPE
+                    <label class="checkbox-inline"><input type="checkbox" value="Y" id="age-checkbox" data-parsley-multiple="age-checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Y
@@ -349,24 +398,13 @@ form signature: 9462475258003162706
 form signature in host form: 9462475258003162706
 field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
 form renderer id: 1
-field renderer id: 8" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Y
-parseable name: age-checkbox
-section: firstName_0_3
-field signature: 3385919517
-form signature: 9462475258003162706
-form signature in host form: 9462475258003162706
-field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
-form renderer id: 1
-field renderer id: 8" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510615">&nbsp;<i class="fas fa-asterisk required-field"></i>I am
+field renderer id: 8" data-ddg-testresultelementid="510615">&nbsp;<i class="fas fa-asterisk required-field"></i>I am
                       at least 16 years old</label>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-12">
-                    <label class="checkbox-inline"><input type="checkbox" value="Y" id="terms-checkbox" data-parsley-multiple="terms-checkbox" title="overall type: UNKNOWN_TYPE
+                    <label class="checkbox-inline"><input type="checkbox" value="Y" id="terms-checkbox" data-parsley-multiple="terms-checkbox" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Y
@@ -377,18 +415,7 @@ form signature: 9462475258003162706
 form signature in host form: 9462475258003162706
 field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
 form renderer id: 1
-field renderer id: 9" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Y
-parseable name: terms-checkbox
-section: firstName_0_3
-field signature: 1287512286
-form signature: 9462475258003162706
-form signature in host form: 9462475258003162706
-field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
-form renderer id: 1
-field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510616">&nbsp;<i class="fas fa-asterisk required-field"></i>I
+field renderer id: 9" data-ddg-testresultelementid="510616">&nbsp;<i class="fas fa-asterisk required-field"></i>I
                       have read and agree with the Terms of Service</label>
                   </div>
                 </div>
@@ -405,11 +432,11 @@ field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelem
             <div class="login-signup-separator">
               <span class="login-signup-text-separator" aria-label="or">or</span>
             </div>
-            <div style="font-size: 18px" class="gray-label">
+            <div class="gray-label">
               Already have an account?
               <br>
-              <div style="margin-top: 5px">
-                <a href="https://guest.nasa.gov/manage" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true"><img src="/img/nasa-logo.png" height="24px" alt="NASA Logo">
+              <div>
+                <a href="https://guest.nasa.gov/manage" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">
                   &nbsp; Log in with NASA</a>
                 <a href="https://auth.launchpad.nasa.gov/affwebservices/public/oauthtokenconsumer?AuthzServerID=Google&amp;RelayState=https://guest.nasa.gov/manage" class="btn btn-danger" tabindex="-1" role="button" aria-disabled="true"><i class="fab fa-google"></i> &nbsp; Log in with Google</a>
               </div>
@@ -419,7 +446,7 @@ field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelem
             </div>
             <br>
           </div>
-          <div class="col-6" style="border-left: 2px solid lightgray">
+          <div class="col-6">
             <div id="policyStatementContainer">
               <div class="card">
                 <div class="card-header">Terms of Service</div>
@@ -543,18 +570,8 @@ field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelem
       </div>
     </div>
 
-    <script type="text/javascript" src="https://mobile.neacc.nasa.gov/pulse/track.js"></script>
-    <script type="text/javascript">
-      try {
-        Pulse.track("GUEST", {
-          environment: "production",
-          method: "GET",
-          auid: "",
-          server: "aao-icam-guest-prod-699cc574bd-s8k6x",
-          status: 200,
-        });
-      } catch (e) {}
-    </script>
+    
+    
   </div>
 
   <div id="captcha-modal" class="modal" tabindex="-1" role="dialog" aria-labelledby="captcha-modal-label" aria-hidden="true">
@@ -578,13 +595,13 @@ field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelem
             </div>
           </div>
           <div>
-            <img id="captcha-image" src="captcha.png" alt="Captcha Image">
+            
             <span id="captcha-audio-container"></span>
             <span title="Refresh Captcha" onclick="refreshCaptcha();"><i class="fas fa-sync-alt guest-captcha-refresh"></i></span>
             <br><br>
             <label for="captcha-input-text"><span aria-label="Required" class="fas fa-asterisk required-field"></span>Type the code <span id="captcha-desc">shown</span> above:</label>
-            <form id="captcha-form" data-ddg-formtype="sign up">
-              <input type="text" id="captcha-input-text" name="captcha-input" placeholder="Captcha Code" class="form-control" required="true" title="overall type: UNKNOWN_TYPE
+            <form id="captcha-form">
+              <input type="text" id="captcha-input-text" name="captcha-input" placeholder="Captcha Code" class="form-control" required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Captcha Code
@@ -595,18 +612,7 @@ form signature: 18259306543865263138
 form signature in host form: 18259306543865263138
 field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
 form renderer id: 2
-field renderer id: 16" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Captcha Code
-parseable name: captcha-input
-section: captcha-input_0_16
-field signature: 2055102656
-form signature: 18259306543865263138
-form signature in host form: 18259306543865263138
-field frame token: 8B0893BDDBDF2165D13236ED5CD352D7
-form renderer id: 2
-field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510617">
+field renderer id: 16" data-ddg-testresultelementid="510617">
               <input type="hidden" value="e90e1213-3d6a-4980-9795-551fc7fd357a" name="_csrf">
             </form>
           </div>
@@ -623,11 +629,11 @@ field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
   </div>
 
-  <script src="/webjars/jquery/3.6.0/jquery.min.js"></script>
-  <script src="/js/bootstrap.min.js"></script>
-  <script src="/js/csrf-helper.js"></script>
-  <script src="/js/parsley-icam.js"></script>
-  <script src="/js/parsley.min.js"></script>
-  <script src="/js/captcha.js"></script>
-  <script src="/js/account-create.js"></script>
+  
+  
+  
+  
+  
+  
+  
 

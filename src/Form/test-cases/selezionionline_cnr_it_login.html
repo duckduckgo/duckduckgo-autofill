@@ -1,5 +1,6 @@
 <!--
   https://selezionionline.cnr.it/jconon/login
+  rank: 3485
   testRunId: 66
   testResultId: 236631
 -->
@@ -18,22 +19,8 @@
             <a href="#" id="notifications" class="btn btn-danger btn-vmiddle pull-right ribbon-new"><i class="icon-warning-sign animated flash"></i>
               <span class="counter">18</span> Notice</a>
           </div>
-          <button id="applist" class="pull-right" style="
-              display: none;
-              margin-top: 0.5rem;
-              border: none;
-              border-radius: 100%;
-              padding: 0px;
-              background: transparent;
-              color: inherit;
-              height: 40px;
-              justify-content: center;
-              align-items: center;
-              position: relative;
-            ">
-            <svg aria-hidden="true" data-prefix="fae" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="height: 16px; width: 16px; display: block">
-              <path fill="currentColor" d="M2 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2Zm6 12c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0-6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4-8c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2ZM8 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2Zm6 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path>
-            </svg>
+          <button id="applist" class="pull-right">
+            
           </button>
           <div class="nav-collapse collapse">
             <a class="btn btn-small btn-lang btn-vmiddle pull-right" href="?lang=it"><i class="flag flag-it"></i> IT</a>
@@ -55,9 +42,9 @@
               </li>
               <li class="divider-vertical"></li>
               <li class="liSearch">
-                <form id="search" method="GET" action="/jconon/search-call" class="form-search" data-ddg-formtype="sign in">
+                <form id="search" method="GET" action="/jconon/search-call" class="form-search">
                   <div class="input-append">
-                    <input type="text" name="filters-codice" placeholder="filter calls" class="search-query input-small" title="overall type: UNKNOWN_TYPE
+                    <input type="text" name="filters-codice" placeholder="filter calls" class="search-query input-small" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: filter calls
@@ -68,18 +55,7 @@ form signature: 8051426917854075900
 form signature in host form: 8051426917854075900
 field frame token: FE882A7EFF340235A81A8898CD5BC325
 form renderer id: 1
-field renderer id: 2" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: filter calls
-parseable name: filters-codice
-section: filters-codice_0_2
-field signature: 1723308585
-form signature: 8051426917854075900
-form signature in host form: 8051426917854075900
-field frame token: FE882A7EFF340235A81A8898CD5BC325
-form renderer id: 1
-field renderer id: 2" autofill-prediction="UNKNOWN_TYPE" style="opacity: 0.3" data-ddg-inputtype="unknown" data-ddg-testresultelementid="522886">
+field renderer id: 2" data-ddg-testresultelementid="522886">
                     <button type="submit" class="btn btn-primary">
                       <i class="icon-search"></i> Calls
                     </button>
@@ -142,22 +118,46 @@ field renderer id: 2" autofill-prediction="UNKNOWN_TYPE" style="opacity: 0.3" da
                   </p>
                 </div>
                 <div class="span7">
-                  <a href="https://www.spid.gov.it"><img src="res/img/spid-agid-logo-lb.png"></a>
+                  <a href="https://www.spid.gov.it"></a>
                 </div>
               </div>
             </div>
             <div class="span5">
-              <form class="form-signin" action="/jconon/rest/security/login" method="post" novalidate="novalidate" data-ddg-formtype="sign in">
+              <form class="form-signin" action="/jconon/rest/security/login" method="post" novalidate="novalidate">
                 <legend>Please sign in</legend>
                 <fieldset>
                   <div class="control-group">
                     <div class="controls">
-                      <input type="text" id="username" name="username" autocomplete="username" placeholder="Username" class="span12" data-ddg-testresultelementid="522887" data-manual-scoring="fullName">
+                      <input type="text" id="username" name="username" autocomplete="username" placeholder="Username" class="span12" autofill-information="overall type: HTML_TYPE_EMAIL
+server type: NAME_FULL
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: username
+section: username_0_5
+field signature: 239111655
+form signature: 856092803066233815
+form signature in host form: 856092803066233815
+field frame token: FE882A7EFF340235A81A8898CD5BC325
+form renderer id: 2
+field renderer id: 5
+autocomplete: username" data-ddg-testresultelementid="522887" data-manual-scoring="fullName">
                     </div>
                   </div>
                   <div class="control-group">
                     <div class="controls">
-                      <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Password" class="span12" data-ddg-testresultelementid="522888" data-manual-scoring="password">
+                      <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Password" class="span12" autofill-information="overall type: UNKNOWN_TYPE
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: username_0_5
+field signature: 2051817934
+form signature: 856092803066233815
+form signature in host form: 856092803066233815
+field frame token: FE882A7EFF340235A81A8898CD5BC325
+form renderer id: 2
+field renderer id: 6
+autocomplete: current-password" data-ddg-testresultelementid="522888" data-manual-scoring="password">
                     </div>
                   </div>
                   <div class="inline-block btn-block">
@@ -165,7 +165,7 @@ field renderer id: 2" autofill-prediction="UNKNOWN_TYPE" style="opacity: 0.3" da
                       <i class="icon-user animated flash"></i> Please sign in
                     </button>
                     <a href="/jconon/sso/login" id="ssoLogin" class="btn btn-primary italia-it-button italia-it-button-size-s button-spid span6" aria-haspopup="true" aria-expanded="false">
-                      <span class="italia-it-button-icon"><img src="res/img/spid-ico-circle-bb.svg" onerror="this.src='res/img/spid-ico-circle-bb.png'; this.onerror=null;" alt=""></span>
+                      <span class="italia-it-button-icon"></span>
                       <span class="italia-it-button-text">Enter with SSO/SPID</span>
                     </a>
                   </div>
@@ -218,7 +218,7 @@ field renderer id: 2" autofill-prediction="UNKNOWN_TYPE" style="opacity: 0.3" da
     </div>
   </div>
 
-  <div id="jstree-marker" style="display: none">»</div>
-  <div id="jstree-marker-line" style="display: none"></div>
+  <div id="jstree-marker">»</div>
+  <div id="jstree-marker-line"></div>
   <div id="vakata-contextmenu"></div>
 

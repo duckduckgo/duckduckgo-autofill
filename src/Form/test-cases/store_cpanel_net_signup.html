@@ -1,12 +1,13 @@
 <!--
   https://store.cpanel.net/login/register
+  rank: 317
   testRunId: 66
   testResultId: 234423
 -->
 
   <nav id="MainNav" class="navbar navbar-expand-lg navbar-dark bg-dark no-print">
     <a class="navbar-brand pt-0" href="/">
-      <img src="/img/cPanel.svg">
+      
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle Navigation">
       <span class="navbar-toggler-icon"></span>
@@ -58,18 +59,14 @@
 
   <section id="content" class="p-3">
     <div id="cpanel-loading-overlay" class="d-none"></div>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Ld50bgZAAAAAMqNsVrempQl9y9fxY6A2UDnYv56" type="text/javascript"></script>
-    <script type="text/javascript">
-      var recaptcha_site_key = "6Ld50bgZAAAAAMqNsVrempQl9y9fxY6A2UDnYv56";
-    </script>
-    <script type="text/javascript">
-      var manage2_host = "manage2.cpanel.net";
-    </script>
+    
+    
+    
     <div class="container">
       <h2>Account Registration</h2>
       <hr>
       <div id="status-message" class="alert d-none" role="alert"></div>
-      <form id="account-registration" data-ddg-formtype="sign up">
+      <form id="account-registration">
         <input type="hidden" name="redirect" value="">
         <input type="hidden" name="csrf_token" value="4iE14XK1yGKIu4YN">
         <input type="hidden" name="json" value="1">
@@ -81,27 +78,53 @@
                 <div class="form-row">
                   <div class="form-group col-lg-4">
                     <label for="email">Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" data-ddg-autofill="true" data-ddg-testresultelementid="510757" style="
-                        background-size: auto 26px !important;
-                        background-position: right center !important;
-                        background-repeat: no-repeat !important;
-                        background-origin: content-box !important;
-                        background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                        transition: background 0s ease 0s !important;
-                      " data-manual-scoring="emailAddress">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: email
+section: email_0_5
+field signature: 1029417091
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 5" data-ddg-testresultelementid="510757" data-manual-scoring="emailAddress">
                     <div class="invalid-feedback"></div>
                   </div>
                   <div class="form-group col-lg-4">
                     <label for="name">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" data-ddg-testresultelementid="510758" data-manual-scoring="password">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: email_0_5
+field signature: 2051817934
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 6" data-ddg-testresultelementid="510758" data-manual-scoring="password">
                     <div id="password-strength" class="progress mt-1">
-                      <div id="password-strength-progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                      <div id="password-strength-progress-bar" class="progress-bar" role="progressbar"></div>
                     </div>
                     <div class="invalid-feedback"></div>
                   </div>
                   <div class="form-group col-lg-4">
                     <label for="name">Confirm Password</label>
-                    <input type="password" class="form-control" id="confirm_password" name="password_confirm" placeholder="Confirm Password" data-ddg-testresultelementid="510759" data-manual-scoring="password">
+                    <input type="password" class="form-control" id="confirm_password" name="password_confirm" placeholder="Confirm Password" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password
+parseable name: password_confirm
+section: email_0_5
+field signature: 392508346
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 7" data-ddg-testresultelementid="510759" data-manual-scoring="password">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
@@ -117,7 +140,7 @@
                 <div class="form-row">
                   <div class="form-group col-lg-6">
                     <label for="name">Name</label>
-                    <input type="text" class="form-control" id="name" name="full_name" placeholder="Name" value="" title="overall type: COMPANY_NAME
+                    <input type="text" class="form-control" id="name" name="full_name" placeholder="Name" value="" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Password Confirm Password Name Company Name
@@ -128,23 +151,12 @@ form signature: 7210662071344526520
 form signature in host form: 7210662071344526520
 field frame token: 48E82A396335962828107751F6DB7E91
 form renderer id: 1
-field renderer id: 8" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Password Confirm Password Name Company Name
-parseable name: full_name
-section: email_0_5
-field signature: 3812465820
-form signature: 7210662071344526520
-form signature in host form: 7210662071344526520
-field frame token: 48E82A396335962828107751F6DB7E91
-form renderer id: 1
-field renderer id: 8" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="510760">
+field renderer id: 8" data-ddg-testresultelementid="510760">
                     <div class="invalid-feedback"></div>
                   </div>
                   <div class="form-group col-lg-6">
                     <label for="name">Company Name</label>
-                    <input type="text" class="form-control" id="company" name="company_name" placeholder="Company Name" value="" title="overall type: COMPANY_NAME
+                    <input type="text" class="form-control" id="company" name="company_name" placeholder="Company Name" value="" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Company Name
@@ -155,37 +167,59 @@ form signature: 7210662071344526520
 form signature in host form: 7210662071344526520
 field frame token: 48E82A396335962828107751F6DB7E91
 form renderer id: 1
-field renderer id: 9" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Company Name
-parseable name: company_name
-section: email_0_5
-field signature: 680987098
-form signature: 7210662071344526520
-form signature in host form: 7210662071344526520
-field frame token: 48E82A396335962828107751F6DB7E91
-form renderer id: 1
-field renderer id: 9" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510761">
+field renderer id: 9" data-ddg-testresultelementid="510761">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-lg-6">
                     <label for="address-1">Address</label>
-                    <input type="text" class="form-control" id="address-1" name="address1" placeholder="Address" value="" data-ddg-testresultelementid="510762" data-manual-scoring="addressStreet">
+                    <input type="text" class="form-control" id="address-1" name="address1" placeholder="Address" value="" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE1
+label: Address
+parseable name: address1
+section: email_0_5
+field signature: 2267517795
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 10" data-ddg-testresultelementid="510762" data-manual-scoring="addressStreet">
                     <div class="invalid-feedback"></div>
                   </div>
                   <div class="form-group col-lg-6">
                     <label for="address-2">Address (cont.)</label>
-                    <input type="text" class="form-control" id="address-2" name="address2" placeholder="Address (cont.)" value="" data-ddg-testresultelementid="510763" data-manual-scoring="addressStreet2">
+                    <input type="text" class="form-control" id="address-2" name="address2" placeholder="Address (cont.)" value="" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE2
+label: Address (cont.)
+parseable name: address2
+section: email_0_5
+field signature: 1236818338
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 11" data-ddg-testresultelementid="510763" data-manual-scoring="addressStreet2">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-lg-6">
                     <label for="country">Country</label>
-                    <select class="form-control" id="country" name="country" data-loaded-value="" data-ddg-testresultelementid="510764" data-manual-scoring="addressCountryCode">
+                    <select class="form-control" id="country" name="country" data-loaded-value="" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country
+parseable name: country
+section: email_0_5
+field signature: 2799270304
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 12" data-ddg-testresultelementid="510764" data-manual-scoring="addressCountryCode">
                       <option value="AF">Afghanistan</option>
                       <option value="AX">Åland Islands</option>
                       <option value="AL">Albania</option>
@@ -468,14 +502,36 @@ field renderer id: 9" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unk
                   <div class="invalid-feedback"></div>
                   <div class="form-group col-lg-6">
                     <label for="city">City</label>
-                    <input type="text" class="form-control" id="city" name="city" placeholder="City" value="" data-ddg-testresultelementid="510765" data-manual-scoring="addressCity">
+                    <input type="text" class="form-control" id="city" name="city" placeholder="City" value="" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: City
+parseable name: city
+section: email_0_5
+field signature: 2098554694
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 13" data-ddg-testresultelementid="510765" data-manual-scoring="addressCity">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-lg-6">
                     <label for="state-us">State/Province/Region</label>
-                    <select class="form-control" id="state-auto" name="state" data-loaded-value="" data-ddg-testresultelementid="510766" data-manual-scoring="addressProvince">
+                    <select class="form-control" id="state-auto" name="state" data-loaded-value="" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State/Province/Region
+parseable name: state
+section: email_0_5
+field signature: 1878375253
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 14" data-ddg-testresultelementid="510766" data-manual-scoring="addressProvince">
                       <option value="AL">Alabama</option>
                       <option value="AK">Alaska</option>
                       <option value="AS">American Samoa</option>
@@ -536,7 +592,7 @@ field renderer id: 9" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unk
                       <option value="WI">Wisconsin</option>
                       <option value="WY">Wyoming</option>
                     </select>
-                    <input type="text" class="form-control d-none" id="state-non-auto" placeholder="State/Province/Region" value="" title="overall type: UNKNOWN_TYPE
+                    <input type="text" class="form-control d-none" id="state-non-auto" placeholder="State/Province/Region" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: State/Province/Region
@@ -547,42 +603,64 @@ form signature: 7210662071344526520
 form signature in host form: 7210662071344526520
 field frame token: 48E82A396335962828107751F6DB7E91
 form renderer id: 1
-field renderer id: 15" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: State/Province/Region
-parseable name: state-non-auto
-section: email_0_5
-field signature: 2806114023
-form signature: 7210662071344526520
-form signature in host form: 7210662071344526520
-field frame token: 48E82A396335962828107751F6DB7E91
-form renderer id: 1
-field renderer id: 15" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.addressProvince" data-ddg-testresultelementid="510767">
+field renderer id: 15" data-ddg-testresultelementid="510767">
                     <div class="invalid-feedback"></div>
                   </div>
                   <div class="form-group col-lg-6">
                     <label for="postal-code">Zip/Postal Code</label>
-                    <input type="text" class="form-control" id="postal-code" name="postal_code" placeholder="Zip/Postal Code" value="" data-ddg-testresultelementid="510768" data-manual-scoring="addressPostalCode">
+                    <input type="text" class="form-control" id="postal-code" name="postal_code" placeholder="Zip/Postal Code" value="" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_ZIP
+label: Zip/Postal Code
+parseable name: postal_code
+section: email_0_5
+field signature: 187291502
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 16" data-ddg-testresultelementid="510768" data-manual-scoring="addressPostalCode">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-md-6">
                     <label for="telephone">Telephone Number</label>
-                    <input type="text" class="form-control" id="telephone" name="phone_number" placeholder="Telephone Number" value="" data-ddg-testresultelementid="510769" data-manual-scoring="phone">
+                    <input type="text" class="form-control" id="telephone" name="phone_number" placeholder="Telephone Number" value="" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Telephone Number
+parseable name: phone_number
+section: email_0_5
+field signature: 1514016883
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 17" data-ddg-testresultelementid="510769" data-manual-scoring="phone">
                     <div class="invalid-feedback"></div>
                   </div>
                   <div class="form-group col-md-6">
                     <label for="mobile">Mobile Number</label>
-                    <input type="text" class="form-control" id="mobile" name="mobile_number" placeholder="Mobile Number" value="" data-ddg-testresultelementid="510770" data-manual-scoring="phone">
+                    <input type="text" class="form-control" id="mobile" name="mobile_number" placeholder="Mobile Number" value="" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Mobile Number
+parseable name: mobile_number
+section: email_0_5
+field signature: 3838988140
+form signature: 7210662071344526520
+form signature in host form: 7210662071344526520
+field frame token: 48E82A396335962828107751F6DB7E91
+form renderer id: 1
+field renderer id: 18" data-ddg-testresultelementid="510770" data-manual-scoring="phone">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-lg-6">
                     <label for="card-name">Tax ID/VAT Number</label>
-                    <input type="text" class="form-control" id="tax-id" name="tax_id" placeholder="Tax ID/VAT Number" value="" title="overall type: UNKNOWN_TYPE
+                    <input type="text" class="form-control" id="tax-id" name="tax_id" placeholder="Tax ID/VAT Number" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Tax ID/VAT Number
@@ -593,18 +671,7 @@ form signature: 7210662071344526520
 form signature in host form: 7210662071344526520
 field frame token: 48E82A396335962828107751F6DB7E91
 form renderer id: 1
-field renderer id: 19" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Tax ID/VAT Number
-parseable name: tax_id
-section: email_0_5
-field signature: 2869649090
-form signature: 7210662071344526520
-form signature in host form: 7210662071344526520
-field frame token: 48E82A396335962828107751F6DB7E91
-form renderer id: 1
-field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510771">
+field renderer id: 19" data-ddg-testresultelementid="510771">
                     <div class="invalid-feedback"></div>
                   </div>
                 </div>
@@ -613,7 +680,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </div>
         </div>
         <div class="form-check mt-3">
-          <input id="checkbox-legal-agreement" class="form-check-input cursor-pointer" type="checkbox" name="legal_agreement" value="" title="overall type: UNKNOWN_TYPE
+          <input id="checkbox-legal-agreement" class="form-check-input cursor-pointer" type="checkbox" name="legal_agreement" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I have read and agree to the cPanel Terms of Use
@@ -624,18 +691,7 @@ form signature: 7210662071344526520
 form signature in host form: 7210662071344526520
 field frame token: 48E82A396335962828107751F6DB7E91
 form renderer id: 1
-field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I have read and agree to the cPanel Terms of Use
-parseable name: legal_agreement
-section: email_0_5
-field signature: 738869128
-form signature: 7210662071344526520
-form signature in host form: 7210662071344526520
-field frame token: 48E82A396335962828107751F6DB7E91
-form renderer id: 1
-field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510772">
+field renderer id: 20" data-ddg-testresultelementid="510772">
           <label class="form-check-label cursor-pointer" for="checkbox-legal-agreement">
             I have read and agree to the
             <a href="https://www.cpanel.com/legal-notices.html" target="_blank">cPanel Terms of Use</a>
@@ -649,13 +705,7 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </form>
     </div>
   </section>
-  <iframe name="__uspapiLocator" tabindex="-1" role="presentation" aria-hidden="true" title="Blank" style="
-      display: none;
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      top: -9999px;
-    "></iframe>
+  
 
   <footer class="no-print">
     <div class="container">
@@ -780,7 +830,7 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <hr>
       <div class="row legal">
         <div class="col-3 col-md-2 col-lg-2 ml-lg-0 mx-auto pb-3 pb-lg-0">
-          <a href="https://www.cpanel.com"><img src="/img/footer-cpanel.svg" class="img-fluid"></a>
+          <a href="https://www.cpanel.com"></a>
         </div>
         <div class="col-12 col-lg-6 text-center text-lg-left legal-links">
           <p>
@@ -792,14 +842,14 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           </p>
         </div>
         <div class="col-12 col-md-8 mx-md-auto col-lg-4 pb-4 pb-lg-0 d-flex justify-content-between">
-          <a href="//facebook.com/cpanel" target="_blank"><img src="/img/facebook.svg" style="height: 24px"></a>
-          <a href="//twitter.com/cpanel" target="_blank"><img src="/img/twitter.svg" style="height: 24px"></a>
-          <a href="//www.instagram.com/cpanel/" target="_blank"><img src="/img/instagram.svg" style="height: 24px"></a>
-          <a href="//youtube.com/user/cpaneltv" target="_blank"><img src="/img/youtube.svg" style="height: 24px"></a>
-          <a href="//linkedin.com/company/cpanel" target="_blank"><img src="/img/linkedin.svg" style="height: 24px"></a>
-          <a href="//go.cpanel.net/slack" target="_blank"><img src="/img/slack.svg" style="height: 24px"></a>
-          <a href="//reddit.com/r/cpanel/" target="_blank"><img src="/img/reddit.svg" style="height: 24px"></a>
-          <a href="//go.cpanel.net/discord" target="_blank"><img src="/img/discord.svg" style="height: 24px"></a>
+          <a href="//facebook.com/cpanel" target="_blank"></a>
+          <a href="//twitter.com/cpanel" target="_blank"></a>
+          <a href="//www.instagram.com/cpanel/" target="_blank"></a>
+          <a href="//youtube.com/user/cpaneltv" target="_blank"></a>
+          <a href="//linkedin.com/company/cpanel" target="_blank"></a>
+          <a href="//go.cpanel.net/slack" target="_blank"></a>
+          <a href="//reddit.com/r/cpanel/" target="_blank"></a>
+          <a href="//go.cpanel.net/discord" target="_blank"></a>
         </div>
       </div>
     </div>
@@ -815,97 +865,29 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           </p>
         </div>
         <div class="col-4 col-md-4 col-lg-3 col-xl-2 ml-md-auto mr-md-0 mx-auto mt-3 mt-md-0">
-          <img src="/img/cPWHM_Pay.svg" class="img-fluid">
+          
         </div>
       </div>
     </div>
   </section>
-  <script type="text/javascript">
-    var YUI_config = {
-      combine: true,
-      base: "/yui/3.4.1/build/",
-      comboBase: "/yui/combo.cgi?",
-      root: "/yui/3.4.1/build/",
-    };
-  </script>
-  <script type="text/javascript" src="/idev_magic_revision/92c941ac3d7940f7b513f2518b22e779//commonui/js/vendor/jquery/3.6.1/jquery-3.6.1.min.js"></script>
-  <script type="text/javascript" src="/idev_magic_revision/f418e845dc4d7dfb6e38b52afbc31683//commonui/js/vendor/bootstrap/4.6.2/bootstrap.bundle.min.js"></script>
-  <script type="text/javascript" src="/idev_magic_revision/afba15341883658c8638316c1bf43e56//js/models/storeapi.model.min.js"></script>
-  <script type="text/javascript" src="/idev_magic_revision/5dcf055823ea6e6d7ef9c5cfc1821c02//js/toggle-switches.js"></script>
-  <script type="text/javascript" src="/idev_magic_revision/38542d99451343f013ea548f0fa299e0//js/register/dist/bundle.js"></script>
+  
+  
+  
+  
+  
+  
 
-  <script type="text/javascript" data-cookieconsent="preferences,marketing">
-    // Zendesk LiveChat
-    (function () {
-      var lc = document.createElement("script");
-      lc.type = "text/javascript";
-      lc.async = true;
-      lc.id = "ze-snippet";
-      lc.src =
-        ("https:" == document.location.protocol ? "https://" : "http://") +
-        "static.zdassets.com/ekr/snippet.js?key=1cde64a5-6517-4586-9dff-3c62d183129a";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(lc, s);
-    })();
-  </script>
-  <script type="text/javascript">
-    (function () {
-      var js =
-        "window['__CF$cv$params']={r:'7a893440ebcd27fc',m:'rvieen2iAplsZC44exUvmHTOH64J.fYeU8mORQXPFAA-1678929945-0-AUg8DgaNoNxvRaE5MYznsDGXsad9Rad1TGVKsaTtnYz1Xwq18NBbX6WTCqezL6eMMQtODwJxMqXZDX1vHkTAkzePgomT4ZrGGbFKH0JDMOV1dtHGcXC4GCtghxL4yMbbCA==',s:[0xd09831009d,0xb23d1c942b],u:'/cdn-cgi/challenge-platform/h/b'};var now=Date.now()/1000,offset=14400,ts=''+(Math.floor(now)-Math.floor(now%offset)),_cpo=document.createElement('script');_cpo.nonce='',_cpo.src='/cdn-cgi/challenge-platform/h/b/scripts/alpha/invisible.js?ts='+ts,document.getElementsByTagName('head')[0].appendChild(_cpo);";
-      var _0xh = document.createElement("iframe");
-      _0xh.height = 1;
-      _0xh.width = 1;
-      _0xh.style.position = "absolute";
-      _0xh.style.top = 0;
-      _0xh.style.left = 0;
-      _0xh.style.border = "none";
-      _0xh.style.visibility = "hidden";
-      document.body.appendChild(_0xh);
-      function handler() {
-        var _0xi = _0xh.contentDocument || _0xh.contentWindow.document;
-        if (_0xi) {
-          var _0xj = _0xi.createElement("script");
-          _0xj.nonce = "";
-          _0xj.innerHTML = js;
-          _0xi.getElementsByTagName("head")[0].appendChild(_0xj);
-        }
-      }
-      if (document.readyState !== "loading") {
-        handler();
-      } else if (window.addEventListener) {
-        document.addEventListener("DOMContentLoaded", handler);
-      } else {
-        var prev = document.onreadystatechange || function () {};
-        document.onreadystatechange = function (e) {
-          prev(e);
-          if (document.readyState !== "loading") {
-            document.onreadystatechange = prev;
-            handler();
-          }
-        };
-      }
-    })();
-  </script>
+  
+  
 
-  <iframe tabindex="-1" role="presentation" aria-hidden="true" title="Blank" src="https://consentcdn.cookiebot.com/sdk/bc-v4.min.html" style="position: absolute; width: 1px; height: 1px; top: -9999px"></iframe>
+  
   <div>
-    <div class="grecaptcha-badge" data-style="bottomright" style="
-        width: 256px;
-        height: 60px;
-        display: block;
-        transition: right 0.3s ease 0s;
-        position: fixed;
-        bottom: 14px;
-        right: -186px;
-        box-shadow: gray 0px 0px 5px;
-        border-radius: 2px;
-        overflow: hidden;
-      ">
+    <div class="grecaptcha-badge" data-style="bottomright">
       <div class="grecaptcha-logo">
-        <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6Ld50bgZAAAAAMqNsVrempQl9y9fxY6A2UDnYv56&amp;co=aHR0cHM6Ly9zdG9yZS5jcGFuZWwubmV0OjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=invisible&amp;cb=sskqeqgzi3t6" width="256" height="60" role="presentation" name="a-2ka4i88wtxoh" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+        
       </div>
       <div class="grecaptcha-error"></div>
-      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: 
@@ -916,60 +898,12 @@ form signature: 13064865965209284463
 form signature in host form: 13064865965209284463
 field frame token: 48E82A396335962828107751F6DB7E91
 form renderer id: 0
-field renderer id: 23" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: 
-parseable name: g-recaptcha-response
-section: g-recaptcha-response_0_23
-field signature: 3309787731
-form signature: 13064865965209284463
-form signature in host form: 13064865965209284463
-field frame token: 48E82A396335962828107751F6DB7E91
-form renderer id: 0
-field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510773" style="
-          width: 250px;
-          height: 40px;
-          border: 1px solid rgb(193, 193, 193);
-          margin: 10px 25px;
-          padding: 0px;
-          resize: none;
-          display: none;
-        "></textarea>
+field renderer id: 23" data-ddg-testresultelementid="510773"></textarea>
     </div>
-    <iframe style="display: none"></iframe>
+    
   </div>
-  <iframe height="1" width="1" style="
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      border: none;
-      visibility: hidden;
-    "></iframe><iframe data-product="web_widget" title="No content" role="presentation" tabindex="-1" allow="microphone *" aria-hidden="true" src="about:blank" style="
-      width: 0px;
-      height: 0px;
-      border: 0px;
-      position: absolute;
-      top: -9999px;
-    "></iframe>
+  
   <div>
-    <iframe title="Opens a widget where you can find more information" id="launcher" tabindex="-1" style="
-        color-scheme: light;
-        width: 136px;
-        height: 50px;
-        padding: 0px;
-        margin: 10px 20px;
-        position: fixed;
-        bottom: 30px;
-        overflow: visible;
-        opacity: 0;
-        border: 0px;
-        z-index: 999998;
-        transition-duration: 250ms;
-        transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
-        transition-property: opacity, top, bottom;
-        top: -9999px;
-        visibility: hidden;
-      "></iframe>
+    
   </div>
 

@@ -1,67 +1,18 @@
 <!--
   https://www.city-data.com/forum/register.php
+  rank: 6501
   testRunId: 66
   testResultId: 238302
 -->
 
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(["_setAccount", "UA-892232-12"]);
-    _gaq.push(["_trackPageview"]);
-    (function () {
-      var ga = document.createElement("script");
-      ga.type = "text/javascript";
-      ga.async = true;
-      ga.src =
-        ("https:" == document.location.protocol
-          ? "https://ssl"
-          : "http://www") + ".google-analytics.com/ga.js";
-      (
-        document.getElementsByTagName("head")[0] ||
-        document.getElementsByTagName("body")[0]
-      ).appendChild(ga);
-    })();
-  </script>
+  
 
-  <script type="text/javascript">
-    var ES = function (r) {
-      return r.replace(/"/g, "&quot;");
-    };
-    function addLink() {
-      var l = document.location.href.split("#")[0];
-      l = l.split('"')[0];
-      l = l.split("'")[0];
-      l = l.split("<")[0];
-      l = l.split(">")[0];
-      var a = window.getSelection(),
-        aa = a + "";
-      if (aa.length < 20 || aa.indexOf("city-data.com") != -1) return;
-      var d =
-        ES(aa) +
-        "<br/><br/> Read more: <a href='" +
-        l +
-        "'>" +
-        l +
-        "</a><br/><br/>";
-      var b = document.getElementsByTagName("body")[0],
-        c = document.createElement("div");
-      c.style.position = "absolute";
-      c.style.left = "0";
-      c.style.width = "1px";
-      c.innerHTML = d;
-      b.appendChild(c);
-      a.selectAllChildren(c);
-      window.setTimeout(function () {
-        b.removeChild(c);
-      }, 0);
-    }
-    document.oncopy = addLink;
-  </script>
+  
 
   <a name="top"></a>
   <div id="cdfc">
     <div id="cdfh">
-      <img id="cdfi" usemap="#m_cdfh" src="//pics3.city-data.com/images/cdfh.jpg" alt="" height="80">
+      
     </div>
     <map name="m_cdfh"><area shape="rect" coords="24,39,197,67" href="/" title="U.S. Cities" alt="U.S. Cities"><area shape="circle" coords="724,19,37" href="/forum/" target="_top" title="U.S. Cities Relocation, Moving, Local Discussion Forum" alt="City-Data Forum Index"></map>
   </div>
@@ -70,8 +21,8 @@
   <!-- open content container -->
 
   <div align="center">
-    <div class="page" style="width: 100%; text-align: left">
-      <div style="padding: 0px 25px 0px 25px" align="left">
+    <div class="page">
+      <div align="left">
         <br>
 
         <!--  cd_guest_newthread_reg -->
@@ -82,39 +33,10 @@
 
         <!-- /cd_guest_quickreplay -->
 
-        <script type="text/javascript" src="//pics3.city-data.com/forum/clientscript/vbulletin_md5.js?v=376"></script>
-        <script type="text/javascript">
-          function verify_passwords(password1, password2) {
-            // do various checks, this will save people noticing mistakes on next page
-            if (password1.value == "" || password2.value == "") {
-              alert("Please fill out both password fields.");
-              return false;
-            } else if (password1.value != password2.value) {
-              alert("The entered passwords do not match.");
-              return false;
-            } else {
-              var junk_output;
+        
+        
 
-              md5hash(
-                password1,
-                document.forms.register.password_md5,
-                junk_output,
-                0
-              );
-              md5hash(
-                password2,
-                document.forms.register.passwordconfirm_md5,
-                junk_output,
-                0
-              );
-
-              return true;
-            }
-            return false;
-          }
-        </script>
-
-        <form action="registeradv.php?do=addmember" name="register" method="post" onsubmit="return verify_passwords(password, passwordconfirm);" data-ddg-formtype="sign up">
+        <form action="registeradv.php?do=addmember" name="register" method="post" onsubmit="return verify_passwords(password, passwordconfirm);">
           <input type="hidden" name="s" value="">
           <input type="hidden" name="securitytoken" value="guest">
           <input type="hidden" name="do" value="addmember">
@@ -138,8 +60,8 @@
               <tr>
                 <td class="panelsurround" align="center">
                   <div class="panel">
-                    <div style="width: 640px" align="left">
-                      <div class="smallfont" style="margin-bottom: 3px">
+                    <div align="left">
+                      <div class="smallfont">
                         In order to be able to post messages, you must first
                         register.<br>
                         If you already are a member, you can log in
@@ -148,9 +70,20 @@
                         websites.<br>
                       </div>
 
-                      <div class="smallfont" style="margin-bottom: 3px">
+                      <div class="smallfont">
                         <strong>User Name</strong>:<br>
-                        <input type="text" class="bginput" name="username" size="50" maxlength="25" value="" data-ddg-testresultelementid="531778" data-manual-scoring="username">
+                        <input type="text" class="bginput" name="username" size="50" maxlength="25" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: User Name:
+parseable name: username
+section: username_0_11
+field signature: 239111655
+form signature: 17448981745168312351
+form signature in host form: 17448981745168312351
+field frame token: A1106C5D8A0BCB4824A168E6A3043930
+form renderer id: 1
+field renderer id: 11" data-ddg-testresultelementid="531778" data-manual-scoring="username">
                       </div>
 
                       <fieldset class="fieldset">
@@ -165,11 +98,33 @@
                             <tr>
                               <td>
                                 Password:<br>
-                                <input type="password" class="bginput" name="password" size="25" maxlength="50" value="" data-ddg-testresultelementid="531779" data-manual-scoring="password">
+                                <input type="password" class="bginput" name="password" size="25" maxlength="50" value="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password:
+parseable name: password
+section: username_0_11
+field signature: 2051817934
+form signature: 17448981745168312351
+form signature in host form: 17448981745168312351
+field frame token: A1106C5D8A0BCB4824A168E6A3043930
+form renderer id: 1
+field renderer id: 13" data-ddg-testresultelementid="531779" data-manual-scoring="password">
                               </td>
                               <td width="50%">
                                 Confirm Password:<br>
-                                <input type="password" class="bginput" name="passwordconfirm" size="25" maxlength="50" value="" data-ddg-testresultelementid="531780" data-manual-scoring="password">&nbsp;<a href="#" onclick="window.open('fractalizer_ajaxreg_ui.php?do=passwdgenform', 'new','width=340,height=360,resizable=0');return false;"><img src="images/ajaxreg/icons/pswsugg.gif" align="baseline" border="0"></a>
+                                <input type="password" class="bginput" name="passwordconfirm" size="25" maxlength="50" value="" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password:
+parseable name: passwordconfirm
+section: username_0_11
+field signature: 839743473
+form signature: 17448981745168312351
+form signature in host form: 17448981745168312351
+field frame token: A1106C5D8A0BCB4824A168E6A3043930
+form renderer id: 1
+field renderer id: 14" data-ddg-testresultelementid="531780" data-manual-scoring="password">&nbsp;<a href="#" onclick="window.open('fractalizer_ajaxreg_ui.php?do=passwdgenform', 'new','width=340,height=360,resizable=0');return false;"></a>
                               </td>
                             </tr>
                           </tbody>
@@ -188,31 +143,39 @@
                             <tr>
                               <td>
                                 Email Address:<br>
-                                <input type="text" class="bginput" name="email" size="25" maxlength="50" value="" dir="ltr" data-ddg-autofill="true" data-ddg-testresultelementid="531781" style="
-                                    background-size: auto 100% !important;
-                                    background-position: right center !important;
-                                    background-repeat: no-repeat !important;
-                                    background-origin: content-box !important;
-                                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                    transition: background 0s ease 0s !important;
-                                  " data-manual-scoring="emailAddress">
+                                <input type="text" class="bginput" name="email" size="25" maxlength="50" value="" dir="ltr" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address:
+parseable name: email
+section: username_0_11
+field signature: 420638584
+form signature: 17448981745168312351
+form signature in host form: 17448981745168312351
+field frame token: A1106C5D8A0BCB4824A168E6A3043930
+form renderer id: 1
+field renderer id: 16" data-ddg-testresultelementid="531781" data-manual-scoring="emailAddress">
                               </td>
                               <td>
                                 Confirm Email Address:<br>
-                                <input type="text" class="bginput" name="emailconfirm" size="25" maxlength="50" value="" dir="ltr" data-ddg-autofill="true" data-ddg-testresultelementid="531782" style="
-                                    background-size: auto 100% !important;
-                                    background-position: right center !important;
-                                    background-repeat: no-repeat !important;
-                                    background-origin: content-box !important;
-                                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                                    transition: background 0s ease 0s !important;
-                                  " data-manual-scoring="emailAddress">
+                                <input type="text" class="bginput" name="emailconfirm" size="25" maxlength="50" value="" dir="ltr" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm Email Address:
+parseable name: emailconfirm
+section: username_0_11
+field signature: 2455987448
+form signature: 17448981745168312351
+form signature in host form: 17448981745168312351
+field frame token: A1106C5D8A0BCB4824A168E6A3043930
+form renderer id: 1
+field renderer id: 17" data-ddg-testresultelementid="531782" data-manual-scoring="emailAddress">
                               </td>
                             </tr>
                             <tr>
                               <td colspan="2">
-                                <div style="margin-left: 10px">
-                                  <img src="//pics3.city-data.com/forum/images/icons/icon4.gif" alt="" style="">
+                                <div>
+                                  
                                   Please double-check that your email address is
                                   entered correctly. Otherwise, we will be
                                   unable to <b>activate your account</b> or
@@ -232,11 +195,11 @@
                         <legend>Human Verification</legend>
                         <input id="hash" type="hidden" name="humanverify[hash]" value="1763c82daf73c122c92841a63cbdeed9">
                         <div class="g-recaptcha" data-sitekey="6LfnLfkSAAAAAGuyBUjuWlGYzjdRDRvFqTLhNYMk" data-theme="light" data-type="image">
-                          <div style="width: 304px; height: 78px">
+                          <div>
                             <div>
-                              <iframe title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor?ar=1&amp;k=6LfnLfkSAAAAAGuyBUjuWlGYzjdRDRvFqTLhNYMk&amp;co=aHR0cHM6Ly93d3cuY2l0eS1kYXRhLmNvbTo0NDM.&amp;hl=en&amp;type=image&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;theme=light&amp;size=normal&amp;cb=6lq42uros3wh" width="304" height="78" role="presentation" name="a-ymqmp5uyz4nw" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+                              
                             </div>
-                            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: UNKNOWN_TYPE
+                            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: 
@@ -247,28 +210,9 @@ form signature: 17448981745168312351
 form signature in host form: 17448981745168312351
 field frame token: A1106C5D8A0BCB4824A168E6A3043930
 form renderer id: 1
-field renderer id: 32" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: 
-parseable name: g-recaptcha-response
-section: username_0_11
-field signature: 3309787731
-form signature: 17448981745168312351
-form signature in host form: 17448981745168312351
-field frame token: A1106C5D8A0BCB4824A168E6A3043930
-form renderer id: 1
-field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="531783" style="
-                                width: 250px;
-                                height: 40px;
-                                border: 1px solid rgb(193, 193, 193);
-                                margin: 10px 25px;
-                                padding: 0px;
-                                resize: none;
-                                display: none;
-                              "></textarea>
+field renderer id: 32" data-ddg-testresultelementid="531783"></textarea>
                           </div>
-                          <iframe style="display: none"></iframe>
+                          
                         </div>
                         <noscript>
                           <div style="width: 302px; height: 352px">
@@ -330,18 +274,10 @@ field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             </div>
                           </div>
                         </noscript>
-                        <script src="https://www.google.com/recaptcha/api.js" async="" defer=""></script>
+                        
                       </fieldset>
                       <div class="fieldset">
-                        <div style="
-                            height: 100px;
-                            overflow: auto;
-                            border: 2px inset;
-                            padding: 4px;
-                            margin: 5px;
-                            background-color: window;
-                            margin-top: 20px;
-                          ">
+                        <div>
                           <p><strong>Forum Rules</strong></p>
                           <p>
                             Registration to this forum is free! We do insist
@@ -469,7 +405,7 @@ field renderer id: 32" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                               Policy</a>.
                           </p>
                         </div>
-                        <input type="checkbox" name="agree" id="cb_rules_agree" value="1" title="overall type: UNKNOWN_TYPE
+                        <input type="checkbox" name="agree" id="cb_rules_agree" value="1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I have read and agree to abide by the City-Data.com rules and I have reviewed  the Terms of Use and 
@@ -480,18 +416,7 @@ form signature: 17448981745168312351
 form signature in host form: 17448981745168312351
 field frame token: A1106C5D8A0BCB4824A168E6A3043930
 form renderer id: 1
-field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I have read and agree to abide by the City-Data.com rules and I have reviewed  the Terms of Use and 
-parseable name: agree
-section: username_0_11
-field signature: 3110347568
-form signature: 17448981745168312351
-form signature in host form: 17448981745168312351
-field frame token: A1106C5D8A0BCB4824A168E6A3043930
-form renderer id: 1
-field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="531784"><strong><phrase 1="City-Data Forum">I have read and agree to abide by the City-Data.com
+field renderer id: 20" data-ddg-testresultelementid="531784"><strong><phrase 1="City-Data Forum">I have read and agree to abide by the City-Data.com
                             rules and I have reviewed the
                             <a href="/terms.html#terms">Terms of Use</a> and the
                             <a href="/terms.html#priv">Privacy Policy</a>.</phrase></strong><br>
@@ -512,8 +437,8 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
               <tr>
                 <td class="panelsurround" align="center">
                   <div class="panel">
-                    <div style="width: 640px" align="left">
-                      <fieldset class="fieldset" id="timezone_set" style="display: none">
+                    <div align="left">
+                      <fieldset class="fieldset" id="timezone_set">
                         <legend>
                           <label for="sel_timezoneoffset">Time Zone</label>
                         </legend>
@@ -529,8 +454,8 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             </tr>
                             <tr>
                               <td>
-                                <span style="float: right">
-                                  <select name="timezoneoffset" id="sel_timezoneoffset" title="overall type: UNKNOWN_TYPE
+                                <span>
+                                  <select name="timezoneoffset" id="sel_timezoneoffset" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Time Zone Time Zone:
@@ -541,18 +466,7 @@ form signature: 17448981745168312351
 form signature in host form: 17448981745168312351
 field frame token: A1106C5D8A0BCB4824A168E6A3043930
 form renderer id: 1
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Time Zone Time Zone:
-parseable name: timezoneoffset
-section: username_0_11
-field signature: 148647261
-form signature: 17448981745168312351
-form signature in host form: 17448981745168312351
-field frame token: A1106C5D8A0BCB4824A168E6A3043930
-form renderer id: 1
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="531785">
+field renderer id: 22" data-ddg-testresultelementid="531785">
                                     <option value="-12" class="">
                                       (GMT -12:00) Eniwetok, Kwajalein
                                     </option>
@@ -683,8 +597,8 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </tr>
                             <tr>
                               <td>
-                                <span style="float: right">
-                                  <select name="dst" id="sel_dst" title="overall type: UNKNOWN_TYPE
+                                <span>
+                                  <select name="dst" id="sel_dst" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: DST Correction Option:
@@ -695,18 +609,7 @@ form signature: 17448981745168312351
 form signature in host form: 17448981745168312351
 field frame token: A1106C5D8A0BCB4824A168E6A3043930
 form renderer id: 1
-field renderer id: 23" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: DST Correction Option:
-parseable name: dst
-section: username_0_11
-field signature: 2677418859
-form signature: 17448981745168312351
-form signature in host form: 17448981745168312351
-field frame token: A1106C5D8A0BCB4824A168E6A3043930
-form renderer id: 1
-field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="531786">
+field renderer id: 23" data-ddg-testresultelementid="531786">
                                     <option value="2">
                                       Automatically detect DST settings
                                     </option>
@@ -740,7 +643,7 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </tr>
                             <tr>
                               <td>
-                                <label for="cb_adminemail"><input type="checkbox" name="options[adminemail]" value="1" id="cb_adminemail" checked="checked" title="overall type: UNKNOWN_TYPE
+                                <label for="cb_adminemail"><input type="checkbox" name="options[adminemail]" value="1" id="cb_adminemail" checked="checked" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Receive Email from Administrators
@@ -751,18 +654,7 @@ form signature: 17448981745168312351
 form signature in host form: 17448981745168312351
 field frame token: A1106C5D8A0BCB4824A168E6A3043930
 form renderer id: 1
-field renderer id: 25" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Receive Email from Administrators
-parseable name: options[adminemail]
-section: username_0_11
-field signature: 1727831789
-form signature: 17448981745168312351
-form signature in host form: 17448981745168312351
-field frame token: A1106C5D8A0BCB4824A168E6A3043930
-form renderer id: 1
-field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="531787">Receive Email from Administrators</label>
+field renderer id: 25" data-ddg-testresultelementid="531787">Receive Email from Administrators</label>
                               </td>
                             </tr>
                           </tbody>
@@ -784,7 +676,18 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             </tr>
                             <tr>
                               <td>
-                                <input type="text" class="bginput" name="userfield[field28]" id="ctb_field28" value="" size="5" maxlength="5" data-ddg-testresultelementid="531788" data-manual-scoring="addressPostalCode">
+                                <input type="text" class="bginput" name="userfield[field28]" id="ctb_field28" value="" size="5" maxlength="5" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: ADDRESS_HOME_ZIP
+heuristic type: UNKNOWN_TYPE
+label: (Optional, U.S. residents only) Make sure to fill out this field to see people living near you, to d
+parseable name: userfield[field28]
+section: username_0_11
+field signature: 1239295551
+form signature: 17448981745168312351
+form signature in host form: 17448981745168312351
+field frame token: A1106C5D8A0BCB4824A168E6A3043930
+form renderer id: 1
+field renderer id: 27" data-ddg-testresultelementid="531788" data-manual-scoring="addressPostalCode">
 
                                 <input type="hidden" name="userfield[field28_set]" value="1">
                               </td>
@@ -795,7 +698,7 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     </div>
                   </div>
 
-                  <div style="margin-top: 6px">
+                  <div>
                     <!--  cd_guest_quickreplay -->
 
                     <!--  cd_guest_quickreplay -->
@@ -804,7 +707,7 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
 
                     <!--  cd_guest_quickreplay -->
 
-                    <input type="reset" class="button" name="Reset" value="Reset Fields" data-ddg-inputtype="unknown" data-ddg-testresultelementid="531789">
+                    <input type="reset" class="button" name="Reset" value="Reset Fields" data-ddg-testresultelementid="531789">
                   </div>
                 </td>
               </tr>
@@ -813,73 +716,7 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         </form>
 
         <!-- nocaptcha_register -->
-        <script type="text/javascript">
-          document.getElementById("timezone_set").style.display = "none";
-          // script by Josh Fraser (http://www.onlineaspect.com)
-
-          function checked_rules() {
-            if (document.getElementById("cb_rules_agree").checked == false) {
-              alert(
-                "You have chosen not to accept the forum rules, so registration cannot continue."
-              );
-              return false;
-            }
-            return true;
-          }
-
-          function calculate_time_zone() {
-            var Now = new Date();
-            var jan1 = new Date(Now.getFullYear(), 0, 1, 0, 0, 0, 0); // jan 1st
-            var june1 = new Date(Now.getFullYear(), 6, 1, 0, 0, 0, 0); // june 1st
-            var temp = jan1.toGMTString();
-            var jan2 = new Date(temp.substring(0, temp.lastIndexOf(" ") - 1));
-            temp = june1.toGMTString();
-            var june2 = new Date(temp.substring(0, temp.lastIndexOf(" ") - 1));
-            var std_time_offset = (jan1 - jan2) / (1000 * 60 * 60);
-            var daylight_time_offset = (june1 - june2) / (1000 * 60 * 60);
-            var dst;
-            if (std_time_offset == daylight_time_offset) {
-              dst = "0"; // daylight savings time is NOT observed
-            } else {
-              // positive is southern, negative is northern hemisphere
-              var hemisphere = std_time_offset - daylight_time_offset;
-              if (hemisphere >= 0) std_time_offset = daylight_time_offset;
-              dst = "1"; // daylight savings time is observed
-            }
-            var i;
-
-            for (
-              i = 0;
-              i < document.getElementById("sel_timezoneoffset").options.length;
-              i++
-            ) {
-              if (
-                document.getElementById("sel_timezoneoffset").options[i]
-                  .value == std_time_offset
-              ) {
-                document.getElementById("sel_timezoneoffset").selectedIndex = i;
-                break;
-              }
-            }
-            for (
-              i = 0;
-              i < document.getElementById("sel_dst").options.length;
-              i++
-            ) {
-              if (document.getElementById("sel_dst").options[i].value == dst) {
-                document.getElementById("sel_dst").selectedIndex = i;
-                break;
-              }
-            }
-          }
-
-          onload = calculate_time_zone;
-
-          if (document.getElementById("img_verify")) {
-            document.getElementById("img_verify").style.display = "none";
-          }
-          document.getElementById("secretfield").value = "ee8da41e55" + "50";
-        </script>
+        
         <!-- /nocaptcha_register -->
 
         <br>
@@ -895,9 +732,9 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
   <!-- / close content container -->
   <!-- /content area table -->
 
-  <form action="/forum/" method="get" data-ddg-formtype="sign up">
+  <form action="/forum/" method="get">
     <div align="center">
-      <div class="smallfont" align="center" style="font-size: 7pt; color: Gray">
+      <div class="smallfont" align="center">
         <!-- Do not remove  or your scheduled tasks will cease to function -->
 
         <!-- Do not remove  or your scheduled tasks will cease to function -->
@@ -913,22 +750,11 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       <tbody>
         <tr>
           <!-- mstyle start -->
-          <script type="text/javascript">
-            function changeStyleCookie(styleId) {
-              var d = new Date();
-              d.setDate(d.getDate() + 999);
-              set_cookie("cdmsstyleid", styleId, d);
-              location.reload(true);
-            }
-            if (document.cookie.indexOf("cdmsstyleid") != -1)
-              document.write(
-                "<td class='tfoot'><input type='button' value='Mobile version' class='desktop_button' title='Change style to mobile version' onClick=\"changeStyleCookie('3')\" /></td>"
-              );
-          </script>
+          
           <!-- mstyle end -->
 
           <td class="tfoot">
-            <select name="styleid" onchange="switch_id(this, 'style')" data-ddg-inputtype="unknown" data-ddg-testresultelementid="531790">
+            <select name="styleid" onchange="switch_id(this, 'style')" data-ddg-testresultelementid="531790">
               <optgroup label="Quick Style Chooser">
                 <option value="1" class="" selected="selected">
                   -- Default Style
@@ -995,17 +821,10 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
     </table>
   </form>
 
-  <script type="text/javascript">
-    <!--
-    // Main vBulletin Javascript Initialization
-    vBulletin_init();
-    //-->
-  </script>
+  
 
   <!-- Quantcast Tag, part 2 -->
-  <script type="text/javascript">
-    _qevents.push({ qacct: "p-fcJqrRjuhwLnA" });
-  </script>
+  
   <noscript>
     <div style="display: none">
       <img
@@ -1018,48 +837,12 @@ field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
   </noscript>
   <!-- Quantcast End, part 2 -->
 
-  <div style="
-      background-color: rgb(255, 255, 255);
-      border: 1px solid rgb(204, 204, 204);
-      box-shadow: rgba(0, 0, 0, 0.2) 2px 2px 3px;
-      position: absolute;
-      transition: visibility 0s linear 0.3s, opacity 0.3s linear 0s;
-      opacity: 0;
-      visibility: hidden;
-      z-index: 2000000000;
-      left: 0px;
-      top: -10000px;
-    ">
-    <div style="
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0px;
-        left: 0px;
-        z-index: 2000000000;
-        background-color: rgb(255, 255, 255);
-        opacity: 0.05;
-      "></div>
-    <div class="g-recaptcha-bubble-arrow" style="
-        border: 11px solid transparent;
-        width: 0px;
-        height: 0px;
-        position: absolute;
-        pointer-events: none;
-        margin-top: -11px;
-        z-index: 2000000000;
-      "></div>
-    <div class="g-recaptcha-bubble-arrow" style="
-        border: 10px solid transparent;
-        width: 0px;
-        height: 0px;
-        position: absolute;
-        pointer-events: none;
-        margin-top: -10px;
-        z-index: 2000000000;
-      "></div>
-    <div style="z-index: 2000000000; position: relative">
-      <iframe title="recaptcha challenge expires in two minutes" src="https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;k=6LfnLfkSAAAAAGuyBUjuWlGYzjdRDRvFqTLhNYMk" name="c-ymqmp5uyz4nw" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox" style="width: 100%; height: 100%"></iframe>
+  <div>
+    <div></div>
+    <div class="g-recaptcha-bubble-arrow"></div>
+    <div class="g-recaptcha-bubble-arrow"></div>
+    <div>
+      
     </div>
   </div>
 

@@ -1,5 +1,6 @@
 <!--
   https://journals.aps.org/signup
+  rank: 3143
   testRunId: 66
   testResultId: 236463
 -->
@@ -9,7 +10,7 @@
     <ul class="title-area main">
       <li class="name">
         <h1>
-          <a href="https://www.aps.org/"><img src="//cdn.journals.aps.org/development/journals/images/aps-logo.svg" class="logo" style="height: 39px" alt="APS Logo"></a>
+          <a href="https://www.aps.org/"></a>
         </h1>
       </li>
       <li class="toggle-topbar menu-icon">
@@ -62,11 +63,11 @@
       </ul>
       <ul class="right">
         <li class="has-form">
-          <form action="/search" accept-charset="UTF-8" method="get" class="top-bar-search" data-ddg-formtype="sign up">
+          <form action="/search" accept-charset="UTF-8" method="get" class="top-bar-search">
             <input type="hidden" name="authenticity_token" value="aa48755365d0537459ef252cfe4e0fc53b37e4463f867d0db77b5d2ab08d006d">
             <div class="row collapse">
               <div class="small-10 large-10 columns">
-                <input name="sort" type="hidden" value="relevance"><input autocapitalize="off" autocomplete="off" autocorrect="off" id="top-bar-search-input" name="q" placeholder="Journal, vol, page, DOI, etc." spellcheck="false" type="text" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521708"><span class="adv-expand-wrap"><a data-reveal-id="search-modal" href="#" id="adv-expand"><span class="adv-expand-icon"></span></a></span><a data-reveal-id="search-modal" href="#" id="adv-reveal-link">Search/Article Lookup</a>
+                <input name="sort" type="hidden" value="relevance"><input autocapitalize="off" autocomplete="off" autocorrect="off" id="top-bar-search-input" name="q" placeholder="Journal, vol, page, DOI, etc." spellcheck="false" type="text" data-ddg-testresultelementid="521708"><span class="adv-expand-wrap"><a data-reveal-id="search-modal" href="#" id="adv-expand"><span class="adv-expand-icon"></span></a></span><a data-reveal-id="search-modal" href="#" id="adv-reveal-link">Search/Article Lookup</a>
               </div>
               <div class="small-2 large-2 columns">
                 <button class="button" type="submit">
@@ -91,10 +92,10 @@
       <div class="large-6 large-offset-3 columns panel">
         <h3>Create a New APS Journals Account</h3>
         <div id="signup">
-          <form action="/account" accept-charset="UTF-8" method="post" class="form-horizontal" data-ddg-formtype="sign up">
+          <form action="/account" accept-charset="UTF-8" method="post" class="form-horizontal">
             <input type="hidden" name="authenticity_token" value="aa48755365d0537459ef252cfe4e0fc53b37e4463f867d0db77b5d2ab08d006d">
             <p>
-              <label for="uname">Choose a login username:</label><input type="text" name="user[username]" id="uname" tabindex="1" class="" title="overall type: UNKNOWN_TYPE
+              <label for="uname">Choose a login username:</label><input type="text" name="user[username]" id="uname" tabindex="1" class="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Choose a login username:
@@ -105,48 +106,67 @@ form signature: 3041162913035264718
 form signature in host form: 3041162913035264718
 field frame token: 5BDA680D7C274A6C7437DA6120C42850
 form renderer id: 2
-field renderer id: 6" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
+field renderer id: 6" data-ddg-testresultelementid="521701">
+            </p>
+            <p>
+              <label for="password">Choose a password:</label><input type="password" name="user[password]" id="password" tabindex="2" class="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
 heuristic type: UNKNOWN_TYPE
-label: Choose a login username:
-parseable name: user[username]
+label: Choose a password:
+parseable name: user[password]
 section: user[username]_0_6
-field signature: 183307868
+field signature: 1660289739
 form signature: 3041162913035264718
 form signature in host form: 3041162913035264718
 field frame token: 5BDA680D7C274A6C7437DA6120C42850
 form renderer id: 2
-field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.username" data-ddg-testresultelementid="521701">
+field renderer id: 7" data-ddg-testresultelementid="521702" data-manual-scoring="password">
             </p>
             <p>
-              <label for="password">Choose a password:</label><input type="password" name="user[password]" id="password" tabindex="2" class="" data-ddg-testresultelementid="521702" data-manual-scoring="password">
-            </p>
-            <p>
-              <label for="password_confirmation">Enter your password again:</label><input type="password" name="user[password_confirmation]" id="password_confirmation" tabindex="3" class="" data-ddg-testresultelementid="521703" data-manual-scoring="password">
+              <label for="password_confirmation">Enter your password again:</label><input type="password" name="user[password_confirmation]" id="password_confirmation" tabindex="3" class="" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Enter your password again:
+parseable name: user[password_confirmation]
+section: user[username]_0_6
+field signature: 290049442
+form signature: 3041162913035264718
+form signature in host form: 3041162913035264718
+field frame token: 5BDA680D7C274A6C7437DA6120C42850
+form renderer id: 2
+field renderer id: 8" data-ddg-testresultelementid="521703" data-manual-scoring="password">
             </p>
             <hr>
             <p>
-              <label for="realname">Enter your full name:</label><input type="text" name="user[real_name]" id="realname" tabindex="4" class="" data-ddg-testresultelementid="521704" data-manual-scoring="fullName">
+              <label for="realname">Enter your full name:</label><input type="text" name="user[real_name]" id="realname" tabindex="4" class="" autofill-information="overall type: NAME_FULL
+server type: NAME_FULL
+heuristic type: UNKNOWN_TYPE
+label: Enter your full name:
+parseable name: user[real_name]
+section: user[username]_0_6
+field signature: 92950321
+form signature: 3041162913035264718
+form signature in host form: 3041162913035264718
+field frame token: 5BDA680D7C274A6C7437DA6120C42850
+form renderer id: 2
+field renderer id: 9" data-ddg-testresultelementid="521704" data-manual-scoring="fullName">
             </p>
             <p>
-              <label for="email">Enter your email address:</label><input type="text" name="user[primary_email]" id="email" tabindex="5" class="" data-ddg-autofill="true" data-ddg-testresultelementid="521705" style="
-                  background-size: auto 26px !important;
-                  background-position: right center !important;
-                  background-repeat: no-repeat !important;
-                  background-origin: content-box !important;
-                  background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                  transition: background 0s ease 0s !important;
-                " data-manual-scoring="emailAddress">
+              <label for="email">Enter your email address:</label><input type="text" name="user[primary_email]" id="email" tabindex="5" class="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Enter your email address:
+parseable name: user[primary_email]
+section: user[username]_0_6
+field signature: 3437819581
+form signature: 3041162913035264718
+form signature in host form: 3041162913035264718
+field frame token: 5BDA680D7C274A6C7437DA6120C42850
+form renderer id: 2
+field renderer id: 10" data-ddg-testresultelementid="521705" data-manual-scoring="emailAddress">
             </p>
             <div class="mtcaptcha" mtcapwid="mtcaptcha-1">
-              <iframe id="mtcaptcha-iframe-1" style="
-                  display: inline-block;
-                  border: 0px;
-                  padding: 0px;
-                  margin: 0px;
-                  background: transparent;
-                  height: 179px;
-                " src="https://service.mtcaptcha.com/mtcv1/client/iframe.html?v=2023-02-20.20.17.25&amp;sitekey=MTPublic-ZLcycasto&amp;iframeId=mtcaptcha-iframe-1&amp;widgetSize=standard&amp;custom=false&amp;widgetInstance=mtcaptcha&amp;challengeType=standard&amp;theme=basic&amp;lang=en&amp;action=&amp;autoFadeOuterText=false&amp;host=https%3A%2F%2Fjournals.aps.org&amp;hostname=journals.aps.org&amp;serviceDomain=service.mtcaptcha.com&amp;textLength=0&amp;lowFrictionInvisible=&amp;enableMouseFlow=false" title="mtcaptcha" sandbox=" allow-forms allow-popups allow-same-origin allow-scripts allow-modals allow-popups-to-escape-sandbox" width="100%" height="179px"></iframe><input type="hidden" class="mtcaptcha-verifiedtoken" name="mtcaptcha-verifiedtoken" id="mtcaptcha-verifiedtoken-1" readonly="readonly" value="">
+              <input type="hidden" class="mtcaptcha-verifiedtoken" name="mtcaptcha-verifiedtoken" id="mtcaptcha-verifiedtoken-1" readonly="readonly" value="">
             </div>
             <hr>
             <p class="policies">
@@ -166,24 +186,8 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
       </div>
     </div>
   </section>
-  <script>
-    if (typeof jQuery != "undefined") {
-      $(document).ready(function () {
-        $("#uname").focus();
-      });
-    } else {
-      var t = document.getElementById("uname");
-      if (t != undefined) {
-        t.focus();
-      }
-    }
-  </script>
-  <div class="email-callout" style="
-      text-align: center;
-      padding-top: 3rem;
-      padding-bottom: 5rem;
-      margin-top: 6rem;
-    ">
+  
+  <div class="email-callout">
     <section class="column-row">
       <p>
         Sign up to receive regular email alerts from
@@ -344,37 +348,39 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
       </div>
     </div>
   </footer>
-  <script src="//cdn.journals.aps.org/development/journals/javascripts/journals/vendor-ecfd0a41.js"></script>
-  <script src="//cdn.journals.aps.org/development/journals/javascripts/tapp/app-eca880e9.js"></script>
-  <script src="https://cdn.aps.org/cookie-widget/latest/cookiewidget.js"></script>
+  
+  
+  
   <div id="app">
     <div><div></div></div>
   </div>
-  <script>
-    window.APS = {
-      features: { enable_mathjax: null },
-      product: { code: "JOURNALS", urlPrefix: "/" },
-    };
-
-    window.onload = function () {
-      $(document).foundation();
-    };
-
-    tapp.core.init(window.APS);
-
-    $(function () {
-      $("#header .title").click(function () {
-        if ($(window).width() < 769) {
-          $(this).toggleClass("open");
-          $(".journal-nav").slideToggle();
-        }
-      });
-    });
-  </script>
+  
   <div class="small reveal-modal" data-reveal="" id="login-modal">
     <h4>Log In</h4>
-    <form action="https://journals.aps.org/login?rt=https%3A%2F%2Fjournals.aps.org%2Fsignup" method="post" data-ddg-formtype="sign in">
-      <input type="hidden" name="authenticity_token" value="aa48755365d0537459ef252cfe4e0fc53b37e4463f867d0db77b5d2ab08d006d"><input name="_method" type="hidden" value="put"><input name="username" placeholder="Username" type="text" data-ddg-testresultelementid="521706" data-manual-scoring="username"><input name="password" placeholder="Password" type="password" data-ddg-testresultelementid="521707" data-manual-scoring="password"><input class="small button" type="submit" value="Log In">
+    <form action="https://journals.aps.org/login?rt=https%3A%2F%2Fjournals.aps.org%2Fsignup" method="post">
+      <input type="hidden" name="authenticity_token" value="aa48755365d0537459ef252cfe4e0fc53b37e4463f867d0db77b5d2ab08d006d"><input name="_method" type="hidden" value="put"><input name="username" placeholder="Username" type="text" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: username
+section: username_0_26
+field signature: 239111655
+form signature: 1889708564527580899
+form signature in host form: 1889708564527580899
+field frame token: 5BDA680D7C274A6C7437DA6120C42850
+form renderer id: 3
+field renderer id: 26" data-ddg-testresultelementid="521706" data-manual-scoring="username"><input name="password" placeholder="Password" type="password" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: username_0_26
+field signature: 2051817934
+form signature: 1889708564527580899
+form signature in host form: 1889708564527580899
+field frame token: 5BDA680D7C274A6C7437DA6120C42850
+form renderer id: 3
+field renderer id: 27" data-ddg-testresultelementid="521707" data-manual-scoring="password"><input class="small button" type="submit" value="Log In">
       <a class="small secondary button cancel">Cancel</a>
       <ul class="no-bullet">
         <li>
@@ -387,10 +393,10 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
   </div>
   <div class="large reveal-modal" data-reveal="" id="search-modal">
     <h4>Search</h4>
-    <form action="/search" accept-charset="UTF-8" method="get" class="custom" data-ddg-formtype="sign up">
+    <form action="/search" accept-charset="UTF-8" method="get" class="custom">
       <div class="row">
         <div class="large-3 columns">
-          <select name="field" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521709">
+          <select name="field" data-ddg-testresultelementid="521709">
             <option value="all">All Fields</option>
             <option value="author">Author</option>
             <option value="abstract">Abstract</option>
@@ -403,7 +409,7 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
           </select>
         </div>
         <div class="large-7 columns">
-          <input type="text" name="q" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521710">
+          <input type="text" name="q" data-ddg-testresultelementid="521710">
         </div>
         <div class="large-2 columns">
           <input type="submit" value="Search" class="button small">
@@ -413,10 +419,10 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
     <hr>
     <h4>Article Lookup</h4>
     <h6>Paste a citation or DOI</h6>
-    <form action="/search/citation" accept-charset="UTF-8" method="post" class="custom" data-ddg-formtype="sign up">
+    <form action="/search/citation" accept-charset="UTF-8" method="post" class="custom">
       <div class="row">
         <div class="large-10 columns">
-          <input type="text" name="q" placeholder="e.g. Phys. Rev. Lett. 111, 012345" id="citation_modal_q" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521711">
+          <input type="text" name="q" placeholder="e.g. Phys. Rev. Lett. 111, 012345" id="citation_modal_q" data-ddg-testresultelementid="521711">
         </div>
         <div class="large-2 columns">
           <input type="submit" value="Lookup" class="button small">
@@ -425,10 +431,10 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
     </form>
     <hr class="citation-spacer">
     <h6>Enter a citation</h6>
-    <form action="/search/citation" accept-charset="UTF-8" method="post" class="custom" data-ddg-formtype="sign up">
+    <form action="/search/citation" accept-charset="UTF-8" method="post" class="custom">
       <div class="row">
         <div class="large-4 columns">
-          <label for="citation_modal_journal">Journal: </label><select name="journal" id="citation_modal_journal" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521712">
+          <label for="citation_modal_journal">Journal: </label><select name="journal" id="citation_modal_journal" data-ddg-testresultelementid="521712">
             <option value="PRL">Phys. Rev. Lett.</option>
             <option value="PRX">Phys. Rev. X</option>
             <option value="PRXENERGY">PRX Energy</option>
@@ -454,10 +460,10 @@ field renderer id: 6" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cre
           </select>
         </div>
         <div class="large-3 columns">
-          <label for="citation_modal_volume">Volume: </label><input type="text" name="volume" id="citation_modal_volume" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521713">
+          <label for="citation_modal_volume">Volume: </label><input type="text" name="volume" id="citation_modal_volume" data-ddg-testresultelementid="521713">
         </div>
         <div class="large-3 columns">
-          <label for="citation_modal_article">Article: </label><input type="text" name="article" id="citation_modal_article" data-ddg-inputtype="unknown" data-ddg-testresultelementid="521714">
+          <label for="citation_modal_article">Article: </label><input type="text" name="article" id="citation_modal_article" data-ddg-testresultelementid="521714">
         </div>
         <div class="large-2 columns">
           <input type="submit" value="Lookup" class="small button lookup2">

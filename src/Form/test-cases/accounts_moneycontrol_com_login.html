@@ -1,5 +1,6 @@
 <!--
   https://accounts.moneycontrol.com/mclogin
+  rank: 2097
   testRunId: 66
   testResultId: 235841
 -->
@@ -15,7 +16,7 @@
   <!-- End Google Tag Manager (noscript) -->
   <div class="log_deskbx">
     <div class="login_signup_popup loginPP" id="LoginModal">
-      <div class="signupblock" style="display: none">
+      <div class="signupblock">
         <div>
           <div class="top-block PR">
             <div class="signheading">Sign Up</div>
@@ -37,10 +38,10 @@
                   <span class="ic_signupmail"></span>SIGN UP WITH EMAIL
                 </a>
               </div>
-              <div class="sign_upform" style="display: none">
+              <div class="sign_upform">
                 <div class="float-label">
-                  <form method="POST" id="register_form" autocomplete="off" data-ddg-formtype="sign up">
-                    <input style="display: none" title="overall type: EMAIL_ADDRESS
+                  <form method="POST" id="register_form" autocomplete="off">
+                    <input autofill-information="overall type: EMAIL_ADDRESS
 server type: NO_SERVER_DATA
 heuristic type: EMAIL_ADDRESS
 label: SIGN UP WITH EMAIL
@@ -51,19 +52,8 @@ form signature: 9909831375985508579
 form signature in host form: 9909831375985508579
 field frame token: 67A64D105FC0BC9E54A374C43EC186F9
 form renderer id: 5
-field renderer id: 27" autofill-information="overall type: EMAIL_ADDRESS
-server type: NO_SERVER_DATA
-heuristic type: EMAIL_ADDRESS
-label: SIGN UP WITH EMAIL
-parseable name: 
-section: _0_27
-field signature: 1318412689
-form signature: 9909831375985508579
-form signature in host form: 9909831375985508579
-field frame token: 67A64D105FC0BC9E54A374C43EC186F9
-form renderer id: 5
-field renderer id: 27" autofill-prediction="EMAIL_ADDRESS" data-ddg-inputtype="unknown" data-ddg-testresultelementid="518849">
-                    <input type="password" style="display: none" title="overall type: UNKNOWN_TYPE
+field renderer id: 27" data-ddg-testresultelementid="518849">
+                    <input type="password" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: SIGN UP WITH EMAIL
@@ -74,18 +64,7 @@ form signature: 9909831375985508579
 form signature in host form: 9909831375985508579
 field frame token: 67A64D105FC0BC9E54A374C43EC186F9
 form renderer id: 5
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: SIGN UP WITH EMAIL
-parseable name: 
-section: _0_27
-field signature: 475301429
-form signature: 9909831375985508579
-form signature in host form: 9909831375985508579
-field frame token: 67A64D105FC0BC9E54A374C43EC186F9
-form renderer id: 5
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="518850">
+field renderer id: 28" data-ddg-testresultelementid="518850">
                     <!-- <div class="textfieldbox namebox">
                                                 <input type="hidden" name="site_ref" value="">
                                                 <input autocomplete="off" type="text" maxlength="30" placeholder="First Name" name="first_name" id="first_name" class="textfield textfieldsignup" required  form-name="register_form" error-id="error_reg_fname" >
@@ -100,17 +79,22 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                             </div> -->
 
                     <div class="textfieldbox">
-                      <input autocomplete="off" type="text" onfocusout="validateConsumerEmail('email','error_reg_email')" maxlength="100" placeholder="Email" id="email" name="email" class="textfield" form-name="register_form" error-id="error_reg_email" required="" data-ddg-autofill="true" data-ddg-testresultelementid="518851" style="
-                          background-size: auto 26px !important;
-                          background-position: right center !important;
-                          background-repeat: no-repeat !important;
-                          background-origin: content-box !important;
-                          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                          transition: background 0s ease 0s !important;
-                        " data-manual-scoring="emailAddress">
+                      <input autocomplete="off" type="text" onfocusout="validateConsumerEmail('email','error_reg_email')" maxlength="100" placeholder="Email" id="email" name="email" class="textfield" form-name="register_form" error-id="error_reg_email" required="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: email
+section: _0_27
+field signature: 420638584
+form signature: 9909831375985508579
+form signature in host form: 9909831375985508579
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 5
+field renderer id: 29
+autocomplete: off" data-ddg-testresultelementid="518851" data-manual-scoring="emailAddress">
                       <label for="Email">Email</label>
                     </div>
-                    <div class="error_txt" id="error_reg_email" style="display: block"></div>
+                    <div class="error_txt" id="error_reg_email"></div>
 
                     <!-- <div class="textfieldbox PR">
                                                 <input autocomplete="off" type="password" maxlength="40" id="pwd" name="pwd" placeholder="Password" class="textfield" required  form-name="register_form" error-id="error_reg_pass" />
@@ -119,8 +103,20 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                                             </div>
                                             <div class="error_txt" id="error_reg_pass" style="display:block;"></div> -->
 
-                    <div class="textfieldbox PR usepwdreg" style="display: block">
-                      <input autocomplete="off" type="password" maxlength="40" id="pwd" name="pwd" placeholder="Password" class="textfield" required="" form-name="register_form" error-id="error_reg_pass" data-ddg-testresultelementid="518852" data-manual-scoring="password">
+                    <div class="textfieldbox PR usepwdreg">
+                      <input autocomplete="off" type="password" maxlength="40" id="pwd" name="pwd" placeholder="Password" class="textfield" required="" form-name="register_form" error-id="error_reg_pass" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: pwd
+section: _0_27
+field signature: 2597353482
+form signature: 9909831375985508579
+form signature in host form: 9909831375985508579
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 5
+field renderer id: 30
+autocomplete: off" data-ddg-testresultelementid="518852" data-manual-scoring="password">
                       <label for="password">Password</label>
                       <span class="eye_show_ic" onclick="showpassword('pwd', 'register_form', this);"></span>
                       <div class="use_otptxt">
@@ -128,20 +124,44 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                       </div>
                     </div>
 
-                    <div class="useotpreg" style="display: none">
+                    <div class="useotpreg">
                       <div class="textfieldbox">
                         <span class="countrycode">+91</span>
-                        <input autocomplete="off" type="text" onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;" onfocusout="validateConsumerMobile('mobile','error_reg_mobile')" maxlength="10" placeholder="xxxxxxxxxx" id="mobile" name="mobile" class="textfield" form-name="register_form" error-id="error_reg_mobile" required="" data-ddg-testresultelementid="518853" data-manual-scoring="phone">
+                        <input autocomplete="off" type="text" onkeypress="if ( isNaN(this.value + String.fromCharCode(event.keyCode) )) return false;" onfocusout="validateConsumerMobile('mobile','error_reg_mobile')" maxlength="10" placeholder="xxxxxxxxxx" id="mobile" name="mobile" class="textfield" form-name="register_form" error-id="error_reg_mobile" required="" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: +91
+parseable name: mobile
+section: _0_27
+field signature: 3025753046
+form signature: 9909831375985508579
+form signature in host form: 9909831375985508579
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 5
+field renderer id: 31
+autocomplete: off" data-ddg-testresultelementid="518853" data-manual-scoring="phone">
                         <label for="Mobile">Mobile</label>
                       </div>
-                      <div class="error_txt" id="error_reg_mobile" style="display: block"></div>
+                      <div class="error_txt" id="error_reg_mobile"></div>
 
                       <div class="textfieldbox">
                         <input type="button" value="Send Otp" class="sendOtp" id="sendOtp">
                       </div>
 
                       <div class="textfieldbox PR">
-                        <input autocomplete="off" type="password" maxlength="4" id="otp" name="otp" placeholder="Enter OTP" class="textfield" required="" form-name="register_form" error-id="error_reg_pass" data-ddg-testresultelementid="518854" data-manual-scoring="password">
+                        <input autocomplete="off" type="password" maxlength="4" id="otp" name="otp" placeholder="Enter OTP" class="textfield" required="" form-name="register_form" error-id="error_reg_pass" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: OTP
+parseable name: otp
+section: _0_27
+field signature: 3677158820
+form signature: 9909831375985508579
+form signature in host form: 9909831375985508579
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 5
+field renderer id: 33
+autocomplete: off" data-ddg-testresultelementid="518854" data-manual-scoring="password">
                         <label for="otp">OTP</label>
                         <span class="eye_show_ic" onclick="showpassword('otp', 'register_form', this);"></span>
                         <div class="use_pwdtxt">
@@ -150,15 +170,15 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                       </div>
                     </div>
 
-                    <div class="error_txt" id="error_reg_pass" style="display: none"></div>
-                    <div id="success_reg_otp" style="display: none">
+                    <div class="error_txt" id="error_reg_pass"></div>
+                    <div id="success_reg_otp">
                       <span class="success_reg_otp_msg"></span><span class="timerReg"></span>
                     </div>
 
                     <div class="textfieldbox PR">
                       <input autocomplete="off" type="hidden" name="cnfpwd" id="cnfpwd" placeholder="Confirm Password" class="textfield" required="" form-name="register_form">
                     </div>
-                    <div class="error_txt" id="error_reg_cnfpass" style="display: none"></div>
+                    <div class="error_txt" id="error_reg_cnfpass"></div>
                     <div class="password_char MT10 clearfix">
                       <ul class="clearfix pwdlist">
                         <li id="olc">One lowercase character</li>
@@ -170,10 +190,22 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                     </div>
 
                     <div id="reg_captcha" class="textfieldbox PR">
-                      <input autocomplete="off" placeholder="Enter Captcha" type="text" maxlength="6" name="cap" form-name="register_form" class="captchafield" required="" id="cap" error-id="captcha_error" data-ddg-testresultelementid="518855" data-manual-scoring="addressPostalCode">
-                      <img src="" alt="CAPTCHA" id="captcha_img">&nbsp;<img src="/assets/images/reload.png" onclick="reload_captcha('register_form')" height="30px" width="30px">
+                      <input autocomplete="off" placeholder="Enter Captcha" type="text" maxlength="6" name="cap" form-name="register_form" class="captchafield" required="" id="cap" error-id="captcha_error" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_ZIP
+label: Enter Captcha
+parseable name: cap
+section: _0_27
+field signature: 2884086464
+form signature: 9909831375985508579
+form signature in host form: 9909831375985508579
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 5
+field renderer id: 35
+autocomplete: off" data-ddg-testresultelementid="518855" data-manual-scoring="addressPostalCode">
+                      &nbsp;
                     </div>
-                    <div class="error_txt" id="error_reg_captcha" style="display: none"></div>
+                    <div class="error_txt" id="error_reg_captcha"></div>
 
                     <button type="button" disabled="" class="signingraybg signup_sucess submit" id="ACT_SIGNUP_SUBMIT" onclick="api_call('/register/index/', 'register_form')">
                       sign up with email
@@ -182,7 +214,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                     <input type="hidden" value="1" name="app">
                     <input type="hidden" value="/register/index/" name="register_form_api" id="register_form_api">
                     <input type="hidden" value="false" name="secure">
-                    <div class="error_txt" id="error_api" style="display: none"></div>
+                    <div class="error_txt" id="error_api"></div>
                   </form>
                 </div>
               </div>
@@ -203,11 +235,11 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
               </div>
             </div>
           </div>
-          <div class="signup_verificationbx signupverifyBX" style="display: none" data-ddg-formtype="sign up">
-            <div class="top-block PR" style="padding-top: 0px">
+          <div class="signup_verificationbx signupverifyBX">
+            <div class="top-block PR">
               <div class="signheading_sub">Email Verification</div>
               <p>
-                <img src="/assets/images/userimg.png" class="radius_brd_blu" width="100" height="100" alt="">
+                
               </p>
               <!--
                                 <p>Thank you for registering.</p>
@@ -234,9 +266,9 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="cr
                 <span id="emailverimailmsg">
                   <a href="#" class="op_blu18" id="useid"></a>
                   <a class="edit_link" id="ACCT_EMAIL_EDIT" href="javascript:;">Edit</a> </span><br>
-                <span id="upd_error_msg" style="color: red"></span>
-                <span id="editemaildiv" style="display: none">
-                  <input autocomplete="off" name="" maxlength="100" type="text" value="" placeholder="Email ID" class="edit_txtfield" id="editemailid" title="overall type: UNKNOWN_TYPE
+                <span id="upd_error_msg"></span>
+                <span id="editemaildiv">
+                  <input autocomplete="off" name="" maxlength="100" type="text" value="" placeholder="Email ID" class="edit_txtfield" id="editemailid" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Email ID
@@ -248,26 +280,7 @@ form signature in host form: 5865750677920605253
 field frame token: 67A64D105FC0BC9E54A374C43EC186F9
 form renderer id: 0
 field renderer id: 41
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Email ID
-parseable name: editemailid
-section: editemailid_0_41
-field signature: 2380109590
-form signature: 5865750677920605253
-form signature in host form: 5865750677920605253
-field frame token: 67A64D105FC0BC9E54A374C43EC186F9
-form renderer id: 0
-field renderer id: 41
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="518856" style="
-                      background-size: auto 26px !important;
-                      background-position: right center !important;
-                      background-repeat: no-repeat !important;
-                      background-origin: content-box !important;
-                      background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                      transition: background 0s ease 0s !important;
-                    ">
+autocomplete: off" data-ddg-testresultelementid="518856">
                   <a class="btn_otp MT15 updateemailid" href="javascript:;" id="ACCT_EMAIL_EDIT_SUBMIT" onclick="updateemailid();">Submit</a>
                 </span>
                 <br>
@@ -277,10 +290,10 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identi
               <p id="verilinksend">
                 <a href="javascript:;" class="resend_link" onclick="resendvericationmail();" id="ACCT_RESEND_EMAIL_VERIFICATION"><em><span class="ic_resend MR5"></span>Resend Instruction</em></a>
               </p>
-              <p class="green_verify" style="display: none" id="link_sent">
+              <p class="green_verify" id="link_sent">
                 ✔ Verification link sent successfully.
               </p>
-              <p class="green_verify" style="display: none" id="emailupdate_sent">
+              <p class="green_verify" id="emailupdate_sent">
                 ✔ Verification link sent successfully.
               </p>
               <input type="hidden" id="thanksemailid" name="thanksemailid" value="">
@@ -291,22 +304,11 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identi
           </div>
 
           <!-- Resend Instruction Dummy Block start -->
-          <style>
-            .login_signup_popup .signup_verificationbx_reset {
-              color: #333333;
-              font: 400 15px/24px "Open Sans", Arial, Helvetica, sans-serif;
-              text-align: center;
-            }
-            .accnt_locked_msg {
-              color: #333333;
-              font: 400 14px/24px "Open Sans", Arial, Helvetica, sans-serif;
-              padding: 0 20px;
-            }
-          </style>
-          <div class="forgot_sucess clearfix signup_verificationbx_reset" style="display: none">
-            <div style="padding-top: 0px" class="top-block PR">
+          
+          <div class="forgot_sucess clearfix signup_verificationbx_reset">
+            <div class="top-block PR">
               <p>
-                <img width="100" height="100" alt="" class="radius_brd_blu" src="/assets/images/userimg.png">
+                
               </p>
 
               <p>
@@ -320,7 +322,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identi
                   <em><span class="ic_resend MR5"></span>Resend Instruction</em></a>
               </p>
 
-              <p class="green_verify" id="greenverifyRI" style="display: none">
+              <p class="green_verify" id="greenverifyRI">
                 <span class="sign_right"></span> Instruction resent
                 successfully.
               </p>
@@ -329,14 +331,14 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identi
           <!-- Resend Instruction Dummy Block end -->
         </div>
       </div>
-      <div id="authenticbox" style="display: none">
-        <div class="sign_welcome" style="display: none">
+      <div id="authenticbox">
+        <div class="sign_welcome">
           <button>
             <i class="spinner"></i> <span class="state">Authenticating</span>
           </button>
         </div>
       </div>
-      <div class="signinblock" style="display: block">
+      <div class="signinblock">
         <div class="signwrap">
           <div class="top-block PR">
             <div class="signheading">Login</div>
@@ -355,16 +357,40 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identi
             </div>
             <div class="formbox">
               <div class="float-label">
-                <form method="POST" id="login_form" data-ddg-formtype="sign in">
+                <form method="POST" id="login_form">
                   <input type="hidden" name="site_ref" value="">
                   <div class="textfieldbox PR">
-                    <input autocomplete="off" type="text" maxlength="100" placeholder="Email or Mobile Number or User ID" id="email" name="email" class="textfield" required="" form-name="login_form" error-id="error_login_email" data-ddg-testresultelementid="518857" data-manual-scoring="username">
+                    <input autocomplete="off" type="text" maxlength="100" placeholder="Email or Mobile Number or User ID" id="email" name="email" class="textfield" required="" form-name="login_form" error-id="error_login_email" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Email or Mobile Number or User ID
+parseable name: email
+section: email_0_48
+field signature: 420638584
+form signature: 4981366566222399705
+form signature in host form: 4981366566222399705
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 6
+field renderer id: 48
+autocomplete: off" data-ddg-testresultelementid="518857" data-manual-scoring="username">
                     <label for="Email, username or mobile">Email or Mobile Number or User ID</label>
                   </div>
-                  <div class="error_txt" id="error_login_email" style="display: none"></div>
+                  <div class="error_txt" id="error_login_email"></div>
                   <div class="textfieldbox PR usepwd">
                     <input type="hidden" name="flagwp" id="flagwp" value="0">
-                    <input autocomplete="off" type="password" maxlength="40" id="pwd" name="pwd" placeholder="Password" class="textfield" required="" form-name="login_form" error-id="error_login_pass" onkeyup="javascript:checkweakpass(this.value);" data-ddg-testresultelementid="518858" data-manual-scoring="password">
+                    <input autocomplete="off" type="password" maxlength="40" id="pwd" name="pwd" placeholder="Password" class="textfield" required="" form-name="login_form" error-id="error_login_pass" onkeyup="javascript:checkweakpass(this.value);" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: pwd
+section: email_0_48
+field signature: 2597353482
+form signature: 4981366566222399705
+form signature in host form: 4981366566222399705
+field frame token: 67A64D105FC0BC9E54A374C43EC186F9
+form renderer id: 6
+field renderer id: 50
+autocomplete: off" data-ddg-testresultelementid="518858" data-manual-scoring="password">
                     <label for="password">Password</label>
                     <span class="eye_show_ic" onclick="showpassword('pwd', 'login_form', this);"></span>
                     <div class="use_otptxt">
@@ -372,8 +398,8 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identi
                     </div>
                   </div>
 
-                  <div class="textfieldbox PR useotp" style="display: none">
-                    <input autocomplete="off" type="password" maxlength="4" id="otp" name="otp" placeholder="Enter OTP" class="textfield" required="" form-name="login_form" error-id="error_login_pass" title="overall type: UNKNOWN_TYPE
+                  <div class="textfieldbox PR useotp">
+                    <input autocomplete="off" type="password" maxlength="4" id="otp" name="otp" placeholder="Enter OTP" class="textfield" required="" form-name="login_form" error-id="error_login_pass" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Enter OTP
@@ -385,19 +411,7 @@ form signature in host form: 4981366566222399705
 field frame token: 67A64D105FC0BC9E54A374C43EC186F9
 form renderer id: 6
 field renderer id: 51
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Enter OTP
-parseable name: otp
-section: email_0_48
-field signature: 3677158820
-form signature: 4981366566222399705
-form signature in host form: 4981366566222399705
-field frame token: 67A64D105FC0BC9E54A374C43EC186F9
-form renderer id: 6
-field renderer id: 51
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="518859">
+autocomplete: off" data-ddg-testresultelementid="518859">
                     <label for="otp">OTP</label>
                     <span class="eye_show_ic" onclick="showpassword('otp', 'login_form', this);"></span>
                     <div class="use_pwdtxt">
@@ -405,8 +419,8 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                     </div>
                   </div>
 
-                  <div class="error_txt" id="error_login_pass" style="display: none"></div>
-                  <div id="success_login_otp" style="display: none">
+                  <div class="error_txt" id="error_login_pass"></div>
+                  <div id="success_login_otp">
                     <span class="success_login_otp_msg"></span><span class="timer"></span>
                   </div>
 
@@ -424,7 +438,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
                   <button type="button" disabled="" class="signingraybg submit" id="ACCT_LOGIN_SUBMIT" data-loginurl="/login/index/" onclick="api_call('/login/index/', 'login_form')">
                     Login
                   </button>
-                  <div class="error_txt" id="error_api" style="display: none"></div>
+                  <div class="error_txt" id="error_api"></div>
                 </form>
               </div>
             </div>
@@ -449,27 +463,27 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelement
             </div>
           </div>
         </div>
-        <div class="sign_welcome" style="display: none">
+        <div class="sign_welcome">
           <button>
             <i class="spinner"></i> <span class="state">Authenticating</span>
           </button>
         </div>
-        <div class="forgot_pwdbx forgotPWDbx" style="display: none">
+        <div class="forgot_pwdbx forgotPWDbx">
           <div class="forgot_box1">
             <div class="top-block PR">
               <div class="signheading">Forgot password</div>
             </div>
-            <div class="clearfix send_pwdbx TAC" style="display: block">
+            <div class="clearfix send_pwdbx TAC">
               <p class="accnt_locked_msg"></p>
               <p class="forgt_pwdtxt">
                 Please enter the email address you used to register to receive
                 the password reset instructions.
               </p>
               <div class="formbox">
-                <form id="forgot_pass" method="POST" data-ddg-formtype="sign up">
+                <form id="forgot_pass" method="POST">
                   <div class="float-label">
                     <div class="textfieldbox PR">
-                      <input autocomplete="off" type="text" maxlength="100" placeholder="Email" name="email" form-name="forgot_pass" class="textfield" id="forgot_pass_email" error-id="forgot_pass_email_error" required="" title="overall type: UNKNOWN_TYPE
+                      <input autocomplete="off" type="text" maxlength="100" placeholder="Email" name="email" form-name="forgot_pass" class="textfield" id="forgot_pass_email" error-id="forgot_pass_email_error" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Email
@@ -481,36 +495,17 @@ form signature in host form: 6962274403037321430
 field frame token: 67A64D105FC0BC9E54A374C43EC186F9
 form renderer id: 7
 field renderer id: 58
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Email
-parseable name: email
-section: email_0_58
-field signature: 420638584
-form signature: 6962274403037321430
-form signature in host form: 6962274403037321430
-field frame token: 67A64D105FC0BC9E54A374C43EC186F9
-form renderer id: 7
-field renderer id: 58
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.emailAddress" data-ddg-autofill="true" data-ddg-testresultelementid="518860" style="
-                          background-size: auto 26px !important;
-                          background-position: right center !important;
-                          background-repeat: no-repeat !important;
-                          background-origin: content-box !important;
-                          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                          transition: background 0s ease 0s !important;
-                        ">
+autocomplete: off" data-ddg-testresultelementid="518860">
                       <label for="Email, username or mobile">Email</label>
                     </div>
-                    <div class="error_txt" style="display: none" id="forgot_pass_email_error">
+                    <div class="error_txt" id="forgot_pass_email_error">
                       Please enter the valid Email
                     </div>
                     <div class="clear">&nbsp;</div>
                   </div>
                   <div class="float-label">
                     <div class="textfieldbox PR">
-                      <input autocomplete="off" placeholder="Type the text" type="text" maxlength="6" name="cap" form-name="forgot_pass" class="captchafield" id="cap" error-id="captcha_error" required="" title="overall type: UNKNOWN_TYPE
+                      <input autocomplete="off" placeholder="Type the text" type="text" maxlength="6" name="cap" form-name="forgot_pass" class="captchafield" id="cap" error-id="captcha_error" required="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Type the text
@@ -522,22 +517,10 @@ form signature in host form: 6962274403037321430
 field frame token: 67A64D105FC0BC9E54A374C43EC186F9
 form renderer id: 7
 field renderer id: 59
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Type the text
-parseable name: cap
-section: email_0_58
-field signature: 2884086464
-form signature: 6962274403037321430
-form signature in host form: 6962274403037321430
-field frame token: 67A64D105FC0BC9E54A374C43EC186F9
-form renderer id: 7
-field renderer id: 59
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="518861">
-                      <img src="https://accounts.moneycontrol.com/api/captcha" alt="CAPTCHA" id="captcha_img">&nbsp;<img src="/assets/images/reload.png" onclick="reload_captcha('forgot_pass')" height="30px" width="30px">
+autocomplete: off" data-ddg-testresultelementid="518861">
+                      &nbsp;
                     </div>
-                    <div class="error_txt" style="display: none" id="cap_error">
+                    <div class="error_txt" id="cap_error">
                       Captcha string not matching
                     </div>
                     <div class="clear">&nbsp;</div>
@@ -546,7 +529,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                   <button type="button" disabled="" class="signingraybg send_pp1" id="ACCT_FORGOT_PASSWORD_SUBMIT" onclick="this.disabled=true;resetpassemail('/user/resetpasscap/', 'forgot_pass', 'forgot_pass')">
                     send now
                   </button>
-                  <div class="PA15" id="forgot_pass_email_success" style="display: none">
+                  <div class="PA15" id="forgot_pass_email_success">
                     <p class="green_verify TAC">
                       <span class="sign_right"></span> Verification link sent
                       successfully.
@@ -556,10 +539,10 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                 </form>
               </div>
             </div>
-            <div class="forgot_sucess clearfix signup_verificationbx" style="display: none">
-              <div style="padding-top: 0px" class="top-block PR">
+            <div class="forgot_sucess clearfix signup_verificationbx">
+              <div class="top-block PR">
                 <p>
-                  <img width="100" height="100" alt="" class="radius_brd_blu" src="/assets/images/userimg.png">
+                  
                 </p>
 
                 <!--
@@ -588,7 +571,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                   </a>
                 </p>
 
-                <p class="green_verify" id="greenverify" style="display: none">
+                <p class="green_verify" id="greenverify">
                   <span class="sign_right"></span> Password Reset link sent
                   successfully.
                 </p>
@@ -598,7 +581,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
         </div>
       </div>
 
-      <div class="fbmsgblk" style="display: none">
+      <div class="fbmsgblk">
         <div class="top-block PR">
           <div class="signheading">Sign Up</div>
         </div>
@@ -612,342 +595,21 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
     </div>
   </div>
 
-  <style type="text/css">
-    .fbmsgblk {
-      padding: 0px 20px;
-    }
-    .fbmsgblk p {
-      font: 500 14px/20px "Open Sans", sans-serif;
-      color: #333;
-      padding-bottom: 15px;
-      text-align: center;
-    }
-  </style>
+  
 
   <input name="fblogval" type="hidden" id="fblogval" value="">
 
-  <script>
-    var captcha_url = "https://accounts.moneycontrol.com/api/captcha";
-  </script>
-  <script src="/assets/js/mclogin/jquery.cookie.min.js?id=2022101713"></script>
-  <script src="/assets/js/mclogin/login_signup.js?id=2022101713"></script>
+  
+  
+  
   <!--login signup popup end-->
-  <script>
-    var stoptimer;
-    function resendOtp() {
-      $(".use_otp_btn").click();
-      /*$(".resendOtp").attr("disabled", "disabled");
-        setTimeout(function() {
-            $(".resendOtp").removeAttr("disabled");
-        }, 30000);*/
-    }
+  
 
-    function resendOtpReg() {
-      $("#sendOtp").click();
-      /*$(".resendOtpReg").attr("disabled", "disabled");
-        setTimeout(function() {
-            $(".resendOtpReg").removeAttr("disabled");
-        }, 30000);*/
-    }
+  
 
-    $(document).ready(function () {
-      showpopup(formname); //show sign up popup if click on register
+  
 
-      $(".use_otp_btn").click(function () {
-        $(".error_txt").css("display", "none");
-        $(".error_txt").text("");
-        $("#flagwp").val(0);
-
-        var userid = $.trim($("#login_form #email").val());
-        var formname = "login";
-        if (userid != "") {
-          $(".forgottxt").css("display", "none");
-          $("#login_form #otp").val("");
-          $("#login_form #pwd").val("");
-          $("#error_login_pass").css("display", "none");
-          $("#error_login_pass").text("");
-          $("#success_login_otp").css("display", "none");
-          $(".success_login_otp_msg").text("");
-          active_submit("login_form");
-          $.ajax({
-            type: "POST",
-            url: "/user/sendotp",
-            dataType: "json",
-            data: { userid: userid, formname: formname },
-            success: function (response) {
-              if (response["status"] == "success") {
-                $(".usepwd").css("display", "none");
-                $(".useotp").css("display", "block");
-                $("#success_login_otp").css("display", "block");
-                $(".success_login_otp_msg").text(response["message"]);
-                //$("#success_login_otp").append(" <a href='javascript:void(0)' class='resendOtp' onclick='resendOtp();'>Resend</a>");
-                clearTimeout(stoptimer);
-                timer(30, "login");
-              } else if (response["status"] == "error") {
-                $(".usepwd").css("display", "none");
-                $(".useotp").css("display", "block");
-                $("#error_login_pass").css("display", "block");
-                $("#error_login_pass").text(response["message"]);
-              } else {
-                $("#error_login_pass").css("display", "block");
-                $("#error_login_pass").text("something went wrong!");
-              }
-
-              if ($("#div_captcha").html()) {
-                listencall(580);
-              }
-            },
-          });
-        } else {
-          $("#error_login_email").text(
-            "Please Enter Email or Mobile Number or User ID"
-          );
-          $("#error_login_email").css("display", "block");
-        }
-      });
-
-      $(".use_pwd_btn").click(function () {
-        $(".error_txt").css("display", "none");
-        $(".error_txt").text("");
-
-        $(".forgottxt").css("display", "block");
-        $("#success_login_otp").css("display", "none");
-        $(".success_login_otp_msg").text("");
-        $("#error_login_pass").css("display", "none");
-        $("#error_login_pass").text("");
-        $(".useotp").css("display", "none");
-        $(".usepwd").css("display", "block");
-        $("#login_form #otp").val("");
-        $("#login_form #pwd").val("");
-        active_submit("login_form");
-        if ($("#div_captcha").html()) {
-          listencall(580);
-        }
-      });
-
-      $(".use_pwd_btn_reg").click(function () {
-        $(".error_txt").css("display", "none");
-        $(".error_txt").text("");
-
-        $("#success_reg_otp").css("display", "none");
-        $(".success_reg_otp_msg").text("");
-        $("#error_reg_pass").css("display", "none");
-        $("#error_reg_pass").text("");
-        $(".useotpreg").css("display", "none");
-        $(".usepwdreg").css("display", "block");
-        $(".password_char").css("display", "block");
-        $("#register_form #otp").val("");
-        $("#register_form #pwd").val("");
-        $("#register_form #mobile").val("");
-        active_submit("register_form");
-        listencall(580);
-      });
-
-      $(".use_otp_btn_reg").click(function () {
-        $(".error_txt").css("display", "none");
-        $(".error_txt").text("");
-        $("#success_reg_otp").css("display", "none");
-        $(".success_reg_otp_msg").text("");
-        $("#error_reg_pass").css("display", "none");
-        $("#error_reg_pass").text("");
-        $(".useotpreg").css("display", "block");
-        $(".usepwdreg").css("display", "none");
-        $("#sendOtp").css("display", "block");
-        $(".password_char").css("display", "none");
-        $("#register_form #otp").val("");
-        $("#register_form #pwd").val("");
-        $("#register_form #mobile").val("");
-        active_submit("register_form");
-        listencall(580);
-      });
-
-      $("#sendOtp").click(function () {
-        if (
-          validateConsumerMobile("mobile", "error_reg_mobile") &&
-          validateConsumerEmail("email", "error_reg_email")
-        ) {
-          $("#success_reg_otp").css("display", "none");
-          $(".success_reg_otp_msg").text("");
-          $("#error_reg_pass").css("display", "none");
-          $("#error_reg_pass").text("");
-          $("#success_reg_otp").css("display", "block");
-          $(".success_reg_otp_msg").text("Wait...");
-          var userid = $("#register_form #mobile").val();
-          var useremail = $("#register_form #email").val();
-          var formname = "register";
-          $("#sendOtp").css("display", "none");
-          $.ajax({
-            type: "POST",
-            url: "/user/sendotp",
-            dataType: "json",
-            data: { userid: userid, useremail: useremail, formname: formname },
-            success: function (response) {
-              if (response["status"] == "success") {
-                $("#success_reg_otp").css("display", "block");
-                $(".success_reg_otp_msg").text(response["message"]);
-                //$("#success_reg_otp").append(" <a href='javascript:void(0)' class='resendOtpReg'>Resend</a>");
-                clearTimeout(stoptimer);
-                timer(30, "register");
-              } else if (response["status"] == "error") {
-                $("#success_reg_otp").css("display", "none");
-                $(".success_reg_otp_msg").text("");
-                $("#error_reg_pass").css("display", "block");
-                $("#error_reg_pass").text(response["message"]);
-                $("#sendOtp").css("display", "block");
-              } else {
-                $("#success_reg_otp").css("display", "none");
-                $(".success_reg_otp_msg").text("");
-                $("#error_reg_pass").css("display", "block");
-                $("#error_reg_pass").text("something went wrong!");
-                $("#sendOtp").css("display", "block");
-              }
-            },
-          });
-        }
-      });
-    });
-  </script>
-
-  <script>
-    /*
-function reload_captcha(){
-    var random = Math.random();
-    $('#captcha_img').attr('src',captcha_url+'?refresh='+random);
-}
-*/
-
-    function reload_captcha(form) {
-      var random = Math.random();
-      if (form) {
-        $("#" + form + " #captcha_img").attr(
-          "src",
-          captcha_url + "?refresh=" + random
-        );
-      } else {
-        $("#captcha_img").attr("src", captcha_url + "?refresh=" + random);
-      }
-    }
-
-    function validateConsumerEmail(email_field, error_div) {
-      //prep
-      var email = document.getElementById(email_field),
-        error;
-      //validate
-      if (
-        !email.value ||
-        !/^([\w-\.]+@([\w-]+\.)+[a-zA-Z]{2,4})?$/.test(email.value)
-      )
-        error = "Please enter a valid e-mail";
-      //feedback
-      if (error) {
-        //        email.focus();
-        document.getElementById(error_div).style.display = "block";
-        document.getElementById(error_div).innerHTML = error;
-        //        console.log(error);
-        return false;
-      } else {
-        //OK - do something here
-        //        console.log('ok');
-        document.getElementById(error_div).innerHTML = "";
-        document.getElementById(error_div).style.display = "none";
-        return true;
-      }
-    }
-
-    function validateConsumerMobile(mobile_field, error_div) {
-      //prep
-      var mobile = document.getElementById(mobile_field),
-        error;
-      //validate
-
-      if (!mobile.value || !/[0-9]{10}/g.test(mobile.value))
-        error = "Please enter a valid Mobile (Eg. xxxxxxxxxx)";
-      //feedback
-      if (error) {
-        //        mobile.focus();
-        document.getElementById(error_div).style.display = "block";
-        document.getElementById(error_div).innerHTML = error;
-        //        console.log(error);
-        return false;
-      } else {
-        //OK - do something here
-        //        console.log('ok');
-        document.getElementById(error_div).innerHTML = "";
-        document.getElementById(error_div).style.display = "none";
-        return true;
-      }
-    }
-
-    function checkweakpass(pwd) {
-      var patternpw_numeric = new RegExp(/(?=.*\d)/);
-      var patternpw_caps = new RegExp(/(?=.*[A-Z])/);
-      var patternpw_lower = new RegExp(/(?=.*[a-z])/);
-      var patternpw_symbol = new RegExp(/(?=.*[^a-zA-Z\d\s])/);
-
-      if (
-        pwd.length < 8 ||
-        !patternpw_numeric.test(pwd) ||
-        !patternpw_caps.test(pwd) ||
-        !patternpw_lower.test(pwd) ||
-        !patternpw_symbol.test(pwd)
-      ) {
-        $("#flagwp").val(1);
-      } else {
-        $("#flagwp").val(0);
-      }
-    }
-  </script>
-
-  <script type="text/javascript">
-    let timerOn = true;
-
-    function timer(remaining, formname) {
-      var m = Math.floor(remaining / 60);
-      var s = remaining % 60;
-      m = m < 10 ? "0" + m : m;
-      s = s < 10 ? "0" + s : s;
-      //document.getElementById('timer').innerHTML = m + ':' + s;
-      if (formname == "login") {
-        $(".timer").html(" " + m + ":" + s);
-      } else {
-        $(".timerReg").html(" " + m + ":" + s);
-      }
-
-      remaining -= 1;
-      if (remaining >= 0 && timerOn) {
-        stoptimer = setTimeout(function () {
-          timer(remaining, formname);
-        }, 1000);
-        return;
-      }
-
-      if (!timerOn) {
-        return;
-      }
-      if (formname == "login") {
-        $(".timer").html(
-          " <a href='javascript:void(0)' class='resendOtp' onclick='resendOtp();'>Resend</a>"
-        );
-      } else {
-        $(".timerReg").html(
-          " <a href='javascript:void(0)' class='resendOtpReg' onclick='resendOtpReg();'>Resend</a>"
-        );
-      }
-    }
-  </script>
-
-  <style type="text/css">
-    #alertfrlogn {
-      position: absolute;
-      background: #fff;
-      display: none;
-      height: 300px;
-      top: 50%;
-      left: 50%;
-      width: 320px;
-      margin: 0 0 0 -160px;
-    }
-  </style>
+  
 
   <div id="alertfrlogn">
     <div class="PA20">
@@ -960,12 +622,6 @@ function reload_captcha(){
       src="https://accounts.moneycontrol.com/akam/13/pixel_3f43f214?a=dD0yNmEwNmNjZjU5NTEwODdlOWM4YmM1OWY3MzMxMjAyOWMwYWRhNWQ5JmpzPW9mZg=="
       style="visibility: hidden; position: absolute; left: -999px; top: -999px"
   /></noscript>
-  <script type="text/javascript" src="/Hgd-9jht/Ozh4J6D/gFq0sT6/-V/iQ5ND2JGiSiYOJ/GRsXSw/NWUXb/WwgAzk"></script>
-  <iframe id="apiproxy27a946029c671d68f81e0ede767a1f00717391c10.3525707728" name="apiproxy27a946029c671d68f81e0ede767a1f00717391c10.3525707728" src="https://content.googleapis.com/static/proxy.html?usegapi=1&amp;jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.Oupypiulh58.O%2Fd%3D1%2Frs%3DAHpOoo_CVmSAWqMsGCHgMRyaSvlE8hY6sw%2Fm%3D__features__#parent=https%3A%2F%2Faccounts.moneycontrol.com&amp;rpctoken=658336341" tabindex="-1" aria-hidden="true" style="
-      width: 1px;
-      height: 1px;
-      position: absolute;
-      top: -100px;
-      display: none;
-    "></iframe>
+  
+  
 

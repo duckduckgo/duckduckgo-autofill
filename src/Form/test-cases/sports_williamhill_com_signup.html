@@ -1,9 +1,10 @@
 <!--
   https://sports.williamhill.com/acc/en-gb/register/SB/register.html
+  rank: 6788
   testRunId: 66
   testResultId: 238443
 -->
-<form class="regForm" id="registration" action="https://sports.williamhill.com/acc/en-gb/register/confirm.html" method="post" data-ddg-formtype="sign up">
+<form class="regForm" id="registration" action="https://sports.williamhill.com/acc/en-gb/register/confirm.html" method="post">
   <input id="modal_reg" name="modal_reg" value="1" type="hidden">
 
   <input type="hidden" name="ioBlackBoxCopy" id="ioBlackBoxCopy">
@@ -21,9 +22,9 @@
   <div id="inputs">
     <div class="leftClmn">
       <label class="label top">Title</label>
-      <div class="tooltipGroup success" style="z-index: 20">
+      <div class="tooltipGroup success">
         <div class="title">
-          <select id="title" name="title" onfocus="document.reg.validation.help(this.id)" onblur="document.reg.validation.validate(this.id)" onchange="document.reg.validation.help(this.id); gaStartRegistrationTracking('Reg');" title="overall type: UNKNOWN_TYPE
+          <select id="title" name="title" onfocus="document.reg.validation.help(this.id)" onblur="document.reg.validation.validate(this.id)" onchange="document.reg.validation.help(this.id); gaStartRegistrationTracking('Reg');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Title
@@ -34,18 +35,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 18" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Title
-parseable name: title
-section: title_0_18
-field signature: 3155588667
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" class="success" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533007">
+field renderer id: 18" class="success" data-ddg-testresultelementid="533007">
             <option value="Dr">Dr</option>
 
             <option value="Miss">Miss</option>
@@ -67,33 +57,41 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" class="success" data-d
       <label class="label">Name</label>
       <div class="tooltipGroup double">
         <div class="firstName">
-          <span wmwrap="true" style="position: relative; clear: none; float: left"><label style="
-                position: absolute;
-                left: 0px;
-                display: inline;
-                cursor: text;
-                padding: 3px 5px;
-                color: rgb(136, 137, 138);
-              ">First name</label><input id="fName" name="fName" value="" type="text" watermark="First name" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" data-ddg-testresultelementid="533008" data-manual-scoring="firstName"></span>
+          <span wmwrap="true"><label>First name</label><input id="fName" name="fName" value="" type="text" watermark="First name" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First name
+parseable name: fName
+section: title_0_18
+field signature: 2192597347
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 19" data-ddg-testresultelementid="533008" data-manual-scoring="firstName"></span>
         </div>
         <div class="surname">
-          <span wmwrap="true" style="position: relative; clear: none; float: left"><label style="
-                position: absolute;
-                left: 0px;
-                display: inline;
-                cursor: text;
-                padding: 3px 5px;
-                color: rgb(136, 137, 138);
-              ">Surname</label><input id="lName" name="lName" value="" type="text" watermark="Surname" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" data-ddg-testresultelementid="533009" data-manual-scoring="lastName"></span>
+          <span wmwrap="true"><label>Surname</label><input id="lName" name="lName" value="" type="text" watermark="Surname" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Surname
+parseable name: lName
+section: title_0_18
+field signature: 134835573
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 20" data-ddg-testresultelementid="533009" data-manual-scoring="lastName"></span>
         </div>
         <span id="fName_msg"><p>
             <label id="fName_msg_txt"></label><label id="lName_msg_txt"></label></p></span>
       </div>
 
       <label class="label">Date of birth</label>
-      <div class="tooltipGroup" style="z-index: 19">
+      <div class="tooltipGroup">
         <div class="day">
-          <select id="dob_day" name="dob_day" onchange="document.reg.check_dob(); gaStartRegistrationTracking('Reg');" onblur="document.reg.check_dob()" onfocus="document.reg.custom_help_dob(this.id,'dob_day')" title="overall type: UNKNOWN_TYPE
+          <select id="dob_day" name="dob_day" onchange="document.reg.check_dob(); gaStartRegistrationTracking('Reg');" onblur="document.reg.check_dob()" onfocus="document.reg.custom_help_dob(this.id,'dob_day')" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of birth
@@ -104,18 +102,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of birth
-parseable name: dob_day
-section: title_0_18
-field signature: 2939639704
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533010">
+field renderer id: 21" data-ddg-testresultelementid="533010">
             <option value="-1" class="optHeading">Day</option>
             <option value="1" id="dob_day_1">1</option>
             <option value="2" id="dob_day_2">2</option>
@@ -151,7 +138,7 @@ field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </select>
         </div>
         <div class="month">
-          <select id="dob_month" name="dob_month" onchange="document.reg.check_dob(); gaStartRegistrationTracking('Reg');" onblur="document.reg.check_dob()" onfocus="document.reg.custom_help_dob(this.id,'dob_day')" title="overall type: UNKNOWN_TYPE
+          <select id="dob_month" name="dob_month" onchange="document.reg.check_dob(); gaStartRegistrationTracking('Reg');" onblur="document.reg.check_dob()" onfocus="document.reg.custom_help_dob(this.id,'dob_day')" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of birth
@@ -162,18 +149,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of birth
-parseable name: dob_month
-section: title_0_18
-field signature: 1764377410
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533011">
+field renderer id: 22" data-ddg-testresultelementid="533011">
             <option value="-1" class="optHeading">Month</option>
 
             <option value="1">January</option>
@@ -202,7 +178,7 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </select>
         </div>
         <div class="year">
-          <select id="dob_year" name="dob_year" onchange="document.reg.check_dob(); gaStartRegistrationTracking('Reg');" onblur="document.reg.check_dob()" onfocus="document.reg.custom_help_dob(this.id,'dob_day')" title="overall type: UNKNOWN_TYPE
+          <select id="dob_year" name="dob_year" onchange="document.reg.check_dob(); gaStartRegistrationTracking('Reg');" onblur="document.reg.check_dob()" onfocus="document.reg.custom_help_dob(this.id,'dob_day')" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Date of birth
@@ -213,18 +189,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 23" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Date of birth
-parseable name: dob_year
-section: title_0_18
-field signature: 2513340355
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533012">
+field renderer id: 23" data-ddg-testresultelementid="533012">
             <option value="-1" class="optHeading">Year</option>
             <option value="2005">2005</option>
             <option value="2004">2004</option>
@@ -335,28 +300,54 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       <label class="label">Email address</label>
       <div class="tooltipGroup">
         <div class="largeInput">
-          <input id="email" name="email" value="" type="text" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" data-ddg-autofill="true" data-ddg-testresultelementid="533013" style="
-              background-size: auto 100% !important;
-              background-position: right center !important;
-              background-repeat: no-repeat !important;
-              background-origin: content-box !important;
-              background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-              transition: background 0s ease 0s !important;
-            " data-manual-scoring="emailAddress">
+          <input id="email" name="email" value="" type="text" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email address
+parseable name: email
+section: title_0_18
+field signature: 420638584
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 24" data-ddg-testresultelementid="533013" data-manual-scoring="emailAddress">
         </div>
         <span id="email_msg"><p><label id="email_msg_txt"></label></p></span>
       </div>
       <label class="label">Mobile Number</label>
       <div class="tooltipGroup">
         <div class="largeInput">
-          <input id="telephone" name="telephone" value="" type="text" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" data-ddg-testresultelementid="533014" data-manual-scoring="phone">
+          <input id="telephone" name="telephone" value="" type="text" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: PHONE_HOME_CITY_AND_NUMBER
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Mobile Number
+parseable name: telephone
+section: title_0_18
+field signature: 3860194788
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 25" data-ddg-testresultelementid="533014" data-manual-scoring="phone">
         </div>
         <span id="telephone_msg"><p><label id="telephone_msg_txt"></label></p></span>
       </div>
       <label class="label">Country</label>
-      <div class="tooltipGroup error" style="z-index: 18">
+      <div class="tooltipGroup error">
         <div class="bigSelect">
-          <select id="country_code" name="country_code" onchange="document.reg.validation.validate(this.id); gaStartRegistrationTracking('Reg');" class="error" data-ddg-testresultelementid="533015" data-manual-scoring="addressCountryCode">
+          <select id="country_code" name="country_code" onchange="document.reg.validation.validate(this.id); gaStartRegistrationTracking('Reg');" class="error" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Unable to register residents from this country. Please click here for more.
+parseable name: country_code
+section: title_0_18
+field signature: 2270350410
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 26" data-ddg-testresultelementid="533015" data-manual-scoring="addressCountryCode">
             <option value="AF">Afghanistan</option>
 
             <option value="DZ">Algeria</option>
@@ -680,11 +671,11 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               for more.</label>
           </p></span>
       </div>
-      <span id="reg_house_number" style="display: none">
+      <span id="reg_house_number">
         <label class="label">House number/name</label>
         <div class="tooltipGroup">
           <div class="smallInput">
-            <input type="text" name="fhouse" id="fhouse" value="" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" title="overall type: ADDRESS_HOME_HOUSE_NUMBER
+            <input type="text" name="fhouse" id="fhouse" value="" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: ADDRESS_HOME_HOUSE_NUMBER
 server type: NO_SERVER_DATA
 heuristic type: ADDRESS_HOME_HOUSE_NUMBER
 label: House number/name
@@ -695,27 +686,16 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 27" autofill-information="overall type: ADDRESS_HOME_HOUSE_NUMBER
-server type: NO_SERVER_DATA
-heuristic type: ADDRESS_HOME_HOUSE_NUMBER
-label: House number/name
-parseable name: fhouse
-section: title_0_18
-field signature: 312200163
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 27" autofill-prediction="ADDRESS_HOME_HOUSE_NUMBER" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533016">
+field renderer id: 27" data-ddg-testresultelementid="533016">
           </div>
           <span id="fhouse_msg"><p><label id="fhouse_msg_txt"></label></p></span>
         </div>
       </span>
-      <span id="reg_addr_1" style="display: block">
+      <span id="reg_addr_1">
         <label class="label">Address</label>
         <div class="tooltipGroup address1">
           <div class="largeInput address1">
-            <input id="addr_street_1" name="addr_street_1" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" title="overall type: ADDRESS_HOME_STREET_NAME
+            <input id="addr_street_1" name="addr_street_1" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: ADDRESS_HOME_STREET_NAME
 server type: ADDRESS_HOME_STREET_NAME
 heuristic type: ADDRESS_HOME_STREET_NAME
 label: Address
@@ -726,35 +706,46 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 28" autofill-information="overall type: ADDRESS_HOME_STREET_NAME
-server type: ADDRESS_HOME_STREET_NAME
-heuristic type: ADDRESS_HOME_STREET_NAME
-label: Address
-parseable name: addr_street_1
-section: title_0_18
-field signature: 3993724575
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 28" autofill-prediction="ADDRESS_HOME_STREET_NAME" data-ddg-inputtype="identities.addressStreet" data-ddg-testresultelementid="533017">
+field renderer id: 28" data-ddg-testresultelementid="533017">
           </div>
           <span id="addr_street_1_msg"><p><label id="addr_street_1_msg_txt"></label></p></span>
         </div>
       </span>
-      <span id="reg_addr_2" style="display: block">
+      <span id="reg_addr_2">
         <div class="tooltipGroup">
           <div class="largeInput address2">
-            <input id="addr_street_2" name="addr_street_2" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" data-ddg-testresultelementid="533018" data-manual-scoring="addressStreet2">
+            <input id="addr_street_2" name="addr_street_2" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: ADDRESS_HOME_LINE2
+server type: ADDRESS_HOME_LINE2
+heuristic type: ADDRESS_HOME_LINE2
+label: Title Name
+parseable name: addr_street_2
+section: title_0_18
+field signature: 2928801540
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 29" data-ddg-testresultelementid="533018" data-manual-scoring="addressStreet2">
           </div>
           <span id="addr_street_2_msg"><p><label id="addr_street_2_msg_txt"></label></p></span>
         </div>
       </span>
-      <span id="reg_addr_city" style="display: block">
+      <span id="reg_addr_city">
         <label class="label">Town/City</label>
         <div class="tooltipGroup">
           <div class="largeInput">
-            <input id="addr_city" name="addr_city" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" data-ddg-testresultelementid="533019" data-manual-scoring="addressCity">
+            <input id="addr_city" name="addr_city" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: ADDRESS_HOME_CITY
+heuristic type: ADDRESS_HOME_CITY
+label: Town/City
+parseable name: addr_city
+section: title_0_18
+field signature: 826352856
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 30" data-ddg-testresultelementid="533019" data-manual-scoring="addressCity">
           </div>
           <span id="addr_city_msg"><p><label id="addr_city_msg_txt"></label></p></span>
         </div>
@@ -766,11 +757,22 @@ field renderer id: 28" autofill-prediction="ADDRESS_HOME_STREET_NAME" data-ddg-i
 
       <!-- Fiscal region -->
 
-      <span id="reg_addr_region" style="">
+      <span id="reg_addr_region">
         <label class="label">County/State <span class="optionalField">(Optional)</span></label>
         <div class="tooltipGroup">
           <div class="largeInput">
-            <input id="addr_region" name="addr_region" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" data-ddg-testresultelementid="533020" data-manual-scoring="addressProvince">
+            <input id="addr_region" name="addr_region" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: ADDRESS_HOME_STATE
+heuristic type: ADDRESS_HOME_STATE
+label: County/State (Optional)
+parseable name: addr_region
+section: title_0_18
+field signature: 2887398595
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 31" data-ddg-testresultelementid="533020" data-manual-scoring="addressProvince">
           </div>
           <span id="addr_region_msg"><p><label id="addr_region_msg_txt"></label></p></span>
         </div>
@@ -784,11 +786,22 @@ field renderer id: 28" autofill-prediction="ADDRESS_HOME_STREET_NAME" data-ddg-i
 
       <!-- Address state -->
 
-      <span id="reg_addr_state" style="display: none">
+      <span id="reg_addr_state">
         <label class="label">State</label>
-        <div class="tooltipGroup" style="z-index: 17">
+        <div class="tooltipGroup">
           <div class="bigSelect">
-            <select name="addr_state_id" id="addr_state_id" onchange="document.reg.validation.validate(this.id); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" data-ddg-testresultelementid="533021" data-manual-scoring="addressProvince">
+            <select name="addr_state_id" id="addr_state_id" onchange="document.reg.validation.validate(this.id); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: State
+parseable name: addr_state_id
+section: title_0_18
+field signature: 3038968282
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 32" data-ddg-testresultelementid="533021" data-manual-scoring="addressProvince">
               <option value="-1">Choose state</option>
 
               <option value="55">Alberta</option>
@@ -824,20 +837,31 @@ field renderer id: 28" autofill-prediction="ADDRESS_HOME_STREET_NAME" data-ddg-i
 
       <!-- End Address state -->
 
-      <span id="reg_postcode" style="display: block">
+      <span id="reg_postcode">
         <label class="label">Postcode/ZIP</label>
         <div class="tooltipGroup">
           <div class="smallInput">
-            <input id="postcode" name="postcode" value="" type="text" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" data-ddg-testresultelementid="533022" data-manual-scoring="addressPostalCode">
+            <input id="postcode" name="postcode" value="" type="text" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: ADDRESS_HOME_ZIP
+heuristic type: ADDRESS_HOME_ZIP
+label: Postcode/ZIP
+parseable name: postcode
+section: title_0_18
+field signature: 811475114
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 33" data-ddg-testresultelementid="533022" data-manual-scoring="addressPostalCode">
           </div>
           <span id="postcode_msg"><p><label id="postcode_msg_txt"></label></p></span>
         </div>
       </span>
-      <span id="reg_find_address" style="display: none">
+      <span id="reg_find_address">
         <input type="button" value="Find Address" class="secCTA" onclick="return document.reg.lookup_address()" id="find_address_button" onfocus="document.reg.validation.help(this.id)">
         <a href="#" class="addressManual" onclick="return show_manual_addr(this);" onfocus="document.reg.validation.help(this.id)">Enter Manually</a>
       </span>
-      <span id="reg_address_select" style="display: none">
+      <span id="reg_address_select">
         <label class="label">Select address or enter manually</label>
         <div class="addressLookup">
           <ul name="address" id="addSelect"></ul>
@@ -867,7 +891,7 @@ field renderer id: 28" autofill-prediction="ADDRESS_HOME_STREET_NAME" data-ddg-i
       <label class="label top">Username</label>
       <div class="tooltipGroup">
         <div class="midInput">
-          <input id="reg_username" name="reg_username" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" title="overall type: USERNAME
+          <input id="reg_username" name="reg_username" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: USERNAME
 server type: USERNAME
 heuristic type: UNKNOWN_TYPE
 label: Username
@@ -878,39 +902,52 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 35" autofill-information="overall type: USERNAME
-server type: USERNAME
-heuristic type: UNKNOWN_TYPE
-label: Username
-parseable name: reg_username
-section: title_0_18
-field signature: 2225538423
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 35" autofill-prediction="USERNAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533023">
+field renderer id: 35" data-ddg-testresultelementid="533023">
         </div>
         <span id="reg_username_msg"><p><label id="reg_username_msg_txt"></label></p></span>
       </div>
       <label class="label">Password</label>
       <div class="tooltipGroup">
         <div class="midInput">
-          <input type="password" id="reg_password" name="reg_password" autocomplete="off" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" data-ddg-testresultelementid="533024" data-manual-scoring="password">
+          <input type="password" id="reg_password" name="reg_password" autocomplete="off" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: reg_password
+section: title_0_18
+field signature: 1163480252
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 36
+autocomplete: off" data-ddg-testresultelementid="533024" data-manual-scoring="password">
         </div>
         <span id="reg_password_msg"><p><label id="reg_password_msg_txt"></label></p></span>
       </div>
       <label class="label">Confirm password</label>
       <div class="tooltipGroup">
         <div class="midInput">
-          <input type="password" id="vfy_password" name="vfy_password" autocomplete="off" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg._check_passwords(this.id,false,'Y'); gaStartRegistrationTracking('Reg');" onblur="document.reg._check_passwords(this.id,true,'Y')" data-ddg-testresultelementid="533025" data-manual-scoring="password">
+          <input type="password" id="vfy_password" name="vfy_password" autocomplete="off" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg._check_passwords(this.id,false,'Y'); gaStartRegistrationTracking('Reg');" onblur="document.reg._check_passwords(this.id,true,'Y')" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm password
+parseable name: vfy_password
+section: title_0_18
+field signature: 3393375048
+form signature: 540767963733277450
+form signature in host form: 540767963733277450
+field frame token: FC845EACC6D54D337777975B05250B59
+form renderer id: 2
+field renderer id: 37
+autocomplete: off" data-ddg-testresultelementid="533025" data-manual-scoring="password">
         </div>
         <span id="vfy_password_msg"><p><label id="vfy_password_msg_txt"></label></p></span>
       </div>
       <label class="label">Security question</label>
-      <div class="tooltipGroup" style="z-index: 15">
+      <div class="tooltipGroup">
         <div class="midSelect">
-          <select id="challenge_1" name="challenge_1" class="styled" onfocus="document.reg.validation.help(this.id)" onblur="document.reg.validation.validate(this.id)" onchange="gaStartRegistrationTracking('Reg');" title="overall type: UNKNOWN_TYPE
+          <select id="challenge_1" name="challenge_1" class="styled" onfocus="document.reg.validation.help(this.id)" onblur="document.reg.validation.validate(this.id)" onchange="gaStartRegistrationTracking('Reg');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security question
@@ -921,18 +958,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 38" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security question
-parseable name: challenge_1
-section: title_0_18
-field signature: 2610911298
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533026">
+field renderer id: 38" data-ddg-testresultelementid="533026">
             <option value="-1" class="optHeading">
               Choose a security question
             </option>
@@ -959,7 +985,7 @@ field renderer id: 38" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       <label class="label"> Answer</label>
       <div class="tooltipGroup">
         <div class="midInput">
-          <input id="response_1" name="response_1" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" title="overall type: UNKNOWN_TYPE
+          <input id="response_1" name="response_1" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Answer
@@ -970,26 +996,15 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 39" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Answer
-parseable name: response_1
-section: title_0_18
-field signature: 2257024943
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 39" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533027">
+field renderer id: 39" data-ddg-testresultelementid="533027">
         </div>
         <span id="response_1_msg"><p><label id="response_1_msg_txt"></label></p></span>
       </div>
 
       <label class="label">Currency</label>
-      <div class="tooltipGroup" style="z-index: 14">
+      <div class="tooltipGroup">
         <div class="midSelect">
-          <select id="ccy_code" name="ccy_code" class="styled" onchange="document.reg._change_ccy(); gaStartRegistrationTracking('Reg');" title="overall type: UNKNOWN_TYPE
+          <select id="ccy_code" name="ccy_code" class="styled" onchange="document.reg._change_ccy(); gaStartRegistrationTracking('Reg');" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Currency
@@ -1000,18 +1015,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 40" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Currency
-parseable name: ccy_code
-section: title_0_18
-field signature: 2172354629
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533028">
+field renderer id: 40" data-ddg-testresultelementid="533028">
             <option value="GBP" selected="">GBP</option>
 
             <option value="EUR">EUR</option>
@@ -1037,9 +1041,9 @@ field renderer id: 40" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       </div>
 
       <label class="label">Deposit Limit Type and Amount</label>
-      <div style="z-index: 14" class="tooltipGroup">
-        <div class="midSelect" style="display: block">
-          <select name="deposit_period_type" id="deposit_period_type" onchange="document.reg.validation.validate(this.id); document.reg._display_deposit_limit_drop_down(this.value); " onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" title="overall type: NUMERIC_QUANTITY
+      <div class="tooltipGroup">
+        <div class="midSelect">
+          <select name="deposit_period_type" id="deposit_period_type" onchange="document.reg.validation.validate(this.id); document.reg._display_deposit_limit_drop_down(this.value); " onblur="document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: Deposit Limit Type and Amount
@@ -1050,18 +1054,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 41" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: Deposit Limit Type and Amount
-parseable name: deposit_period_type
-section: title_0_18
-field signature: 1450199462
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 41" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533029">
+field renderer id: 41" data-ddg-testresultelementid="533029">
             <option value="-1">Choose Type</option>
 
             <option value="NO_LIMIT">No Limit</option>
@@ -1073,7 +1066,7 @@ field renderer id: 41" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype
             <option value="month">Monthly</option>
           </select>
 
-          <select name="max_deposit_value" id="max_deposit_value" onchange="gaStartRegistrationTracking('Reg'); document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" disabled="true" title="overall type: NUMERIC_QUANTITY
+          <select name="max_deposit_value" id="max_deposit_value" onchange="gaStartRegistrationTracking('Reg'); document.reg.validation.validate(this.id)" onfocus="document.reg.validation.help(this.id)" disabled="true" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: Deposit Limit Type and Amount
@@ -1084,18 +1077,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 42" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: Deposit Limit Type and Amount
-parseable name: max_deposit_value
-section: title_0_18
-field signature: 3900762791
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 42" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533030">
+field renderer id: 42" data-ddg-testresultelementid="533030">
             <option value="-1">Choose limit</option>
             <option value="100000.00">£100000</option>
             <option value="50000.00">£50000</option>
@@ -1112,17 +1094,14 @@ field renderer id: 42" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype
         </div>
         <span id="deposit_period_type_msg"><p><label id="deposit_period_type_msg_txt"></label></p></span>
         <label class="label lblDDL"></label>
-        <script>
-          var help_url =
-            "https://williamhill-lang.custhelp.com/app/answers/detail/a_id/3325";
-        </script>
+        
         <span id="max_deposit_day_value"><p><label id="max_deposit_value_msg_txt"></label></p></span>
       </div>
 
       <label class="label">Promo Code <span class="optionalField">(Optional)</span></label>
       <div class="tooltipGroup">
         <div class="midInput">
-          <input id="fb_promo_code" name="fb_promo_code" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" title="overall type: MERCHANT_PROMO_CODE
+          <input id="fb_promo_code" name="fb_promo_code" value="" type="text" onfocus="document.reg.validation.help(this.id)" onkeyup="document.reg.validation.validate(this.id,true); gaStartRegistrationTracking('Reg');" onblur="document.reg.validation.validate(this.id)" autofill-information="overall type: MERCHANT_PROMO_CODE
 server type: NO_SERVER_DATA
 heuristic type: MERCHANT_PROMO_CODE
 label: Promo Code (Optional)
@@ -1133,25 +1112,14 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 43" autofill-information="overall type: MERCHANT_PROMO_CODE
-server type: NO_SERVER_DATA
-heuristic type: MERCHANT_PROMO_CODE
-label: Promo Code (Optional)
-parseable name: fb_promo_code
-section: title_0_18
-field signature: 3253390621
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 43" autofill-prediction="MERCHANT_PROMO_CODE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533031">
+field renderer id: 43" data-ddg-testresultelementid="533031">
         </div>
         <span id="fb_promo_code_msg"><p><label id="fb_promo_code_msg_txt"></label></p></span>
       </div>
 
       <div class="termsAbs">
         <div class="checkboxDiv">
-          <input id="acceptTerms" name="acceptTerms" type="checkbox" onclick="sendConditionsPoliciesTracking('optinout')" title="overall type: UNKNOWN_TYPE
+          <input id="acceptTerms" name="acceptTerms" type="checkbox" onclick="sendConditionsPoliciesTracking('optinout')" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I accept the Terms &amp; Conditions, Privacy Policy, &amp; Age Verification Policy as published on this site
@@ -1162,18 +1130,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 44" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I accept the Terms &amp; Conditions, Privacy Policy, &amp; Age Verification Policy as published on this site
-parseable name: acceptTerms
-section: title_0_18
-field signature: 1883088482
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533032">
+field renderer id: 44" data-ddg-testresultelementid="533032">
           <span class="inlineLabel" id="lbl_accept_terms">
             I accept the
             <a href="#" onclick="javascript:window.open('https://williamhill-lang.custhelp.com/app/answers/detail/a_id/6719','_wh_popup','width=665,height=440,resizeable=yes,scrollbars=yes');sendConditionsPoliciesTracking('TandC');return false">Terms &amp; Conditions</a>,
@@ -1184,20 +1141,11 @@ field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         </div>
 
         <div class="checkboxDiv">
-          <script>
-            // A list of contact options as per CONTACT_HOW_MAP config
-            document.contactHow_options = [];
+          
 
-            document.contactHow_options.push("Email_contactHow");
+          
 
-            document.contactHow_options.push("Telephone_contactHow");
-
-            document.contactHow_options.push("SMS_contactHow");
-          </script>
-
-          <script type="text/javascript" src="https://secdn.williamhill.com/core/ob/static/cust/js/acct_utils.js?ver=389b2a686cb6fc3d0194517c1103af96"></script>
-
-          <input type="checkbox" name="keepInformed" id="keepInformed" onclick="sendPromosubscribeTracking('keepInformed','optinout')" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, true);" title="overall type: UNKNOWN_TYPE
+          <input type="checkbox" name="keepInformed" id="keepInformed" onclick="sendPromosubscribeTracking('keepInformed','optinout')" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, true);" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I want to receive news about bonuses, offers, free-to-play games and services via email, SMS or tele
@@ -1208,18 +1156,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 45" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I want to receive news about bonuses, offers, free-to-play games and services via email, SMS or tele
-parseable name: keepInformed
-section: title_0_18
-field signature: 2496882301
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533033">
+field renderer id: 45" data-ddg-testresultelementid="533033">
           <span class="inlineLabel">I want to receive news about bonuses, offers, free-to-play games
             and services via email, SMS or telephone. You can update/edit your
             preferences at any time.</span>
@@ -1227,7 +1164,7 @@ field renderer id: 45" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           <label><strong>How would you like to be notified:</strong></label>
 
           <label for="Email_contactHow" class="communication-channels">
-            <input type="checkbox" id="Email_contactHow" name="Email_contactHow" value="E" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, false);" title="overall type: UNKNOWN_TYPE
+            <input type="checkbox" id="Email_contactHow" name="Email_contactHow" value="E" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, false);" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Email
@@ -1238,24 +1175,13 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 46" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Email
-parseable name: Email_contactHow
-section: title_0_18
-field signature: 1778440106
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 46" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533034">
+field renderer id: 46" data-ddg-testresultelementid="533034">
 
             Email
           </label>
 
           <label for="Telephone_contactHow" class="communication-channels">
-            <input type="checkbox" id="Telephone_contactHow" name="Telephone_contactHow" value="T" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, false);" title="overall type: UNKNOWN_TYPE
+            <input type="checkbox" id="Telephone_contactHow" name="Telephone_contactHow" value="T" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, false);" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Call
@@ -1266,24 +1192,13 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 47" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Call
-parseable name: Telephone_contactHow
-section: title_0_18
-field signature: 419747630
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 47" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533035">
+field renderer id: 47" data-ddg-testresultelementid="533035">
 
             Call
           </label>
 
           <label for="SMS_contactHow" class="communication-channels">
-            <input type="checkbox" id="SMS_contactHow" name="SMS_contactHow" value="S" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, false);" title="overall type: UNKNOWN_TYPE
+            <input type="checkbox" id="SMS_contactHow" name="SMS_contactHow" value="S" onchange="document.controlCheckboxes(this, 'keepInformed', document.contactHow_options, false);" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: SMS
@@ -1294,18 +1209,7 @@ form signature: 540767963733277450
 form signature in host form: 540767963733277450
 field frame token: FC845EACC6D54D337777975B05250B59
 form renderer id: 2
-field renderer id: 48" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: SMS
-parseable name: SMS_contactHow
-section: title_0_18
-field signature: 4283937034
-form signature: 540767963733277450
-form signature in host form: 540767963733277450
-field frame token: FC845EACC6D54D337777975B05250B59
-form renderer id: 2
-field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533036">
+field renderer id: 48" data-ddg-testresultelementid="533036">
 
             SMS
           </label>
@@ -1316,7 +1220,7 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
   <div class="formFooter">
     <div class="rightClmn">
       <!-- Preload image for Safari -->
-      <img src="https://secdn.williamhill.com/core/ob/static/cust/images/en/processing.gif?ver=389b2a686cb6fc3d0194517c1103af96" style="display: none">
+      
       <input class="submitGreen" id="submitButton" type="button" onclick="javascript:copyBlackBox('registration');  document.reg.submit_form(false); " value=" Agree and Join ">
     </div>
   </div>

@@ -1,5 +1,6 @@
 <!--
   https://www.superbet.gy
+  rank: 6933
   testRunId: 66
   testResultId: 238533
 -->
@@ -7,22 +8,19 @@
   <input type="hidden" myindex="'Superbet'" class="ng-isolate-scope">
   <input type="hidden" name="ClientID" ng-init="ClientID=3" ng-model="ClientID" class="ng-pristine ng-untouched ng-valid ng-not-empty">
   <input type="hidden" name="Clientname" ng-init="Clientname='Superbet'" ng-model="Clientname" class="ng-pristine ng-untouched ng-valid ng-not-empty">
-  <div class="loadingGame ng-hide" ng-show="loginLoading" style="background-color: transparent"></div>
-  <div class="H_loading" id="H_loading" style="display: none">
-    <img src="//cdn2-5e15.kxcdn.com/betting/webportal/images/loadingSvg.svg">
+  <div class="loadingGame ng-hide" ng-show="loginLoading"></div>
+  <div class="H_loading" id="H_loading">
+    
   </div>
 
-  <div class="H_main_w ng-scope" id="H_main_w" ng-controller="headerController as headerCtlr" style="
-      background: url('//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPageNewDesign/664623807-2190_LandingPageNewDesign.png')
-        center center no-repeat fixed;
-    ">
-    <div class="H_main" id="H_main" style="transform: scale(0.5625) translate(-50%, 0px)">
+  <div class="H_main_w ng-scope" id="H_main_w" ng-controller="headerController as headerCtlr">
+    <div class="H_main" id="H_main">
       <div class="H_logo_w">
-        <img src="//cdn2-5e15.kxcdn.com/betting/Images/logo_3.png">
+        
         <ul class="top-header-list Commonmenuhide">
           <!-- ngIf: ClientId==3 -->
           <li ng-if="ClientId==3" id="tab_PlayerCard" class="ng-scope">
-            <a target="_blank" href="https://cr.superbet.gy/" style="color: white; position: relative; top: -8px">
+            <a target="_blank" href="https://cr.superbet.gy/">
               <i class="sprite customer-card"></i>Customer Card<span class="palycarRe">Registration</span></a>
           </li>
           <!-- end ngIf: ClientId==3 -->
@@ -61,16 +59,49 @@
             <h3>Register Mobile Number</h3>
           </div>
           <div class="change_password" ng-hide="frm.RegSuccess">
-            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required" data-ddg-formtype="sign up">
-              <div class="fa fa-mobile textbox_style mobile_n_w textbox_style_JS active" style="width: 100%">
-                <input type="text" ax="4" readonly="" value="" ng-model="Telephone_Reg_CountryCode" style="width: 14%; height: 30px; font-weight: bold" ng-click="toggle()" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" data-ddg-testresultelementid="533586" data-manual-scoring="phone">
-                <input type="text" readonly="" name="mobileno" ng-model="MobileRegNumber" required="" style="width: 84%" number-type="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" data-ddg-testresultelementid="533587" data-manual-scoring="phone">
+            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required">
+              <div class="fa fa-mobile textbox_style mobile_n_w textbox_style_JS active">
+                <input type="text" ax="4" readonly="" value="" ng-model="Telephone_Reg_CountryCode" ng-click="toggle()" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Register Mobile Number
+parseable name: 
+section: _0_4
+field signature: 1318412689
+form signature: 7700001668624065106
+form signature in host form: 7700001668624065106
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 1
+field renderer id: 4" data-ddg-testresultelementid="533586" data-manual-scoring="phone">
+                <input type="text" readonly="" name="mobileno" ng-model="MobileRegNumber" required="" number-type="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Register Mobile Number
+parseable name: mobileno
+section: _0_4
+field signature: 456256682
+form signature: 7700001668624065106
+form signature in host form: 7700001668624065106
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 1
+field renderer id: 5" data-ddg-testresultelementid="533587" data-manual-scoring="phone">
               </div>
               <div class="fa fa-key textbox_style otp_w textbox_style_JS active">
-                <input type="text" name="OTPReg" ng-model="frm.OTPReg" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" data-ddg-testresultelementid="533588" data-manual-scoring="phone">
+                <input type="text" name="OTPReg" ng-model="frm.OTPReg" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Register Mobile Number
+parseable name: OTPReg
+section: _0_4
+field signature: 1943005826
+form signature: 7700001668624065106
+form signature in host form: 7700001668624065106
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 1
+field renderer id: 6" data-ddg-testresultelementid="533588" data-manual-scoring="phone">
               </div>
               <div class="fa fa-key textbox_style Account_Pwd textbox_style_JS active">
-                <input type="password" name="password" ng-model="frm.PasswordReg" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" title="overall type: UNKNOWN_TYPE
+                <input type="password" name="password" ng-model="frm.PasswordReg" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Register Mobile Number
@@ -82,23 +113,11 @@ form signature in host form: 7700001668624065106
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 1
 field renderer id: 7
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Register Mobile Number
-parseable name: password
-section: _0_4
-field signature: 2051817934
-form signature: 7700001668624065106
-form signature in host form: 7700001668624065106
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 1
-field renderer id: 7
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="533589">
-                <i class="fa fa-eye" aria-hidden="true" style="top: 10px; right: 0px; z-index: 3; cursor: pointer" ng-click="hideShowPassword()"></i>
+autocomplete: off" data-ddg-testresultelementid="533589">
+                <i class="fa fa-eye" aria-hidden="true" ng-click="hideShowPassword()"></i>
               </div>
               <div class="fa fa-key textbox_style New_Pwd textbox_style_JS active">
-                <input type="password" name="password" ng-model="frm.NewPasswordReg" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" title="overall type: UNKNOWN_TYPE
+                <input type="password" name="password" ng-model="frm.NewPasswordReg" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Register Mobile Number
@@ -110,31 +129,19 @@ form signature in host form: 7700001668624065106
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 1
 field renderer id: 8
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Register Mobile Number
-parseable name: password
-section: _0_4
-field signature: 2051817934
-form signature: 7700001668624065106
-form signature in host form: 7700001668624065106
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 1
-field renderer id: 8
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="533590">
-                <i class="fa fa-eye" aria-hidden="true" style="top: 10px; right: 0px; z-index: 3; cursor: pointer" ng-click="hideShowPassword()"></i>
+autocomplete: off" data-ddg-testresultelementid="533590">
+                <i class="fa fa-eye" aria-hidden="true" ng-click="hideShowPassword()"></i>
               </div>
-              <div style="float: left" class="submit_but EmptyValidationBut_JS" ng-click="frm.RegMobileNo()" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
+              <div class="submit_but EmptyValidationBut_JS" ng-click="frm.RegMobileNo()" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
                 Submit
               </div>
-              <div style="float: right" class="submit_but EmptyValidationBut_JS" ng-click="frm.resendOTP()" ng-class="{disableClass:resendLoading}">
+              <div class="submit_but EmptyValidationBut_JS" ng-click="frm.resendOTP()" ng-class="{disableClass:resendLoading}">
                 Resend OTP
               </div>
-              <div class="myProgress ng-hide" ng-show="RegshowProgress" style="display: inline-block">
-                <div class="myBar" ng-style="myBar" style="width: 0%"></div>
+              <div class="myProgress ng-hide" ng-show="RegshowProgress">
+                <div class="myBar" ng-style="myBar"></div>
               </div>
-              <div style="float: right" class="submit_but EmptyValidationBut_JS update_mobileNo" ng-click="UpdateNewMobileNumber()" ng-class="{}">
+              <div class="submit_but EmptyValidationBut_JS update_mobileNo" ng-click="UpdateNewMobileNumber()" ng-class="{}">
                 Change Mobile Number
               </div>
             </form>
@@ -151,9 +158,9 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="creden
             <h3>Register Mobile Number</h3>
           </div>
           <div class="change_password">
-            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required" data-ddg-formtype="sign up">
-              <div class="fa fa-mobile textbox_style mobile_n_w textbox_style_JS active" style="width: 100%">
-                <input type="text" ax="4" readonly="" value="" ng-model="Telephone_Telephone_CountryCode" style="width: 14%; height: 30px; font-weight: bold" ng-click="toggle()" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" title="overall type: UNKNOWN_TYPE
+            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required">
+              <div class="fa fa-mobile textbox_style mobile_n_w textbox_style_JS active">
+                <input type="text" ax="4" readonly="" value="" ng-model="Telephone_Telephone_CountryCode" ng-click="toggle()" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: GenerateOTP
@@ -164,27 +171,11 @@ form signature: 6940221581127614339
 form signature in host form: 6940221581127614339
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 2
-field renderer id: 9" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: GenerateOTP
-parseable name: 
-section: _0_9
-field signature: 1318412689
-form signature: 6940221581127614339
-form signature in host form: 6940221581127614339
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 2
-field renderer id: 9" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533591">
-                <ul class="dropD_ul_wC ng-hide" ng-show="showcountry" style="
-                    left: 30px;
-                    top: 38px;
-                    width: 45%;
-                    background-color: #ccc;
-                  ">
+field renderer id: 9" data-ddg-testresultelementid="533591">
+                <ul class="dropD_ul_wC ng-hide" ng-show="showcountry">
                   <!-- ngRepeat: co in MobCountries -->
                 </ul>
-                <input type="text" name="mobileno" ng-readonly="OTPLoading" ng-model="MobileNumber" required="" style="width: 84%; right: -20px" number-type="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" title="overall type: UNKNOWN_TYPE
+                <input type="text" name="mobileno" ng-readonly="OTPLoading" ng-model="MobileNumber" required="" number-type="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: GenerateOTP
@@ -195,18 +186,7 @@ form signature: 6940221581127614339
 form signature in host form: 6940221581127614339
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 2
-field renderer id: 10" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: GenerateOTP
-parseable name: mobileno
-section: _0_9
-field signature: 456256682
-form signature: 6940221581127614339
-form signature in host form: 6940221581127614339
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 2
-field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="533593">
+field renderer id: 10" data-ddg-testresultelementid="533593">
               </div>
               <div class="submit_but EmptyValidationBut_JS" ng-click="frm.generateOTP()" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
                 GenerateOTP
@@ -223,9 +203,9 @@ field renderer id: 10" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
             <h3>Enter OTP to validate Mobile Number</h3>
           </div>
           <div class="change_password">
-            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required" data-ddg-formtype="sign up">
+            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required">
               <div class="fa fa-key textbox_style otp_w textbox_style_JS active">
-                <input type="text" name="OTPReg" ng-model="OTPReg" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" title="overall type: UNKNOWN_TYPE
+                <input type="text" name="OTPReg" ng-model="OTPReg" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Submit Resend OTP
@@ -236,28 +216,17 @@ form signature: 3491466875783663776
 form signature in host form: 3491466875783663776
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 3
-field renderer id: 11" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Submit Resend OTP
-parseable name: OTPReg
-section: OTPReg_0_11
-field signature: 1943005826
-form signature: 3491466875783663776
-form signature in host form: 3491466875783663776
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 3
-field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533595">
+field renderer id: 11" data-ddg-testresultelementid="533595">
               </div>
-              <div style="float: left" class="submit_but EmptyValidationBut_JS" ng-click="frm.RegMonthlyMobileReg()" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
+              <div class="submit_but EmptyValidationBut_JS" ng-click="frm.RegMonthlyMobileReg()" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
                 Submit
               </div>
-              <div style="float: right" class="submit_but EmptyValidationBut_JS disableClass" ng-click="frm.resendOTP()" ng-class="{disableClass:resendLoading}">
+              <div class="submit_but EmptyValidationBut_JS disableClass" ng-click="frm.resendOTP()" ng-class="{disableClass:resendLoading}">
                 Resend OTP
               </div>
             </form>
-            <div class="myProgress ng-hide" ng-show="RegshowProgress" style="display: inline-block">
-              <div class="myBar" ng-style="myBar" style="width: 0%"></div>
+            <div class="myProgress ng-hide" ng-show="RegshowProgress">
+              <div class="myBar" ng-style="myBar"></div>
             </div>
           </div>
           <div class="validation_div float_left width_100 ng-binding" ng-bind="RegMsg" ng-class="{'Valid':status,'Error':status==false}"></div>
@@ -273,9 +242,9 @@ field renderer id: 11" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <h3>Enter OTP to validate Mobile Number</h3>
           </div>
           <div class="change_password" ng-hide="resetOTPSuccess">
-            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required" data-ddg-formtype="sign up">
+            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required">
               <div class="fa fa-key textbox_style otp_w textbox_style_JS active">
-                <input type="text" name="OTPReg" ng-model="resetOTPReg" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" title="overall type: UNKNOWN_TYPE
+                <input type="text" name="OTPReg" ng-model="resetOTPReg" required="" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Submit Resend OTP
@@ -286,29 +255,18 @@ form signature: 3491466875783663776
 form signature in host form: 3491466875783663776
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 4
-field renderer id: 12" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Submit Resend OTP
-parseable name: OTPReg
-section: OTPReg_0_12
-field signature: 1943005826
-form signature: 3491466875783663776
-form signature in host form: 3491466875783663776
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 4
-field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533597">
+field renderer id: 12" data-ddg-testresultelementid="533597">
               </div>
 
-              <div style="float: left" class="submit_but EmptyValidationBut_JS" ng-click="resetPwdOTP(resetOTPReg)" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
+              <div class="submit_but EmptyValidationBut_JS" ng-click="resetPwdOTP(resetOTPReg)" ng-class="{'loginActive':OTPLoading,disableClass:OTPLoading}">
                 Submit
               </div>
-              <div style="float: right" class="submit_but EmptyValidationBut_JS disableClass" ng-click="resetResend()" ng-class="{disableClass:resendLoading}">
+              <div class="submit_but EmptyValidationBut_JS disableClass" ng-click="resetResend()" ng-class="{disableClass:resendLoading}">
                 Resend OTP
               </div>
             </form>
-            <div class="myProgress ng-hide" ng-show="RegshowProgress" style="display: inline-block">
-              <div class="myBar" ng-style="myBar" style="width: 0%"></div>
+            <div class="myProgress ng-hide" ng-show="RegshowProgress">
+              <div class="myBar" ng-style="myBar"></div>
             </div>
           </div>
           <div class="validation_div ng-binding" ng-bind="PwdresetMsg" ng-class="{'Valid':status,'Error':status==false}"></div>
@@ -328,19 +286,36 @@ field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <!-- end ngIf: logindisplay -->
           </div>
           <div class="change_password">
-            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required" data-ddg-formtype="sign up">
+            <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required">
               <div class="fa fa-envelope textbox_style textbox_style_JS active email_w" ng-class="{'email_w_Card':IsCardEnabled==1,'email_w':IsCardEnabled!=1}">
-                <input type="text" name="email" ng-model="frm.Username" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" data-ddg-autofill="true" data-ddg-testresultelementid="533599" style="
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input type="text" name="email" ng-model="frm.Username" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Submit
+parseable name: email
+section: email_0_13
+field signature: 420638584
+form signature: 9538269805240532063
+form signature in host form: 9538269805240532063
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 5
+field renderer id: 13
+autocomplete: off" data-ddg-testresultelementid="533599" data-manual-scoring="emailAddress">
               </div>
               <div class="fa fa-key textbox_style password_w textbox_style_JS active">
-                <input type="password" name="password" ng-model="frm.Password" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" data-ddg-testresultelementid="533601" data-manual-scoring="password">
+                <input type="password" name="password" ng-model="frm.Password" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Submit
+parseable name: password
+section: email_0_13
+field signature: 2051817934
+form signature: 9538269805240532063
+form signature in host form: 9538269805240532063
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 5
+field renderer id: 14
+autocomplete: off" data-ddg-testresultelementid="533601" data-manual-scoring="password">
               </div>
               <div class="submit_but EmptyValidationBut_JS" ng-click="frm.loginFun()">
                 Submit
@@ -351,9 +326,9 @@ field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
       </div>
       <div class="H_left_p ng-scope" ng-controller="formCtlr as frm">
-        <div class="position-fixed w-100 h-100 _popup_day ng-hide d-flex" ng-show="DayValPopup" style="inset: 0">
+        <div class="position-fixed w-100 h-100 _popup_day ng-hide d-flex" ng-show="DayValPopup">
           <div class="m-auto rounded">
-            <div class="_p_h rounded-top" style="background-color: #16cce9">
+            <div class="_p_h rounded-top">
               <h2 class="px-2 d-flex align-items-center fa-2x py-2">
                 Important Notice
                 <i class="fa fa-times p-2 ml-auto font_size_15 cursor_pointer" ng-click="DayValPopup=false"></i>
@@ -417,37 +392,51 @@ field renderer id: 12" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <h3>Change Password</h3>
             </div>
             <div class="change_password">
-              <form class="EmptyValidation_W_JS ng-pristine ng-valid ng-valid-date" role="form" name="frm.changepasswordform" ng-submit="frm.formdata(data)" ng-hide="successpopup" data-ddg-formtype="sign up">
+              <form class="EmptyValidation_W_JS ng-pristine ng-valid ng-valid-date" role="form" name="frm.changepasswordform" ng-submit="frm.formdata(data)" ng-hide="successpopup">
                 <div class="fa fa-key textbox_style textbox_style_JS new_pasword">
                   <br>
-                  <input type="password" ng-model="data.newpassword" name="newpassword" autocomplete="off" class="ng-pristine ng-untouched ng-valid ng-empty" data-ddg-testresultelementid="533603" data-manual-scoring="password">
-                  <i class="fa fa-eye" aria-hidden="true" style="top: 10px; right: 0px; z-index: 3; cursor: pointer" ng-click="hideShowPassword()"></i>
-                  <span class="error_span ng-binding" ng-bind="frm.newpassmessage" style="color: red"></span>
+                  <input type="password" ng-model="data.newpassword" name="newpassword" autocomplete="off" class="ng-pristine ng-untouched ng-valid ng-empty" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: password should contain at least 6 characters Your Password Updated Successfully !
+parseable name: newpassword
+section: newpassword_0_17
+field signature: 79855942
+form signature: 9608405320185850879
+form signature in host form: 9608405320185850879
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 7
+field renderer id: 17
+autocomplete: off" data-ddg-testresultelementid="533603" data-manual-scoring="password">
+                  <i class="fa fa-eye" aria-hidden="true" ng-click="hideShowPassword()"></i>
+                  <span class="error_span ng-binding" ng-bind="frm.newpassmessage"></span>
                 </div>
                 <br>
                 <p>password should contain at least 6 characters</p>
                 <div class="fa fa-key textbox_style c_password_w textbox_style_JS">
                   <br>
-                  <input type="password" ng-model="data.confirmpassword" name="confirmpassword" autocomplete="off" class="ng-pristine ng-untouched ng-valid ng-empty" data-ddg-testresultelementid="533605" data-manual-scoring="password">
-                  <i class="fa fa-eye" aria-hidden="true" style="top: 10px; right: 0px; z-index: 3; cursor: pointer" ng-click="hideShowPassword()"></i>
-                  <span class="error_span ng-binding" ng-bind="frm.cfrmpassmessage" style="color: red"></span>
+                  <input type="password" ng-model="data.confirmpassword" name="confirmpassword" autocomplete="off" class="ng-pristine ng-untouched ng-valid ng-empty" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: password should contain at least 6 characters Your Password Updated Successfully !
+parseable name: confirmpassword
+section: newpassword_0_17
+field signature: 2548554047
+form signature: 9608405320185850879
+form signature in host form: 9608405320185850879
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 7
+field renderer id: 18
+autocomplete: off" data-ddg-testresultelementid="533605" data-manual-scoring="password">
+                  <i class="fa fa-eye" aria-hidden="true" ng-click="hideShowPassword()"></i>
+                  <span class="error_span ng-binding" ng-bind="frm.cfrmpassmessage"></span>
                 </div>
                 <br>
 
                 <div class="re_input_w fa fa-calendar textbox_style textbox_style_JS m-0">
                   <p class="mb-0">Please Enter Your Date of Birth</p>
-                  <div class="input-group d-flex w-100 textbox_style pl-0 m-0" style="display: flex !important">
-                    <input type="text" class="inputStyle pl-1 ng-pristine ng-untouched ng-valid ng-isolate-scope ng-empty ng-valid-date" uib-datepicker-popup="dd.MM.yyyy" ng-model="data.DOB" is-open="isDatepickerOpen" close-text="Close" alt-input-formats="altInputFormats" style="
-                        pointer-events: none;
-                        width: 100%;
-                        height: 30px;
-                        box-shadow: none;
-                        text-align: left;
-                        padding: 0px;
-                        border-radius: unset;
-                        pointer-events: none;
-                        font-size: 12px;
-                      " title="overall type: UNKNOWN_TYPE
+                  <div class="input-group d-flex w-100 textbox_style pl-0 m-0">
+                    <input type="text" class="inputStyle pl-1 ng-pristine ng-untouched ng-valid ng-isolate-scope ng-empty ng-valid-date" uib-datepicker-popup="dd.MM.yyyy" ng-model="data.DOB" is-open="isDatepickerOpen" close-text="Close" alt-input-formats="altInputFormats" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Please Enter Your Date of Birth
@@ -458,55 +447,32 @@ form signature: 9608405320185850879
 form signature in host form: 9608405320185850879
 field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
 form renderer id: 7
-field renderer id: 19" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Please Enter Your Date of Birth
-parseable name: 
-section: newpassword_0_17
-field signature: 1318412689
-form signature: 9608405320185850879
-form signature in host form: 9608405320185850879
-field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
-form renderer id: 7
-field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533607">
+field renderer id: 19" data-ddg-testresultelementid="533607">
                     <div uib-datepicker-popup-wrap="" ng-model="date" ng-change="dateSelection(date)" template-url="uib/template/datepickerPopup/popup.html" class="ng-pristine ng-untouched ng-valid ng-scope ng-empty">
                       <!-- ngIf: isOpen -->
                     </div>
-                    <span class="inputStyle my-auto _calspan" style="
-                        margin-left: -30px;
-                        z-index: 1;
-                        box-shadow: none;
-                        border: none;
-                        background-color: rgba(0, 0, 0, 0);
-                        width: 30px !important;
-                      ">
+                    <span class="inputStyle my-auto _calspan">
                       <button type="button" class="btn-default _calendar border-0 bg-transparent" ng-click="isDatepickerOpen = !isDatepickerOpen">
-                        <i class="fa fa-calendar bg-transparent" aria-hidden="true" style="font-size: 16px !important"></i>
+                        <i class="fa fa-calendar bg-transparent" aria-hidden="true"></i>
                       </button>
                     </span>
-                    <span class="error_span w-100 ng-binding" ng-bind="frm.DOBmessage" style="color: red"></span>
+                    <span class="error_span w-100 ng-binding" ng-bind="frm.DOBmessage"></span>
                   </div>
                 </div>
 
-                <span class="error_span ng-binding" ng-bind="frm.message" style="color: red"></span>
+                <span class="error_span ng-binding" ng-bind="frm.message"></span>
                 <br>
 
-                <div class="modal-footer" style="display: inline-block; width: 100%">
+                <div class="modal-footer">
                   <input type="submit" class="submit_but EmptyValidationBut_JS click_effect_JS" ng-class="{'disableClass': submitLoading,'loginActive':submitLoading}" value="Submit">
                 </div>
               </form>
               <form class="EmptyValidation_W_JS ng-hide ng-pristine ng-valid" ng-show="successpopup">
-                <div style="font-size: 18px; color: darkgreen; text-align: center">
+                <div>
                   <b>Your Password Updated Successfully !</b>
                 </div>
                 <br>
-                <input type="submit" ng-click="frm.cancel()" value="OK" style="
-                    margin: 40px 150px 40px;
-                    width: 20%;
-                    height: 30%;
-                    background-color: darkorange;
-                  ">
+                <input type="submit" ng-click="frm.cancel()" value="OK">
               </form>
             </div>
           </div>
@@ -518,11 +484,23 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <h3>USER CONFIRMATION</h3>
             </div>
             <div class="change_password">
-              <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required" data-ddg-formtype="sign up">
+              <form class="EmptyValidation_W_JS ng-pristine ng-invalid ng-invalid-required">
                 <div class="fa fa-key textbox_style password_w textbox_style_JS active">
-                  <input type="password" name="password" ng-model="frm.validPassword" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" data-ddg-testresultelementid="533609" data-manual-scoring="password">
-                  <i class="fa fa-eye" aria-hidden="true" style="top: 10px; right: 0px; z-index: 3; cursor: pointer" ng-click="hideShowPassword()"></i>
-                  <span style="color: #ec5818" ng-bind="frm.passworderror" class="ng-binding"></span>
+                  <input type="password" name="password" ng-model="frm.validPassword" required="" autocomplete="off" class="ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: OK
+parseable name: password
+section: password_0_23
+field signature: 2051817934
+form signature: 6746471238317025439
+form signature in host form: 6746471238317025439
+field frame token: 6D680132B22EA6DCE75E0D9194FEDB28
+form renderer id: 9
+field renderer id: 23
+autocomplete: off" data-ddg-testresultelementid="533609" data-manual-scoring="password">
+                  <i class="fa fa-eye" aria-hidden="true" ng-click="hideShowPassword()"></i>
+                  <span ng-bind="frm.passworderror" class="ng-binding"></span>
                 </div>
                 <div class="submit_but EmptyValidationBut_JS" ng-click="frm.ValidUser()">
                   OK
@@ -680,14 +658,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <i class="fa FBLink" aria-hidden="true"></i> </a><!-- end ngIf: 'Watsup'!=links.name --><!-- end ngRepeat: links in homesociallinks -->
           <!-- ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><a ng-href="https://api.whatsapp.com/send?phone=5926737313" target="_blank" ng-if="'Watsup'==links.name" ng-repeat="links in homesociallinks" class="ng-scope" href="https://api.whatsapp.com/send?phone=5926737313">
             <i class="fa Watsup fa-Watsup" aria-hidden="true"></i>
-            <!-- ngIf: 'Watsup'==links.name --><label ng-if="'Watsup'==links.name" ng-bind="links.url" style="
-                background-color: #34af23;
-                padding: 10px 10px;
-                border-radius: 4px;
-                vertical-align: text-bottom;
-                display: unset;
-                margin-bottom: unset;
-              " class="ng-binding ng-scope">+5926737313</label><!-- end ngIf: 'Watsup'==links.name --> </a><!-- end ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks -->
+            <!-- ngIf: 'Watsup'==links.name --><label ng-if="'Watsup'==links.name" ng-bind="links.url" class="ng-binding ng-scope">+5926737313</label><!-- end ngIf: 'Watsup'==links.name --> </a><!-- end ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks --><!-- ngIf: 'Watsup'==links.name --><!-- end ngRepeat: links in homesociallinks -->
         </div>
       </div>
       <div class="H_content_w ng-scope" ng-controller="globalHomeController as globalHomeCtlr">
@@ -695,7 +666,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <ul class="ul_clear">
             <!-- ngIf: ClientId==3 -->
             <li ng-if="ClientId==3" id="tab_PlayerCard" class="topmenucommonhide ng-scope">
-              <a target="_blank" href="https://cr.superbet.gy/" style="color: white; position: relative; top: -8px">Customer Card<span class="palycarRe">Registration</span></a>
+              <a target="_blank" href="https://cr.superbet.gy/">Customer Card<span class="palycarRe">Registration</span></a>
             </li>
             <!-- end ngIf: ClientId==3 -->
             <!-- ngIf: ClientId==1 -->
@@ -875,33 +846,33 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <div>
                 <span id="dot_0" class="active"></span><span id="dot_1" class=""></span><span id="dot_2" class=""></span><span id="dot_3" class=""></span><span id="dot_4" class=""></span><span id="dot_5" class=""></span><span id="dot_6" class=""></span><span id="dot_7" class=""></span><span id="dot_8" class=""></span>
               </div>
-              <ul style="width: 7785px">
-                <li class="active" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3484_LandingPage.jpg">
+              <ul>
+                <li class="active">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3482_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/698171880-3481_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3480_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3479_LandingPage.png">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3477_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3465_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3463_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
-                <li class="" style="width: 865px">
-                  <img src="//cdn2-5e15.kxcdn.com/NewDesign/Images/SlidingImages/LandingPage/3452_LandingPage.jpg">
+                <li class="">
+                  
                 </li>
               </ul>
               <div class="next"></div>
@@ -912,7 +883,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </div>
           <!-- ngIf: YUrl!='' -->
           <div class="H_video ng-scope" ng-if="YUrl!=''" ng-class="{'active':toggleDiv==4}">
-            <iframe class="H_videoIfram" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen="" ng-src="https://player.vimeo.com/video/806779335?h=3a62a1dcc1?wmode=transparent&amp;rel=0&amp;theme=light&amp;color=white&amp;autoplay=0;autohide=1&amp;enablejsapi=1&amp;iv_load_policy=3&amp;version=3&amp;" src="https://player.vimeo.com/video/806779335?h=3a62a1dcc1?wmode=transparent&amp;rel=0&amp;theme=light&amp;color=white&amp;autoplay=0;autohide=1&amp;enablejsapi=1&amp;iv_load_policy=3&amp;version=3&amp;"></iframe>
+            
           </div>
           <!-- end ngIf: YUrl!='' -->
           <div class="H_video_but" ng-click="toggleFun(4)" ng-class="{'active':toggleDiv==4}">
@@ -920,16 +891,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           </div>
         </div>
         <div class="H_product_item_w">
-          <style>
-            .H_product_item_w {
-              position: relative;
-            }
-
-            .new_year_countdown {
-              left: calc(50% + 120px);
-              transform: translateX(-50%);
-            }
-          </style>
+          
           <!-- New Year Celebration Countdown Start-->
 
           <!-- New Year Celebration Countdown end-->
@@ -950,7 +912,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/LiveRoulette.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/LiveRoulette.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -968,7 +930,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/YGTSCG.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/YGTSCG.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -986,7 +948,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/live_bet1.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/live_bet1.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1004,7 +966,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/yGT.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/yGT.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1022,7 +984,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/SPORT_BETTING1.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/SPORT_BETTING1.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1034,7 +996,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                 <!-- ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 --><a ng-click="OpenSlotGameUrl(products.plink )" ng-if="products.plink.indexOf('http') != -1" class="ng-scope"><div class="glowball"></div></a><!-- end ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/egt_games1.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/egt_games1.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1052,7 +1014,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/Vsport.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/Vsport.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1070,7 +1032,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/Superbet_VDG.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/Superbet_VDG.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1088,7 +1050,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/VR1.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/VR1.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1106,7 +1068,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/BlackJack.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/BlackJack.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1124,7 +1086,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/ChickChick.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/ChickChick.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1142,7 +1104,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   <div class="glowball"></div> </a><!-- end ngIf: products.plink.indexOf('http') == -1 -->
                 <!-- ngIf: products.plink.indexOf('http') != -1 -->
 
-                <img ng-src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/VirtualKeno.png?1" src="//cdn2-5e15.kxcdn.com/betting/webportal/Images/ProductLog/VirtualKeno.png?1">
+                
               </div>
             </li>
             <!-- end ngRepeat: products in  globalHomeCtlr.productlist -->
@@ -1214,140 +1176,16 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
   </div>
 
-  <script>
-    window.addEventListener(
-      "DOMContentLoaded",
-      function () {
-        setTimeout(function () {
-          document.getElementById("H_loading").style.display = "none";
-        }, 1000);
-      },
-      true
-    );
-
-    window.addEventListener("resize", windowResize);
-    function windowResize() {
-      var maxWidth, maxHeight;
-      if (window.innerWidth <= 1024) {
-        document.getElementById("H_main").style.transform = "";
-        return;
-      }
-      maxWidth = 1920;
-      maxHeight = 1080;
-
-      var main = document.getElementById("H_main");
-      var main_w = document.getElementById("H_main_w");
-      var $window = window;
-      var width = window.innerWidth;
-      var height = window.innerHeight;
-      var scale;
-      scale = Math.min(width / maxWidth, height / maxHeight);
-      if (width >= maxWidth && height >= maxHeight) {
-        main.style.transform = "";
-        document.getElementById("H_main_w").style.width = "";
-        document.getElementById("H_main_w").style.height = "";
-        return;
-      }
-
-      main.style.transform = "scale(" + scale + ")translate(-50%,0)";
-      main_w.style.width = maxWidth * scale;
-      main_w.style.height = maxHeight * scale;
-    }
-    windowResize();
-    //debugger
-    var im = 0;
-    var imL = 1;
-    var storedimages = null;
-    var setTimer = setInterval(function () {
-      storedimages = localStorage.getItem("background_Banner");
-      if (storedimages != null) {
-        storedimages = JSON.parse(storedimages);
-        document.getElementById("H_main_w").style.background =
-          "url(" + storedimages[0].img + ") no-repeat center center fixed";
-        clearInterval(setTimer);
-      }
-    }, 5000);
-    var setTimerBannerSlider = setInterval(function () {
-      //  debugger;
-      if (storedimages != null) {
-        imL = storedimages.length;
-        var bimg = storedimages[im].img;
-        document.getElementById("H_main_w").style.background =
-          "url(" + bimg + ") no-repeat center center fixed";
-        im += 1;
-        if (imL == im) {
-          im = 0;
-        }
-      }
-      if (storedimages.length <= 1) clearInterval(setTimerBannerSlider);
-    }, 8000);
-  </script>
-  <style>
-    #fund-transfer ul li a {
-      padding: 10px 50px;
-      font-size: 16px;
-    }
-
-    #fund-transfer ul li a > i {
-      font-size: 14px;
-      line-height: 29px;
-    }
-
-    .group_prod {
-      margin: 0 0 0 6px;
-      width: 16px;
-      height: 16px;
-      background-color: #df5c01;
-      text-align: center;
-      line-height: 16px;
-      border-radius: 100%;
-      color: #fff !important;
-    }
-
-    .fa-eye {
-      position: absolute;
-      top: 33px;
-      right: 13px;
-      /*z-index: 9;*/
-    }
-
-    .palycarRe {
-      /*position: absolute;
-            width: 100%;
-            right: 0;
-            top: 61%;
-            max-width: 103px;
-            padding: 10px 5px;
-            line-height: 0;
-            font-size: 12px;
-            color: #fff;
-            background-color: #ff0000;
-            border-radius: 4px;
-            border: 1px solid #d8d801;*/
-      position: absolute;
-      width: 100%;
-      left: 50%;
-      top: 61%;
-      max-width: 103px;
-      padding: 10px 5px;
-      line-height: 0;
-      font-size: 12px;
-      color: #fff;
-      background-color: #ff0000;
-      border-radius: 4px;
-      border: 1px solid #d8d801;
-      text-align: center;
-      transform: translate(-50%, 0);
-    }
-  </style>
-  <div class="main_w" id="appPromo" style="display: none" ng-hide="ShowPromo">
+  
+  
+  <div class="main_w" id="appPromo" ng-hide="ShowPromo">
     <div class="header_wProm">
-      <img src="//cdn2-5e15.kxcdn.com/betting/Images/logo_3.png">
+      
       <div class="home_but" ng-click="Hidepromo()">Home</div>
     </div>
     <div class="content_w">
       <div class="content_w_hEAD">
-        <img src="//cdn2-5e15.kxcdn.com/betting/images/Mobile/Apppromo/icon-96-xhdpi.png" class="app_icon">
+        
         <div class="name_install_but_w">
           <h3>Superbet Android App</h3>
           <ul class="ul_clear install_but_downL">
@@ -1375,7 +1213,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </ol>
       </div>
       <div class="slide_w">
-        <img src="//cdn2-5e15.kxcdn.com/betting/images/Mobile/Apppromo/MobileAppPromomIcon_3.jpg">
+        
       </div>
       <div class="Description_w">
         <h5>Description</h5>
@@ -1395,66 +1233,9 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
   <!--Upload Validation Popups-->
 
   <div class="position-fixed w-100 h-100 _popup_home d-flex ng-hide" ng-show="upldMsgShow">
-    <style>
-      ._popup_DayVal {
-        background-color: rgba(0, 0, 0, 0.7);
-        z-index: 11110;
-      }
+    
 
-      ._popup_DayVal > div {
-        background-color: aliceblue;
-        width: 100%;
-        max-width: 400px;
-      }
-
-      ._popup_DayVal > div ._p_h {
-        background-color: #16cce9;
-      }
-
-      ._asterisk li {
-        list-style: none;
-      }
-
-      ._asterisk li:before {
-        content: "*";
-      }
-
-      ._hypen li {
-        list-style: none;
-      }
-
-      ._hypen li:before {
-        content: "-";
-      }
-
-      ._Dayscolor {
-        color: red;
-      }
-
-      ._mainH {
-        background-color: forestgreen !important;
-        font-size: 10px;
-      }
-
-      ._s_h {
-        background-color: #ec5818;
-      }
-
-      ._RefreshUpldCaptcha {
-        cursor: pointer;
-        font-size: 18px;
-        vertical-align: top;
-        line-height: 0;
-        padding: 15px 10px;
-        margin-top: 12px;
-        display: inline-block;
-        background-color: #ec5818;
-        color: white;
-        border-radius: 2px;
-      }
-    </style>
-
-    <div class="m-auto rounded" style="background-color: white">
+    <div class="m-auto rounded">
       <div class="_p_h rounded-top _mainH">
         <h2 class="px-2 d-flex align-items-center fa-2x mb-0">
           Successfully uploaded
@@ -1484,7 +1265,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                   </p>
                 </div>
               </div>
-              <div class="modal-footer" style="justify-content: center">
+              <div class="modal-footer">
                 <div class="submit_but EmptyValidationBut_JS click_effect_JS m-0" ng-class="{'disableClass': submitLoading}" ng-click="upldMsgShow=false">
                   OK
                 </div>
@@ -1600,853 +1381,15 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         <audio id="player_audio" autoplay ng-if="globalCtlr.newYearStart && globalCtlr.newYearCbrn">
             <source src="https://drive.google.com/uc?export=download&id=1c2p2JYL6C1k06P9iZPZQ6HpM_R2hzEuF">
         </audio>-->
-  <script>
-    function getOS() {
-      var i = navigator.userAgent,
-        n = "";
-      return (
-        i.match(/iPad/i) || i.match(/iPhone/i)
-          ? ((n = "iOS"), i.indexOf("OS "))
-          : i.match(/Windows/i)
-          ? ((n = "iOS"), i.indexOf("OS "))
-          : i.match(/Android/i)
-          ? ((n = "Android"), i.indexOf("Android "))
-          : (n = "unknown"),
-        n
-      );
-    }
-    if (getOS() == "Android") {
-      document.getElementById("appPromo").style.display = "block";
-    }
-  </script>
+  
 
-  <script src="//cdn2-5e15.kxcdn.com/betting/webportal/js/chatjs.js?638145301552211470"></script>
-  <style>
-    .update_mobileno {
-      float: left;
-      width: auto;
-      padding: 0 15px;
-      margin: 15px 0 0 50%;
-      transform: translate(-50%, 0);
-    }
-    /**********************New styles**********************/
+  
+  
+  
 
-    .H_main .LanguageSLanguagectBoxW > div {
-      background: transparent !important;
-    }
+  
 
-    .H_main .LanguageSLanguagectBoxW {
-      right: unset !important;
-      left: 425px;
-    }
+  
 
-    .H_main .LanguageSLanguagectBoxW > div,
-    .LanguageSLanguagectBoxW > div {
-      border-color: transparent !important;
-    }
-
-    .top-header-list {
-      position: absolute;
-      right: 55px;
-      top: 0px;
-    }
-
-    .top-header-list li {
-      list-style: none;
-      float: left;
-      position: relative;
-    }
-
-    .top-header-list li a {
-      font-size: 15px;
-      float: left;
-      position: relative;
-      text-transform: uppercase;
-    }
-
-    .top-header-list li a i {
-      float: left;
-      margin: 24px 10px 0px 31px;
-    }
-
-    .top-header-list .palycarRe {
-      margin-top: 5px;
-      left: 70%;
-    }
-
-    .top-header-list li a:hover,
-    .top-header-list li a:active {
-      color: white;
-      cursor: pointer !important;
-      text-decoration: underline;
-    }
-
-    .top-header-list li > ul {
-      width: 235px;
-      position: absolute;
-      z-index: 13;
-      top: 70px;
-      right: 0px;
-      margin-left: 21px;
-      background: #3a3d42;
-      border: 1px solid white;
-      visibility: hidden;
-    }
-
-    .top-header-list li > ul li {
-      width: 100%;
-      line-height: 35px;
-      border-bottom: 1px solid white;
-    }
-
-    .top-header-list li > ul li a {
-      padding: 0px 5px;
-    }
-
-    .top-header-list li > ul li:before {
-      font: normal normal normal 14px/1 FontAwesome;
-      content: "\f111";
-      color: #ff6a00;
-      position: absolute;
-      right: 10px;
-      margin-top: 11px;
-    }
-
-    .top-header-list li > ul li:hover,
-    .top-header-list li > ul li:active {
-      width: 100%;
-      cursor: pointer;
-      background: #1b1b1b;
-    }
-
-    .top-header-list li:hover ul,
-    .top-header-list li:active ul {
-      visibility: visible;
-    }
-
-    .top-header-list li > ul li:last-child {
-      border-bottom: transparent;
-    }
-
-    .top-header-list li > ul li a {
-      /*font-size: 1rem;*/
-      font-size: 14px;
-    }
-
-    .sprite {
-      background-image: url("https://cdn2-5e15.kxcdn.com/betting/webportal/Images/top-nav.png");
-      background-repeat: no-repeat;
-      display: block;
-    }
-
-    .customer-card {
-      width: 40px;
-      height: 40px;
-      background-position: -5px -5px;
-    }
-
-    .fund-transfer {
-      width: 40px;
-      height: 40px;
-      background-position: -5px -55px;
-    }
-
-    .register {
-      width: 40px;
-      height: 40px;
-      background-position: -5px -105px;
-    }
-
-    .Commonmenuhide {
-      display: block;
-    }
-
-    @media (min-width: 1025px) {
-      .topmenucommonhide {
-        display: none !important;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      .Commonmenuhide {
-        display: none;
-      }
-
-      .LanguageSLanguagectBoxW {
-        left: 240px;
-      }
-
-      .top-header-list {
-        width: 100%;
-        float: left;
-        position: relative !important;
-        z-index: 1;
-      }
-
-      .top-header-list li a {
-        font-size: 14px;
-      }
-
-      .top-header-list li a i {
-        margin: 14px 10px !important;
-      }
-
-      .top-header-list li > ul {
-        top: 45px;
-      }
-
-      .sprite {
-        width: 30px;
-        height: 30px;
-        background-size: 30px;
-        background-position: top;
-      }
-
-      .fund-transfer {
-        background-position-y: -30px;
-      }
-
-      .register {
-        background-position-y: -60px;
-      }
-    }
-
-    @media (max-width: 475px) {
-      .LanguageSLanguagectBoxW {
-        left: 153px !important;
-      }
-
-      .top-header-list li {
-        width: 100% !important;
-      }
-
-      .top-header-list li > ul {
-        right: unset;
-        left: 60px;
-      }
-
-      .top-header-list li a i {
-        margin: 14px 4px !important;
-      }
-    }
-  </style>
-  <style>
-    .H_product_item_w ul li > div a {
-      border-radius: 100%;
-      overflow: hidden;
-    }
-
-    .newIconStyle {
-      overflow: hidden;
-      height: 31%;
-      padding: 0 0;
-      animation: newIconStyleAni 8s infinite;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      max-height: 28px;
-    }
-
-    .newIconStyle > div {
-      border-radius: 100%;
-      background-color: red;
-      margin-top: 2px;
-      height: 300%;
-      position: relative;
-    }
-
-    .newIconStyle > div > span {
-      position: absolute;
-      line-height: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      z-index: 1;
-      color: #fff;
-      top: 4px !important;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    @keyframes newIconStyleAni {
-      0% {
-        transform: rotateY(0deg) scaleY(1);
-      }
-
-      30% {
-        transform: rotateY(50deg) scaleY(0.3);
-      }
-
-      60% {
-        transform: rotateY(0deg) scaleY(1);
-      }
-
-      100% {
-        transform: rotateY(0deg) scaleY(1);
-      }
-    }
-
-    .custom-btn-container {
-      left: 538px;
-      position: absolute;
-      top: 35px;
-    }
-
-    .custom-btn-container > a {
-      font-size: 16px;
-      font-weight: bold;
-      background-color: #ffffff;
-      color: red;
-      padding: 5px 15px;
-      border: 2px solid red;
-      border-radius: 5px;
-    }
-
-    .custom-btn-container > button i {
-      margin-right: 5px;
-    }
-
-    .custom-btn-container > a:hover,
-    .custom-btn-container > a:active {
-      color: white;
-      cursor: pointer;
-      background-color: red;
-    }
-
-    @media only screen and (max-width: 1024px) {
-      .custom-btn-container {
-        left: 300px;
-        top: 21px;
-        z-index: 2;
-      }
-
-      .custom-btn-container > a {
-        font-size: 12px !important;
-      }
-
-      .H_main .LanguageSLanguagectBoxW {
-        left: 205px;
-      }
-
-      .H_left_H {
-        width: 70% !important;
-        float: right !important;
-      }
-    }
-
-    @media only screen and (max-width: 766px) and (min-width: 636px) {
-      .H_main .LanguageSLanguagectBoxW {
-        left: 145px !important;
-      }
-
-      .custom-btn-container {
-        left: 177px !important;
-      }
-    }
-
-    @media only screen and (max-width: 635px) and (min-width: 590px) {
-      .H_main .LanguageSLanguagectBoxW {
-        left: 145px !important;
-      }
-
-      .custom-btn-container {
-        top: 300px !important;
-        left: 0px !important;
-      }
-    }
-
-    @media only screen and (max-width: 589px) and (min-width: 320px) {
-      /*.H_main .LanguageSLanguagectBoxW {
-                left: 145px !important;
-            }*/
-      .custom-btn-container {
-        top: 259px !important;
-        left: 0px !important;
-      }
-    }
-  </style>
-
-  <style>
-    /* 2020 New year Celebration*/
-
-    .title-slide-in .char {
-      opacity: 0.001;
-    }
-
-    .hide {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .remove {
-      display: none !important;
-    }
-
-    .blur {
-      -webkit-filter: blur(12px);
-      filter: blur(12px);
-    }
-
-    .ny-container {
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      pointer-events: none;
-    }
-
-    .loading-init {
-      width: 100%;
-      align-self: center;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .loading-init__status {
-      margin-top: 1em;
-      font-size: 0.8em;
-      opacity: 0.75;
-    }
-
-    .stage-container {
-      overflow: hidden;
-      box-sizing: initial;
-      border: 1px solid #222;
-      margin: -1px;
-    }
-
-    @media (max-width: 840px) {
-      .stage-container {
-        border: none;
-        margin: 0;
-      }
-    }
-
-    .canvas-container {
-      width: 100%;
-      height: 100%;
-      transition: -webkit-filter 0.3s;
-      transition: filter 0.3s;
-      transition: filter 0.3s, -webkit-filter 0.3s;
-    }
-
-    .canvas-container canvas {
-      position: absolute;
-      mix-blend-mode: lighten;
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-    }
-
-    .fr-controls {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      padding-bottom: 50px;
-      display: flex;
-      justify-content: space-between;
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-
-    @media (min-width: 840px) {
-      .fr-controls {
-        visibility: visible;
-      }
-
-      .fr-controls.hide:hover {
-        opacity: 1;
-      }
-    }
-
-    .menu {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: rgba(0, 0, 0, 0.42);
-      transition: opacity 0.3s, visibility 0.3s;
-    }
-
-    .menu__inner-wrap {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      transition: opacity 0.3s;
-    }
-
-    .menu__header {
-      margin-top: auto;
-      margin-bottom: 8px;
-      padding-top: 16px;
-      font-size: 2em;
-      text-transform: uppercase;
-    }
-
-    .menu__subheader {
-      margin-bottom: auto;
-      padding-bottom: 12px;
-      font-size: 0.86em;
-      opacity: 0.8;
-    }
-
-    .menu form {
-      width: 100%;
-      max-width: 400px;
-      padding: 0 10px;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .menu .form-option {
-      display: flex;
-      align-items: center;
-      margin: 16px 0;
-      transition: opacity 0.3s;
-    }
-
-    .menu .form-option label {
-      display: block;
-      width: 50%;
-      padding-right: 12px;
-      text-align: right;
-      text-transform: uppercase;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    .menu .form-option--select select {
-      display: block;
-      width: 50%;
-      height: 30px;
-      font-size: 1rem;
-      font-family: "Russo One", arial, sans-serif;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 0.06em;
-      background-color: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
-    .menu .form-option--select select option {
-      background-color: black;
-    }
-
-    .menu .form-option--checkbox input {
-      display: block;
-      width: 26px;
-      height: 26px;
-      margin: 0;
-      opacity: 0.5;
-    }
-
-    @media (max-width: 840px) {
-      .menu .form-option select,
-      .menu .form-option input {
-        outline: none;
-      }
-    }
-
-    .close-menu-btn {
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-
-    .__btn {
-      opacity: 0.16;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      cursor: default;
-      transition: opacity 0.3s;
-    }
-
-    .btn--bright {
-      opacity: 0.5;
-    }
-
-    @media (min-width: 840px) {
-      .__btn:hover {
-        opacity: 0.32;
-      }
-
-      .btn--bright:hover {
-        opacity: 0.75;
-      }
-    }
-
-    .__btn svg {
-      display: block;
-      margin: auto;
-    }
-
-    .credits {
-      margin-top: auto;
-      margin-bottom: 10px;
-      padding-top: 6px;
-      font-size: 0.8em;
-      opacity: 0.75;
-    }
-
-    .credits a {
-      color: rgba(255, 255, 255, 0.5);
-      text-decoration: none;
-    }
-
-    .credits a:hover,
-    .credits a:active {
-      color: rgba(255, 255, 255, 0.75);
-      text-decoration: underline;
-    }
-
-    .help-modal {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      visibility: hidden;
-      transition-property: visibility;
-      transition-duration: 0.25s;
-    }
-
-    .help-modal__overlay {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      opacity: 0;
-      transition-property: opacity;
-      transition-timing-function: ease-in;
-      transition-duration: 0.25s;
-    }
-
-    .help-modal__dialog {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      max-width: 400px;
-      max-height: calc(100vh - 100px);
-      margin: 10px;
-      padding: 20px;
-      border-radius: 0.3em;
-      background-color: rgba(0, 0, 0, 0.4);
-      opacity: 0;
-      -webkit-transform: scale(0.9, 0.9);
-      transform: scale(0.9, 0.9);
-      transition-property: opacity, -webkit-transform;
-      transition-property: opacity, transform;
-      transition-property: opacity, transform, -webkit-transform;
-      transition-timing-function: ease-in;
-      transition-duration: 0.25s;
-    }
-
-    @media (min-width: 840px) {
-      .help-modal__dialog {
-        font-size: 1.25rem;
-        max-width: 500px;
-      }
-    }
-
-    .help-modal__header {
-      font-size: 1.75em;
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    .help-modal__body {
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      margin: 1em 0;
-      padding: 1em 0;
-      border-top: 1px solid rgba(255, 255, 255, 0.25);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-      line-height: 1.5;
-      color: rgba(255, 255, 255, 0.75);
-    }
-
-    .help-modal__close-btn {
-      flex-shrink: 0;
-      outline: none;
-      border: none;
-      border-radius: 2px;
-      padding: 0.25em 0.75em;
-      margin-top: 0.36em;
-      font-family: "Russo One", arial, sans-serif;
-      font-size: 1em;
-      color: rgba(255, 255, 255, 0.5);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      background-color: rgba(255, 255, 255, 0.25);
-      transition: color 0.3s, background-color 0.3s;
-    }
-
-    .help-modal__close-btn:hover,
-    .help-modal__close-btn:active,
-    .help-modal__close-btn:focus {
-      color: #fff;
-      background-color: #09f;
-    }
-
-    .help-modal.active {
-      visibility: visible;
-      transition-duration: 0.4s;
-    }
-
-    .help-modal.active .help-modal__overlay {
-      opacity: 1;
-      transition-timing-function: ease-out;
-      transition-duration: 0.4s;
-    }
-
-    .help-modal.active .help-modal__dialog {
-      opacity: 1;
-      -webkit-transform: scale(1, 1);
-      transform: scale(1, 1);
-      transition-timing-function: ease-out;
-      transition-duration: 0.4s;
-    }
-
-    .hide {
-      display: none;
-    }
-
-    /*Fire work End*/
-  </style>
-
-  <style>
-    ._popup_day {
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 11110;
-    }
-
-    ._popup_day > div {
-      background-color: aliceblue;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .popup_day > div .p_h {
-      background-color: #16cce9 !important;
-    }
-
-    ._asterisk li {
-      list-style: none;
-    }
-
-    ._asterisk li:before {
-      content: "*";
-    }
-
-    ._hypen li {
-      list-style: none;
-    }
-
-    ._hypen li:before {
-      content: "-";
-    }
-
-    ._Dayscolor {
-      color: red;
-    }
-
-    .previous {
-      text-align: center;
-    }
-
-    .next {
-      text-align: center;
-    }
-
-    .H_logo_w .euro20 {
-      position: absolute;
-      left: 560px;
-      background: linear-gradient(to bottom, #30a0ab, #27969f);
-      font-size: 16px;
-      height: 45px;
-      line-height: 45px;
-      padding: 0 13px;
-      border-radius: 27px;
-      top: 16px;
-      z-index: 2;
-    }
-
-    @media (max-width: 1024px) {
-      .H_logo_w .euro20 {
-        left: 243px;
-        font-size: 12px;
-        height: 36px;
-        line-height: 36px;
-        padding: 0 13px;
-        top: 9px;
-      }
-    }
-
-    @media (max-width: 766px) {
-      .H_logo_w .euro20 {
-        left: 172px;
-      }
-    }
-
-    @media (max-width: 590px) {
-      .H_logo_w .euro20 {
-        left: 50%;
-        transform: translateX(-50%);
-        top: 300px;
-      }
-    }
-
-    @media (max-width: 490px) {
-      .H_logo_w .euro20 {
-        left: 50%;
-        transform: translateX(-50%);
-        top: 274px;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      .H_product_item_w ul {
-        padding-top: 75px;
-      }
-    }
-
-    .uib-datepicker-popup
-      table
-      thead
-      tr:first-child
-      th:first-child
-      button:before {
-      content: "\f053";
-      display: inline-block;
-      font: normal normal normal 14px/1 FontAwesome;
-    }
-
-    .uib-datepicker-popup
-      table
-      thead
-      tr:first-child
-      th:last-child
-      button:before {
-      content: "\f054";
-      display: inline-block;
-      font: normal normal normal 14px/1 FontAwesome;
-    }
-  </style>
-
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.24/webcam.min.js?2:22 AM"></script>
+  
 

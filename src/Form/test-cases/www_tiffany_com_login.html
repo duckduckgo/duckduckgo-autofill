@@ -1,9 +1,10 @@
 <!--
   https://www.tiffany.com/Customer/Account/SignIn.aspx
+  rank: 9287
   testRunId: 66
   testResultId: 239731
 -->
-<form name="frmSignIn" method="post" action="./SignIn.aspx" id="frmSignIn" class="validateForm" novalidate="novalidate" data-ddg-formtype="sign in">
+<form name="frmSignIn" method="post" action="./SignIn.aspx" id="frmSignIn" class="validateForm" novalidate="novalidate">
   <div>
     <input type="hidden" name="__UrlReferrer" id="__UrlReferrer">
     <input type="hidden" name="isAjaxEnabled" id="isAjaxEnabled" value="False">
@@ -11,127 +12,15 @@
     <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="iMbXfFjFyXeZnBcHqzPyc7MQZy4zUTQxhSRGtZjyV8Ha6VRcAPKTq10/AbMfaSLhmKlUOhVM2cek2DKOgeXhPyL492I=">
   </div>
   <h1 class="visually-hidden">Sign In</h1>
-  <script>
-    var emailsignupregex =
-      /^\s*[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\s*$/i;
-    var LABEL_ITEM_NOT_ADDED =
-      "Your item could not be added at this time. Please try again later.";
-    var LABEL_ADD_TO_SHOPPING_BAG = "Add to Bag";
-    var LABEL_GO_TO_SHOPPING_BAG = "Go to Shopping Bag";
-    var LABEL_ADD_TO_SAVED_ITEMS = "Save This Item";
-    var LABEL_GO_TO_SAVED_ITEMS = "Go to Saved Items";
-    var LABEL_ADDED_TO_SAVED_ITEMS = "Added to Saved Items";
-    var LABEL_SHOW_DETAILS = "Show Details";
-    var LABEL_HIDE_DETAILS = "Hide Details";
-    var LABEL_REMOVE = "Remove";
-    var LABEL_REMOVED_FROM_SAVED_ITEMS = "This Item has been removed";
-    var LABEL_FIND_STORES = "Find Stores";
-    var LABEL_EMAIL_ME = "Notify Me";
-    var LABEL_OUT_OF_STOCK = "Currently Unavailable";
-    var MSG_PASWORD_EXPIRE = "Your password will expire after # day(s).";
-    var showInlineBags = true;
-    var previewMinVersion = "";
-    var previewDate = "";
-    var userIPAddress = "";
-    var isPreviewVersion = "False";
-    var isDisplayPRBanner = "False";
-    var passwordExpiryDays = "";
-    function readHeaderCookie(name) {
-      var nameEQ = name + "=";
-      var ca = document.cookie.split(";");
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == " ") c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-      }
-      return null;
-    }
-    function setHeaderCookie(name, value) {
-      var futdate = new Date();
-      var expdate = futdate.getTime();
-      expdate += 364 * 24 * 60 * 60 * 1000;
-      futdate.setTime(expdate);
-      var newCookie = name + "=" + value + "; path=/;";
-      newCookie += "expires=" + futdate.toGMTString();
-      window.document.cookie = newCookie;
-    }
-    function setHashCookie() {
-      var hash = window.location.hash;
-      if (hash != null && hash != "") {
-        setHeaderCookie("LastURLHash", hash);
-      } else {
-        setHeaderCookie("LastURLHash", "");
-      }
-    }
-    var locationsShareTokenServiceURL = "/Default.aspx/AddPreviewShareLink";
-    var msgInlineBagNoItems = "Your shopping bag is empty.";
-    var msgInlineSavedNoItems = "You currently have no saved items.";
-    var inlineItemHTML =
-      '<img src="$imgSrc$" /><div class="itemHover"><a class="type-cta avenir" href="https://www.tiffany.com$friendlyUrl$$searchParams$$bagType$">$viewdetails$</a>$removeItem$</div>';
-    var inlineItemEmailHTML = '<span class="l4">$email$</span><br />';
-    var inlineItemTitlePrice =
-      '<span class="l4">$title$</span><br /><div class="price">$price$</div>';
-    var inlineItemRingHTML =
-      '<div class="l6">$sizelabel$ &nbsp;$ringsize$</div>';
-    var inlineItemEngravingHTML =
-      '<div class="inline-engraving"><span class="l6 engraving-type">$engravingType$ &nbsp;$engravingInitials$</span><br/><span class="l6 engraving-style">$engravingStyle$</span><br/><span class="l6">$engravingPrice$</span></div>';
-    var inlineItemNoEngravingHTML =
-      '<div class="inline-engraving"><span class="l6">No Engraving Added</span></div>';
-    var inlineQtyHTML = '<div class="l6">Quantity&nbsp;&nbsp;$qtyAmt$</div>';
-    var inlineAddToBag =
-      '<a class="l6 add" data-sku="$sku$" data-selectedSku = "$selectedSku$" data-itemID="$itemID$" data-itemDesc="$itemDesc$" data-groupSku="$groupSku$" data-bag-type="$bagtype$" onclick="moveSavedItemToShoppingBag(this);" href="#">Add to Bag</a> / ';
-    var inlineEmailMe =
-      '<a class="l6 emailMe" data-sku="$sku$" data-selectedSku = "$selectedSku$" data-groupSku="$groupSku$" onclick="openEmailMeOverlay(this); return false;" href="#">' +
-      LABEL_EMAIL_ME +
-      "</a> / ";
-    var inlineOutOfStock =
-      '<div class="outOfStock">' + LABEL_OUT_OF_STOCK + "</div>";
-    var inlineRemoveItem =
-      '<a href="#" data-bag-type="$bagtype$" data-sku="$sku$" data-itemID="$itemID$" class="type-cta avenir remove">Remove</a>';
-    var inlineBagNoItems =
-      '<div class="sterling-display type-b4">' +
-      msgInlineBagNoItems +
-      '</div><div style="padding-top:25px;"><a class="btn" href="/gifts/most-popular">Shop Most Popular</a>';
-    var inlineSavedNoItems =
-      '<div class="no-item-sb sterling-display type-b4 "><div class="info-box-sb"><div>' +
-      msgInlineSavedNoItems +
-      '</div> <div>To view items you saved to your account, please <a class="type-cta avenir" onclick="TrackInlineSavedItemsLinkClick(&apos;Inline Saved Items&apos;,&apos;Sign In&apos;)" href="/Customer/Account/SignIn.aspx?destYA=true">sign in</a>.</div></div></div>';
-    var ringSizeLabel = "Ring Size";
-    var chainLengthLabel = "Chain Length";
-    var genericSizeLabel = "Size";
-    var contentForInlineMainContainer =
-      '<div class="itemCarousel flex-item apply-touch-carousel" data-arrow-type="minimal" data-scroll="noScroll" style="height:100%;"><div class="container" style="height:100%"></div></div>';
-    var infoBoxContent =
-      "<div style='$hiddenShipping$ sterling-display type-b4'>$shippingType$<div class='type-eb1-i' style='$hiddenDate$'>$deliveryDate$</div></div><div style='$hiddenNeed$'><a href='/Customer/ShoppingBag.aspx?isMenu=1&hdr=1&needItSooner=1' class='type-cta avenir'>Need it Sooner? </a></div><div>Estimated Total: $price$</div>";
-    var veiwDetailsText = "View Details";
-    var bannerLearnMore = "Learn More";
-  </script>
-  <script lang="javascript">
-    var url=(window.location!=window.parent.location)?document.referrer:document.location;var trustedSiteUrls="uxanalytics.content-square.fr";var isTrustedSite=false;if(self==top){isTrustedSite=true;}else{var res=trustedSiteUrls.split(" ");for(var i=0;i<res.length;i++){if(res[i].trim()!=''&&url.indexOf(res[i])>-1){isTrustedSite=true;break;}}}if(isTrustedSite){document.documentElement.style.display='block';}else{top.location=self.location;top.location.href=window.location.href;}
-  </script>
-  <script type="application/ld+json">
-    {
-      "@context": "http://schema.org",
-      "@type": "Organization",
-      "name": "Tiffany & Co.",
-      "url": "http://www.tiffany.com",
-      "sameAs": [
-        "http://www.facebook.com/Tiffany",
-        "http://instagram.com/tiffanyandco",
-        "http://www.pinterest.com/tiffanyandco",
-        "http://www.twitter.com/tiffanyandco",
-        "http://tiffanyandco.tumblr.com/",
-        "http://www.youtube.com/officialtiffanyandco",
-        "https://plus.google.com/117880747798344936145/"
-      ]
-    }
-  </script>
+  
+  
+  
   <div class="image-overlay">
     <div class="image-overlay-inner">
       <a href="#" class="close">
-        <img src="/shared/images/icons/close.png" width="25" height="25" alt="×"></a>
+        </a>
       <div class="large-image">
-        <img id="overlay-large" alt="" src="" style="display: none">
+        
         <div id="overlay-module"></div>
       </div>
       <div class="thumbs"><div></div></div>
@@ -139,15 +28,15 @@
   </div>
   <div id="shop-tile-overlay">
     <div class="miniPDP">
-      <img class="loading" src="/shared/images/loading.gif">
+      
     </div>
     <a href="#" class="close"><i class="icon-font" aria-hidden="true">delete_large</i><br></a>
     <div class="list">
       <hr class="small">
       <div class="type-h5 shop-tile__Shop-title">Shop</div>
-      <div class="rollbar" style="overflow: hidden; position: relative">
-        <div class="rollbar-path-vertical" style="z-index: 2; display: none; top: 10px; height: 68px">
-          <div class="rollbar-handle" style="height: 30%; opacity: 1"></div>
+      <div class="rollbar">
+        <div class="rollbar-path-vertical">
+          <div class="rollbar-handle"></div>
         </div>
       </div>
     </div>
@@ -155,19 +44,19 @@
   <div id="grid-popup">
     <a href="#" class="close">×<br></a>
     <div class="image">
-      <a href="#"><img src="" alt=""></a>
+      <a href="#"></a>
       <a href="#" class="saved-heart-add jq-add-saved"><i class="icon-font">like</i></a>
       <a href="#" class="saved-heart-remove jq-remove-saved"><i class="icon-font">like_solid</i></a>
     </div>
     <div class="info">
-      <h2 class="t3" style="display: none"></h2>
+      <h2 class="t3"></h2>
       <div class="grouping">
         <span class="description t8"><a href="#" id="item_link" class="no_hover_class"></a></span>
         <span class="price"></span><br>
         <div class="group-options l6">
           <label>Size</label>
           <span class="styled-select">
-            <select class="select--has-value" title="overall type: NUMERIC_QUANTITY
+            <select class="select--has-value" autofill-information="overall type: NUMERIC_QUANTITY
 server type: NO_SERVER_DATA
 heuristic type: NUMERIC_QUANTITY
 label: Size
@@ -178,30 +67,19 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 5" autofill-information="overall type: NUMERIC_QUANTITY
-server type: NO_SERVER_DATA
-heuristic type: NUMERIC_QUANTITY
-label: Size
-parseable name: 
-section: _0_5
-field signature: 4203909268
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542609">
+field renderer id: 5" data-ddg-testresultelementid="542609">
               <option value="6">6</option>
               <option value="8">8</option>
             </select>
           </span>
         </div>
       </div>
-      <div class="out-of-stock" style="display: none">
+      <div class="out-of-stock">
         CURRENTLY UNAVAILABLE ONLINE
       </div>
       <div class="error master"></div>
       <a href="#" class="btn add">Add To Bag</a>
-      <a href="#" class="btn emailMe" style="display: none">Notify When Available</a>
+      <a href="#" class="btn emailMe">Notify When Available</a>
       <br>
       <div class="item-links l6">
         <a class="details" href="#">View Details</a>
@@ -211,7 +89,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
   <div class="modal-popup">
     <a href="#" class="close">×</a>
     <div class="content">
-      <img class="loading" src="https://www.tiffany.com/shared/images/loading.gif">
+      
     </div>
   </div>
   <div id="gray-overlay"></div>
@@ -226,7 +104,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
         <span class="toast-bag">This item has been added to your Shopping Bag.</span>
       </h3>
       <div class="toast-info">
-        <img class="product-image" src="">
+        
         <div class="flex-block">
           <div class="flex-item col-6">
             <a href="/Customer/wishlist/WishList.aspx" class="btn-aem btn-aem--secondary toast-saved">
@@ -253,704 +131,19 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
       </div>
     </div>
   </div>
-  <link rel="stylesheet" href="/etc.clientlibs/tiffanynco-platform/clientlibs/header.min.css">
-  <script language="javascript" src="//s7d9.scene7.com/s7viewers/html5/js/BasicZoomViewer.js"></script>
-  <script>
-    (function () {
-      if (window.NodeList && !NodeList.prototype.forEach) {
-        var head = document.getElementsByTagName("head")[0];
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src =
-          "https://polyfill.io/v3/polyfill.min.js?features=default%2Ces2015%2Ces2016%2Ces6%2Ces5%2CArray.prototype.forEach";
-        head.appendChild(script);
-        NodeList.prototype.forEach = Array.prototype.forEach;
-      }
-    })();
-  </script>
-  <script>
-    window.tiffany = {};
-    window.tiffany.apiUrl = {
-      itemDetailsEndPoint:
-        "/productsprocessapi/api/process/v1/products/group/items/details",
-      productDetailsEndPoint:
-        "/productsprocessapi/api/process/v1/products/item/complete",
-      productDetailsEndPointForPrice:
-        "/productssystemapi/api/system/v1/products/item/price",
-      groupProductDetailsEndPointForPrice:
-        "/productssystemapi/api/system/v1/products/group/price",
-      productsListEndPoint:
-        "/productsprocessapi/api/process/v1/products/itemlist",
-      storeEndPoint: "/storessystemapi/api/system/v1/stores/store",
-      productTypeAheadSearchEndPoint:
-        "/ecomproductsearchsystemapi/api/system/v1/productsearch/typeahead",
-      standardCustomerEndPoint:
-        "/customersystemapi/api/system/v1/customers/customer/create/standard",
-      skuEcomAddEndPoint:
-        "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/sku-ecom/add",
-      shoppingBagListEndPoint:
-        "/shoppingbagssystemapi/api/system/v1/shoppingbags/item/list",
-      masterCategoryDetails:
-        "/mastercategoriessystemapi/api/system/v1/mastercategories/mastercategory",
-      masterCategoriesListEndPoint:
-        "/mastercategoriessystemapi/api/system/v1/mastercategories/list",
-      storeByCountryEndPoint:
-        "/storessystemapi/api/system/v1/stores/store/storebycountry",
-      categoryItemListDetails:
-        "/categoriessystemapi/api/system/v1/categories/category/itemlist",
-      storeHoursEndPoint: "/storessystemapi/api/system/v1/stores/store/hours",
-      productGuidedSearchEcomEndPoint:
-        "/ecomproductsearchprocessapi/api/process/v1/productsearch/ecomguidedsearch",
-      productAvailabilitySearchEcomEndPoint:
-        "/ecomproductsearchprocessapi/api/process/v1/productsearch/availabilitysearch",
-      storeCompleteEndPoint:
-        "/storessystemapi/api/system/v1/stores/store/complete",
-      storeSEOEndPoint: "/storessystemapi/api/system/v1/stores/store/seo",
-      categoryListEndPoint:
-        "/categoriessystemapi/api/system/v1/categories/list",
-      categoryDetailEndPoint:
-        "/categoriessystemapi/api/system/v1/categories/category",
-      storeServiceEndPoint:
-        "/storessystemapi/api/system/v1/stores/store/services",
-      productGuidedSearchPkbEndPoint:
-        "/pkbproductguidedsearchsystemapi/api/system/v1/pkbproductsearch/guidedsearch",
-      groupDetailsEndPoint:
-        "/productsprocessapi/api/process/v1/products/group/complete",
-      sessionConfigEndPoint:
-        "/customerssystemapi/api/system/v1/customers/customer/create/anonymous",
-      wishListAddEndPoint:
-        "/saveditemsprocessapi/api/process/v1/saveditems/item/add",
-      wishListDeleteEndPoint:
-        "/saveditemsprocessapi/api/process/v1/saveditems/item/delete",
-      wishListGetEndPoint:
-        "/saveditemsprocessapi/api/process/v1/saveditems/item/list",
-      taxonomyEndPoint:
-        "/ecomproductsearchprocessapi/api/process/v1/productsearch/taxonomy",
-      fiisEnabledStoreEndPoint:
-        "/finditeminstoresprocessapi/api/process/v1/fiis/enabledstores/list",
-      fiisAvailabilityInStoreEndPoint:
-        "/finditeminstoresprocessapi/api/process/v1/fiis/product/availabilitybystores/list",
-      engravingItemEndPoint:
-        "/servicingssystemapi/api/system/v1/servicings/item/services",
-      skuEcomAddGroupTypeOneEndPoint:
-        "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/group-type1/add",
-      skuEcomAddGroupTypeTwoEndPoint:
-        "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/group-type2/add",
-      browseGridProductImageUrl:
-        "http://media.tiffany.com/is/image/Tiffany/<Preset>/<ImageName>.jpg",
-      preferredStoreViewEndPoint:
-        "/customerssystemapi/api/system/v1/customers/customer/preferredstore/view",
-      preferredStoreAddEndPoint:
-        "/customerssystemapi/api/system/v1/customers/customer/preferredstore/add",
-      dropHintUrl:
-        "/content/tiffany-n-co/jcr:content/servlets/dropahintemail.email.html",
-      savehint:
-        "/saveditemsprocessapi/api/process/v1/saveditems/dropahint/save",
-      clientid: "YjlhOGJmZWYxMjhiNDk1ZjhmMTdmYjNjZGViYTU1NTU=",
-      secret: "NzM4MDUyMTQ0MjNkNEFhZWJDOTZhRDU1ODFkYmNmMGI=",
-      engagementGroupCompleteEndpoint:
-        "/productsprocessapi/api/process/v1/products/engagementgroup/complete",
-      engagementGroupSearchEndpoint:
-        "/ecomproductsearchprocessapi/api/process/v1/productsearch/engagementgroupsearch",
-      giftCardCheckBalanceUrl:
-        "/giftcardsprocessapi/api/process/v1/giftcards/balance",
-      wishListSystemUrl:
-        "/saveditemssystemapi/api/system/v1/saveditems/item/list",
-      shoppingBagCountUrl:
-        "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/count",
-      shoppingBagSystemUrl:
-        "/shoppingbagssystemapi/api/system/v1/shoppingbags/item/list",
-      nearbyStoreEndPoint:
-        "/storesprocessapi/api/process/v1/stores/store/neareststore",
-      listbycountryConfig:
-        "/storessystemapi/api/system/v1/stores/listbycountry",
-      supplementalServiceUrl:
-        "/productsupplementalinfossystemapi/api/system/v1/product/items/supplemental",
-      distributionInvRequest:
-        "/productinventoriessystemapi/api/system/v1/productinventories/item/distributioncenter",
-      onOrderStatusRequest:
-        "/productinventoriessystemapi/api/system/v1/productinventories/item/purchaseorder",
-      allStoresUrl: "/storessystemapi/api/system/v1/stores/list",
-      retailInventoryUrl:
-        "/productinventoriessystemapi/api/system/v1/productinventories/item/retail",
-      shoppingBagUpdateApi:
-        "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/update",
-      eStoreLoginUrl: "/internal/estore/estoresignin.aspx",
-      eStoreValidationUrl:
-        "/customer/account/signin.aspx/EstoreValidateFormsAuthentication",
-      salesforceCustomerServiceFormUrl:
-        "https://tiffanyandcompany.my.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8",
-      salesforceOrgId: "00D3h000002Cr1f",
-      salesforceSiteId: "00N3h00000I8IQU",
-      salesforceSubTypeId: "00N3h00000I8IQY",
-      salesforceTypeId: "00N3h00000I8IQa",
-      salesforceKanaNameId: "00N3h00000J0BTn",
-    };
-    window.tiffany.isAuthormode = false;
-    window.tiffany.authoredContent = {
-      tiffanyDomain: "",
-      skuServiceConfig: { method: "post", url: "productsListEndPoint" },
-      categoryServiceConfig: {
-        method: "post",
-        url: "productGuidedSearchEcomEndPoint",
-      },
-      richRelevanceSessionId: "rr_session_id",
-      salesServiceCookieDomain: "www.tiffany.com",
-      sessionConfig: {
-        method: "post",
-        payload: { siteId: "1" },
-        url: "sessionConfigEndPoint",
-      },
-      canadaEnglishDomain: "https://www.tiffany.ca",
-      shoppingBagSystemRequest: {
-        method: "post",
-        payload: {
-          webCustomerId: "",
-          priceMarketID: "1",
-          assortmentID: "101",
-          siteid: "1",
-        },
-        url: "shoppingBagSystemUrl",
-      },
-      wishlistConfig: {
-        add: {
-          method: "post",
-          payload: {
-            priceMarketId: "1",
-            assortmentId: "101",
-            listTypeId: "1",
-            siteId: "1",
-          },
-          url: "wishListAddEndPoint",
-        },
-        get: {
-          method: "post",
-          payload: { priceMarketId: "1", IsInline: "false", siteId: "1" },
-          url: "wishListGetEndPoint",
-        },
-        delete: {
-          method: "post",
-          payload: { siteId: "1" },
-          url: "wishListDeleteEndPoint",
-        },
-      },
-      requestAuthHeaders: { secretkey: "secret", clientkey: "clientid" },
-      canadaEnglishCookieName: "selectedLanguage",
-      parallaxConfig: { duration: 1000, offset: 100 },
-      salesServiceCookieName: "salesSrvSite",
-      wishlistSystemConfig: {
-        method: "post",
-        payload: {
-          webCustomerId: "",
-          priceMarketID: "1",
-          assortmentID: "101",
-          siteid: "1",
-        },
-        url: "wishListSystemUrl",
-      },
-      salesServiceDefaultHost: "www.tiffany.com",
-      preferredStoreConfig: {
-        getStoreConfig: {
-          method: "post",
-          payload: { siteId: "1" },
-          url: "preferredStoreViewEndPoint",
-        },
-        setStoreConfig: {
-          method: "post",
-          payload: { siteId: "1" },
-          url: "preferredStoreAddEndPoint",
-        },
-        cookieName: "preferredStore",
-      },
-      canadaEnglishCookieValue: "",
-      marketingImagePreset: "EcomBrowseL",
-      expiryYears: 20,
-      shoppingBagCountRequest: {
-        method: "post",
-        payload: {
-          webCustomerId: "",
-          priceMarketID: "1",
-          assortmentID: "101",
-          siteid: "1",
-        },
-        url: "shoppingBagCountUrl",
-      },
-      richRelevanceUserId: "mysid2",
-      salesServiceRedirectUrl: "/sales-service-redirector",
-      productDetailsConfig: {
-        method: "post",
-        payload: { priceMarketId: "1", assortmentId: "101", siteId: "1" },
-        url: "productDetailsEndPointForPrice",
-        groupUrl: "groupProductDetailsEndPointForPrice",
-      },
-      imagePreset: "EcomBrowseM",
-      customDesignsSystemRequest: {
-        method: "post",
-        payload: {
-          webCustomerId: "",
-          priceMarketID: "1",
-          assortmentID: "101",
-          siteid: "1",
-        },
-        url: "customWishListSystemUrl",
-      },
-      findAStoreConfig: {
-        availabilitybystores: "fiisAvailabilityInStoreEndPoint",
-        enabledStoresURL: "fiisEnabledStoreEndPoint",
-      },
-      isEstore: false,
-      sessionCookieName: "mysid2",
-      activeGroupPattern: ",3,",
-      salesServiceCookiePath: "/",
-      selLanCookExpDate: 20,
-    };
-    if (typeof window.tiffany.labels === "undefined") {
-      window.tiffany.labels = {};
-    }
-    window.tiffany.labels = {
-      addToBag: "Add to Bag",
-      addedToBag: "Added to Bag",
-      goToBag: "Go to Bag",
-    };
-    window.tiffany.labels.searchLabel = "Search";
-    window.tiffany.labels.searchModalCloseLabel = "Search Close";
-    window.tiffany.labels.searchButtonLabel = "Search Button";
-    window.tiffany.labels.selectedLabel = "Selected";
-    window.tiffany.authoredContent.typeSearchConfig = {
-      searchQuickLinks: {
-        heading: "Discover",
-        results: [
-          {
-            name: "Jewelry",
-            analyticsLinkName: "jewelry",
-            id: 1,
-            analyticsLinkType: "external",
-            url: "https://www.tiffany.com/jewelry/",
-            target: "_self",
-          },
-          {
-            name: "Gifts",
-            analyticsLinkName: "gifts",
-            id: 2,
-            analyticsLinkType: "external",
-            url: "https://www.tiffany.com/gifts/",
-            target: "_self",
-          },
-          {
-            name: "Store Locator",
-            analyticsLinkName: "jewelry-stores",
-            id: 3,
-            analyticsLinkType: "external",
-            url: "https://www.tiffany.com/jewelry-stores/",
-            target: "_self",
-          },
-        ],
-      },
-      searchFooterData:
-        "<div class='tiffany-rte'><p><b>Need Help?<\/b><\/p>\r\n<p>Contact&nbsp;<a href='/content/tiffany-n-co/www/us/en_us/customer-service.html'>Client Care<\/a><\/p>\r\n<p>Call <span class='text-phnumber'>800 843 3269<\/span><\/p>\r\n<\/div>",
-      telephoneNumber: "800 843 3269",
-      gettypeaheadUrl: {
-        method: "post",
-        payload: { searchTerms: "", assortmentID: "101", siteId: "1" },
-        url: "productTypeAheadSearchEndPoint",
-      },
-      config: {
-        desktopPlaceholder: "Search Tiffany & Co.",
-        quickLinksMobileEnabled: false,
-        mobilePlaceholder: "Search...",
-        searchHistoryHeading: "Search history",
-        searchUrl: "https://www.tiffany.com/search/?q=",
-        hideMobileSearchLinks: false,
-      },
-    };
-    window.tiffany.authoredContent.pinImage =
-      "//media.tiffany.com/is/content/tiffanydm/Map-pin-Blue?$tile$&wid=64&hei=82";
-    window.tiffany.locale = "en_us";
-    window.tiffany.regionCode = "us";
-    window.tiffany.authoredContent.searchRequest = {
-      url: "productGuidedSearchEcomEndPoint",
-      method: "POST",
-      payload: {
-        assortmentID: 101,
-        sortTypeID: 1,
-        navigationFilters: [101],
-        recordsOffsetNumber: 0,
-        recordsCountPerPage: 60,
-        priceMarketID: "1",
-        searchModeID: 1,
-        siteid: 1,
-        searchTerms: "",
-        isPreviewMode: false,
-      },
-    };
-    window.tiffany.authoredContent.servicingSystemApiEndPoint = {
-      url: "/servicingssystemapi/api/system/v1/servicings/services",
-      method: "POST",
-    };
-    window.tiffany.authoredContent.assortmentID = "101";
-    window.tiffany.authoredContent.siteID = "1";
-    if (typeof window.tiffany.authoredContent === "undefined") {
-      window.tiffany.authoredContent = {};
-    }
-    window.tiffany.labels.engraving = {
-      cta: "Add Engraving",
-      heading: "Personalize your design with a choice of engraving. ",
-      subHeading: "",
-      orderBy: "",
-      isOrderByRte: true,
-      deliveryHeading: "<h5>Shipping &amp; Returns</h5>\r\n",
-      isDeliveryHeadingRte: true,
-      deliveryDescription:
-        "<p><span class='body-light-santral'>Please allow an additional 1-2 days for delivery of standard engraved items and an additional 3-4 days for delivery of monogrammed and hand-engraved items. </span></p>\r\n<p> </p>\r\n<p><span class='body-light-santral'>Please note that engraved items may not be returned or exchanged.</span></p>\r\n<p><span class='body-light-santral'> </span></p>\r\n<p><span class='body-light-santral'>Looking for something more unique? Learn about our specialized engraving and customization services by calling Client Services at <span class='text-phnumber'>800 843 3269.</span></span></p>\r\n",
-      deliveryDescriptionNumber: "800 843 3269",
-      isDeliveryDescriptionRte: true,
-      engravingTypeHeading: "Choose your type of engraving",
-      initialsInputHeading: "Enter your initials",
-      stylesHeading: "Choose a font",
-      initials: {
-        placeHolderOne: "C",
-        placeHolderTwo: "L",
-        placeHolderThree: "T",
-        inpLabelOne: "First initial",
-        inpLabelTwo: "Second initial",
-        inpLabelThree: "Third initial",
-        invalidCharacters:
-          "Three letters are required. No symbols or special characters are accepted. ",
-        nonMonogramCharacters:
-          "Invalid symbol or character entered. Only letters are accepted.",
-      },
-      backBtn: "Back",
-      nextBtn: "Next",
-      confirmationHeading:
-        "<div class='tiffany-rte'><p>You’re almost done. Review your engraving and confirm. </p>\r\n</div>",
-      isConfirmationHeadingRTE: true,
-      backToEdit: "Go back and edit",
-      startOver: "Start over",
-      finishButtonLabel_tif_t: "Add to Bag",
-      addToBag: "Finish and add to bag",
-      symbolsHeading: "Choose a symbol",
-      invalidCharacters:
-        "Three letters are required. No symbols or special characters are accepted. ",
-      nonMonogramCharacters:
-        "Invalid symbol or character entered. Only letters are accepted.",
-      icon: "//media.tiffany.com/is/content/tiffanydm/Personalization?$tile$&",
-      editEngraving: {
-        label: "Update Bag",
-        closeAriaLabel: "Close",
-        ariaLabel: "Update Bag ",
-      },
-      custom: {
-        label: "Custom Engraving",
-        component: "CUSTOM_COMPONENT",
-        heading: "Custom Engraving",
-        orderBy: "3",
-        description:
-          "<p>Tiffany’s hand engravers work closely with clients to make sure each custom hand-engraved piece is a singular work of art. From an original drawing to a significant date or meaningful message, anything is possible.<br />\r\n</p>\r\n",
-        isDescriptionRTE: true,
-        options: [
-          {
-            altText: "Custom Engraving Example",
-            sources: [],
-            defaultSrc:
-              "//media.tiffany.com/is/image/tiffanydm/CustomEngraving_Example_1?$tile$&wid=960&hei=960",
-            hiddenOnError: true,
-          },
-          {
-            altText: "Custom Engraving Example",
-            sources: [],
-            defaultSrc:
-              "//media.tiffany.com/is/image/tiffanydm/CustomEngraving_Example_2?$tile$&wid=960&hei=960",
-            hiddenOnError: true,
-          },
-          {
-            altText: "Custom Engraving Example",
-            sources: [],
-            defaultSrc:
-              "//media.tiffany.com/is/image/tiffanydm/CustomEngraving_Example_3?$tile$&wid=960&hei=960",
-            hiddenOnError: true,
-          },
-          {
-            altText: "Custom Engraving Example",
-            sources: [],
-            defaultSrc:
-              "//media.tiffany.com/is/image/tiffanydm/CustomEngraving_Example_4?$tile$&wid=960&hei=960",
-            hiddenOnError: true,
-          },
-        ],
-        helpConfig: {
-          informationTextRTE:
-            "<div class='tiffany-rte'><p>For more information on custom engraving or to place an order, please call Client Services at <a href=\"tel:8008433269.\">800 843 3269</a>.</p>\r\n</div>",
-          telephoneNumber: "800 843 3269",
-        },
-        cta: {
-          text: "Contact us",
-          link: "https://www.tiffany.com/customer-service/",
-          target: "",
-        },
-      },
-      closeAriaLabel: "Close",
-    };
-    window.tiffany.labels.currency = "$";
-    window.tiffany.authoredContent.engraving = {
-      engravingMap: [
-        {
-          label: "Initials",
-          component: "INITIALS_COMPONENT",
-          orderBy: "1",
-          categories: [
-            {
-              serviceTypeId: 1,
-              orderBy: "1",
-              label: "Standard Engraving",
-              description:
-                "<p>Standard engraving uses a machine to expertly carve a design into your metal piece.</p>\r\n",
-              isRte: "true",
-            },
-            {
-              serviceTypeId: 15,
-              orderBy: "2",
-              label: "Hand Engraving",
-              description:
-                "<p>Hand engraving is a centuries-old craft that produces a more deeply etched design.</p>\r\n",
-              isRte: "true",
-            },
-            {
-              serviceTypeId: 150,
-              orderBy: "3",
-              label: "+ $15",
-              description:
-                "<p>A monogram includes three letters—your first, middle and last initials—with your last initial placed prominently in the center.<br />\r\n</p>\r\n<p> </p>\r\n",
-              isRte: "true",
-              previewConfig: {
-                sources: [],
-                altText: "Monogramming Thumbnail Image",
-                defaultSrc:
-                  "//media.tiffany.com/is/image/tiffanydm/monogram-thumbnail?$tile$&wid=72&hei=72",
-                hiddenOnError: "true",
-              },
-            },
-          ],
-        },
-        {
-          label: "Symbols",
-          component: "SYMBOLS_COMPONENT",
-          orderBy: "2",
-          categories: [{ serviceTypeId: 11, orderBy: "1", label: "Symbols" }],
-        },
-      ],
-      productEngravings: {
-        url: "/content/tiffany-n-co/_jcr_content/servlets/byoengraving.GRP_SKU.SELECTEDSKU.IS_BYO.REGION.LOCALE.json",
-        method: "GET",
-      },
-      engravingDefaults: {
-        initials: { itemServiceTypeId: 1, styleCode: 290 },
-        symbols: { itemServiceTypeId: 11, styleCode: 751, groupTypeId: 4 },
-        monogramServiceID: 150,
-        monogramLinkedTo: 15,
-      },
-      siteEngravings: {
-        url: "/content/tiffany-n-co/_jcr_content/servlets/pdpengraving.1.101.json",
-        method: "GET",
-      },
-      permisableCharacters: {
-        monograming: "a-zA-Z",
-        isTrueType: "a-zA-Z0-9!.@#$%&*(\")_+|:<,>?='-'",
-        notTrueType: "a-zA-Z0-9",
-      },
-      hasCustomEngraving: true,
-      interactionName: "add-engraving",
-    };
-    window.tiffany.authoredContent.engraving.fontsConfig = {
-      styles: [
-        { code: 201, delimiter: "%C2%B7" },
-        { code: 202, delimiter: "." },
-        { code: 203, delimiter: "." },
-        { code: 204, delimiter: "." },
-      ],
-      exceptionFor: 150,
-    };
-    window.tiffany.authoredContent.isEngravingExposed = true;
-    window.tiffany.authoredContent.areComponentsExposed = true;
-    window.tiffany.authoredContent.currencyConfig = {
-      locale: "en-us",
-      currency: "USD",
-      currencyDisplay: "symbol",
-      showDecimals: false,
-      customCurrency: "$",
-      displayAhead: true,
-      charactersToIgnore: 3,
-      delimeterToSearch: ",",
-      delimeterToReplace: ",",
-    };
-    if (
-      typeof window.tiffany.authoredContent.wishlistFlyoutConfig === "undefined"
-    ) {
-      window.tiffany.authoredContent.wishlistFlyoutConfig = {};
-    }
-    if (
-      typeof window.tiffany.authoredContent.wishlistFlyoutConfig
-        .addToBagRequest === "undefined"
-    ) {
-      window.tiffany.authoredContent.wishlistFlyoutConfig.addToBagRequest = {};
-    }
-    window.tiffany.authoredContent.miniPdpConfig = {
-      request: {
-        url: "/product-detail-page/_jcr_content/root/basicproductinformation.group-GRP.sku-SKU.nocache.json",
-        method: "GET",
-      },
-    };
-    window.tiffany.authoredContent.icons = {
-      backToTop: {
-        src: "//media.tiffany.com/is/content/tiffanydm/back_to_top?$tile$&wid=32&hei=32",
-        altText: "Back to Top",
-      },
-      tooltip: {
-        src: "//media.tiffany.com/is/content/tiffanydm/infomation-new?$tile$&wid=32&hei=32",
-        altText: "More information",
-      },
-      dropdown: {
-        src: "//media.tiffany.com/is/content/tiffanydm/dropdown-1?$tile$&wid=16&hei=16",
-        altText: "Dropdown",
-      },
-      diamondExpert: {
-        src: "//media.tiffany.com/is/content/tiffanydm/Diamondexpertnew?$tile$&wid=1267&hei=3106",
-        altText: "Diamond Expert",
-      },
-      close: {
-        src: "//media.tiffany.com/is/content/tiffanydm/close-1?$tile$&wid=48&hei=48",
-        altText: "Close",
-      },
-      email: {
-        src: "//media.tiffany.com/is/content/tiffanydm/email-1?$tile$&wid=1267&hei=3106",
-        altText: "Email",
-      },
-      call: {
-        src: "//media.tiffany.com/is/content/tiffanydm/Phonenew?$tile$&wid=1267&hei=3106",
-        altText: "Call",
-      },
-      chat: {
-        src: "//media.tiffany.com/is/content/tiffanydm/chat?$tile$&wid=48&hei=48",
-        altText: "Chat",
-      },
-      edit: {
-        src: "//media.tiffany.com/is/content/tiffanydm/edit?$tile$&wid=32&hei=32",
-        altText: "Edit",
-      },
-      store: {
-        src: "//media.tiffany.com/is/content/tiffanydm/store?$tile$&wid=49&hei=48",
-        altText: "Store",
-      },
-      play: {
-        src: "//media.tiffany.com/is/content/tiffanydm/PLAY_BUTTON?$tile$&wid=40&hei=40",
-        altText: "Play",
-      },
-      savedStoreDefault: {
-        src: "//media.tiffany.com/is/content/tiffanydm/saved-store_default?$tile$&wid=64&hei=96",
-        altText: "Save Store",
-      },
-      savedStoreSaved: {
-        src: "//media.tiffany.com/is/content/tiffanydm/saved-store_saved?$tile$&wid=64&hei=96",
-        altText: "Saved Store",
-      },
-      makeAnAppointment: {
-        src: "//media.tiffany.com/is/content/tiffanydm/appointment?$tile$&wid=48&hei=48",
-        altText: "Appointment",
-      },
-      search: {
-        src: "//media.tiffany.com/is/content/tiffanydm/search?$tile$&wid=16&hei=16",
-        altText: "Search",
-      },
-      zoomInMixedMedia: {
-        src: "//media.tiffany.com/is/content/tiffanydm/MixedMedia_ZoomIcon?$tile$&",
-        altText: "Zoomin",
-      },
-      playMixedMedia: {
-        src: "//media.tiffany.com/is/content/tiffanydm/MixedMedia_PlayIcon?$tile$&",
-        altText: "Play",
-      },
-      spin360: {
-        src: "//media.tiffany.com/is/content/tiffanydm/MixedMedia_spinIcon?$tile$&",
-        altText: "360",
-      },
-    };
-    window.tiffany.authoredContent.pdpTaxLabel = { informationTextRTE: "" };
-  </script>
+  
+  
+  
+  
   <div class="tiffany-aem">
     <div id="tiffany-legacy">
       <div class="cmp-experiencefragment cmp-experiencefragment--header expHeader">
-        <link rel="stylesheet" href="/libs/cq/experience-fragments/components/xfpage/content.min.5797e8e7d68b9d8bf73ee762c36c2426.css" type="text/css">
+        
         <div class="xf-content-height">
           <div class="aem-Grid aem-Grid--12 aem-Grid--default--12">
             <div class="global-header aem-GridColumn aem-GridColumn--default--12">
-              <style type="text/css">
-                .menuhamburger-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/Hamburger-Menu?$tile$&);
-                }
-                .menuhamburger-icon:hover {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/hamburger-1?$tile$&);
-                }
-                .search-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/Search-1?$tile$&);
-                }
-                .search-icon:hover {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/search-icon?$tile$&);
-                }
-                .storeLocator-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/StoreLocator?$tile$&);
-                }
-                .storeLocator-icon:hover {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/store-locator?$tile$&);
-                }
-                .customerService-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/Concierge?$tile$&);
-                }
-                .btn.header__customerServiceIcon.iconwithServiceText:hover
-                  > .customerService-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/customer-service?$tile$&);
-                }
-                .bookanappointment-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/Appointment?$tile$&);
-                }
-                a.bookanapointment:hover .bookanappointment-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/book-an-apppointment?$tile$&);
-                }
-                .account-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/MyAccount?$tile$&);
-                }
-                .user-account:hover .account-icon,
-                .user-account:focus .account-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/my-account?$tile$&);
-                }
-                .wishlist-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/WishlistFull?$tile$&);
-                }
-                .wishlist:hover .whishlist-icon,
-                .wishlist:focus .whishlist-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/wishlisticon?$tile$&);
-                }
-                .whishlistEmpty-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/Wishlist?$tile$&);
-                }
-                .wishlist:hover .whishlistEmpty-icon,
-                .wishlist:focus .whishlistEmpty-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/wishlisticon-empty?$tile$&);
-                }
-                .shoppingbag-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/ShoppingBagFull?$tile$&);
-                }
-                .shoppingbag:hover .shoppingbag-icon,
-                .shoppingbag:focus .shoppingbag-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/shoppingbag-item?$tile$&);
-                }
-                .shoppingbagEmpty-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/ShoppingBag?$tile$&);
-                }
-                .shoppingbag:hover .shoppingbagEmpty-icon,
-                .shoppingbag:focus .shoppingbagEmpty-icon {
-                  background-image: url(//media.tiffany.com/is/content/tiffanydm/shoppingbag-empty?$tile$&);
-                }
-              </style>
-              <header class="header app-js__header header_custom" data-class-to-blur="main-content, footer" style="height: 64px">
+              
+              <header class="header app-js__header header_custom" data-class-to-blur="main-content, footer">
                 <div class="header__nav-container stick">
                   <div class="left-container start-splash">
                     <div class="left-container_item mobile-nav-toggle">
@@ -979,12 +172,8 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                     <a href="https://www.tiffany.com/" title="Tiffany &amp; Co." target="_self" tabindex="0" data-nav-context="header" data-nav-type="tiffany-logo" data-nav-name="tiffany-logo" class="cta-underline main-logo-wrapper">
                       <span class="cta-content">
                         <span class="cta-text">
-                          <span style="
-                              background-image: url(//media.tiffany.com/is/content/tiffanydm/tiffco-logo-2?$tile$&amp;wid=1267&amp;hei=3106);
-                            " class="item-icon logo-mobile"></span>
-                          <span style="
-                              background-image: url(//media.tiffany.com/is/content/tiffanydm/tiffco-logo-2?$tile$&amp;wid=1267&amp;hei=3106);
-                            " class="item-icon logo-desktop"></span>
+                          <span class="item-icon logo-mobile"></span>
+                          <span class="item-icon logo-desktop"></span>
                         </span>
                       </span>
                     </a>
@@ -1009,7 +198,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 <div class="right-container_item">
                                   <div class="account-icon" title="" role="button" aria-label="animation" tabindex="-1"></div>
                                 </div></div></a>
-                            <div class="flyout-container" style="top: 102px">
+                            <div class="flyout-container">
                               <div class="scrollbar-container ps ps--active-y">
                                 <div>
                                   <div class="flyout-items__heading">
@@ -1027,11 +216,11 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 <div class="account-cta-links">
                                   <a class="cta" href="/Customer/Account/CreateAccount.aspx" tabindex="0" data-nav-context="header" data-nav-type="account" data-nav-name="create-account"><span class="cta-content"><span class="cta-text" tabindex="-1">Create an Account</span><span class="icon-Right"></span></span></a><a class="cta" href="/Customer/Account/Signin.aspx" tabindex="0" data-nav-context="header" data-nav-type="account" data-nav-name="sign-in"><span class="cta-content"><span class="cta-text" tabindex="-1">Sign In</span><span class="icon-Right"></span></span></a>
                                 </div>
-                                <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                  <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                <div class="ps__rail-x">
+                                  <div class="ps__thumb-x" tabindex="0"></div>
                                 </div>
-                                <div class="ps__rail-y" style="top: 0px; height: 0px; right: 0px">
-                                  <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                <div class="ps__rail-y">
+                                  <div class="ps__thumb-y" tabindex="0"></div>
                                 </div>
                               </div>
                             </div>
@@ -1040,14 +229,14 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div role="button" tabindex="0" class="flyout-non-mask_top"></div>
                           </div>
                         </div>
-                        <div class="flyout-backdrop" style="top: 0px"></div></article></tiffany-header-flyout>
+                        <div class="flyout-backdrop"></div></article></tiffany-header-flyout>
                     <div role="button" aria-label="WishList" class="right-container_item" data-type="wishlist">
                       <tiffany-header-flyout type="wishlist" link="/Customer/Wishlist/WishList.aspx" label="WishList" navname="saved-items" bootstraped="true"><article class="flyout">
                           <div class="flyout-content wishlist-flyout-open">
                             <div>
                               <a href="/Customer/Wishlist/WishList.aspx" title="WishList" rel="noopener noreferrer" tabindex="0" class="wishlist" data-nav-context="header" data-nav-type="saved-items" data-nav-name="saved-items"><div class="cta-content account" tabindex="-1">
                                   <div class="whishlistEmpty-icon" title="" role="button" aria-label="animation" tabindex="-1"></div></div></a>
-                              <div class="flyout-container" style="top: 102px">
+                              <div class="flyout-container">
                                 <div class="scrollbar-container ps ps--active-y">
                                   <div class="top-content">
                                     <div class="flyout-items__heading">
@@ -1067,11 +256,11 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                     </div>
                                   </div>
                                   <div class="complimentary-shipping"></div>
-                                  <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                    <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                  <div class="ps__rail-x">
+                                    <div class="ps__thumb-x" tabindex="0"></div>
                                   </div>
-                                  <div class="ps__rail-y" style="top: 0px; height: 0px; right: 0px">
-                                    <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                  <div class="ps__rail-y">
+                                    <div class="ps__thumb-y" tabindex="0"></div>
                                   </div>
                                 </div>
                               </div>
@@ -1080,16 +269,16 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                               <div role="button" tabindex="0" class="flyout-non-mask_top"></div>
                             </div>
                           </div>
-                          <div class="flyout-backdrop" style="top: 0px"></div></article></tiffany-header-flyout>
+                          <div class="flyout-backdrop"></div></article></tiffany-header-flyout>
                     </div>
-                    <div aria-label="Shopping Bag" class="right-container_item" style="margin-right: 0px">
+                    <div aria-label="Shopping Bag" class="right-container_item">
                       <tiffany-header-flyout type="shoppingbag" link="/Customer/ShoppingBag.aspx" label="Shopping Bag" navname="shopping-bag" bootstraped="true"><article class="flyout">
                           <div class="flyout-content shoppingbag-flyout-open">
                             <div>
                               <a href="/Customer/ShoppingBag.aspx" title="Shopping Bag" rel="noopener noreferrer" tabindex="0" class="shoppingbag" data-nav-context="header" data-nav-type="shopping-bag" data-nav-name="shopping-bag"><div class="cta-content account" tabindex="-1">
                                   <div class="shoppingbagEmpty-icon" title="" role="button" aria-label="animation" tabindex="-1"></div>
                                   <div class="total-quantity"></div></div></a>
-                              <div class="flyout-container" style="top: 102px">
+                              <div class="flyout-container">
                                 <div class="scrollbar-container ps ps--active-y">
                                   <div>
                                     <div class="flyout-items__heading">
@@ -1109,11 +298,11 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                     </div>
                                   </div>
                                   <div class="complimentary-shipping"></div>
-                                  <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                    <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                  <div class="ps__rail-x">
+                                    <div class="ps__thumb-x" tabindex="0"></div>
                                   </div>
-                                  <div class="ps__rail-y" style="top: 0px; height: 0px; right: 0px">
-                                    <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                  <div class="ps__rail-y">
+                                    <div class="ps__thumb-y" tabindex="0"></div>
                                   </div>
                                 </div>
                               </div>
@@ -1122,7 +311,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                               <div role="button" tabindex="0" class="flyout-non-mask_top"></div>
                             </div>
                           </div>
-                          <div class="flyout-backdrop" style="top: 0px"></div></article></tiffany-header-flyout>
+                          <div class="flyout-backdrop"></div></article></tiffany-header-flyout>
                     </div>
                   </div>
                   <nav class="main-nav jq--hide-sub-nav">
@@ -1509,23 +698,9 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div class="sub-nav__img sub-nav__img--half">
                               <article class="text-with-image app-js__text-with-image">
                                 <div class="text-with-image__image lazy-load--textWithImage lazy-load--defaultImage">
-                                  <style type="text/css">
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                    @media only screen and (max-width: 56.1875em) {
-                                      .aspect-ratio-image- {
-                                        display: block;
-                                        aspect-ratio: auto /;
-                                      }
-                                    }
-                                  </style>
+                                  
                                   <a href="https://www.tiffany.com/gifts/shop/gifts-for-her/" target="_self">
-                                    <picture>
-                                      <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/Gifts-For-Her_Nav_Flyout_Evergreen-1?$tile$&amp;wid=1168&amp;hei=608&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                      <img data-src="//media.tiffany.com/is/image/tiffanydm/Gifts-For-Her_Nav_Flyout_Evergreen-1?$tile$&amp;wid=1168&amp;hei=608" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany &amp; Co. Gift Ideas for Her" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                    </picture>
+                                    
                                   </a>
                                 </div>
                                 <div class="text-with-image__text inset-left">
@@ -1911,23 +1086,9 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div class="sub-nav__img sub-nav__img--half">
                               <article class="text-with-image app-js__text-with-image">
                                 <div class="text-with-image__image lazy-load--textWithImage lazy-load--defaultImage">
-                                  <style type="text/css">
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                    @media only screen and (max-width: 56.1875em) {
-                                      .aspect-ratio-image- {
-                                        display: block;
-                                        aspect-ratio: auto /;
-                                      }
-                                    }
-                                  </style>
+                                  
                                   <a href="https://www.tiffany.com/watches/shop/all-watches/" target="_self">
-                                    <picture>
-                                      <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/WATCH-Flyout-Desktop?$tile$&amp;wid=1168&amp;hei=608&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                      <img data-src="//media.tiffany.com/is/image/tiffanydm/WATCH-Flyout-Desktop?$tile$&amp;wid=1168&amp;hei=608" src="" class="load-lazily aspect-ratio-image-" alt="Watches" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                    </picture>
+                                    
                                   </a>
                                 </div>
                                 <div class="text-with-image__text inset-left">
@@ -2086,23 +1247,9 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div class="sub-nav__img sub-nav__img--half">
                               <article class="text-with-image app-js__text-with-image">
                                 <div class="text-with-image__image lazy-load--textWithImage lazy-load--defaultImage">
-                                  <style type="text/css">
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                    @media only screen and (max-width: 56.1875em) {
-                                      .aspect-ratio-image- {
-                                        display: block;
-                                        aspect-ratio: auto /;
-                                      }
-                                    }
-                                  </style>
+                                  
                                   <a href="https://www.tiffany.com/home-designs/shop/table-settings/" target="_self">
-                                    <picture>
-                                      <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/HA-Flyout-Desktop-7?$tile$&amp;wid=1168&amp;hei=608&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                      <img data-src="//media.tiffany.com/is/image/tiffanydm/HA-Flyout-Desktop-7?$tile$&amp;wid=1168&amp;hei=608" src="" class="load-lazily aspect-ratio-image-" alt="Home &amp; Accessories" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                    </picture>
+                                    
                                   </a>
                                 </div>
                                 <div class="text-with-image__text inset-left">
@@ -2170,23 +1317,9 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div class="sub-nav__img sub-nav__img--three-quarters">
                               <article class="text-with-image app-js__text-with-image">
                                 <div class="text-with-image__image lazy-load--textWithImage lazy-load--defaultImage">
-                                  <style type="text/css">
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                    @media only screen and (max-width: 56.1875em) {
-                                      .aspect-ratio-image- {
-                                        display: block;
-                                        aspect-ratio: auto /;
-                                      }
-                                    }
-                                  </style>
+                                  
                                   <a href="https://www.tiffany.com/fragrance/tiffany-eau-de-parfum/" target="_self">
-                                    <picture>
-                                      <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/ROSEGOLDFRAGRANCE_DOTCOM_FLYOUT?$tile$&amp;wid=1760&amp;hei=608&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                      <img data-src="//media.tiffany.com/is/image/tiffanydm/ROSEGOLDFRAGRANCE_DOTCOM_FLYOUT?$tile$&amp;wid=1760&amp;hei=608" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany &amp; Co. Fragrance" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                    </picture>
+                                    
                                   </a>
                                 </div>
                                 <div class="text-with-image__text inset-left">
@@ -2316,23 +1449,9 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div class="sub-nav__img sub-nav__img--half">
                               <article class="text-with-image app-js__text-with-image">
                                 <div class="text-with-image__image lazy-load--textWithImage lazy-load--defaultImage">
-                                  <style type="text/css">
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                    @media only screen and (max-width: 56.1875em) {
-                                      .aspect-ratio-image- {
-                                        display: block;
-                                        aspect-ratio: auto /;
-                                      }
-                                    }
-                                  </style>
+                                  
                                   <a href="https://www.tiffany.com/jewelry/shop/mens-jewelry/" target="_self">
-                                    <picture>
-                                      <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout-Desktop-1?$tile$&amp;wid=1168&amp;hei=608&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                      <img data-src="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout-Desktop-1?$tile$&amp;wid=1168&amp;hei=608" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany &amp; Co. Men’s" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                    </picture>
+                                    
                                   </a>
                                 </div>
                                 <div class="text-with-image__text inset-left">
@@ -2479,23 +1598,9 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <div class="sub-nav__img sub-nav__img--half">
                               <article class="text-with-image app-js__text-with-image">
                                 <div class="text-with-image__image lazy-load--textWithImage lazy-load--defaultImage">
-                                  <style type="text/css">
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                    @media only screen and (max-width: 56.1875em) {
-                                      .aspect-ratio-image- {
-                                        display: block;
-                                        aspect-ratio: auto /;
-                                      }
-                                    }
-                                  </style>
+                                  
                                   <a href="https://www.tiffany.com/jewelry/shop/tiffany-lock/" target="_self">
-                                    <picture>
-                                      <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout2-Desktop-1?$tile$&amp;wid=1168&amp;hei=608&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                      <img data-src="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout2-Desktop-1?$tile$&amp;wid=1168&amp;hei=608" src="" class="load-lazily aspect-ratio-image-" alt="Stories" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                    </picture>
+                                    
                                   </a>
                                 </div>
                                 <div class="text-with-image__text inset-left">
@@ -2839,31 +1944,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/jewelry/shop/necklaces-pendants/" title="Shop Now" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/TiffanyTrue-2019_PDPmarketing_Desktop?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/TiffanyTrue-2019_PDPmarketing_Desktop?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany Jewelry" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -2997,31 +2088,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/gifts/shop/gifts-for-her/" title="Shop Now" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/Gifts-For-Her_Nav_Flyout_Evergreen-1?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/Gifts-For-Her_Nav_Flyout_Evergreen-1?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany &amp; Co. Gift Ideas for Her" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -3340,31 +2417,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/engagement/" title="Explore Love &amp; Engagement" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/2022_LE_NAV-Desktop?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/2022_LE_NAV-Desktop?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Love &amp; Engagement" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -3508,31 +2571,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/watches/shop/all-watches/" title="Shop All Fine Watches" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/WATCH-Flyout-Desktop?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/WATCH-Flyout-Desktop?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Watches" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -3706,31 +2755,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/home-designs/shop/table-settings/" title="Shop Now" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/HA-Flyout-Desktop-7?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/HA-Flyout-Desktop-7?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Home &amp; Accessories" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -3798,31 +2833,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/fragrance/tiffany-eau-de-parfum/" title="Shop the New Fragrance" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/ROSEGOLDFRAGRANCE_DOTCOM_FLYOUT?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/ROSEGOLDFRAGRANCE_DOTCOM_FLYOUT?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany &amp; Co. Fragrance" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -3957,31 +2978,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/jewelry/shop/mens-jewelry/" title="Shop Men’s Jewelry" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout-Desktop-1?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout-Desktop-1?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Tiffany &amp; Co. Men’s" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -4130,31 +3137,17 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                                 </nav>
                                 <div class="col_separator"></div>
                               </div>
-                              <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                              <div class="ps__rail-x">
+                                <div class="ps__thumb-x" tabindex="-1"></div>
                               </div>
-                              <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                              <div class="ps__rail-y">
+                                <div class="ps__thumb-y" tabindex="-1"></div>
                               </div>
                             </div>
                             <div class="header__sub-menu_image">
                               <a href="https://www.tiffany.com/jewelry/shop/tiffany-lock/" title="Explore the Collection" tabindex="-1">
-                                <style type="text/css">
-                                  .aspect-ratio-image- {
-                                    display: block;
-                                    aspect-ratio: auto /;
-                                  }
-                                  @media only screen and (max-width: 56.1875em) {
-                                    .aspect-ratio-image- {
-                                      display: block;
-                                      aspect-ratio: auto /;
-                                    }
-                                  }
-                                </style>
-                                <picture>
-                                  <source type="image/webp" data-srcset="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout2-Desktop-1?$tile$&amp;&amp;fmt=webp" srcset="" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                  <img data-src="//media.tiffany.com/is/image/tiffanydm/LOCK-Flyout2-Desktop-1?$tile$&amp;" src="" class="load-lazily aspect-ratio-image-" alt="Stories" onload="window.aos &amp;&amp; window.aos.refresh()">
-                                </picture>
+                                
+                                
                               </a>
                               <div class="header__sub-menu_image_content">
                                 <div class="header__sub-menu_image_content-desc">
@@ -4177,9 +3170,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <span class="cta-content">
                               <span class="remaining-links-mobile_item_icon">
                                 <span class="cta-content">
-                                  <span style="
-                                      background-image: url(//media.tiffany.com/is/content/tiffanydm/Concierge?$tile$&amp;wid=1267&amp;hei=3106);
-                                    " class="remaining-links-mobile_item_icon__icon header_icon_customerService"></span>
+                                  <span class="remaining-links-mobile_item_icon__icon header_icon_customerService"></span>
                                 </span>
                               </span>
                               Contact us
@@ -4191,9 +3182,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <span class="cta-content">
                               <span class="remaining-links-mobile_item_icon">
                                 <span class="cta-content">
-                                  <span style="
-                                      background-image: url(//media.tiffany.com/is/content/tiffanydm/Appointment?$tile$&amp;wid=1267&amp;hei=3106);
-                                    " class="remaining-links-mobile_item_icon__icon header_icon_bookAnAppointment"></span>
+                                  <span class="remaining-links-mobile_item_icon__icon header_icon_bookAnAppointment"></span>
                                 </span>
                               </span>
                               Book an Appointment
@@ -4205,9 +3194,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <span class="cta-content">
                               <span class="remaining-links-mobile_item_icon">
                                 <span class="cta-content">
-                                  <span style="
-                                      background-image: url(//media.tiffany.com/is/content/tiffanydm/MyAccount?$tile$&amp;wid=32&amp;hei=32);
-                                    " class="remaining-links-mobile_item_icon__icon header_icon_Account"></span>
+                                  <span class="remaining-links-mobile_item_icon__icon header_icon_Account"></span>
                                 </span>
                               </span>
                               My Account
@@ -4219,9 +3206,7 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                             <span class="cta-content">
                               <span class="remaining-links-mobile_item_icon">
                                 <span class="cta-content">
-                                  <span style="
-                                      background-image: url(//media.tiffany.com/is/content/tiffanydm/StoreLocator?$tile$&amp;wid=32&amp;hei=32);
-                                    " class="remaining-links-mobile_item_icon__icon header_icon_Store"></span>
+                                  <span class="remaining-links-mobile_item_icon__icon header_icon_Store"></span>
                                 </span>
                               </span>
                               Store Locator
@@ -4229,525 +3214,18 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
                           </a>
                         </div>
                       </div>
-                      <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                        <div class="ps__thumb-x" tabindex="-1" style="left: 0px; width: 0px"></div>
+                      <div class="ps__rail-x">
+                        <div class="ps__thumb-x" tabindex="-1"></div>
                       </div>
-                      <div class="ps__rail-y" style="top: 0px; right: 0px">
-                        <div class="ps__thumb-y" tabindex="-1" style="top: 0px; height: 0px"></div>
+                      <div class="ps__rail-y">
+                        <div class="ps__thumb-y" tabindex="-1"></div>
                       </div>
                     </div>
                   </div>
                 </nav>
-                <script>
-                  // akam-sw.js install script version 1.3.6
-                  "serviceWorker" in navigator &&
-                    "find" in [] &&
-                    (function () {
-                      var e = new Promise(function (e) {
-                          "complete" === document.readyState || !1
-                            ? e()
-                            : (window.addEventListener("load", function () {
-                                e();
-                              }),
-                              setTimeout(function () {
-                                "complete" !== document.readyState && e();
-                              }, 1e4));
-                        }),
-                        n = window.akamServiceWorkerInvoked,
-                        r = "1.3.6";
-                      if (n) aka3pmLog("akam-setup already invoked");
-                      else {
-                        (window.akamServiceWorkerInvoked = !0),
-                          (window.aka3pmLog = function () {
-                            window.akamServiceWorkerDebug &&
-                              console.log.apply(console, arguments);
-                          });
-                        function o(e) {
-                          (window.BOOMR_mq = window.BOOMR_mq || []).push([
-                            "addVar",
-                            { "sm.sw.s": e, "sm.sw.v": r },
-                          ]);
-                        }
-                        var i = "/akam-sw.js",
-                          a = new Map();
-                        navigator.serviceWorker.addEventListener(
-                          "message",
-                          function (e) {
-                            var n,
-                              r,
-                              o = e.data;
-                            if (o.isAka3pm)
-                              if (o.command) {
-                                var i =
-                                  ((n = o.command),
-                                  (r = a.get(n)) && r.length > 0
-                                    ? r.shift()
-                                    : null);
-                                i && i(e.data.response);
-                              } else if (o.commandToClient)
-                                switch (o.commandToClient) {
-                                  case "enableDebug":
-                                    window.akamServiceWorkerDebug ||
-                                      ((window.akamServiceWorkerDebug = !0),
-                                      aka3pmLog(
-                                        "Setup script debug enabled via service worker message"
-                                      ),
-                                      v());
-                                    break;
-                                  case "boomerangMQ":
-                                    o.payload &&
-                                      (window.BOOMR_mq =
-                                        window.BOOMR_mq || []).push(o.payload);
-                                }
-                            aka3pmLog(
-                              "akam-sw message: " + JSON.stringify(e.data)
-                            );
-                          }
-                        );
-                        var t = function (e) {
-                            return new Promise(function (n) {
-                              var r, o;
-                              (r = e.command),
-                                (o = n),
-                                a.has(r) || a.set(r, []),
-                                a.get(r).push(o),
-                                navigator.serviceWorker.controller &&
-                                  ((e.isAka3pm = !0),
-                                  navigator.serviceWorker.controller.postMessage(
-                                    e
-                                  ));
-                            });
-                          },
-                          c = function (e) {
-                            return t({ command: "navTiming", navTiming: e });
-                          },
-                          s = null,
-                          m = {},
-                          d = function () {
-                            var e = i;
-                            return (
-                              s && (e += "?othersw=" + encodeURIComponent(s)),
-                              (function (e, n) {
-                                return new Promise(function (r, i) {
-                                  aka3pmLog(
-                                    "Registering service worker with URL: " + e
-                                  ),
-                                    navigator.serviceWorker
-                                      .register(e, n)
-                                      .then(function (e) {
-                                        aka3pmLog(
-                                          "ServiceWorker registration successful with scope: ",
-                                          e.scope
-                                        ),
-                                          r(e),
-                                          o(1);
-                                      })
-                                      .catch(function (e) {
-                                        aka3pmLog(
-                                          "ServiceWorker registration failed: ",
-                                          e
-                                        ),
-                                          o(0),
-                                          i(e);
-                                      });
-                                });
-                              })(e, m)
-                            );
-                          },
-                          g = navigator.serviceWorker.__proto__.register;
-                        if (
-                          ((navigator.serviceWorker.__proto__.register =
-                            function (n, r) {
-                              return n.includes(i)
-                                ? g.call(this, n, r)
-                                : (aka3pmLog(
-                                    "Overriding registration of service worker for: " +
-                                      n
-                                  ),
-                                  (s = new URL(n, window.location.href)),
-                                  (m = r),
-                                  navigator.serviceWorker.controller
-                                    ? new Promise(function (n, r) {
-                                        var o =
-                                          navigator.serviceWorker.controller
-                                            .scriptURL;
-                                        if (o.includes(i)) {
-                                          var a = encodeURIComponent(s);
-                                          o.includes(a)
-                                            ? (aka3pmLog(
-                                                "Cancelling registration as we already integrate other SW: " +
-                                                  s
-                                              ),
-                                              navigator.serviceWorker
-                                                .getRegistration()
-                                                .then(function (e) {
-                                                  n(e);
-                                                }))
-                                            : e.then(function () {
-                                                aka3pmLog(
-                                                  "Unregistering existing 3pm service worker"
-                                                ),
-                                                  navigator.serviceWorker
-                                                    .getRegistration()
-                                                    .then(function (e) {
-                                                      e.unregister()
-                                                        .then(function () {
-                                                          return d();
-                                                        })
-                                                        .then(function (e) {
-                                                          n(e);
-                                                        })
-                                                        .catch(function (e) {
-                                                          r(e);
-                                                        });
-                                                    });
-                                              });
-                                        } else
-                                          aka3pmLog(
-                                            "Cancelling registration as we already have akam-sw.js installed"
-                                          ),
-                                            navigator.serviceWorker
-                                              .getRegistration()
-                                              .then(function (e) {
-                                                n(e);
-                                              });
-                                      })
-                                    : g.call(this, n, r));
-                            }),
-                          navigator.serviceWorker.controller)
-                        ) {
-                          var u = navigator.serviceWorker.controller.scriptURL;
-                          u.includes("/akam-sw.js") ||
-                            u.includes("/akam-sw-preprod.js") ||
-                            u.includes("/threepm-sw.js") ||
-                            (aka3pmLog(
-                              "Detected existing service worker. Removing and re-adding inside akam-sw.js"
-                            ),
-                            (s = new URL(u, window.location.href)),
-                            e.then(function () {
-                              navigator.serviceWorker
-                                .getRegistration()
-                                .then(function (e) {
-                                  (m = { scope: e.scope }), e.unregister(), d();
-                                });
-                            }));
-                        } else
-                          e.then(function () {
-                            window.akamServiceWorkerPreprod &&
-                              (i = "/akam-sw-preprod.js"),
-                              d();
-                          });
-                        if (window.performance) {
-                          var w = window.performance.timing,
-                            l = w.responseEnd - w.responseStart;
-                          c(l);
-                        }
-                        e.then(function () {
-                          t({ command: "pageLoad" });
-                        });
-                        var k = !1;
-                        function v() {
-                          window.akamServiceWorkerDebug &&
-                            !k &&
-                            ((k = !0),
-                            aka3pmLog(
-                              "Initializing debug functions at window scope"
-                            ),
-                            (window.aka3pmInjectSwPolicy = function (e) {
-                              return t({ command: "updatePolicy", policy: e });
-                            }),
-                            (window.aka3pmDisableInjectedPolicy = function () {
-                              return t({ command: "disableInjectedPolicy" });
-                            }),
-                            (window.aka3pmDeleteInjectedPolicy = function () {
-                              return t({ command: "deleteInjectedPolicy" });
-                            }),
-                            (window.aka3pmGetStateAsync = function () {
-                              return t({ command: "getState" });
-                            }),
-                            (window.aka3pmDumpState = function () {
-                              aka3pmGetStateAsync().then(function (e) {
-                                aka3pmLog(JSON.stringify(e, null, "\t"));
-                              });
-                            }),
-                            (window.aka3pmInjectTiming = function (e) {
-                              return c(e);
-                            }),
-                            (window.aka3pmUpdatePolicyFromNetwork =
-                              function () {
-                                return t({ command: "pullPolicyFromNetwork" });
-                              }));
-                        }
-                        v();
-                      }
-                    })();
-                </script>
-                <script>
-                  if (typeof window.tiffany.labels === "undefined") {
-                    window.tiffany.labels = {};
-                  }
-                  if (typeof window.tiffany.authoredContent === "undefined") {
-                    window.tiffany.authoredContent = {};
-                  }
-                  window.tiffany.labels.shoppingBagFlyout = {
-                    currency: "$",
-                    noCartItemsTitle: "Your Shopping Bag",
-                    cartDescription: "<p>Your shopping bag is empty. </p>\r\n",
-                    cartMessage:
-                      "For faster checkout, sign in to your account.",
-                    ctaText1: "Sign In",
-                    ctaUrl1: "/Customer/Account/Signin.aspx",
-                    ctaTarget1: "_self",
-                    cartItemsTitle:
-                      "To speed up the checkout process, sign in now.",
-                    ctaText2: "Sign In",
-                    ctaUrl2: "/Customer/Account/Signin.aspx",
-                    ctaTarget2: "_self",
-                    complimentaryShipping: "Complimentary Express Delivery",
-                    shippingOption: "View different shipping options",
-                    shippingOptionUrl:
-                      "/Customer/ShoppingBag.aspx?isMenu=1&hdr=1&needItSooner=1",
-                    shippingOptionTarget: "_self",
-                    shoppingBag: "View Bag",
-                    shoppingBagUrl: "/Customer/ShoppingBag.aspx",
-                    shoppingBagTarget: "_self",
-                    subtotalLabel: "Estimated Total:",
-                    checkOut: "Checkout",
-                    checkoutUrl: "/Customer/Checkout/SignIn.aspx",
-                    quantity: "Quantity",
-                    remove: "Remove",
-                    customDesignsCTALink:
-                      "https://www.tiffany.com/Customer/WishList/Wishlist.aspx/",
-                  };
-                  window.tiffany.labels.wishlistFlyout = {
-                    wishlistTitle: "Welcome to your Saved Items",
-                    wishlistDescription:
-                      "<p>View saved favorites, build-your-own charm jewelry designs and sent hints.</p>\r\n",
-                    wishlistMessage: null,
-                    ctaText: "Sign In",
-                    ctaUrl: "/Customer/Account/Signin.aspx",
-                    ctaTarget: "_self",
-                    savedItems: "Saved Items",
-                    customDesignsCTALink:
-                      "https://www.tiffany.com/Customer/WishList/Wishlist.aspx/",
-                    ctaText2: "View All Saved Products",
-                    ctaUrl2: "/Customer/WishList/Wishlist.aspx",
-                    ctaTarget2: "_self",
-                    wishListHeading:
-                      "For faster checkout, sign in to your account.",
-                    addToBag: "Add To Bag",
-                    wishlistFlyoutViewDetails: "View Details",
-                    wishlistFlyoutViewDetailsTarget: "_self",
-                    remove: "Remove",
-                    wishlistPersonalizationLabelText: "Personalization",
-                    machineEngraving: "Standard Engraving",
-                    handEngraving: "Hand Engraving",
-                    monogramingEngraving: "Monogramming",
-                    machineSymbolEngraving: "Symbol Engraving",
-                  };
-                  window.tiffany.authoredContent.wishlistFlyoutConfig = {
-                    isWishlistEmpty: false,
-                    isLoggedOut: true,
-                    cookieName: "mysid2",
-                    listFetchRequest: {
-                      url: "/saveditemsprocessapi/api/process/v1/saveditems/item/list",
-                      method: "POST",
-                      payload: {
-                        IsInline: "false",
-                        priceMarketID: "1",
-                        siteid: "1",
-                        assortmentID: "101",
-                      },
-                    },
-                    removeRequest: {
-                      url: "/saveditemssystemapi/api/system/v1/saveditems/item/delete",
-                      method: "POST",
-                      payload: {
-                        listItemID: "",
-                        priceMarketID: "1",
-                        siteid: "1",
-                        assortmentID: "101",
-                      },
-                    },
-                    addToBagRequest: {
-                      skuEcomAddRequest: {
-                        url: "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/sku-ecom/add",
-                        method: "POST",
-                        payload: {
-                          sku: "",
-                          quantity: "",
-                          partialShip: "",
-                          orderOriginationId: "",
-                          categoryID: "",
-                          masterCategoryID: "",
-                          priceMarketID: "1",
-                          siteid: "1",
-                          assortmentID: "101",
-                        },
-                      },
-                      skuEcomAddGroupTypeOneEndPoint: {
-                        url: "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/group-type1/add",
-                        method: "POST",
-                        payload: {
-                          groupSku: "",
-                          sku: "",
-                          quantity: "",
-                          partialShip: "",
-                          orderOriginationId: "",
-                          categoryID: "",
-                          masterCategoryID: "",
-                          priceMarketID: "1",
-                          siteid: "1",
-                          assortmentID: "101",
-                        },
-                      },
-                      skuEcomAddGroupTypeTwoEndPoint: {
-                        url: "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/group-type2/add",
-                        method: "POST",
-                        payload: {
-                          groupSku: "",
-                          sku: "",
-                          quantity: "",
-                          partialShip: "",
-                          orderOriginationId: "",
-                          categoryID: "",
-                          masterCategoryID: "",
-                          parentGroupSKU: "",
-                          priceMarketID: "1",
-                          siteid: "1",
-                          assortmentID: "101",
-                        },
-                      },
-                      itemDetailsEndPoint: {
-                        url: "/productsprocessapi/api/process/v1/products/group/items/details",
-                        method: "POST",
-                        payload: {
-                          groupSku: "",
-                          sku: "",
-                          quantity: "",
-                          partialShip: "",
-                          orderOriginationId: "",
-                          categoryID: "",
-                          masterCategoryID: "",
-                          priceMarketID: "1",
-                          siteid: "1",
-                          assortmentID: "101",
-                        },
-                      },
-                    },
-                  };
-                  window.tiffany.authoredContent.shoppingBagFlyoutConfig = {
-                    isCartEmpty: false,
-                    isLoggedOut: true,
-                    cookieName: "mysid2",
-                    listFetchRequest: {
-                      url: "/shoppingbagsprocessapi/api/process/v1/shoppingbags/item/list",
-                      method: "POST",
-                      payload: {
-                        priceMarketID: "1",
-                        siteid: "1",
-                        assortmentID: "101",
-                      },
-                    },
-                    removeRequest: {
-                      url: "/shoppingbagssystemapi/api/system/v1/shoppingbags/item/delete",
-                      method: "POST",
-                      payload: {
-                        shoppingBagItemID: "",
-                        priceMarketID: "1",
-                        siteid: "1",
-                        assortmentID: "101",
-                      },
-                    },
-                  };
-                  if (
-                    typeof window.tiffany.authoredContent.wishlistFlyoutConfig
-                      .addToBagRequest === "undefined"
-                  ) {
-                    window.tiffany.authoredContent.wishlistFlyoutConfig.addToBagRequest =
-                      {};
-                  }
-                  window.tiffany.labels.shoppingBagFlyout.bagSignInDataNavName =
-                    "sign\u002Din";
-                  window.tiffany.labels.shoppingBagFlyout.bagViewDetailsDataNavName =
-                    "shopping\u002Dbag\u002Dview\u002Ddetails";
-                  window.tiffany.labels.shoppingBagFlyout.bagViewAllDataNavName =
-                    "shopping\u002Dbag\u002Dview\u002Dall";
-                  window.tiffany.labels.shoppingBagFlyout.bagCheckoutDataNavName =
-                    "checkout";
-                  window.tiffany.labels.wishlistFlyout.wishlistSignInDataNavName =
-                    "sign\u002Din";
-                  window.tiffany.labels.wishlistFlyout.wishlistViewDetailsDataNavName =
-                    "saved\u002Ditems\u002Dview\u002Ddetails";
-                  window.tiffany.labels.wishlistFlyout.wishViewAllDataNavName =
-                    "saved\u002Ditems\u002Dview\u002Dall";
-                  window.tiffany.labels.wishlistFlyout.wishlistCustomerItemsDataIntName =
-                    "saved\u002Ditems";
-                  window.tiffany.labels.wishlistFlyout.wishlistCustomDesignDataIntName =
-                    "saved\u002Ddesigns";
-                  window.tiffany.authoredContent.isEcomSite = "true";
-                  window.tiffany.authoredContent.shoppingBagUrl =
-                    "/Customer/ShoppingBag.aspx";
-                  window.tiffany.authoredContent.menuLabel = "<p>Menu<\/p>\r\n";
-                </script>
-                <script>
-                  window.tiffany.labels.loginFlyout = {
-                    title: "Sign In or Create an Account",
-                    description:
-                      "<p>With an account you can check out faster, view your online order history and access your shopping bag or saved items from any device. </p>\r\n",
-                    loginText: "Sign In",
-                    loginUrl: "/Customer/Account/Signin.aspx",
-                    signupText: "Create an Account",
-                    signupUrl: "/Customer/Account/CreateAccount.aspx",
-                  };
-                  window.tiffany.labels.myAccountFlyout = {
-                    suffixHeadlineText: " ",
-                    onlineOrdersHistoryLabel: "Orders",
-                    onlineOrdersCtaUrl: "/Customer/Account/OrderSummary.aspx",
-                    onlineOrdersCtaTarget: "_self",
-                    personalInfoLabel: "Personal Information",
-                    personalInfoCtaUrl: "/Customer/Account/EditAccount.aspx",
-                    personalInfoCtaTarget: "_self",
-                    loginInfoLabel: "Sign-in Information",
-                    loginInfoCtaUrl: "/Customer/Account/AccountSettings.aspx",
-                    loginInfoCtaTarget: "_self",
-                    emailPreferenceLabel: "Preferences",
-                    emailPreferenceCtaUrl:
-                      "/Customer/Account/CommunicationPreferences.aspx",
-                    emailPreferenceCtaTarget: "_self",
-                    addressBookLabel: "Addresses",
-                    addressBookCtaUrl: "/Customer/Account/AddressBook.aspx",
-                    addressBookCtaTarget: "_self",
-                    preferredStoreLabel: "Your preferred store:",
-                    signOutLabel: "Sign Out",
-                    signOutUrl: "/Customer/Account/sign_out.aspx",
-                  };
-                  window.tiffany.authoredContent.myAccountConfig = {
-                    url: "/content/tiffany-n-co/_jcr_content/servlets/myaccount.json",
-                    method: "POST",
-                    payload: { cookieVal: "", siteId: "1" },
-                  };
-                  window.tiffany.labels.loginFlyout.accountSignInDataNavName =
-                    "sign\u002Din";
-                  window.tiffany.labels.loginFlyout.accountCreateAccDataNavName =
-                    "create\u002Daccount";
-                  window.tiffany.labels.myAccountFlyout.accountOrderHistDataNavName =
-                    "online\u002Dorder\u002Dhistory";
-                  window.tiffany.labels.myAccountFlyout.accountPersonalInfoDataNavName =
-                    "personal\u002Dinfo";
-                  window.tiffany.labels.myAccountFlyout.accountLoginInfoDataNavName =
-                    "login\u002Dinfo";
-                  window.tiffany.labels.myAccountFlyout.accountEmailPrefDataNavName =
-                    "email\u002Dpreferences";
-                  window.tiffany.labels.myAccountFlyout.accountAddrBookDataNavName =
-                    "address\u002Dbook";
-                  window.tiffany.labels.myAccountFlyout.accountChangePrefStoreDataNavName =
-                    "change\u002Dpreferred\u002Dstore";
-                  window.tiffany.labels.myAccountFlyout.accountSignInDataNavName =
-                    "sign\u002Din";
-                  window.tiffany.labels.myAccountFlyout.accountCreateAccDataNavName =
-                    "create\u002Daccount";
-                </script>
+                
+                
+                
                 <div class="header-mobile stick">
                   <div class="header-mobile-inner-wrapper">
                     <tiffany-search type="mobileSearch" bootstraped="true"><div class="search-modal"></div></tiffany-search>
@@ -4760,47 +3238,37 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
       </div>
     </div>
   </div>
-  <script src="/etc.clientlibs/tiffanynco-platform/clientlibs/header.min.js" defer=""></script>
+  
   <div id="wrapper">
-    <div class="newHeader dont-stack flex-block justify-center flex-wrap" style="width: 100%; margin: 20px 0 0">
+    <div class="newHeader dont-stack flex-block justify-center flex-wrap">
       <div class="flex-item dont-stack flex-block flex-shrink col-2"></div>
       <div class="flex-item dont-stack flex-block flex-shrink col-2 justify-right"></div>
     </div>
     <div class="icon-nav-info-box">
       <a href="#" class="icon-nav-info-box__close"><i class="icon-font">delete_large</i></a>
-      <script>
-        var didYouMeanLiteral = "Did you mean {0} ?";
-        var storeSearchFriendlyURL = "/jewelry-stores/search";
-        var itemSearchFriendlyURL = "/search";
-        var storeNear = "Stores near {0}";
-        var storeNearYou = "Stores near you";
-        function TrackViewMoreStoreEvents() {
-          TrackEvent("Menus", "Header", "View More Stores and Events", "");
-          s.eVar8 = "View More Stores and Events - Header";
-          void s.t();
-        }
-        function TrackViewAllStoresInCountry(countryandLoc) {
-          TrackEvent(
-            "Menus",
-            "Header",
-            "View ALL Stores in" + countryandLoc,
-            ""
-          );
-          s.eVar8 = "View ALL Stores in" + countryandLoc;
-          void s.t();
-        }
-      </script>
+      
       <div class="store-search-nav-box dont-stack flex-block">
         <div class="flex-item col-2"></div>
         <div class="flex-item">
-          <div id="storesearch" class="searchbar" style="width: 40%; margin: 0 auto; position: relative">
-            <label for="locationSearchInput" style="display: none">
+          <div id="storesearch" class="searchbar">
+            <label for="locationSearchInput">
               Enter a city, state or zip code...
             </label>
-            <input type="text" id="locationSearchInput" placeholder="Enter a city, state or zip code..." runat="server" data-ddg-testresultelementid="542610" data-manual-scoring="addressCity">
+            <input type="text" id="locationSearchInput" placeholder="Enter a city, state or zip code..." runat="server" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: Enter a city, state or zip code...
+parseable name: locationSearchInput
+section: _0_5
+field signature: 2052763714
+form signature: 1544802490815716851
+form signature in host form: 1544802490815716851
+field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
+form renderer id: 1
+field renderer id: 9" data-ddg-testresultelementid="542610" data-manual-scoring="addressCity">
             <a id="locationSearchBtn" class="btn" href="javascript:SearchManager.getInstance().searchLocations()"><i class="icon-font">search</i></a>
-            <div class="store-near sterling-display type-b2" style="padding-top: 50px; text-align: left">
-              <div class="store-near__header" style="padding-bottom: 5px"></div>
+            <div class="store-near sterling-display type-b2">
+              <div class="store-near__header"></div>
               <div class="store-near__list"></div>
             </div>
           </div>
@@ -4831,10 +3299,10 @@ field renderer id: 5" autofill-prediction="NUMERIC_QUANTITY" data-ddg-inputtype=
       <div id="ctlHeader_ctlSearch_pnlSimpleSearch" class="item-search-nav-box dont-stack flex-block">
         <div class="flex-item col-2 advanced-Search"></div>
         <div class="flex-item">
-          <div id="sitesearch" class="searchbar" style="width: 40%; position: relative">
+          <div id="sitesearch" class="searchbar">
             <div>
-              <label for="searchInput" style="display: none">Search Tiffany.com...</label>
-              <input id="searchInput" class="placeholder" autocomplete="off" name="search" type="text" placeholder="Search Tiffany.com..." runat="server" title="overall type: SEARCH_TERM
+              <label for="searchInput">Search Tiffany.com...</label>
+              <input id="searchInput" class="placeholder" autocomplete="off" name="search" type="text" placeholder="Search Tiffany.com..." runat="server" autofill-information="overall type: SEARCH_TERM
 server type: NO_SERVER_DATA
 heuristic type: SEARCH_TERM
 label: Search Tiffany.com...
@@ -4846,22 +3314,10 @@ form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
 field renderer id: 10
-autocomplete: off" autofill-information="overall type: SEARCH_TERM
-server type: NO_SERVER_DATA
-heuristic type: SEARCH_TERM
-label: Search Tiffany.com...
-parseable name: search
-section: _0_5
-field signature: 4273170279
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 10
-autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown" data-ddg-testresultelementid="542611">
+autocomplete: off" data-ddg-testresultelementid="542611">
               <a id="topSearchBtn" class="btn" href="javascript:SearchManager.getInstance().searchSite()"><i class="icon-font">search</i></a>
               <div id="searchSg-warp">
-                <ul id="searchSg" class="type-cta avenir" style="display: none"></ul>
+                <ul id="searchSg" class="type-cta avenir"></ul>
               </div>
               <div id="ctlHeader_ctlSearch_searchError" class="errorText"></div>
             </div>
@@ -4893,14 +3349,9 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
           </div>
         </div>
       </div>
-      <div class="account-nav-box flex-block dont-stack justify-center" style="
-          padding: 20px 0;
-          border: solid #333;
-          border-width: 1px 0;
-          margin: auto 0;
-        ">
-        <div class="flex-item col-3" style="border-right: 1px solid #333">
-          <div class="sterling-display type-b3" style="padding-bottom: 15px">
+      <div class="account-nav-box flex-block dont-stack justify-center">
+        <div class="flex-item col-3">
+          <div class="sterling-display type-b3">
             Have an Account?
           </div>
           <br>
@@ -4908,9 +3359,9 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
             Sign In
           </a>
         </div>
-        <div class="flex-item account-nav-box__create-info col-3" style="text-align: left; padding-left: 50px">
+        <div class="flex-item account-nav-box__create-info col-3">
           <div class="sterling-display type-b3">Create an Account</div>
-          <div class="sterling-display type-b4" style="padding: 15px 0">
+          <div class="sterling-display type-b4">
             Save time during checkout, view your shopping bag and saved items
             from any device and access your order history.
           </div>
@@ -4918,11 +3369,11 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
             Register
           </a>
         </div>
-        <div class="flex-item col-2" style="height: 0"></div>
+        <div class="flex-item col-2"></div>
         <div class="flex-item align-self-center">
-          <div class="sterling-display type-b3" style="padding-bottom: 15px"></div>
+          <div class="sterling-display type-b3"></div>
         </div>
-        <div class="flex-item col-2" style="text-align: left">
+        <div class="flex-item col-2">
           <ul class="type-cta avenir account-links">
             <li>
               <a href="https://www.tiffany.com/Customer/Account/EditAccount.aspx" onclick="TrackQuickViewHeaderLinks('My Account,personal information')">Personal Information</a>
@@ -4934,7 +3385,7 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
               <a href="https://www.tiffany.com/Customer/Account/CommunicationPreferences.aspx" onclick="TrackQuickViewHeaderLinks('My Account,email preferences')">Email Preferences</a>
             </li>
           </ul>
-          <div style="padding-top: 10px">
+          <div>
             <div class="sterling-display type-b2 preferredStore__header">
               My Preferred Store
             </div>
@@ -4947,16 +3398,16 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
         <div class="flex-item col-6">
           <div class="saved-items__header sterling-display type-b3">
             <span class="savedItemsHeaders"> Saved Items </span>
-            <span class="addedToSavedItems" style="display: none" aria-hidden="true">
+            <span class="addedToSavedItems" aria-hidden="true">
               This item has been added to your saved items.
             </span>
-            <span class="removedFromSavedItems" style="display: none" aria-hidden="true">
+            <span class="removedFromSavedItems" aria-hidden="true">
               This Item has been removed
             </span>
           </div>
-          <div class="noSavedItems" style="display: none"></div>
+          <div class="noSavedItems"></div>
           <div class="inlineLoading">
-            <img class="loading" src="https://www.tiffany.com/shared/images/loading.gif">
+            
           </div>
           <div class="saved-items__carousel apply-touch-carousel" data-scroll="noScroll" data-arrow-type="minimal" data-pager-style="numbers" data-arrow-placement="bottom">
             <div class="container"></div>
@@ -5019,21 +3470,21 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
         <div class="flex-item col-6">
           <div class="shopping-bag__header sterling-display type-b3">
             <span class="shoppingBagHeaders"> Shopping Bag </span>
-            <span class="addedToShoppingBag" style="display: none" aria-hidden="true">
+            <span class="addedToShoppingBag" aria-hidden="true">
               This item has been added to your shopping bag.
             </span>
-            <span class="removedFromShoppingBag" style="display: none" aria-hidden="true">
+            <span class="removedFromShoppingBag" aria-hidden="true">
               This Item has been removed
             </span>
           </div>
-          <div class="noShoppingBag" style="display: none"></div>
+          <div class="noShoppingBag"></div>
           <div class="inlineLoading">
-            <img class="loading" src="https://www.tiffany.com/shared/images/loading.gif">
+            
           </div>
           <div class="shopping-bag__carousel apply-touch-carousel" data-scroll="noScroll" data-arrow-type="minimal" data-pager-style="numbers" data-arrow-placement="bottom">
             <div class="container"></div>
           </div>
-          <div class="view-shopping-details type-cta avenir" style="padding-top: 10px">
+          <div class="view-shopping-details type-cta avenir">
             <a href="https://www.tiffany.com/Customer/ShoppingBag.aspx" onclick="TrackNavigationalLinks('view bag details','inline shopping bag')">
               View Bag Details (<span class="shopping-bag-item-count"></span>)
             </a>
@@ -5049,12 +3500,19 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
         </div>
       </div>
     </div>
-    <script>
-      var pageType = "CategoryBrowse";
-      var PageURL = "/Customer/Account/SignIn.aspx";
-      var showBanner = false;
-    </script>
-    <input name="txtVCode" type="text" id="txtVCode" style="display: none" data-ddg-testresultelementid="542612" data-manual-scoring="addressCity">
+    
+    <input name="txtVCode" type="text" id="txtVCode" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: delete_large Enter a city, state or zip code... My Preferred StoreHave an Account?
+parseable name: txtVCode
+section: _0_5
+field signature: 1090431170
+form signature: 1544802490815716851
+form signature in host form: 1544802490815716851
+field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
+form renderer id: 1
+field renderer id: 11" data-ddg-testresultelementid="542612" data-manual-scoring="addressCity">
     <div id="page" class="mobile-spacing__extra">
       <div class="container">
         <div class="sign-in flex-block">
@@ -5070,11 +3528,23 @@ autocomplete: off" autofill-prediction="SEARCH_TERM" data-ddg-inputtype="unknown
                 <fieldset>
                   <div class="md-input">
                     <label for="txtEmail">Email</label>
-                    <input name="txtEmail" type="text" maxlength="70" id="txtEmail" size="12" autocomplete="email" aria-required="true" data-ddg-testresultelementid="542613" data-manual-scoring="username">
+                    <input name="txtEmail" type="text" maxlength="70" id="txtEmail" size="12" autocomplete="email" aria-required="true" autofill-information="overall type: HTML_TYPE_EMAIL
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: txtEmail
+section: _0_5
+field signature: 454621691
+form signature: 1544802490815716851
+form signature in host form: 1544802490815716851
+field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
+form renderer id: 1
+field renderer id: 13
+autocomplete: email" data-ddg-testresultelementid="542613" data-manual-scoring="username">
                   </div>
                   <div class="md-input">
                     <label for="txtPassword">Password</label>
-                    <input name="txtPassword" type="password" maxlength="12" id="txtPassword" class="input" size="12" autocomplete="password" aria-required="true" title="overall type: UNKNOWN_TYPE
+                    <input name="txtPassword" type="password" maxlength="12" id="txtPassword" class="input" size="12" autocomplete="password" aria-required="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Password
@@ -5086,19 +3556,7 @@ form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
 field renderer id: 14
-autocomplete: password" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Password
-parseable name: txtPassword
-section: _0_5
-field signature: 3273750665
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 14
-autocomplete: password" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="credentials.password" data-ddg-testresultelementid="542614">
+autocomplete: password" data-ddg-testresultelementid="542614">
                   </div>
                   <div class="formBtnWrapper">
                     <input type="submit" name="btnSignIn" value="Sign In" id="btnSignIn" class="btn-aem">
@@ -5114,7 +3572,7 @@ autocomplete: password" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="c
           </div>
           <div class="flex-item col-6">
             <div class="sign-in__header">
-              <h2 class="sterling-display type-aem-h3" style="letter-spacing: 2px">
+              <h2 class="sterling-display type-aem-h3">
                 Create an Account
               </h2>
               <div class="signin_Createaccount_Descitems_Wrapper">
@@ -5134,33 +3592,15 @@ autocomplete: password" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="c
       </div>
     </div>
     <div class="clear"></div>
-    <script>
-      var isChooseYourCountry = "True";
-      var selectedSite = "CA";
-      var cycURL = "https://www.tiffany.com/chooseyourcountry.aspx";
-      var sitePrefURL =
-        "https://www.tiffany.com/setsitepreference.aspx?mode=cycfooter&cyctoken=7521DB24AB15485181964AF6731093FB";
-      var previewQueryParam = "";
-    </script>
-    <script>
-      var txtDragToRotate = "Drag to rotate";
-      var dropAHintText = "Drop A Hint";
-      var shopNowText = "Shop Now";
-      var tileTitle = "DROP A HINT";
-      var dropTileText =
-        "Send a little nudge to the ones you love and get just what you’re wishing for.";
-      var viewMoreProducts = "VIEW MORE PRODUCTS";
-      var cofirmCloseModal =
-        "Are you sure you want to close? Any unsaved changes will be lost.";
-      var LABEL_ADD_SUCCESS = "This item has been added to your shopping bag.";
-    </script>
-    <div id="copyright" class="l7" style="display: none">
+    
+    
+    <div id="copyright" class="l7">
       © 2023 Tiffany &amp; Co. All Rights Reserved
     </div>
   </div>
   <div class="tiffany-aem">
     <div class="cmp-experiencefragment cmp-experiencefragment--footer">
-      <link rel="stylesheet" href="/libs/cq/experience-fragments/components/xfpage/content.min.5797e8e7d68b9d8bf73ee762c36c2426.css" type="text/css">
+      
       <div class="xf-content-height">
         <div class="aem-Grid aem-Grid--12 aem-Grid--default--12">
           <div class="global-footer aem-GridColumn aem-GridColumn--default--12">
@@ -5183,7 +3623,7 @@ autocomplete: password" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="c
                       <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                         <div class="link-list__container">
                           <article class="css-dropdown">
-                            <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-mobile0" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-mobile0" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Client Care
@@ -5194,18 +3634,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 16" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Client Care
-parseable name: footer-list-itemfooter-mobile0
-section: _0_5
-field signature: 3955770114
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542615">
+field renderer id: 16" data-ddg-testresultelementid="542615">
                             <div class="link-list__container_title">
                               <label class="css-dropdown__text-button" for="footer-list-itemfooter-mobile0">
                                 Client Care
@@ -5258,11 +3687,11 @@ field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                         <div class="scrollbar-container ps">
                                           <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                           <div></div>
-                                          <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                          <div class="ps__rail-x">
+                                            <div class="ps__thumb-x" tabindex="0"></div>
                                           </div>
-                                          <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                          <div class="ps__rail-y">
+                                            <div class="ps__thumb-y" tabindex="0"></div>
                                           </div>
                                         </div>
                                       </div></div></tiffany-footer-flyout>
@@ -5276,11 +3705,11 @@ field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                         <div class="scrollbar-container ps">
                                           <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                           <div></div>
-                                          <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                          <div class="ps__rail-x">
+                                            <div class="ps__thumb-x" tabindex="0"></div>
                                           </div>
-                                          <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                          <div class="ps__rail-y">
+                                            <div class="ps__thumb-y" tabindex="0"></div>
                                           </div>
                                         </div>
                                       </div></div></tiffany-footer-flyout>
@@ -5320,7 +3749,7 @@ field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                         <div class="link-list__container">
                           <article class="css-dropdown">
-                            <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-mobile1" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-mobile1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Our Company
@@ -5331,18 +3760,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 17" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Our Company
-parseable name: footer-list-itemfooter-mobile1
-section: _0_5
-field signature: 2876372188
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542616">
+field renderer id: 17" data-ddg-testresultelementid="542616">
                             <div class="link-list__container_title">
                               <label class="css-dropdown__text-button" for="footer-list-itemfooter-mobile1">
                                 Our Company
@@ -5378,11 +3796,11 @@ field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                         <div class="scrollbar-container ps">
                                           <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                           <div></div>
-                                          <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                          <div class="ps__rail-x">
+                                            <div class="ps__thumb-x" tabindex="0"></div>
                                           </div>
-                                          <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                          <div class="ps__rail-y">
+                                            <div class="ps__thumb-y" tabindex="0"></div>
                                           </div>
                                         </div>
                                       </div></div></tiffany-footer-flyout>
@@ -5423,11 +3841,11 @@ field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                         <div class="scrollbar-container ps">
                                           <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                           <div></div>
-                                          <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                          <div class="ps__rail-x">
+                                            <div class="ps__thumb-x" tabindex="0"></div>
                                           </div>
-                                          <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                          <div class="ps__rail-y">
+                                            <div class="ps__thumb-y" tabindex="0"></div>
                                           </div>
                                         </div>
                                       </div></div></tiffany-footer-flyout>
@@ -5451,7 +3869,7 @@ field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                       <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                         <div class="link-list__container">
                           <article class="css-dropdown">
-                            <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-mobile2" title="overall type: UNKNOWN_TYPE
+                            <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-mobile2" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Related Tiffany Sites
@@ -5462,18 +3880,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 18" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Related Tiffany Sites
-parseable name: footer-list-itemfooter-mobile2
-section: _0_5
-field signature: 812611967
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542617">
+field renderer id: 18" data-ddg-testresultelementid="542617">
                             <div class="link-list__container_title">
                               <label class="css-dropdown__text-button" for="footer-list-itemfooter-mobile2">
                                 Related Tiffany Sites
@@ -5547,7 +3954,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                       <div class="link-list__container">
                         <article class="css-dropdown">
-                          <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-desktop0" title="overall type: UNKNOWN_TYPE
+                          <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-desktop0" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Client Care
@@ -5558,18 +3965,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 19" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Client Care
-parseable name: footer-list-itemfooter-desktop0
-section: _0_5
-field signature: 724753654
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542618">
+field renderer id: 19" data-ddg-testresultelementid="542618">
                           <div class="link-list__container_title">
                             <label class="css-dropdown__text-button" for="footer-list-itemfooter-desktop0">
                               Client Care
@@ -5622,11 +4018,11 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       <div class="scrollbar-container ps">
                                         <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                         <div></div>
-                                        <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                          <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                        <div class="ps__rail-x">
+                                          <div class="ps__thumb-x" tabindex="0"></div>
                                         </div>
-                                        <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                          <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                        <div class="ps__rail-y">
+                                          <div class="ps__thumb-y" tabindex="0"></div>
                                         </div>
                                       </div>
                                     </div></div></tiffany-footer-flyout>
@@ -5640,11 +4036,11 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       <div class="scrollbar-container ps">
                                         <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                         <div></div>
-                                        <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                          <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                        <div class="ps__rail-x">
+                                          <div class="ps__thumb-x" tabindex="0"></div>
                                         </div>
-                                        <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                          <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                        <div class="ps__rail-y">
+                                          <div class="ps__thumb-y" tabindex="0"></div>
                                         </div>
                                       </div>
                                     </div></div></tiffany-footer-flyout>
@@ -5675,7 +4071,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                       <div class="link-list__container">
                         <article class="css-dropdown">
-                          <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-desktop1" title="overall type: UNKNOWN_TYPE
+                          <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-desktop1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Our Company
@@ -5686,18 +4082,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Our Company
-parseable name: footer-list-itemfooter-desktop1
-section: _0_5
-field signature: 1637466064
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542619">
+field renderer id: 20" data-ddg-testresultelementid="542619">
                           <div class="link-list__container_title">
                             <label class="css-dropdown__text-button" for="footer-list-itemfooter-desktop1">
                               Our Company
@@ -5733,11 +4118,11 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       <div class="scrollbar-container ps">
                                         <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                         <div></div>
-                                        <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                          <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                        <div class="ps__rail-x">
+                                          <div class="ps__thumb-x" tabindex="0"></div>
                                         </div>
-                                        <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                          <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                        <div class="ps__rail-y">
+                                          <div class="ps__thumb-y" tabindex="0"></div>
                                         </div>
                                       </div>
                                     </div></div></tiffany-footer-flyout>
@@ -5778,11 +4163,11 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                                       <div class="scrollbar-container ps">
                                         <button type="button" class="footer-flyout__container_close icon-Close" aria-label="close"></button>
                                         <div></div>
-                                        <div class="ps__rail-x" style="left: 0px; bottom: 0px">
-                                          <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px"></div>
+                                        <div class="ps__rail-x">
+                                          <div class="ps__thumb-x" tabindex="0"></div>
                                         </div>
-                                        <div class="ps__rail-y" style="top: 0px; right: 0px">
-                                          <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px"></div>
+                                        <div class="ps__rail-y">
+                                          <div class="ps__thumb-y" tabindex="0"></div>
                                         </div>
                                       </div>
                                     </div></div></tiffany-footer-flyout>
@@ -5806,7 +4191,7 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                       <div class="link-list__container">
                         <article class="css-dropdown">
-                          <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-desktop2" title="overall type: UNKNOWN_TYPE
+                          <input type="checkbox" class="css-dropdown__trigger" id="footer-list-itemfooter-desktop2" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Related Tiffany Sites
@@ -5817,18 +4202,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Related Tiffany Sites
-parseable name: footer-list-itemfooter-desktop2
-section: _0_5
-field signature: 1893415179
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542620">
+field renderer id: 21" data-ddg-testresultelementid="542620">
                           <div class="link-list__container_title">
                             <label class="css-dropdown__text-button" for="footer-list-itemfooter-desktop2">
                               Related Tiffany Sites
@@ -5897,7 +4271,7 @@ field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                   </div>
                 </div>
                 <div class="footer__top-wrapper_right-wrapper">
-                  <input type="checkbox" class="css-dropdown__trigger" id="footer-email" title="overall type: UNKNOWN_TYPE
+                  <input type="checkbox" class="css-dropdown__trigger" id="footer-email" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Latest from Tiffany
@@ -5908,18 +4282,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Latest from Tiffany
-parseable name: footer-email
-section: _0_5
-field signature: 3125486001
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542621">
+field renderer id: 22" data-ddg-testresultelementid="542621">
                   <div class="footer__top-wrapper_right-wrapper_title">
                     <label class="css-dropdown__text-button" for="footer-email">
                       Latest from Tiffany
@@ -5932,7 +4295,19 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     events, store openings and much more.
                   </p>
                   <div class="footer__top-wrapper_right-wrapper_email-wrapper material-input">
-                    <input class="footer__top-wrapper_right-wrapper_email-wrapper_email-input" name="UserEmail" id="UserEmail" type="email" autocomplete="email" data-ddg-testresultelementid="542622" data-manual-scoring="username">
+                    <input class="footer__top-wrapper_right-wrapper_email-wrapper_email-input" name="UserEmail" id="UserEmail" type="email" autocomplete="email" autofill-information="overall type: HTML_TYPE_EMAIL
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: UserEmail
+section: UserEmail_0_23
+field signature: 3915214557
+form signature: 1544802490815716851
+form signature in host form: 1544802490815716851
+field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
+form renderer id: 1
+field renderer id: 23
+autocomplete: email" data-ddg-testresultelementid="542622" data-manual-scoring="username">
                     <label for="UserEmail" class="footer__top-wrapper_right-wrapper_email-wrapper_email-label">Email</label>
                   </div>
                   <button type="submit" class="footer__top-wrapper_right-wrapper_signup-button btn btn--outline" tabindex="0" data-url="/Customer/Request/EmailSignUp.aspx" title="Sign up" formtarget="_blank" rel="noopener noreferrer" data-nav-context="footer" data-nav-type="email-signup">
@@ -5943,35 +4318,35 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     <div class="footer__bottom-wrapper_right-container_item_social-icons">
                       <a href="https://instagram.com/tiffanyandco/" aria-label="Instagram" title="Instagram" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Instagram" class="cta">
                         <span class="cta-content hover-cta">
-                          <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Instagram load-lazily loaded" src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" data-was-processed="true">
+                          
                         </span>
                       </a>
                     </div>
                     <div class="footer__bottom-wrapper_right-container_item_social-icons">
                       <a href="https://www.facebook.com/Tiffany/" aria-label="Facebook" title="Facebook" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Facebook" class="cta">
                         <span class="cta-content hover-cta">
-                          <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Facebook load-lazily loaded" src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" data-was-processed="true">
+                          
                         </span>
                       </a>
                     </div>
                     <div class="footer__bottom-wrapper_right-container_item_social-icons">
                       <a href="https://pinterest.com/TiffanyAndCo/" aria-label="Pinterest" title="Pinterest" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Pinterest" class="cta">
                         <span class="cta-content hover-cta">
-                          <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Pinterest load-lazily loaded" src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" data-was-processed="true">
+                          
                         </span>
                       </a>
                     </div>
                     <div class="footer__bottom-wrapper_right-container_item_social-icons">
                       <a href="https://twitter.com/TiffanyAndCo/" aria-label="Twitter" title="Twitter" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Twitter" class="cta">
                         <span class="cta-content hover-cta">
-                          <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Twitter load-lazily loaded" src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" data-was-processed="true">
+                          
                         </span>
                       </a>
                     </div>
                     <div class="footer__bottom-wrapper_right-container_item_social-icons">
                       <a href="https://www.youtube.com/OfficialTiffanyAndCo/" aria-label="YouTube" title="YouTube" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="YouTube" class="cta">
                         <span class="cta-content hover-cta">
-                          <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_YouTube load-lazily loaded" src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" data-was-processed="true">
+                          
                         </span>
                       </a>
                     </div>
@@ -5989,7 +4364,7 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                     </div>
                     <div class="choose-country">
                       <div class="choose-country__container">
-                        <input type="checkbox" class="css-dropdown__trigger" id="footer-global" title="overall type: UNKNOWN_TYPE
+                        <input type="checkbox" class="css-dropdown__trigger" id="footer-global" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Change Location: United States
@@ -6000,24 +4375,13 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 25" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Change Location: United States
-parseable name: footer-global
-section: UserEmail_0_23
-field signature: 1779388899
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 25" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542623">
+field renderer id: 25" data-ddg-testresultelementid="542623">
                         <div class="css-dropdown__content choose-country__content hide">
                           <div class="choose-country__bottom-wrapper">
                             <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                               <div class="link-list__container">
                                 <article class="css-dropdown chooseCountry">
-                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item00" title="overall type: UNKNOWN_TYPE
+                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item00" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Americas
@@ -6028,18 +4392,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Americas
-parseable name: footer-list-item00
-section: UserEmail_0_23
-field signature: 301503578
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542624">
+field renderer id: 26" data-ddg-testresultelementid="542624">
                                   <div class="link-list__container_title">
                                     <label class="css-dropdown__text-button" for="footer-list-item00">
                                       Americas
@@ -6103,7 +4456,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                               <div class="link-list__container">
                                 <article class="css-dropdown chooseCountry">
-                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item11" title="overall type: UNKNOWN_TYPE
+                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item11" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Europe
@@ -6114,18 +4467,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 27" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Europe
-parseable name: footer-list-item11
-section: UserEmail_0_23
-field signature: 515968145
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542625">
+field renderer id: 27" data-ddg-testresultelementid="542625">
                                   <div class="link-list__container_title">
                                     <label class="css-dropdown__text-button" for="footer-list-item11">
                                       Europe
@@ -6234,7 +4576,7 @@ field renderer id: 27" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                               <div class="link-list__container">
                                 <article class="css-dropdown chooseCountry">
-                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item22" title="overall type: UNKNOWN_TYPE
+                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item22" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Asia/Pacific
@@ -6245,18 +4587,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Asia/Pacific
-parseable name: footer-list-item22
-section: UserEmail_0_23
-field signature: 1400503993
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542626">
+field renderer id: 28" data-ddg-testresultelementid="542626">
                                   <div class="link-list__container_title">
                                     <label class="css-dropdown__text-button" for="footer-list-item22">
                                       Asia/Pacific
@@ -6356,7 +4687,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                             <article class="link-list app-js__link-list {{linkList.styleTabClass}}">
                               <div class="link-list__container">
                                 <article class="css-dropdown chooseCountry">
-                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item33" title="overall type: UNKNOWN_TYPE
+                                  <input type="checkbox" class="css-dropdown__trigger" id="footer-list-item33" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: All other locations
@@ -6367,18 +4698,7 @@ form signature: 1544802490815716851
 form signature in host form: 1544802490815716851
 field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
 form renderer id: 1
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: All other locations
-parseable name: footer-list-item33
-section: UserEmail_0_23
-field signature: 3024709201
-form signature: 1544802490815716851
-form signature in host form: 1544802490815716851
-field frame token: 7FC3C6A4C44358E267B31A616DD8AFB6
-form renderer id: 1
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="542627">
+field renderer id: 29" data-ddg-testresultelementid="542627">
                                   <div class="link-list__container_title">
                                     <label class="css-dropdown__text-button" for="footer-list-item33">
                                       All other locations
@@ -6416,35 +4736,35 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                   <div class="footer__bottom-wrapper_right-container_item_social-icons">
                     <a href="https://instagram.com/tiffanyandco/" aria-label="Instagram" title="Instagram" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Instagram" class="cta-underline cta">
                       <span class="cta-content">
-                        <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Instagram load-lazily">
+                        
                       </span>
                     </a>
                   </div>
                   <div class="footer__bottom-wrapper_right-container_item_social-icons">
                     <a href="https://www.facebook.com/Tiffany/" aria-label="Facebook" title="Facebook" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Facebook" class="cta-underline cta">
                       <span class="cta-content">
-                        <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Facebook load-lazily">
+                        
                       </span>
                     </a>
                   </div>
                   <div class="footer__bottom-wrapper_right-container_item_social-icons">
                     <a href="https://pinterest.com/TiffanyAndCo/" aria-label="Pinterest" title="Pinterest" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Pinterest" class="cta-underline cta">
                       <span class="cta-content">
-                        <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Pinterest load-lazily">
+                        
                       </span>
                     </a>
                   </div>
                   <div class="footer__bottom-wrapper_right-container_item_social-icons">
                     <a href="https://twitter.com/TiffanyAndCo/" aria-label="Twitter" title="Twitter" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="Twitter" class="cta-underline cta">
                       <span class="cta-content">
-                        <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_Twitter load-lazily">
+                        
                       </span>
                     </a>
                   </div>
                   <div class="footer__bottom-wrapper_right-container_item_social-icons">
                     <a href="https://www.youtube.com/OfficialTiffanyAndCo/" aria-label="YouTube" title="YouTube" target="_blank" tabindex="0" data-exit-context="footer" data-exit-type="social" data-exit-name="YouTube" class="cta-underline cta">
                       <span class="cta-content">
-                        <img data-src="//media.tiffany.com/is/image/tiffanydm/footer-sprite?$tile$&amp;wid=1267&amp;hei=3106" class="footer_icon_YouTube load-lazily">
+                        
                       </span>
                     </a>
                   </div>
@@ -6456,265 +4776,8 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
                 </span>
               </div>
             </footer>
-            <script>
-              // akam-sw.js install script version 1.3.6
-              "serviceWorker" in navigator &&
-                "find" in [] &&
-                (function () {
-                  var e = new Promise(function (e) {
-                      "complete" === document.readyState || !1
-                        ? e()
-                        : (window.addEventListener("load", function () {
-                            e();
-                          }),
-                          setTimeout(function () {
-                            "complete" !== document.readyState && e();
-                          }, 1e4));
-                    }),
-                    n = window.akamServiceWorkerInvoked,
-                    r = "1.3.6";
-                  if (n) aka3pmLog("akam-setup already invoked");
-                  else {
-                    (window.akamServiceWorkerInvoked = !0),
-                      (window.aka3pmLog = function () {
-                        window.akamServiceWorkerDebug &&
-                          console.log.apply(console, arguments);
-                      });
-                    function o(e) {
-                      (window.BOOMR_mq = window.BOOMR_mq || []).push([
-                        "addVar",
-                        { "sm.sw.s": e, "sm.sw.v": r },
-                      ]);
-                    }
-                    var i = "/akam-sw.js",
-                      a = new Map();
-                    navigator.serviceWorker.addEventListener(
-                      "message",
-                      function (e) {
-                        var n,
-                          r,
-                          o = e.data;
-                        if (o.isAka3pm)
-                          if (o.command) {
-                            var i =
-                              ((n = o.command),
-                              (r = a.get(n)) && r.length > 0
-                                ? r.shift()
-                                : null);
-                            i && i(e.data.response);
-                          } else if (o.commandToClient)
-                            switch (o.commandToClient) {
-                              case "enableDebug":
-                                window.akamServiceWorkerDebug ||
-                                  ((window.akamServiceWorkerDebug = !0),
-                                  aka3pmLog(
-                                    "Setup script debug enabled via service worker message"
-                                  ),
-                                  v());
-                                break;
-                              case "boomerangMQ":
-                                o.payload &&
-                                  (window.BOOMR_mq =
-                                    window.BOOMR_mq || []).push(o.payload);
-                            }
-                        aka3pmLog("akam-sw message: " + JSON.stringify(e.data));
-                      }
-                    );
-                    var t = function (e) {
-                        return new Promise(function (n) {
-                          var r, o;
-                          (r = e.command),
-                            (o = n),
-                            a.has(r) || a.set(r, []),
-                            a.get(r).push(o),
-                            navigator.serviceWorker.controller &&
-                              ((e.isAka3pm = !0),
-                              navigator.serviceWorker.controller.postMessage(
-                                e
-                              ));
-                        });
-                      },
-                      c = function (e) {
-                        return t({ command: "navTiming", navTiming: e });
-                      },
-                      s = null,
-                      m = {},
-                      d = function () {
-                        var e = i;
-                        return (
-                          s && (e += "?othersw=" + encodeURIComponent(s)),
-                          (function (e, n) {
-                            return new Promise(function (r, i) {
-                              aka3pmLog(
-                                "Registering service worker with URL: " + e
-                              ),
-                                navigator.serviceWorker
-                                  .register(e, n)
-                                  .then(function (e) {
-                                    aka3pmLog(
-                                      "ServiceWorker registration successful with scope: ",
-                                      e.scope
-                                    ),
-                                      r(e),
-                                      o(1);
-                                  })
-                                  .catch(function (e) {
-                                    aka3pmLog(
-                                      "ServiceWorker registration failed: ",
-                                      e
-                                    ),
-                                      o(0),
-                                      i(e);
-                                  });
-                            });
-                          })(e, m)
-                        );
-                      },
-                      g = navigator.serviceWorker.__proto__.register;
-                    if (
-                      ((navigator.serviceWorker.__proto__.register = function (
-                        n,
-                        r
-                      ) {
-                        return n.includes(i)
-                          ? g.call(this, n, r)
-                          : (aka3pmLog(
-                              "Overriding registration of service worker for: " +
-                                n
-                            ),
-                            (s = new URL(n, window.location.href)),
-                            (m = r),
-                            navigator.serviceWorker.controller
-                              ? new Promise(function (n, r) {
-                                  var o =
-                                    navigator.serviceWorker.controller
-                                      .scriptURL;
-                                  if (o.includes(i)) {
-                                    var a = encodeURIComponent(s);
-                                    o.includes(a)
-                                      ? (aka3pmLog(
-                                          "Cancelling registration as we already integrate other SW: " +
-                                            s
-                                        ),
-                                        navigator.serviceWorker
-                                          .getRegistration()
-                                          .then(function (e) {
-                                            n(e);
-                                          }))
-                                      : e.then(function () {
-                                          aka3pmLog(
-                                            "Unregistering existing 3pm service worker"
-                                          ),
-                                            navigator.serviceWorker
-                                              .getRegistration()
-                                              .then(function (e) {
-                                                e.unregister()
-                                                  .then(function () {
-                                                    return d();
-                                                  })
-                                                  .then(function (e) {
-                                                    n(e);
-                                                  })
-                                                  .catch(function (e) {
-                                                    r(e);
-                                                  });
-                                              });
-                                        });
-                                  } else
-                                    aka3pmLog(
-                                      "Cancelling registration as we already have akam-sw.js installed"
-                                    ),
-                                      navigator.serviceWorker
-                                        .getRegistration()
-                                        .then(function (e) {
-                                          n(e);
-                                        });
-                                })
-                              : g.call(this, n, r));
-                      }),
-                      navigator.serviceWorker.controller)
-                    ) {
-                      var u = navigator.serviceWorker.controller.scriptURL;
-                      u.includes("/akam-sw.js") ||
-                        u.includes("/akam-sw-preprod.js") ||
-                        u.includes("/threepm-sw.js") ||
-                        (aka3pmLog(
-                          "Detected existing service worker. Removing and re-adding inside akam-sw.js"
-                        ),
-                        (s = new URL(u, window.location.href)),
-                        e.then(function () {
-                          navigator.serviceWorker
-                            .getRegistration()
-                            .then(function (e) {
-                              (m = { scope: e.scope }), e.unregister(), d();
-                            });
-                        }));
-                    } else
-                      e.then(function () {
-                        window.akamServiceWorkerPreprod &&
-                          (i = "/akam-sw-preprod.js"),
-                          d();
-                      });
-                    if (window.performance) {
-                      var w = window.performance.timing,
-                        l = w.responseEnd - w.responseStart;
-                      c(l);
-                    }
-                    e.then(function () {
-                      t({ command: "pageLoad" });
-                    });
-                    var k = !1;
-                    function v() {
-                      window.akamServiceWorkerDebug &&
-                        !k &&
-                        ((k = !0),
-                        aka3pmLog(
-                          "Initializing debug functions at window scope"
-                        ),
-                        (window.aka3pmInjectSwPolicy = function (e) {
-                          return t({ command: "updatePolicy", policy: e });
-                        }),
-                        (window.aka3pmDisableInjectedPolicy = function () {
-                          return t({ command: "disableInjectedPolicy" });
-                        }),
-                        (window.aka3pmDeleteInjectedPolicy = function () {
-                          return t({ command: "deleteInjectedPolicy" });
-                        }),
-                        (window.aka3pmGetStateAsync = function () {
-                          return t({ command: "getState" });
-                        }),
-                        (window.aka3pmDumpState = function () {
-                          aka3pmGetStateAsync().then(function (e) {
-                            aka3pmLog(JSON.stringify(e, null, "\t"));
-                          });
-                        }),
-                        (window.aka3pmInjectTiming = function (e) {
-                          return c(e);
-                        }),
-                        (window.aka3pmUpdatePolicyFromNetwork = function () {
-                          return t({ command: "pullPolicyFromNetwork" });
-                        }));
-                    }
-                    v();
-                  }
-                })();
-            </script>
-            <script>
-              const snapsChatAttributeName = "online-chat";
-              const snapsChatLink = document.querySelectorAll(
-                "[data-nav-name=" + snapsChatAttributeName + "]"
-              );
-              /**
-               * Clearing/Removing Footer links for .NET Pages
-               */
-              if (snapsChatLink.length > 0) {
-                snapsChatLink.forEach((element) => {
-                  if (document.URL.includes("aspx")) {
-                    element.remove();
-                  }
-                });
-              }
-            </script>
+            
+            
           </div>
         </div>
       </div>

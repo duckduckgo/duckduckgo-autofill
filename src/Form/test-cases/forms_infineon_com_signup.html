@@ -1,5 +1,6 @@
 <!--
   https://forms.infineon.com/covid19/Identity/Account/Register
+  rank: 8782
   testRunId: 66
   testResultId: 239485
 -->
@@ -35,11 +36,7 @@
   </header>
   <main role="main" class="flex-shrink-0">
     <div class="container">
-      <style type="text/css">
-        .display-none {
-          display: none;
-        }
-      </style>
+      
 
       <div class="jumbotron jumbotron-fluid">
         <div class="container">
@@ -71,24 +68,46 @@
           </section>
         </div>
         <div class="col-md-7 offset-md-1 display-none" id="form-container">
-          <form method="post" action="/covid19/Identity/Account/Register" data-ddg-formtype="sign up">
+          <form method="post" action="/covid19/Identity/Account/Register">
             <h4>Create a new account.</h4>
             <hr>
             <div class="text-danger validation-summary-valid" data-valmsg-summary="true">
               <ul>
-                <li style="display: none"></li>
+                <li></li>
               </ul>
             </div>
             <div class="form-group">
               <label for="Input_FirstName">First Name</label>
               <span class="text-danger">*</span>
-              <input class="form-control" type="text" data-val="true" data-val-required="The First Name field is required." id="Input_FirstName" name="Input.FirstName" value="" data-ddg-testresultelementid="541175" data-manual-scoring="firstName">
+              <input class="form-control" type="text" data-val="true" data-val-required="The First Name field is required." id="Input_FirstName" name="Input.FirstName" value="" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name
+parseable name: Input.FirstName
+section: Input.FirstName_0_30
+field signature: 1116638444
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 30" data-ddg-testresultelementid="541175" data-manual-scoring="firstName">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.FirstName" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group">
               <label for="Input_LastName">Last Name</label>
               <span class="text-danger">*</span>
-              <input class="form-control" type="text" data-val="true" data-val-required="The Last Name field is required." id="Input_LastName" name="Input.LastName" value="" data-ddg-testresultelementid="541176" data-manual-scoring="lastName">
+              <input class="form-control" type="text" data-val="true" data-val-required="The Last Name field is required." id="Input_LastName" name="Input.LastName" value="" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name
+parseable name: Input.LastName
+section: Input.FirstName_0_30
+field signature: 4020337706
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 31" data-ddg-testresultelementid="541176" data-manual-scoring="lastName">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.LastName" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group">
@@ -96,7 +115,7 @@
               <span class="text-danger">*</span>
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <select class="input-group-text" data-val="true" data-val-required="The MobileCallingCode field is required." id="Input_MobileCallingCode" name="Input.MobileCallingCode" title="overall type: PHONE_HOME_COUNTRY_CODE
+                  <select class="input-group-text" data-val="true" data-val-required="The MobileCallingCode field is required." id="Input_MobileCallingCode" name="Input.MobileCallingCode" autofill-information="overall type: PHONE_HOME_COUNTRY_CODE
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_COUNTRY_CODE
 label: Primary Number (e.g. +65 12345678) *
@@ -107,18 +126,7 @@ form signature: 13560604348868097756
 form signature in host form: 13560604348868097756
 field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
 form renderer id: 4
-field renderer id: 32" autofill-information="overall type: PHONE_HOME_COUNTRY_CODE
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_COUNTRY_CODE
-label: Primary Number (e.g. +65 12345678) *
-parseable name: Input.MobileCallingCode
-section: Input.FirstName_0_30
-field signature: 3454566390
-form signature: 13560604348868097756
-form signature in host form: 13560604348868097756
-field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
-form renderer id: 4
-field renderer id: 32" autofill-prediction="PHONE_HOME_COUNTRY_CODE" data-ddg-inputtype="identities.phone" data-ddg-testresultelementid="541177">
+field renderer id: 32" data-ddg-testresultelementid="541177">
                     <option value="+376">AD (+376)</option>
                     <option value="+971">AE (+971)</option>
                     <option value="+93">AF (+93)</option>
@@ -371,13 +379,24 @@ field renderer id: 32" autofill-prediction="PHONE_HOME_COUNTRY_CODE" data-ddg-in
                     <option value="+263">ZW (+263)</option>
                   </select>
                 </div>
-                <input class="form-control" type="text" data-val="true" data-val-regex="Enter 1 to 12 digits" data-val-regex-pattern="\d{1,12}" data-val-required="The Primary Number (e.g. +65 12345678) field is required." id="Input_Mobile" name="Input.Mobile" value="" data-ddg-testresultelementid="541178" data-manual-scoring="phone">
+                <input class="form-control" type="text" data-val="true" data-val-regex="Enter 1 to 12 digits" data-val-regex-pattern="\d{1,12}" data-val-required="The Primary Number (e.g. +65 12345678) field is required." id="Input_Mobile" name="Input.Mobile" value="" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_CITY_AND_NUMBER
+label: Primary Number (e.g. +65 12345678)
+parseable name: Input.Mobile
+section: Input.FirstName_0_30
+field signature: 3137270204
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 33" data-ddg-testresultelementid="541178" data-manual-scoring="phone">
               </div>
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.Mobile" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group" id="ipt-employeeId">
               <label for="Input_PersonnelNumber">Infineon Employee ID (8 Digits)</label>
-              <input class="form-control" type="text" id="Input_PersonnelNumber" name="Input.PersonnelNumber" value="" title="overall type: UNKNOWN_TYPE
+              <input class="form-control" type="text" id="Input_PersonnelNumber" name="Input.PersonnelNumber" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Infineon Employee ID (8 Digits)
@@ -388,23 +407,12 @@ form signature: 13560604348868097756
 form signature in host form: 13560604348868097756
 field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
 form renderer id: 4
-field renderer id: 34" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Infineon Employee ID (8 Digits)
-parseable name: Input.PersonnelNumber
-section: Input.FirstName_0_30
-field signature: 452788948
-form signature: 13560604348868097756
-form signature in host form: 13560604348868097756
-field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
-form renderer id: 4
-field renderer id: 34" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="541179">
+field renderer id: 34" data-ddg-testresultelementid="541179">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.PersonnelNumber" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group" id="ipt-company">
               <label for="Input_Company">Company Name</label>
-              <input class="form-control" type="text" id="Input_Company" name="Input.Company" value="" title="overall type: COMPANY_NAME
+              <input class="form-control" type="text" id="Input_Company" name="Input.Company" value="" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Company Name
@@ -415,23 +423,12 @@ form signature: 13560604348868097756
 form signature in host form: 13560604348868097756
 field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
 form renderer id: 4
-field renderer id: 35" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Company Name
-parseable name: Input.Company
-section: Input.FirstName_0_30
-field signature: 1916853570
-form signature: 13560604348868097756
-form signature in host form: 13560604348868097756
-field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
-form renderer id: 4
-field renderer id: 35" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="541180">
+field renderer id: 35" data-ddg-testresultelementid="541180">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.Company" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group" id="ipt-department">
               <label for="Input_DepartmentId">Department</label>
-              <select class="form-control" id="Input_DepartmentId" name="Input.DepartmentId" title="overall type: UNKNOWN_TYPE
+              <select class="form-control" id="Input_DepartmentId" name="Input.DepartmentId" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Department
@@ -442,18 +439,7 @@ form signature: 13560604348868097756
 form signature in host form: 13560604348868097756
 field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
 form renderer id: 4
-field renderer id: 36" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Department
-parseable name: Input.DepartmentId
-section: Input.FirstName_0_30
-field signature: 531117242
-form signature: 13560604348868097756
-form signature in host form: 13560604348868097756
-field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
-form renderer id: 4
-field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="541181">
+field renderer id: 36" data-ddg-testresultelementid="541181">
                 <option>Select One</option>
                 <option value="3680">AGI</option>
                 <option value="4888">AIM OPP FE PFM FM R DPS</option>
@@ -5666,7 +5652,18 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             </div>
             <div class="form-group">
               <label for="Input_Country">Country</label>
-              <select class="form-control" id="Input_Country" name="Input.Country" data-ddg-testresultelementid="541182" data-manual-scoring="addressCountryCode">
+              <select class="form-control" id="Input_Country" name="Input.Country" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country
+parseable name: Input.Country
+section: Input.FirstName_0_30
+field signature: 142160176
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 37" data-ddg-testresultelementid="541182" data-manual-scoring="addressCountryCode">
                 <option value="Afghanistan">Afghanistan</option>
                 <option value="Åland Islands">Åland Islands</option>
                 <option value="Albania">Albania</option>
@@ -5995,26 +5992,52 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <div class="form-group">
               <label for="Input_Email">Email</label>
               <span class="text-danger">*</span>
-              <input class="form-control" type="email" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="Input_Email" name="Input.Email" value="" data-ddg-autofill="true" data-ddg-testresultelementid="541183" style="
-                  background-size: auto 26px !important;
-                  background-position: right center !important;
-                  background-repeat: no-repeat !important;
-                  background-origin: content-box !important;
-                  background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                  transition: background 0s ease 0s !important;
-                " data-manual-scoring="emailAddress">
+              <input class="form-control" type="email" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="Input_Email" name="Input.Email" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: Input.Email
+section: Input.FirstName_0_30
+field signature: 2169294163
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 38" data-ddg-testresultelementid="541183" data-manual-scoring="emailAddress">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.Email" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group">
               <label for="Input_Password">Password</label>
               <span class="text-danger">*</span>
-              <input class="form-control" type="password" data-val="true" data-val-length="The Password must be at least 6 and at max 100 characters long." data-val-length-max="100" data-val-length-min="6" data-val-required="The Password field is required." id="Input_Password" maxlength="100" name="Input.Password" data-ddg-testresultelementid="541184" data-manual-scoring="password">
+              <input class="form-control" type="password" data-val="true" data-val-length="The Password must be at least 6 and at max 100 characters long." data-val-length-max="100" data-val-length-min="6" data-val-required="The Password field is required." id="Input_Password" maxlength="100" name="Input.Password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Input.Password
+section: Input.FirstName_0_30
+field signature: 358733409
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 39" data-ddg-testresultelementid="541184" data-manual-scoring="password">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.Password" data-valmsg-replace="true"></span>
             </div>
             <div class="form-group">
               <label for="Input_ConfirmPassword">Confirm password</label>
               <span class="text-danger">*</span>
-              <input class="form-control" type="password" data-val="true" data-val-equalto="The password and confirmation password do not match." data-val-equalto-other="*.Password" id="Input_ConfirmPassword" name="Input.ConfirmPassword" data-ddg-testresultelementid="541185" data-manual-scoring="password">
+              <input class="form-control" type="password" data-val="true" data-val-equalto="The password and confirmation password do not match." data-val-equalto-other="*.Password" id="Input_ConfirmPassword" name="Input.ConfirmPassword" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm password
+parseable name: Input.ConfirmPassword
+section: Input.FirstName_0_30
+field signature: 1550852729
+form signature: 13560604348868097756
+form signature in host form: 13560604348868097756
+field frame token: 0FC61A19CB3D8B4FFFB647DA45D4E551
+form renderer id: 4
+field renderer id: 40" data-ddg-testresultelementid="541185" data-manual-scoring="password">
               <span class="text-danger field-validation-valid" data-valmsg-for="Input.ConfirmPassword" data-valmsg-replace="true"></span>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
@@ -6028,72 +6051,7 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
       </div>
 
-      <script type="text/javascript">
-        $(document).ready(function () {
-          var prepareForInfineonSsoLogin = function () {
-            $("#btn-sso").removeClass("btn-light").addClass("btn-primary");
-            $("#btn-form-no-company")
-              .removeClass("btn-primary")
-              .addClass("btn-light");
-            $("#btn-form-no-employeeId")
-              .removeClass("btn-primary")
-              .addClass("btn-light");
-            $("#form-container").addClass("display-none");
-          };
-          var prepareForInfineonLogin = function () {
-            $("#btn-form-no-company")
-              .removeClass("btn-light")
-              .addClass("btn-primary");
-            $("#btn-sso").removeClass("btn-primary").addClass("btn-light");
-            $("#btn-form-no-employeeId")
-              .removeClass("btn-primary")
-              .addClass("btn-light");
-
-            $("#form-container").removeClass("display-none");
-            $("#ipt-employeeId").removeClass("display-none");
-            $("#ipt-department").removeClass("display-none");
-            $("#ipt-company").addClass("display-none");
-          };
-          var prepareForVisitorLogin = function () {
-            $("#btn-form-no-employeeId")
-              .removeClass("btn-light")
-              .addClass("btn-primary");
-            $("#btn-sso").removeClass("btn-primary").addClass("btn-light");
-            $("#btn-form-no-company")
-              .removeClass("btn-primary")
-              .addClass("btn-light");
-
-            $("#form-container").removeClass("display-none");
-            $("#ipt-company").removeClass("display-none");
-            $("#ipt-department").addClass("display-none");
-            $("#ipt-employeeId").addClass("display-none");
-          };
-
-          var activeForm = localStorage.getItem("activeForm");
-          if (activeForm && activeForm === "Infineon SSO Login") {
-            prepareForInfineonSsoLogin();
-          } else if (activeForm && activeForm === "Infineon Login") {
-            prepareForInfineonLogin();
-          } else if (activeForm && activeForm === "Visitor Login") {
-            prepareForVisitorLogin();
-          }
-
-          $("#btn-form-no-company").click(function () {
-            localStorage.setItem("activeForm", "Infineon Login");
-            prepareForInfineonLogin();
-          });
-
-          $("#btn-form-no-employeeId").click(function () {
-            localStorage.setItem("activeForm", "Visitor Login");
-            prepareForVisitorLogin();
-          });
-
-          $("#btn-sso").click(function () {
-            localStorage.setItem("activeForm", "Infineon SSO Login");
-            prepareForInfineonSsoLogin();
-          });
-        });
-      </script>
+      
     </div>
   </main>
 
@@ -6105,11 +6063,11 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
         <div class="col-md-6 text-right">
           <div title="Request culture provider:">
-            <form id="select-language-form" method="post" role="form" action="/covid19/I18N/SetLanguage?returnUrl=%2FIdentity%2FAccount%2FRegister" data-ddg-formtype="sign up">
+            <form id="select-language-form" method="post" role="form" action="/covid19/I18N/SetLanguage?returnUrl=%2FIdentity%2FAccount%2FRegister">
               <div class="form-group row">
                 <label class="col-2 col-sm-2 col-md-4 col-form-label" for="requestCulture_RequestCulture_UICulture_Name">Language:</label>
                 <div class="col-10 col-sm-10 col-md-8">
-                  <select id="select-language-selector" class="form-control" name="culture" data-val="true" data-val-required="The Name field is required." data-ddg-inputtype="unknown" data-ddg-testresultelementid="541186">
+                  <select id="select-language-selector" class="form-control" name="culture" data-val="true" data-val-required="The Name field is required." data-ddg-testresultelementid="541186">
                     <option selected="selected" value="en-GB">
                       English (United Kingdom)
                     </option>
@@ -6126,24 +6084,12 @@ field renderer id: 36" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
   </footer>
 
-  <script src="/covid19/js/site.js?v=Ne06puQJhsheMzFANLnRrM5d4XBCQIB0VaiGJgDaET8"></script>
+  
 
-  <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js" crossorigin="anonymous" integrity="sha384-rZfj/ogBloos6wzLGpPkkOr/gpkBNLZ6b6yLy4o+ok+t/SAKlL5mvXLr0OXNi1Hp"></script>
-  <script>
-    (window.jQuery && window.jQuery.validator) ||
-      document.write(
-        "\u003Cscript src=\u0022/covid19/Identity/lib/jquery-validation/dist/jquery.validate.min.js\u0022 crossorigin=\u0022anonymous\u0022 integrity=\u0022sha384-rZfj/ogBloos6wzLGpPkkOr/gpkBNLZ6b6yLy4o\u002Bok\u002Bt/SAKlL5mvXLr0OXNi1Hp\u0022\u003E\u003C/script\u003E"
-      );
-  </script>
-  <script src="/covid19/Identity/lib/jquery-validation/dist/jquery.validate.min.js" crossorigin="anonymous" integrity="sha384-rZfj/ogBloos6wzLGpPkkOr/gpkBNLZ6b6yLy4o+ok+t/SAKlL5mvXLr0OXNi1Hp"></script>
-  <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.9/jquery.validate.unobtrusive.min.js" crossorigin="anonymous" integrity="sha384-ifv0TYDWxBHzvAk2Z0n8R434FL1Rlv/Av18DXE43N/1rvHyOG4izKst0f2iSLdds"></script>
-  <script>
-    (window.jQuery &&
-      window.jQuery.validator &&
-      window.jQuery.validator.unobtrusive) ||
-      document.write(
-        "\u003Cscript src=\u0022/covid19/Identity/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js\u0022 crossorigin=\u0022anonymous\u0022 integrity=\u0022sha384-ifv0TYDWxBHzvAk2Z0n8R434FL1Rlv/Av18DXE43N/1rvHyOG4izKst0f2iSLdds\u0022\u003E\u003C/script\u003E"
-      );
-  </script>
-  <script src="/covid19/Identity/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js" crossorigin="anonymous" integrity="sha384-ifv0TYDWxBHzvAk2Z0n8R434FL1Rlv/Av18DXE43N/1rvHyOG4izKst0f2iSLdds"></script>
+  
+  
+  
+  
+  
+  
 

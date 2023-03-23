@@ -1,5 +1,6 @@
 <!--
   https://www.1cbit.ru/lk/
+  rank: 6864
   testRunId: 66
   testResultId: 238478
 -->
@@ -21,9 +22,9 @@
             <div id="search-wrap" data-ajax-page="/lk/index.php" data-container_id="title-search" data-input_id="title-search-input" data-min_query_len="2" data-wait_image="/bitrix/themes/.default/images/wait.gif" data-submit_id="header-search-submit" data-result_id="search-result" data-search_wrap_id="search-wrap">
               <div id="title-search">
                 <div class="header-search-form elasticsearch">
-                  <div class="header-search" data-ddg-formtype="sign up">
+                  <div class="header-search">
                     <div class="text">
-                      <input id="title-search-input" type="text" name="q" value="" maxlength="50" autocomplete="off" placeholder="Я ищу..." title="overall type: UNKNOWN_TYPE
+                      <input id="title-search-input" type="text" name="q" value="" maxlength="50" autocomplete="off" placeholder="Я ищу..." autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Я ищу...
@@ -35,21 +36,9 @@ form signature in host form: 4569606189690405620
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 0
 field renderer id: 17
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Я ищу...
-parseable name: q
-section: q_0_17
-field signature: 1012080445
-form signature: 4569606189690405620
-form signature in host form: 4569606189690405620
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 0
-field renderer id: 17
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533232">
+autocomplete: off" data-ddg-testresultelementid="533232">
                     </div>
-                    <input name="s" type="submit" value="" class="header-search-submit" id="header-search-submit" style="display: block">
+                    <input name="s" type="submit" value="" class="header-search-submit" id="header-search-submit">
                     <div class="custom-wait-image"></div>
                   </div>
                 </div>
@@ -58,13 +47,7 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                 <div class="title-search-result"></div>
               </div>
             </div>
-            <script>
-              $(document).ready(function () {
-                BX.ready(function () {
-                  new SearchPage($("#search-wrap"));
-                });
-              });
-            </script>
+            
           </div>
 
           <a href="javascript:void(0)" class="head-row__review head-row__import header-import"><span class="icon biti-phone-import"></span>Импортозамещение</a>
@@ -79,8 +62,8 @@ autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknow
                     <div class="bit-title2">Выбор региона</div>
                   </div>
                   <div class="bit-select-region__search">
-                    <form class="bit-search" data-ddg-formtype="sign up">
-                      <input type="text" placeholder="Введите название города" class="bit-search__input" title="overall type: UNKNOWN_TYPE
+                    <form class="bit-search">
+                      <input type="text" placeholder="Введите название города" class="bit-search__input" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Введите название города
@@ -91,18 +74,7 @@ form signature: 13270917618706712983
 form signature in host form: 13270917618706712983
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 2
-field renderer id: 19" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Введите название города
-parseable name: 
-section: _0_19
-field signature: 1318412689
-form signature: 13270917618706712983
-form signature in host form: 13270917618706712983
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 2
-field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.addressCity" data-ddg-testresultelementid="533233">
+field renderer id: 19" data-ddg-testresultelementid="533233">
                       <button class="bit-search__button" disabled="">
                         <span class="icon biti-search"></span>
                       </button>
@@ -1815,7 +1787,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
         <div class="panel panel-default j-spoiler">
           <div class="panel-heading bit-accordion__heading" role="tab" id="headingServices2">
             <span class="icon">
-              <img src="/1c-bitrix-start/img/default-services-icon.png"></span>
+              </span>
             <div class="bit-accordion__title">
               БИТ.Личный кабинет
               <div class="bit-accordion__title_small">
@@ -1835,7 +1807,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
 
         <div class="panel panel-default j-spoiler">
           <div class="panel-heading bit-accordion__heading" role="tab" id="headingServices1">
-            <span class="icon"><img src="/1c-bitrix-start/img/default-services-icon.png">
+            <span class="icon">
             </span>
             <div class="bit-accordion__title">
               Кабинет обновлений для продуктов БИТ
@@ -1860,9 +1832,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
     <div class="container">
       <div class="bit-footer__main-row">
         <div class="bit-footer__main-col">
-          <span class="icon biti-logo-white lozad" data-background-image="/bitrix/templates/landing/img/logo-white.svg" data-loaded="true" style="
-              background-image: url('/bitrix/templates/landing/img/logo-white.svg');
-            "></span>
+          <span class="icon biti-logo-white lozad" data-background-image="/bitrix/templates/landing/img/logo-white.svg" data-loaded="true"></span>
           <div class="bit-footer__247">
             Мы поддерживаем ваш бизнес 24 часа 7 дней в неделю
           </div>
@@ -1978,9 +1948,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
             <a href="//vk.com/bit_it" target="_blank"><span class="icon biti-circle-blue"><span class="icon biti-vk"></span></span></a>
           </div>
           <div class="bit-social__item">
-            <a href="//youtube.com/user/1bitOfficial" target="_blank"><span class="icon biti-circle-blue"><span class="icon biti-youtube lozad" data-background-image="/bitrix/templates/landing/img/you-tube.svg" data-loaded="true" style="
-                    background-image: url('/bitrix/templates/landing/img/you-tube.svg');
-                  "></span></span></a>
+            <a href="//youtube.com/user/1bitOfficial" target="_blank"><span class="icon biti-circle-blue"><span class="icon biti-youtube lozad" data-background-image="/bitrix/templates/landing/img/you-tube.svg" data-loaded="true"></span></span></a>
           </div>
         </div>
         <div class="cpr-list">
@@ -2008,267 +1976,34 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
       </div>
     </div>
   </footer>
-  <script>
-    $("body").attr("data-phone-mask", "+7 (ddd) ddd-dddd");
-    $("body").attr("data-phone-mask-cc", "ca");
-  </script>
+  
 
-  <style>
-    .inf-tooltip.green {
-      text-shadow: 0 1px #4abf50;
-      line-height: 16px;
-      border: 1px solid #4abf50;
-      border-radius: 3px;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.18);
-      background: #59de5f;
-      background: -moz-linear-gradient(top, #59de5f 0%, #4abf50 100%);
-      background: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        color-stop(0%, #59de5f),
-        color-stop(100%, #4abf50)
-      );
-      background: -webkit-linear-gradient(top, #59de5f 0%, #4abf50 100%);
-      background: -o-linear-gradient(top, #59de5f 0%, #4abf50 100%);
-      background: -ms-linear-gradient(top, #59de5f 0%, #4abf50 100%);
-      background: linear-gradient(to bottom, #59de5f 0%, #4abf50 100%);
-    }
-    .inf-tooltip {
-      position: fixed;
+  
+  
+  
 
-      /* красивости... */
-      font-size: 14px;
-      padding: 12px 13px;
-      color: #fff;
-      text-shadow: 0 1px #8a2d14;
-      line-height: 16px;
-      border: 1px solid #a83737;
-      border-radius: 3px;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.18);
-      background: #f34747;
-      background: -moz-linear-gradient(top, #f34747 0%, #f02e2b 100%);
-      background: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        color-stop(0%, #f34747),
-        color-stop(100%, #f02e2b)
-      );
-      background: -webkit-linear-gradient(top, #f34747 0%, #f02e2b 100%);
-      background: -o-linear-gradient(top, #f34747 0%, #f02e2b 100%);
-      background: -ms-linear-gradient(top, #f34747 0%, #f02e2b 100%);
-      background: linear-gradient(to bottom, #f34747 0%, #f02e2b 100%);
-      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f34747', endColorstr='#f02e2b',GradientType=0 );
-      z-index: 20000;
-      -webkit-box-sizing: unset;
-      -moz-box-sizing: unset;
-      box-sizing: unset;
-    }
-    .inf-tooltip.green:after {
-      border-top: 10px solid #4abf50;
-    }
-    .inf-tooltip:after {
-      content: "";
-      display: block;
-      position: absolute;
-      left: 50%;
-      margin-left: -10px;
-      bottom: -8px;
-      width: 0px;
-      height: 0px;
-      border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
-      border-top: 10px solid #f1302d;
-    }
-  </style>
-  <script type="text/javascript">
-    if (!window.BX) window.BX = {};
-    if (!window.BX.message)
-      window.BX.message = function (mess) {
-        if (typeof mess === "object") {
-          for (let i in mess) {
-            BX.message[i] = mess[i];
-          }
-          return true;
-        }
-      };
-  </script>
-  <script type="text/javascript">
-    (window.BX || top.BX).message({
-      JS_CORE_LOADING: "Загрузка...",
-      JS_CORE_NO_DATA: "- Нет данных -",
-      JS_CORE_WINDOW_CLOSE: "Закрыть",
-      JS_CORE_WINDOW_EXPAND: "Развернуть",
-      JS_CORE_WINDOW_NARROW: "Свернуть в окно",
-      JS_CORE_WINDOW_SAVE: "Сохранить",
-      JS_CORE_WINDOW_CANCEL: "Отменить",
-      JS_CORE_WINDOW_CONTINUE: "Продолжить",
-      JS_CORE_H: "ч",
-      JS_CORE_M: "м",
-      JS_CORE_S: "с",
-      JSADM_AI_HIDE_EXTRA: "Скрыть лишние",
-      JSADM_AI_ALL_NOTIF: "Показать все",
-      JSADM_AUTH_REQ: "Требуется авторизация!",
-      JS_CORE_WINDOW_AUTH: "Войти",
-      JS_CORE_IMAGE_FULL: "Полный размер",
-    });
-  </script>
+  
 
-  <script type="text/javascript" src="/bitrix/js/main/core/core.min.js?1672073788220366"></script>
+  
+  
 
-  <script>
-    BX.setJSList([
-      "/bitrix/js/main/core/core_ajax.js",
-      "/bitrix/js/main/core/core_promise.js",
-      "/bitrix/js/main/polyfill/promise/js/promise.js",
-      "/bitrix/js/main/loadext/loadext.js",
-      "/bitrix/js/main/loadext/extension.js",
-      "/bitrix/js/main/polyfill/promise/js/promise.js",
-      "/bitrix/js/main/polyfill/find/js/find.js",
-      "/bitrix/js/main/polyfill/includes/js/includes.js",
-      "/bitrix/js/main/polyfill/matches/js/matches.js",
-      "/bitrix/js/ui/polyfill/closest/js/closest.js",
-      "/bitrix/js/main/polyfill/fill/main.polyfill.fill.js",
-      "/bitrix/js/main/polyfill/find/js/find.js",
-      "/bitrix/js/main/polyfill/matches/js/matches.js",
-      "/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js",
-      "/bitrix/js/main/core/core.js",
-      "/bitrix/js/main/polyfill/intersectionobserver/js/intersectionobserver.js",
-      "/bitrix/js/main/lazyload/dist/lazyload.bundle.js",
-      "/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js",
-      "/bitrix/js/main/parambag/dist/parambag.bundle.js",
-    ]);
-  </script>
-  <script type="text/javascript">
-    (window.BX || top.BX).message({
-      LANGUAGE_ID: "ru",
-      FORMAT_DATE: "DD.MM.YYYY",
-      FORMAT_DATETIME: "DD.MM.YYYY HH:MI:SS",
-      COOKIE_PREFIX: "BITRIX_SM",
-      SERVER_TZ_OFFSET: "10800",
-      UTF_MODE: "N",
-      SITE_ID: "s1",
-      SITE_DIR: "/",
-      USER_ID: "",
-      SERVER_TIME: "1678933312",
-      USER_TZ_OFFSET: "0",
-      USER_TZ_AUTO: "Y",
-      bitrix_sessid: "ab6cc61ceea36cfc8eed911665505ddc",
-    });
-  </script>
+  
 
-  <script type="text/javascript">
-    (function () {
-      "use strict";
+  
+  
+  
+  
+  
+  
+  
+  
+  
 
-      var counter = function () {
-        var cookie = (function (name) {
-          var parts = ("; " + document.cookie).split("; " + name + "=");
-          if (parts.length == 2) {
-            try {
-              return JSON.parse(
-                decodeURIComponent(parts.pop().split(";").shift())
-              );
-            } catch (e) {}
-          }
-        })("BITRIX_CONVERSION_CONTEXT_s1");
-
-        if (cookie && cookie.EXPIRE >= BX.message("SERVER_TIME")) return;
-
-        var request = new XMLHttpRequest();
-        request.open("POST", "/bitrix/tools/conversion/ajax_counter.php", true);
-        request.setRequestHeader(
-          "Content-type",
-          "application/x-www-form-urlencoded"
-        );
-        request.send(
-          "SITE_ID=" +
-            encodeURIComponent("s1") +
-            "&sessid=" +
-            encodeURIComponent(BX.bitrix_sessid()) +
-            "&HTTP_REFERER=" +
-            encodeURIComponent(document.referrer)
-        );
-      };
-
-      if (window.frameRequestStart === true)
-        BX.addCustomEvent("onFrameDataReceived", counter);
-      else BX.ready(counter);
-    })();
-  </script>
-
-  <script type="text/javascript" src="/bitrix/components/pb.search/elastic.search/script.js?16720867258515"></script>
-  <script type="text/javascript" src="/bitrix/templates/.default/components/vitams/city.dropdown/city_popup/script.js?156646926716457"></script>
-  <script type="text/javascript" src="/bitrix/templates/.default/components/bezr/contact.box.simple/frontend.shuffle.landing/script.js?16686962541081"></script>
-  <script type="text/javascript" src="/bitrix/components/1cbit/promo.flyfooter.banner/templates/.default/script.js?16110718941698"></script>
-  <script type="text/javascript" src="/bitrix/templates/.default/components/bezr/form.result.new.befsend/general2landing.onecol/script.js?16704339722838"></script>
-  <script type="text/javascript" src="/bitrix/components/pb.main/before.exit.popup/before_exit_popup.js?16788128062579"></script>
-  <script type="text/javascript" src="/bitrix/templates/main/bootstrap/js/bootstrap.min.js?152061948412446"></script>
-  <script type="text/javascript" src="/bitrix/templates/landing/script.js?165038191512216"></script>
-  <script type="text/javascript" src="/bitrix/components/vitams/geo.confirm/templates/.default/script.js?16745901487810"></script>
-
-  <script>
-    var pixel;
-    var vk_el;
-    var m = 0;
-    window.vkAsyncInit = function () {
-      pixel = new VK.Pixel("VK-RTRG-224010-f9oMb");
-      pixel.ProductEvent(86364, "view_other");
-      pixel.Add(30129480);
-      pixel.Hit();
-    };
-    window.vkEvent = function (ev, el, url) {
-      if (typeof el == "object") {
-        const eventParams = {
-          products: [
-            {
-              id: el.id,
-              group_id: el.group_id,
-              price: Number(el.price),
-            },
-          ],
-        };
-        if (url > 0) {
-          try {
-            mr = new URLSearchParams(window.location.search);
-            if (mr.get("WEB_FORM_ID") != 71) return false;
-          } catch (e) {}
-        }
-        pixel.ProductEvent(86364, ev, eventParams);
-      }
-    };
-  </script>
-  <script src="//vk.com/js/api/openapi.js?159" async=""></script>
+  
+  
 
   <!-- BEGIN JIVOSITE CODE -->
-  <script type="text/javascript">
-    function JIVOSITE() {
-      (function () {
-        var widget_id = "NGG3OKV5VM";
-        var d = document;
-        var w = window;
-        function l() {
-          var s = document.createElement("script");
-          s.type = "text/javascript";
-          s.async = true;
-          s.src = "//code.jivosite.com/script/widget/" + widget_id;
-          var ss = document.getElementsByTagName("script")[0];
-          ss.parentNode.insertBefore(s, ss);
-        }
-        if (d.readyState == "complete") {
-          l();
-        } else {
-          if (w.attachEvent) {
-            w.attachEvent("onload", l);
-          } else {
-            w.addEventListener("load", l, false);
-          }
-        }
-      })();
-    }
-    setTimeout(JIVOSITE, 2000);
-  </script>
+  
   <!-- END JIVOSITE CODE -->
   <div class="j-lazy-load" data-name="form-general-134callback-popup" data-cache-id="1f03b1e86e08bf212240cc0e92821a87167893331246">
     <div id="general-form-134callback-popup" class="popup onecol j-form-popup hidden tooltipster-area" data-salt-form="134callback-popup" data-btn=".call-ord-popup" data-template="general.onecol">
@@ -2278,7 +2013,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
         <div class="close j-close"></div>
       </div>
       <div class="popup-content">
-        <form name="CALL_ORD_CHLB" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate" data-ddg-formtype="sign up">
+        <form name="CALL_ORD_CHLB" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate">
           <input type="hidden" name="sessid" id="sessid" value="ab6cc61ceea36cfc8eed911665505ddc">
           <input type="hidden" name="WEB_FORM_ID" value="134">
           <div class="clearfix">
@@ -2286,7 +2021,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
               <!--float: left/right-->
               <label>ваше имя</label>
               <div class="text">
-                <input name="form_text_6882" type="text" data-type="" value="" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_6882" type="text" data-type="" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: ваше имя
@@ -2297,18 +2032,7 @@ form signature: 4631460806089859299
 form signature in host form: 4631460806089859299
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 3
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: ваше имя
-parseable name: form_text_6882
-section: form_text_6882_0_30
-field signature: 3389478622
-form signature: 4631460806089859299
-form signature in host form: 4631460806089859299
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 3
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.firstName" data-ddg-testresultelementid="533234">
+field renderer id: 30" data-ddg-testresultelementid="533234">
               </div>
             </div>
             <div>
@@ -3810,7 +3534,7 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     </li>
                   </ul>
                 </div>
-                <input name="form_text_6883" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="0" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_6883" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="0" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: +7 (___) ___-____
@@ -3822,40 +3546,32 @@ form signature in host form: 4631460806089859299
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 3
 field renderer id: 31
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: +7 (___) ___-____
-parseable name: form_text_6883
-section: form_text_6882_0_30
-field signature: 3503926723
-form signature: 4631460806089859299
-form signature in host form: 4631460806089859299
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 3
-field renderer id: 31
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533235">
+autocomplete: off" data-ddg-testresultelementid="533235">
               </div>
             </div>
             <div>
               <!--float: left/right-->
               <label>Email</label>
               <div class="text">
-                <input name="form_text_7154" type="text" data-type="NO_REQUIRED" value="" data-ddg-autofill="true" data-ddg-testresultelementid="533236" style="
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input name="form_text_7154" type="text" data-type="NO_REQUIRED" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: form_text_7154
+section: form_text_6882_0_30
+field signature: 978023360
+form signature: 4631460806089859299
+form signature in host form: 4631460806089859299
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 3
+field renderer id: 32" data-ddg-testresultelementid="533236" data-manual-scoring="emailAddress">
               </div>
             </div>
             <div>
               <!--float: left/right-->
               <label></label>
-              <div class="text" style="display: none">
-                <input name="form_text_9257" type="text" data-type="FANTOME" value="" title="overall type: UNKNOWN_TYPE
+              <div class="text">
+                <input name="form_text_9257" type="text" data-type="FANTOME" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Заказ звонка
@@ -3866,18 +3582,7 @@ form signature: 4631460806089859299
 form signature in host form: 4631460806089859299
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 3
-field renderer id: 33" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Заказ звонка
-parseable name: form_text_9257
-section: form_text_6882_0_30
-field signature: 3773025968
-form signature: 4631460806089859299
-form signature in host form: 4631460806089859299
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 3
-field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533237">
+field renderer id: 33" data-ddg-testresultelementid="533237">
               </div>
             </div>
           </div>
@@ -3907,11 +3612,7 @@ field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
 
     <a href="javascript:void(0);" class="promo-panel__close">
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 47.971 47.971" style="enable-background: new 0 0 47.971 47.971" xml:space="preserve" width="12px" height="12px">
-        <g>
-          <path d="M28.228,23.986L47.092,5.122c1.172-1.171,1.172-3.071,0-4.242c-1.172-1.172-3.07-1.172-4.242,0L23.986,19.744L5.121,0.88   c-1.172-1.172-3.07-1.172-4.242,0c-1.172,1.171-1.172,3.071,0,4.242l18.865,18.864L0.879,42.85c-1.172,1.171-1.172,3.071,0,4.242   C1.465,47.677,2.233,47.97,3,47.97s1.535-0.293,2.121-0.879l18.865-18.864L42.85,47.091c0.586,0.586,1.354,0.879,2.121,0.879   s1.535-0.293,2.121-0.879c1.172-1.171,1.172-3.071,0-4.242L28.228,23.986z" fill="#FFFFFF"></path>
-        </g>
-      </svg>
+      
     </a>
   </div>
 
@@ -3923,7 +3624,7 @@ field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         <div class="close j-close"></div>
       </div>
       <div class="popup-content">
-        <form name="CALL_ORD_CHLB" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate" data-ddg-formtype="sign up">
+        <form name="CALL_ORD_CHLB" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate">
           <input type="hidden" name="sessid" id="sessid" value="ab6cc61ceea36cfc8eed911665505ddc">
           <input type="hidden" name="WEB_FORM_ID" value="CALL_ORD_CHLB">
           <div class="clearfix text-wrap">
@@ -3931,7 +3632,7 @@ field renderer id: 33" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               <!--float: left/right-->
               <label>ваше имя</label>
               <div class="text">
-                <input name="form_text_6882" type="text" data-type="" value="" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_6882" type="text" data-type="" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: ваше имя
@@ -3942,18 +3643,7 @@ form signature: 4631460806089859299
 form signature in host form: 4631460806089859299
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 4
-field renderer id: 48" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: ваше имя
-parseable name: form_text_6882
-section: form_text_6882_0_48
-field signature: 3389478622
-form signature: 4631460806089859299
-form signature in host form: 4631460806089859299
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 4
-field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="identities.firstName" data-ddg-testresultelementid="533238">
+field renderer id: 48" data-ddg-testresultelementid="533238">
               </div>
             </div>
             <div>
@@ -5455,7 +5145,7 @@ field renderer id: 48" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="id
                     </li>
                   </ul>
                 </div>
-                <input name="form_text_6883" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="1" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_6883" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: +7 (___) ___-____
@@ -5467,40 +5157,32 @@ form signature in host form: 4631460806089859299
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 4
 field renderer id: 49
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: +7 (___) ___-____
-parseable name: form_text_6883
-section: form_text_6882_0_48
-field signature: 3503926723
-form signature: 4631460806089859299
-form signature in host form: 4631460806089859299
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 4
-field renderer id: 49
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533239">
+autocomplete: off" data-ddg-testresultelementid="533239">
               </div>
             </div>
             <div>
               <!--float: left/right-->
               <label>Email</label>
               <div class="text">
-                <input name="form_text_7154" type="text" data-type="NO_REQUIRED" value="" data-ddg-autofill="true" data-ddg-testresultelementid="533240" style="
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input name="form_text_7154" type="text" data-type="NO_REQUIRED" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: form_text_7154
+section: form_text_6882_0_48
+field signature: 978023360
+form signature: 4631460806089859299
+form signature in host form: 4631460806089859299
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 4
+field renderer id: 50" data-ddg-testresultelementid="533240" data-manual-scoring="emailAddress">
               </div>
             </div>
             <div>
               <!--float: left/right-->
               <label></label>
-              <div class="text" style="display: none">
-                <input name="form_text_9257" type="text" data-type="FANTOME" value="" title="overall type: UNKNOWN_TYPE
+              <div class="text">
+                <input name="form_text_9257" type="text" data-type="FANTOME" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Заказ звонка
@@ -5511,18 +5193,7 @@ form signature: 4631460806089859299
 form signature in host form: 4631460806089859299
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 4
-field renderer id: 51" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Заказ звонка
-parseable name: form_text_9257
-section: form_text_6882_0_48
-field signature: 3773025968
-form signature: 4631460806089859299
-form signature in host form: 4631460806089859299
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 4
-field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533241">
+field renderer id: 51" data-ddg-testresultelementid="533241">
               </div>
             </div>
           </div>
@@ -5543,15 +5214,11 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       </div>
     </div>
   </div>
-  <link href="/bitrix/cache/css/s1/landing/page_bbfef2f1090346db29e5821dbd520934/page_bbfef2f1090346db29e5821dbd520934_v1.css?1678813561257" type="text/css" rel="stylesheet">
-  <link href="/bitrix/cache/css/s1/landing/default_126d698fe2b09db8502fd7e51ce3347e/default_126d698fe2b09db8502fd7e51ce3347e_v1.css?16788134072396" type="text/css" rel="stylesheet">
-  <link href="/bitrix/cache/css/s1/landing/template_653e05b719cc9994cb2046992bdfde14/template_653e05b719cc9994cb2046992bdfde14_v1.css?1678813407389304" type="text/css" data-template-style="true" rel="stylesheet">
+  
+  
+  
 
-  <style>
-    #stub {
-      display: none;
-    }
-  </style>
+  
   <div class="j-lazy-load" data-name="form-general-71ORDER" data-cache-id="1f03b1e86e08bf212240cc0e92821a87167893331246">
     <div id="general-form-71ORDER" class="bit-modal popup onecol j-form-product hidden tooltipster-area" data-salt-form="71ORDER" data-btn=".buy-product,.buy-product-btn" data-product-title="" data-product-input="#userProduct71ORDER" data-template="general2landing.onecol">
       <div class="modal-dialog" role="document">
@@ -5570,7 +5237,7 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
               </div>
               <div class="popup-content">
                 <p class="j-data-description">&nbsp;</p>
-                <form name="BUY_PRODUCT" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate" data-ddg-formtype="sign up">
+                <form name="BUY_PRODUCT" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate">
                   <input type="hidden" name="sessid" id="sessid" value="ab6cc61ceea36cfc8eed911665505ddc">
                   <input type="hidden" name="WEB_FORM_ID" value="71">
                   <div class="clearfix text-wrap">
@@ -5578,21 +5245,36 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                       <!--float: left/right-->
 
                       <div class="text">
-                        <input class="bit-form__input" name="form_text_3797" type="text" data-type="" value="" placeholder="ваше имя" data-ddg-testresultelementid="533242" data-manual-scoring="firstName">
+                        <input class="bit-form__input" name="form_text_3797" type="text" data-type="" value="" placeholder="ваше имя" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: UNKNOWN_TYPE
+label: ваше имя
+parseable name: form_text_3797
+section: form_text_3797_0_66
+field signature: 58668505
+form signature: 5693799593702194447
+form signature in host form: 5693799593702194447
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 5
+field renderer id: 66" data-ddg-testresultelementid="533242" data-manual-scoring="firstName">
                       </div>
                     </div>
                     <div>
                       <!--float: left/right-->
 
                       <div class="text">
-                        <input class="bit-form__input" name="form_text_3794" type="text" data-type="EMAIL_NO_REQUIRED" value="" placeholder="Ваш Email" data-ddg-autofill="true" data-ddg-testresultelementid="533243" style="
-                            background-size: auto 26px !important;
-                            background-position: right center !important;
-                            background-repeat: no-repeat !important;
-                            background-origin: content-box !important;
-                            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                            transition: background 0s ease 0s !important;
-                          " data-manual-scoring="emailAddress">
+                        <input class="bit-form__input" name="form_text_3794" type="text" data-type="EMAIL_NO_REQUIRED" value="" placeholder="Ваш Email" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Ваш Email
+parseable name: form_text_3794
+section: form_text_3797_0_66
+field signature: 2433037636
+form signature: 5693799593702194447
+form signature in host form: 5693799593702194447
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 5
+field renderer id: 67" data-ddg-testresultelementid="533243" data-manual-scoring="emailAddress">
                       </div>
                     </div>
                     <div>
@@ -7099,7 +6781,7 @@ field renderer id: 51" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                             </li>
                           </ul>
                         </div>
-                        <input class="bit-form__input" name="form_text_3798" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="5" title="overall type: UNKNOWN_TYPE
+                        <input class="bit-form__input" name="form_text_3798" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="5" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: +7 (___) ___-____
@@ -7111,23 +6793,11 @@ form signature in host form: 5693799593702194447
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 5
 field renderer id: 68
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: +7 (___) ___-____
-parseable name: form_text_3798
-section: form_text_3797_0_66
-field signature: 3535917931
-form signature: 5693799593702194447
-form signature in host form: 5693799593702194447
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 5
-field renderer id: 68
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533244">
+autocomplete: off" data-ddg-testresultelementid="533244">
                       </div>
                     </div>
-                    <div class="block-radiobox" style="display: none">
-                      <label><input type="radio" delivery="" data-code="DELIVERY" id="7855" name="form_radio_DELIVERY" value="7855" title="overall type: UNKNOWN_TYPE
+                    <div class="block-radiobox">
+                      <label><input type="radio" delivery="" data-code="DELIVERY" id="7855" name="form_radio_DELIVERY" value="7855" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Нужна
@@ -7138,18 +6808,7 @@ form signature: 5693799593702194447
 form signature in host form: 5693799593702194447
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 5
-field renderer id: 69" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Нужна
-parseable name: form_radio_DELIVERY
-section: form_text_3797_0_66
-field signature: 3549938745
-form signature: 5693799593702194447
-form signature in host form: 5693799593702194447
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 5
-field renderer id: 69" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533245"></label><label for="7855">Нужна</label><br><label><input type="radio" delivery="" data-code="DELIVERY" id="7856" name="form_radio_DELIVERY" value="7856" title="overall type: UNKNOWN_TYPE
+field renderer id: 69" data-ddg-testresultelementid="533245"></label><label for="7855">Нужна</label><br><label><input type="radio" delivery="" data-code="DELIVERY" id="7856" name="form_radio_DELIVERY" value="7856" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Не нужна
@@ -7160,24 +6819,13 @@ form signature: 5693799593702194447
 form signature in host form: 5693799593702194447
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 5
-field renderer id: 70" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Не нужна
-parseable name: form_radio_DELIVERY
-section: form_text_3797_0_66
-field signature: 3549938745
-form signature: 5693799593702194447
-form signature in host form: 5693799593702194447
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 5
-field renderer id: 70" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533246"></label><label for="7856">Не нужна</label>
+field renderer id: 70" data-ddg-testresultelementid="533246"></label><label for="7856">Не нужна</label>
                     </div>
                   </div>
-                  <div style="display: none">
+                  <div>
                     <label for="userMess">Адрес доставки:</label>
                     <div class="textarea">
-                      <textarea name="form_textarea_7857" cols="40" rows="5" delivery_address="" data-code="DELIVERY_ADDRESS" title="overall type: UNKNOWN_TYPE
+                      <textarea name="form_textarea_7857" cols="40" rows="5" delivery_address="" data-code="DELIVERY_ADDRESS" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Адрес доставки:
@@ -7188,26 +6836,15 @@ form signature: 5693799593702194447
 form signature in host form: 5693799593702194447
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 5
-field renderer id: 71" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Адрес доставки:
-parseable name: form_textarea_7857
-section: form_text_3797_0_66
-field signature: 1669595769
-form signature: 5693799593702194447
-form signature in host form: 5693799593702194447
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 5
-field renderer id: 71" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533247"></textarea>
+field renderer id: 71" data-ddg-testresultelementid="533247"></textarea>
                     </div>
                   </div>
                   <div class="clearfix">
                     <div>
                       <!--float: left/right-->
 
-                      <div class="text" style="display: none">
-                        <input class="bit-form__input" name="form_text_9299" type="text" data-type="FANTOME" value="" placeholder="" title="overall type: UNKNOWN_TYPE
+                      <div class="text">
+                        <input class="bit-form__input" name="form_text_9299" type="text" data-type="FANTOME" value="" placeholder="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Форма заказа продукта
@@ -7218,18 +6855,7 @@ form signature: 5693799593702194447
 form signature in host form: 5693799593702194447
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 5
-field renderer id: 72" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Форма заказа продукта
-parseable name: form_text_9299
-section: form_text_3797_0_66
-field signature: 3032202632
-form signature: 5693799593702194447
-form signature in host form: 5693799593702194447
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 5
-field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533248">
+field renderer id: 72" data-ddg-testresultelementid="533248">
                       </div>
                     </div>
                   </div>
@@ -7254,7 +6880,7 @@ field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     </div>
   </div>
   <div class="j-lazy-load" data-name="form-complaints2boss-115COMPLAINTS_HEADER" data-cache-id="1f03b1e86e08bf212240cc0e92821a87167893331246">
-    <div id="general-form-115COMPLAINTS_HEADER" class="popup j-form-popup complaints2boss" data-salt-form="115COMPLAINTS_HEADER" data-btn=".header-feedback" data-template="complaints2boss" style="display: none">
+    <div id="general-form-115COMPLAINTS_HEADER" class="popup j-form-popup complaints2boss" data-salt-form="115COMPLAINTS_HEADER" data-btn=".header-feedback" data-template="complaints2boss">
       <div class="popup-title">
         <div class="title-text">Написать директору</div>
         <div class="close j-close"></div>
@@ -7279,14 +6905,25 @@ field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
             <span class="post">Руководитель Компании «Первый Бит»</span>
           </span>
         </div>
-        <form name="COMPLAINT" id="form-115COMPLAINTS_HEADER" action="/lk/" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate" data-ddg-formtype="sign up">
+        <form name="COMPLAINT" id="form-115COMPLAINTS_HEADER" action="/lk/" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate">
           <input type="hidden" name="sessid" id="sessid" value="ab6cc61ceea36cfc8eed911665505ddc">
           <input type="hidden" name="WEB_FORM_ID" value="115">
           <div class="clearfix">
             <div class="float-left">
               <label>ваше имя<span class="required" aria-required="true">*</span></label>
               <div class="text">
-                <input name="form_text_6445" type="text" data-type="NAME" value="" data-ddg-testresultelementid="533249" data-manual-scoring="firstName">
+                <input name="form_text_6445" type="text" data-type="NAME" value="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: UNKNOWN_TYPE
+label: ваше имя*
+parseable name: form_text_6445
+section: form_text_6445_0_89
+field signature: 1011840101
+form signature: 10253854641824924648
+form signature in host form: 10253854641824924648
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 6
+field renderer id: 89" data-ddg-testresultelementid="533249" data-manual-scoring="firstName">
               </div>
               <label>Телефон<span class="required" aria-required="true">*</span></label>
               <div class="text iti iti--allow-dropdown iti--separate-dial-code">
@@ -8785,11 +8422,23 @@ field renderer id: 72" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                     </li>
                   </ul>
                 </div>
-                <input name="form_text_6446" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="2" data-ddg-testresultelementid="533250" data-manual-scoring="phone">
+                <input name="form_text_6446" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="2" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: PHONE_HOME_WHOLE_NUMBER
+heuristic type: UNKNOWN_TYPE
+label: +7 (___) ___-____
+parseable name: form_text_6446
+section: form_text_6445_0_89
+field signature: 1131549255
+form signature: 10253854641824924648
+form signature in host form: 10253854641824924648
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 6
+field renderer id: 90
+autocomplete: off" data-ddg-testresultelementid="533250" data-manual-scoring="phone">
               </div>
               <label></label>
-              <div class="text j-required" style="display: none">
-                <input name="form_text_9279" type="text" data-type="FANTOME" value="" title="overall type: UNKNOWN_TYPE
+              <div class="text j-required">
+                <input name="form_text_9279" type="text" data-type="FANTOME" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Телефон*
@@ -8800,24 +8449,13 @@ form signature: 10253854641824924648
 form signature in host form: 10253854641824924648
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 6
-field renderer id: 91" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Телефон*
-parseable name: form_text_9279
-section: form_text_6445_0_89
-field signature: 3275019069
-form signature: 10253854641824924648
-form signature in host form: 10253854641824924648
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 6
-field renderer id: 91" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533251">
+field renderer id: 91" data-ddg-testresultelementid="533251">
               </div>
             </div>
             <div class="float-right">
               <label>Ваше сообщение</label>
               <div class="textarea">
-                <textarea name="form_textarea_6447" cols="40" rows="5" data-code="TEXT" title="overall type: UNKNOWN_TYPE
+                <textarea name="form_textarea_6447" cols="40" rows="5" data-code="TEXT" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Ваше сообщение
@@ -8828,18 +8466,7 @@ form signature: 10253854641824924648
 form signature in host form: 10253854641824924648
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 6
-field renderer id: 92" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Ваше сообщение
-parseable name: form_textarea_6447
-section: form_text_6445_0_89
-field signature: 3766984135
-form signature: 10253854641824924648
-form signature in host form: 10253854641824924648
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 6
-field renderer id: 92" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533252"></textarea>
+field renderer id: 92" data-ddg-testresultelementid="533252"></textarea>
               </div>
             </div>
           </div>
@@ -8859,7 +8486,7 @@ field renderer id: 92" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
     </div>
   </div>
   <div class="j-lazy-load" data-name="form-complaints2boss-229COMPLAINTS_HEADER" data-cache-id="1f03b1e86e08bf212240cc0e92821a87167893331246">
-    <div id="general-form-229COMPLAINTS_HEADER" class="popup j-form-popup complaints2boss complaints2boss-import" data-salt-form="229COMPLAINTS_HEADER" data-btn=".header-import" data-template="importSubstitution" style="display: none">
+    <div id="general-form-229COMPLAINTS_HEADER" class="popup j-form-popup complaints2boss complaints2boss-import" data-salt-form="229COMPLAINTS_HEADER" data-btn=".header-import" data-template="importSubstitution">
       <div class="popup-title">
         <div class="title-text">Линия консультаций по импортозамещению ПО</div>
         <div class="close j-close"></div>
@@ -8887,14 +8514,14 @@ field renderer id: 92" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
             <span>Мы готовы ответить на ваши вопросы и поддержать вас.</span>
           </span>
         </div>
-        <form name="SUBSTITUTION_FORM" id="form-229COMPLAINTS_HEADER" action="/lk/" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate" data-ddg-formtype="sign up">
+        <form name="SUBSTITUTION_FORM" id="form-229COMPLAINTS_HEADER" action="/lk/" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate">
           <input type="hidden" name="sessid" id="sessid" value="ab6cc61ceea36cfc8eed911665505ddc">
           <input type="hidden" name="WEB_FORM_ID" value="229">
           <div class="clearfix">
             <div class="float-left">
               <label>ваше имя</label>
               <div class="text j-required">
-                <input name="form_text_9379" type="text" data-type="NAME" value="" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_9379" type="text" data-type="NAME" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: ваше имя
@@ -8905,18 +8532,7 @@ form signature: 11906903866732140460
 form signature in host form: 11906903866732140460
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 7
-field renderer id: 107" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: ваше имя
-parseable name: form_text_9379
-section: form_text_9379_0_107
-field signature: 2619616150
-form signature: 11906903866732140460
-form signature in host form: 11906903866732140460
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 7
-field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533253">
+field renderer id: 107" data-ddg-testresultelementid="533253">
               </div>
               <label>Телефон<span class="required" aria-required="true">*</span></label>
               <div class="text iti iti--allow-dropdown iti--separate-dial-code">
@@ -10415,7 +10031,7 @@ field renderer id: 107" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
                     </li>
                   </ul>
                 </div>
-                <input name="form_text_9382" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="3" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_9382" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="3" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: +7 (___) ___-____
@@ -10427,23 +10043,11 @@ form signature in host form: 11906903866732140460
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 7
 field renderer id: 108
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: +7 (___) ___-____
-parseable name: form_text_9382
-section: form_text_9379_0_107
-field signature: 2665574253
-form signature: 11906903866732140460
-form signature in host form: 11906903866732140460
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 7
-field renderer id: 108
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533254">
+autocomplete: off" data-ddg-testresultelementid="533254">
               </div>
               <label></label>
-              <div class="text j-required" style="display: none">
-                <input name="form_text_9389" type="text" data-type="FANTOME" value="" title="overall type: UNKNOWN_TYPE
+              <div class="text j-required">
+                <input name="form_text_9389" type="text" data-type="FANTOME" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Телефон*
@@ -10454,24 +10058,13 @@ form signature: 11906903866732140460
 form signature in host form: 11906903866732140460
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 7
-field renderer id: 109" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Телефон*
-parseable name: form_text_9389
-section: form_text_9379_0_107
-field signature: 2117534865
-form signature: 11906903866732140460
-form signature in host form: 11906903866732140460
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 7
-field renderer id: 109" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533255">
+field renderer id: 109" data-ddg-testresultelementid="533255">
               </div>
             </div>
             <div class="float-right">
               <label>Ваше сообщение</label>
               <div class="textarea">
-                <textarea name="form_textarea_9386" cols="40" rows="5" data-code="TEXT" title="overall type: UNKNOWN_TYPE
+                <textarea name="form_textarea_9386" cols="40" rows="5" data-code="TEXT" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Ваше сообщение
@@ -10482,18 +10075,7 @@ form signature: 11906903866732140460
 form signature in host form: 11906903866732140460
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 7
-field renderer id: 110" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Ваше сообщение
-parseable name: form_textarea_9386
-section: form_text_9379_0_107
-field signature: 1878458157
-form signature: 11906903866732140460
-form signature in host form: 11906903866732140460
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 7
-field renderer id: 110" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="533256"></textarea>
+field renderer id: 110" data-ddg-testresultelementid="533256"></textarea>
               </div>
             </div>
           </div>
@@ -10512,7 +10094,7 @@ field renderer id: 110" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultel
       </div>
     </div>
   </div>
-  <div class="hidden" id="before_exit_popup__data" data-timer-start="9999999" data-timer="1" data-dont-reshow="1" style="display: none; visibility: visible"></div>
+  <div class="hidden" id="before_exit_popup__data" data-timer-start="9999999" data-timer="1" data-dont-reshow="1"></div>
   <div class="j-lazy-load" data-name="form-general-before_exit_popup" data-cache-id="1f03b1e86e08bf212240cc0e92821a87167893331246">
     <div id="general-form-before_exit_popup" class="popup onecol wide j-form-popup hidden tooltipster-area" data-salt-form="before_exit_popup" data-btn="#before_exit_popup__data" data-template="general.onecol.wide">
       <div class="popup-title">
@@ -10521,7 +10103,7 @@ field renderer id: 110" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultel
         <div class="close j-close"></div>
       </div>
       <div class="popup-content">
-        <form name="before_exit_popup" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate" data-ddg-formtype="sign up">
+        <form name="before_exit_popup" action="/lk/index.php" method="POST" enctype="multipart/form-data" class="j-form" data-flag="true" novalidate="novalidate">
           <input type="hidden" name="sessid" id="sessid" value="ab6cc61ceea36cfc8eed911665505ddc">
           <input type="hidden" name="WEB_FORM_ID" value="before_exit_popup">
           <div class="h2">Закажите звонок, наши специалисты помогут Вам</div>
@@ -12025,7 +11607,7 @@ field renderer id: 110" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultel
                     </li>
                   </ul>
                 </div>
-                <input name="form_text_7684" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="4" title="overall type: UNKNOWN_TYPE
+                <input name="form_text_7684" type="tel" data-type="PHONE" value="" placeholder="+7 (___) ___-____" maxlength="17" autocomplete="off" data-intl-tel-input-id="4" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: +7 (___) ___-____
@@ -12037,40 +11619,32 @@ form signature in host form: 6059626750747039532
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 8
 field renderer id: 125
-autocomplete: off" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: +7 (___) ___-____
-parseable name: form_text_7684
-section: form_text_7684_0_125
-field signature: 3419207748
-form signature: 6059626750747039532
-form signature in host form: 6059626750747039532
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 8
-field renderer id: 125
-autocomplete: off" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533257">
+autocomplete: off" data-ddg-testresultelementid="533257">
               </div>
             </div>
             <div>
               <!--float: left/right-->
               <label>e-mail</label>
               <div class="text">
-                <input name="form_text_7685" type="text" data-type="EMAIL" value="" data-ddg-autofill="true" data-ddg-testresultelementid="533258" style="
-                    background-size: auto 26px !important;
-                    background-position: right center !important;
-                    background-repeat: no-repeat !important;
-                    background-origin: content-box !important;
-                    background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-                    transition: background 0s ease 0s !important;
-                  " data-manual-scoring="emailAddress">
+                <input name="form_text_7685" type="text" data-type="EMAIL" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: e-mail
+parseable name: form_text_7685
+section: form_text_7684_0_125
+field signature: 2342827499
+form signature: 6059626750747039532
+form signature in host form: 6059626750747039532
+field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
+form renderer id: 8
+field renderer id: 126" data-ddg-testresultelementid="533258" data-manual-scoring="emailAddress">
               </div>
             </div>
             <div>
               <!--float: left/right-->
               <label></label>
-              <div class="text" style="display: none">
-                <input name="form_text_9177" type="text" data-type="FANTOME" value="" title="overall type: UNKNOWN_TYPE
+              <div class="text">
+                <input name="form_text_9177" type="text" data-type="FANTOME" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Закажите звонок, наши специалисты помогут Вам
@@ -12081,18 +11655,7 @@ form signature: 6059626750747039532
 form signature in host form: 6059626750747039532
 field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
 form renderer id: 8
-field renderer id: 127" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Закажите звонок, наши специалисты помогут Вам
-parseable name: form_text_9177
-section: form_text_7684_0_125
-field signature: 1770813678
-form signature: 6059626750747039532
-form signature in host form: 6059626750747039532
-field frame token: 7A0B38AD9125ADCF25F68597C775E9D9
-form renderer id: 8
-field renderer id: 127" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="533259">
+field renderer id: 127" data-ddg-testresultelementid="533259">
               </div>
             </div>
           </div>
@@ -12112,19 +11675,7 @@ field renderer id: 127" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="u
       </div>
     </div>
   </div>
-  <div style="
-      background-image: url('/bitrix/themes/.default/images/wait.gif');
-      display: none;
-      position: absolute;
-      z-index: 1100;
-    "></div>
-  <a style="
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      color: orange;
-      text-decoration: none;
-      opacity: 0;
-    ">&nbsp;</a>
-  <script class="iti-load-utils" async="" src="/bitrix/templates/main/vendor/intltelinput/js/utils.js"></script>
+  <div></div>
+  <a>&nbsp;</a>
+  
 

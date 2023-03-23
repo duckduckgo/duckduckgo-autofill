@@ -1,9 +1,10 @@
 <!--
   https://urs.earthdata.nasa.gov/users/new
+  rank: 297
   testRunId: 66
   testResultId: 234411
 -->
-<form id="new_user" action="/users" accept-charset="UTF-8" method="post" novalidate="novalidate" data-ddg-formtype="sign up">
+<form id="new_user" action="/users" accept-charset="UTF-8" method="post" novalidate="novalidate">
   <input name="utf8" type="hidden" value="✓" autocomplete="off"><input type="hidden" name="authenticity_token" value="IrvE+lpCDIZEPWHG8g4IBv3gPMMoWpwUVKUVCNPzT+UyPKRs0iSqIxMV5pLDoIOEfXJmAX5rZ57mudY4+GiIhw==" autocomplete="off">
 
   <fieldset class="top">
@@ -13,17 +14,50 @@
     <div class="form-stack-left">
       <p>
         <label for="user_uid">Username:</label> <span class="required">•</span>
-        <input type="text" name="user[uid]" id="user_uid" size="30" maxlength="30" autofocus="autofocus" data-ddg-testresultelementid="510618" data-manual-scoring="username">
+        <input type="text" name="user[uid]" id="user_uid" size="30" maxlength="30" autofocus="autofocus" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username:
+parseable name: user[uid]
+section: user[uid]_0_4
+field signature: 3505241301
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 4" data-ddg-testresultelementid="510618" data-manual-scoring="username">
       </p>
       <p>
         <label for="user_password">Password:</label>
         <span class="required">•</span>
-        <input type="password" name="user[password]" id="user_password" data-ddg-testresultelementid="510619" data-manual-scoring="password">
+        <input type="password" name="user[password]" id="user_password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password:
+parseable name: user[password]
+section: user[uid]_0_4
+field signature: 1660289739
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 5" data-ddg-testresultelementid="510619" data-manual-scoring="password">
       </p>
       <p>
         <label for="user_password_confirmation">Password Confirmation:</label>
         <span class="required">•</span>
-        <input type="password" name="user[password_confirmation]" id="user_password_confirmation" data-ddg-testresultelementid="510620" data-manual-scoring="password">
+        <input type="password" name="user[password_confirmation]" id="user_password_confirmation" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password Confirmation:
+parseable name: user[password_confirmation]
+section: user[uid]_0_4
+field signature: 290049442
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 6" data-ddg-testresultelementid="510620" data-manual-scoring="password">
       </p>
     </div>
     <div class="form-message">
@@ -55,31 +89,68 @@
       <p>
         <label for="user_first_name">First Name:</label>
         <span class="required">•</span><br>
-        <input type="text" name="user[first_name]" id="user_first_name" size="35" maxlength="35" data-ddg-testresultelementid="510621" data-manual-scoring="firstName">
+        <input type="text" name="user[first_name]" id="user_first_name" size="35" maxlength="35" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First Name:
+parseable name: user[first_name]
+section: user[uid]_0_4
+field signature: 3941925427
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 8" data-ddg-testresultelementid="510621" data-manual-scoring="firstName">
       </p>
       <p>
         <label for="user_last_name">Last Name:</label>
         <span class="required">•</span><br>
-        <input type="text" name="user[last_name]" id="user_last_name" size="35" maxlength="35" data-ddg-testresultelementid="510622" data-manual-scoring="lastName">
+        <input type="text" name="user[last_name]" id="user_last_name" size="35" maxlength="35" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last Name:
+parseable name: user[last_name]
+section: user[uid]_0_4
+field signature: 1645822949
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 9" data-ddg-testresultelementid="510622" data-manual-scoring="lastName">
       </p>
     </div>
     <div class="form-stack-right">
       <p>
         <label for="user_middle_initial">Middle Initial:</label><br>
-        <input type="text" name="user[middle_initial]" id="user_middle_initial" size="1" maxlength="1" data-ddg-testresultelementid="510623" data-manual-scoring="middleName">
+        <input type="text" name="user[middle_initial]" id="user_middle_initial" size="1" maxlength="1" autofill-information="overall type: NAME_MIDDLE_INITIAL
+server type: NO_SERVER_DATA
+heuristic type: NAME_MIDDLE_INITIAL
+label: Middle Initial:
+parseable name: user[middle_initial]
+section: user[uid]_0_4
+field signature: 728145930
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 10" data-ddg-testresultelementid="510623" data-manual-scoring="middleName">
       </p>
 
       <p>
         <label for="user_email_address">E-mail:</label>
         <span class="required">•</span><br>
-        <input type="text" name="user[email_address]" id="user_email_address" data-ddg-autofill="true" data-ddg-testresultelementid="510624" style="
-            background-size: auto 26px !important;
-            background-position: right center !important;
-            background-repeat: no-repeat !important;
-            background-origin: content-box !important;
-            background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-            transition: background 0s ease 0s !important;
-          " data-manual-scoring="emailAddress">
+        <input type="text" name="user[email_address]" id="user_email_address" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail:
+parseable name: user[email_address]
+section: user[uid]_0_4
+field signature: 2592533989
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 11" data-ddg-testresultelementid="510624" data-manual-scoring="emailAddress">
       </p>
     </div>
   </fieldset>
@@ -89,7 +160,18 @@
     </legend>
     <p>
       <label for="user_country">Country:</label> <span class="required">•</span><br>
-      <select name="user[country]" id="user_country" class="single-select" data-ddg-testresultelementid="510625" data-manual-scoring="addressCountryCode">
+      <select name="user[country]" id="user_country" class="single-select" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country:
+parseable name: user[country]
+section: user[uid]_0_4
+field signature: 4289618371
+form signature: 12319005238400260102
+form signature in host form: 12319005238400260102
+field frame token: 7D74602B27FC41D15C8219688D8E5163
+form renderer id: 1
+field renderer id: 13" data-ddg-testresultelementid="510625" data-manual-scoring="addressCountryCode">
         <option value="">Select a Country</option>
         <option value="United States">United States</option>
         <option value="Afghanistan">Afghanistan</option>
@@ -299,7 +381,7 @@
       <p>
         <label for="user_affiliation">Affiliation:</label>
         <span class="required">•</span><br>
-        <select name="user[affiliation]" id="user_affiliation" class="single-select" title="overall type: UNKNOWN_TYPE
+        <select name="user[affiliation]" id="user_affiliation" class="single-select" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Affiliation:
@@ -310,18 +392,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 15" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Affiliation:
-parseable name: user[affiliation]
-section: user[uid]_0_4
-field signature: 486562549
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 15" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510626">
+field renderer id: 15" data-ddg-testresultelementid="510626">
           <option value="">Select an Affiliation</option>
           <option value="Government">Government</option>
           <option value="Commercial">Commercial</option>
@@ -331,7 +402,7 @@ field renderer id: 15" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </select>
         <br><br>
         <label for="user_affiliation_other">If 'other' selected above:</label>
-        <input type="text" name="user[affiliation_other]" id="user_affiliation_other" value="" title="overall type: UNKNOWN_TYPE
+        <input type="text" name="user[affiliation_other]" id="user_affiliation_other" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: If 'other' selected above:
@@ -342,22 +413,11 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 16" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: If 'other' selected above:
-parseable name: user[affiliation_other]
-section: user[uid]_0_4
-field signature: 85590360
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 16" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510627">
+field renderer id: 16" data-ddg-testresultelementid="510627">
       </p>
       <p>
         <label for="user_study_area">Study Area:</label><br>
-        <select name="user[study_area]" id="user_study_area" class="single-select" title="overall type: UNKNOWN_TYPE
+        <select name="user[study_area]" id="user_study_area" class="single-select" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Study Area:
@@ -368,18 +428,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 17" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Study Area:
-parseable name: user[study_area]
-section: user[uid]_0_4
-field signature: 3783700619
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510628">
+field renderer id: 17" data-ddg-testresultelementid="510628">
           <option value="">Select a Study Area</option>
           <option value="Air Sea Interaction">Air Sea Interaction</option>
           <option value="Atmospheric Aerosols">Atmospheric Aerosols</option>
@@ -419,7 +468,7 @@ field renderer id: 17" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
     <div class="form-stack-right">
       <p>
         <label for="user_user_type">User Type:</label><br>
-        <select name="user[user_type]" id="user_user_type" class="single-select" title="overall type: UNKNOWN_TYPE
+        <select name="user[user_type]" id="user_user_type" class="single-select" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: User Type:
@@ -430,18 +479,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 18" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: User Type:
-parseable name: user[user_type]
-section: user[uid]_0_4
-field signature: 3639209551
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510629">
+field renderer id: 18" data-ddg-testresultelementid="510629">
           <option value="">Select a User Type</option>
           <option value="Production User">Production User</option>
           <option value="Science Team">Science Team</option>
@@ -455,7 +493,7 @@ field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       </p>
       <p>
         <label for="user_organization">Organization:</label><br>
-        <input type="text" name="user[organization]" id="user_organization" title="overall type: COMPANY_NAME
+        <input type="text" name="user[organization]" id="user_organization" autofill-information="overall type: COMPANY_NAME
 server type: NO_SERVER_DATA
 heuristic type: COMPANY_NAME
 label: Organization:
@@ -466,18 +504,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 19" autofill-information="overall type: COMPANY_NAME
-server type: NO_SERVER_DATA
-heuristic type: COMPANY_NAME
-label: Organization:
-parseable name: user[organization]
-section: user[uid]_0_4
-field signature: 1748290148
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 19" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="510630">
+field renderer id: 19" data-ddg-testresultelementid="510630">
       </p>
     </div>
   </fieldset>
@@ -489,7 +516,7 @@ field renderer id: 19" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="un
     <div class="acknowledge info-box">
       <div class="ack-cell">
         <label class="hide-element" for="allow_auth_app_emails">Checkbox for authorization of applications to send emails</label>
-        <input type="checkbox" name="user[allow_auth_app_emails]" id="allow_auth_app_emails" value="true" onclick="enable_hidden_id(this)" checked="checked" title="overall type: UNKNOWN_TYPE
+        <input type="checkbox" name="user[allow_auth_app_emails]" id="allow_auth_app_emails" value="true" onclick="enable_hidden_id(this)" checked="checked" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Checkbox for authorization of applications to send emails
@@ -500,18 +527,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Checkbox for authorization of applications to send emails
-parseable name: user[allow_auth_app_emails]
-section: user[uid]_0_4
-field signature: 847130011
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510631">
+field renderer id: 21" data-ddg-testresultelementid="510631">
       </div>
 
       <div class="ack-cell">
@@ -524,7 +540,7 @@ field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
     <div class="acknowledge">
       <div class="ack-cell">
         <label class="hide-element" for="meris_sentinel_eulas">Checkbox for interst in Meris or Sentinel Data.</label>
-        <input type="checkbox" name="user[eula]" id="meris_sentinel_eulas" value="false" onclick="enable_meris_sentinel_eulas(this)" title="overall type: UNKNOWN_TYPE
+        <input type="checkbox" name="user[eula]" id="meris_sentinel_eulas" value="false" onclick="enable_meris_sentinel_eulas(this)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Checkbox for interst in Meris or Sentinel Data.
@@ -535,18 +551,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 22" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Checkbox for interst in Meris or Sentinel Data.
-parseable name: user[eula]
-section: user[uid]_0_4
-field signature: 4226591540
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510632">
+field renderer id: 22" data-ddg-testresultelementid="510632">
       </div>
       <div class="ack-cell">
         Yes, I'm interested in Meris and ESA Sentinel-3 Data.
@@ -719,7 +724,7 @@ field renderer id: 22" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         <div class="acknowledge">
           <div class="ack-cell">
             <label class="hide-element" for="agreed_to_meris_eula">Checkbox for Meris EULA</label>
-            <input type="checkbox" name="user[agreed_to_meris_eula]" id="agreed_to_meris_eula" value="true" onclick="enable_hidden_id(this)" title="overall type: UNKNOWN_TYPE
+            <input type="checkbox" name="user[agreed_to_meris_eula]" id="agreed_to_meris_eula" value="true" onclick="enable_hidden_id(this)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Checkbox for Meris EULA
@@ -730,18 +735,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 23" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Checkbox for Meris EULA
-parseable name: user[agreed_to_meris_eula]
-section: user[uid]_0_4
-field signature: 3948772029
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510633">
+field renderer id: 23" data-ddg-testresultelementid="510633">
           </div>
           <div class="ack-cell">
             Yes, I Agree to MERIS End User License Agreement.
@@ -835,7 +829,7 @@ field renderer id: 23" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         <div class="acknowledge">
           <div class="ack-cell">
             <label class="hide-element" for="agreed_to_sentinel_eula">Checkbox for Sentinel EULA.</label>
-            <input type="checkbox" name="user[agreed_to_sentinel_eula]" id="agreed_to_sentinel_eula" value="true" onclick="enable_hidden_id(this)" title="overall type: UNKNOWN_TYPE
+            <input type="checkbox" name="user[agreed_to_sentinel_eula]" id="agreed_to_sentinel_eula" value="true" onclick="enable_hidden_id(this)" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Checkbox for Sentinel EULA.
@@ -846,18 +840,7 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 24" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Checkbox for Sentinel EULA.
-parseable name: user[agreed_to_sentinel_eula]
-section: user[uid]_0_4
-field signature: 3799921125
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="510634">
+field renderer id: 24" data-ddg-testresultelementid="510634">
           </div>
           <div class="ack-cell">
             Yes, I Agree to ESA Sentinel-3 End User License Agreement.
@@ -930,13 +913,13 @@ field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
       </div>
 
       <div class="recaptcha-elem">
-        <script src="https://www.recaptcha.net/recaptcha/api.js" async="" defer=""></script>
+        
         <div data-sitekey="6LfAADYUAAAAAMNHz4nnPapVaJfuDzgiAHrrgEZP" class="g-recaptcha" data-callback="recaptchaCallback">
-          <div style="width: 304px; height: 78px">
+          <div>
             <div>
-              <iframe title="reCAPTCHA" src="https://www.recaptcha.net/recaptcha/api2/anchor?ar=1&amp;k=6LfAADYUAAAAAMNHz4nnPapVaJfuDzgiAHrrgEZP&amp;co=aHR0cHM6Ly91cnMuZWFydGhkYXRhLm5hc2EuZ292OjQ0Mw..&amp;hl=en&amp;v=Trd6gj1dhC_fx0ma_AWHc1me&amp;size=normal&amp;cb=pjv44ai4u015" width="304" height="78" role="presentation" name="a-128jkl1hb1og" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox"></iframe>
+              
             </div>
-            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" title="overall type: SEARCH_TERM
+            <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: SEARCH_TERM
 server type: NO_SERVER_DATA
 heuristic type: SEARCH_TERM
 label: By accessing and using this information system, you acknowledge and consent to the following: You ar
@@ -947,28 +930,9 @@ form signature: 12319005238400260102
 form signature in host form: 12319005238400260102
 field frame token: 7D74602B27FC41D15C8219688D8E5163
 form renderer id: 1
-field renderer id: 50" autofill-information="overall type: SEARCH_TERM
-server type: NO_SERVER_DATA
-heuristic type: SEARCH_TERM
-label: By accessing and using this information system, you acknowledge and consent to the following: You ar
-parseable name: g-recaptcha-response
-section: user[uid]_0_4
-field signature: 3309787731
-form signature: 12319005238400260102
-form signature in host form: 12319005238400260102
-field frame token: 7D74602B27FC41D15C8219688D8E5163
-form renderer id: 1
-field renderer id: 50" autofill-prediction="SEARCH_TERM" style="
-                width: 250px;
-                height: 40px;
-                border: 1px solid rgb(193, 193, 193);
-                margin: 10px 25px;
-                padding: 0px;
-                resize: none;
-                display: none;
-              " aria-hidden="true" aria-label="do not use" aria-readonly="true" data-ddg-testresultelementid="510635"></textarea>
+field renderer id: 50" aria-hidden="true" aria-label="do not use" aria-readonly="true" data-ddg-testresultelementid="510635"></textarea>
           </div>
-          <iframe style="display: none" aria-hidden="true" aria-label="do not use" aria-readonly="true"></iframe>
+          
         </div>
         <noscript>
           <div>

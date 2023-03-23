@@ -1,9 +1,10 @@
 <!--
   https://prequal.wsp.com/account/Register
+  rank: 5793
   testRunId: 66
   testResultId: 237932
 -->
-<form action="/Account/Register" class="form-horizontal" id="frmUserRegister" method="post" role="form" novalidate="novalidate" data-ddg-formtype="sign up">
+<form action="/Account/Register" class="form-horizontal" id="frmUserRegister" method="post" role="form" novalidate="novalidate">
   <input name="__RequestVerificationToken" type="hidden" value="BUzu_3HUaQGd6-GM7PE1vahgqBXZqc09ozYbex5XwSvfF6Jgzn9c7uVx6D077cGXCTdhWzxa4z358zvnjYcwcJnFEO4XIwHyUV1KEfnghYQ1"><input data-val="true" data-val-number="The field IsModelValidationFailed must be a number." id="IsModelValidationFailed" name="IsModelValidationFailed" type="hidden" value="">
   <div class="tabbable">
     <noscript><p style="color: red; font-size: 10pt; font-family: 'Gentium Basic'">
@@ -12,36 +13,47 @@
       </p></noscript>
     <ul class="nav nav-tabs responsive hidden-xs" id="tabRegistration">
       <li class="active tabFont" id="tbTermsandCondition">
-        <a id="lnkTermsAndCondition" style="padding: 10px 10px" href="#divTermsAndCondition" data-toggle="tab"><b>Terms and Conditions</b></a>
+        <a id="lnkTermsAndCondition" href="#divTermsAndCondition" data-toggle="tab"><b>Terms and Conditions</b></a>
       </li>
       <li id="tbBusinessDetails" class="disabled tabFont">
-        <a id="lnkBusinessDetails" style="padding: 10px 10px" href="#divBusinessDetails" data-toggle="tab"><b>Business Details</b></a>
+        <a id="lnkBusinessDetails" href="#divBusinessDetails" data-toggle="tab"><b>Business Details</b></a>
       </li>
       <li id="tbContactInformation" class="disabled tabFont">
-        <a id="lnkContactInformation" style="padding: 10px 10px" href="#divContactInformation" data-toggle="tab"><b>Contact Information</b></a>
+        <a id="lnkContactInformation" href="#divContactInformation" data-toggle="tab"><b>Contact Information</b></a>
       </li>
       <li id="tbSecurityQuestions" class="disabled tabFont">
-        <a id="lnkSecurityQuestions" style="padding: 10px 10px" href="#divSecurityQuestions" data-toggle="tab"><b>Security Questions</b></a>
+        <a id="lnkSecurityQuestions" href="#divSecurityQuestions" data-toggle="tab"><b>Security Questions</b></a>
       </li>
       <li id="tbRegistrationInformation" class="disabled tabFont">
-        <a id="lnkRegistrationInformation" style="padding: 10px 10px" href="#divRegistrationInformation" data-toggle="tab"><b>Registration Information</b></a>
+        <a id="lnkRegistrationInformation" href="#divRegistrationInformation" data-toggle="tab"><b>Registration Information</b></a>
       </li>
     </ul>
     <div class="tab-content responsive hidden-xs">
       <div class="well bs-component tab-pane active fade in" id="divTermsAndCondition">
         <div class="form-group center-block">
           <label class="control-label" for="CountryId">Country</label>
-          <select class="form-control input-sm" data-val="true" data-val-number="The field Country must be a number." data-val-required="Country is required." id="CountryId" name="CountryId" data-ddg-testresultelementid="529472" data-manual-scoring="addressCountryCode">
+          <select class="form-control input-sm" data-val="true" data-val-number="The field Country must be a number." data-val-required="Country is required." id="CountryId" name="CountryId" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country
+parseable name: CountryId
+section: CountryId_0_20
+field signature: 1874648344
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 20" data-ddg-testresultelementid="529472" data-manual-scoring="addressCountryCode">
             <option value="1">United States</option>
           </select>
 
           <span class="field-validation-valid" data-valmsg-for="CountryId" data-valmsg-replace="true"></span>
         </div>
 
-        <div id="divTermsAndConditionsContainer" class="form-group" style="display: block">
+        <div id="divTermsAndConditionsContainer" class="form-group">
           <div class="checkbox">
             <label>
-              <input class="" data-val="true" data-val-booleanrequired="Please agree to the WSP USA terms of use and privacy policy then click next button." data-val-required="The IsAgreedTermsAndConditions field is required." id="IsAgreedTermsAndConditions" name="IsAgreedTermsAndConditions" style="margin-right: 4px; position: relative" type="checkbox" value="true" title="overall type: UNKNOWN_TYPE
+              <input class="" data-val="true" data-val-booleanrequired="Please agree to the WSP USA terms of use and privacy policy then click next button." data-val-required="The IsAgreedTermsAndConditions field is required." id="IsAgreedTermsAndConditions" name="IsAgreedTermsAndConditions" type="checkbox" value="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Organization type
@@ -52,22 +64,22 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 21" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Organization type
-parseable name: IsAgreedTermsAndConditions
-section: CountryId_0_20
-field signature: 2682833943
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 21" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="529473"><input name="IsAgreedTermsAndConditions" type="hidden" value="false">
+field renderer id: 21" data-ddg-testresultelementid="529473"><input name="IsAgreedTermsAndConditions" type="hidden" value="false">
               I
-              <input class="form-control input-sm" data-val="true" data-val-maxlength="Electronic Signature should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Electronic signature is required." id="ElectronicSignature" maxlength="64" name="ElectronicSignature" placeholder="Enter your electronic signature" style="display: inline" type="text" value="" data-ddg-testresultelementid="529474" data-manual-scoring="fullName">
+              <input class="form-control input-sm" data-val="true" data-val-maxlength="Electronic Signature should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Electronic signature is required." id="ElectronicSignature" maxlength="64" name="ElectronicSignature" placeholder="Enter your electronic signature" type="text" value="" autofill-information="overall type: NAME_FULL
+server type: NAME_FULL
+heuristic type: UNKNOWN_TYPE
+label: I
+parseable name: ElectronicSignature
+section: CountryId_0_20
+field signature: 374063434
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 23" data-ddg-testresultelementid="529474" data-manual-scoring="fullName">
 
-              <input class="form-control input-sm" data-val="true" data-val-maxlength="Title should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Title is required." id="Title" maxlength="64" name="Title" placeholder="Title" style="display: inline" type="text" value="" title="overall type: UNKNOWN_TYPE
+              <input class="form-control input-sm" data-val="true" data-val-maxlength="Title should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Title is required." id="Title" maxlength="64" name="Title" placeholder="Title" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Title
@@ -78,18 +90,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 24" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Title
-parseable name: Title
-section: CountryId_0_20
-field signature: 3992572232
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529475">
+field renderer id: 24" data-ddg-testresultelementid="529475">
 
               agree to the WSP USA terms of use and privacy policy.
             </label>
@@ -523,7 +524,7 @@ field renderer id: 24" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       <div class="well bs-component tab-pane fade" id="divBusinessDetails">
         <div class="form-group center-block">
           <label class="control-label" for="OrganizationTypeId">Organization type</label>
-          <select class="form-control input-sm" data-val="true" data-val-number="The field Organization type must be a number." data-val-required="Organization type is required." id="OrganizationTypeId" name="OrganizationTypeId" title="overall type: UNKNOWN_TYPE
+          <select class="form-control input-sm" data-val="true" data-val-number="The field Organization type must be a number." data-val-required="Organization type is required." id="OrganizationTypeId" name="OrganizationTypeId" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Organization type
@@ -534,18 +535,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 26" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Organization type
-parseable name: OrganizationTypeId
-section: CountryId_0_20
-field signature: 1509646608
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529476">
+field renderer id: 26" data-ddg-testresultelementid="529476">
             <option value=""></option>
             <option value="1">Corporation</option>
             <option value="2">LLC</option>
@@ -562,7 +552,7 @@ field renderer id: 26" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
         <div class="form-group center-block">
           <label class="control-label" for="CompanyName">Full legal business name</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Full legal business name should not be more than 128 characters." data-val-maxlength-max="128" data-val-regex="Full legal business name may contain symbols , ' . _ - &amp; + * |;" data-val-regex-pattern="^[a-zA-Z0-9 ,.\-_'&amp;+*|;]+$" data-val-remote="Full legal business name is already registered. Please try again." data-val-remote-additionalfields="*.CompanyName" data-val-remote-url="/Account/IsCompanyNameAlreadyRegistered" data-val-required="Full legal business name is required." id="CompanyName" maxlength="128" name="CompanyName" style="text-align: left" type="text" value="" title="overall type: COMPANY_NAME
+          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Full legal business name should not be more than 128 characters." data-val-maxlength-max="128" data-val-regex="Full legal business name may contain symbols , ' . _ - &amp; + * |;" data-val-regex-pattern="^[a-zA-Z0-9 ,.\-_'&amp;+*|;]+$" data-val-remote="Full legal business name is already registered. Please try again." data-val-remote-additionalfields="*.CompanyName" data-val-remote-url="/Account/IsCompanyNameAlreadyRegistered" data-val-required="Full legal business name is required." id="CompanyName" maxlength="128" name="CompanyName" type="text" value="" autofill-information="overall type: COMPANY_NAME
 server type: COMPANY_NAME
 heuristic type: COMPANY_NAME
 label: Full legal business name
@@ -573,25 +563,14 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 27" autofill-information="overall type: COMPANY_NAME
-server type: COMPANY_NAME
-heuristic type: COMPANY_NAME
-label: Full legal business name
-parseable name: CompanyName
-section: CountryId_0_20
-field signature: 2591567894
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 27" autofill-prediction="COMPANY_NAME" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529477">
+field renderer id: 27" data-ddg-testresultelementid="529477">
           <span class="field-validation-valid" data-valmsg-for="CompanyName" data-valmsg-replace="true"></span>
-          <div id="lblCompanyName" class="field-validation-warning" style="display: none"></div>
+          <div id="lblCompanyName" class="field-validation-warning"></div>
         </div>
 
-        <div style="display: none" class="form-group center-block explain">
+        <div class="form-group center-block explain">
           <label class="control-label txtExplain" for="Explain">Explain</label>
-          <textarea class="form-control form-control-font-size txtExplain" cols="20" data-val="true" data-val-maxlength="Explanation should not be more than 128 characters." data-val-maxlength-max="128" data-val-required="Explanation is required." id="Explain" maxlength="128" name="Explain" rows="2" style="text-align: left" title="overall type: UNKNOWN_TYPE
+          <textarea class="form-control form-control-font-size txtExplain" cols="20" data-val="true" data-val-maxlength="Explanation should not be more than 128 characters." data-val-maxlength-max="128" data-val-required="Explanation is required." id="Explain" maxlength="128" name="Explain" rows="2" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Explain
@@ -602,18 +581,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 28" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Explain
-parseable name: Explain
-section: CountryId_0_20
-field signature: 2073309432
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="529478"></textarea>
+field renderer id: 28" data-ddg-testresultelementid="529478"></textarea>
 
           <span class="field-validation-valid" data-valmsg-for="Explain" data-valmsg-replace="true"></span>
         </div>
@@ -624,7 +592,7 @@ field renderer id: 28" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
           <label class="labelExtendedDescription">(Enter applicant's nine-digit employer identification number
             ('EIN'). If applicant does not have an EIN, provide the last four
             digits of applicant’s social security number ('SSN').)</label>
-          <select class="form-control input-sm" data-val="true" data-val-number="The field EIN/SSN must be a number." data-val-required="EIN/SSN is required." id="EitherEINSSN" name="EitherEINSSN" title="overall type: UNKNOWN_TYPE
+          <select class="form-control input-sm" data-val="true" data-val-number="The field EIN/SSN must be a number." data-val-required="EIN/SSN is required." id="EitherEINSSN" name="EitherEINSSN" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: EIN/SSN
@@ -635,18 +603,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 29" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: EIN/SSN
-parseable name: EitherEINSSN
-section: CountryId_0_20
-field signature: 513224912
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529479">
+field renderer id: 29" data-ddg-testresultelementid="529479">
             <option value=""></option>
             <option value="1">EIN</option>
             <option value="2">SSN</option>
@@ -658,7 +615,7 @@ field renderer id: 29" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <label class="control-label" for="EINSSNNumber">EIN/SSN number</label>
           <br>
           <label class="labelExtendedDescription">(For SSN : Enter only last 4 digits.)</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-remote="EIN is already registered. Please try again." data-val-remote-additionalfields="*.EINSSNNumber,*.EitherEINSSN" data-val-remote-url="/Account/IsEINExist" data-val-required="EIN/SSN number is required." id="EINSSNNumber" name="EINSSNNumber" style="text-align: left" type="text" value="" title="overall type: UNKNOWN_TYPE
+          <input class="form-control form-control-font-size" data-val="true" data-val-remote="EIN is already registered. Please try again." data-val-remote-additionalfields="*.EINSSNNumber,*.EitherEINSSN" data-val-remote-url="/Account/IsEINExist" data-val-required="EIN/SSN number is required." id="EINSSNNumber" name="EINSSNNumber" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: EIN/SSN number
@@ -669,22 +626,11 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 30" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: EIN/SSN number
-parseable name: EINSSNNumber
-section: CountryId_0_20
-field signature: 905844973
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529480">
+field renderer id: 30" data-ddg-testresultelementid="529480">
           <span class="field-validation-valid" data-valmsg-for="EINSSNNumber" data-valmsg-replace="true"></span>
         </div>
         <div class="form-group center-block">
-          <input id="btnPreviousTab2" type="button" class="btn btn-primary" value="Previous" style="margin-right: 2px">
+          <input id="btnPreviousTab2" type="button" class="btn btn-primary" value="Previous">
           <input id="btnNextTab2" type="button" class="btn btn-primary" value="Next">
         </div>
       </div>
@@ -695,21 +641,43 @@ field renderer id: 30" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <label class="labelExtendedDescription">(If you provided the last four digits of a SSN in the 'Business
             Details' section, the name provided in this section must correspond
             to the SSN previously provided.)</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Last name should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Last name is required." id="LastName" maxlength="64" name="LastName" style="text-align: left" type="text" value="" data-ddg-testresultelementid="529481" data-manual-scoring="lastName">
+          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Last name should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Last name is required." id="LastName" maxlength="64" name="LastName" type="text" value="" autofill-information="overall type: NAME_LAST
+server type: NAME_LAST
+heuristic type: NAME_LAST
+label: Last name
+parseable name: LastName
+section: CountryId_0_20
+field signature: 3852795446
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 33" data-ddg-testresultelementid="529481" data-manual-scoring="lastName">
 
           <span class="field-validation-valid" data-valmsg-for="LastName" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
           <label class="control-label" for="FirstName">First name</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="First name should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="First name is required." id="FirstName" maxlength="64" name="FirstName" style="text-align: left" type="text" value="" data-ddg-testresultelementid="529482" data-manual-scoring="firstName">
+          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="First name should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="First name is required." id="FirstName" maxlength="64" name="FirstName" type="text" value="" autofill-information="overall type: NAME_FIRST
+server type: NAME_FIRST
+heuristic type: NAME_FIRST
+label: First name
+parseable name: FirstName
+section: CountryId_0_20
+field signature: 2784595196
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 34" data-ddg-testresultelementid="529482" data-manual-scoring="firstName">
 
           <span class="field-validation-valid" data-valmsg-for="FirstName" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
           <label class="control-label" for="JobTitle">Job title</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Job title should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Job title is required." id="JobTitle" maxlength="64" name="JobTitle" style="text-align: left" type="text" value="" title="overall type: UNKNOWN_TYPE
+          <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Job title should not be more than 64 characters." data-val-maxlength-max="64" data-val-required="Job title is required." id="JobTitle" maxlength="64" name="JobTitle" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Job title
@@ -720,35 +688,35 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 35" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Job title
-parseable name: JobTitle
-section: CountryId_0_20
-field signature: 4097846251
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 35" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529483">
+field renderer id: 35" data-ddg-testresultelementid="529483">
           <span class="field-validation-valid" data-valmsg-for="JobTitle" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
-          <div class="row" style="padding-left: 15px">
+          <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12 small-Telephone">
-              <label class="control-label" for="Telephone" style="text-align: left; display: inline-block">Telephone</label>
+              <label class="control-label" for="Telephone">Telephone</label>
             </div>
           </div>
         </div>
         <div class="form-group center-block">
-          <div class="row" style="padding-left: 15px">
+          <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12 small-Telephone">
-              <div class="form-inline telephone-groupinput" style="display: inline-block">
+              <div class="form-inline telephone-groupinput">
                 <div class="nopadding">
                   <div class="intl-tel-input pretty inside">
-                    <input class="form-control form-control-font-size Telephone telephone-country-code" id="TelephoneCountryCode" name="TelephoneCountryCode" readonly="readonly" type="text" value="" data-ddg-testresultelementid="529484" data-manual-scoring="phone">
+                    <input class="form-control form-control-font-size Telephone telephone-country-code" id="TelephoneCountryCode" name="TelephoneCountryCode" readonly="readonly" type="text" value="" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Telephone
+parseable name: TelephoneCountryCode
+section: CountryId_0_20
+field signature: 3018503565
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 36" data-ddg-testresultelementid="529484" data-manual-scoring="phone">
                     <div class="flag-dropdown">
                       <div class="selected-flag" title="United States: +1">
                         <div class="flag us"><div class="arrow"></div></div>
@@ -784,11 +752,7 @@ field renderer id: 35" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                           <span class="country-name">American Samoa</span><span class="dial-code">+1684</span>
                         </li>
                         <li class="country" data-dial-code="376" data-country-code="ad">
-                          <div class="flag ad" hidden="" style="
-                              display: none !important;
-                              min-height: 0px !important;
-                              height: 0px !important;
-                            "></div>
+                          <div class="flag ad" hidden=""></div>
                           <span class="country-name">Andorra</span><span class="dial-code">+376</span>
                         </li>
                         <li class="country" data-dial-code="244" data-country-code="ao">
@@ -1757,16 +1721,22 @@ field renderer id: 35" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
                       </ul>
                     </div>
                   </div>
-                  <input class="form-control form-control-font-size phoneNumber" data-val="true" data-val-customtelephonenumbervalidation="Phone number must be {0} digits." data-val-customtelephonenumbervalidation-attributepropertyname="TelephoneCountryCode" data-val-required="Telephone is required." id="Telephone" name="Telephone" type="text" value="" maxlength="10" data-ddg-testresultelementid="529485" data-manual-scoring="phone">
+                  <input class="form-control form-control-font-size phoneNumber" data-val="true" data-val-customtelephonenumbervalidation="Phone number must be {0} digits." data-val-customtelephonenumbervalidation-attributepropertyname="TelephoneCountryCode" data-val-required="Telephone is required." id="Telephone" name="Telephone" type="text" value="" maxlength="10" autofill-information="overall type: PHONE_HOME_CITY_AND_NUMBER
+server type: PHONE_HOME_CITY_AND_NUMBER
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Telephone
+parseable name: Telephone
+section: CountryId_0_20
+field signature: 4029772588
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 37" data-ddg-testresultelementid="529485" data-manual-scoring="phone">
                 </div>
               </div>
               &nbsp;&nbsp;
-              <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Extension should not be more than 6 characters." data-val-maxlength-max="6" id="Extension" maxlength="6" name="Extension" placeholder="Extension" style="
-                  text-align: left;
-                  vertical-align: middle;
-                  width: 90px;
-                  display: inline-block;
-                " type="text" value="" title="overall type: PHONE_HOME_EXTENSION
+              <input class="form-control form-control-font-size" data-val="true" data-val-maxlength="Extension should not be more than 6 characters." data-val-maxlength-max="6" id="Extension" maxlength="6" name="Extension" placeholder="Extension" type="text" value="" autofill-information="overall type: PHONE_HOME_EXTENSION
 server type: NO_SERVER_DATA
 heuristic type: PHONE_HOME_EXTENSION
 label: Extension
@@ -1777,18 +1747,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 38" autofill-information="overall type: PHONE_HOME_EXTENSION
-server type: NO_SERVER_DATA
-heuristic type: PHONE_HOME_EXTENSION
-label: Extension
-parseable name: Extension
-section: CountryId_0_20
-field signature: 3158358463
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 38" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529486">
+field renderer id: 38" data-ddg-testresultelementid="529486">
             </div>
           </div>
 
@@ -1811,7 +1770,7 @@ field renderer id: 38" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
                                         </div>-->
 
         <div class="form-group center-block">
-          <input id="btnPreviousTab3" type="button" class="btn btn-primary" value="Previous" style="margin-right: 2px">
+          <input id="btnPreviousTab3" type="button" class="btn btn-primary" value="Previous">
           <input id="btnNextTab3" type="button" class="btn btn-primary" value="Next">
         </div>
       </div>
@@ -1819,7 +1778,7 @@ field renderer id: 38" autofill-prediction="PHONE_HOME_EXTENSION" data-ddg-input
       <div class="well bs-component tab-pane fade" id="divSecurityQuestions">
         <div class="form-group center-block">
           <label class="control-label" for="SecurityQuestion1">Security question 1</label>
-          <select class="form-control input-sm" data-val="true" data-val-custommustnotsame="Security question 1 should be different from Security question2." data-val-custommustnotsame-attributeproperty="SecurityQuestion2" data-val-custommustnotsame-attributepropertyname="Security question2" data-val-number="The field Security question 1 must be a number." data-val-required="Security question is required." id="SecurityQuestion1" name="SecurityQuestion1" title="overall type: UNKNOWN_TYPE
+          <select class="form-control input-sm" data-val="true" data-val-custommustnotsame="Security question 1 should be different from Security question2." data-val-custommustnotsame-attributeproperty="SecurityQuestion2" data-val-custommustnotsame-attributepropertyname="Security question2" data-val-number="The field Security question 1 must be a number." data-val-required="Security question is required." id="SecurityQuestion1" name="SecurityQuestion1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security question 1
@@ -1830,18 +1789,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 41" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security question 1
-parseable name: SecurityQuestion1
-section: CountryId_0_20
-field signature: 1200403218
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529487">
+field renderer id: 41" data-ddg-testresultelementid="529487">
             <option value=""></option>
             <option value="1">What is your favorite hobby?</option>
             <option value="2">What was your childhood nickname?</option>
@@ -1865,7 +1813,7 @@ field renderer id: 41" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
         <div class="form-group center-block">
           <label class="control-label" for="SecurityAnswer1">Security answer 1</label>
-          <input minlength="5" class="form-control form-control-font-size" data-val="true" data-val-maxlength="Security Answer 1 should not be more than 16 characters." data-val-maxlength-max="16" data-val-required="Security answer is required." id="SecurityAnswer1" maxlength="16" name="SecurityAnswer1" style="text-align: left" type="password" value="" title="overall type: UNKNOWN_TYPE
+          <input minlength="5" class="form-control form-control-font-size" data-val="true" data-val-maxlength="Security Answer 1 should not be more than 16 characters." data-val-maxlength-max="16" data-val-required="Security answer is required." id="SecurityAnswer1" maxlength="16" name="SecurityAnswer1" type="password" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security answer 1
@@ -1876,23 +1824,12 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 42" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security answer 1
-parseable name: SecurityAnswer1
-section: CountryId_0_20
-field signature: 1475810604
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 42" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529488">
+field renderer id: 42" data-ddg-testresultelementid="529488">
           <span class="field-validation-valid" data-valmsg-for="SecurityAnswer1" data-valmsg-replace="true"></span>
         </div>
         <div class="form-group center-block">
           <label class="control-label" for="SecurityQuestion2">Security question 2</label>
-          <select class="form-control input-sm" data-val="true" data-val-custommustnotsame="Security question 2 should be different from Security question1." data-val-custommustnotsame-attributeproperty="SecurityQuestion1" data-val-custommustnotsame-attributepropertyname="Security question1" data-val-number="The field Security question 2 must be a number." data-val-required="Security question is required." id="SecurityQuestion2" name="SecurityQuestion2" title="overall type: UNKNOWN_TYPE
+          <select class="form-control input-sm" data-val="true" data-val-custommustnotsame="Security question 2 should be different from Security question1." data-val-custommustnotsame-attributeproperty="SecurityQuestion1" data-val-custommustnotsame-attributepropertyname="Security question1" data-val-number="The field Security question 2 must be a number." data-val-required="Security question is required." id="SecurityQuestion2" name="SecurityQuestion2" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security question 2
@@ -1903,18 +1840,7 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 43" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security question 2
-parseable name: SecurityQuestion2
-section: CountryId_0_20
-field signature: 2918397800
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 43" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529489">
+field renderer id: 43" data-ddg-testresultelementid="529489">
             <option value=""></option>
             <option value="1">What is your favorite hobby?</option>
             <option value="2">What was your childhood nickname?</option>
@@ -1939,7 +1865,7 @@ field renderer id: 43" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
         </div>
         <div class="form-group center-block">
           <label class="control-label" for="SecurityAnswer2">Security answer 2</label>
-          <input minlength="5" class="form-control form-control-font-size" data-val="true" data-val-custommustnotsame="Security answer 2 should be different from Security answer1." data-val-custommustnotsame-attributeproperty="SecurityAnswer1" data-val-custommustnotsame-attributepropertyname="Security answer1" data-val-maxlength="Security Answer 2 should not be more than 16 characters." data-val-maxlength-max="16" data-val-required="Security answer is required." id="SecurityAnswer2" maxlength="16" name="SecurityAnswer2" style="text-align: left" type="password" value="" title="overall type: UNKNOWN_TYPE
+          <input minlength="5" class="form-control form-control-font-size" data-val="true" data-val-custommustnotsame="Security answer 2 should be different from Security answer1." data-val-custommustnotsame-attributeproperty="SecurityAnswer1" data-val-custommustnotsame-attributepropertyname="Security answer1" data-val-maxlength="Security Answer 2 should not be more than 16 characters." data-val-maxlength-max="16" data-val-required="Security answer is required." id="SecurityAnswer2" maxlength="16" name="SecurityAnswer2" type="password" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Security answer 2
@@ -1950,24 +1876,13 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 44" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Security answer 2
-parseable name: SecurityAnswer2
-section: CountryId_0_20
-field signature: 1597721215
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529490">
+field renderer id: 44" data-ddg-testresultelementid="529490">
           <span class="field-validation-valid" data-valmsg-for="SecurityAnswer2" data-valmsg-replace="true"></span>
 
           <!--<label id="lblPassword" class="field-validation-error"></label> -->
         </div>
         <div class="form-group center-block">
-          <input id="btnPreviousTab5" type="button" class="btn btn-primary" value="Previous" style="margin-right: 2px">
+          <input id="btnPreviousTab5" type="button" class="btn btn-primary" value="Previous">
           <input id="btnNextTab5" type="button" class="btn btn-primary" value="Next">
         </div>
       </div>
@@ -1976,22 +1891,36 @@ field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <label class="control-label" for="UserName">Email (Username)</label>
           <br>
           <label class="labelExtendedDescription">(Username cannot be changed. Please choose carefully.)</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-email="Email (Username) is not in a valid format." data-val-maxlength="Username should not be more than 256 characters." data-val-maxlength-max="256" data-val-remote="Email is already registered. Please try again." data-val-remote-additionalfields="*.UserName" data-val-remote-url="/Account/IsUserNameExist" data-val-required="Email (Username) is required." id="UserName" maxlength="256" name="UserName" style="text-align: left" type="text" value="" data-ddg-testresultelementid="529491" data-manual-scoring="username">
+          <input class="form-control form-control-font-size" data-val="true" data-val-email="Email (Username) is not in a valid format." data-val-maxlength="Username should not be more than 256 characters." data-val-maxlength-max="256" data-val-remote="Email is already registered. Please try again." data-val-remote-additionalfields="*.UserName" data-val-remote-url="/Account/IsUserNameExist" data-val-required="Email (Username) is required." id="UserName" maxlength="256" name="UserName" type="text" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email (Username)
+parseable name: UserName
+section: CountryId_0_20
+field signature: 3184812433
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 47" data-ddg-testresultelementid="529491" data-manual-scoring="username">
 
           <span class="field-validation-valid" data-valmsg-for="UserName" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
           <label class="control-label" for="ConfirmEmail">Confirm email</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-email="Confirm email is not in a valid format." data-val-equalto="Confirm email does not match with the Email. Please try again." data-val-equalto-other="*.UserName" data-val-maxlength="Confirm Email should not be more than 256 characters." data-val-maxlength-max="256" data-val-required="Confirm email is required." id="ConfirmEmail" maxlength="256" name="ConfirmEmail" style="
-              text-align: left;
-              background-size: auto 26px !important;
-              background-position: right center !important;
-              background-repeat: no-repeat !important;
-              background-origin: content-box !important;
-              background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-              transition: background 0s ease 0s !important;
-            " type="text" value="" data-ddg-autofill="true" data-ddg-testresultelementid="529492" data-manual-scoring="emailAddress">
+          <input class="form-control form-control-font-size" data-val="true" data-val-email="Confirm email is not in a valid format." data-val-equalto="Confirm email does not match with the Email. Please try again." data-val-equalto-other="*.UserName" data-val-maxlength="Confirm Email should not be more than 256 characters." data-val-maxlength-max="256" data-val-required="Confirm email is required." id="ConfirmEmail" maxlength="256" name="ConfirmEmail" type="text" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Confirm email
+parseable name: ConfirmEmail
+section: CountryId_0_20
+field signature: 2884542915
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 48" data-ddg-testresultelementid="529492" data-manual-scoring="emailAddress">
 
           <span class="field-validation-valid" data-valmsg-for="ConfirmEmail" data-valmsg-replace="true"></span>
         </div>
@@ -2000,22 +1929,36 @@ field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
           <br>
           <label class="labelExtendedDescription">(Must be different than Username. This email will be used to
             recover your username if you forget it.)</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-custommustnotsame="Recovery email address should be different from UserName." data-val-custommustnotsame-attributeproperty="UserName" data-val-custommustnotsame-attributepropertyname="UserName" data-val-email="Recovery email is not in a valid format." data-val-maxlength="Recovery email should not be more than 256 characters." data-val-maxlength-max="256" data-val-required="Recovery email is required." id="RecoveryEmail" maxlength="256" name="RecoveryEmail" style="
-              text-align: left;
-              background-size: auto 26px !important;
-              background-position: right center !important;
-              background-repeat: no-repeat !important;
-              background-origin: content-box !important;
-              background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-              transition: background 0s ease 0s !important;
-            " type="text" value="" data-ddg-autofill="true" data-ddg-testresultelementid="529493" data-manual-scoring="emailAddress">
+          <input class="form-control form-control-font-size" data-val="true" data-val-custommustnotsame="Recovery email address should be different from UserName." data-val-custommustnotsame-attributeproperty="UserName" data-val-custommustnotsame-attributepropertyname="UserName" data-val-email="Recovery email is not in a valid format." data-val-maxlength="Recovery email should not be more than 256 characters." data-val-maxlength-max="256" data-val-required="Recovery email is required." id="RecoveryEmail" maxlength="256" name="RecoveryEmail" type="text" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Recovery email address
+parseable name: RecoveryEmail
+section: CountryId_0_20
+field signature: 3354748425
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 49" data-ddg-testresultelementid="529493" data-manual-scoring="emailAddress">
 
           <span class="field-validation-valid" data-valmsg-for="RecoveryEmail" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
           <label class="control-label" for="Password">Password</label>
-          <input class="form-control form-control-font-size" data-html="true" data-original-title="<ul class='tooltip-ul-padding'><li>Password must be at least 8 characters long.</li><li>Password must contain at least one digit ('0'-'9').</li><li>Password must contain at least one uppercase ('A'-'Z').</li><li>Password must contain at least one lowercase ('a'-'z').</li><li>Password must contain at least one special character (!@#$%^*()).</li></ul>" data-placement="right" data-toggle="tooltip" data-trigger="focus" data-val="true" data-val-length="The Password must be at least 8 characters long." data-val-length-max="100" data-val-length-min="8" data-val-regex="Password does not match with the rules." data-val-regex-pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^*()]).{8,}$" data-val-required="Password is required." id="Password" name="Password" onkeyup="passwordMeterStrength(this)" style="text-align: left" type="password" data-ddg-testresultelementid="529494" data-manual-scoring="password">
+          <input class="form-control form-control-font-size" data-html="true" data-original-title="<ul class='tooltip-ul-padding'><li>Password must be at least 8 characters long.</li><li>Password must contain at least one digit ('0'-'9').</li><li>Password must contain at least one uppercase ('A'-'Z').</li><li>Password must contain at least one lowercase ('a'-'z').</li><li>Password must contain at least one special character (!@#$%^*()).</li></ul>" data-placement="right" data-toggle="tooltip" data-trigger="focus" data-val="true" data-val-length="The Password must be at least 8 characters long." data-val-length-max="100" data-val-length-min="8" data-val-regex="Password does not match with the rules." data-val-regex-pattern="^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^*()]).{8,}$" data-val-required="Password is required." id="Password" name="Password" onkeyup="passwordMeterStrength(this)" type="password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: CountryId_0_20
+field signature: 3935904101
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 50" data-ddg-testresultelementid="529494" data-manual-scoring="password">
           <div id="password_meter_description"></div>
           <div id="password_meter_strength_border">
             <!-- Used for border only-->
@@ -2028,16 +1971,27 @@ field renderer id: 44" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
 
         <div class="form-group center-block">
           <label class="control-label" for="ConfirmPassword">Confirm password</label>
-          <input class="form-control form-control-font-size" data-val="true" data-val-equalto="The password and confirm password do not match." data-val-equalto-other="*.Password" data-val-required="Confirm password is required." id="ConfirmPassword" name="ConfirmPassword" style="text-align: left" type="password" data-ddg-testresultelementid="529495" data-manual-scoring="password">
+          <input class="form-control form-control-font-size" data-val="true" data-val-equalto="The password and confirm password do not match." data-val-equalto-other="*.Password" data-val-required="Confirm password is required." id="ConfirmPassword" name="ConfirmPassword" type="password" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm password
+parseable name: ConfirmPassword
+section: CountryId_0_20
+field signature: 3280187023
+form signature: 7049410707155457945
+form signature in host form: 7049410707155457945
+field frame token: AD50E2FB4085446F7E089F825863E4A3
+form renderer id: 2
+field renderer id: 51" data-ddg-testresultelementid="529495" data-manual-scoring="password">
 
           <span class="field-validation-valid" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
-          <label id="lblCaptcha" class="control-label" style="font-weight: normal"><small>Please enter the text displayed in the image.</small></label><br>
-          <img id="imgCaptcha" alt="Click to Change image" src="../Images/CaptchaImages/b1j13wlsycvgzkk4plrk0515.png?t=638145152921685858" title="Click to Change image" style="width: 200px; height: 50px">
-          <img id="imgCaptchaRefresh" alt="Refresh" src="/Images/refresh.jpg" title="Refresh">
-          <input class="form-control form-control-font-size" data-val="true" data-val-remote="The characters you entered didn't match the word verification. Please try again." data-val-remote-additionalfields="*.Captcha" data-val-remote-url="/Account/IsValidAccountRegisterCaptcha" data-val-required="The characters verification is required." id="Captcha" name="Captcha" style="text-align: left" type="text" value="" title="overall type: UNKNOWN_TYPE
+          <label id="lblCaptcha" class="control-label"><small>Please enter the text displayed in the image.</small></label><br>
+          
+          
+          <input class="form-control form-control-font-size" data-val="true" data-val-remote="The characters you entered didn't match the word verification. Please try again." data-val-remote-additionalfields="*.Captcha" data-val-remote-url="/Account/IsValidAccountRegisterCaptcha" data-val-required="The characters verification is required." id="Captcha" name="Captcha" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Please enter the text displayed in the image.
@@ -2048,27 +2002,16 @@ form signature: 7049410707155457945
 form signature in host form: 7049410707155457945
 field frame token: AD50E2FB4085446F7E089F825863E4A3
 form renderer id: 2
-field renderer id: 52" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Please enter the text displayed in the image.
-parseable name: Captcha
-section: CountryId_0_20
-field signature: 925846098
-form signature: 7049410707155457945
-form signature in host form: 7049410707155457945
-field frame token: AD50E2FB4085446F7E089F825863E4A3
-form renderer id: 2
-field renderer id: 52" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="529496">
+field renderer id: 52" data-ddg-testresultelementid="529496">
 
           <span class="field-validation-valid" data-valmsg-for="Captcha" data-valmsg-replace="true"></span>
         </div>
 
         <div class="form-group center-block">
-          <input id="btnPreviousTab4" type="button" class="btn btn-primary" value="Previous" style="margin-right: 2px">
+          <input id="btnPreviousTab4" type="button" class="btn btn-primary" value="Previous">
           <input id="btnSubmit" type="button" class="btn btn-primary" value="Complete registration">
-          <div id="processingImage" style="display: none">
-            <img style="padding-left: 15px" src="/images/loading.gif">
+          <div id="processingImage">
+            
           </div>
         </div>
         <br>
@@ -2079,10 +2022,10 @@ field renderer id: 52" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="un
       <div class="panel panel-default tabFont">
         <div class="panel-heading">
           <h4 class="panel-title">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#collapse-tabRegistration" href="#collapse-divTermsAndCondition" aria-expanded="true" style="color: rgb(66, 139, 202)"><b>Terms and Conditions</b></a>
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#collapse-tabRegistration" href="#collapse-divTermsAndCondition" aria-expanded="true"><b>Terms and Conditions</b></a>
           </h4>
         </div>
-        <div id="collapse-divTermsAndCondition" class="panel-collapse collapse in" aria-expanded="true" style=""></div>
+        <div id="collapse-divTermsAndCondition" class="panel-collapse collapse in" aria-expanded="true"></div>
       </div>
       <div class="panel panel-default disabled tabFont">
         <div class="panel-heading">

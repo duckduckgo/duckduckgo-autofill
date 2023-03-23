@@ -1,12 +1,13 @@
 <!--
   https://xscb2.escapefromtarkov.com/registration
+  rank: 7426
   testRunId: 66
   testResultId: 238749
 -->
-<form id="User-RegisterForm" name="User-RegisterForm" class="base-form serializable" action="/registration" method="POST" data-ddg-formtype="sign up">
+<form id="User-RegisterForm" name="User-RegisterForm" class="base-form serializable" action="/registration" method="POST">
   <div class="inline form_left">
     <div class="form-item">
-      <label for="login">Login<span class="form-required" title="This field is required.">*</span></label><input data-validation="[NOTEMPTY]" data-validation-message="Field Login can not be empty." data-validation-regex="/^[a-z0-9_-]{3,15}$/i" data-validation-regex-message="The field should consist of 3 to 15 characters. You can use Latin letters, digits, the underscore, and hyphen." id="login" name="login" class="form-text" size="40" maxlength="15" type="text" value="" placeholder="" title="overall type: UNKNOWN_TYPE
+      <label for="login">Login<span class="form-required" title="This field is required.">*</span></label><input data-validation="[NOTEMPTY]" data-validation-message="Field Login can not be empty." data-validation-regex="/^[a-z0-9_-]{3,15}$/i" data-validation-regex-message="The field should consist of 3 to 15 characters. You can use Latin letters, digits, the underscore, and hyphen." id="login" name="login" class="form-text" size="40" maxlength="15" type="text" value="" placeholder="" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Login*
@@ -17,41 +18,67 @@ form signature: 6742224166458573302
 form signature in host form: 6742224166458573302
 field frame token: B649456CFE65D62DFEB017BD0AD8E724
 form renderer id: 1
-field renderer id: 13" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Login*
-parseable name: login
-section: login_0_13
-field signature: 2301446952
-form signature: 6742224166458573302
-form signature in host form: 6742224166458573302
-field frame token: B649456CFE65D62DFEB017BD0AD8E724
-form renderer id: 1
-field renderer id: 13" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="535158">
+field renderer id: 13" data-ddg-testresultelementid="535158">
     </div>
     <div class="form-item">
-      <label for="email">E-mail<span class="form-required" title="This field is required.">*</span></label><input data-validation="[NOTEMPTY, EMAIL]" data-validation-message="Invalid E-mail" id="email" name="email" class="form-text" size="40" maxlength="400" type="text" value="" placeholder="" data-ddg-autofill="true" data-ddg-testresultelementid="535159" style="
-          background-size: auto 26px !important;
-          background-position: right center !important;
-          background-repeat: no-repeat !important;
-          background-origin: content-box !important;
-          background-image: url('chrome-extension://eiflgdmjpmjdgkdcckpjelhcfemjnfme/img/logo-small.svg') !important;
-          transition: background 0s ease 0s !important;
-        " data-manual-scoring="emailAddress">
+      <label for="email">E-mail<span class="form-required" title="This field is required.">*</span></label><input data-validation="[NOTEMPTY, EMAIL]" data-validation-message="Invalid E-mail" id="email" name="email" class="form-text" size="40" maxlength="400" type="text" value="" placeholder="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: E-mail*
+parseable name: email
+section: login_0_13
+field signature: 420638584
+form signature: 6742224166458573302
+form signature in host form: 6742224166458573302
+field frame token: B649456CFE65D62DFEB017BD0AD8E724
+form renderer id: 1
+field renderer id: 14" data-ddg-testresultelementid="535159" data-manual-scoring="emailAddress">
     </div>
     <div class="inline form_right">
       <div class="form-item">
-        <label for="password1">Password<span class="form-required" title="This field is required.">*</span></label><input data-validation="[NOTEMPTY]" data-validation-message="The password you entered is too simple. Use a few words, numbers, capital letters." data-password-strength-values="[&quot;very weak&quot;,&quot;weak&quot;,&quot;normal&quot;,&quot;strong&quot;,&quot;very strong&quot;]" data-validation-regex="/^(?=.*\d)(?=.*\p{Lu})(?=.*\p{Ll}).{8,}$/um" data-validation-regex-message="The password you entered is too simple. Use a few words, numbers, capital letters." id="password1" name="password1" class="form-password withIcon" size="20" maxlength="400" type="password" value="" data-ddg-testresultelementid="535160" data-manual-scoring="password"><i class="icon eye eye-closed"></i>
+        <label for="password1">Password<span class="form-required" title="This field is required.">*</span></label><input data-validation="[NOTEMPTY]" data-validation-message="The password you entered is too simple. Use a few words, numbers, capital letters." data-password-strength-values="[&quot;very weak&quot;,&quot;weak&quot;,&quot;normal&quot;,&quot;strong&quot;,&quot;very strong&quot;]" data-validation-regex="/^(?=.*\d)(?=.*\p{Lu})(?=.*\p{Ll}).{8,}$/um" data-validation-regex-message="The password you entered is too simple. Use a few words, numbers, capital letters." id="password1" name="password1" class="form-password withIcon" size="20" maxlength="400" type="password" value="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password*
+parseable name: password1
+section: login_0_13
+field signature: 4073518182
+form signature: 6742224166458573302
+form signature in host form: 6742224166458573302
+field frame token: B649456CFE65D62DFEB017BD0AD8E724
+form renderer id: 1
+field renderer id: 15" data-ddg-testresultelementid="535160" data-manual-scoring="password"><i class="icon eye eye-closed"></i>
       </div>
       <div class="form-item">
-        <label for="password2">Repeat password<span class="form-required" title="This field is required.">*</span></label><input data-validation="[V==password1]" data-validation-message="Passwords do not match." id="password2" name="password2" class="form-password withIcon" size="20" maxlength="400" type="password" value="" data-ddg-testresultelementid="535161" data-manual-scoring="password"><i class="icon eye eye-closed"></i>
+        <label for="password2">Repeat password<span class="form-required" title="This field is required.">*</span></label><input data-validation="[V==password1]" data-validation-message="Passwords do not match." id="password2" name="password2" class="form-password withIcon" size="20" maxlength="400" type="password" value="" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Repeat password*
+parseable name: password2
+section: login_0_13
+field signature: 585843248
+form signature: 6742224166458573302
+form signature in host form: 6742224166458573302
+field frame token: B649456CFE65D62DFEB017BD0AD8E724
+form renderer id: 1
+field renderer id: 16" data-ddg-testresultelementid="535161" data-manual-scoring="password"><i class="icon eye eye-closed"></i>
       </div>
       <div class="form-item">
-        <input id="testfield" name="testfield" class="form-text" size="40" maxlength="252" type="text" value="" placeholder="" data-ddg-testresultelementid="535162" data-manual-scoring="addressProvince">
+        <input id="testfield" name="testfield" class="form-text" size="40" maxlength="252" type="text" value="" placeholder="" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: Register new account Please complete the form below to create a new BATTLESTATE GAMES LIMITED Accoun
+parseable name: testfield
+section: login_0_13
+field signature: 1771428121
+form signature: 6742224166458573302
+form signature in host form: 6742224166458573302
+field frame token: B649456CFE65D62DFEB017BD0AD8E724
+form renderer id: 1
+field renderer id: 17" data-ddg-testresultelementid="535162" data-manual-scoring="addressProvince">
       </div>
       <div class="form-item">
-        <label for="lang">Preferred language<span class="form-required" title="This field is required.">*</span></label><select id="lang" name="lang" class="form-select select2-hidden-accessible" tabindex="-1" aria-hidden="true" title="overall type: UNKNOWN_TYPE
+        <label for="lang">Preferred language<span class="form-required" title="This field is required.">*</span></label><select id="lang" name="lang" class="form-select select2-hidden-accessible" tabindex="-1" aria-hidden="true" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Preferred language*
@@ -62,26 +89,15 @@ form signature: 6742224166458573302
 form signature in host form: 6742224166458573302
 field frame token: B649456CFE65D62DFEB017BD0AD8E724
 form renderer id: 1
-field renderer id: 18" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: Preferred language*
-parseable name: lang
-section: login_0_13
-field signature: 283064157
-form signature: 6742224166458573302
-form signature in host form: 6742224166458573302
-field frame token: B649456CFE65D62DFEB017BD0AD8E724
-form renderer id: 1
-field renderer id: 18" autofill-prediction="UNKNOWN_TYPE" data-ddg-inputtype="unknown" data-ddg-testresultelementid="535163" style="">
+field renderer id: 18" data-ddg-testresultelementid="535163">
           <option value="en">English</option>
-          <option value="ru">Русский</option></select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 300px"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-lang-container"><span class="select2-selection__rendered" id="select2-lang-container" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+          <option value="ru">Русский</option></select><span class="select2 select2-container select2-container--default" dir="ltr"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-lang-container"><span class="select2-selection__rendered" id="select2-lang-container" title="English">English</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
       </div>
       <div class="form_footer">
         <div class="inlinebottom">
           <div class="age_agree">
             <div class="form-item">
-              <input id="age_agree" name="age_agree" class="form-checkbox age_agree" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+              <input id="age_agree" name="age_agree" class="form-checkbox age_agree" type="checkbox" value="1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I am over 18 years old*
@@ -92,18 +108,7 @@ form signature: 6742224166458573302
 form signature in host form: 6742224166458573302
 field frame token: B649456CFE65D62DFEB017BD0AD8E724
 form renderer id: 1
-field renderer id: 19" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I am over 18 years old*
-parseable name: age_agree
-section: login_0_13
-field signature: 139928362
-form signature: 6742224166458573302
-form signature in host form: 6742224166458573302
-field frame token: B649456CFE65D62DFEB017BD0AD8E724
-form renderer id: 1
-field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="535164"><label for="age_agree" class="option"></label>
+field renderer id: 19" data-ddg-testresultelementid="535164"><label for="age_agree" class="option"></label>
             </div>
           </div>
           <div class="form_note age_agree_note">I am over 18 years old*</div>
@@ -111,7 +116,7 @@ field renderer id: 19" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
         <div class="form-policy">
           <div class="div-policy policy_en">
             <div class="form-item">
-              <input data-validation-message="" id="privacy" name="privacy" class="form-checkbox accept_policy" type="checkbox" value="1" title="overall type: UNKNOWN_TYPE
+              <input data-validation-message="" id="privacy" name="privacy" class="form-checkbox accept_policy" type="checkbox" value="1" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: I have read and accepted the terms of the Privacy Policy, License Agreement,
@@ -122,18 +127,7 @@ form signature: 6742224166458573302
 form signature in host form: 6742224166458573302
 field frame token: B649456CFE65D62DFEB017BD0AD8E724
 form renderer id: 1
-field renderer id: 20" autofill-information="overall type: UNKNOWN_TYPE
-server type: NO_SERVER_DATA
-heuristic type: UNKNOWN_TYPE
-label: I have read and accepted the terms of the Privacy Policy, License Agreement,
-parseable name: privacy
-section: login_0_13
-field signature: 1159444826
-form signature: 6742224166458573302
-form signature in host form: 6742224166458573302
-field frame token: B649456CFE65D62DFEB017BD0AD8E724
-form renderer id: 1
-field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultelementid="535165"><label for="privacy" class="option"></label>
+field renderer id: 20" data-ddg-testresultelementid="535165"><label for="privacy" class="option"></label>
             </div>
             <div class="form_agree">
               I have read and accepted the terms of the
@@ -145,7 +139,18 @@ field renderer id: 20" autofill-prediction="UNKNOWN_TYPE" data-ddg-testresultele
             </div>
           </div>
           <div class="form-item">
-            <input data-validation="[NOTEMPTY]" data-validation-message="Please enter your reCAPTCHA." id="g-recaptcha-response" name="g-recaptcha-response" class="form-text hidden" size="40" maxlength="400" type="text" value="" placeholder="" data-ddg-testresultelementid="535166" data-manual-scoring="addressProvince">
+            <input data-validation="[NOTEMPTY]" data-validation-message="Please enter your reCAPTCHA." id="g-recaptcha-response" name="g-recaptcha-response" class="form-text hidden" size="40" maxlength="400" type="text" value="" placeholder="" autofill-information="overall type: ADDRESS_HOME_STATE
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_STATE
+label: Register new account Please complete the form below to create a new BATTLESTATE GAMES LIMITED Accoun
+parseable name: g-recaptcha-response
+section: login_0_13
+field signature: 601091711
+form signature: 6742224166458573302
+form signature in host form: 6742224166458573302
+field frame token: B649456CFE65D62DFEB017BD0AD8E724
+form renderer id: 1
+field renderer id: 21" data-ddg-testresultelementid="535166" data-manual-scoring="addressProvince">
           </div>
           <div class="g-recaptcha" data-theme="dark" data-sitekey="6Le-KrEcAAAAADQ0DVP5R2D_Sm-Oc6QEiKWQ_wb9"></div>
           <div class="form-item">
