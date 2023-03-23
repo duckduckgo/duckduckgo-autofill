@@ -46,7 +46,6 @@ export const defaultOptions = {
 
 export class HTMLTooltip {
     isAboveInput = false;
-    isHidden = true
     /** @type {HTMLTooltipOptions} */
     options;
     /**
@@ -92,6 +91,9 @@ export class HTMLTooltip {
                 index: null
             }
         }
+    }
+    get isHidden () {
+        return this.tooltip.parentNode.hidden
     }
     append () {
         document.body.appendChild(this.host)
@@ -300,7 +302,6 @@ export class HTMLTooltip {
                 document.fonts.load("bold 13px 'DDG_ProximaNova'")
             ]).then(() => {
                 this.tooltip.parentNode.removeAttribute('hidden')
-                this.isHidden = false
                 this.checkPosition()
             })
         })

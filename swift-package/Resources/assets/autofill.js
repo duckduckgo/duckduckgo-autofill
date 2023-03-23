@@ -11495,8 +11495,6 @@ class HTMLTooltip {
   constructor(config, inputType, getPosition, options) {
     _defineProperty(this, "isAboveInput", false);
 
-    _defineProperty(this, "isHidden", true);
-
     _defineProperty(this, "options", void 0);
 
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
@@ -11552,6 +11550,10 @@ class HTMLTooltip {
         index: null
       }
     };
+  }
+
+  get isHidden() {
+    return this.tooltip.parentNode.hidden;
   }
 
   append() {
@@ -11807,7 +11809,6 @@ class HTMLTooltip {
     (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => {
       Promise.allSettled([document.fonts.load("normal 13px 'DDG_ProximaNova'"), document.fonts.load("bold 13px 'DDG_ProximaNova'")]).then(() => {
         this.tooltip.parentNode.removeAttribute('hidden');
-        this.isHidden = false;
         this.checkPosition();
       });
     });
