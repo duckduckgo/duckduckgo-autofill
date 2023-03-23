@@ -29,6 +29,18 @@
       "properties": {
         "pixelName": {
           "type": "string",
+          "const": "autofill_show"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
           "const": "autofill_personal_address"
         }
       },
@@ -65,7 +77,7 @@
       "properties": {
         "pixelName": {
           "type": "string",
-          "const": "incontext_get_email_protection"
+          "const": "incontext_primary_cta"
         }
       },
       "required": [
@@ -89,7 +101,7 @@
       "properties": {
         "pixelName": {
           "type": "string",
-          "const": "incontext_dismiss_initial"
+          "const": "incontext_close_x"
         }
       },
       "required": [

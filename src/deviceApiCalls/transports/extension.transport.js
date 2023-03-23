@@ -3,7 +3,6 @@ import {
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
     SendJSPixelCall,
-    SetIncontextSignupInitiallyDismissedAtCall,
     SetIncontextSignupPermanentlyDismissedAtCall,
     GetIncontextSignupDismissedAtCall
 } from '../__generated__/deviceApiCalls.js'
@@ -24,10 +23,6 @@ export class ExtensionTransport extends DeviceApiTransport {
 
         if (deviceApiCall instanceof GetAvailableInputTypesCall) {
             return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
-        }
-
-        if (deviceApiCall instanceof SetIncontextSignupInitiallyDismissedAtCall) {
-            return deviceApiCall.result(await extensionSpecificSetIncontextSignupInitiallyDismissedAtCall(deviceApiCall.params))
         }
 
         if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
@@ -133,23 +128,6 @@ async function extensionSpecificGetIncontextSignupDismissedAt () {
             },
             (response) => {
                 resolve(response)
-            }
-        )
-    })
-}
-
-/**
- * @param {import('../__generated__/validators-ts').SetIncontextSignupInitiallyDismissedAt} params
- */
-async function extensionSpecificSetIncontextSignupInitiallyDismissedAtCall (params) {
-    return new Promise(resolve => {
-        chrome.runtime.sendMessage(
-            {
-                messageType: 'setIncontextSignupInitiallyDismissedAt',
-                options: params
-            },
-            () => {
-                resolve(true)
             }
         )
     })

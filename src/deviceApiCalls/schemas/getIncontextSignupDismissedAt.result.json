@@ -9,11 +9,11 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "initiallyDismissedAt": {
-                    "type": "number"
-                },
                 "permanentlyDismissedAt": {
                     "type": "number"
+                },
+                "isInstalledRecently": {
+                    "type": "boolean"
                 }
             },
             "required": []

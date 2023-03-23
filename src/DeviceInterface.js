@@ -45,6 +45,7 @@ function createDevice () {
         }
         return new AppleDeviceInterface(globalConfig, deviceApi, settings)
     }
+    globalConfig.isExtension = true
     return new ExtensionInterface(globalConfig, deviceApi, settings)
 }
 

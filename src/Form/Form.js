@@ -7,11 +7,11 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType,
-    safeExecute, getText
+    safeExecute, getText, wasAutofilledByChrome
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
-import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
+import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
@@ -200,8 +200,17 @@ class Form {
 
     removeInputHighlight (input) {
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
+        removeInlineStyles(input, {'cursor': 'pointer'})
         input.classList.remove('ddg-autofilled')
         this.addAutofillStyles(input)
+    }
+
+    resetIconStylesToInitial () {
+        const input = this.activeInput
+        if (input) {
+            const initialStyles = getIconStylesBase(input, this)
+            addInlineStyles(input, initialStyles)
+        }
     }
 
     removeAllHighlights (e, dataType) {
@@ -357,8 +366,14 @@ class Form {
     }
 
     addAutofillStyles (input) {
-        const styles = getIconStylesBase(input, this)
-        addInlineStyles(input, styles)
+        const initialStyles = getIconStylesBase(input, this)
+        const activeStyles = getIconStylesAlternate(input, this)
+
+        addInlineStyles(input, initialStyles)
+        return {
+            onMouseMove: activeStyles,
+            onMouseLeave: initialStyles
+        }
     }
 
     /**
@@ -376,12 +391,28 @@ class Form {
 
         const hasIcon = !!config.getIconBase(input, this)
         if (hasIcon) {
-            this.addAutofillStyles(input)
+            const { onMouseMove, onMouseLeave } = this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
+                if (wasAutofilledByChrome(input)) return
+
                 if (isEventWithinDax(e, e.target)) {
-                    e.target.style.setProperty('cursor', 'pointer', 'important')
+                    addInlineStyles(e.target, {
+                        'cursor': 'pointer',
+                        ...onMouseMove
+                    })
                 } else {
-                    e.target.style.removeProperty('cursor')
+                    removeInlineStyles(e.target, {'cursor': 'pointer'})
+                    // Only overwrite active icon styles if tooltip is closed
+                    if (!this.device.isTooltipActive()) {
+                        addInlineStyles(e.target, { ...onMouseLeave })
+                    }
+                }
+            })
+            this.addListener(input, 'mouseleave', (e) => {
+                removeInlineStyles(e.target, {'cursor': 'pointer'})
+                // Only overwrite active icon styles if tooltip is closed
+                if (!this.device.isTooltipActive()) {
+                    addInlineStyles(e.target, { ...onMouseLeave })
                 }
             })
         }
@@ -419,6 +450,8 @@ class Form {
             const input = e.target
             let click = null
 
+            if (wasAutofilledByChrome(input)) return
+
             if (!canBeInteractedWith(input)) return
 
             // Checks for pointerdown event
@@ -432,18 +465,24 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
+                // On mobile and extensions we don't trigger the focus event to avoid
+                // keyboard flashing and conflicts with browsers' own tooltips
                 if (
-                    this.device.globalConfig.isMobileApp &&
+                    (this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) &&
                     // Avoid the icon capturing clicks on small fields making it impossible to focus
                     input.offsetWidth > 50 &&
                     isEventWithinDax(e, input)
                 ) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
+                    input.blur()
                 }
 
                 this.touched.add(input)
                 this.device.attachTooltip(this, input, click)
+
+                const activeStyles = getIconStylesAlternate(input, this)
+                addInlineStyles(input, activeStyles)
             }
         }
 
@@ -461,8 +500,10 @@ class Form {
     shouldOpenTooltip (e, input) {
         if (this.device.globalConfig.isApp) return true
         if (this.device.globalConfig.isWindows) return true
+        if (isEventWithinDax(e, input)) return true
+        if (this.device.inContextSignup?.isAvailable()) return false
 
-        return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled')) || isEventWithinDax(e, input)
+        return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled'))
     }
 
     autofillInput (input, string, dataType) {

@@ -9,27 +9,33 @@ class EmailSignupHTMLTooltip extends HTMLTooltip {
 
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--email">
-    <div class="tooltip tooltip--email tooltip--email-signup" hidden>
+<div class="wrapper wrapper--email" hidden>
+    <div class="tooltip tooltip--email tooltip--email-signup">
+        <button class="close-tooltip js-close-email-signup" aria-label="Close"></button>
         <h1>
-            Protect your inbox 💪 I've caught trackers hiding in 85% of emails.
+            Hide your email and block trackers
         </h1>
         <p>
-            Want me to hide your email address and remove hidden trackers before
-            forwarding messages to your inbox?
+            Create a unique, random address that also removes hidden trackers and forwards email to your inbox.
         </p>
         <div class="notice-controls">
             <a href="https://duckduckgo.com/email/start-incontext" target="_blank" class="primary js-get-email-signup">
-                Get Email Protection
+                Protect My Email
             </a>
             <button class="ghost js-dismiss-email-signup">
-                ${device.inContextSignup?.initiallyDismissed ? "Don't Ask Again" : 'Maybe Later'}
+                Don't Show Again
             </button>
         </div>
     </div>
+    <div class="tooltip--email__caret"></div>
 </div>`
 
         this.tooltip = this.shadow.querySelector('.tooltip')
+
+        this.closeEmailSignup = this.shadow.querySelector('.js-close-email-signup')
+        this.registerClickableButton(this.closeEmailSignup, () => {
+            device.inContextSignup?.onIncontextSignupClosed()
+        })
 
         this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
         this.registerClickableButton(this.dismissEmailSignup, () => {

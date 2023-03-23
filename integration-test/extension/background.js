@@ -2,7 +2,6 @@
 
 let emailProtectionUserData = null
 let privateEmailAliasIndex = 0
-let incontextSignupInitiallyDismissedAt
 let incontextSignupPermanentlyDismissedAt
 
 globalThis.setEmailProtectionUserData = (userName) => {
@@ -57,13 +56,10 @@ function init () {
         } else if (message.messageType === 'getIncontextSignupDismissedAt') {
             return sendResponse({
                 success: {
-                    initiallyDismissedAt: incontextSignupInitiallyDismissedAt,
-                    permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt
+                    permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt,
+                    isInstalledRecently: true
                 }
             })
-        } else if (message.messageType === 'setIncontextSignupInitiallyDismissedAt') {
-            incontextSignupInitiallyDismissedAt = message.value
-            return sendResponse()
         } else if (message.messageType === 'setIncontextSignupPermanentlyDismissedAt') {
             incontextSignupPermanentlyDismissedAt = message.value
             return sendResponse()

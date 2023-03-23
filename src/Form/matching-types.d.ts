@@ -99,6 +99,7 @@ interface InputTypeConfigBase {
     type: SupportedMainTypes,
     getIconFilled: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
     getIconBase: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
+    getIconAlternate: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: import("../Form/Form").Form) => Promise<boolean>,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
     tooltipItem(data: any): TooltipItemRenderer;

@@ -91,12 +91,6 @@
         "paramsValidator": { "$ref":  "./schemas/sendJSPixel.params.json" }
       }
     },
-    "setIncontextSignupInitiallyDismissedAt": {
-      "type": "object",
-      "properties": {
-        "paramsValidator": { "$ref":  "./schemas/setIncontextSignupInitiallyDismissedAt.params.json" }
-      }
-    },
     "setIncontextSignupPermanentlyDismissedAt": {
       "type": "object",
       "properties": {
@@ -118,16 +112,6 @@
           "const": true
         },
         "resultValidator": { "$ref": "./schemas/autofill-settings.json" }
-      }
-    },
-    "incontextSignupSettings": {
-      "type": "object",
-      "properties": {
-        "validatorsOnly": {
-          "type": "boolean",
-          "const": true
-        },
-        "resultValidator": { "$ref": "./schemas/incontext-signup-settings.json" }
       }
     },
     "getAlias": {

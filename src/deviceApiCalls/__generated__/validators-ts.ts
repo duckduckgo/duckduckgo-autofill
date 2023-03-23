@@ -17,6 +17,9 @@ export type SendJSPixelParams =
       };
     }
   | {
+      pixelName: "autofill_show";
+    }
+  | {
       pixelName: "autofill_personal_address";
     }
   | {
@@ -26,13 +29,13 @@ export type SendJSPixelParams =
       pixelName: "incontext_show";
     }
   | {
-      pixelName: "incontext_get_email_protection";
+      pixelName: "incontext_primary_cta";
     }
   | {
       pixelName: "incontext_dismiss_persisted";
     }
   | {
-      pixelName: "incontext_dismiss_initial";
+      pixelName: "incontext_close_x";
     };
 
 /**
@@ -111,10 +114,6 @@ export interface API {
     paramsValidator?: SendJSPixelParams;
     [k: string]: unknown;
   };
-  setIncontextSignupInitiallyDismissedAt?: {
-    paramsValidator?: SetIncontextSignupInitiallyDismissedAt;
-    [k: string]: unknown;
-  };
   setIncontextSignupPermanentlyDismissedAt?: {
     paramsValidator?: SetIncontextSignupPermanentlyDismissedAt;
     [k: string]: unknown;
@@ -127,11 +126,6 @@ export interface API {
   autofillSettings?: {
     validatorsOnly?: true;
     resultValidator?: AutofillSettings;
-    [k: string]: unknown;
-  };
-  incontextSignupSettings?: {
-    validatorsOnly?: true;
-    resultValidator?: IncontextSignupSettings;
     [k: string]: unknown;
   };
   getAlias?: {
@@ -460,12 +454,6 @@ export interface CheckCredentialsProviderStatusResult {
   error?: GenericError;
 }
 /**
- * Sets the time that the in-context Email Protection sign-up message was initially dismissed
- */
-export interface SetIncontextSignupInitiallyDismissedAt {
-  value?: number;
-}
-/**
  * Sets the time that the in-context Email Protection sign-up message was permanently dismissed
  */
 export interface SetIncontextSignupPermanentlyDismissedAt {
@@ -476,8 +464,8 @@ export interface SetIncontextSignupPermanentlyDismissedAt {
  */
 export interface GetIncontextSignupDismissedAt {
   success: {
-    initiallyDismissedAt?: number;
     permanentlyDismissedAt?: number;
+    isInstalledRecently?: boolean;
   };
 }
 /**
@@ -499,13 +487,6 @@ export interface AutofillFeatureToggles {
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
   third_party_credentials_provider?: boolean;
-}
-/**
- * Delivered as part of Runtime Configuration, but needs to live here since Runtime Configuration can contain settings for many features
- */
-export interface IncontextSignupSettings {
-  initiallyDismissedAt?: number;
-  permanentlyDismissedAt?: number;
 }
 export interface GetAliasParams {
   requiresUserPermission: boolean;

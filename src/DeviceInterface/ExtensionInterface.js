@@ -31,7 +31,8 @@ class ExtensionInterface extends InterfacePrototype {
         const htmlTooltipOptions = {
             ...defaultOptions,
             css: `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossOrigin="anonymous">`,
-            testMode: this.isTestMode()
+            testMode: this.isTestMode(),
+            hasCaret: true
         }
         const tooltipKinds = {
             [TOOLTIP_TYPES.EmailProtection]: 'legacy',
@@ -47,11 +48,16 @@ class ExtensionInterface extends InterfacePrototype {
             return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.settings.featureToggles.emailProtection_incontext_signup && this.inContextSignup?.permanentlyDismissed === false) {
+        if (this.inContextSignup?.isAvailable()) {
             return TOOLTIP_TYPES.EmailSignup
         }
 
         return null
+    }
+
+    removeAutofillUIFromPage () {
+        super.removeAutofillUIFromPage()
+        this.activeForm?.removeAllDecorations()
     }
 
     async resetAutofillUI (callback) {

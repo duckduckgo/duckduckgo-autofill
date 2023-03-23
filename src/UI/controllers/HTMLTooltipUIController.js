@@ -1,7 +1,8 @@
+import { isEventWithinDax } from '../../autofill-utils.js'
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
-import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltop.js'
+import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js'
 import {defaultOptions} from '../HTMLTooltip.js'
 import {UIController} from './UIController.js'
 
@@ -64,6 +65,7 @@ export class HTMLTooltipUIController extends UIController {
         if (this.getActiveTooltip()) {
             return
         }
+
         const { topContextData, getPosition, input, form } = args
         const tooltip = this.createTooltip(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
@@ -94,6 +96,7 @@ export class HTMLTooltipUIController extends UIController {
         }
 
         if (this._options.tooltipKind === 'legacy') {
+            this._options.device.firePixel({pixelName: 'autofill_show'})
             return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
                 .render(this._options.device)
         }
@@ -176,6 +179,8 @@ export class HTMLTooltipUIController extends UIController {
     // Global listener for event delegation
     _pointerDownListener (e) {
         if (!e.isTrusted) return
+        // Ignore events on the Dax icon, we handle those elsewhere
+        if (isEventWithinDax(e, e.target)) return
 
         // @ts-ignore
         if (e.target.nodeName === 'DDG-AUTOFILL') {

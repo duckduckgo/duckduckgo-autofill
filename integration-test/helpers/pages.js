@@ -1,14 +1,17 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
 import {mockedCalls} from './harness.js'
+import {clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
 export function incontextSignupPage (page) {
-    const getCallToAction = () => page.locator(`text=Get Email Protection`)
+    const getCallToAction = () => page.locator(`text=Protect My Email`)
+    const getTooltip = () => page.locator('.tooltip--email')
     return {
         async assertIsShowing () {
             expect(await getCallToAction()).toBeVisible()
+            expect(await getTooltip()).toBeInViewport({ ratio: 1 })
         },
         async assertIsHidden () {
             expect(await getCallToAction()).toBeHidden()
@@ -19,6 +22,44 @@ export function incontextSignupPage (page) {
         async dismissTooltipWith (text) {
             const dismissTooltipButton = await page.locator(`text=${text}`)
             await dismissTooltipButton.click({timeout: 500})
+        },
+        async closeTooltip () {
+            const dismissTooltipButton = await page.locator(`[aria-label=Close]`)
+            await dismissTooltipButton.click({timeout: 500})
+        }
+    }
+}
+
+export function incontextSignupPageWithinIframe (page) {
+    return {
+        async navigate (domain) {
+            const pageName = constants.pages['iframeContainer']
+            const pagePath = `integration-test/pages/${pageName}`
+            await page.goto(new URL(pagePath, domain).href)
+        },
+        async clickDirectlyOnDax () {
+            const input = await page.frameLocator('iframe').locator('input#email')
+            await clickOnIcon(input)
+        },
+        async assertTooltipWithinFrame () {
+            const tooltip = await page.frameLocator('iframe').locator('.tooltip--email')
+            await expect(tooltip).toBeVisible()
+            await expect(tooltip).toBeInViewport({ ratio: 1 })
+        }
+    }
+}
+
+export function incontextSignupPageEmailBottomPage (page) {
+    const {selectors} = constants.fields.email
+    return {
+        async navigate (domain) {
+            const pageName = constants.pages['emailAtBottom']
+            const pagePath = `integration-test/pages/${pageName}`
+            await page.goto(new URL(pagePath, domain).href)
+        },
+        async clickDirectlyOnDax () {
+            const input = page.locator(selectors.identity)
+            await clickOnIcon(input)
         }
     }
 }
@@ -584,13 +625,19 @@ export function loginPageMultistep (page, server, opts) {
  * A wrapper around interactions for `integration-test/pages/email-autofill.html`
  *
  * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {ServerWrapper} [server]
  */
 export function emailAutofillPage (page, server) {
     const {selectors} = constants.fields.email
     return {
-        async navigate () {
-            await page.goto(server.urlForPath(constants.pages['email-autofill']))
+        async navigate (domain) {
+            const emailAutofillPageName = constants.pages['email-autofill']
+            if (domain) {
+                const pagePath = `integration-test/pages/${emailAutofillPageName}`
+                await page.goto(new URL(pagePath, domain).href)
+            } else {
+                await page.goto(server.urlForPath(emailAutofillPageName))
+            }
         },
         async clickIntoInput () {
             const input = page.locator(selectors.identity)
@@ -599,9 +646,15 @@ export function emailAutofillPage (page, server) {
         },
         async clickDirectlyOnDax () {
             const input = page.locator(selectors.identity)
-            const box = await input.boundingBox()
-            if (!box) throw new Error('unreachable')
-            await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
+            await clickOnIcon(input)
+        },
+        async assertInputHasFocus () {
+            const input = page.locator(selectors.identity)
+            await expect(input).toBeFocused()
+        },
+        async assertInputNotFocused () {
+            const input = page.locator(selectors.identity)
+            await expect(input).not.toBeFocused()
         },
         async assertEmailValue (emailAddress) {
             const email = page.locator(selectors.identity)

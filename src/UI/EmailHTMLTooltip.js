@@ -11,8 +11,8 @@ class EmailHTMLTooltip extends HTMLTooltip {
 
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--email">
-    <div class="tooltip tooltip--email" hidden>
+<div class="wrapper wrapper--email" hidden>
+    <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
                 Use <span class="js-address">${formatDuckAddress(escapeXML(this.addresses.personalAddress))}</span>
@@ -24,6 +24,7 @@ ${this.options.css}
             <span class="tooltip__button--email__secondary-text">Blocks email trackers and hides your address</span>
         </button>
     </div>
+    <div class="tooltip--email__caret"></div>
 </div>`
         this.wrapper = this.shadow.querySelector('.wrapper')
         this.tooltip = this.shadow.querySelector('.tooltip')

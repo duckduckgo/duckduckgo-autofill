@@ -1,6 +1,6 @@
-import {forwardConsoleMessages, setupServer, withChromeExtensionContext} from '../helpers/harness.js'
+import {forwardConsoleMessages, withChromeExtensionContext, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
+import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe, incontextSignupPageEmailBottomPage} from '../helpers/pages.js'
 
 /**
  *  Tests for email autofill in chrome extension.
@@ -10,22 +10,23 @@ import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
 const test = withChromeExtensionContext(base)
 
 test.describe('chrome extension', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test('should allow user to sign up for Email Protection', async ({page, context}) => {
         forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
 
         const incontextSignup = incontextSignupPage(page)
-        const emailPage = emailAutofillPage(page, server)
-        await emailPage.navigate()
+        const emailPage = emailAutofillPage(page)
+        await emailPage.navigate('https://example.com')
         const newPageOpening = new Promise(resolve => context.once('page', resolve))
 
+        // Confirm tooltip hidden after clicking the input
         await emailPage.clickIntoInput()
+        await incontextSignup.assertIsHidden()
+        await emailPage.assertInputHasFocus()
+
+        // Confirm tooltip shows after clicking the Dax icon
+        await emailPage.clickDirectlyOnDax()
+        await emailPage.assertInputNotFocused()
         await incontextSignup.assertIsShowing()
         await incontextSignup.getEmailProtection()
 
@@ -35,35 +36,72 @@ test.describe('chrome extension', () => {
         await emailProtectionPage.close()
 
         // Confirm pixels triggered
-        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_get_email_protection'])
+        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_primary_cta'])
     })
 
     test('should allow tooptip to be dismissed', async ({page}) => {
         forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
 
         const incontextSignup = incontextSignupPage(page)
-        const emailPage = emailAutofillPage(page, server)
-        await emailPage.navigate()
-
-        // Hide tooltip
-        await emailPage.clickIntoInput()
-        await incontextSignup.assertIsShowing()
-        await incontextSignup.dismissTooltipWith('Maybe Later')
-
-        // Confirm only tooltip hidden
-        await incontextSignup.assertIsHidden()
-        await emailPage.assertDaxIconIsShowing()
+        const emailPage = emailAutofillPage(page)
+        await emailPage.navigate('https://example.com')
 
         // Permanently dismiss tooltip
         await emailPage.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
-        await incontextSignup.dismissTooltipWith("Don't Ask Again")
+        await incontextSignup.dismissTooltipWith("Don't Show Again")
 
         // Confirm in-context signup has been completely dismissed
         await incontextSignup.assertIsHidden()
         await emailPage.assertDaxIconIsHidden()
 
         // Confirm pixels triggered
-        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_initial', 'incontext_show', 'incontext_dismiss_persisted'])
+        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_persisted'])
+    })
+
+    test('should allow tooptip to be closed', async ({page}) => {
+        forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
+
+        const incontextSignup = incontextSignupPage(page)
+        const emailPage = emailAutofillPage(page)
+        await emailPage.navigate('https://example.com')
+
+        // Permanently dismiss tooltip
+        await emailPage.clickDirectlyOnDax()
+        await incontextSignup.assertIsShowing()
+        await incontextSignup.closeTooltip()
+
+        // Confirm in-context signup is only hidden
+        await incontextSignup.assertIsHidden()
+        await emailPage.assertDaxIconIsShowing()
+
+        // Confirm pixels triggered
+        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_close_x'])
+    })
+
+    test('should display properly in iframes with small width', async ({page}) => {
+        forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
+
+        const pageWithIframe = incontextSignupPageWithinIframe(page)
+        await pageWithIframe.navigate('https://example.com')
+
+        await pageWithIframe.clickDirectlyOnDax()
+        await pageWithIframe.assertTooltipWithinFrame()
+    })
+
+    test('should display properly above when email at bottom of page', async ({page}) => {
+        forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
+
+        const incontextSignup = incontextSignupPage(page)
+        const pageWidthEmailBottomPage = incontextSignupPageEmailBottomPage(page)
+        await pageWidthEmailBottomPage.navigate('https://example.com')
+
+        await pageWidthEmailBottomPage.clickDirectlyOnDax()
+        await incontextSignup.assertIsShowing()
+        await incontextSignup.dismissTooltipWith("Don't Show Again")
     })
 })
