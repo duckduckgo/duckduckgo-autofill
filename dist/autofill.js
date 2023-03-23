@@ -11851,7 +11851,7 @@ var _DataHTMLTooltip = _interopRequireDefault(require("../DataHTMLTooltip.js"));
 
 var _EmailHTMLTooltip = _interopRequireDefault(require("../EmailHTMLTooltip.js"));
 
-var _EmailSignupHTMLTooltop = _interopRequireDefault(require("../EmailSignupHTMLTooltop.js"));
+var _EmailSignupHTMLTooltip = _interopRequireDefault(require("../EmailSignupHTMLTooltip.js"));
 
 var _HTMLTooltip = require("../HTMLTooltip.js");
 
@@ -11976,7 +11976,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
         pixelName: 'incontext_show'
       });
 
-      return new _EmailSignupHTMLTooltop.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+      return new _EmailSignupHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
     } // collect the data for each item to display
 
 
@@ -12151,7 +12151,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":29,"../../autofill-utils.js":53,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltop.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":29,"../../autofill-utils.js":53,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltip.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
