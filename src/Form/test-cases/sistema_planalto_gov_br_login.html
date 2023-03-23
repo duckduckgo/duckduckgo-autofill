@@ -1,0 +1,87 @@
+<!--
+  https://sistema.planalto.gov.br/dseg/index.php
+  rank: 5909
+  testRunId: 67
+  testResultId: 243894
+-->
+<form name="FRM" id="FRM" method="post" action="index.php">
+  <fieldset>
+    <div class="form-group">
+      <input type="text" name="form-username" id="form-username" placeholder="Digite o CPF (só números)" class="form-username form-control" onkeydown="var key=(event.keyCode) ? event.keyCode : event.which;
+if(key==13){ if(this.value!=''){$('#form-password').focus();} }" value="" maxlength="11" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Digite o CPF (só números)
+parseable name: form-username
+section: form-username_0_74
+field signature: 445787894
+form signature: 10046110351900101811
+form signature in host form: 10046110351900101811
+field frame token: 057975165D9EF0B1F8E229DA452035EF
+form renderer id: 8
+field renderer id: 74" data-ddg-testresultelementid="571635" data-manual-scoring="username OR emailAddress">
+    </div>
+
+    <div class="form-group">
+      <input type="password" name="form-password" id="form-password" placeholder="Digite a senha do VOX." class="form-password form-control" onkeydown="var key=(event.keyCode) ? event.keyCode : event.which;
+if(key==13){ if(DOM('form-captcha')){$('#form-captcha').focus();}else{$('#cmd_logon_ok').click();} }" value="" autocomplete="off" maxlength="20" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Digite a senha do VOX.
+parseable name: form-password
+section: form-username_0_74
+field signature: 2212088400
+form signature: 10046110351900101811
+form signature in host form: 10046110351900101811
+field frame token: 057975165D9EF0B1F8E229DA452035EF
+form renderer id: 8
+field renderer id: 75
+autocomplete: off" data-ddg-testresultelementid="571636" data-manual-scoring="password">
+    </div>
+
+    <div class="form-group">
+      <div class="jumbotron" align="center">
+        <div id="div_captcha" title="Clique para obter novo código" onclick="document.getElementsByTagName('form')[0].submit();">
+          
+        </div>
+
+        <div>
+          <input type="text" name="form-captcha" id="form-captcha" placeholder="Digite o código" class="form-username form-control" value="" autocomplete="off" maxlength="6" onkeydown="var key=(event.keyCode) ? event.keyCode : event.which; if(key==13){ $('#cmd_logon_ok').click();}" onkeyup="this.value=this.value.toUpperCase();" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Digite o código
+parseable name: form-captcha
+section: form-username_0_74
+field signature: 1567143808
+form signature: 10046110351900101811
+form signature in host form: 10046110351900101811
+field frame token: 057975165D9EF0B1F8E229DA452035EF
+form renderer id: 8
+field renderer id: 76
+autocomplete: off" data-ddg-testresultelementid="571637">
+        </div>
+      </div>
+      <div class="jumbotron" align="center">
+        <button type="button" id="cmd_logon_ok" class="btn btn-lg btn-success btn-block" onclick="fJS_user_login_cmdOk_click();">
+          Entrar
+        </button>
+      </div>
+    </div>
+
+    <div align="center" class="jumbotron">
+      <div onclick="">
+        <b>Esqueceu a senha<br>ou é usuário novo?
+          &nbsp;&nbsp;&nbsp;&nbsp;<label id="link_senha_reset" onclick="fJS_user_login_reset_senha_click();" title="Enviar uma senha provisória para os seus e-mail cadastrados no DSeg">Clique aqui</label></b>
+      </div>
+      <div>
+        Se o seu acesso estiver bloqueado, solicite o desbloqueio pelo
+        <a href="http://sprnet.presidencia.gov.br/home/index.php">Fale_Conosco</a>
+        na intranet/DSeg ou envie um email para
+        <a href="https://correio2.presidencia.gov.br/owa/">uds@presidencia.gov.br</a>.
+      </div>
+    </div>
+    <input type="hidden" id="index_action" name="index_action" value="">
+    <input type="hidden" id="TIP_LOGON" name="TIP_LOGON" value="">
+    <input type="hidden" id="SITE_INDEX" name="SITE_INDEX" value="">
+  </fieldset>
+</form>

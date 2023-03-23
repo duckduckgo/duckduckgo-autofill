@@ -1,0 +1,84 @@
+<!--
+  https://admissions.sa.ucsb.edu/applicantportal/Auth/Login/
+  rank: 1845
+  testRunId: 67
+  testResultId: 241560
+-->
+<form action="/applicantportal/Auth/Login" id="login-form" method="post">
+  <div class="form-group">
+    <label for="PermWithCheckDigit">UCSB Perm Number</label><br>
+    <span class="field-validation-valid text-danger" data-valmsg-for="PermWithCheckDigit" data-valmsg-replace="true"></span>
+    <input class="form-control" data-val="true" data-val-regex="Perm number should be formatted like 123456-7 or 1234567" data-val-regex-pattern="(\d{6}[-]\d{1})|(\d{7})" id="PermWithCheckDigit" name="PermWithCheckDigit" placeholder="Please enter your 7-character UCSB Perm Number" type="text" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: UCSB Perm Number
+parseable name: PermWithCheckDigit
+section: PermWithCheckDigit_0_26
+field signature: 1677598855
+form signature: 9963893762365853994
+form signature in host form: 9963893762365853994
+field frame token: FC8815B96D8D89B1535C2228EFBAFED5
+form renderer id: 3
+field renderer id: 26" data-ddg-testresultelementid="554783" data-manual-scoring="username OR emailAddress">
+  </div>
+  <div class="form-group text-center">- or -</div>
+  <div class="form-group">
+    <label for="UcApplicationId">UC Application ID</label>
+    <input class="form-control" id="UcApplicationId" name="UcApplicationId" placeholder="Please enter your 7-character UC Application ID" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: UC Application ID
+parseable name: UcApplicationId
+section: PermWithCheckDigit_0_26
+field signature: 1436050186
+form signature: 9963893762365853994
+form signature in host form: 9963893762365853994
+field frame token: FC8815B96D8D89B1535C2228EFBAFED5
+form renderer id: 3
+field renderer id: 27" data-ddg-testresultelementid="554784">
+    <div>
+      <a href="/applicantportal/Auth/Instructions" class="small" target="_blank">Forgot UC Application ID?</a>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+    <label for="selQuarter">Quarter</label>
+    <select id="selQuarter" name="Quarter" onchange="handleQuarterChange();" class="form-control" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Quarter
+parseable name: Quarter
+section: PermWithCheckDigit_0_26
+field signature: 2875205713
+form signature: 9963893762365853994
+form signature in host form: 9963893762365853994
+field frame token: FC8815B96D8D89B1535C2228EFBAFED5
+form renderer id: 3
+field renderer id: 28" data-ddg-testresultelementid="554785">
+      <option value="20234">Fall 2023</option>
+    </select>
+    <input id="Quarter" name="Quarter" type="hidden" value="">
+  </div>
+  
+  <div class="form-group">
+    <label for="Password">Password</label><br>
+    <span class="field-validation-valid text-danger" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+    <input class="form-control" data-val="true" data-val-regex="Password contains invalid characters. Please consider changing your password using the link below." data-val-regex-pattern="([^<>#])" id="Password" name="Password" type="password" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: Password
+section: PermWithCheckDigit_0_26
+field signature: 3935904101
+form signature: 9963893762365853994
+form signature in host form: 9963893762365853994
+field frame token: FC8815B96D8D89B1535C2228EFBAFED5
+form renderer id: 3
+field renderer id: 30" data-ddg-testresultelementid="554786" data-manual-scoring="password">
+    <div>
+      <a href="https://admissions.sa.ucsb.edu/AccountManagement/Identify.aspx" class="small" target="_blank">Forgot Password?</a><br>
+      <a href="https://admissions.sa.ucsb.edu/AccountManagement/Change.aspx" class="small" target="_blank">Change Password</a>
+    </div>
+  </div>
+  <button id="btnSubmit" class="btn btn-primary">Login</button>
+</form>

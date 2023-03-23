@@ -1,0 +1,172 @@
+<!--
+  https://secure.xserver.ne.jp/xapanel/login/xserver/
+  rank: 1523
+  testRunId: 67
+  testResultId: 243301
+-->
+
+  <header class="header">
+    <h1 class="loginTitle">
+      <div class="loginTitle__logo">
+        
+        <div class="potallogo-backimage">
+          
+        </div>
+        <a href="https://www.xserver.ne.jp/"></a>
+      </div>
+    </h1>
+  </header>
+  <main class="loginContainer" role="main">
+    <div class="formContents">
+      <input type="hidden" id="recaptcha_service" name="recaptcha_service" value="xserver">
+      <input type="hidden" id="target_tool" name="target_tool" value="info">
+
+      <h2 class="formTitle">Xserverアカウント ログイン</h2>
+
+      <p class="mb30">
+        会員情報やご利用状況の確認や、サーバーパネル/ファイルマネージャ等の各種ツールを利用することができます。
+      </p>
+      <div class="mainService">
+        <form action="/xapanel/myaccount/login" method="post" id="login_area">
+          <input type="hidden" name="request_page" value="">
+          <input type="hidden" name="uniqid" value="446f7ee37d204e9d3be37ca3899e8c33ed2b63645f9817e2c8387bd2093526a4">
+
+          <div class="formBody">
+            <div class="formItem">
+              <div class="formCaption">
+                <label for="memberid">メールアドレス</label>
+              </div>
+              <div class="formData">
+                <input type="text" name="memberid" id="memberid" placeholder="name@example.com" class="wide" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: EMAIL_ADDRESS
+label: メールアドレス
+parseable name: memberid
+section: memberid_0_21
+field signature: 3650503170
+form signature: 14747109498240828438
+form signature in host form: 14747109498240828438
+field frame token: 404944451FC5491C2C942E1E3DF97BCF
+form renderer id: 2
+field renderer id: 21" data-ddg-testresultelementid="568008" data-manual-scoring="username OR emailAddress">
+              </div>
+              <div class="formCaution">
+                <ul class="cautionList">
+                  <li>XserverアカウントIDでもログインできます</li>
+                </ul>
+              </div>
+            </div>
+            <div class="formItem">
+              <div class="formCaption">
+                <label for="password">パスワード</label>
+              </div>
+              <div class="formData">
+                <span class="formPw"><input type="password" name="user_password" id="user_password" class="wide" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: パスワード
+parseable name: user_password
+section: memberid_0_21
+field signature: 139615506
+form signature: 14747109498240828438
+form signature in host form: 14747109498240828438
+field frame token: 404944451FC5491C2C942E1E3DF97BCF
+form renderer id: 2
+field renderer id: 22" data-ddg-testresultelementid="568009" data-manual-scoring="password"><i class="ico ico__eye"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="formFooter">
+            <div class="formFooterLogin">
+              <input type="hidden" name="service_login" value="xserver">
+              <div>
+                <div class="grecaptcha-badge" data-style="none">
+                  <div class="grecaptcha-logo">
+                    
+                  </div>
+                  <div class="grecaptcha-error"></div>
+                  <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: パスワードを忘れてしまった方はこちら
+parseable name: g-recaptcha-response
+section: memberid_0_21
+field signature: 3309787731
+form signature: 14747109498240828438
+form signature in host form: 14747109498240828438
+field frame token: 404944451FC5491C2C942E1E3DF97BCF
+form renderer id: 2
+field renderer id: 27" data-ddg-testresultelementid="568010"></textarea>
+                </div>
+                
+              </div>
+              <button type="button" class="g-recaptcha" data-sitekey="6LePCq4UAAAAAIhwW211vAJelBE_NJS-ANlm1GGT" data-callback="onSubmit" name="action_user_login" hidden="" id="recaptchav2_button"></button>
+              <input type="button" value="ログインする" class="btn btnPrimary btnSubmit wide btn--loading" onclick="loginFunc()">
+            </div>
+            <div class="formFooterReminder">
+              <p>
+                パスワードを忘れてしまった方は<a href="/xinfo/?action_reissue_index=true">こちら</a>
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="newUsers">
+      <a href="/xinfo/?action_register_index=true">はじめての方はこちら</a>
+    </div>
+    <aside class="loginLinks_wrapper">
+      <p class="tac font-bold font-m mb20">各種ログインはこちら</p>
+      <ul class="loginLinks">
+        <li class="is--current">
+          <a href="/xapanel/login/xserver/"> Xserverアカウント </a>
+        </li>
+        <li class="">
+          <a href="/xapanel/login/xserver/server/">サーバーパネル</a>
+        </li>
+        <li class="">
+          <a href="/xapanel/login/xserver/ftp/">ファイルマネージャ</a>
+        </li>
+        <li class=""><a href="/xapanel/login/xserver/mail/">WEBメール</a></li>
+      </ul>
+    </aside>
+  </main>
+  <div id="id-register-branch"></div>
+
+  
+  <footer class="footer">
+    <p>
+      <small>© 2023 Xserver Inc.</small>
+    </p>
+  </footer>
+
+  <!-- pardotトラッキングタグ -->
+  
+
+  <div>
+    <div class="grecaptcha-badge" data-style="bottomright">
+      <div class="grecaptcha-logo">
+        
+      </div>
+      <div class="grecaptcha-error"></div>
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: g-recaptcha-response
+section: g-recaptcha-response_0_26
+field signature: 3309787731
+form signature: 10984837891970435159
+form signature in host form: 10984837891970435159
+field frame token: 404944451FC5491C2C942E1E3DF97BCF
+form renderer id: 0
+field renderer id: 26" data-ddg-testresultelementid="568011"></textarea>
+    </div>
+  </div>
+  <div>
+    <div></div>
+    <div>
+      
+    </div>
+  </div>
+

@@ -1,0 +1,114 @@
+<!--
+  https://areaclientes.orange.es
+  rank: 9742
+  testRunId: 67
+  testResultId: 245862
+-->
+<form name="formLogin" action="https://areaclientes.orange.es/public/api/logadoUnico/v1/orange/login" autocomplete="off" method="post" ng-submit="authBoxLoginCtrl.showSpinner($event)" class="ng-pristine ng-valid ng-valid-maxlength">
+  <!-- ngIf: !authBoxLoginCtrl.isFinished -->
+  <input name="goto" id="goto" value="https://areaprivada.orange.es/soycliente/" type="hidden">
+  <input name="gotoOnBlacklist" id="gotoOnBlacklist" value="https://areaclientes.orange.es/blacklist" type="hidden">
+  <input name="gotoOnFail" id="gotOnFail" value="https://areaclientes.orange.es/error" type="hidden">
+  <input name="rol" value="acmeorangeweb" type="hidden">
+  <input name="credentialType" value="" type="hidden">
+  <!-- ngIf: authBoxLoginCtrl.showInputCaptcha && authBoxLoginCtrl.isOldVersionNavigator -->
+  <div class="row panel-input border-bottom no-error" ng-class="authBoxLoginCtrl.errorFormatLogin ? 'error' : authBoxLoginCtrl.checkPasswordandUser ? 'error' :                 authBoxLoginCtrl.checkDirty(authBoxLoginCtrl.environment) ? 'border-black':'no-error'">
+    <div class="insertInfo">
+      <!-- Input del documento de identidad-->
+      <!-- ngIf: authBoxLoginCtrl.environment === 'int' -->
+      <!-- uat -->
+      <!-- ngIf: authBoxLoginCtrl.environment === 'uat' || authBoxLoginCtrl.environment === 'uat2' || authBoxLoginCtrl.environment === 'ase' -->
+      <!-- pro -->
+      <!-- ngIf: authBoxLoginCtrl.environment === 'pro' --><input id="pro" class="col-xs-6 col-sm-6 input-area ng-pristine ng-untouched ng-valid ng-scope ng-empty" autocomplete="off" ng-if="authBoxLoginCtrl.environment === 'pro'" name="wt-docid" type="text" placeholder="Usuario" ng-model="authBoxLoginCtrl.docId" ng-change="authBoxLoginCtrl.validateFormatLoginStepByStep();" ng-trim="false" data-cs-mask="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Usuario
+parseable name: wt-docid
+section: wt-docid_0_22
+field signature: 1096900979
+form signature: 3665990058380001014
+form signature in host form: 3665990058380001014
+field frame token: D4A086A47A11E6E385515267A74816E5
+form renderer id: 2
+field renderer id: 22
+autocomplete: off" data-ddg-testresultelementid="586602" data-manual-scoring="username OR emailAddress"><!-- end ngIf: authBoxLoginCtrl.environment === 'pro' -->
+      <!-- es necesario meter docid auque vaya vacio -->
+      <input name="wt-msisdn" value="" type="hidden">
+    </div>
+  </div>
+  <div class="row panel-error ng-hide" ng-show="authBoxLoginCtrl.errorFormatLogin">
+    <div class="imgCaution">
+      
+    </div>
+    <span class="error_p line ng-binding">Formato incorrecto.</span>
+    <!--linea error input-->
+  </div>
+  <!-- Subir a cms -->
+  <div class="row panel-error ng-hide" ng-show="authBoxLoginCtrl.checkPasswordandUser">
+    <div class="imgCaution">
+      
+    </div>
+    <span class="error_p line ng-binding">
+      <!--Por favor, rellene este campo -->
+      Por favor, rellene este campo
+    </span>
+    <!--linea error input-->
+  </div>
+  <!-- ngIf: authBoxLoginCtrl.enterInForm -->
+  <div class="row panel-input border-bottom no-error" ng-class="authBoxLoginCtrl.errorFormatPwd ? 'error' :                 authBoxLoginCtrl.checkDirty(authBoxLoginCtrl.environment) ? 'border-black':'no-error'">
+    <div class="insertInfo">
+      <input class="col-xs-6 col-sm-6 input-area ng-pristine ng-untouched ng-valid ng-empty ng-valid-maxlength" name="wt-pwd" id="inputPassword" maxlength="authBoxLoginCtrl.maxlengthcaracterspwd" type="password" autocomplete="new-password" placeholder="Contraseña" ng-keyup="authBoxLoginCtrl.checkPass($event); authBoxLoginCtrl.checkEnter($event); authBoxLoginCtrl.showParPasword($event);" ng-change="authBoxLoginCtrl.validateFormatInputs();" ng-model="authBoxLoginCtrl.pwd" data-cs-mask="" autofill-information="overall type: UNKNOWN_TYPE
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Contraseña
+parseable name: wt-pwd
+section: wt-docid_0_22
+field signature: 2108522223
+form signature: 3665990058380001014
+form signature in host form: 3665990058380001014
+field frame token: D4A086A47A11E6E385515267A74816E5
+form renderer id: 2
+field renderer id: 20
+autocomplete: new-password" data-ddg-testresultelementid="586603" data-manual-scoring="password">
+    </div>
+    <div class="imgForm">
+      
+    </div>
+  </div>
+  <!-- Error -->
+  <div class="row panel-error ng-hide" ng-show="authBoxLoginCtrl.errorLogin || authBoxLoginCtrl.errorFormatPwd">
+    <div class="imgCaution">
+      
+    </div>
+    <span class="error_p panel-image ng-binding"></span>
+  </div>
+  <!-- Captcha -->
+  <!-- ngIf: authBoxLoginCtrl.showInputCaptcha && !authBoxLoginCtrl.isOldVersionNavigator -->
+  <!-- Captcha antiguo -->
+  <!-- ngIf: authBoxLoginCtrl.showInputCaptcha && authBoxLoginCtrl.isOldVersionNavigator -->
+  <div class="row panel-button button-right">
+    <button class="button-small font-size16p ng-binding no-va black-letters" type="submit" value="Submit" ng-disabled="authBoxLoginCtrl.errorFormatPwd || authBoxLoginCtrl.errorFormatLogin || authBoxLoginCtrl.errorFormatInputs" ng-class="{'no-va':authBoxLoginCtrl.errorFormatPwd || authBoxLoginCtrl.errorFormatLogin || authBoxLoginCtrl.errorFormatInputs,                    'si-va':!authBoxLoginCtrl.errorFormatInputs,                    'white-letters':authBoxLoginCtrl.pagos,'black-letters':!authBoxLoginCtrl.pagos}" name="" ng-click="authBoxLoginCtrl.generateEventToTealium(false, authBoxLoginCtrl.eventActionAccessPass, authBoxLoginCtrl.eventLabelInicio, authBoxLoginCtrl.journeyCategory, authBoxLoginCtrl.journeyType)" disabled="disabled">
+      Entrar
+    </button>
+  </div>
+  <!-- ngIf: !authBoxLoginCtrl.isTuya && authBoxLoginCtrl.showChangePassword -->
+  <div class="row panel-link-password ng-scope" ng-if="!authBoxLoginCtrl.isTuya &amp;&amp; authBoxLoginCtrl.showChangePassword">
+    <a class="link-all ng-binding" ng-href="/rememberPassword" ng-click="authBoxLoginCtrl.generateEventToTealium(false, authBoxLoginCtrl.eventActionGetPass, authBoxLoginCtrl.eventLabelNewPass, '','')" href="/rememberPassword">
+      Nueva contraseña
+    </a>
+  </div>
+  <!-- end ngIf: !authBoxLoginCtrl.isTuya && authBoxLoginCtrl.showChangePassword -->
+  <div ng-class="{'marginTop65':authBoxLoginCtrl.isInmersiveNow || authBoxLoginCtrl.isTuya}" class="o-comp__auth-box-login-infoUser-div" ng-click="authBoxLoginCtrl.openTextHelp()">
+    <div class="o-comp__auth-box-login-infoUser">
+      <p class="o-comp__auth-box-login-infoUserP">
+        
+        <span class="o-comp__auth-box-login-new_passport ng-binding">
+          ¿Cuál es mi usuario?
+        </span>
+        <!-- ngIf: !authBoxLoginCtrl.openTextHelpUser --><!-- end ngIf: !authBoxLoginCtrl.openTextHelpUser -->
+        <!-- ngIf: authBoxLoginCtrl.openTextHelpUser -->
+      </p>
+    </div>
+    <!-- ngIf: authBoxLoginCtrl.openTextHelpUser -->
+  </div>
+</form>

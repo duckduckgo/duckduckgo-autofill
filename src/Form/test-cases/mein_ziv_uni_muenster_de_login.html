@@ -1,0 +1,118 @@
+<!--
+  https://mein-ziv.uni-muenster.de/?lang=en
+  rank: 8690
+  testRunId: 67
+  testResultId: 245335
+-->
+<form action="https://mein-ziv.uni-muenster.de/index.php" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="lang" value="en">
+
+  <input type="hidden" name="ticket_id" value="">
+
+  <table class="fishbone meinziv">
+    <!-- ============================================================== -->
+
+    <tbody onmouseover="helpshow(1,this);">
+      <tr>
+        <td>
+          <p>
+            <label for="nid"><strong>WWU ID (or matriculation number or email address or given name
+                and surname or ...):</strong></label>
+          </p>
+        </td>
+
+        <td class="meinzivlast">
+          <p>
+            <input type="text" class="f_suchfeld" name="nid" id="nid" size="20" onfocus="helpshow(1,this);" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: WWU ID (or matriculation number or email address or given name and surname or ...):
+parseable name: nid
+section: nid_0_29
+field signature: 3880943674
+form signature: 1157506900147658468
+form signature in host form: 1157506900147658468
+field frame token: 75B21D50E0480F2A2EB235349650031E
+form renderer id: 3
+field renderer id: 29" data-ddg-testresultelementid="582855" data-manual-scoring="username OR emailAddress">
+          </p>
+        </td>
+
+        <td id="help1" class="meinzivhelp" rowspan="1">
+          <p>
+            The WWU ID (frequently also called “userid” (user identification),
+            user name, login name, or (university or IT or ZIV) account name)
+            was submitted to you with your inscription documents or during an
+            earlier registration. Example: <tt>s_tudi12</tt>. Note: New
+            registered students can announce themselves soonest at the beginning
+            of term.
+          </p>
+        </td>
+      </tr>
+    </tbody>
+
+    <!-- ============================================================== -->
+
+    <tbody onmouseover="helpshow(2,this);">
+      <tr>
+        <td>
+          <p>
+            <label for="passwd"><strong>WWU password:</strong></label>
+          </p>
+        </td>
+
+        <td class="meinzivlast">
+          <p>
+            <input type="password" class="f_suchfeld" name="passwd" id="passwd" size="20" onfocus="helpshow(2,this);" value="" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: WWU password:
+parseable name: passwd
+section: nid_0_29
+field signature: 4260854359
+form signature: 1157506900147658468
+form signature in host form: 1157506900147658468
+field frame token: 75B21D50E0480F2A2EB235349650031E
+form renderer id: 3
+field renderer id: 30" data-ddg-testresultelementid="582856" data-manual-scoring="password">
+            
+            <span class="passwortauge" onclick="passwortauge('passwd');">👁</span><span class="capslockwarn">&nbsp;<strong>Caps Lock is on!</strong></span><br><a title="Link öffnet neues Fenster" class="int" rel="internal" target="_blank" href="/IT/PasswortVergessen">Lost your password?</a>
+          </p>
+        </td>
+
+        <td id="help2" class="meinzivhelp" rowspan="1">
+          <p>
+            The WWU password was communicated to you together with the WWU ID.
+            Note: The special passwords used in some areas of the university
+            cannot be used here.
+          </p>
+        </td>
+      </tr>
+    </tbody>
+
+    <!-- ============================================================== -->
+
+    <tbody onmouseover="helpshow(3,this);">
+      <tr>
+        <td></td>
+
+        <td class="meinzivlast" align="center">
+          <p>
+            <button type="submit" class="f_go_button" onfocus="helpshow(3,this);">
+              Continue
+            </button>
+          </p>
+        </td>
+
+        <td id="help3" class="meinzivhelp" rowspan="1">
+          <p>
+            With this button you can enter the IT portal, the website of the
+            central user administration.
+          </p>
+        </td>
+      </tr>
+    </tbody>
+
+    <!-- ============================================================== -->
+  </table>
+</form>

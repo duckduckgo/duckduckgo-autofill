@@ -1,0 +1,1300 @@
+<!--
+  https://account.qnap.com
+  rank: 4652
+  testRunId: 67
+  testResultId: 243109
+-->
+
+  <div class="screen-mask" ng-class="{'visible':full_screen_mask}"></div>
+
+  <!-- Progress Indicator Full Page -->
+  <div class="progress-indicator-fullpage ng-hide" ng-show="loading">
+    <div class="progress-indicator">
+      <div class="circle-progress-indicator">
+        
+      </div>
+      <!-- 字串 如需顯示請參考下列描述 -->
+      <!-- 0 ~ 8s 顯示-->
+      <!-- <div class="progress-msg">讀取中...</div> -->
+    </div>
+  </div>
+
+  <div class="root">
+    <!-- header -->
+    
+    
+    <header class="header ng-scope" ng-class="{'m--header':is_inner_page}" id="header" ng-controller="headerCtrl">
+      <div class="logo" ng-click="gotoProfile()">
+        
+        
+      </div>
+
+      <div class="utils-location-only">
+        <div class="util-btn util-location" ng-class="{'active':current_dropdown_menu == 'location'}" ng-click="toggleDropdown('location'); $event.stopPropagation()">
+          <div class="location-group">
+            
+            <span class="current-location ng-hide" ng-show="china_site">China</span>
+            <span class="current-location" ng-show="!china_site">Global</span>
+          </div>
+          <!-- 隱藏加上 class: hide -->
+          <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'location'">
+            <ul class="comp-dropdown-menu">
+              <li class="section">
+                <div class="section-items selection" ng-click="switchSite('global')">
+                  Global
+                </div>
+                <div class="section-items selection" ng-click="switchSite('china')">
+                  China
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="utils" ng-hide="is_invitation_signup_page">
+        <div class="util-btn util-service" ng-class="{'active':current_dropdown_menu == 'service'}" ng-click="toggleDropdown('service'); $event.stopPropagation()">
+          
+          <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'service'">
+            <ul class="comp-dropdown-menu">
+              <!-- ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">QNAP Account</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">myQNAPcloud</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">Organization Center</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">AMIZ Cloud</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">QuWAN</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">Software Store</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">License Manager</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">Qmiix</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">Service Portal</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">Warranty Extension</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+              <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="service-name ng-binding">AfoBot</div>
+              </li>
+              <!-- end ngRepeat: app in apps_info -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="util-btn util-location" ng-class="{'active':current_dropdown_menu == 'location'}" ng-hide="is_license_shop || is_remind_pw_and_ts_page" ng-click="toggleDropdown('location');$event.stopPropagation()">
+          
+          <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'location'">
+            <ul class="comp-dropdown-menu">
+              <li class="section">
+                <div class="section-items selection selected" ng-class="{'selected':!china_site}" ng-click="switchSite('global')">
+                  Global
+                </div>
+                <div class="section-items selection" ng-class="{'selected':china_site}" ng-click="switchSite('china')">
+                  China
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="util-btn util-lang" ng-class="{'active':current_dropdown_menu == 'lang'}" ng-click="toggleDropdown('lang'); $event.stopPropagation()">
+          
+          <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'lang'">
+            <ul class="comp-dropdown-menu">
+              <li class="section">
+                <!-- ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope selected" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  English
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  繁體中文
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  简体中文
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Czech
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Dansk
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Deutsch
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Español
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Français
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Italiano
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  日本語
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  한국
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Norsk
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Polski
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Русский
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Suomi
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Svenska
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Nederlands
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Turk dili
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  ไทย
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Português
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Magyar
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Ελληνικά
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+                <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                  Român
+                </div>
+                <!-- end ngRepeat: lang in supportedLanguages -->
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="util-btn util-more" ng-class="{'active':current_dropdown_menu == 'info'}" ng-click="toggleDropdown('info'); $event.stopPropagation()">
+          
+          <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'info'">
+            <ul class="comp-dropdown-menu">
+              <li class="section m--section">
+                <div class="section-head">Service</div>
+                <div class="m--selection-group m--service">
+                  <!-- ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">QNAP Account</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">myQNAPcloud</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">
+                      Organization Center
+                    </div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">AMIZ Cloud</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">QuWAN</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">Software Store</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">License Manager</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">Qmiix</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">Service Portal</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">
+                      Warranty Extension
+                    </div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                  <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
+                    <div class="service-logo">
+                      
+                    </div>
+                    <div class="service-name ng-binding">AfoBot</div>
+                  </div>
+                  <!-- end ngRepeat: app in apps_info -->
+                </div>
+              </li>
+
+              <li class="section-divide m--section-divide"></li>
+              <li class="section m--section" ng-hide="is_license_shop || is_remind_pw_and_ts_page">
+                <div class="section-head">Location</div>
+                <div class="m--selection-group m--location">
+                  <div class="section-items selection selected" ng-class="{'selected':!china_site}" ng-click="switchSite('global')">
+                    Global
+                  </div>
+                  <div class="section-items selection" ng-class="{'selected':china_site}" ng-click="switchSite('china')">
+                    China
+                  </div>
+                </div>
+              </li>
+              <li class="section-divide m--section-divide"></li>
+              <li class="section m--section">
+                <div class="section-head">Language</div>
+                <div class="m--selection-group m--lang">
+                  <!-- ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope selected" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    English
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    繁體中文
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    简体中文
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Czech
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Dansk
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Deutsch
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Español
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Français
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Italiano
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    日本語
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    한국
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Norsk
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Polski
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Русский
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Suomi
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Svenska
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Nederlands
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Turk dili
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    ไทย
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Português
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Magyar
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Ελληνικά
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                  <div class="section-items selection ng-binding ng-scope" ng-repeat="lang in supportedLanguages" ng-click="selectLang(lang.value)" ng-class="{'selected':current_lang == lang.value}">
+                    Român
+                  </div>
+                  <!-- end ngRepeat: lang in supportedLanguages -->
+                </div>
+              </li>
+              <li class="section-divide m--section-divide"></li>
+              <li class="section">
+                <div class="section-head">Support</div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoCMS('/features',true);closeInfoMenu();">
+                  Features
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://support.myqnapcloud.cn/features?lang=zh');closeInfoMenu();">
+                  Features
+                </div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoCMS('/faq',true);closeInfoMenu();">
+                  FAQ
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://support.myqnapcloud.cn/faq?lang=zh');closeInfoMenu();">
+                  FAQ
+                </div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoStatus('/service_status',true);closeInfoMenu();">
+                  System status
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://status.myqnapcloud.cn/service_status?lang=zh');closeInfoMenu();">
+                  System status
+                </div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoExternalPage('https://www.qnap.com/go/support-ticket/');closeInfoMenu();">
+                  Contact us
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://www.qnap.com.cn/zh-cn/support-ticket/');closeInfoMenu();">
+                  Contact us
+                </div>
+              </li>
+              <li class="section-divide" ng-hide="china_site"></li>
+              <li class="section" ng-hide="china_site">
+                <div class="section-head">Community</div>
+                <div class="section-items selection" ng-click="gotoExternalPage('http://forum.qnap.com/viewforum.php?f=313');closeInfoMenu();">
+                  Forum
+                </div>
+              </li>
+              <li class="section-divide"></li>
+              <li class="section">
+                <div class="section-head">QNAP</div>
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoExternalPage('https://www.qnap.com');closeInfoMenu();">
+                  QNAP website
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://www.qnap.com.cn');closeInfoMenu();">
+                  QNAP website
+                </div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoExternalPage('https://www.qnap.com/en/privacy-notice/qid');closeInfoMenu();">
+                  Privacy policy
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://www.qnap.com.cn/zh-cn/privacy-notice/qid');closeInfoMenu();">
+                  Privacy policy
+                </div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoExternalPage('https://www.qnap.com/en/before_buy/con_show.php?op=showone&amp;cid=15');closeInfoMenu();">
+                  Terms of Service
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://www.qnap.com.cn/zh-cn/before_buy/con_show.php?op=showone&amp;cid=15');closeInfoMenu();">
+                  Terms of Service
+                </div>
+
+                <div ng-hide="china_site" class="section-items selection" ng-click="gotoCMS('/security',true);closeInfoMenu();">
+                  Security Disclaimer
+                </div>
+                <div ng-show="china_site" class="section-items selection ng-hide" ng-click="gotoExternalPage('https://support.myqnapcloud.cn/security?lang=zh');closeInfoMenu();">
+                  Security Disclaimer
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="divide ng-hide" ng-show="is_sign_in"></div>
+        <div class="util-btn util-account ng-hide" ng-show="is_sign_in" ng-click="toggleDropdown('user'); $event.stopPropagation()">
+          <div class="avatar no-avatar">
+            <span ng-hide="user.avatars" class="ng-binding"></span>
+            
+          </div>
+          <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'user'">
+            <ul class="comp-dropdown-menu">
+              <li class="section account-section">
+                <div class="section-head">Account Management</div>
+                <div class="section-items selection current-account">
+                  <div class="account-img">
+                    <div class="avatar no-avatar">
+                      <span ng-hide="user.avatars" class="ng-binding"></span>
+                      
+                    </div>
+                  </div>
+                  <div class="account-info">
+                    <div class="name ng-binding"></div>
+                    <div class="mail ng-binding"></div>
+                  </div>
+                </div>
+              </li>
+              <li class="section-divide"></li>
+              <li class="section" ng-click="signout()">
+                <div class="section-items selection">Sign out</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    
+    <div class="fixed-alert ng-scope ng-hide" ng-controller="alertController" ng-class="[alertClass]" ng-click="$event.stopPropagation()" ng-show="show_alert">
+      <div class="alert-content">
+        <button type="button" class="alert-close-btn" aria-hidden="true" ng-click="closeAlert()">
+          ×
+        </button>
+        <div class="alert-msg ng-binding">
+          <strong class="ng-binding"></strong>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- content -->
+
+    
+    
+    
+    
+    
+
+    
+    <div class="wrap" ng-init="app_name=''; qid=''; error=''; captcha={url:''}; xsrf_token='2|e3f888a3|bb094f15c678218556330a829d025b4f|1679075728'">
+      <!-- main: 主要內容，一個頁面只能有一個 main 標籤 -->
+      <main class="main-content ng-scope" ng-controller="signInCtrl">
+        <div class="section-left">
+          <div class="promo-content">
+            <div class="slogan mb40">Your account for everything QNAP</div>
+            <!-- promo banner: default image -->
+            <div banner-id="0" class="promo-banner promo-banner-0 active">
+              <div class="lottie-canvas">
+                <div id="illustration-default" class="illustration type-lottie default">
+                  
+                </div>
+              </div>
+            </div>
+            <!-- promo banner: myQNAPcloud -->
+            <div banner-id="1" class="promo-banner promo-banner-1">
+              <div class="promo-service mb24">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="divide"></div>
+                <div class="service-slogan">
+                  Connect securely. Share simply. Manage easily.
+                </div>
+              </div>
+              <div class="lottie-canvas">
+                <div class="illustration type-normal myqnapcloud">
+                  
+                </div>
+              </div>
+            </div>
+            <!-- promo banner: QuWAN -->
+            <div banner-id="2" class="promo-banner promo-banner-2">
+              <div class="promo-service mb24">
+                <div class="service-logo">
+                  
+                </div>
+                <div class="divide"></div>
+                <div class="service-slogan">
+                  QuWAN is a cloud-based WAN architecture and uses a centralized
+                  control function to intelligently and securely direct traffic
+                  across the WAN.
+                </div>
+              </div>
+              <div class="lottie-canvas">
+                <div class="illustration type-normal myqnapcloud">
+                  
+                </div>
+              </div>
+            </div>
+            <!-- promo banner: Amiz -->
+            <!-- 
+                    <div banner-id="3" class="promo-banner promo-banner-3">
+                        <div class="promo-service mb24">
+                            <div class="service-logo">
+                                <img src="https://static.myqnapcloud.com/auth/static/v3/img/home/service-logo-amiz.svg">
+                            </div>
+                            <div class="divide"></div>
+                            <div class="service-slogan">
+                                Integrate. Elevate. Accelerate.
+                            </div>
+                        </div>
+                        <div class="lottie-canvas">
+                            <div class="illustration type-normal myqnapcloud">
+                                <img src="https://static.myqnapcloud.com/auth/static/v3/img/home/illustration-amiz.png">
+                            </div>
+                        </div>
+                    </div>
+                    -->
+            <!-- banner control -->
+            <div class="dot-nav">
+              <ul>
+                <li item-id="0" class="nav-item nav-item-0 active"></li>
+                <li item-id="1" class="nav-item nav-item-1"></li>
+                <li item-id="2" class="nav-item nav-item-2"></li>
+                <!-- 
+                            <li item-id="3" class="nav-item nav-item-3"></li>
+                            -->
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="section-right overlay-scroll os-host-flexbox os-host os-theme-dark os-host-resize-disabled os-host-scrollbar-horizontal-hidden os-host-scrollbar-vertical-hidden os-host-transition">
+          <div class="os-resize-observer-host observed">
+            <div class="os-resize-observer"></div>
+          </div>
+          <div class="os-size-auto-observer observed">
+            <div class="os-resize-observer"></div>
+          </div>
+          <div class="os-content-glue"></div>
+          <div class="os-padding">
+            <div class="os-viewport os-viewport-native-scrollbars-invisible os-viewport-native-scrollbars-overlaid">
+              <div class="os-content">
+                <div class="signin-form">
+                  <!-- normal -->
+                  <div class="form-content qid-login" ng-show="sign_in_way == 'normal'">
+                    <form id="form1" name="form1" method="post" action="https://account.qnap.com/signin?state=%2F" onsubmit="return checkForm(this)" novalidate="" autocomplete="off" class="ng-pristine ng-valid">
+                      <input type="hidden" ng-model="recaptcha_token" id="recaptcha_token" name="recaptcha_token" class="ng-pristine ng-untouched ng-valid">
+
+                      <div class="form-head">
+                        <div class="form-title mb8">
+                          <div class="sign-in-with-qnap-id">
+                            Sign in to QNAP Account
+                          </div>
+                          <!-- 來源服務，沒有就隱藏 -->
+                          <div class="continue-to-service ng-binding ng-hide" ng-show="app_name"></div>
+                        </div>
+                        <div class="form-primary-option" ng-hide="hide_signup">
+                          New user?
+                          <a href="" ng-click="gotoInternalPage('signup')">Sign up</a>
+                        </div>
+                      </div>
+
+                      <input type="hidden" value="2|e3f888a3|bb094f15c678218556330a829d025b4f|1679075728" name="_xsrf">
+                      <div class="error-msg mb16 ng-hide" ng-show="error" ng-switch="" on="error">
+                        <!-- ngSwitchWhen: 1012005 -->
+                        <!-- ngSwitchWhen: 1012007 -->
+                        <!-- ngSwitchWhen: 1050022 -->
+                        <!-- ngSwitchWhen: 1019007 -->
+                        <!-- ngSwitchWhen: 1004010 -->
+                        <!-- ngSwitchWhen: 1019011 -->
+                        <!-- ngSwitchWhen: 1010007 -->
+                        <!-- ngSwitchWhen: captcha -->
+                        <!-- ngSwitchDefault:  --><span ng-switch-default="" class="ng-binding ng-scope">Internal Server Error. - []</span><!-- end ngSwitchWhen: -->
+                      </div>
+
+                      <div class="comp-input modern mb32">
+                        <input id="qid" name="qid" type="text" ng-model="qid" autofocus="" class="modern ng-pristine ng-valid ng-touched" tabindex="1" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: UNKNOWN_TYPE
+label: Sign in to QNAP Account New user? Sign up
+parseable name: qid
+section: qid_0_16
+field signature: 2308850849
+form signature: 16767204569306110311
+form signature in host form: 16767204569306110311
+field frame token: 4923F9725CFC20B752CFADBC9780A14B
+form renderer id: 2
+field renderer id: 16" data-ddg-testresultelementid="566590" data-manual-scoring="username OR emailAddress">
+                        <label class="input-label">Email address or phone number</label>
+                      </div>
+                      <div class="comp-input modern pwd-visibility">
+                        <span class="pwd-visible-trigger">
+                          
+                          
+                        </span>
+                        <input id="password" name="password" type="password" ng-model="password" ng-trim="false" oncopy="return false" ondrag="return false" ondrop="return false" oncute="return false" class="modern ng-pristine ng-valid ng-touched" tabindex="1" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Sign in to QNAP Account New user? Sign up
+parseable name: password
+section: qid_0_16
+field signature: 2051817934
+form signature: 16767204569306110311
+form signature in host form: 16767204569306110311
+field frame token: 4923F9725CFC20B752CFADBC9780A14B
+form renderer id: 2
+field renderer id: 17" data-ddg-testresultelementid="566591" data-manual-scoring="password">
+                        <label class="input-label">Password</label>
+                      </div>
+
+                      <div class="comp-checkbox-group mt32 mb24"></div>
+
+                      <div class="action-row mb40">
+                        <button type="submit" ng-disabled="!qid || !password || qid.length == 0 || password.length == 0" class="q-btn q-btn-primary q-btn-large" disabled="disabled">
+                          Sign in
+                        </button>
+                        <button type="button" class="q-btn q-btn-primary q-btn-large wechat-login-btn mt16 ng-hide" ng-click="weixinLink('signin')" ng-show="china_site &amp;&amp; !hide_social">
+                          <span class="ic-wechat"></span>
+                          <span>Continue with WeChat</span>
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- social -->
+                  <div class="form-content qid-login ng-hide" ng-show="sign_in_way == 'social'">
+                    <div class="form-head">
+                      <div class="form-title mb8">
+                        <div class="sign-in-with-qnap-id">
+                          Sign in with your social account
+                        </div>
+                        <!-- 從其他服務跳轉過來時顯示，沒有就隱藏 -->
+                        <div class="continue-to-service ng-binding ng-hide" ng-show="app_name"></div>
+                      </div>
+                      <div class="form-primary-option" ng-hide="hide_signup">
+                        New user?
+                        <a href="" ng-click="gotoInternalPage('signup')">Sign up</a>
+                      </div>
+                    </div>
+
+                    <div class="social-login">
+                      <a href="" class="social-btn social-btn-google mb24" ng-click="googleSignIn();$event.stopPropagation();">
+                        
+                        <span>Google</span>
+                      </a>
+                      <a href="" class="social-btn social-btn-facebook mb24" ng-click="facebookLink('signin');$event.stopPropagation();">
+                        
+                        <span>Facebook</span>
+                      </a>
+                      <a href="" class="social-btn social-btn-apple mb24" ng-click="appleSignin('signin');$event.stopPropagation();">
+                        
+                        <span>Apple</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="options">
+                    <div class="mb10" ng-hide="hide_forget_password">
+                      <a href="" ng-click="gotoInternalPage('forgetpassword')">Forgot Password?</a>
+                    </div>
+                    <div class="mb10" ng-show="checkShowSocial()">
+                      <a href="" ng-click="sign_in_way = 'social'">Sign in with your social account</a>
+                    </div>
+                    <div class="mb10 ng-hide" ng-show="sign_in_way == 'social'">
+                      <a href="" ng-click="sign_in_way = 'normal'">Sign in with QID</a>
+                    </div>
+                    <div class="mb10" ng-hide="hide_activation_mail">
+                      <a href="" ng-click="gotoInternalPage('activation')">Have not received activation email?</a>
+                    </div>
+                  </div>
+                  <div class="qnap-links">
+                    <span class="link-item">
+                      <a href="https://www.qnap.com/en/privacy-notice/qid" target="_blank" ng-hide="china_site">Privacy policy</a>
+                      <a href="https://www.qnap.com.cn/zh-cn/privacy-notice/qid" target="_blank" ng-show="china_site" class="ng-hide">Privacy policy</a>
+                    </span>
+                    <span class="link-item">
+                      <a href="https://www.qnap.com/en/before_buy/con_show.php?op=showone&amp;cid=15" target="_blank" ng-hide="china_site">Terms of Service</a>
+                      <a href="https://www.qnap.com.cn/zh-cn/before_buy/con_show.php?op=showone&amp;cid=15" target="_blank" ng-show="china_site" class="ng-hide">Terms of Service</a>
+                    </span>
+                  </div>
+                  <div class="qnap-copyright ng-binding" ng-hide="china_site">
+                    Copyright 2023; QNAP Systems, Inc. All Rights Reserved.
+                  </div>
+                  <div class="qnap-copyright ng-binding ng-hide" ng-show="china_site">
+                    威博通科技 (上海) 有限公司 ©2023 版权所有
+                  </div>
+                  <span id="footer_word">Copyright 2013-2014; QNAP Systems, Inc. All Rights
+                    Reserved.</span>
+                  <div class="china_site ng-hide" ng-show="china_site">
+                    <a href="http://beian.miit.gov.cn/" target="_blank">沪ICP备2022006091号-2</a>
+                    |
+                    <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802025528" target="_blank">京公网安备11010802025528号</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable">
+            <div class="os-scrollbar-track os-scrollbar-track-off">
+              <div class="os-scrollbar-handle"></div>
+            </div>
+          </div>
+          <div class="os-scrollbar os-scrollbar-vertical os-scrollbar-unusable">
+            <div class="os-scrollbar-track os-scrollbar-track-off">
+              <div class="os-scrollbar-handle"></div>
+            </div>
+          </div>
+          <div class="os-scrollbar-corner"></div>
+        </div>
+      </main>
+    </div>
+    
+    
+    
+
+    <div class="hide">
+      <span id="message_info">Info</span>
+      <span id="message_success">Successful</span>
+      <span id="message_warning">Warning</span>
+      <span id="message_confirm">Confirm</span>
+      <span id="message_error">Error</span>
+      <span id="message_api_error">Sending request to server failed!</span>
+      <span id="message_1050001">User not found</span>
+      <span id="message_1050002">User already exists.</span>
+      <span id="message_1050020">User already exists.</span>
+      <span id="message_1050003">User already exists.</span>
+      <span id="message_1050005">Incorrect password</span>
+      <span id="message_1050006">This account has been activated</span>
+      <span id="message_1050009">Unsupported image type</span>
+      <span id="message_1050010">Cannot read image file</span>
+      <span id="message_1050011">User has not linked {platform}.</span>
+      <span id="message_1050012">Another QNAP ID has been linked with this {platform} account.</span>
+      <span id="message_1050017">Sorry, we could not process your request. Send your request again via
+        QNAP Account.</span>
+      <span id="message_1012007">User account not activated</span>
+      <span id="message_1129005">Login failed.</span>
+      <span id="message_1000001">System is busy now. Please try again later.</span>
+      <span id="message_1004006">User already exists.</span>
+      <span id="message_1000003">Incorrect email format.</span>
+      <span id="message_1004005">The verification code is incorrect.</span>
+      <span id="message_1050022">This QNAP ID is not verified.</span>
+      <span id="message_1050026">Your {social_network} account has been registered in QNAP. However,
+        your profile settings do not allow login with your {social_network1}
+        account. You must log in with your QNAP ID. You can change this setting
+        later in your profile settings.</span>
+      <span id="message_1050027">You do not meet the minimum age requirement.</span>
+      <span id="message_1013007">Failed to retrieve your Google profile picture.</span>
+      <span id="message_1007004">@Invitation not found.@</span>
+      <span id="message_1050032">Must not be the same as your last 5 passwords used.</span>
+      <span id="message_1050031">Your Apple ID has already been associated with another QNAP ID.</span>
+
+      <span id="message_1004010">Unable to send a verification code. You have reached the daily SMS
+        limit. Wait until tomorrow or use other authentication methods.</span>
+      <span id="message_1019010">You have made too many attempts. Please wait and try again later.</span>
+      <span id="message_1019011">Unable to sign in. Your QNAP ID does not belong to this region. Go to
+        the QNAP Account website of your region and then sign in again.</span>
+
+      <span id="message_no_select_reason">You have not select any reason.</span>
+      <span id="message_continue_to_app_name">to continue to {app_name}</span>
+
+      <span id="message_here_word">here</span>
+      <span id="message_sex_not_specified">Not Specified</span>
+      <span id="message_sex_male">Male</span>
+      <span id="message_sex_female">Female</span>
+      <span id="message_revoke_app_successfully">Application is removed</span>
+      <span id="message_incorrect_phone_number">Incorrect phone number</span>
+      <span id="message_exists_phone_number">This phone number is already in use.</span>
+      <span id="message_profile">Profile</span>
+
+      <span id="message_profile_remove_phone_str">Do you want to remove the phone number: {phone_number}? Note that you
+        will no longer be able to sign in to your QNAP account with this phone
+        number.</span>
+
+      <span id="message_expand">View more</span>
+      <span id="message_collapse">View less</span>
+
+      <span id="message_terms_of_service">Terms of Service</span>
+      <span id="message_privacy_policy">Privacy policy</span>
+      <span id="message_signup_gdpr">We highly value your trust and confidence in us and want to assure you
+        that your personal information will be kept completely confidential. As
+        part of our continuing efforts to improve your experience with us, and
+        comply with new data protection laws such as the EU GDPR, we have
+        updated our {terms_of_service} and {privacy_policy}.</span>
+
+      <span id="message_qid_activated_str">Your account is not yet activated. Check the verification email sent to
+        {email} and then enter the verification code.</span>
+
+      <span id="message_organization_user_info_update_success">Your profile is updated.</span>
+
+      <span id="message_organization_uninvite_to_group_desc">Select the members you want to invite to this group.</span>
+      <span id="message_organization_invited_to_group_desc">Deselect the members you want to remove from this group.</span>
+
+      <span id="message_organization_manager_status_all">All</span>
+      <span id="message_organization_manager_status_active">Active</span>
+      <span id="message_organization_manager_status_suspend">Suspended</span>
+      <span id="message_organization_manager_status_pending">Invited</span>
+      <span id="message_organization_manager_status_inactivate">QNAP ID not activated</span>
+
+      <span id="message_organization_title">Organization</span>
+      <span id="message_organization_manager_administrator_group">Group</span>
+      <span id="message_organization_manager_administrator_site">Site</span>
+      <span id="message_organization_manager_account_list">Account List</span>
+      <span id="message_organization_manager_activity_log">Activity Log</span>
+
+      <span id="message_organization_resend_invitation">Resend Invitation</span>
+      <span id="message_organization_send">Send</span>
+
+      <span id="message_organization_name_more_length">Organization names can have a maximum of 100 characters.</span>
+      <span id="message_organization_group_name_more_length">The group name must not exceed 50 characters.</span>
+
+      <span id="message_organization_api_error_code_1060001">Failed to create the organization.</span>
+      <span id="message_organization_api_error_code_1060002">The organization name is already taken: "{org_name}".</span>
+      <span id="message_organization_api_error_code_1060003">The organization does not exist.</span>
+      <span id="message_organization_api_error_code_1060004">Permission denied. Only owners can perform this operation.</span>
+      <span id="message_organization_api_error_code_1060005">The selected users do not belong in the organization.</span>
+      <span id="message_organization_api_error_code_1060006">You cannot remove your own account from the owner group.</span>
+      <span id="message_organization_api_error_code_1060007">You cannot delete the only owner of the organization.</span>
+      <span id="message_organization_api_error_code_1060008">Failed to create the organization group.</span>
+      <span id="message_organization_api_error_code_1060009">The organization group name is already taken: "{group_name}".</span>
+      <span id="message_organization_api_error_code_1060010">The maximum number of owners has been reached.</span>
+      <span id="message_organization_api_error_code_1060011">Each organization must have at least one owner.</span>
+      <span id="message_organization_api_error_code_1060012">The user already belongs to this organization.</span>
+      <span id="message_organization_api_error_code_1060013">Missing organization ID or invalid token</span>
+      <span id="message_organization_api_error_code_1060014">The user does not have a valid email address.</span>
+      <span id="message_organization_api_error_code_1060015">@Invalid Group ID or Group not found.@</span>
+      <span id="message_organization_api_error_code_1060016">@The requested organization id does not match with the current token
+        Organization Id@</span>
+      <span id="message_organization_api_error_code_1060017">@The token contains neither Organization ID nor User info.@</span>
+      <span id="message_organization_api_error_code_1060018">This site already belongs to this organization.</span>
+      <span id="message_organization_api_error_code_1060019">@Invalid Site ID or Site not found.@</span>
+      <span id="message_organization_api_error_code_1060020">@User were not in the Organization.@</span>
+      <span id="message_organization_api_error_code_1060021">@Group were not in the Organization.@</span>
+      <span id="message_organization_api_error_code_1060022">You cannot suspend your own account in the owner group.</span>
+
+      <span id="message_organization_log_category_1">Account</span>
+      <span id="message_organization_log_category_2">Organization</span>
+      <span id="message_organization_log_category_3">Group</span>
+      <span id="message_organization_log_category_4">Site</span>
+
+      <span id="message_organization_log_event_1">Add</span>
+      <span id="message_organization_log_event_2">Remove</span>
+      <span id="message_organization_log_event_3">Edit</span>
+
+      <span id="message_organization_site_select_timezone">Select a time zone</span>
+
+      <span id="message_google_authenticator_remind_str">If you have not yet installed an authenticator app, download
+        {google_authenticator} or {microsoft_authenticator} on your mobile
+        device.</span>
+
+      <span id="message_link_socail_network_str">Link {social_network} account.</span>
+
+      <span id="message_domain_global">Global</span>
+      <span id="message_domain_china">China</span>
+
+      <span id="message_delete_contact_list_desc">Do you really want to remove your friend from the contact list?</span>
+
+      <span id="message_change_password_success">Your password is changed.</span>
+
+      <span id="message_profile_update_success">Your profile is updated.</span>
+      <span id="message_fail_upload_avatar">Fail to upload your avatar. Please try later.</span>
+      <span id="message_avatar_update_success">Your avatar is updated.</span>
+      <span id="message_1050012_no_pratform">Social account has been linked by others.</span>
+
+      <span id="message_invalid_email">Account not found.</span>
+      <span id="message_invalid_access_token">This URL is no longer available.</span>
+      <span id="message_password_not_match">Passwords do not match.</span>
+      <span id="message_password_invalid">The password is incorrect.</span>
+
+      <span id="message_create_qid_invalid_qid">The email address or phone number does not follow the correct
+        format.</span>
+      <span id="message_create_nickname_invalid_qid">You have reached the maximum number of characters allowed for a
+        nickname.</span>
+      <span id="message_create_qid_registered">User already exists.</span>
+
+      <span id="message_license_store">License Store</span>
+      <span id="message_delete_qid_msg">Your purchased licenses on {license_manager} will be permanently
+        deleted.</span>
+      <span id="message_license_manager">QNAP License Manager</span>
+
+      <span id="message_delete_organization">Delete</span>
+
+      <span id="message_delete_organization_msg">Warning: Deleting an organization permanently deletes all organization
+        data. Are you sure you want to delete the organization?</span>
+
+      <span id="message_delete_user">Are you sure you want to remove these accounts?</span>
+
+      <span id="message_delete_user_msg">Removed accounts will no longer be able to access certain features,
+        services, or devices in your organization.</span>
+
+      <span id="message_delete_group">Are you sure you want to delete these groups?</span>
+
+      <span id="message_delete_group_msg">Members of the deleted group will no longer have permission to use
+        features or access devices previously assigned to the group.</span>
+
+      <span id="message_delete_site">Site Deletion</span>
+
+      <span id="message_delete_site_msg">The devices belong to this site will no longer have the site
+        information. This will affect other QNAP devices that use this site for
+        cloud device management. Do you want to delete the selected site?</span>
+
+      <span id="message_delete_contact_list">Remove from contact list</span>
+
+      <span id="message_password_warning_str_1">Password requirements:</span>
+      <span id="message_password_warning_str_2">Between 8 and 50 characters</span>
+      <span id="message_password_warning_str_3">Contain both uppercase and lowercase letters</span>
+      <span id="message_password_warning_str_4">Contain at least one number</span>
+      <span id="message_password_warning_str_5">Cannot be the same as your QID</span>
+
+      <span id="message_1013001">This URL is no longer available.</span>
+      <span id="message_1013003">User has not linked {platform}.</span>
+      <span id="message_1013004">Your Facebook token is invalid, please log in to Facebook again.</span>
+      <span id="message_1013005">Cannot verify your Google account. Please sign up using an alternative
+        method.</span>
+      <span id="message_1013006">Your Google token is invalid, please log in to Google again.</span>
+      <span id="message_email_format_error">Incorrect email format.</span>
+      <span id="message_email_not_empty">Email can not be empty</span>
+      <span id="message_qid_not_empty">An email address or phone number is required.</span>
+      <span id="message_email_too_long">Email must be at most 100 characters.</span>
+      <span id="message_email_exist">This email already exists.</span>
+      <span id="message_portal_notify_enabled">You'll receive notification on myQNAPcloud website.</span>
+      <span id="message_invalid_verification_code">The verification code is incorrect.</span>
+
+      <span id="message_portal_notify_disabled">You'll no longer receive notification on myQNAPcloud website.</span>
+      <span id="message_license_tab_name_detail">License Details</span>
+      <span id="message_license_tab_name_active">Activation and Installation</span>
+      <span id="message_license_tab_name_usage_record">Usage Record</span>
+
+      <span id="message_license_page_tab_name_license_store">License store</span>
+      <span id="message_license_page_tab_name_my_license">My licenses</span>
+      <span id="message_license_page_tab_name_order_history">Order history</span>
+
+      <span id="message_license_status_valid">Valid</span>
+      <span id="message_license_status_invalid">Invalid</span>
+      <span id="message_license_status_revoked">@Revoked@</span>
+      <span id="message_license_type_device">Device-based</span>
+      <span id="message_license_type_user">User-based</span>
+
+      <span id="message_license_device_active">Active</span>
+      <span id="message_license_device_inactive">Inactive</span>
+
+      <span id="message_license_usage_record_action_activate">Activate</span>
+      <span id="message_license_usage_record_action_unbind_user">Deactivate</span>
+      <span id="message_license_usage_record_action_bind_device">Activate</span>
+      <span id="message_license_usage_record_action_unbind_device">Deactivate</span>
+      <span id="message_license_usage_record_action_bind_user">Assigned</span>
+
+      <span id="message_license_offline_actviate_done">You have successfully uploaded the DIF.</span>
+      <span id="message_license_duration_year">Year(s)</span>
+      <span id="message_license_duration_days">Days</span>
+      <span id="message_license_no_more">For details, please check the {faq}.</span>
+      <span id="message_license_email_content">A license "{license_name}" has been assigned to your QNAP ID. Sign in
+        with your QNAP ID in License Manager for more information. You can
+        activate the license and start using the product.</span>
+      <span id="message_license_error_not_qid">{email} is not a valid QNAP ID.</span>
+      <span id="message_license_cloudlink_activate_success">You have successfully activated your {product_name} license. You can
+        start using your application on {device_name}.</span>
+      <span id="message_license_cloudlink_activate_failed">Your {product_name} license cannot be activated using myQNAPcloud Link.
+        We recommend upgrading to the latest myQNAPcloud Link version as soon as
+        possible.</span>
+      <span id="message_license_cloudlink_tunnel_error">Please check the internet connection for {device_name}. Device must be
+        online to apply.</span>
+
+      <span id="message_license_product_sale">{valid_date} Year {price} {currency}</span>
+
+      <span id="message_app_page_title">{app_name} would like to obtain the following permissions:</span>
+      <span id="message_app_page_device_list_box_title">Log on to one of the following devices and grant access to
+        {app_name}:</span>
+      <span id="message_app_page_device_not_connected">Please check the Internet connection for {device_name}. Device must be
+        online to edit.</span>
+
+      <span id="message_app_page_tooltip_offline">The {app_name} QPKG is currently not running on this device. Verify the
+        status on the App Center.</span>
+      <span id="message_app_page_tooltip_not_install_qpkg">Unable to connect to the device remotely. Verify that the myQNAPcloud
+        Link QPKG is installed and functional.</span>
+      <span id="message_app_page_no_login_dialog_title">Permission to access {app_name}</span>
+      <span id="message_app_page_no_login_dialog_msg">You have not granted any devices access to {app_name}. You may not be
+        able to use this service or feature. Do you want to continue?</span>
+
+      <span id="message_app_page_login_device_error_code_1190006">Another user is already authenticated using the current QNAP ID. You
+        must log out first.</span>
+      <span id="message_app_page_login_device_error_code_1013001">This URL is no longer available.</span>
+      <span id="message_app_page_login_device_error_code_1129005">Login failed.</span>
+
+      <span id="message_app_page_login_device_notes_auto_install">Note: The {app_name} app will be automatically installed, updated and
+        enabled on your device.</span>
+      <span id="message_app_page_login_device_notes_auto_install_tip">You must install and enable the {app_name} QPKG before creating applets
+        on the IFTTT website.</span>
+
+      <span id="message_app_page_action_installing">Installing...</span>
+      <span id="message_app_page_action_enabling">Enabling...</span>
+      <span id="message_app_page_retry_msg">{app_name} cannot be installed/enabled remotely. Please check the
+        firmware version(4.2.2 or above) and try again.</span>
+
+      <span id="message_app_page_sort_application_name">Application Name</span>
+      <span id="message_app_page_sort_last_updated_at">Last Login Date</span>
+
+      <span id="message_license_deactivate_start_device_msg">Do you want to deactivate the {license_name} license?</span>
+      <span id="message_license_deactivate_start_user_msg">Are you sure you want to remove the {license_name} license from
+        "{qid}"?</span>
+      <span id="message_license_deactivate_success_msg">Congratulations! You have successfully deactivated your {product_name}
+        license.</span>
+      <span id="message_license_trade_complete_msg">You can activate your license by myQNAPcloud Link or by a license key.
+        For more information, click {here}.</span>
+
+      <span id="message_password_strength_weak">Weak</span>
+      <span id="message_password_strength_fair">Fair</span>
+      <span id="message_password_strength_good">Good</span>
+      <span id="message_password_strength_strong">Strong</span>
+
+      <span id="message_forget_password">Forgot Password?</span>
+      <span id="message_sign_up_and_verify">This account name is already taken. If this is your account, click
+        {link} to reset your password.</span>
+
+      <span id="message_social_link_msg_1">We found a QNAP ID using this email: {email}.</span>
+      <span id="message_social_link_msg_2">Enter your QNAP ID password to link your {platform} account.</span>
+      <span id="message_social_link_msg_3">We will create a QNAP ID and link it to your {platform} account. Enter
+        a password for your QNAP ID.</span>
+
+      <span id="message_social_link_error_msg_1">Unable to access {platform}. Please try again.</span>
+      <span id="message_social_link_error_msg_2">There is no email address linked to this {platform} account. Please
+        specify a valid email address.</span>
+
+      <span id="message_verify_by_email_desc">In case your mobile device gets lost or stolen, you can send your
+        verification code to your email address ({qid_email}). If you have
+        previously signed in from a trusted device, you can change your settings
+        from that device without a verification code.</span>
+
+      <span id="message_not_verify_by_email_desc">If your phone gets lost or stolen, you can send a verification code to
+        the email address registered to your QNAP ID. Ensure that you are using
+        a valid email address in your {profile}.</span>
+
+      <span id="message_send_sms_limit">Unable to send a verification code. You have reached the daily SMS
+        limit. Wait until tomorrow or use other authentication methods.</span>
+
+      <span id="message_remove_authenticator">Text messaging on the phone number "{oldest_phone_number}" will become
+        the default method for your 2-step verification if you remove this
+        authenticator app. Do you really want to remove the authenticator?</span>
+      <span id="message_remove_backup_phone">Text messaging to the phone number "{oldest_phone_number}" will be your
+        default method of 2-step verification. Do you want to remove the phone
+        number "{selected_phone_number}" from your account?</span>
+
+      <span id="message_my_interests_for_business">Business</span>
+      <span id="message_my_interests_soho">Family &amp; SOHO</span>
+      <span id="message_my_interests_data_protection">Data Protection</span>
+      <span id="message_my_interests_cloud">Cloud</span>
+      <span id="message_my_interests_networking">Networking</span>
+      <span id="message_my_interests_surveillance">Surveillance &amp; Premises Security</span>
+      <span id="message_my_interests_product_security">Security</span>
+      <span id="message_my_interests_content_creation">Content Creation</span>
+      <span id="message_my_interests_monthly_news">Monthly News</span>
+
+      <span id="message_please_select_a_country">Select a country or region</span>
+      <span id="message_please_select_a_organization_country">Select a country.</span>
+      <span id="message_please_select_organization_size">Select the approximate number of members in your organization.</span>
+      <span id="message_people">@People@</span>
+      <span id="message_continue_as">Continue as {Display_Name}</span>
+
+      <!-- Country -->
+      <span id="message_country_Afghanistan">Afghanistan</span><span id="message_country_Albania">Albania</span><span id="message_country_Algeria">Algeria</span><span id="message_country_Andorra">Andorra</span><span id="message_country_Angola">Angola</span><span id="message_country_Antigua_and_Barbuda">Antigua and Barbuda</span><span id="message_country_Argentina">Argentina</span><span id="message_country_Armenia">Armenia</span><span id="message_country_Australia">Australia</span><span id="message_country_Austria">Austria</span><span id="message_country_Azerbaijan">Azerbaijan</span><span id="message_country_Bahamas">Bahamas</span><span id="message_country_Bahrain">Bahrain</span><span id="message_country_Bangladesh">Bangladesh</span><span id="message_country_Barbados">Barbados</span><span id="message_country_Belarus">Belarus</span><span id="message_country_Belgium">Belgium</span><span id="message_country_Belize">Belize</span><span id="message_country_Benin">Benin</span><span id="message_country_Bhutan">Bhutan</span><span id="message_country_Bolivia">Bolivia</span><span id="message_country_Bosnia_and_Herzegovina">Bosnia and Herzegovina</span><span id="message_country_Botswana">Botswana</span><span id="message_country_Brazil">Brazil</span><span id="message_country_Brunei">Brunei</span><span id="message_country_Bulgaria">Bulgaria</span><span id="message_country_Burkina_Faso">Burkina Faso</span><span id="message_country_Myanmar">Myanmar</span><span id="message_country_Burundi">Burundi</span><span id="message_country_Cambodia">Cambodia</span><span id="message_country_Cameroon">Cameroon</span><span id="message_country_Canada">Canada</span><span id="message_country_Cape_Verde">Cape Verde</span><span id="message_country_Central_African_Republic">Central African Republic</span><span id="message_country_Chad">Chad</span><span id="message_country_Chile">Chile</span><span id="message_country_China">China</span><span id="message_country_Colombia">Colombia</span><span id="message_country_Comoros">Comoros</span><span id="message_country_Republic_of_the_Congo">Republic of the Congo</span><span id="message_country_Democratic_Republic_of_the_Congo">Democratic Republic of the Congo</span><span id="message_country_Costa_Rica">Costa Rica</span><span id="message_country_cdi">Côte d'Ivoire</span><span id="message_country_Croatia">Croatia</span><span id="message_country_Cuba">Cuba</span><span id="message_country_Cyprus">Cyprus</span><span id="message_country_Czech_Republic">Czech Republic</span><span id="message_country_Denmark">Denmark</span><span id="message_country_Djibouti">Djibouti</span><span id="message_country_Dominica">Dominica</span><span id="message_country_Dominican_Republic">Dominican Republic</span><span id="message_country_East_Timor">East Timor</span><span id="message_country_Ecuador">Ecuador</span><span id="message_country_Egypt">Egypt</span><span id="message_country_El_Salvador">El Salvador</span><span id="message_country_Equatorial_Guinea">Equatorial Guinea</span><span id="message_country_Eritrea">Eritrea</span><span id="message_country_Estonia">Estonia</span><span id="message_country_Ethiopia">Ethiopia</span><span id="message_country_Fiji">Fiji</span><span id="message_country_Finland">Finland</span><span id="message_country_France">France</span><span id="message_country_Gabon">Gabon</span><span id="message_country_Gambia">Gambia</span><span id="message_country_Georgia">Georgia</span><span id="message_country_Germany">Germany</span><span id="message_country_Ghana">Ghana</span><span id="message_country_Greece">Greece</span><span id="message_country_Grenada">Grenada</span><span id="message_country_Guatemala">Guatemala</span><span id="message_country_Guinea">Guinea</span><span id="message_country_Guinea-Bissau">Guinea-Bissau</span><span id="message_country_Guyana">Guyana</span><span id="message_country_Haiti">Haiti</span><span id="message_country_Honduras">Honduras</span><span id="message_country_Hungary">Hungary</span><span id="message_country_Iceland">Iceland</span><span id="message_country_India">India</span><span id="message_country_Indonesia">Indonesia</span><span id="message_country_Iran">Iran</span><span id="message_country_Iraq">Iraq</span><span id="message_country_Ireland">Ireland</span><span id="message_country_Israel">Israel</span><span id="message_country_Italy">Italy</span><span id="message_country_Jamaica">Jamaica</span><span id="message_country_Japan">Japan</span><span id="message_country_Jordan">Jordan</span><span id="message_country_Kazakhstan">Kazakhstan</span><span id="message_country_Kenya">Kenya</span><span id="message_country_Kiribati">Kiribati</span><span id="message_country_North_Korea">North Korea</span><span id="message_country_South_Korea">South Korea</span><span id="message_country_Kuwait">Kuwait</span><span id="message_country_Kyrgyzstan">Kyrgyzstan</span><span id="message_country_Laos">Laos</span><span id="message_country_Latvia">Latvia</span><span id="message_country_Lebanon">Lebanon</span><span id="message_country_Lesotho">Lesotho</span><span id="message_country_Liberia">Liberia</span><span id="message_country_Libya">Libya</span><span id="message_country_Liechtenstein">Liechtenstein</span><span id="message_country_Lithuania">Lithuania</span><span id="message_country_Luxembourg">Luxembourg</span><span id="message_country_Macedonia">Macedonia</span><span id="message_country_Madagascar">Madagascar</span><span id="message_country_Malawi">Malawi</span><span id="message_country_Malaysia">Malaysia</span><span id="message_country_Maldives">Maldives</span><span id="message_country_Mali">Mali</span><span id="message_country_Malta">Malta</span><span id="message_country_Marshall_Islands">Marshall Islands</span><span id="message_country_Mauritania">Mauritania</span><span id="message_country_Mauritius">Mauritius</span><span id="message_country_Mexico">Mexico</span><span id="message_country_Micronesia">Micronesia</span><span id="message_country_Moldova">Moldova</span><span id="message_country_Monaco">Monaco</span><span id="message_country_Mongolia">Mongolia</span><span id="message_country_Montenegro">Montenegro</span><span id="message_country_Morocco">Morocco</span><span id="message_country_Mozambique">Mozambique</span><span id="message_country_Namibia">Namibia</span><span id="message_country_Nauru">Nauru</span><span id="message_country_Nepal">Nepal</span><span id="message_country_Netherlands">Netherlands</span><span id="message_country_New_Zealand">New Zealand</span><span id="message_country_Nicaragua">Nicaragua</span><span id="message_country_Niger">Niger</span><span id="message_country_Nigeria">Nigeria</span><span id="message_country_Norway">Norway</span><span id="message_country_Oman">Oman</span><span id="message_country_Pakistan">Pakistan</span><span id="message_country_Palau">Palau</span><span id="message_country_Panama">Panama</span><span id="message_country_Papua_New_Guinea">Papua New Guinea</span><span id="message_country_Paraguay">Paraguay</span><span id="message_country_Peru">Peru</span><span id="message_country_Philippines">Philippines</span><span id="message_country_Poland">Poland</span><span id="message_country_Portugal">Portugal</span><span id="message_country_Qatar">Qatar</span><span id="message_country_Romania">Romania</span><span id="message_country_Russia">Russia</span><span id="message_country_Rwanda">Rwanda</span><span id="message_country_Saint_Kitts_and_Nevis">Saint Kitts and Nevis</span><span id="message_country_Saint_Lucia">St. Lucia</span><span id="message_country_Saint_Vincent_and_the_Grenadines">St. Vincent and the Grenadines</span><span id="message_country_Samoa">Samoa</span><span id="message_country_San_Marino">San Marino</span><span id="message_country_Sao_Tome_and_Principe">Sao Tome and Principe</span><span id="message_country_Saudi_Arabia">Saudi Arabia</span><span id="message_country_Senegal">Senegal</span><span id="message_country_Serbia">Serbia</span><span id="message_country_Seychelles">Seychelles</span><span id="message_country_Sierra_Leone">Sierra Leone</span><span id="message_country_Singapore">Singapore</span><span id="message_country_Slovakia">Slovakia</span><span id="message_country_Slovenia">Slovenia</span><span id="message_country_Solomon_Islands">Solomon Islands</span><span id="message_country_Somalia">Somalia</span><span id="message_country_South_Africa">South Africa</span><span id="message_country_South_Sudan">South Sudan</span><span id="message_country_Spain">Spain</span><span id="message_country_Sri_Lanka">Sri Lanka</span><span id="message_country_Sudan">Sudan</span><span id="message_country_Suriname">Suriname</span><span id="message_country_Swaziland">Swaziland</span><span id="message_country_Sweden">Sweden</span><span id="message_country_Switzerland">Switzerland</span><span id="message_country_Syria">Syria</span><span id="message_country_Tajikistan">Tajikistan</span><span id="message_country_Tanzania">Tanzania</span><span id="message_country_Taiwan">Taiwan</span><span id="message_country_Thailand">Thailand</span><span id="message_country_Togo">Togo</span><span id="message_country_Tonga">Tonga</span><span id="message_country_Trinidad_and_Tobago">Trinidad and Tobago</span><span id="message_country_Tunisia">Tunisia</span><span id="message_country_Turkey">Turkey</span><span id="message_country_Turkmenistan">Turkmenistan</span><span id="message_country_Tuvalu">Tuvalu</span><span id="message_country_Uganda">Uganda</span><span id="message_country_Ukraine">Ukraine</span><span id="message_country_United_Arab_Emirates">United Arab Emirates</span><span id="message_country_United_Kingdom">United Kingdom</span><span id="message_country_United_States">United States</span><span id="message_country_Uruguay">Uruguay</span><span id="message_country_Uzbekistan">Uzbekistan</span><span id="message_country_Vanuatu">Vanuatu</span><span id="message_country_Venezuela">Venezuela</span><span id="message_country_Vietnam">Vietnam</span><span id="message_country_Yemen">Yemen</span><span id="message_country_Zambia">Zambia</span><span id="message_country_Zimbabwe">Zimbabwe</span><span id="message_country_Hong_Kong">Hong Kong</span><span id="message_country_London">London</span>
+
+      <span id="message_country_American_Samoa">American Samoa</span>
+      <span id="message_country_Anguilla">Anguilla</span>
+      <span id="message_country_Antarctica">Antarctica</span>
+      <span id="message_country_Aruba">Aruba</span>
+      <span id="message_country_Bermuda">Bermuda</span>
+      <span id="message_country_British_Indian_Ocean_Territory">British Indian Ocean Territory</span>
+      <span id="message_country_British_Virgin_Islands">British Virgin Islands</span>
+      <span id="message_country_Cayman_Islands">Cayman Islands</span>
+      <span id="message_country_Christmas_Island">Christmas Island</span>
+      <span id="message_country_Cocos_Islands">Cocos Islands</span>
+      <span id="message_country_Cook_Islands">Cook Islands</span>
+      <span id="message_country_Curacao">Curacao</span>
+      <span id="message_country_Falkland_Islands">Falkland Islands</span>
+      <span id="message_country_Faroe_Islands">Faroe Islands</span>
+      <span id="message_country_French_Polynesia">French Polynesia</span>
+      <span id="message_country_Gibraltar">Gibraltar</span>
+      <span id="message_country_Greenland">Greenland</span>
+      <span id="message_country_Guam">Guam</span>
+      <span id="message_country_Guernsey">Guernsey</span>
+      <span id="message_country_Isle_of_Man">Isle of Man</span>
+      <span id="message_country_Ivory_Coast">Côte d'Ivoire</span>
+      <span id="message_country_Jersey">Bailiwick of Jersey</span>
+      <span id="message_country_Kosovo">Kosovo</span>
+      <span id="message_country_Macao">Macao</span>
+      <span id="message_country_Mayotte">Mayotte</span>
+      <span id="message_country_Montserrat">Montserrat</span>
+      <span id="message_country_Netherlands_Antilles">Netherlands Antilles</span>
+      <span id="message_country_New_Caledonia">New Caledonia</span>
+      <span id="message_country_Niue">Niue</span>
+      <span id="message_country_Northern_Mariana_Islands">Northern Mariana Islands</span>
+      <span id="message_country_Palestine">Palestine</span>
+      <span id="message_country_Pitcairn">Pitcairn</span>
+      <span id="message_country_Puerto_Rico">Puerto Rico</span>
+      <span id="message_country_Reunion">Reunion</span>
+      <span id="message_country_Saint_Barthelemy">Saint Barthelemy</span>
+      <span id="message_country_Saint_Helena">Saint Helena</span>
+      <span id="message_country_Saint_Martin">Saint Martin</span>
+      <span id="message_country_Saint_Pierre_and_Miquelon">Saint Pierre and Miquelon</span>
+      <span id="message_country_Sint_Maarten">Sint Maarten</span>
+      <span id="message_country_Svalbard_and_Jan_Mayen">Svalbard and Jan Mayen</span>
+      <span id="message_country_Tokelau">Tokelau</span>
+      <span id="message_country_Turks_and_Caicos_Islands">Turks and Caicos Islands</span>
+      <span id="message_country_U.S._Virgin_Islands">U.S. Virgin Islands</span>
+      <span id="message_country_Vatican">Vatican</span>
+      <span id="message_country_Wallis_and_Futuna">Wallis and Futuna</span>
+      <span id="message_country_Western_Sahara">Western Sahara</span>
+    </div>
+
+    <div id="app_scope_descriptions" class="hide">
+      <span id="scope.user">Read your profile and activities</span>
+      <span id="scope.user.write">Update your profile and password</span>
+
+      <span id="scope.device">Read information of your devices</span>
+      <span id="scope.device.write">Update the names of your devices</span>
+      <span id="scope.favorite">Read your favorite devices</span>
+      <span id="scope.favorite.write">Update your favorite devices</span>
+
+      <span id="scope.file">Read files on your devices</span>
+      <span id="scope.file.write">Create, rename, move, copy or delete files/folders on your
+        devices</span>
+
+      <span id="scope.share">Get the information and content of sharelinks on your devices</span>
+      <span id="scope.share.write">Create, update or delete sharelinks on your devices</span>
+
+      <span id="scope.cloudlink">Get cloudlink information on your devices</span>
+      <span id="scope.ddns">Get ddns information on your devices</span>
+
+      <span id="scopeset_access_device">Access to the connection information of your device</span>
+      <span id="scopeset_device_auth">Access to your device on behalf of another user</span>
+      <span id="scopeset_qmiix_partner">@scopeset_qmiix_partner@</span>
+      <span id="scopeset_qmiix">@scopeset_qmiix@</span>
+    </div>
+  </div>
+
+  <div id="fb-root"></div>
+  <div>
+    <div class="grecaptcha-badge" data-style="bottomright">
+      <div class="grecaptcha-logo">
+        
+      </div>
+      <div class="grecaptcha-error"></div>
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: g-recaptcha-response
+section: g-recaptcha-response_0_20
+field signature: 3309787731
+form signature: 13125038416749627279
+form signature in host form: 13125038416749627279
+field frame token: 4923F9725CFC20B752CFADBC9780A14B
+form renderer id: 0
+field renderer id: 20" data-ddg-testresultelementid="566592"></textarea>
+    </div>
+    
+  </div>
+
