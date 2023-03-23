@@ -14960,7 +14960,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 
     const topClass = wrapperClass || '';
     const dataTypeClass = "tooltip__button--data--".concat(config.type);
-    this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
+    this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\" hidden>\n    <div class=\"tooltip tooltip--data\">\n        ").concat(items.map(item => {
       var _item$credentialsProv, _item$labelSmall, _item$label;
 
       const credentialsProvider = (_item$credentialsProv = item.credentialsProvider) === null || _item$credentialsProv === void 0 ? void 0 : _item$credentialsProv.call(item);
@@ -15008,7 +15008,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
   render(device) {
     this.device = device;
     this.addresses = device.getLocalAddresses();
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Generate a Private Duck Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n    <div class=\"tooltip--email__caret\"></div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\" hidden>\n    <div class=\"tooltip tooltip--email\">\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Generate a Private Duck Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n    <div class=\"tooltip--email__caret\"></div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
@@ -15079,7 +15079,7 @@ class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
    */
   render(device) {
     this.device = device;
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <button class=\"close-tooltip js-close-email-signup\" aria-label=\"Close\"></button>\n        <h1>\n            Hide your email and block trackers\n        </h1>\n        <p>\n            Create a unique, random address that also removes hidden trackers and forwards email to your inbox.\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Protect My Email\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                Don't Show Again\n            </button>\n        </div>\n    </div>\n    <div class=\"tooltip--email__caret\"></div>\n</div>");
+    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\" hidden>\n    <div class=\"tooltip tooltip--email tooltip--email-signup\">\n        <button class=\"close-tooltip js-close-email-signup\" aria-label=\"Close\"></button>\n        <h1>\n            Hide your email and block trackers\n        </h1>\n        <p>\n            Create a unique, random address that also removes hidden trackers and forwards email to your inbox.\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Protect My Email\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                Don't Show Again\n            </button>\n        </div>\n    </div>\n    <div class=\"tooltip--email__caret\"></div>\n</div>");
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.closeEmailSignup = this.shadow.querySelector('.js-close-email-signup');
     this.registerClickableButton(this.closeEmailSignup, () => {
@@ -15170,6 +15170,8 @@ class HTMLTooltip {
    */
   constructor(config, inputType, getPosition, options) {
     _defineProperty(this, "isAboveInput", false);
+
+    _defineProperty(this, "isHidden", true);
 
     _defineProperty(this, "options", void 0);
 
@@ -15276,14 +15278,12 @@ class HTMLTooltip {
     }
 
     this.animationFrame = window.requestAnimationFrame(() => {
-      const {
-        width: tooltipWidth
-      } = this.tooltip.getBoundingClientRect();
-      if (tooltipWidth === 0) return;
+      if (this.isHidden) return;
       const {
         left,
         bottom,
-        height
+        height,
+        top
       } = this.getPosition();
 
       if (left !== this.left || bottom !== this.top) {
@@ -15294,7 +15294,11 @@ class HTMLTooltip {
         this.updatePosition('tooltip', coords);
 
         if (this.options.hasCaret) {
-          this.isAboveInput = this.getPosition().top > this.tooltip.getBoundingClientRect().top;
+          // Recalculate tooltip top as it may have changed after update potition above
+          const {
+            top: tooltipTop
+          } = this.tooltip.getBoundingClientRect();
+          this.isAboveInput = top > tooltipTop;
           const borderWidth = 2;
           const caretTop = this.isAboveInput ? coords.top - height - borderWidth : coords.top;
           this.updatePosition('caret', { ...coords,
@@ -15478,7 +15482,8 @@ class HTMLTooltip {
 
     (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => {
       Promise.allSettled([document.fonts.load("normal 13px 'DDG_ProximaNova'"), document.fonts.load("bold 13px 'DDG_ProximaNova'")]).then(() => {
-        this.tooltip.removeAttribute('hidden');
+        this.tooltip.parentNode.removeAttribute('hidden');
+        this.isHidden = false;
         this.checkPosition();
       });
     });

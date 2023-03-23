@@ -7,9 +7,11 @@ const ATTR_AUTOFILL = 'data-ddg-autofill'
 
 export function incontextSignupPage (page) {
     const getCallToAction = () => page.locator(`text=Protect My Email`)
+    const getTooltip = () => page.locator('.tooltip--email')
     return {
         async assertIsShowing () {
             expect(await getCallToAction()).toBeVisible()
+            expect(await getTooltip()).toBeInViewport({ ratio: 1 })
         },
         async assertIsHidden () {
             expect(await getCallToAction()).toBeHidden()

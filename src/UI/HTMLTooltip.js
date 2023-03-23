@@ -46,6 +46,7 @@ export const defaultOptions = {
 
 export class HTMLTooltip {
     isAboveInput = false;
+    isHidden = true
     /** @type {HTMLTooltipOptions} */
     options;
     /**
@@ -129,16 +130,17 @@ export class HTMLTooltip {
         }
 
         this.animationFrame = window.requestAnimationFrame(() => {
-            const { width: tooltipWidth } = this.tooltip.getBoundingClientRect()
-            if (tooltipWidth === 0) return
+            if (this.isHidden) return
 
-            const {left, bottom, height} = this.getPosition()
+            const {left, bottom, height, top} = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
                 const coords = {left, top: bottom}
                 this.updatePosition('tooltip', coords)
                 if (this.options.hasCaret) {
-                    this.isAboveInput = this.getPosition().top > this.tooltip.getBoundingClientRect().top
+                    // Recalculate tooltip top as it may have changed after update potition above
+                    const { top: tooltipTop } = this.tooltip.getBoundingClientRect()
+                    this.isAboveInput = top > tooltipTop
                     const borderWidth = 2
                     const caretTop = this.isAboveInput ? coords.top - height - borderWidth : coords.top
                     this.updatePosition('caret', { ...coords, top: caretTop })
@@ -297,7 +299,8 @@ export class HTMLTooltip {
                 document.fonts.load("normal 13px 'DDG_ProximaNova'"),
                 document.fonts.load("bold 13px 'DDG_ProximaNova'")
             ]).then(() => {
-                this.tooltip.removeAttribute('hidden')
+                this.tooltip.parentNode.removeAttribute('hidden')
+                this.isHidden = false
                 this.checkPosition()
             })
         })
