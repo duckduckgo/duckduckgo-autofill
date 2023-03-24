@@ -10,11 +10,11 @@ export function incontextSignupPage (page) {
     const getTooltip = () => page.locator('.tooltip--email')
     return {
         async assertIsShowing () {
-            expect(await getCallToAction()).toBeVisible()
-            expect(await getTooltip()).toBeInViewport({ ratio: 1 })
+            await expect(getCallToAction()).toBeVisible()
+            await expect(getTooltip()).toBeInViewport({ ratio: 1 })
         },
         async assertIsHidden () {
-            expect(await getCallToAction()).toBeHidden()
+            await expect(getCallToAction()).toBeHidden()
         },
         async getEmailProtection () {
             (await getCallToAction()).click({timeout: 500})
@@ -34,7 +34,7 @@ export function incontextSignupPageWithinIframe (page) {
     return {
         async navigate (domain) {
             const pageName = constants.pages['iframeContainer']
-            const pagePath = `integration-test/pages/${pageName}`
+            const pagePath = `integration-test/${pageName}`
             await page.goto(new URL(pagePath, domain).href)
         },
         async clickDirectlyOnDax () {
@@ -54,7 +54,7 @@ export function incontextSignupPageEmailBottomPage (page) {
     return {
         async navigate (domain) {
             const pageName = constants.pages['emailAtBottom']
-            const pagePath = `integration-test/pages/${pageName}`
+            const pagePath = `integration-test/${pageName}`
             await page.goto(new URL(pagePath, domain).href)
         },
         async clickDirectlyOnDax () {
@@ -628,7 +628,7 @@ export function emailAutofillPage (page) {
         async navigate (domain) {
             const emailAutofillPageName = constants.pages['email-autofill']
             if (domain) {
-                const pagePath = `integration-test/pages/${emailAutofillPageName}`
+                const pagePath = `integration-test/${emailAutofillPageName}`
                 await page.goto(new URL(pagePath, domain).href)
             } else {
                 await page.goto(emailAutofillPageName)
