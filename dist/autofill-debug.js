@@ -15368,7 +15368,6 @@ class HTMLTooltip {
     }
   }
   /**
-   *
    * @param {'tooltip' | 'caret'} element
    * @param {{
    *     left: number,
@@ -15377,24 +15376,14 @@ class HTMLTooltip {
    */
 
 
-  updatePosition(element, _ref2) {
+  applyPositionalStyles(element, _ref2) {
     var _ruleObj$getRuleStrin;
 
     let {
       left,
       top
     } = _ref2;
-    const shadow = this.shadow; // If the stylesheet is not loaded wait for load (Chrome bug)
-
-    if (!shadow.styleSheets.length) {
-      var _this$stylesheet;
-
-      (_this$stylesheet = this.stylesheet) === null || _this$stylesheet === void 0 ? void 0 : _this$stylesheet.addEventListener('load', () => this.checkPosition());
-      return;
-    }
-
-    this.left = left;
-    this.top = top;
+    const shadow = this.shadow;
     const ruleObj = this.transformRules[element];
 
     if (ruleObj.index) {
@@ -15412,6 +15401,36 @@ class HTMLTooltip {
     if (typeof cssRule === 'string') {
       shadow.styleSheets[0].insertRule(cssRule, ruleObj.index);
     }
+  }
+  /**
+   * @param {'tooltip' | 'caret'} element
+   * @param {{
+   *     left: number,
+   *     top: number
+   * }} coords
+   */
+
+
+  updatePosition(element, _ref3) {
+    let {
+      left,
+      top
+    } = _ref3;
+
+    // If the stylesheet is not loaded wait for load (Chrome bug)
+    if (!this.shadow.styleSheets.length) {
+      var _this$stylesheet;
+
+      (_this$stylesheet = this.stylesheet) === null || _this$stylesheet === void 0 ? void 0 : _this$stylesheet.addEventListener('load', () => this.checkPosition());
+      return;
+    }
+
+    this.left = left;
+    this.top = top;
+    this.applyPositionalStyles(element, {
+      left,
+      top
+    });
 
     if (this.options.hasCaret) {
       const overridePosition = this.getOverridePosition({
@@ -15500,6 +15519,12 @@ class HTMLTooltip {
 
     (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => {
       Promise.allSettled([document.fonts.load("normal 13px 'DDG_ProximaNova'"), document.fonts.load("bold 13px 'DDG_ProximaNova'")]).then(() => {
+        const offscreen = {
+          left: -1000,
+          top: -1000
+        };
+        this.applyPositionalStyles('tooltip', offscreen);
+        this.applyPositionalStyles('caret', offscreen);
         this.tooltip.parentNode.removeAttribute('hidden');
         this.checkPosition();
       });

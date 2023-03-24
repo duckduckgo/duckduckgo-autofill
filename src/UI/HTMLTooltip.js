@@ -181,24 +181,14 @@ export class HTMLTooltip {
     }
 
     /**
-     *
      * @param {'tooltip' | 'caret'} element
      * @param {{
      *     left: number,
      *     top: number
      * }} coords
      */
-    updatePosition (element, {left, top}) {
+    applyPositionalStyles (element, {left, top}) {
         const shadow = this.shadow
-        // If the stylesheet is not loaded wait for load (Chrome bug)
-        if (!shadow.styleSheets.length) {
-            this.stylesheet?.addEventListener('load', () => this.checkPosition())
-            return
-        }
-
-        this.left = left
-        this.top = top
-
         const ruleObj = this.transformRules[element]
 
         if (ruleObj.index) {
@@ -215,6 +205,26 @@ export class HTMLTooltip {
         if (typeof cssRule === 'string') {
             shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
         }
+    }
+
+    /**
+     * @param {'tooltip' | 'caret'} element
+     * @param {{
+     *     left: number,
+     *     top: number
+     * }} coords
+     */
+    updatePosition (element, {left, top}) {
+        // If the stylesheet is not loaded wait for load (Chrome bug)
+        if (!this.shadow.styleSheets.length) {
+            this.stylesheet?.addEventListener('load', () => this.checkPosition())
+            return
+        }
+
+        this.left = left
+        this.top = top
+
+        this.applyPositionalStyles(element, {left, top})
 
         if (this.options.hasCaret) {
             const overridePosition = this.getOverridePosition({left, top})
@@ -301,6 +311,9 @@ export class HTMLTooltip {
                 document.fonts.load("normal 13px 'DDG_ProximaNova'"),
                 document.fonts.load("bold 13px 'DDG_ProximaNova'")
             ]).then(() => {
+                const offscreen = {left: -1000, top: -1000}
+                this.applyPositionalStyles('tooltip', offscreen)
+                this.applyPositionalStyles('caret', offscreen)
                 this.tooltip.parentNode.removeAttribute('hidden')
                 this.checkPosition()
             })
