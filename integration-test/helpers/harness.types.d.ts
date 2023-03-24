@@ -45,7 +45,7 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     // observe the current state
     tap(fn: (currentState: State) => void): MockBuilder<State, Mocks>
     // apply to the page, this is the final step
-    applyTo(page: import("playwright").Page): Promise<void>
+    applyTo(page: import("@playwright/test").Page): Promise<void>
 }
 
 
@@ -69,7 +69,7 @@ interface ScriptBuilder {
     // set the platform - this is required
     platform(platform: Platform): Omit<ScriptBuilder, "platform">
     // apply to the page, this is the final step
-    applyTo(page: import("playwright").Page): Promise<void>
+    applyTo(page: import("@playwright/test").Page): Promise<void>
 }
 
 /**

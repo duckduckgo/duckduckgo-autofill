@@ -360,28 +360,32 @@ export function createWebkitMocks (platform = 'macos') {
  * This will mock webkit handlers based on the key-values you provide
  *
  * @private
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {Record<string, any>} mocks
  */
 async function withMockedWebkit (page, mocks) {
     await page.addInitScript((mocks) => {
-        window.__playwright = { mocks: { calls: [] } }
+        window.__playwright_autofill = { mocks: { calls: [] } }
         window.webkit = {
             messageHandlers: {}
         }
         for (let [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
+                /**
+                 * @param {any} data
+                 * @return {Promise<string|undefined>}
+                 */
                 postMessage: async (data) => {
                     /** @type {MockCall} */
                     const call = [msgName, data, response]
                     let thisResponse = response
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
 
                     // This allows mocks to have multiple return values.
                     // It has to be inline here since it's serialized into the page.
                     const isMulti = Array.isArray(response)
                     if (isMulti) {
-                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
+                        const prevCount = window.__playwright_autofill.mocks.calls.filter(([name]) => name === msgName).length
                         const next = response[prevCount - 1]
                         if (next) {
                             thisResponse = next

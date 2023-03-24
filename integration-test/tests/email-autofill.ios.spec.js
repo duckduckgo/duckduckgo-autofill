@@ -1,7 +1,6 @@
 import {
     createAutofillScript,
     forwardConsoleMessages,
-    setupServer,
     withIOSContext
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
@@ -15,13 +14,6 @@ import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.w
 const test = withIOSContext(base)
 
 test.describe('ios', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test('should autofill the selected email when email protection is enabled', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
@@ -43,7 +35,7 @@ test.describe('ios', () => {
         const {privateAddress0} = constants.fields.email
 
         // page abstraction
-        const emailPage = emailAutofillPage(page, server)
+        const emailPage = emailAutofillPage(page)
         await emailPage.navigate()
 
         // Click in the input, a native window will appear
@@ -72,7 +64,7 @@ test.describe('ios', () => {
             .applyTo(page)
 
         // page abstraction
-        const emailPage = emailAutofillPage(page, server)
+        const emailPage = emailAutofillPage(page)
         await emailPage.navigate()
 
         await emailPage.clickIntoInput()

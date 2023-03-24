@@ -31,12 +31,14 @@
     "src",
     "scripts",
     "packages/password",
+    "integration-test",
     "packages/device-api",
     "*.js",
     "types.d.ts"
   ],
   "exclude": [
     "jest-test-environment.js",
-    "Gruntfile.js"
+    "Gruntfile.js",
+    "integration-test/extension"
   ]
 }

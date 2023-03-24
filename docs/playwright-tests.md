@@ -62,7 +62,7 @@ page, nor the specific details of what `clickIntoInput` does - it's about readab
 methods should be named in a styles that matches what the application does, or what you expect it to do.
 
 ```js
-const emailPage = emailAutofillPage(page, server)
+const emailPage = emailAutofillPage(page)
 await emailPage.navigate()
 await emailPage.clickIntoInput()
 ```

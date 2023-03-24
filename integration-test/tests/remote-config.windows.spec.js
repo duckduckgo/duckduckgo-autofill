@@ -1,7 +1,7 @@
 import {
     createAutofillScript,
     forwardConsoleMessages,
-    setupServer, withWindowsContext
+    withWindowsContext
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage} from '../helpers/pages.js'
@@ -10,17 +10,10 @@ import {createWindowsMocks} from '../helpers/mocks.windows.js'
 const test = withWindowsContext(base)
 
 test.describe('Remote config on windows', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('when autofill is disabled remotely', () => {
         test('page scanning does not occur at all', async ({page}) => {
             await forwardConsoleMessages(page)
-            const login = loginPage(page, server)
+            const login = loginPage(page)
             await login.navigate()
 
             await createWindowsMocks()

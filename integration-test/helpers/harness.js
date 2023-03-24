@@ -1,8 +1,5 @@
-import * as fs from 'fs'
 import {mkdtempSync, readFileSync} from 'fs'
-import * as path from 'path'
 import {join} from 'path'
-import * as http from 'http'
 import {tmpdir} from 'os'
 import {devices} from 'playwright'
 import {chromium, firefox} from '@playwright/test'
@@ -11,53 +8,7 @@ import {macosContentScopeReplacements, iosContentScopeReplacements} from './mock
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
 /**
- * A simple file server, this is done manually here to enable us
- * to manipulate some requests if needed.
- * @param {string|number} [port]
- * @return {ServerWrapper}
- */
-export function setupServer (port) {
-    const server = http.createServer(function (req, res) {
-        if (!req.url) throw new Error('unreachable')
-        const url = new URL(req.url, `http://${req.headers.host}`)
-        const importUrl = new URL(import.meta.url)
-        const dirname = importUrl.pathname.replace(/\/[^/]*$/, '')
-        let pathname = path.join(dirname, '../pages', url.pathname)
-
-        if (url.pathname.startsWith('/src')) {
-            pathname = path.join(dirname, '../../', url.pathname)
-        }
-
-        fs.readFile(pathname, (err, data) => {
-            if (err) {
-                res.writeHead(404)
-                res.end(JSON.stringify(err))
-                return
-            }
-            res.writeHead(200)
-            res.end(data)
-        })
-    }).listen(port)
-
-    const address = server.address()
-    if (address === null || typeof address === 'string') throw new Error('unreachable')
-    const url = new URL('http://localhost:' + address.port)
-
-    return {
-        address,
-        url,
-        urlForPath (path) {
-            const nextUrl = new URL(path, url)
-            return nextUrl.href
-        },
-        close () {
-            server.close()
-        }
-    }
-}
-
-/**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {string} domain
  */
 export async function setupMockedDomain (page, domain) {
@@ -115,7 +66,7 @@ export async function withEmailProtectionExtensionSignedInAs (page, username) {
 }
 
 /**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {Record<string, string | boolean>} replacements
  * @param {Platform} [platform]
  * @return {Promise<void>}
@@ -210,7 +161,7 @@ export function createAutofillScript () {
 }
 
 /**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  */
 export async function defaultMacosScript (page) {
     return createAutofillScript()
@@ -220,7 +171,7 @@ export async function defaultMacosScript (page) {
 }
 
 /**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  */
 export async function defaultIOSScript (page) {
     return createAutofillScript()
@@ -230,7 +181,7 @@ export async function defaultIOSScript (page) {
 }
 
 /**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} featureToggles
  */
 export async function withIOSFeatureToggles (page, featureToggles) {
@@ -245,7 +196,7 @@ export async function withIOSFeatureToggles (page, featureToggles) {
 /**
  * Relay browser exceptions to the terminal to aid debugging.
  *
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {{verbose?: boolean}} [_opts]
  */
 export function forwardConsoleMessages (page, _opts = {}) {
@@ -334,7 +285,7 @@ export function withWindowsContext (test) {
 }
 
 /**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {string} measureName
  * @return {Promise<PerformanceEntryList>}
  */
@@ -355,14 +306,14 @@ export async function printPerformanceSummary (name, times) {
 }
 
 /**
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {string[]} [names]
  * @returns {Promise<MockCall[]>}
  */
 export async function mockedCalls (page, names = [], mustExist = true) {
     if (names.length > 0 && mustExist) {
         await page.waitForFunction(({names}) => {
-            const calls = window.__playwright.mocks.calls
+            const calls = window.__playwright_autofill.mocks.calls
             return calls.some(([name]) => names.includes(name))
         }, {names})
     }
@@ -372,17 +323,17 @@ export async function mockedCalls (page, names = [], mustExist = true) {
     }
 
     return page.evaluate(({names}) => {
-        if (!Array.isArray(window.__playwright?.mocks?.calls)) {
-            throw new Error('unreachable, window.__playwright.mocks.calls must be defined')
+        if (!Array.isArray(window.__playwright_autofill?.mocks?.calls)) {
+            throw new Error('unreachable, window.__playwright_autofill.mocks.calls must be defined')
         }
 
         // no need to filter if no names were given, assume the caller wants all mocks
         if (names.length === 0) {
-            return window.__playwright.mocks.calls
+            return window.__playwright_autofill.mocks.calls
         }
 
         // otherwise filter on the given names
-        return window.__playwright.mocks.calls
+        return window.__playwright_autofill.mocks.calls
             .filter(([name]) => names.includes(name))
     }, {names})
 }
@@ -394,7 +345,7 @@ export async function mockedCalls (page, names = [], mustExist = true) {
  * This means that when you run `npx playwright show-results` you can
  * access every piece of JSON that was sent and received.
  *
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {typeof import("@playwright/test").test} test
  * @returns {Promise<void>}
  */

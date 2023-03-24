@@ -1,7 +1,6 @@
 import {
     createAutofillScript,
     forwardConsoleMessages, performanceEntries,
-    setupServer
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
@@ -15,13 +14,6 @@ import {createAvailableInputTypes, stripDuckExtension} from '../helpers/utils.js
 const test = base.extend({})
 
 test.describe('macos', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test('should autofill the selected email', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
@@ -41,7 +33,7 @@ test.describe('macos', () => {
         const {personalAddress, privateAddress0} = constants.fields.email
 
         // page abstraction
-        const emailPage = emailAutofillPage(page, server)
+        const emailPage = emailAutofillPage(page)
         await emailPage.navigate()
 
         // first click into the field
@@ -98,7 +90,7 @@ test.describe('macos', () => {
         }
         test('with an identity only - filling firstName', async ({page}) => {
             await forwardConsoleMessages(page)
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
 
             await createWebkitMocks()
                 .withAvailableInputTypes(createAvailableInputTypes())
@@ -118,7 +110,7 @@ test.describe('macos', () => {
         })
         test('with an identity only - filling lastName', async ({page}) => {
             await forwardConsoleMessages(page)
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
 
             await createWebkitMocks()
                 .withAvailableInputTypes(createAvailableInputTypes())
@@ -138,7 +130,7 @@ test.describe('macos', () => {
         })
         test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
             await forwardConsoleMessages(page)
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
 
             await createWebkitMocks()
                 .withAvailableInputTypes(createAvailableInputTypes())
@@ -160,7 +152,7 @@ test.describe('macos', () => {
         })
         test('with an identity + Email Protection, autofill using duck address in identity triggered from name field', async ({page}) => {
             await forwardConsoleMessages(page)
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
 
             await createWebkitMocks()
                 .withAvailableInputTypes(createAvailableInputTypes())
@@ -181,7 +173,7 @@ test.describe('macos', () => {
         })
         test('with no input types', async ({page}) => {
             await forwardConsoleMessages(page)
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await createWebkitMocks().applyTo(page)
             await applyScript(page)
             await signup.navigate()
@@ -209,7 +201,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const signup = signupPage(page, server)
+        const signup = signupPage(page)
         await signup.navigate()
         await signup.addNewForm()
         await signup.selectSecondEmailField(personalAddress)
@@ -229,7 +221,7 @@ test.describe('macos', () => {
                 .platform('macos')
                 .applyTo(page)
 
-            await page.goto(server.urlForPath('src/Form/test-cases/usps_signup.html'))
+            await page.goto('src/Form/test-cases/usps_signup.html')
             const r = await performanceEntries(page, 'scanner:init')
             for (let performanceEntry of r) {
                 console.log(performanceEntry.duration)

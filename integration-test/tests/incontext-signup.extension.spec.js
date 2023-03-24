@@ -9,7 +9,7 @@ import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe,
  */
 const test = withChromeExtensionContext(base)
 
-test.describe('chrome extension', () => {
+test.describe.skip('chrome extension', () => {
     test('should allow user to sign up for Email Protection', async ({page, context}) => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')

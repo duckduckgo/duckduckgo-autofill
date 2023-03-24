@@ -41,6 +41,13 @@ const config = {
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry'
     },
+    /* let Playwright start/stop the server for us */
+    webServer: {
+        port: 3210,
+        reuseExistingServer: true,
+        command: "npm run serve",
+        ignoreHTTPSErrors: true,
+    },
 
     /* Configure projects for major browsers */
     projects: [

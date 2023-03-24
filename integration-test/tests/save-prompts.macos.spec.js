@@ -1,4 +1,4 @@
-import {createAutofillScript, defaultMacosScript, forwardConsoleMessages, setupServer} from '../helpers/harness.js'
+import {createAutofillScript, defaultMacosScript, forwardConsoleMessages} from '../helpers/harness.js'
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {loginPage, signupPage} from '../helpers/pages.js'
@@ -10,13 +10,6 @@ import {test as base} from '@playwright/test'
 const test = base.extend({})
 
 test.describe('macos', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('prompting to save data', () => {
         test('Prompting to save from a signup form', async ({page}) => {
             // enable in-terminal exceptions
@@ -38,7 +31,7 @@ test.describe('macos', () => {
                 .platform('macos')
                 .applyTo(page)
 
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
             await signup.enterCredentials(credentials)
             await signup.assertWasPromptedToSave(credentials, 'macos')
@@ -56,7 +49,7 @@ test.describe('macos', () => {
                 await createWebkitMocks().applyTo(page)
                 await defaultMacosScript(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.submitLoginForm(credentials)
                 await login.assertWasPromptedToSave(credentials)
@@ -67,7 +60,7 @@ test.describe('macos', () => {
                 await createWebkitMocks().applyTo(page)
                 await defaultMacosScript(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
 
                 const credentials = { password: '123456' }
                 await login.navigate()
@@ -83,7 +76,7 @@ test.describe('macos', () => {
                 await createWebkitMocks().applyTo(page)
                 await defaultMacosScript(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.submitUsernameOnlyForm(credentials.username)
                 await login.shouldNotPromptToSave()

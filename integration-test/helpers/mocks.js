@@ -3,17 +3,17 @@
  */
 export const constants = {
     pages: {
-        'overlay': 'overlay.html',
-        'email-autofill': 'email-autofill.html',
-        'emailAtBottom': 'email-at-bottom.html',
-        'iframeContainer': 'iframe-container.html',
-        'signup': 'signup.html',
-        'login': 'login.html',
-        'loginWithPoorForm': 'login-poor-form.html',
-        'loginWithText': 'login-with-text.html',
-        'loginWithFormInModal': 'login-in-modal.html',
-        'loginCovered': 'login-covered.html',
-        'loginMultistep': 'login-multistep.html'
+        'overlay': 'pages/overlay.html',
+        'email-autofill': 'pages/email-autofill.html',
+        'emailAtBottom': 'pages/email-at-bottom.html',
+        'iframeContainer': 'pages/iframe-container.html',
+        'signup': 'pages/signup.html',
+        'login': 'pages/login.html',
+        'loginWithPoorForm': 'pages/login-poor-form.html',
+        'loginWithText': 'pages/login-with-text.html',
+        'loginWithFormInModal': 'pages/login-in-modal.html',
+        'loginCovered': 'pages/login-covered.html',
+        'loginMultistep': 'pages/login-multistep.html'
     },
     fields: {
         email: {

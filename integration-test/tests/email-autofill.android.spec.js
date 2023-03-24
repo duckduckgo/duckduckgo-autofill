@@ -1,7 +1,6 @@
 import {
     createAutofillScript,
     forwardConsoleMessages,
-    setupServer,
     withAndroidContext
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
@@ -15,18 +14,11 @@ import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.an
 const test = withAndroidContext(base)
 
 test.describe('android', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('when signed in', () => {
         test('should autofill the selected email', async ({page}) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
-            const emailPage = emailAutofillPage(page, server)
+            const emailPage = emailAutofillPage(page)
             await emailPage.navigate()
 
             // android specific mocks, withPersonalEmail will ensure the signed-in check works
@@ -52,7 +44,7 @@ test.describe('android', () => {
     test.describe('when availableInputTypes are available', () => {
         test('should use availableInputTypes.email', async ({page}) => {
             await forwardConsoleMessages(page)
-            const emailPage = emailAutofillPage(page, server)
+            const emailPage = emailAutofillPage(page)
             await emailPage.navigate()
             const {personalAddress} = constants.fields.email
             await createAndroidMocks()
@@ -80,7 +72,7 @@ test.describe('android', () => {
             await forwardConsoleMessages(page)
 
             // page abstraction
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
 
             // android specific mocks

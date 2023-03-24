@@ -1,6 +1,6 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAutofillScript, forwardConsoleMessages, mockedCalls, setupServer} from '../helpers/harness.js'
+import {createAutofillScript, forwardConsoleMessages, mockedCalls} from '../helpers/harness.js'
 import {loginPage, loginPageWithFormInModal, loginPageWithText, overlayPage} from '../helpers/pages.js'
 import {expect, test as base} from '@playwright/test'
 import {createAvailableInputTypes} from '../helpers/utils.js'
@@ -14,7 +14,7 @@ const {personalAddress} = constants.fields.email
 const password = '123456'
 
 /**
- * @param {import("playwright-core").Page} page
+ * @param {import("@playwright/test").Page} page
  */
 async function mocks (page) {
     await createWebkitMocks()
@@ -30,11 +30,10 @@ async function mocks (page) {
 }
 
 /**
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean, pageType?: 'standard' | 'withExtraText' | 'withModal'}} opts
  */
-async function testLoginPage (page, server, opts = {}) {
+async function testLoginPage (page, opts = {}) {
     const {overlay = false, clickLabel = false, pageType = 'standard'} = opts
 
     // enable in-terminal exceptions
@@ -51,13 +50,13 @@ async function testLoginPage (page, server, opts = {}) {
     let login
     switch (pageType) {
     case 'withExtraText':
-        login = loginPageWithText(page, server, {overlay, clickLabel})
+        login = loginPageWithText(page, {overlay, clickLabel})
         break
     case 'withModal':
-        login = loginPageWithFormInModal(page, server, {overlay, clickLabel})
+        login = loginPageWithFormInModal(page, {overlay, clickLabel})
         break
     default:
-        login = loginPage(page, server, {overlay, clickLabel})
+        login = loginPage(page, {overlay, clickLabel})
         break
     }
 
@@ -70,10 +69,9 @@ async function testLoginPage (page, server, opts = {}) {
 }
 
 /**
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  */
-async function createLoginFormInModalPage (page, server) {
+async function createLoginFormInModalPage (page) {
     await forwardConsoleMessages(page)
     await mocks(page)
 
@@ -83,7 +81,7 @@ async function createLoginFormInModalPage (page, server) {
         .platform('macos')
         .applyTo(page)
 
-    const login = loginPageWithFormInModal(page, server)
+    const login = loginPageWithFormInModal(page)
     await login.navigate()
     await login.assertDialogClose()
     await login.openDialog()
@@ -93,20 +91,13 @@ async function createLoginFormInModalPage (page, server) {
 }
 
 test.describe('Auto-fill a login form on macOS', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('without getAvailableInputTypes API', () => {
         test('with in-page HTMLTooltip', async ({page}) => {
-            await testLoginPage(page, server)
+            await testLoginPage(page)
         })
         test.describe('with overlay', () => {
             test('with click and focus', async ({page}) => {
-                const login = await testLoginPage(page, server, {overlay: true, pageType: 'withExtraText'})
+                const login = await testLoginPage(page, {overlay: true, pageType: 'withExtraText'})
                 // this is not ideal as it's checking an implementation detail.
                 // But it's done to ensure we're not getting a false positive
                 // and definitely loading the overlay code paths
@@ -115,7 +106,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             })
         })
         test('by clicking a label', async ({page}) => {
-            await testLoginPage(page, server, {clickLabel: true, pageType: 'withExtraText'})
+            await testLoginPage(page, {clickLabel: true, pageType: 'withExtraText'})
         })
         test('selecting an item inside an overlay', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -128,7 +119,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 .platform('macos')
                 .applyTo(page)
 
-            const overlay = overlayPage(page, server)
+            const overlay = overlayPage(page)
             await overlay.navigate()
             await overlay.clickButtonWithText(personalAddress)
             await overlay.doesNotCloseParentAfterCall('pmHandlerGetAutofillCredentials')
@@ -145,7 +136,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPageWithText(page, server)
+                const login = loginPageWithText(page)
                 await login.navigate()
                 await login.fieldsContainIcons()
 
@@ -157,7 +148,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.assertNoPixelFired()
             })
             test('autofill should not submit the form automatically', async ({page}) => {
-                const login = await createLoginFormInModalPage(page, server)
+                const login = await createLoginFormInModalPage(page)
                 await login.promptWasNotShown()
                 await login.assertDialogClose()
                 await login.openDialog()
@@ -182,7 +173,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.clickIntoUsernameInput()
                 await login.fieldsDoNotContainIcons()
@@ -203,7 +194,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.emailHasDaxPasswordNoIcon()
             })
@@ -212,7 +203,7 @@ test.describe('Auto-fill a login form on macOS', () => {
 
     test.describe('When the form is in a modal', () => {
         test('Filling the form should not close the modal', async ({page}) => {
-            const login = await createLoginFormInModalPage(page, server)
+            const login = await createLoginFormInModalPage(page)
             await login.openDialog()
             await login.fieldsContainIcons()
             await login.selectFirstCredential(personalAddress)
@@ -220,7 +211,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.assertDialogOpen()
         })
         test('Escape key should only close the dialog if our tooltip is not showing', async ({page}) => {
-            const login = await createLoginFormInModalPage(page, server)
+            const login = await createLoginFormInModalPage(page)
             await login.openDialog()
             await login.clickIntoUsernameInput()
             await login.hitEscapeKey()
@@ -255,7 +246,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 .platform('macos')
                 .applyTo(page)
 
-            const login = loginPage(page, server)
+            const login = loginPage(page)
             await login.navigate()
             await login.fieldsContainIcons()
 
@@ -288,7 +279,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const overlay = overlayPage(page, server)
+                const overlay = overlayPage(page)
                 await overlay.navigate()
                 await overlay.clickButtonWithText('Bitwarden is locked')
                 await overlay.doesNotCloseParentAfterCall('askToUnlockProvider')
@@ -324,7 +315,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.fieldsContainIcons()
 
@@ -398,7 +389,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.fieldsContainIcons()
 
@@ -434,7 +425,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 await login.fieldsContainIcons()
 
