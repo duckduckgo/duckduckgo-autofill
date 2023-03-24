@@ -21,7 +21,7 @@ test.describe('Auto-fill a login form on windows', () => {
 
                 const login = loginPage(page, {overlay: true})
                 await login.navigate()
-                await page.pause();
+                await page.pause()
 
                 await createWindowsMocks()
                     .withAvailableInputTypes(createAvailableInputTypes())

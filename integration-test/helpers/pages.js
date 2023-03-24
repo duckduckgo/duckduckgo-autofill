@@ -69,7 +69,7 @@ export function incontextSignupPageEmailBottomPage (page) {
  *
  * @param {import("@playwright/test").Page} page
  */
-export function signupPage(page) {
+export function signupPage (page) {
     const decoratedFirstInputSelector = '#email' + constants.fields.email.selectors.identity
     const decoratedSecondInputSelector = '#email-2' + constants.fields.email.selectors.identity
     const emailStyleAttr = () => page.locator('#email').first().getAttribute('style')
@@ -550,7 +550,7 @@ export function loginPageWithPoorForm (page, opts) {
  * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageWithFormInModal(page, opts) {
+export function loginPageWithFormInModal (page, opts) {
     const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
@@ -585,7 +585,7 @@ export function loginPageWithFormInModal(page, opts) {
  * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageCovered(page, opts) {
+export function loginPageCovered (page, opts) {
     const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
@@ -604,7 +604,7 @@ export function loginPageCovered(page, opts) {
  * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageMultistep(page, opts) {
+export function loginPageMultistep (page, opts) {
     const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
@@ -622,7 +622,7 @@ export function loginPageMultistep(page, opts) {
  *
  * @param {import("@playwright/test").Page} page
  */
-export function emailAutofillPage(page) {
+export function emailAutofillPage (page) {
     const {selectors} = constants.fields.email
     return {
         async navigate (domain) {
@@ -688,7 +688,7 @@ export function emailAutofillPage(page) {
 /**
  * @param {import("@playwright/test").Page} page
  */
-export function overlayPage(page) {
+export function overlayPage (page) {
     return {
         async navigate () {
             await page.goto(constants.pages['overlay'])

@@ -1,6 +1,6 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages, performanceEntries,
+    forwardConsoleMessages, performanceEntries
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
