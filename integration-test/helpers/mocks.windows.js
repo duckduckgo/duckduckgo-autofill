@@ -115,12 +115,12 @@ export function createWindowsMocks () {
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
-                window.__playwright = { mocks: { calls: [] } }
+                window.__playwright_autofill = { mocks: { calls: [] } }
                 const listeners = []
 
                 function recordCall (name, request, response) {
                     const call = [name, request, response]
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                 }
                 /**
                  * @param {any} request
@@ -128,7 +128,7 @@ export function createWindowsMocks () {
                  */
                 function respond (name, request, response) {
                     const call = [name, request, response]
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     setTimeout(() => {
                         for (let listener of listeners) {
                             listener({

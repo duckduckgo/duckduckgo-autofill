@@ -1,7 +1,7 @@
 import {
     createAutofillScript,
     forwardConsoleMessages,
-    setupServer, withWindowsContext
+    withWindowsContext
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {signupPage} from '../helpers/pages.js'
@@ -13,19 +13,12 @@ import {createWindowsMocks} from '../helpers/mocks.windows.js'
 const test = withWindowsContext(base)
 
 test.describe('Windows secure messaging', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('When autofill script runs', () => {
         test('the window.chrome.webview variables have been removed', async ({page}) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
 
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
 
             // this will add `window.chome.webview` to mimic what the Windows platform would do

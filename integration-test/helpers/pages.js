@@ -10,11 +10,11 @@ export function incontextSignupPage (page) {
     const getTooltip = () => page.locator('.tooltip--email')
     return {
         async assertIsShowing () {
-            expect(await getCallToAction()).toBeVisible()
-            expect(await getTooltip()).toBeInViewport({ ratio: 1 })
+            await expect(getCallToAction()).toBeVisible()
+            await expect(getTooltip()).toBeInViewport({ ratio: 1 })
         },
         async assertIsHidden () {
-            expect(await getCallToAction()).toBeHidden()
+            await expect(getCallToAction()).toBeHidden()
         },
         async getEmailProtection () {
             (await getCallToAction()).click({timeout: 500})
@@ -34,7 +34,7 @@ export function incontextSignupPageWithinIframe (page) {
     return {
         async navigate (domain) {
             const pageName = constants.pages['iframeContainer']
-            const pagePath = `integration-test/pages/${pageName}`
+            const pagePath = `integration-test/${pageName}`
             await page.goto(new URL(pagePath, domain).href)
         },
         async clickDirectlyOnDax () {
@@ -54,7 +54,7 @@ export function incontextSignupPageEmailBottomPage (page) {
     return {
         async navigate (domain) {
             const pageName = constants.pages['emailAtBottom']
-            const pagePath = `integration-test/pages/${pageName}`
+            const pagePath = `integration-test/${pageName}`
             await page.goto(new URL(pagePath, domain).href)
         },
         async clickDirectlyOnDax () {
@@ -67,17 +67,16 @@ export function incontextSignupPageEmailBottomPage (page) {
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  */
-export function signupPage (page, server) {
+export function signupPage (page) {
     const decoratedFirstInputSelector = '#email' + constants.fields.email.selectors.identity
     const decoratedSecondInputSelector = '#email-2' + constants.fields.email.selectors.identity
     const emailStyleAttr = () => page.locator('#email').first().getAttribute('style')
     const passwordStyleAttr = () => page.locator('#password' + constants.fields.password.selectors.credential).getAttribute('style')
     return {
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['signup']))
+            await page.goto(constants.pages['signup'])
         },
         async selectGeneratedPassword () {
             const input = page.locator('#password')
@@ -165,7 +164,7 @@ export function signupPage (page, server) {
          * @returns {Promise<void>}
          */
         async assertWasPromptedToSave (credentials, platform) {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockNames = {
                 ios: 'pmHandlerStoreData',
                 macos: 'pmHandlerStoreData',
@@ -187,6 +186,7 @@ export function signupPage (page, server) {
             const calls = await mockedCalls(page, ['storeFormData'])
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const [, sent] = calls[0]
+            // @ts-expect-error
             expect(sent.Data.credentials).toEqual(credentials)
         },
         /**
@@ -217,15 +217,14 @@ export function signupPage (page, server) {
 /**
  * A wrapper around interactions for `integration-test/pages/login.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPage (page, server, opts = {}) {
+export function loginPage (page, opts = {}) {
     const { overlay = false, clickLabel = false } = opts
     return {
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['login']))
+            await page.goto(constants.pages['login'])
         },
         async clickIntoUsernameInput () {
             const usernameField = page.locator('#email').first()
@@ -359,6 +358,7 @@ export function loginPage (page, server, opts = {}) {
             let params
             if (platform === 'android') {
                 expect(typeof sent).toBe('string')
+                // @ts-expect-error
                 params = JSON.parse(sent)
             } else {
                 params = sent
@@ -367,7 +367,7 @@ export function loginPage (page, server, opts = {}) {
             expect(params.inputType).toBe('credentials.username')
         },
         async promptWasNotShown () {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === 'getAutofillData')
             expect(mockCalls.length).toBe(0)
         },
@@ -378,6 +378,7 @@ export function loginPage (page, server, opts = {}) {
          */
         async assertParentOpened () {
             const credsCalls = await mockedCalls(page, ['getSelectedCredentials'], true)
+            // @ts-expect-error
             const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
             expect(hasSucceeded).toBe(true)
         },
@@ -418,12 +419,12 @@ export function loginPage (page, server, opts = {}) {
          * @returns {Promise<void>}
          */
         async assertAnyMockCallOccurred () {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             expect(calls.length).toBeGreaterThan(0)
         },
         /** @param {string} mockCallName */
         async assertMockCallOccurred (mockCallName) {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCall = calls.find(([name]) => name === mockCallName)
             expect(mockCall).toBeDefined()
         },
@@ -432,7 +433,7 @@ export function loginPage (page, server, opts = {}) {
          * @param {number} times
          */
         async assertMockCallOccurredTimes (mockCallName, times) {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === mockCallName)
             expect(mockCalls).toHaveLength(times)
         },
@@ -440,7 +441,7 @@ export function loginPage (page, server, opts = {}) {
          * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} expected
          */
         async assertTogglesWereMocked (expected) {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCalls = calls.find(([name]) => name === 'getRuntimeConfiguration')
             const [, , resp] = mockCalls
             const actual = resp.userPreferences.features.autofill.settings.featureToggles
@@ -453,7 +454,7 @@ export function loginPage (page, server, opts = {}) {
          * @param {Platform} [platform]
          */
         async assertWasPromptedToSave (data, platform = 'ios') {
-            const calls = await page.evaluate('window.__playwright.mocks.calls')
+            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             // todo(Shane): is it too apple specific?
             const mockNames = {
                 ios: 'pmHandlerStoreData',
@@ -514,16 +515,15 @@ export function loginPage (page, server, opts = {}) {
 /**
  * A wrapper around interactions for `integration-test/pages/login.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageWithText (page, server, opts) {
-    const originalLoginPage = loginPage(page, server, opts)
+export function loginPageWithText (page, opts) {
+    const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['loginWithText']))
+            await page.goto(constants.pages['loginWithText'])
         }
     }
 }
@@ -531,16 +531,15 @@ export function loginPageWithText (page, server, opts) {
 /**
  * A wrapper around interactions for `integration-test/pages/login-poor-form.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageWithPoorForm (page, server, opts) {
-    const originalLoginPage = loginPage(page, server, opts)
+export function loginPageWithPoorForm (page, opts) {
+    const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['loginWithPoorForm']))
+            await page.goto(constants.pages['loginWithPoorForm'])
         }
     }
 }
@@ -548,16 +547,15 @@ export function loginPageWithPoorForm (page, server, opts) {
 /**
  * A wrapper around interactions for `integration-test/pages/login-in-modal.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageWithFormInModal (page, server, opts) {
-    const originalLoginPage = loginPage(page, server, opts)
+export function loginPageWithFormInModal (page, opts) {
+    const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['loginWithFormInModal']))
+            await page.goto(constants.pages['loginWithFormInModal'])
         },
         async openDialog () {
             const button = await page.waitForSelector(`button:has-text("Click here to Login")`)
@@ -584,16 +582,15 @@ export function loginPageWithFormInModal (page, server, opts) {
 /**
  * A wrapper around interactions for `integration-test/pages/login-covered.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageCovered (page, server, opts) {
-    const originalLoginPage = loginPage(page, server, opts)
+export function loginPageCovered (page, opts) {
+    const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['loginCovered']))
+            await page.goto(constants.pages['loginCovered'])
         },
         async closeCookieDialog () {
             await page.click('button:has-text("Accept all cookies")')
@@ -604,16 +601,15 @@ export function loginPageCovered (page, server, opts) {
 /**
  * A wrapper around interactions for `integration-test/pages/login-multistep.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPageMultistep (page, server, opts) {
-    const originalLoginPage = loginPage(page, server, opts)
+export function loginPageMultistep (page, opts) {
+    const originalLoginPage = loginPage(page, opts)
     return {
         ...originalLoginPage,
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['loginMultistep']))
+            await page.goto(constants.pages['loginMultistep'])
         },
         async clickContinue () {
             await page.click('button:has-text("Continue")')
@@ -624,19 +620,18 @@ export function loginPageMultistep (page, server, opts) {
 /**
  * A wrapper around interactions for `integration-test/pages/email-autofill.html`
  *
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} [server]
+ * @param {import("@playwright/test").Page} page
  */
-export function emailAutofillPage (page, server) {
+export function emailAutofillPage (page) {
     const {selectors} = constants.fields.email
     return {
         async navigate (domain) {
             const emailAutofillPageName = constants.pages['email-autofill']
             if (domain) {
-                const pagePath = `integration-test/pages/${emailAutofillPageName}`
+                const pagePath = `integration-test/${emailAutofillPageName}`
                 await page.goto(new URL(pagePath, domain).href)
             } else {
-                await page.goto(server.urlForPath(emailAutofillPageName))
+                await page.goto(emailAutofillPageName)
             }
         },
         async clickIntoInput () {
@@ -691,13 +686,12 @@ export function emailAutofillPage (page, server) {
 }
 
 /**
- * @param {import("playwright").Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  */
-export function overlayPage (page, server) {
+export function overlayPage (page) {
     return {
         async navigate () {
-            await page.goto(server.urlForPath(constants.pages['overlay']))
+            await page.goto(constants.pages['overlay'])
         },
         /**
          * @param {string} text
@@ -722,7 +716,7 @@ export function overlayPage (page, server) {
          */
         async assertSelectedDetail () {
             return page.waitForFunction(() => {
-                const calls = window.__playwright.mocks.calls
+                const calls = window.__playwright_autofill.mocks.calls
                 return calls.some(call => call[0] === 'selectedDetail')
             })
         }
@@ -732,7 +726,7 @@ export function overlayPage (page, server) {
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
  *
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {ServerWrapper} server
  */
 export function loginAndSignup (page, server) {

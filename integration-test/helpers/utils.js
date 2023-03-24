@@ -26,7 +26,7 @@ const stripDuckExtension = (emailAddress) => {
 
 /**
  * Clicks directly on the icon within the input field
- * @param {import('playwright').Locator} input
+ * @param {import('@playwright/test').Locator} input
  * @returns {Promise<void>}
  */
 const clickOnIcon = async (input) => {

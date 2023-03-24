@@ -1,6 +1,5 @@
 import {
     forwardConsoleMessages,
-    setupServer,
     withIOSContext, withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
@@ -14,13 +13,6 @@ import {constants} from '../helpers/mocks.js'
 const test = withIOSContext(base)
 
 test.describe('iOS Save prompts', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('and saving credentials disabled ❌', () => {
         test('should not prompt to save', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -33,7 +25,7 @@ test.describe('iOS Save prompts', () => {
 
             await withIOSFeatureToggles(page, toggles)
 
-            const login = loginPage(page, server)
+            const login = loginPage(page)
             await login.navigate()
 
             const credentials = {
@@ -77,14 +69,14 @@ test.describe('iOS Save prompts', () => {
                 password_generation: false
             })
 
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
             await signup.enterCredentials(credentials)
             await signup.assertWasPromptedToSave(credentials, 'ios')
         })
         test.describe('Prompting to save from a login form', () => {
             /**
-             * @param {import("playwright").Page} page
+             * @param {import("@playwright/test").Page} page
              */
             async function setup (page) {
                 await forwardConsoleMessages(page)
@@ -92,7 +84,7 @@ test.describe('iOS Save prompts', () => {
                 await withIOSFeatureToggles(page, {
                     credentials_saving: true
                 })
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
                 return login
             }
@@ -130,7 +122,7 @@ test.describe('iOS Save prompts', () => {
                 password: '123456'
             }
             /**
-             * @param {import("playwright").Page} page
+             * @param {import("@playwright/test").Page} page
              */
             async function setup (page) {
                 await forwardConsoleMessages(page)
@@ -138,7 +130,7 @@ test.describe('iOS Save prompts', () => {
                 await withIOSFeatureToggles(page, {
                     credentials_saving: true
                 })
-                const login = loginPageWithPoorForm(page, server)
+                const login = loginPageWithPoorForm(page)
                 await login.navigate()
 
                 await page.type('#password', credentials.password)
