@@ -11617,6 +11617,8 @@ class HTMLTooltip {
 
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
+    _defineProperty(this, "mutObsCheckPositionDebounced", _autofillUtils.debounce.call(this, this.checkPosition));
+
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       for (const mutationRecord of mutationList) {
         if (mutationRecord.type === 'childList') {
@@ -11628,7 +11630,7 @@ class HTMLTooltip {
         }
       }
 
-      this.checkPosition();
+      this.mutObsCheckPositionDebounced();
     }));
 
     _defineProperty(this, "clickableButtons", new Map());
@@ -12817,6 +12819,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
+exports.debounce = debounce;
 exports.escapeXML = escapeXML;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -13307,6 +13310,28 @@ function shouldLog() {
   var _window$sessionStorag;
 
   return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem('ddg-autofill-debug')) === 'true';
+}
+/**
+ *
+ * @param {Function} callback
+ * @param {number} timeout
+ * @returns {Function}
+ */
+
+
+function debounce(callback) {
+  var _this = this;
+
+  let timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 150;
+  let timer;
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    clearTimeout(timer);
+    timer = setTimeout(() => callback.apply(_this, args), timeout);
+  };
 }
 
 },{"./Form/matching.js":34}],55:[function(require,module,exports){

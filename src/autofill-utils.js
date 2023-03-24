@@ -400,6 +400,20 @@ function shouldLog () {
     return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
 }
 
+/**
+ *
+ * @param {Function} callback
+ * @param {number} timeout
+ * @returns {Function}
+ */
+function debounce (callback, timeout = 150) {
+    let timer
+    return (...args) => {
+        clearTimeout(timer)
+        timer = setTimeout(() => callback.apply(this, args), timeout)
+    }
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -423,5 +437,6 @@ export {
     isLocalNetwork,
     isValidTLD,
     wasAutofilledByChrome,
-    shouldLog
+    shouldLog,
+    debounce
 }
