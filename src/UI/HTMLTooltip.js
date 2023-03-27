@@ -26,14 +26,14 @@ export const defaultOptions = {
     wrapperClass: '',
     tooltipPositionClass: (top, left) => `
         .tooltip {
-            transform: translate(${left}px, ${top}px);
+            transform: translate(${left}px, ${top}px) !important;
         }
     `,
     caretPositionClass: (top, left, isAboveInput) => `
         .tooltip--email__caret {
             ${isAboveInput
-        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px;`
-        : `transform: translate(${left}px, ${top}px);`
+        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px !important;`
+        : `transform: translate(${left}px, ${top}px) !important;`
 }
         }`,
     css: `<style>${CSS_STYLES}</style>`,
@@ -181,24 +181,14 @@ export class HTMLTooltip {
     }
 
     /**
-     *
      * @param {'tooltip' | 'caret'} element
      * @param {{
      *     left: number,
      *     top: number
      * }} coords
      */
-    updatePosition (element, {left, top}) {
+    applyPositionalStyles (element, {left, top}) {
         const shadow = this.shadow
-        // If the stylesheet is not loaded wait for load (Chrome bug)
-        if (!shadow.styleSheets.length) {
-            this.stylesheet?.addEventListener('load', () => this.checkPosition())
-            return
-        }
-
-        this.left = left
-        this.top = top
-
         const ruleObj = this.transformRules[element]
 
         if (ruleObj.index) {
@@ -215,6 +205,26 @@ export class HTMLTooltip {
         if (typeof cssRule === 'string') {
             shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
         }
+    }
+
+    /**
+     * @param {'tooltip' | 'caret'} element
+     * @param {{
+     *     left: number,
+     *     top: number
+     * }} coords
+     */
+    updatePosition (element, {left, top}) {
+        // If the stylesheet is not loaded wait for load (Chrome bug)
+        if (!this.shadow.styleSheets.length) {
+            this.stylesheet?.addEventListener('load', () => this.checkPosition())
+            return
+        }
+
+        this.left = left
+        this.top = top
+
+        this.applyPositionalStyles(element, {left, top})
 
         if (this.options.hasCaret) {
             const overridePosition = this.getOverridePosition({left, top})
