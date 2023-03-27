@@ -3,6 +3,7 @@ import { constants } from '../constants.js'
 import { extractElementStrings } from './label-util.js'
 import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
 import { matchingConfiguration } from './matching-configuration.js'
+import {logMatching} from './matching-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -331,6 +332,7 @@ class Matching {
                  * it matched the current element, then we'd return 'username'
                  */
                 if (result?.matched) {
+                    logMatching(el, result)
                     return matcher.type
                 }
 
@@ -339,12 +341,16 @@ class Matching {
                  * it would return { matched: false, proceed: false }
                  */
                 if (!result?.matched && result?.proceed === false) {
+                    logMatching(el, result)
                     // If we get here, do not allow subsequent strategies to continue
                     return undefined
                 }
             }
 
-            if (result?.skip) break
+            if (result?.skip) {
+                logMatching(el, result)
+                break
+            }
         }
         return undefined
     }
