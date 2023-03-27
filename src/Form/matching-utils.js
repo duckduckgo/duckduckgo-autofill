@@ -1,9 +1,9 @@
 import {shouldLog} from '../autofill-utils.js'
-import {getExplicitLabelsText} from "./matching";
+import {getExplicitLabelsText} from './matching.js'
 
 /**
  * Logs out matching details when debug flag is active
- * @param {HTMLElement} el
+ * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {MatchingResult} matchingResult
  */
 function logMatching (el, matchingResult) {
@@ -43,12 +43,16 @@ function getVerb (matchingResult) {
     return ''
 }
 
+/**
+ * Returns a human-friendly name to identify a single input field
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @returns {string}
+ */
 function getInputIdentifier (el) {
     const label = getExplicitLabelsText(el)
-    const placeholder = el.placeholder ? `: ${el.placeholder}` : ''
+    const placeholder = el instanceof HTMLInputElement && el.placeholder ? `${el.placeholder}` : ''
     const name = el.name ? `${el.name}` : ''
     const id = el.id ? `#${el.id}` : ''
-
 
     return 'Field: ' + (label || placeholder || name || id)
 }

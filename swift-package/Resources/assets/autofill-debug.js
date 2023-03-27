@@ -12668,11 +12668,11 @@ exports.logMatching = logMatching;
 
 var _autofillUtils = require("../autofill-utils.js");
 
-var _matching = require("./matching");
+var _matching = require("./matching.js");
 
 /**
  * Logs out matching details when debug flag is active
- * @param {HTMLElement} el
+ * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {MatchingResult} matchingResult
  */
 function logMatching(el, matchingResult) {
@@ -12709,16 +12709,22 @@ function getVerb(matchingResult) {
   if (matchingResult.skip) return 'Skipped';
   return '';
 }
+/**
+ * Returns a human-friendly name to identify a single input field
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @returns {string}
+ */
+
 
 function getInputIdentifier(el) {
   const label = (0, _matching.getExplicitLabelsText)(el);
-  const placeholder = el.placeholder ? ": ".concat(el.placeholder) : '';
+  const placeholder = el instanceof HTMLInputElement && el.placeholder ? "".concat(el.placeholder) : '';
   const name = el.name ? "".concat(el.name) : '';
   const id = el.id ? "#".concat(el.id) : '';
   return 'Field: ' + (label || placeholder || name || id);
 }
 
-},{"../autofill-utils.js":62,"./matching":42}],42:[function(require,module,exports){
+},{"../autofill-utils.js":62,"./matching.js":42}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
