@@ -26,14 +26,14 @@ export const defaultOptions = {
     wrapperClass: '',
     tooltipPositionClass: (top, left) => `
         .tooltip {
-            transform: translate(${left}px, ${top}px);
+            transform: translate(${left}px, ${top}px) !important;
         }
     `,
     caretPositionClass: (top, left, isAboveInput) => `
         .tooltip--email__caret {
             ${isAboveInput
-        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px;`
-        : `transform: translate(${left}px, ${top}px);`
+        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px !important;`
+        : `transform: translate(${left}px, ${top}px) !important;`
 }
         }`,
     css: `<style>${CSS_STYLES}</style>`,
@@ -311,9 +311,6 @@ export class HTMLTooltip {
                 document.fonts.load("normal 13px 'DDG_ProximaNova'"),
                 document.fonts.load("bold 13px 'DDG_ProximaNova'")
             ]).then(() => {
-                const offscreen = {left: -1000, top: -1000}
-                this.applyPositionalStyles('tooltip', offscreen)
-                this.applyPositionalStyles('caret', offscreen)
                 this.tooltip.parentNode.removeAttribute('hidden')
                 this.checkPosition()
             })
