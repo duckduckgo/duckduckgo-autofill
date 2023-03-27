@@ -1,5 +1,13 @@
 import { Matching, createMatching } from './matching.js'
 
+/**
+ * @typedef {{
+ *     html: string,
+ *     matcher: MatcherTypeNames,
+ *     matched: boolean
+ * }[]} MatchingTestCases
+ */
+
 const setFormHtml = (html) => {
     document.body.innerHTML = `
     <form>
@@ -19,25 +27,26 @@ beforeEach(() => {
 })
 
 describe('css-selector matching', () => {
-    it.each([
-        { html: `<input name=email />`, selector: 'email', matched: true },
-        { html: `<input name=oops! />`, selector: 'email', matched: false }
-    ])(`$html: '$matched'`, (args) => {
-        const { html, matched, selector } = args
+    it.each(/** @type MatchingTestCases */([
+        { html: `<input name=email />`, matcher: 'email', matched: true },
+        { html: `<input name=oops! />`, matcher: 'email', matched: false }
+    ]))(`$html: '$matched'`, (args) => {
+        const { html, matched, matcher } = args
         const { inputs } = setFormHtml(html)
 
         const matching = createMatching()
-        const result = matching.execCssSelector(selector, inputs[0])
+        const result = matching.execCssSelector(matcher, inputs[0])
         expect(result.matched).toBe(matched)
     })
 })
 
 describe('ddg-matchers matching', () => {
-    it.each([
+    it.each(/** @type MatchingTestCases */([
         { html: `<input placeholder=email />`, matcher: 'email', matched: true },
         { html: `<input placeholder=mail />`, matcher: 'email', matched: false },
         { html: `<input placeholder=email-search />`, matcher: 'email', matched: false }
-    ])(`$html: '$matcher': $matched`, (args) => {
+    ])
+    )(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
 
@@ -50,19 +59,19 @@ describe('ddg-matchers matching', () => {
 })
 
 describe('vendor-regexes matching', () => {
-    it.each([
-        { html: `<input name=email />`, regexName: 'email', matched: true },
-        { html: `<input name=email-address />`, regexName: 'email', matched: true },
-        { html: `<input name="courriel" />`, regexName: 'email', matched: true }, // fr
-        { html: `<input name="メールアドレス" />`, regexName: 'email', matched: true } // ja-JP
-    ])(`$html: '$regexName': $matched`, (args) => {
-        const { html, matched, regexName } = args
+    it.each(/** @type MatchingTestCases */([
+        { html: `<input name=email />`, matcher: 'email', matched: true },
+        { html: `<input name=email-address />`, matcher: 'email', matched: true },
+        { html: `<input name="courriel" />`, matcher: 'email', matched: true }, // fr
+        { html: `<input name="メールアドレス" />`, matcher: 'email', matched: true } // ja-JP
+    ]))(`$html: '$matcher': $matched`, (args) => {
+        const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
 
         const matching = createMatching()
         const result = matching
             .forInput(inputs[0], formElement)
-            .execVendorRegex(regexName)
+            .execVendorRegex(matcher)
         expect(result.matched).toBe(matched)
     })
 })
