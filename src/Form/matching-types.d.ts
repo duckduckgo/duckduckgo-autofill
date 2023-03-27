@@ -11,11 +11,7 @@ type StrategyNames = keyof MatchingConfiguration['strategies'];
 
 interface Matcher {
     type: MatcherTypeNames
-    strategies: {
-        cssSelector?: string
-        ddgMatcher?: string
-        vendorRegex?: string
-    }
+    strategies: MatchingConfiguration.strategies
 }
 
 interface MatcherLists {
@@ -85,8 +81,12 @@ type MatchableStrings =
 
 type MatchingResult = {
     matched: boolean
+    matcherType: MatcherTypeNames
     proceed?: boolean
     skip?: boolean
+    matchedString?: string
+    matchedFrom?: MatchableStrings
+    strategyName: StrategyNames
 }
 
 type SupportedMainTypes =

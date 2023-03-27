@@ -352,13 +352,17 @@ class Matching {
     /**
      * CSS selector matching just leverages the `.matches` method on elements
      *
-     * @param {string} lookup
+     * @param {MatcherTypeNames} lookup
      * @param {HTMLInputElement|HTMLSelectElement} el
      * @returns {MatchingResult}
      */
     execCssSelector (lookup, el) {
         const selector = this.cssSelector(lookup)
-        return { matched: el.matches(selector) }
+        return {
+            matched: el.matches(selector),
+            strategyName: 'cssSelector',
+            matcherType: lookup
+        }
     }
 
     /**
@@ -368,17 +372,20 @@ class Matching {
      * todo: maxDigits was added as an edge-case when converting this over to be declarative, but I'm
      * unsure if it's actually needed. It's not urgent, but we should consider removing it if that's the case
      *
-     * @param {string} lookup
+     * @param {MatcherTypeNames} lookup
      * @returns {MatchingResult}
      */
     execDDGMatcher (lookup) {
+        /** @type {MatchingResult} */
+        const defaultResult = { matched: false, strategyName: 'ddgMatcher', matcherType: lookup }
+
         const ddgMatcher = this.ddgMatcher(lookup)
         if (!ddgMatcher || !ddgMatcher.match) {
-            return { matched: false }
+            return defaultResult
         }
         let matchRexExp = safeRegex(ddgMatcher.match || '')
         if (!matchRexExp) {
-            return {matched: false}
+            return defaultResult
         }
 
         let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
@@ -394,15 +401,22 @@ class Matching {
             // Scoring to ensure all DDG tests are valid
             let score = 0
 
+            /** @type {MatchingResult} */
+            const result = {
+                ...defaultResult,
+                matchedString: elementString,
+                matchedFrom: stringName
+            }
+
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
             if (ddgMatcher.forceUnknown) {
                 let notRegex = safeRegex(ddgMatcher.forceUnknown)
                 if (!notRegex) {
-                    return { matched: false }
+                    return { ...result, matched: false }
                 }
                 if (notRegex.test(elementString)) {
-                    return { matched: false, proceed: false }
+                    return { ...result, matched: false, proceed: false }
                 } else {
                     // All good here, increment the score
                     score++
@@ -412,10 +426,10 @@ class Matching {
             if (ddgMatcher.skip) {
                 let skipRegex = safeRegex(ddgMatcher.skip)
                 if (!skipRegex) {
-                    return { matched: false }
+                    return { ...result, matched: false }
                 }
                 if (skipRegex.test(elementString)) {
-                    return { matched: false, skip: true }
+                    return { ...result, matched: false, skip: true }
                 }
             }
 
@@ -431,29 +445,32 @@ class Matching {
             if (ddgMatcher.maxDigits) {
                 const digitLength = elementString.replace(/[^0-9]/g, '').length
                 if (digitLength > ddgMatcher.maxDigits) {
-                    return { matched: false }
+                    return { ...result, matched: false }
                 } else {
                     score++
                 }
             }
 
             if (score === requiredScore) {
-                return { matched: true }
+                return { ...result, matched: true }
             }
         }
-        return { matched: false }
+        return defaultResult
     }
 
     /**
      * If we get here, a firefox/vendor regex was given and we can execute it on the element
      * strings
-     * @param {string} lookup
+     * @param {MatcherTypeNames} lookup
      * @return {MatchingResult}
      */
     execVendorRegex (lookup) {
+        /** @type {MatchingResult} */
+        const defaultResult = { matched: false, strategyName: 'vendorRegex', matcherType: lookup }
+
         const regex = this.vendorRegex(lookup)
         if (!regex) {
-            return { matched: false }
+            return defaultResult
         }
         /** @type {MatchableStrings[]} */
         const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText']
@@ -462,10 +479,15 @@ class Matching {
             if (!elementString) continue
             elementString = elementString.toLowerCase()
             if (regex.test(elementString)) {
-                return { matched: true }
+                return {
+                    ...defaultResult,
+                    matched: true,
+                    matchedString: elementString,
+                    matchedFrom: stringName
+                }
             }
         }
-        return { matched: false }
+        return defaultResult
     }
 
     /**
