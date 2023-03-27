@@ -6,6 +6,7 @@ import {clickOnIcon} from './utils.js'
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
 export function incontextSignupPage (page) {
+    const {selectors} = constants.fields.email
     const getCallToAction = () => page.locator(`text=Protect My Email`)
     const getTooltip = () => page.locator('.tooltip--email')
     return {
@@ -26,6 +27,10 @@ export function incontextSignupPage (page) {
         async closeTooltip () {
             const dismissTooltipButton = await page.locator(`[aria-label=Close]`)
             await dismissTooltipButton.click({timeout: 500})
+        },
+        async clickDirectlyOnDax () {
+            const input = page.locator(selectors.identity)
+            await clickOnIcon(input)
         }
     }
 }
@@ -50,16 +55,21 @@ export function incontextSignupPageWithinIframe (page) {
 }
 
 export function incontextSignupPageEmailBottomPage (page) {
-    const {selectors} = constants.fields.email
     return {
         async navigate (domain) {
             const pageName = constants.pages['emailAtBottom']
             const pagePath = `integration-test/${pageName}`
             await page.goto(new URL(pagePath, domain).href)
-        },
-        async clickDirectlyOnDax () {
-            const input = page.locator(selectors.identity)
-            await clickOnIcon(input)
+        }
+    }
+}
+
+export function incontextSignupPageEmailTopLeftPage (page) {
+    return {
+        async navigate (domain) {
+            const pageName = constants.pages['emailAtTopLeft']
+            const pagePath = `integration-test/${pageName}`
+            await page.goto(new URL(pagePath, domain).href)
         }
     }
 }

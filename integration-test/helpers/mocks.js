@@ -6,6 +6,7 @@ export const constants = {
         'overlay': 'pages/overlay.html',
         'email-autofill': 'pages/email-autofill.html',
         'emailAtBottom': 'pages/email-at-bottom.html',
+        'emailAtTopLeft': 'pages/email-at-top-left.html',
         'iframeContainer': 'pages/iframe-container.html',
         'signup': 'pages/signup.html',
         'login': 'pages/login.html',

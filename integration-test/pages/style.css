@@ -26,7 +26,15 @@ iframe {
     left: 1em;
 }
 
-.subscribe-newsletter {
+.subscribe-newsletter-top-left {
+    padding: 1rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.subscribe-newsletter-bottom {
     padding: 1rem;
     position: fixed;
     left: 0;
@@ -36,7 +44,8 @@ iframe {
     z-index: 1;
 }
 
-.subscribe-newsletter fieldset {
+.subscribe-newsletter-top-left fieldset,
+.subscribe-newsletter-bottom fieldset {
     display: flex;
     margin: 0 auto;
 }
