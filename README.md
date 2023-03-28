@@ -17,7 +17,7 @@ Both the extension codebase and Android use `npm` to import autofill. To simplif
 1. In the source repo (this folder), run `npm link`. This must be done only once.
 1. In the client repo (the extension folder), run `npm link @duckduckgo/autofill`. Do this every time you start working on the extension repo.
 
-Now you can run `npm start` in this repo and the changes will be picked up automatically in the client 🎉.
+Now you can run `npm start` in this repo and the changes will be picked up automatically each time your client is built 🎉.
 
 ### Apple apps (iOS and macOS)
 
