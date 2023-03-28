@@ -1,5 +1,7 @@
 ## Debugging the Scanner
 
+**On most occasions it's probably easier to debug using the steps outlined at [this page](https://app.asana.com/0/1200930669568058/1204279134793324/f). You can revert to this script for more complex needs.**
+
 You can load our `Scanner.debug.js` script into any HTML file to inspect what's happening with the matching algorithms, form analysis etc.
 
 
