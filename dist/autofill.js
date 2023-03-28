@@ -13285,8 +13285,14 @@ require("./requestIdleCallback.js");
 
 var _DeviceInterface = require("./DeviceInterface.js");
 
+var _autofillUtils = require("./autofill-utils.js");
+
 // Polyfills/shims
 (() => {
+  if ((0, _autofillUtils.shouldLog)()) {
+    console.log('DuckDuckGo Autofill Active');
+  }
+
   if (!window.isSecureContext) return false;
 
   try {
@@ -13307,7 +13313,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":14,"./requestIdleCallback.js":66}],56:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./autofill-utils.js":54,"./requestIdleCallback.js":66}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
