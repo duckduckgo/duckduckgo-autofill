@@ -1,6 +1,6 @@
 import {forwardConsoleMessages, withChromeExtensionContext, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe, incontextSignupPageEmailBottomPage} from '../helpers/pages.js'
+import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe, incontextSignupPageEmailBottomPage, incontextSignupPageEmailTopLeftPage} from '../helpers/pages.js'
 
 /**
  *  Tests for email autofill in chrome extension.
@@ -100,8 +100,21 @@ test.describe('chrome extension', () => {
         const pageWidthEmailBottomPage = incontextSignupPageEmailBottomPage(page)
         await pageWidthEmailBottomPage.navigate('https://example.com')
 
-        await pageWidthEmailBottomPage.clickDirectlyOnDax()
+        await incontextSignup.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
-        await incontextSignup.dismissTooltipWith("Don't Show Again")
+        await incontextSignup.closeTooltip()
+    })
+
+    test('should display properly above when email at top left of page', async ({page}) => {
+        forwardConsoleMessages(page)
+        await setupMockedDomain(page, 'https://example.com')
+
+        const incontextSignup = incontextSignupPage(page)
+        const pageWidthEmailTopLeftPage = incontextSignupPageEmailTopLeftPage(page)
+        await pageWidthEmailTopLeftPage.navigate('https://example.com')
+
+        await incontextSignup.clickDirectlyOnDax()
+        await incontextSignup.assertIsShowing()
+        await incontextSignup.closeTooltip()
     })
 })

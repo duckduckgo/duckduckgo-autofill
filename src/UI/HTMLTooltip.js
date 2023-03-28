@@ -26,14 +26,14 @@ export const defaultOptions = {
     wrapperClass: '',
     tooltipPositionClass: (top, left) => `
         .tooltip {
-            transform: translate(${left}px, ${top}px);
+            transform: translate(${left}px, ${top}px) !important;
         }
     `,
     caretPositionClass: (top, left, isAboveInput) => `
         .tooltip--email__caret {
             ${isAboveInput
-        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px;`
-        : `transform: translate(${left}px, ${top}px);`
+        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px !important;`
+        : `transform: translate(${left}px, ${top}px) !important;`
 }
         }`,
     css: `<style>${CSS_STYLES}</style>`,
@@ -155,8 +155,10 @@ export class HTMLTooltip {
 
     getOverridePosition ({left, top}) {
         const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
+        const smallScreenWidth = tooltipBoundingBox.width * 2
+        const spacing = 5
 
-        // If overflowing from the bottom, try moving to the top
+        // If overflowing from the bottom, move to above the input
         if (tooltipBoundingBox.bottom > window.innerHeight) {
             const inputPosition = this.getPosition()
             const caretHeight = 14
@@ -164,41 +166,38 @@ export class HTMLTooltip {
             if (overriddenTopPosition >= 0) return {left, top: overriddenTopPosition}
         }
 
-        // If overflowing from the left, try centering it in the window
-        if (tooltipBoundingBox.left < 0) {
+        // If overflowing from the left on smaller screen, center in the window
+        if (tooltipBoundingBox.left < 0 && window.innerWidth <= smallScreenWidth) {
+            const leftOverflow = Math.abs(tooltipBoundingBox.left)
             const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2
-            const overriddenLeftPosition = left + Math.abs(tooltipBoundingBox.left) + leftPosWhenCentered
+            const overriddenLeftPosition = left + leftOverflow + leftPosWhenCentered
             return {left: overriddenLeftPosition, top}
         }
 
-        // If overflowing from the right, move it slightly to the left
+        // If overflowing from the left on larger screen, move so it's just on screen on the left
+        if (tooltipBoundingBox.left < 0 && window.innerWidth > smallScreenWidth) {
+            const leftOverflow = Math.abs(tooltipBoundingBox.left)
+            const overriddenLeftPosition = left + leftOverflow + spacing
+            return {left: overriddenLeftPosition, top}
+        }
+
+        // If overflowing from the right, move so it's just on screen on the right
         if (tooltipBoundingBox.right > window.innerWidth) {
             const rightOverflow = tooltipBoundingBox.right - window.innerWidth
-            const extraPadding = 5
-            const overriddenLeftPosition = left - rightOverflow - extraPadding
+            const overriddenLeftPosition = left - rightOverflow - spacing
             return {left: overriddenLeftPosition, top}
         }
     }
 
     /**
-     *
      * @param {'tooltip' | 'caret'} element
      * @param {{
      *     left: number,
      *     top: number
      * }} coords
      */
-    updatePosition (element, {left, top}) {
+    applyPositionalStyles (element, {left, top}) {
         const shadow = this.shadow
-        // If the stylesheet is not loaded wait for load (Chrome bug)
-        if (!shadow.styleSheets.length) {
-            this.stylesheet?.addEventListener('load', () => this.checkPosition())
-            return
-        }
-
-        this.left = left
-        this.top = top
-
         const ruleObj = this.transformRules[element]
 
         if (ruleObj.index) {
@@ -215,6 +214,26 @@ export class HTMLTooltip {
         if (typeof cssRule === 'string') {
             shadow.styleSheets[0].insertRule(cssRule, ruleObj.index)
         }
+    }
+
+    /**
+     * @param {'tooltip' | 'caret'} element
+     * @param {{
+     *     left: number,
+     *     top: number
+     * }} coords
+     */
+    updatePosition (element, {left, top}) {
+        // If the stylesheet is not loaded wait for load (Chrome bug)
+        if (!this.shadow.styleSheets.length) {
+            this.stylesheet?.addEventListener('load', () => this.checkPosition())
+            return
+        }
+
+        this.left = left
+        this.top = top
+
+        this.applyPositionalStyles(element, {left, top})
 
         if (this.options.hasCaret) {
             const overridePosition = this.getOverridePosition({left, top})
