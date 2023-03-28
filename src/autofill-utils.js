@@ -403,14 +403,13 @@ function shouldLog () {
 /**
  *
  * @param {Function} callback
- * @param {number} timeout
  * @returns {Function}
  */
-function debounce (callback, timeout = 150) {
+function whenIdle (callback) {
     let timer
     return (...args) => {
-        clearTimeout(timer)
-        timer = setTimeout(() => callback.apply(this, args), timeout)
+        cancelIdleCallback(timer)
+        timer = requestIdleCallback(() => callback.apply(this, args))
     }
 }
 
@@ -438,5 +437,5 @@ export {
     isValidTLD,
     wasAutofilledByChrome,
     shouldLog,
-    debounce
+    whenIdle
 }

@@ -15293,7 +15293,7 @@ class HTMLTooltip {
 
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
-    _defineProperty(this, "mutObsCheckPositionDebounced", _autofillUtils.debounce.call(this, this.checkPosition));
+    _defineProperty(this, "mutObsCheckPositionWhenIdle", _autofillUtils.whenIdle.call(this, this.checkPosition));
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       for (const mutationRecord of mutationList) {
@@ -15306,7 +15306,7 @@ class HTMLTooltip {
         }
       }
 
-      this.mutObsCheckPositionDebounced();
+      this.mutObsCheckPositionWhenIdle();
     }));
 
     _defineProperty(this, "clickableButtons", new Map());
@@ -16495,7 +16495,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
-exports.debounce = debounce;
 exports.escapeXML = escapeXML;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -16503,6 +16502,7 @@ exports.isValidTLD = isValidTLD;
 exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = void 0;
 exports.shouldLog = shouldLog;
 exports.wasAutofilledByChrome = void 0;
+exports.whenIdle = whenIdle;
 
 var _matching = require("./Form/matching.js");
 
@@ -16990,23 +16990,21 @@ function shouldLog() {
 /**
  *
  * @param {Function} callback
- * @param {number} timeout
  * @returns {Function}
  */
 
 
-function debounce(callback) {
+function whenIdle(callback) {
   var _this = this;
 
-  let timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 150;
   let timer;
   return function () {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    clearTimeout(timer);
-    timer = setTimeout(() => callback.apply(_this, args), timeout);
+    cancelIdleCallback(timer);
+    timer = requestIdleCallback(() => callback.apply(_this, args));
   };
 }
 
