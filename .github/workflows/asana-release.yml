@@ -188,7 +188,7 @@ jobs:
         with:
           repository: duckduckgo/duckduckgo-privacy-extension
           path: extensions/
-          ref: develop
+          ref: main
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update Extensions autofill reference
         run: |
