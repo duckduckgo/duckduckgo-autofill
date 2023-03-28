@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isVisible, buttonMatchesFormType,
-    safeExecute, getText, wasAutofilledByChrome
+    safeExecute, getText, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -87,9 +87,29 @@ class Form {
 
         this.categorizeInputs()
 
+        this.logFormInfo()
+
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
+    }
+
+    logFormInfo () {
+        if (!shouldLog()) return
+
+        console.log(`Form type: %c${this.getFormType()} ${this.formAnalyzer.autofillSignal}`, 'font-weight: bold')
+        console.log('Signals: ', this.formAnalyzer.signals)
+        console.log('Wrapping element: ', this.form)
+        console.log('Inputs: ', this.inputs)
+        console.log('Submit Buttons: ', this.submitButtons)
+    }
+
+    getFormType () {
+        if (this.isHybrid) return 'hybrid'
+        if (this.isLogin) return 'login'
+        if (this.isSignup) return 'signup'
+
+        return 'something went wrong'
     }
 
     /**

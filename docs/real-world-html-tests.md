@@ -1,3 +1,21 @@
+# Real-world forms testing
+
+We have collected hundreds of different forms from popular sites and incoming bugs. They live under _src/Form/test-cases_. These run in CI at each push and ensure we're not introducing regressions and our changes yield a net positive improvement.
+
+To add a form, follow these steps:
+
+1. create an empty file under *src/Form/test-cases*, with the naming convention `<sitename>_<formtype>.html`, e.g. `instagram_login.html`
+2. add the filename to the index list in *src/Form/test-cases* following other examples, optionally with a `title` attribute to reflect the page `<title>` tag
+2. open the devtools in your browser, identify a meaningful container (i.e. the `form` element or whatever makes sense in your case), and copy the HTML contents
+3. paste the copied HTML into your file and add a comment block with the url of your page
+   3. ⚠️ Remember to remove existing autofill attributes like `data-ddg-inputtype` from the HTML because they would influence the script execution and render the test moot
+3. manually score all relevant fields with the `data-manual-scoring` attribute, using only the `subtype`s as defined in the [`availableInputType` schema](https://github.com/duckduckgo/duckduckgo-autofill/blob/main/src/deviceApiCalls/schemas/availableInputTypes.json)
+   4. 🧑‍💻 you can ignore fields that should be `unknown` or that shouldn't be scored anyway (like `type=hidden`) 
+4. manually score the submit button using the `data-manual-submit` attribute
+5. run the test case and if there are expected failures, add them to the index file following other examples
+
+Ultimately the test result should be green aknowledging expected failures. See below for more info.
+
 ## Tracking improvements and regressions of Real-world Tests
 
 Since we cannot offer a 100% perfect solution in terms of input classification, we should instead

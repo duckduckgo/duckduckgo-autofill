@@ -392,6 +392,14 @@ const wasAutofilledByChrome = (input) => {
     }
 }
 
+/**
+ * Checks if we should log debug info to the console
+ * @returns {boolean}
+ */
+function shouldLog () {
+    return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -414,5 +422,6 @@ export {
     getText,
     isLocalNetwork,
     isValidTLD,
-    wasAutofilledByChrome
+    wasAutofilledByChrome,
+    shouldLog
 }
