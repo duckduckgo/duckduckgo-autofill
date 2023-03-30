@@ -11617,6 +11617,8 @@ class HTMLTooltip {
 
     _defineProperty(this, "resObs", new ResizeObserver(entries => entries.forEach(() => this.checkPosition())));
 
+    _defineProperty(this, "mutObsCheckPositionWhenIdle", _autofillUtils.whenIdle.call(this, this.checkPosition));
+
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       for (const mutationRecord of mutationList) {
         if (mutationRecord.type === 'childList') {
@@ -11628,7 +11630,7 @@ class HTMLTooltip {
         }
       }
 
-      this.checkPosition();
+      this.mutObsCheckPositionWhenIdle();
     }));
 
     _defineProperty(this, "clickableButtons", new Map());
@@ -12824,6 +12826,7 @@ exports.isValidTLD = isValidTLD;
 exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = void 0;
 exports.shouldLog = shouldLog;
 exports.wasAutofilledByChrome = void 0;
+exports.whenIdle = whenIdle;
 
 var _matching = require("./Form/matching.js");
 
@@ -13307,6 +13310,26 @@ function shouldLog() {
   var _window$sessionStorag;
 
   return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem('ddg-autofill-debug')) === 'true';
+}
+/**
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+
+
+function whenIdle(callback) {
+  var _this = this;
+
+  let timer;
+  return function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    cancelIdleCallback(timer);
+    timer = requestIdleCallback(() => callback.apply(_this, args));
+  };
 }
 
 },{"./Form/matching.js":34}],55:[function(require,module,exports){

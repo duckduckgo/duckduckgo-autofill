@@ -1,4 +1,4 @@
-import { safeExecute, addInlineStyles } from '../autofill-utils.js'
+import { safeExecute, addInlineStyles, whenIdle } from '../autofill-utils.js'
 import { getSubtypeFromType } from '../Form/matching.js'
 import { CSS_STYLES } from './styles/styles.js'
 
@@ -258,6 +258,7 @@ export class HTMLTooltip {
         }
     }
     resObs = new ResizeObserver(entries => entries.forEach(() => this.checkPosition()))
+    mutObsCheckPositionWhenIdle = whenIdle.call(this, this.checkPosition)
     mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {
             if (mutationRecord.type === 'childList') {
@@ -269,7 +270,7 @@ export class HTMLTooltip {
                 })
             }
         }
-        this.checkPosition()
+        this.mutObsCheckPositionWhenIdle()
     })
     setActiveButton (e) {
         this.activeButton = e.target

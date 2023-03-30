@@ -400,6 +400,19 @@ function shouldLog () {
     return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
 }
 
+/**
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+function whenIdle (callback) {
+    let timer
+    return (...args) => {
+        cancelIdleCallback(timer)
+        timer = requestIdleCallback(() => callback.apply(this, args))
+    }
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -423,5 +436,6 @@ export {
     isLocalNetwork,
     isValidTLD,
     wasAutofilledByChrome,
-    shouldLog
+    shouldLog,
+    whenIdle
 }
