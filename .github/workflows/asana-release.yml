@@ -232,6 +232,7 @@ jobs:
       - name: Update Windows autofill reference
         run: |
           cd windows/submodules/duckduckgo-autofill
+          git fetch --tags
           git checkout ${{ github.event.release.tag_name }}
           cd ../..
       - name: Create Windows PR Body
