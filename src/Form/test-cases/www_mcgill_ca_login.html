@@ -1,0 +1,376 @@
+<!--
+  https://www.mcgill.ca/minerva
+  rank: 2373
+  testRunId: 67
+  testResultId: 241916
+-->
+
+  <div class="headerwrapperdiv">
+    <div class="pageheaderdiv1">
+      <a href="#main_content" onmouseover="window.status='Go to Main Content'; return true" onmouseout="window.status=''; return true" onfocus="window.status='Go to Main Content'; return true" onblur="window.status=''; return true" class="skiplinks">Go to Main Content</a>
+      <h1>Minerva</h1>
+    </div>
+    <div class="headerlinksdiv"></div>
+    <table class="plaintable" summary="This table displays Menu Items and Banner Search textbox." width="100%">
+      <tbody>
+        <tr>
+          <td class="pldefault">
+            <div class="headerlinksdiv2">&nbsp;</div>
+          </td>
+          <td class="pldefault">
+            <p class="rightaligntext">
+              <span class="pageheaderlinks">
+                <a href="https://horizon.mcgill.ca/fr-PBAN1/twbkwbis.P_WWWLogin" class="submenulinktext2">FRANÇAIS</a>
+                |
+                <a href="https://webforms.mcgill.ca/minerva-help/gen_help/login.htm" accesskey="H" onclick="popup = window.open('https://webforms.mcgill.ca/minerva-help/gen_help/login.htm', 'PopupPage','height=500,width=450,scrollbars=yes,resizable=yes'); return false" target="_blank" onmouseover="window.status='';  return true" onmouseout="window.status=''; return true" onfocus="window.status='';  return true" onblur="window.status=''; return true" class="submenulinktext2">HELP</a>
+                |
+                <a href="twbkwbis.P_Logout" accesskey="3" class="submenulinktext2">EXIT</a>
+              </span>
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagetitlediv">
+    <table class="plaintable" summary="This table displays title and static header displays." width="100%">
+      <tbody>
+        <tr>
+          <td class="pldefault">
+            
+            <h2>User Login</h2>
+          </td>
+          <td class="pldefault">&nbsp;</td>
+          <td class="pldefault">
+            <p class="rightaligntext"></p>
+            <div class="staticheaders"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="bg3" width="100%" colspan="3">
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <a name="main_content"></a>
+  </div>
+  <div class="pagebodydiv">
+    <!--  ** END OF twbkwbis.P_OpenDoc **  -->
+    
+    <div class="infotextdiv">
+      <table class="infotexttable" summary="This layout table contains information that may be helpful in understanding the content and functionality of this page.  It could be a brief set of instructions, a description of error messages, or other special information.">
+        <tbody>
+          <tr>
+            <td class="indefault">
+              <span class="infotext">
+                <font size="3">Welcome to Minerva, a user-friendly web interface to McGill's
+                  central information system, available to applicants, students,
+                  faculty, staff and designated guests.<br><br>
+                  Choose your login method:
+                </font>
+
+                <ul>
+                  <li>
+                    <b>McGill username &amp; password</b> - Current students,
+                    faculty and staff (except to access the Finance (Fund)
+                    Administration Menu)
+                  </li>
+                  <li>
+                    <b>McGill ID &amp; PIN</b> - Applicants, guests and service
+                    providers, as well as those accessing the Finance (Fund)
+                    Administration Menu
+                  </li>
+                </ul></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p></p>
+    </div>
+    
+    <table width="80%">
+      <tbody>
+        <tr>
+          <td id="mcg_id_td">
+            <form action="/pban1/twbkwbis.P_ValLogin" method="post" name="loginform" autocomplete="OFF">
+              <!-- McGill Mod August 2015 G. Di Lembo : The following <TABLE> defintion was commented out and replaced by the <TABLE> definition right after it
+   <TABLE  CLASS="login_table" SUMMARY="This data entry table is used to format the user login fields">
+      <TR>
+         <TD CLASS="login_table" scope="row" ><LABEL for=mcg_un><SPAN class=fieldlabelred>McGill Username</SPAN></LABEL></TD>
+         <TD CLASS="login_table"><INPUT TYPE="text" NAME="sid" SIZE="20" MAXLENGTH="80" ID="mcg_un" placeholder="first.last@mcgill.ca" tabindex=3></TD>
+         <td></td>
+      </TR>
+      <TR>
+         <TD CLASS="login_table" scope="row" ><LABEL for=mcg_pw><SPAN class=fieldlabelred>McGill Password</SPAN></LABEL></TD>
+         <TD CLASS="login_table"><INPUT TYPE="password" NAME="PIN" SIZE="20" MAXLENGTH="80" ID="mcg_pw" placeholder="8-18 character password" tabindex=4></TD>
+         <td><a href="http://www.mcgill.ca/forgot-password" target="_blank" class="flink" id="fgpwlink"><font size="3">Forgot Password?</font></a>
+         <div class="fglink_help"><p>For students, instructors, staff members and alumni, your McGill Password is used with your McGill Username to access most McGill systems.</p><p>If you don't know your McGill Password:</p>
+<ol><li>Log into Minerva using your McGill ID and PIN</li>
+<li>Go to the <strong>Personal Menu</strong> > <strong>Password for McGill Username</strong>.</li>
+<li>If you have a McGill Username it will be displayed there along with instructions for choosing a new McGill Password.</li></ol></div></td>
+      </TR>
+      <tr>
+            <td></td>
+            <td><INPUT TYPE="submit" VALUE="Login" style="padding:0 7px;" id="mcg_un_submit"></td>
+            <td></td>
+         </tr>
+   </TABLE>
+-->
+              <table class="login_table" summary="This data entry table is used to format the user login fields">
+                <tbody>
+                  <tr>
+                    <td class="login_table" scope="row">
+                      <label for="UserID"><span class="fieldlabelred">McGill ID Number</span></label>
+                    </td>
+                    <td class="login_table">
+                      <input type="text" name="sid" size="20" maxlength="9" id="UserID" placeholder="9 digit ID number" tabindex="1" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: McGill ID Number
+parseable name: sid
+section: sid_0_5
+field signature: 3450079568
+form signature: 5374106282185992483
+form signature in host form: 5374106282185992483
+field frame token: 27A91E093E643F047A34C9903B130D5A
+form renderer id: 4
+field renderer id: 5" data-ddg-testresultelementid="557568" data-manual-scoring="username OR emailAddress">
+                    </td>
+                    <td>
+                      <a href="bzgkemlv.p_forgot_id" class="flink" id="fgidlink"><font size="3">Forgot ID?</font></a>
+                      <div class="fglink_help">
+                        <p>
+                          Your McGill ID is the
+                          <strong>9-digit number</strong> shown on your McGill
+                          ID card.
+                        </p>
+                        <p>
+                          If you don't remember your McGill ID, click
+                          <strong>Forgot ID?</strong>
+                        </p>
+                        <p>
+                          <strong>Applicants</strong>: Your McGill ID number was
+                          sent to you in the email acknowledgement of your
+                          application.
+                        </p>
+                        <p>
+                          <strong>New Staff</strong>: Your McGill ID number was
+                          sent to the email address you provided when you
+                          applied.
+                        </p>
+                        <p>
+                          <strong>Alumni</strong>: If your McGill ID was a
+                          7-digit number when you last studied at McGill, you
+                          may be able to access Minerva by adding
+                          <strong>11</strong> at the start (e.g.
+                          <strong>11</strong>xxxxxxx).
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="login_table" scope="row">
+                      <label for="PIN"><span class="fieldlabelred">Minerva PIN</span></label>
+                    </td>
+                    <td class="login_table">
+                      <input type="password" name="PIN" size="20" maxlength="18" id="PIN" placeholder="6-18 character PIN" tabindex="2" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Minerva PIN
+parseable name: PIN
+section: sid_0_5
+field signature: 1169727036
+form signature: 5374106282185992483
+form signature in host form: 5374106282185992483
+field frame token: 27A91E093E643F047A34C9903B130D5A
+form renderer id: 4
+field renderer id: 6" data-ddg-testresultelementid="557569" data-manual-scoring="password">
+                    </td>
+                    <td>
+                      <a href="#" class="flink" id="fgpinlink"><font size="3">Forgot PIN?</font></a>
+                      <div class="fglink_help">
+                        <p>
+                          If you don't remember your Minerva PIN, enter your
+                          McGill ID and click <strong>Forgot PIN?</strong>
+                        </p>
+                        <p>
+                          <strong>Applicants and guests</strong>: For first-time
+                          login, your PIN is your
+                          <strong>date of birth</strong> in the format
+                          <strong>yymmdd</strong>, (year, month, day) e.g.
+                          850624.
+                        </p>
+                        <p>
+                          <strong>New Staff</strong>: You will receive your
+                          initial PIN by email.
+                        </p>
+                        <p>
+                          <strong><font color="#dd000">Note</font></strong>: If your PIN has been reset for you, it will revert
+                          to your <b>date of birth</b> in the format
+                          <b>yymmdd</b> (year, month, day) e.g. 850624.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>
+                      <input type="submit" value="Login" id="mcg_id_submit">
+                    </td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </td>
+          <td align="center">
+            <div>
+              &nbsp;
+            </div>
+            <h3>OR</h3>
+            <div>
+              &nbsp;
+            </div>
+          </td>
+          <td id="mcg_un_td">
+            <form action="/pban1/twbkwbis.P_ValLogin" method="post" name="loginform1" autocomplete="OFF">
+              <table class="login_table" summary="This data entry table is used to format the user login fields">
+                <tbody>
+                  <tr>
+                    <td class="login_table" scope="row">
+                      <label for="mcg_un"><span class="fieldlabelred">McGill Username</span></label>
+                    </td>
+                    <td class="login_table">
+                      <input type="text" name="sid" size="20" maxlength="80" id="mcg_un" placeholder="first.last@mcgill.ca" tabindex="3" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: McGill Username
+parseable name: sid
+section: sid_0_8
+field signature: 3450079568
+form signature: 3198980265514761033
+form signature in host form: 3198980265514761033
+field frame token: 27A91E093E643F047A34C9903B130D5A
+form renderer id: 5
+field renderer id: 8" data-ddg-testresultelementid="557570" data-manual-scoring="username">
+                    </td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td class="login_table" scope="row">
+                      <label for="mcg_pw"><span class="fieldlabelred">McGill Password</span></label>
+                    </td>
+                    <td class="login_table">
+                      <input type="password" name="PIN" size="20" maxlength="80" id="mcg_pw" placeholder="8-18 character password" tabindex="4" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: McGill Password
+parseable name: PIN
+section: sid_0_8
+field signature: 1169727036
+form signature: 3198980265514761033
+form signature in host form: 3198980265514761033
+field frame token: 27A91E093E643F047A34C9903B130D5A
+form renderer id: 5
+field renderer id: 9" data-ddg-testresultelementid="557571" data-manual-scoring="password">
+                    </td>
+                    <td>
+                      <a href="http://www.mcgill.ca/forgot-password" target="_blank" class="flink" id="fgpwlink"><font size="3">Forgot Password?</font></a>
+                      <div class="fglink_help">
+                        <p>
+                          For students, instructors, staff members and alumni,
+                          your McGill Password is used with your McGill Username
+                          to access most McGill systems.
+                        </p>
+                        <p>If you don't know your McGill Password:</p>
+                        <ol>
+                          <li>Log into Minerva using your McGill ID and PIN</li>
+                          <li>
+                            Go to the <strong>Personal Menu</strong> &gt;
+                            <strong>Password for McGill Username</strong>.
+                          </li>
+                          <li>
+                            If you have a McGill Username it will be displayed
+                            there along with instructions for choosing a new
+                            McGill Password.
+                          </li>
+                        </ol>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>
+                      <input type="submit" value="Login" id="mcg_un_submit">
+                    </td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="infotextdiv">
+      <table class="infotexttable" summary="This layout table contains information that may be helpful in understanding the content and functionality of this page.  It could be a brief set of instructions, a description of error messages, or other special information.">
+        <tbody>
+          <tr>
+            <td class="indefault">
+              <span class="infotext">
+                <span>
+                  This is a private information system for use by authorized
+                  personnel only. Unauthorized access may lead to legal
+                  prosecution. All Minerva users agree to comply with the
+                  <a href="https://www.mcgill.ca/secretariat/files/secretariat/responsible-use-of-mcgill-it-policy-on-the.pdf" target="_blank">Policy on the Responsible Use of McGill IT Resources</a><br>
+                  <strong>Problems logging in?</strong> Click
+                  <strong>HELP</strong> in the top right corner. When finished
+                  using Minerva, please click <strong>EXIT</strong> and close
+                  your browser to protect your privacy.
+                </span></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p></p>
+    </div>
+    
+
+    <!--  ** START OF twbkwbis.P_CloseDoc **  -->
+    <table class="plaintable" summary="This is table displays line separator at end of the page." width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tbody>
+        <tr>
+          <td class="bgtabon" width="100%" colspan="2">
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <a href="#top" onmouseover="window.status='Skip to top of page'; return true" onmouseout="window.status=''; return true" onfocus="window.status='Skip to top of page'; return true" onblur="window.status=''; return true" class="skiplinks">Skip to top of page</a>
+    <div class="footerbeforediv"></div>
+    <div class="footerafterdiv"></div>
+    <div class="globalafterdiv"></div>
+    <div class="globalfooterdiv"></div>
+    <div class="pagefooterdiv">
+      <span class="releasetext">Release: 8.9</span>
+    </div>
+    <div class="poweredbydiv"></div>
+    <div class="div1"></div>
+    <div class="div2"></div>
+    <div class="div3"></div>
+    <div class="div4"></div>
+    <div class="div5"></div>
+    <div class="div6"></div>
+  </div>
+  <div class="banner_copyright">
+    <h5>
+      <br>© 2023 Ellucian Company L.P. and its affiliates.<br>This software
+      contains confidential and proprietary information of Ellucian or its
+      subsidiaries.<br>Use of this software is limited to Ellucian licensees,
+      and is subject to the terms and conditions of one or more written license
+      agreements between Ellucian and such licensees.
+    </h5>
+  </div>
+

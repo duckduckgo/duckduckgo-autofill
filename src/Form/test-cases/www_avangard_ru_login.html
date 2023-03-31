@@ -1,0 +1,327 @@
+<!--
+  https://www.avangard.ru/login/www/ibank_enter.php
+  rank: 5204
+  testRunId: 67
+  testResultId: 243486
+-->
+
+  <div id="panel"></div>
+  <header>
+    <div class="inner">
+      <a id="logo" href="/"></a>
+      <div class="citySelect">
+        <span>Мой город:</span><a href="/?city=Y" rel="#city_overlay"><i></i><strong>Москва</strong></a>
+      </div>
+      
+      
+
+      <div class="phone">
+        8 (800) 333-98-98
+        <span>(бесплатно для звонков из России)</span>
+      </div>
+      <!--./phone-->
+      <a class="orange-button" href="/login/www/ibank_enter.php">Войти в интернет-банк</a>
+
+      <nav>
+        <ul>
+          <li><a href="/rus/about/">О банке</a></li>
+          <li><a href="/rus/corporate/">Бизнесу</a></li>
+          <li><a href="/rus/private/">Частным лицам</a></li>
+          <li><a href="/rus/about/office/">Офисы и банкоматы</a></li>
+          <li>
+            <form action="/search/index.php">
+              <input name="q" type="text" placeholder="Поиск на сайте" data-ddg-testresultelementid="568952"><input name="s" class="lets-search" type="submit" value="search">
+            </form>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <!--./inner-->
+  </header>
+
+  <section class="content">
+    <div class="inner">
+      <div class="bread-creambs">
+        <ul>
+          <li></li>
+        </ul>
+        <div class="clear"></div>
+      </div>
+
+      <div class="right-column enter_bank_page">
+        <!--Добавил класс и убрал все style с текущий версии -->
+        <h3 class="ttl">Вход в интернет-банк</h3>
+
+        <div class="article n-s-a">
+          <div class="contentBlock">
+            <form id="loginfrm_2" name="loginfrm2" method="post" action="/client4/afterlogin" autocomplete="off" onsubmit="LoginSubmit1(document.getElementById('loginfrm_2'));return false;">
+              <div class="loginBank">
+                <div class="label">
+                  <div class="inp-text_first">
+                    <input type="text" name="login_v" value="" class="keyboardInput" id="key" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Для физических лиц: если вы — новый пользователь или забыли* свой логин и/или пароль, Для юридически
+parseable name: login_v
+section: login_v_0_10
+field signature: 889979736
+form signature: 11226882770119707120
+form signature in host form: 11226882770119707120
+field frame token: D2717507660421D9D66CA9586DEE423B
+form renderer id: 3
+field renderer id: 10" vki_attached="true" data-ddg-testresultelementid="568950" data-manual-scoring="username OR emailAddress">
+                    <input type="hidden" name="login" value="">
+                    <em>Логин</em>
+                  </div>
+                  <!--.inp-text-end-->
+                </div>
+                <!--.label-end-->
+
+                <div class="label">
+                  <div class="inp-text_first">
+                    <input type="password" name="passwd_v" value="" class="keyboardInput" id="key2" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Для физических лиц: если вы — новый пользователь или забыли* свой логин и/или пароль, Для юридически
+parseable name: passwd_v
+section: login_v_0_10
+field signature: 1778556412
+form signature: 11226882770119707120
+form signature in host form: 11226882770119707120
+field frame token: D2717507660421D9D66CA9586DEE423B
+form renderer id: 3
+field renderer id: 12" vki_attached="true" data-ddg-testresultelementid="568951" data-manual-scoring="password">
+                    <input type="hidden" name="passwd" value="">
+
+                    <input type="hidden" name="nw" value="1">
+                    <em>Пароль</em>
+                  </div>
+                  <!--.inp-text-end-->
+                </div>
+                <!--.label-end-->
+
+                <div class="label">
+                  <div class="buttonLoginBank" onclick="LoginSubmit1(document.getElementById('loginfrm_2'));">
+                    Войти
+                  </div>
+                </div>
+                <input type="image" border="0" src="/login/www/img/p.gif" width="1" height="1" alt="" data-ddg-testresultelementid="568953">
+              </div>
+              <!--.loginBank-end-->
+            </form>
+
+            <div class="enter_bank_page_text">
+              <p class="enter_bank_center_text">
+                <b>Для физических лиц: если вы — новый пользователь или
+                  забыли<sup>*</sup> свой логин и/или пароль,
+                  <a href="/login/www/ibank_enter.php?fl=1">получите новый логин и пароль</a></b><br><b>Для юридических лиц и ИП: если вы еще не являетесь клиентом
+                  банка,
+                  <a href="http://demo.avangard.ru/" onclick="window.open(this.href, '_top');window.focus();return false;">попробуйте демоверсию</a></b>
+              </p>
+              <div class="warningDotted">
+                Внимание! Для входа в интернет-банк необходимо ввести только
+                логин и пароль, система никогда не запрашивает для входа: номер
+                телефона, ПИН карты, код доступа со скретч-карты, код CVC2/CVV2
+                <br>Если вы увидите на этой странице нестандартное сообщение —
+                просьба немедленно обратиться в Службу поддержки банка<br><sup>*</sup>
+                Повторный вход в интернет-банк по номеру карты и кодовому слову
+                заблокирован. Если вы забыли свой логин и/или пароль,
+                предварительно обратитесь в Службу поддержки.
+              </div>
+              <!--.warningDotted-end-->
+
+              <h3>Рекомендации по обеспечению безопасности</h3>
+              <p><strong>Работа с интернет-банком</strong></p>
+              <ul>
+                <li>
+                  <i></i>Убедитесь, что адресная строка начинается с https://
+                  (установлено безопасное соединение с сервером банка)
+                </li>
+                <li>
+                  <i></i>Не отлучайтесь от компьютера во время работы с системой
+                </li>
+                <li>
+                  <i></i>После завершения работы с системой, выберите пункт
+                  "завершение сеанса", а затем закройте программу для работы в
+                  сети Интернет (браузер). Перезапустите браузер перед
+                  посещением других сайтов
+                </li>
+                <li>
+                  <i></i>Если вы пользуетесь чужим компьютером, после окончания
+                  работы с системой удалите временные файлы интернета
+                </li>
+                <li>
+                  <i></i>Для физических лиц: Подпишитесь на один из сервисов
+                  информирования – SMS-сервис или бесплатные push-уведомления
+                  (базовый и дополнительный пакет с общей информацией). Это
+                  позволит вам контролировать вход в ваш интернет-банк и смену
+                  логина и/или пароля
+                </li>
+              </ul>
+
+              <p><strong>Логин (имя пользователя) и пароль</strong></p>
+              <ul>
+                <li>
+                  <i></i>Ни при каких обстоятельствах не сообщайте никому свой
+                  логин и/или пароль
+                </li>
+                <li>
+                  <i></i>Запомните свой логин и пароль, а если это трудно —
+                  измените их на более удобные. Избегайте очевидных, легко
+                  предполагаемых цифровых комбинаций, таких как окончание вашего
+                  номера телефона, дата вашего рождения и т.п.
+                </li>
+                <li>
+                  <i></i>Для ввода логина и пароля безопаснее пользоваться
+                  виртуальной экранной клавиатурой, особенно когда пользуетесь
+                  чужим компьютером
+                </li>
+                <li>
+                  <i></i>Вводите логин и пароль, когда их не могут подсматривать
+                  другие лица
+                </li>
+              </ul>
+
+              <p>
+                <strong>Скретч-карта и флеш-карта с ЭЦП (электронно-цифровой
+                  подписью)</strong>
+              </p>
+
+              <ul>
+                <li>
+                  <i></i>Ни при каких обстоятельствах не передавайте никому вашу
+                  скретч-карту или флеш-карту с ЭЦП
+                </li>
+                <li>
+                  <i></i>Не сообщайте 3-им лицам, в том числе представляющимся
+                  сотрудниками банка, коды со скретч-карты доступа
+                </li>
+                <li>
+                  <i></i>Не допускайте возможность получения третьими лицами
+                  кодов подтверждения, направляемых по SMS
+                </li>
+                <li>
+                  <i></i>Не оставляйте скретч-карту или флеш-карту с ЭЦП в
+                  автомобиле, в карманах верхней одежды, сданной в гардероб или
+                  оставленной в общественных местах
+                </li>
+                <li>
+                  <i></i>Не оставляйте флеш-карту с ЭЦП вставленной в компьютер,
+                  вынимайте ее сразу после использования
+                </li>
+              </ul>
+
+              <p><strong>SMS-подтверждение</strong></p>
+
+              <ul>
+                <li>
+                  <i></i>SMS-подтверждение может быть отключено, как независимый
+                  способ подтверждения проведения операций. При этом проведение
+                  операций с наивысшим уровнем риска без SMS-подтверждения будет
+                  невозможно
+                </li>
+                <li>
+                  <i></i>Использование SMS-подтверждения возможно через 24 часа
+                  после его повторного подключения
+                </li>
+              </ul>
+
+              <p>
+                &nbsp;<a href="/bin/ibsec201606.pdf" target="_blank">Подробные рекомендации по мерам безопасности при работе в
+                  интернет-банке</a>
+              </p>
+            </div>
+          </div>
+          <!--contentBlock-->
+        </div>
+      </div>
+      <!--./right-->
+      <div class="clear"></div>
+    </div>
+    <!--./inner-->
+  </section>
+
+  <footer>
+    <div class="footer-top-shadow"></div>
+    <div class="inner">
+      <ul>
+        <li class="col num1">
+          <h6><a href="/rus/about/">О банке</a></h6>
+          <ul>
+            <li><a href="/rus/about/office/">Офисы</a></li>
+            <li><a href="/rus/about/atms/">Банкоматы</a></li>
+            <li><a href="/rus/about/vacancy/">Вакансии</a></li>
+            <li><a href="/rus/about/recv/">Реквизиты</a></li>
+          </ul>
+        </li>
+        <li class="col num2">
+          <h6><a href="/rus/corporate/">Корпоративным клиентам</a></h6>
+          <ul>
+            <li>
+              <a href="/rus/corporate/cashservice/">Расчетно-кассовое обслуживание</a>
+            </li>
+            <li><a href="/rus/corporate/remoteSystem/">Интернет-банк</a></li>
+            <li>
+              <a href="/rus/corporate/salaryproject/">Зарплатный проект</a>
+            </li>
+            <li>
+              <a href="/rus/corporate/cashservice/Cash_Card/">Cash-Сard</a>
+            </li>
+          </ul>
+        </li>
+        <li class="col num3">
+          <h6><a href="/rus/private/">Частным лицам</a></h6>
+          <ul>
+            <li>
+              <a href="/rus/private/cards/creditsCard/">Кредитные карты</a>
+            </li>
+            <li><a href="/rus/private/internetserv/">Интернет-банк</a></li>
+            <li><a href="/rus/private/auto/">Автокредитование</a></li>
+            <li><a href="/rus/private/deposit/">Вклады</a></li>
+          </ul>
+        </li>
+      </ul>
+      <div id="contact-with-us">
+        <h6>Свяжитесь с нами</h6>
+        <div class="body">
+          <div class="big-phone">
+            8 (800) 333-98-98<span>(Федеральный)</span>
+          </div>
+          <div class="just-phone">8 (495) 234-98-98<span>(Москва)</span></div>
+          <a class="orange-button" href="http://zingaya.com/widget/2e37f99e4aee50e96aebdc6da70902af" onclick="window.open(this.href+'?referrer='+escape(window.location.href)+'', '_blank', 'width=236,height=220,resizable=no,toolbar=no,menubar=no,location=no,status=no'); return false">Позвонить с сайта</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <a class="gray-button" target="_blank" href="/login/www/ibank_enter.php">Войти в интернет-банк</a>
+        <a class="site-map" href="/rus/sitemap.php"><i></i>Полная карта сайта</a>
+      </div>
+
+      <div class="blank">
+        <div class="be-with-us">
+          <div>Будьте с нами:</div>
+          <a href="https://vk.com/bankavangard" target="_blank"></a>
+        </div>
+
+        © 1998—2021 Банк Авангард. Генеральная лицензия Банка России № 2879
+        <br>
+        119180, Москва, ул. Большая Якиманка, д. 1
+        <br>
+        E-mail: <a href="mailto:info@avangard.ru">info@avangard.ru</a>
+        <br><br>
+        <p>Создание сайта - <a href="http://www.aic.ru">AIC</a>.</p>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <!--./inner-->
+  </footer>
+  <div id="city_overlay" class="overlay">
+    <a class="close"></a>
+    <div class="arrow"></div>
+    <div class="contentWrap"></div>
+  </div>
+  <!--city_overlay-->
+  <div id="city_map" class="overlay">
+    <div class="contentWrap"></div>
+  </div>
+  <!--city_overlay-->
+

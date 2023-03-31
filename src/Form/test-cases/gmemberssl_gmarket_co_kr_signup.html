@@ -1,0 +1,454 @@
+<!--
+  https://gmemberssl.gmarket.co.kr/mobile/Registration/MemberRegistrationStep1
+  rank: 3707
+  testRunId: 67
+  testResultId: 242633
+-->
+
+  <!-- WRAPPER -->
+  <div id="wrap">
+    <!-- header -->
+    <div id="header" class="head_v3">
+      <div id="header_wrapper">
+        <div id="progress_icon"></div>
+
+        <div id="header_st">
+          <div class="inner">
+            <h1 class="h_sub">Register</h1>
+            <div class="menu">
+              <a href="javascript:GMHeader.back();" class="btn_prev" data-gg-tracking-installed="[200001202,utility,click] VIP_헤더_백버튼"><span class="sp_com">prev</span></a>
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+        <!--앱인 경우 web으로 구성된 최근본상품&최근검색어 영역을 노출할 필요가 없다. todo tolhm 일단 제외 if (false == GlobalPageAttr.IsApp) -->
+      </div>
+      
+    </div>
+    <!-- //header -->
+
+    <hr>
+
+    <!-- CONTENTS -->
+
+    <!-- container -->
+    <div id="container">
+      <div id="content">
+        <div class="join_section">
+          <form action="">
+            <input type="hidden" id="joinChannelType" value="">
+            <div class="inp_area">
+              <div class="inp">
+                <input type="text" class="inp_txt" name="login_id" id="login_id" placeholder="Gmarket ID" autocomplete="off" autocapitalize="off" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Gmarket ID
+parseable name: login_id
+section: login_id_0_17
+field signature: 1441997970
+form signature: 3680615796319691314
+form signature in host form: 3680615796319691314
+field frame token: F84E238A200BE2C92C46DD61A28CC0DD
+form renderer id: 2
+field renderer id: 17
+autocomplete: off" data-ddg-testresultelementid="562930" data-manual-scoring="username OR emailAddress">
+                <button class="btn_del">
+                  <span class="sp_com">delete</span>
+                </button>
+              </div>
+              <div class="inp_dsc">
+                <p class="tx">
+                  Combination of 6~10 alphabets, numbers, and ‘_’(underscore)
+                  without space.
+                </p>
+                <p id="idMsg" class="tx"></p>
+              </div>
+              <div class="inp">
+                <input type="text" name="email" id="email" class="inp_txt" placeholder="E-mail" autocomplete="off" autocapitalize="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: E-mail
+parseable name: email
+section: login_id_0_17
+field signature: 420638584
+form signature: 3680615796319691314
+form signature in host form: 3680615796319691314
+field frame token: F84E238A200BE2C92C46DD61A28CC0DD
+form renderer id: 2
+field renderer id: 19
+autocomplete: off" data-ddg-testresultelementid="562931" data-manual-scoring="username">
+                <button class="btn_del">
+                  <span class="sp_com">delete</span>
+                </button>
+              </div>
+              <div class="inp_dsc">
+                <p id="emailMsg" class="tx">
+                  Please enter your e-mail address.
+                </p>
+                <p id="insertEmailMsg" class="tx tx_v2">
+                  *Please enter your e-mail address.
+                </p>
+
+                <p class="tx">
+                  We will regularly send you emails with offers regarding our
+                  services. You can unsubscribe from receiving these marketing
+                  emails at any time, free of charge, via My Gmarket or the link
+                  in the emails.
+                </p>
+                <p class="tx">
+                  - In order to complete your registration with Gmarket, you
+                  have to first receive our Confirmation E-mail.Please enter a
+                  correct e-mail address.
+                </p>
+                <p class="tx">
+                  - For Yahoo Mail users in Taiwan, Hong Kong, Singapore and
+                  etc, please check whether your email domain is yahoo.com
+                  before enter.
+                </p>
+              </div>
+              <div class="inp inp_v2">
+                <input type="password" name="pwd1" id="pwd1" class="inp_txt" placeholder="Password" onkeyup="validatePasswordType(this,'Password1');" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: pwd1
+section: login_id_0_17
+field signature: 4252859336
+form signature: 3680615796319691314
+form signature in host form: 3680615796319691314
+field frame token: F84E238A200BE2C92C46DD61A28CC0DD
+form renderer id: 2
+field renderer id: 21" data-ddg-testresultelementid="562932" data-manual-scoring="password">
+                <button class="btn_del">
+                  <span class="sp_com">delete</span>
+                </button>
+              </div>
+              <div class="inp">
+                <input type="password" name="pwd2" id="pwd2" class="inp_txt" placeholder="Confirm password" onkeyup="validatePasswordType2();" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm password
+parseable name: pwd2
+section: login_id_0_17
+field signature: 350009959
+form signature: 3680615796319691314
+form signature in host form: 3680615796319691314
+field frame token: F84E238A200BE2C92C46DD61A28CC0DD
+form renderer id: 2
+field renderer id: 23" data-ddg-testresultelementid="562933" data-manual-scoring="password">
+                <button class="btn_del">
+                  <span class="sp_com">delete</span>
+                </button>
+                <p id="confirmed" class="tx_result">
+                  Confirmed
+                </p>
+              </div>
+              <div class="inp_dsc">
+                <p id="pwd2Msg" class="tx tx_v2">
+                  The passwords you entered do not match.
+                </p>
+                <p id="insertPwd" class="tx tx_v2">
+                  *Please enter your Password.
+                </p>
+                <p id="insertRpwd" class="tx tx_v2">
+                  *Please enter your Password again.
+                </p>
+                <div id="bmsgPassword1"></div>
+                <div id="password_info">
+                  <p class="tx">
+                    Combination of 8~15 (upper/lowercase)letters, numbers, and
+                    symbols without space.
+                  </p>
+                  <ul class="lst_dsc">
+                    <li>
+                      - Password is case-sensitive.(distinguishing upper- and
+                      lower-case letters)
+                    </li>
+                    <li>
+                      - Besides letters, include at least a number or symbol (!
+                      @ # $ % ^ &amp; * ( ) - _ + = , . / ? : ; &lt; &gt; [ ] {
+                      } | ~ )
+                    </li>
+                    <li>- Blank(space) cannot be allowed for password</li>
+                    <li>
+                      - No more than 4 same or consecutive letters and numbers.
+                    </li>
+                    <li>- Your ID cannot be used as your Password.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <ul class="chk_area">
+              <li>
+                <input type="checkbox" id="reg_check" class="sp_com inp_chk" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: I have carefully reviewed and agreed the terms and conditions of the User AgreementPersonal Informat
+parseable name: reg_check
+section: login_id_0_17
+field signature: 2990339482
+form signature: 3680615796319691314
+form signature in host form: 3680615796319691314
+field frame token: F84E238A200BE2C92C46DD61A28CC0DD
+form renderer id: 2
+field renderer id: 25" data-ddg-testresultelementid="562934">
+                <label for="inp_join2">I have carefully reviewed and agreed the terms and conditions
+                  of the
+                  <a href="http://gmember.gmarket.co.kr//Pages/UserAgreement" target="_blank" class="abtn utxt"><em>User Agreement</em></a><br>Personal Information will be used for the creation of
+                  your Gmarket account and for the purpose of providing
+                  services.<br>For more information on how we process your
+                  personal data, please see our
+                  <a href="http://gmember.gmarket.co.kr//Pages/PrivacyPolicy" target="_blank" class="abtn utxt"><em>Privacy Policy</em></a></label>
+              </li>
+            </ul>
+            <div class="btn_area">
+              <a id="btnSubmit" href="javascript:formCheck();" class="btn btn_v2">Submit</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <a href="#" class="btn_top">TOP</a>
+    </div>
+    <!-- //container -->
+    <!-- DBM  -->
+    <!--
+    Start of DoubleClick Floodlight Tag: Please do not remove
+    Activity name of this tag: Mweb_RMKT
+    URL of the webpage where the tag is expected to be placed: http://www.gmarket.co.kr
+    This tag must be placed between the <body> and </body> tags, as close as possible to the opening tag.
+    Creation Date: 05/18/2015
+    -->
+    
+    
+    <noscript>
+      <iframe
+        src="https://4815822.fls.doubleclick.net/activityi;src=4815822;type=invmedia;cat=7x18gdrk;ord=1?"
+        width="1"
+        height="1"
+        frameborder="0"
+        style="display: none"
+      ></iframe>
+    </noscript>
+    <!-- End of DoubleClick Floodlight Tag: Please do not remove -->
+    <!--// DBM -->
+    <!--// CONTENTS -->
+
+    <!-- FOOTER -->
+    <div id="footer">
+      <div class="bx_foot">
+        <a class="tx" href="http://sna.gmarket.co.kr/?fcd=704700001&amp;url=https%3a%2f%2fgsigninssl.gmarket.co.kr%2fmobilelogin%2flogin" data-gg-tracking-installed="[200001019,utility,click] HM_푸터_로그인/로그아웃">Sign In</a>
+        <a class="tx" href="https://gmemberssl.gmarket.co.kr/mobile/Registration/MemberRegistrationStep1" data-gg-tracking-installed="[200001020,link,click] HM_푸터_가입하기">Register</a>
+        <a class="tx" href="http://mg.gmarket.co.kr/CustomerCenter" data-gg-tracking-installed="[200001021,link,click] HM_푸터_고객센터">Help</a>
+
+        <a class="tx" href="//glrpp.gmarket.co.kr/2086?charset=enUS">About Gmarket</a>
+      </div>
+
+      <div class="bx_foot">
+        <a href="javascript:;" class="sel_country tx">
+          <span id="selected_ship" data-gg-tracking-installed="[200001023,link,click] HM_푸터_배송지설정">
+            Shipping to South Korea
+          </span>
+          <span id="selected_currency" data-gg-tracking-installed="[200001024,link,click] HM_푸터_통화설정">$USD</span>
+          <span id="selected_lang" data-gg-tracking-installed="[200001025,link,click] HM_푸터_언어설정">English</span>
+        </a>
+      </div>
+
+      <div class="bx_foot">
+        <a href="javascript:goToPc()" class="tx">Go to Full site</a>
+        <a href="javascript:goToApp()" class="tx">Go to APP</a>
+      </div>
+
+      <div class="dsc_foot">
+        <address>
+          Gmarket Inc<br>Gangnam Finance Center, 152, Teheran-ro,<br>Gangnam-gu,
+          Seoul, Rep. of Korea <br>CEO : Hang Il Chun<br>Business
+          Registration No. : 220-81-83676<br>E-commerce Registration<br>:
+          Gangnam No. 10630
+        </address>
+        <a href="http://gmember.gmarket.co.kr/Pages/UserAgreement" class="btn_dsc">User Agreement</a>
+        <a href="http://gmember.gmarket.co.kr/Pages/PrivacyPolicy" class="btn_dsc">Privacy Policy</a>
+      </div>
+
+      <!-- footer common select layer -->
+      <div class="layer_foot">
+        <div class="dimmed"></div>
+        <div class="layer_sec">
+          <div class="po_rel">
+            <h1 class="tit hd_line">Shopping Preferences</h1>
+            <dl class="dl_wrap">
+              <dt class="dt_tit">Language</dt>
+              <dd>
+                <div class="sel_area v2">
+                  <div class="sel">
+                    <select id="sel_lang" data-ddg-testresultelementid="562935">
+                      <option value="enUS">English</option>
+                      c
+                      <option value="zhCN">中文</option>
+                    </select>
+                  </div>
+                </div>
+              </dd>
+              <dt class="dt_tit">Currency</dt>
+              <dd class="flag_box po_rel">
+                <!-- value 값에 따라 국가별 class 교체처리 됨 , value 값은 국가별 코드로 처리 해주세요.-->
+                <span id="natioinal" class="us"></span>
+                <div class="sel_area v2">
+                  <div class="sel">
+                    <select id="sel_currency" data-ddg-testresultelementid="562936">
+                      <option value="ae" name="AED">DH AED</option>
+                      <option value="au" name="AUD">A$ AUD</option>
+                      <option value="br" name="BRL">R$ BRL</option>
+                      <option value="ca" name="CAD">C$ CAD</option>
+                      <option value="cn" name="CNY">￥ CNY</option>
+                      <option value="eu" name="EUR">€ EUR</option>
+                      <option value="gb" name="GBP">￡ GBP</option>
+                      <option value="hk" name="HKD">HK$ HKD</option>
+                      <option value="jp" name="JPY">￥ JPY</option>
+                      <option value="kz" name="KZT">₸ KZT</option>
+                      <option value="mn" name="MNT">₮ MNT</option>
+                      <option value="mo" name="MOP">MOP$ MOP</option>
+                      <option value="my" name="MYR">RM MYR</option>
+                      <option value="no" name="NOK">Nkr NOK</option>
+                      <option value="nz" name="NZD">NZ$ NZD</option>
+                      <option value="ph" name="PHP">₱ PHP</option>
+                      <option value="ru" name="RUB">рубль RUB</option>
+                      <option value="sa" name="SAR">SR SAR</option>
+                      <option value="sg" name="SGD">S$ SGD</option>
+                      <option value="th" name="THB">฿ THB</option>
+                      <option value="tr" name="TRY">TL TRY</option>
+                      <option value="tw" name="TWD">NT$ TWD</option>
+                      <option selected="selected" value="us" name="USD">
+                        $ USD
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </dd>
+              <dt class="dt_tit">Shipping Country or Region</dt>
+              <dd>
+                <div class="sel_area v2">
+                  <div class="sel">
+                    <select id="sel_shipping" data-ddg-testresultelementid="562937">
+                      <option value="AL">Albania</option>
+                      <option value="DZ">Algeria</option>
+                      <option value="AE">Arab Emirates</option>
+                      <option value="AR">Argentina</option>
+                      <option value="AM">Armenia</option>
+                      <option value="AU">Australia</option>
+                      <option value="AT">Austria</option>
+                      <option value="AZ">Azerbaijan</option>
+                      <option value="BH">Bahrain</option>
+                      <option value="BD">Bangladesh</option>
+                      <option value="BY">Belarus</option>
+                      <option value="BE">Belgium</option>
+                      <option value="BT">Bhutan</option>
+                      <option value="BA">Bosnia and Herzegovina</option>
+                      <option value="BR">Brazil</option>
+                      <option value="BN">Brunei Darussalam</option>
+                      <option value="BG">Bulgaria</option>
+                      <option value="CA">Canada</option>
+                      <option value="CV">Cape Verde</option>
+                      <option value="CL">Chile</option>
+                      <option value="CN">China</option>
+                      <option value="CR">CostaRica</option>
+                      <option value="HR">Croatia</option>
+                      <option value="CY">Cyprus</option>
+                      <option value="CZ">Czech Republic</option>
+                      <option value="DK">Denmark</option>
+                      <option value="DJ">Djibouti</option>
+                      <option value="DO">Dominican Republic</option>
+                      <option value="EC">Ecuador</option>
+                      <option value="EG">Egypt</option>
+                      <option value="EE">Estonia</option>
+                      <option value="FJ">Fiji</option>
+                      <option value="FI">Finland</option>
+                      <option value="FR">France</option>
+                      <option value="GE">Georgia</option>
+                      <option value="DE">Germany</option>
+                      <option value="GR">Greece</option>
+                      <option value="HK">Hong Kong</option>
+                      <option value="HU">Hungary</option>
+                      <option value="IN">India</option>
+                      <option value="ID">Indonesia</option>
+                      <option value="IE">Ireland</option>
+                      <option value="IL">Israel</option>
+                      <option value="JP">Japan</option>
+                      <option value="JO">Jordan</option>
+                      <option value="KZ">Kazakhstan</option>
+                      <option value="KE">Kenya</option>
+                      <option value="LA">
+                        Lao People s Democratic Republic
+                      </option>
+                      <option value="LV">Latvia</option>
+                      <option value="LU">Luxembourg</option>
+                      <option value="MO">Macau</option>
+                      <option value="MK">Macedonia</option>
+                      <option value="M2">Malaysia(East)</option>
+                      <option value="MY">Malaysia(West)</option>
+                      <option value="MV">Maldives</option>
+                      <option value="MU">Mauritius</option>
+                      <option value="MX">Mexico</option>
+                      <option value="MN">Mongolia</option>
+                      <option value="MA">Morocco</option>
+                      <option value="MM">Myanmar</option>
+                      <option value="NP">Nepal</option>
+                      <option value="NL">Netherlands</option>
+                      <option value="AN">NETHERLANDS ANTILLES</option>
+                      <option value="NZ">New Zealand</option>
+                      <option value="NI">Nicaragua</option>
+                      <option value="NG">Nigeria</option>
+                      <option value="NO">Norway</option>
+                      <option value="OM">Oman</option>
+                      <option value="PK">Pakistan</option>
+                      <option value="PE">Peru</option>
+                      <option value="PH">Philippines</option>
+                      <option value="PL">Poland</option>
+                      <option value="PT">Portugal</option>
+                      <option value="QA">Qatar</option>
+                      <option value="RO">Romania</option>
+                      <option value="RU">Russian Federation</option>
+                      <option value="RW">Rwanda</option>
+                      <option value="SA">Saudi Arabia</option>
+                      <option value="SG">Singapore</option>
+                      <option value="SK">Slovakia</option>
+                      <option value="SI">Slovenia</option>
+                      <option selected="selected" value="KR">
+                        South Korea
+                      </option>
+                      <option value="ES">Spain</option>
+                      <option value="SE">Sweden</option>
+                      <option value="CH">Switzerland</option>
+                      <option value="TW">Taiwan</option>
+                      <option value="TH">THAILAND</option>
+                      <option value="TR">Turkey</option>
+                      <option value="GB">United Kingdom</option>
+                      <option value="US">United States</option>
+                      <option value="UZ">Uzbekistan</option>
+                      <option value="VN">Vietnam</option>
+                      <option value="ZM">Zambia</option>
+                    </select>
+                  </div>
+                </div>
+              </dd>
+            </dl>
+            <div class="btn_area">
+              <a href="#" class="btn btn_v2 help_cls" onclick="javascript:saveButtonClicked()">Save</a>
+            </div>
+            <a href="#" class="btn_close" onclick="javascript:cancelButtonClicked()"><span class="blind">닫기</span></a>
+          </div>
+        </div>
+        
+      </div>
+      <!--// footer common select layer -->
+
+      
+    </div>
+    
+    <!--// FOOTER -->
+  </div>
+  <!--// WRAPPER -->
+

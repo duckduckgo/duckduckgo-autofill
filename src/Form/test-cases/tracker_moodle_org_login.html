@@ -1,0 +1,477 @@
+<!--
+  https://tracker.moodle.org/login.jsp
+  rank: 1549
+  testRunId: 67
+  testResultId: 241328
+-->
+
+  <div id="moodlesitestopnavbar">
+    <div class="waffle-menu">
+      <button class="navbar-toggler mt-2 mr-2 collapsed" onclick="open_mobile_menu()" type="button" data-toggle="collapse" data-target="#sitetopnavbar" aria-controls="sitetopnavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="aui-icon aui-icon-small aui-iconfont-appswitcher"></span>
+      </button>
+    </div>
+    <a href="https://moodle.org/" class="navbar-brand position-md-fixed d-none d-md-flex align-items-center m-0 p-0 aabtn">
+      
+    </a>
+    <div class="collapse navbar-collapse justify-content-end mt-2" id="sitetopnavbar">
+      <ul class="navbar-nav">
+        <li class="nav-item Forums">
+          <a class="nav-link" href="https://moodle.org//course"><span>Forums</span></a>
+        </li>
+        <li class="nav-item documentation">
+          <a class="nav-link" href="https://docs.moodle.org"><span>Documentation</span></a>
+        </li>
+        <li class="nav-item download">
+          <a class="nav-link" href="https://download.moodle.org"><span>Downloads</span></a>
+        </li>
+        <li class="nav-item demo">
+          <a class="nav-link" href="https://moodle.org/demo"><span>Demo</span></a>
+        </li>
+        <li class="nav-item tracker">
+          <a class="nav-link" href="https://tracker.moodle.org"><span>Tracker</span></a>
+        </li>
+        <li class="nav-item development">
+          <a class="nav-link" href="https://moodledev.io/"><span>Development</span></a>
+        </li>
+        <li class="nav-item translation">
+          <a class="nav-link" href="https://lang.moodle.org"><span>Translation</span></a>
+        </li>
+        <li class="nav-item search">
+          <a class="nav-link icon-no-margin" href="https://moodle.org/public/search">
+            <i class="quick-search-item-image aui-icon aui-icon-small aui-iconfont-search"></i>
+          </a>
+        </li>
+        <li class="nav-item menu">
+          <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-expanded="false" onclick="openMenu()">
+            
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" id="waffle_menu">
+            <div class="p-3 pathways">
+              <div class="pb-1 heading">What are you looking for?</div>
+              <hr>
+              <p>
+                Learn about Moodle's products, like Moodle LMS or Moodle
+                Worplace, or find a Moodle Certified Service Provider.<br>
+                <br>
+                <a href="https://moodle.com">Moodle.com <i class="fa fa-long-arrow-right icon"></i></a>
+              </p>
+              <hr>
+              <p>
+                Our social network to share and curate open educational
+                resources.<br>
+                <br>
+                <a href="https://moodle.net">MoodleNet <i class="fa fa-long-arrow-right icon"></i></a>
+              </p>
+              <hr>
+              <p>
+                Courses and programs to develop your skills as a Moodle
+                educator, administrator, designer or developer.<br>
+                <br>
+                <a href="https://moodle.academy">Moodle Academy <i class="fa fa-long-arrow-right icon"></i></a>
+              </p>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
+    <div></div>
+  </div>
+  <div id="page">
+    <header id="header" role="banner">
+      
+      <a class="aui-skip-link" href="/login.jsp?os_destination=%2Flogin.jsp">Log in</a><a class="aui-skip-link" href="#main">Skip to main content</a><a class="aui-skip-link" href="#sidebar">Skip to sidebar</a>
+      <nav class="aui-header aui-dropdown2-trigger-group" aria-label="Site" data-aui-responsive="true">
+        <div class="aui-header-inner">
+          <div class="aui-header-before">
+            <button class="aui-dropdown2-trigger app-switcher-trigger aui-dropdown2-trigger-arrowless" aria-controls="app-switcher" aria-haspopup="true" role="button" data-aui-trigger="" href="#app-switcher" resolved="" aria-expanded="false">
+              <span class="aui-icon aui-icon-small aui-iconfont-appswitcher">Linked Applications</span>
+            </button>
+            <div id="app-switcher" class="aui-dropdown2 aui-style-default aui-layer" role="menu" hidden="" data-is-switcher="true" data-environment="{&quot;isUserAdmin&quot;:false,&quot;isAppSuggestionAvailable&quot;:false,&quot;isSiteAdminUser&quot;:false}" resolved="" tabindex="-1">
+              <div class="aui-dropdown2-section">
+                <ul class="nav-links">
+                  <li class="nav-link nav-link-local">
+                    <a href="https://tracker.moodle.org/secure/MyJiraHome.jspa" class="aui-dropdown2-radio aui-dropdown2-checked checked" title="https://tracker.moodle.org/secure/MyJiraHome.jspa" resolved="" aria-checked="true" tabindex="0" role="radio"><span class="nav-link-label">Moodle Tracker</span></a>
+                  </li>
+                  <li class="nav-link">
+                    <a href="https://moodlesuccess.atlassian.net/wiki/" class="aui-dropdown2-radio" title="https://moodlesuccess.atlassian.net/wiki/" resolved="" aria-checked="false" tabindex="0" role="radio"><span class="nav-link-label">Confluence</span></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="aui-header-primary">
+            <span id="logo" class="aui-header-logo aui-header-logo-custom"><a href="https://tracker.moodle.org/secure/MyJiraHome.jspa" aria-label="Go to home page"><span class="aui-header-logo-text">Moodle Tracker</span></a></span>
+            <ul class="aui-nav">
+              <li>
+                <a href="/secure/Dashboard.jspa" class="aui-nav-link aui-dropdown2-trigger aui-dropdown2-ajax" id="home_link" aria-haspopup="true" aria-controls="home_link-content" title="View and manage your dashboards" accesskey="d" elementtiming="app-header" resolved="" aria-expanded="false">Dashboards</a>
+                <div class="aui-dropdown2 aui-style-default aui-layer" id="home_link-content" data-aui-dropdown2-ajax-key="home_link" resolved="" tabindex="-1"></div>
+              </li>
+              <li>
+                <a href="/secure/BrowseProjects.jspa" class="aui-nav-link aui-dropdown2-trigger aui-dropdown2-ajax" id="browse_link" aria-haspopup="true" aria-controls="browse_link-content" title="View recent projects and browse a list of projects" accesskey="p" resolved="" aria-expanded="false">Projects</a>
+                <div class="aui-dropdown2 aui-style-default aui-layer" id="browse_link-content" data-aui-dropdown2-ajax-key="browse_link" resolved="" tabindex="-1"></div>
+              </li>
+              <li>
+                <a href="/issues/" class="aui-nav-link aui-dropdown2-trigger aui-dropdown2-ajax" id="find_link" aria-haspopup="true" aria-controls="find_link-content" title="Search for issues and view recent issues" accesskey="i" resolved="" aria-expanded="false">Issues</a>
+                <div class="aui-dropdown2 aui-style-default aui-layer" id="find_link-content" data-aui-dropdown2-ajax-key="find_link" resolved="" tabindex="-1"></div>
+              </li>
+              <li>
+                <a href="/secure/SessionNavigator.jspa" class="aui-nav-link aui-dropdown2-trigger" id="bonfire_top_menu_dropdown" aria-haspopup="true" aria-controls="bonfire_top_menu_dropdown-content" title="Capture" resolved="" aria-expanded="false">Capture</a>
+                <div class="aui-dropdown2 aui-style-default aui-layer" id="bonfire_top_menu_dropdown-content" resolved="" tabindex="-1">
+                  <div id="bonfire_top_main_menu.2" class="aui-dropdown2-section">
+                    <ul class="aui-list-truncate">
+                      <li id="bonfire_gettingstarted_link">
+                        <a href="/secure/BonfireGettingStarted.jspa" id="bonfire_gettingstarted_link_lnk" class="">Getting started</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <a href="" class="aui-nav-link" id="jira-minimaltheme-top" accesskey="b">cute element</a>
+              </li>
+            </ul>
+          </div>
+          <div class="aui-header-secondary">
+            <ul class="aui-nav">
+              <li id="quicksearch-menu">
+                <form action="/secure/QuickSearch.jspa" method="get" id="quicksearch" class="aui-quicksearch dont-default-focus ajs-dirty-warning-exempt">
+                  <input id="quickSearchInput" autocomplete="off" class="search" type="text" placeholder="Search" name="searchString" accesskey="q" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Search
+parseable name: searchString
+section: searchString_0_14
+field signature: 1623631481
+form signature: 16418392489650083056
+form signature in host form: 16418392489650083056
+field frame token: BD030857C08762777687F3B0CF9E6EA3
+form renderer id: 1
+field renderer id: 14
+autocomplete: off" data-ddg-testresultelementid="553402">
+                  <div class="quick-search-spinner"></div>
+                  <input type="submit" class="hidden" value="Search">
+                </form>
+              </li>
+              <li>
+                <a class="jira-feedback-plugin" role="button" aria-haspopup="true" id="jira-header-feedback-link" href="#"><span class="aui-icon aui-icon-small aui-iconfont-feedback">Give feedback to Atlassian</span></a>
+              </li>
+              <li id="system-help-menu">
+                <a class="aui-nav-link aui-dropdown2-trigger aui-dropdown2-trigger-arrowless" id="help_menu" aria-haspopup="true" href="https://docs.atlassian.com/jira/jcore-docs-0820/" target="_blank" rel="noopener noreferrer" title="Help" resolved="" aria-controls="system-help-menu-content" aria-expanded="false"><span class="aui-icon aui-icon-small aui-iconfont-question-filled">Help</span></a>
+                <div id="system-help-menu-content" class="aui-dropdown2 aui-style-default aui-layer" resolved="" tabindex="-1">
+                  <div class="aui-dropdown2-section">
+                    <ul id="jira-help" class="aui-list-truncate">
+                      <li>
+                        <a id="view_core_help" class="aui-nav-link" title="Go to the online documentation for Jira Core" href="https://docs.atlassian.com/jira/jcore-docs-0820/" target="_blank">Jira Core help</a>
+                      </li>
+                      <li>
+                        <a id="cbsv-help-item-link" class="aui-nav-link" href="https://denizoguz.atlassian.net/wiki/spaces/CBSV/pages/1835077/User+Manual" target="_blank">Configuration Management Toolkit</a>
+                      </li>
+                      <li>
+                        <a id="keyshortscuthelp" class="aui-nav-link" title="Get more information about Jira's Keyboard Shortcuts ( Type '?' )" href="/secure/ViewKeyboardShortcuts!default.jspa" target="_blank">Keyboard Shortcuts</a>
+                      </li>
+                      <li>
+                        <a id="view_about" class="aui-nav-link" title="Get more information about Jira" href="/secure/AboutPage.jspa">About Jira</a>
+                      </li>
+                      <li>
+                        <a id="view_credits" class="aui-nav-link" title="See who did what" href="/secure/credits/AroundTheWorld!default.jspa" target="_blank">Jira Credits</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+              <li id="user-options">
+                <a class="aui-nav-link login-link" href="/login.jsp?os_destination=%2Flogin.jsp">Log In</a>
+                <div id="user-options-content" class="aui-dropdown2 aui-style-default aui-layer" resolved="" tabindex="-1">
+                  <div class="aui-dropdown2-section"></div>
+                </div>
+              </li>
+              
+              <table id="cutehiddentemplatewrapper">
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="communardo.universal.header">
+                        <div id="moodlesitestopnavbar">
+                          <div class="waffle-menu">
+                            <button class="navbar-toggler mt-2 mr-2 collapsed" onclick="open_mobile_menu()" type="button" data-toggle="collapse" data-target="#sitetopnavbar" aria-controls="sitetopnavbar" aria-expanded="false" aria-label="Toggle navigation">
+                              <span class="aui-icon aui-icon-small aui-iconfont-appswitcher"></span>
+                            </button>
+                          </div>
+                          <a href="https://moodle.org/" class="navbar-brand position-md-fixed d-none d-md-flex align-items-center m-0 p-0 aabtn">
+                            
+                          </a>
+                          <div class="collapse navbar-collapse justify-content-end mt-2" id="sitetopnavbar">
+                            <ul class="navbar-nav">
+                              <li class="nav-item Forums">
+                                <a class="nav-link" href="https://moodle.org//course"><span>Forums</span></a>
+                              </li>
+                              <li class="nav-item documentation">
+                                <a class="nav-link" href="https://docs.moodle.org"><span>Documentation</span></a>
+                              </li>
+                              <li class="nav-item download">
+                                <a class="nav-link" href="https://download.moodle.org"><span>Downloads</span></a>
+                              </li>
+                              <li class="nav-item demo">
+                                <a class="nav-link" href="https://moodle.org/demo"><span>Demo</span></a>
+                              </li>
+                              <li class="nav-item tracker">
+                                <a class="nav-link" href="https://tracker.moodle.org"><span>Tracker</span></a>
+                              </li>
+                              <li class="nav-item development">
+                                <a class="nav-link" href="https://moodledev.io/"><span>Development</span></a>
+                              </li>
+                              <li class="nav-item translation">
+                                <a class="nav-link" href="https://lang.moodle.org"><span>Translation</span></a>
+                              </li>
+                              <li class="nav-item search">
+                                <a class="nav-link icon-no-margin" href="https://moodle.org/public/search">
+                                  <i class="quick-search-item-image aui-icon aui-icon-small aui-iconfont-search"></i>
+                                </a>
+                              </li>
+                              <li class="nav-item menu">
+                                <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-expanded="false" onclick="openMenu()">
+                                  
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" id="waffle_menu">
+                                  <div class="p-3 pathways">
+                                    <div class="pb-1 heading">
+                                      What are you looking for?
+                                    </div>
+                                    <hr>
+                                    <p>
+                                      Learn about Moodle's products, like Moodle
+                                      LMS or Moodle Worplace, or find a Moodle
+                                      Certified Service Provider.<br>
+                                      <br>
+                                      <a href="https://moodle.com">Moodle.com
+                                        <i class="fa fa-long-arrow-right icon"></i></a>
+                                    </p>
+                                    <hr>
+                                    <p>
+                                      Our social network to share and curate
+                                      open educational resources.<br>
+                                      <br>
+                                      <a href="https://moodle.net">MoodleNet
+                                        <i class="fa fa-long-arrow-right icon"></i></a>
+                                    </p>
+                                    <hr>
+                                    <p>
+                                      Courses and programs to develop your
+                                      skills as a Moodle educator,
+                                      administrator, designer or developer.<br>
+                                      <br>
+                                      <a href="https://moodle.academy">Moodle Academy
+                                        <i class="fa fa-long-arrow-right icon"></i></a>
+                                    </p>
+                                  </div>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <div></div>
+                        </div>
+                        <div id="moodlejirafootercopy">
+                          All content on this web site is made available under
+                          the
+                          <a href="https://docs.moodle.org/dev/License">GNU General Public License</a>, unless otherwise stated. <br>
+                          <a href="https://moodle.org/" class="moodle-logo-link">
+                            
+                          </a>
+                          <p class="footernotice">
+                            Moodle™ is a
+                            <a href="https://moodle.com/trademarks/">registered trademark</a>.
+                          </p>
+                          <p class="footernotice">
+                            <a href="https://moodle.com/privacy-notice/">Privacy</a>
+                            |
+                            <a href="https://moodle.org/mod/page/view.php?id=8384">Cookies</a>
+                            | <a href="https://moodle.org/contact/">Contact</a>
+                          </p>
+                        </div>
+                        
+                        
+                        
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </ul>
+          </div>
+        </div>
+        <aui-header-end resolved=""></aui-header-end>
+      </nav>
+    </header>
+    <div id="content">
+      <div class="aui-page-panel">
+        <div class="aui-page-panel-inner">
+          <main role="main" id="main" class="aui-page-panel-content">
+            <header class="aui-page-header">
+              <div class="aui-page-header-inner">
+                <div class="aui-page-header-main">
+                  <h1>Welcome to Moodle Tracker</h1>
+                </div>
+              </div>
+            </header>
+            <form action="/login.jsp" class="aui ajs-dirty-warning-exempt" id="login-form" method="post">
+              <div class="form-body">
+                <div class="aui-group jira-login-method">
+                  <div class="aui-item jira-login-item">
+                    <div class="field-group">
+                      <label accesskey="u" for="login-form-username"><u>U</u>sername</label>
+                      <input class="text medium-field" id="login-form-username" name="os_username" type="text" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Username
+parseable name: os_username
+section: os_username_0_17
+field signature: 1925768377
+form signature: 6940096949849474641
+form signature in host form: 6940096949849474641
+field frame token: BD030857C08762777687F3B0CF9E6EA3
+form renderer id: 2
+field renderer id: 17" data-ddg-testresultelementid="553403" data-manual-scoring="username OR emailAddress">
+                    </div>
+                    <div class="field-group">
+                      <label accesskey="p" for="login-form-password" id="passwordlabel"><u>P</u>assword</label>
+                      <input id="login-form-password" class="text medium-field" name="os_password" type="password" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: os_password
+section: os_username_0_17
+field signature: 1400873875
+form signature: 6940096949849474641
+form signature in host form: 6940096949849474641
+field frame token: BD030857C08762777687F3B0CF9E6EA3
+form renderer id: 2
+field renderer id: 18" data-ddg-testresultelementid="553404" data-manual-scoring="password">
+                    </div>
+                    <fieldset class="group">
+                      <div class="checkbox" resolved="">
+                        <input class="checkbox" id="login-form-remember-me" name="os_cookie" type="checkbox" value="true" resolved="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember my login on this computer
+parseable name: os_cookie
+section: os_username_0_17
+field signature: 680774562
+form signature: 6940096949849474641
+form signature in host form: 6940096949849474641
+field frame token: BD030857C08762777687F3B0CF9E6EA3
+form renderer id: 2
+field renderer id: 20" data-ddg-testresultelementid="553405"><span class="aui-form-glyph"></span>
+                        <label for="login-form-remember-me" accesskey="r"><u>R</u>emember my login on this computer</label>
+                      </div>
+                    </fieldset>
+                    <div id="sign-up-hint" class="field-group">
+                      Not a member?
+                      <a id="signup" href="/secure/Signup!default.jspa" tabindex="-1">Sign up</a>
+                      for an account.
+                    </div>
+                  </div>
+                </div>
+                <div class="hidden">
+                  <input name="os_destination" type="hidden">
+                </div>
+                <div class="hidden">
+                  <input name="user_role" type="hidden">
+                </div>
+                <div class="hidden">
+                  <input name="atl_token" type="hidden">
+                </div>
+              </div>
+              <div class="buttons-container form-footer">
+                <div class="buttons">
+                  <input accesskey="s" class="aui-button aui-button-primary" id="login-form-submit" name="login" title="Press Ctrl+Alt+s to submit this form" type="submit" value="Log In" resolved="">
+                  <a accesskey="`" class="aui-button aui-button-link cancel" href="/secure/ForgotLoginDetails.jspa" id="login-form-cancel" title="Press Ctrl+Alt+` to cancel" resolved="">Can't access your account?</a>
+                </div>
+              </div>
+              <div id="openid-login">
+                <div class="divider"><span>or</span></div>
+                <div class="providers">
+                  <span class="provider"><a id="openid-1" data-id="1" class="openid aui-button button" href="/openid/login/1" resolved="">Google</a></span><span class="provider"><a id="openid-2" data-id="2" class="openid aui-button button" href="/openid/login/2" resolved="">GitHub</a></span><span class="provider"><a id="openid-3" data-id="3" class="openid aui-button button" href="/openid/login/3" resolved="">Facebook</a></span><span class="provider"><a id="openid-4" data-id="4" class="openid aui-button button" href="/openid/login/4" resolved="">LinkedIn</a></span>
+                </div>
+              </div>
+            </form>
+          </main>
+        </div>
+      </div>
+    </div>
+    <footer id="footer" role="contentinfo">
+      <section class="footer-body">
+        <ul class="atlassian-footer">
+          <li>
+            Atlassian Jira
+            <a class="seo-link" rel="nofollow" href="https://www.atlassian.com/software/jira">Project Management Software</a>
+          </li>
+          <li>
+            <a id="about-link" rel="nofollow" href="/secure/AboutPage.jspa/secure/AboutPage.jspa">About Jira</a>
+          </li>
+          <li>
+            <a id="footer-report-problem-link" rel="nofollow" href="/secure/CreateIssue!default.jspa">Report a problem</a>
+          </li>
+        </ul>
+        <p class="atlassian-footer">
+          <span class="licensemessage">
+            Powered by a free Atlassian
+            <a rel="nofollow" href="http://www.atlassian.com/software/jira">Jira</a>
+            open source license for Moodle Pty Ltd. Try Jira -
+            <a rel="nofollow" href="http://www.atlassian.com/software/jira">bug tracking software</a>
+            for <i>your</i> team.
+          </span>
+        </p>
+      </section>
+      <fieldset class="hidden parameters">
+        <input type="hidden" title="loggedInUser" value="">
+        <input type="hidden" title="ajaxTimeout" value="The call to the Jira server did not complete within the timeout period.  We are unsure of the result of this operation.">
+        <input type="hidden" title="JiraVersion" value="8.20.11">
+        <input type="hidden" title="ajaxUnauthorised" value="You are not authorised to perform this operation. Please log in.">
+        <input type="hidden" title="baseURL" value="https://tracker.moodle.org">
+        <input type="hidden" title="ajaxCommsError" value="The Jira server could not be contacted. This may be a temporary glitch or the server may be down. ">
+        <input type="hidden" title="ajaxServerError" value="The Jira server was contacted but has returned an error response. We are unsure of the result of this operation.">
+        <input type="hidden" title="ajaxErrorCloseDialog" value="Close this dialog and press refresh in your browser">
+        <input type="hidden" title="ajaxErrorDialogHeading" value="Communications Breakdown">
+        <input type="hidden" title="dirtyMessage" value="You have entered new data on this page. If you navigate away from this page without first saving your data, the changes will be lost.">
+        <input type="hidden" title="dirtyDialogMessage" value="You have entered new data in this dialog. If you navigate away from this dialog without first saving your data, the changes will be lost. Click cancel to return to the dialog.">
+        <input type="hidden" title="keyType" value="Type">
+        <input type="hidden" title="keyThen" value="then">
+        <input type="hidden" title="dblClickToExpand" value="Double click to expand">
+        <input type="hidden" title="actions" value="Actions">
+        <input type="hidden" title="removeItem" value="Remove">
+        <input type="hidden" title="workflow" value="Workflow">
+        <input type="hidden" title="labelNew" value="New Label">
+        <input type="hidden" title="issueActionsHint" value="Begin typing for available operations or press down to see all">
+        <input type="hidden" title="closelink" value="Close">
+        <input type="hidden" title="dotOperations" value="Operations">
+        <input type="hidden" title="dotLoading" value="Loading...">
+        <input type="hidden" title="frotherSuggestions" value="Suggestions">
+        <input type="hidden" title="frotherNomatches" value="No Matches">
+        <input type="hidden" title="multiselectVersionsError" value="{0} is not a valid version.">
+        <input type="hidden" title="multiselectComponentsError" value="{0} is not a valid component.">
+        <input type="hidden" title="multiselectGenericError" value="The value {0} is invalid.">
+      </fieldset>
+      <div id="moodlejirafooter">
+        All content on this web site is made available under the
+        <a href="https://docs.moodle.org/dev/License">GNU General Public License</a>, unless otherwise stated. <br>
+        <a href="https://moodle.org/" class="moodle-logo-link">
+          
+        </a>
+        <p class="footernotice">
+          Moodle™ is a
+          <a href="https://moodle.com/trademarks/">registered trademark</a>.
+        </p>
+        <p class="footernotice">
+          <a href="https://moodle.com/privacy-notice/">Privacy</a> |
+          <a href="https://moodle.org/mod/page/view.php?id=8384">Cookies</a> |
+          <a href="https://moodle.org/contact/">Contact</a>
+        </p>
+      </div>
+    </footer>
+  </div>
+  
+  
+

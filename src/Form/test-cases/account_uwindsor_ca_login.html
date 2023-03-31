@@ -1,0 +1,127 @@
+<!--
+  https://account.uwindsor.ca/login
+  rank: 628
+  testRunId: 67
+  testResultId: 240587
+-->
+
+  <div class="flex h-screen" role="main" x-data="{ tab: 1, accountURL: '#', submitDisabled: false }">
+    <div class="flex-grow max-w-xl p-2 m-auto">
+      <div class="shadow-xl">
+        <div class="absolute z-0 hidden -mt-24 -ml-48 w-96 opacity-10 md:block">
+          
+        </div>
+        <div class="relative flex justify-between px-8 pt-6 pb-6 bg-white rounded-t" role="header">
+          <h1 class="flex items-center h-20 text-2xl font-light text-gray-600 md:text-3xl">
+            UWin Account
+          </h1>
+          
+        </div>
+        <div class="relative grid grid-cols-2 bg-white">
+          <a href="#" title="Sign In" @click="tab = 1" class="py-4 text-center bg-gray-100 cursor-pointer hover:underline bg-gray-200" :class="{ 'bg-gray-200' : tab == 1}">
+            Sign in
+          </a>
+          <a href="#" title="Activate my account" @click="tab = 2" class="py-4 text-center bg-gray-100 cursor-pointer hover:underline" :class="{ 'bg-gray-200' : tab == 2}">
+            Account Activation
+          </a>
+        </div>
+        <div class="relative flex flex-col px-2 pt-6 pb-6 bg-gray-200 rounded-b md:px-8" role="form">
+          <form action="login" method="POST" x-show="tab == 1">
+            <input type="hidden" name="_token" value="PvGekgOanBBYEz2Tym0yF5BEcpZP90eVpmSvsHmE">
+            <div class="mt-4 mb-6 text-center">
+              <span class="text-gray-600">Sign in with your UWin ID and password:</span>
+            </div>
+
+            <div class="relative mb-4">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
+                
+              </div>
+              <input class="block pl-16 shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-800 h-14 focus:outline-none focus:ring-2 focus:ring-uwindsor-blue focus:border-transparent" id="uwinid" name="uwinid" type="text" placeholder="UWin ID" value="" aria-label="uwinid" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: UWin ID
+parseable name: uwinid
+section: uwinid_0_2
+field signature: 1567781366
+form signature: 15064258755448812294
+form signature in host form: 15064258755448812294
+field frame token: 54745878BD3627F8C2DB43A71A6B08AC
+form renderer id: 1
+field renderer id: 2" data-ddg-testresultelementid="548394" data-manual-scoring="username OR emailAddress">
+            </div>
+            <div class="relative mb-6">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
+                
+              </div>
+              <input class="block pl-16 shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-800 h-14 focus:outline-none focus:ring-2 focus:ring-uwindsor-blue focus:border-transparen" id="password" name="password" type="password" placeholder="******************" value="" aria-label="password" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: password
+parseable name: password
+section: uwinid_0_2
+field signature: 2051817934
+form signature: 15064258755448812294
+form signature in host form: 15064258755448812294
+field frame token: 54745878BD3627F8C2DB43A71A6B08AC
+form renderer id: 1
+field renderer id: 3" data-ddg-testresultelementid="548395" data-manual-scoring="password">
+            </div>
+            <div class="flex flex-col justify-center">
+              <button x-on:click="submitDisabled = true" x-bind:disabled="submitDisabled" class="px-8 py-3 mt-4 mb-2 font-bold text-white transition border-2 rounded shadow-lg border-uwindsor-blue bg-uwindsor-blue hover:bg-white hover:border-uwindsor-blue hover:text-uwindsor-blue focus:outline-none focus:bg-white focus:text-uwindsor-blue" type="submit">
+                Sign In
+              </button>
+              <a href="/password/reset" title="Forgot your password?" class="block mt-4 text-center hover:text-uwindsor-blue hover:underline focus:outline-none focus:text-uwindsor-blue focus:underline">
+                Forgot your password?
+              </a>
+            </div>
+          </form>
+          <div x-show="tab == 2">
+            <label class="text-gray-600" for="account-type">Please select the account type:
+            </label>
+            <select x-model="accountURL" id="account-type" class="block w-full px-4 py-3 pr-8 my-6 bg-white border rounded appearance-none focus:outline-none focus:ring-2 focus:ring-uwindsor-blue" data-ddg-testresultelementid="548396">
+              <option value="#">Account Type</option>
+              <option value="https://userid.net.uwindsor.ca/m/student_activation_first_time/stdlogin">
+                UWindsor Student (First Time)
+              </option>
+              <option value="https://userid.net.uwindsor.ca/m/student_activation/stdlogin">
+                UWindsor Student
+              </option>
+              <option value="https://userid.net.uwindsor.ca/m/emp_activation/emp">
+                Faculty / Staff / Employee
+              </option>
+              <option value="https://userid.net.uwindsor.ca/m/wireless_guest/wguest">
+                Guest Wireless
+              </option>
+              <option disabled="">────────────</option>
+              <option value="https://userid.net.uwindsor.ca/m/alumni_activation/alumlogin">
+                Alumni
+              </option>
+              <option value="https://userid.net.uwindsor.ca/m/arc1_account/createarc1">
+                ARC1
+              </option>
+
+              <option value="https://userid.net.uwindsor.ca/m/student_account_extension/stdlogin">
+                Extend Your UWin Account services
+              </option>
+              <option value="https://userid.net.uwindsor.ca/m/medical_student_activation/stdlogin">
+                Schulich School of Medicine and Dentistry Student
+              </option>
+              <option value="https://userid.net.uwindsor.ca/m/stdq_activation/stdq">
+                Professional Development &amp; Continuing Education Student
+              </option>
+              <option value="https://userid.net.uwindsor.ca/friend/sponsor">
+                UWin Friend
+              </option>
+            </select>
+            <a :href="accountURL" target="_blank" title="Active my account" class="block w-full px-8 py-3 mb-2 font-bold text-center text-white transition border-2 rounded shadow-lg cursor-pointer border-uwindsor-blue bg-uwindsor-blue hover:bg-white hover:border-uwindsor-blue hover:text-uwindsor-blue focus:outline-none focus:bg-white focus:text-uwindsor-blue" href="#">
+              Activate
+            </a>
+          </div>
+        </div>
+      </div>
+      <a href="https://userid.net.uwindsor.ca/m/display_uwinid/stdlogin" target="_blank" title="Find my UWin ID" class="block my-4 text-center text-gray-200 hover:text-uwindsor-yellow hover:underline focus:outline-none focus:text-uwindsor-yellow focus:underline">
+        Find my UWin ID
+      </a>
+    </div>
+  </div>
+

@@ -1,0 +1,262 @@
+<!--
+  https://ibs.johnsoncontrols.com
+  rank: 9995
+  testRunId: 67
+  testResultId: 245979
+-->
+
+  <!-- If we're here for a federated user, then the rechallenge for credentials needs to be done by the IDP (Identity Provider) -->
+  
+
+  <!--[if lte IE 8]>
+    <script type="text/javascript">
+      alert(
+        "Your browser is out of date. Some functions may not work as expected. Please update your browser version."
+      );
+    </script>
+  <![endif]-->
+
+  <div class="container-fluid">
+    <div class="col-md-6 col-md-offset-3 maincolumn">
+      <div class="logo-image text-center">
+        <a href="http://www.johnsoncontrols.com" target="_blank"></a>
+        <h1>Welcome to Johnson Controls</h1>
+      </div>
+
+      <!-- Let Dev and QA users know which environment they are in -->
+      <div>
+        
+      </div>
+
+      <div class="row">
+        <div class="btn-group btn-group-justified">
+          <!-- Next two elements have jquery behavior defined at the end below -->
+          <a href="#" class="btn btn-default btn-lg active" id="employee-login-link">Employees &amp; Contractors</a>
+          <a href="#" class="btn btn-default btn-lg" id="non-employee-login-link">Customers &amp; Partners</a>
+        </div>
+      </div>
+
+      <div>
+        
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <!-- EMPLOYEE form starts here -->
+          <form id="employee-login-form" action="#" method="post" role="form">
+            <div class="form-control-wrapper">
+              <input type="text" name="USER" id="employee-userid" tabindex="1" class="form-control empty" onkeypress="enterNextField(this, event, 'employee-password');" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Employees &amp; Contractors Customers &amp; Partners
+parseable name: USER
+section: USER_0_1
+field signature: 2656536810
+form signature: 2644320935314525074
+form signature in host form: 2644320935314525074
+field frame token: 4A03EE35CDB44E50A488488AF2510890
+form renderer id: 1
+field renderer id: 1" data-ddg-testresultelementid="587461" data-manual-scoring="username OR emailAddress">
+              <!--		<div class="hint">Do NOT include the <i>&#64;jci.com</i></div> -->
+              <div class="floating-label">GlobalID@jci.com</div>
+              <span class="material-input"></span>
+            </div>
+            <div class="form-control-wrapper">
+              <input type="password" name="PASSWORD" id="employee-password" tabindex="2" class="form-control empty" onkeypress="return enterSubmit(this, event, 'employee-login-form');" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Employees &amp; Contractors Customers &amp; Partners
+parseable name: PASSWORD
+section: USER_0_1
+field signature: 3955007064
+form signature: 2644320935314525074
+form signature in host form: 2644320935314525074
+field frame token: 4A03EE35CDB44E50A488488AF2510890
+form renderer id: 1
+field renderer id: 2" data-ddg-testresultelementid="587462" data-manual-scoring="password">
+              <div class="floating-label">Password</div>
+              <span class="material-input"></span>
+            </div>
+
+            <div>
+              <input type="hidden" name="target" value="https://ibs.johnsoncontrols.com/">
+              <input type="hidden" name="smquerydata" value="">
+              <input type="hidden" name="smauthreason" value="0">
+              <input type="hidden" name="smagentname" value="BWLxLb55WrleOMKpq071Hwvv5XqYmHe9lbz6BGodD5VuR+cHii/92BpoDd2JEwS3">
+              <input type="hidden" name="postpreservationdata" value="">
+            </div>
+
+            <div class="text-right">
+              <a href="#" onclick="EmpForgotPwd(); return false;" class="btn btn-default btn-sm" target="_blank">Forgot password?</a>
+              <a href="#" onclick="EmpSetQA(); return false;" class="btn btn-default btn-sm" target="_blank">Register/Update Self-Service password settings</a>
+              <a href="#" onclick="EmpChangePwd(); return false;" class="btn btn-default btn-sm" target="_blank">Change password</a>
+            </div>
+
+            <div class="form-control-wrapper">
+              <a id="employee-login-submit" tabindex="3" class="btn btn-material-teal btn-lg btn-block" href="#" onclick="submitForm('employee-login-form'); return false;">Login</a>
+            </div>
+
+            <!-- Employee help links begin here -->
+            <div class="row text-center">
+              <a href="#" class="btn btn-default btn-help" data-toggle="modal" data-target="#employeeHelpModal">Need help?</a>
+            </div>
+          </form>
+
+          <!-- NON-EMPLOYEE form starts here -->
+          <form id="non-employee-login-form" action="#" method="post" role="form">
+            <div class="form-control-wrapper">
+              <input type="text" name="USER" id="non-employee-userid" tabindex="1" class="form-control empty" onkeypress="enterNextField(this, event, 'non-employee-password');" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: UNKNOWN_TYPE
+label: Employees &amp; Contractors Customers &amp; Partners
+parseable name: USER
+section: USER_0_8
+field signature: 2656536810
+form signature: 8910336453317456221
+form signature in host form: 8910336453317456221
+field frame token: 4A03EE35CDB44E50A488488AF2510890
+form renderer id: 2
+field renderer id: 8" data-ddg-testresultelementid="587463" data-manual-scoring="username">
+              <div class="hint">Enter your email (john.doe@company.com)</div>
+              <div class="floating-label">Email ID</div>
+              <span class="material-input"></span>
+            </div>
+            <div class="form-control-wrapper">
+              <input type="password" name="PASSWORD" id="non-employee-password" tabindex="2" class="form-control empty" onkeypress="return enterSubmit(this, event, 'non-employee-login-form');" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Employees &amp; Contractors Customers &amp; Partners
+parseable name: PASSWORD
+section: USER_0_8
+field signature: 3955007064
+form signature: 8910336453317456221
+form signature in host form: 8910336453317456221
+field frame token: 4A03EE35CDB44E50A488488AF2510890
+form renderer id: 2
+field renderer id: 9" data-ddg-testresultelementid="587464" data-manual-scoring="password">
+              <div class="floating-label">Password</div>
+              <span class="material-input"></span>
+            </div>
+
+            <div>
+              <input type="hidden" name="target" value="https://ibs.johnsoncontrols.com/">
+              <input type="hidden" name="smquerydata" value="">
+              <input type="hidden" name="smauthreason" value="0">
+              <input type="hidden" name="smagentname" value="BWLxLb55WrleOMKpq071Hwvv5XqYmHe9lbz6BGodD5VuR+cHii/92BpoDd2JEwS3">
+              <input type="hidden" name="postpreservationdata" value="">
+            </div>
+
+            <div class="text-right">
+              <a href="#" onclick="NonEmpForgotPwd(); return false;" class="btn btn-default btn-sm" target="_blank">Forgot password?</a>
+              <a href="#" onclick="NonEmpChangePwd(); return false;" class="btn btn-default btn-sm" target="_blank">Change password</a>
+            </div>
+
+            <div class="form-control-wrapper">
+              <a id="non-employee-login-submit" tabindex="3" class="btn btn-material-teal btn-lg btn-block" href="#" onclick="submitForm('non-employee-login-form'); return false;">Login</a>
+            </div>
+
+            <!-- Non-Employee help links begin here -->
+            <div class="row text-center">
+              <a href="#" class="btn btn-default btn-help" data-toggle="modal" data-target="#nonEmployeeHelpModal">Need help?</a>
+            </div>
+          </form>
+
+          <!-- Privacy links begin here -->
+          <div class="row privacy">
+            <div class="col-xs-6 borderright">
+              <a class="btn btn-default btn-sm btn-flat pull-right" href="http://www.johnsoncontrols.com/legal/terms" alt="Terms" target="_blank">Terms</a>
+            </div>
+            <div class="col-xs-6 borderleft">
+              <a class="btn btn-default btn-sm btn-flat" href="http://www.johnsoncontrols.com/legal/privacy" alt="Privacy" target="_blank">Privacy</a>
+            </div>
+            <div class="row text-center">
+              
+              Copyright © 2023 Johnson Controls. All rights reserved.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYEE Need Help Modal -->
+    <div class="modal fade" id="employeeHelpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h3 class="modal-title" id="helpModalLabel">
+              Help for employees...
+            </h3>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <p>
+                  To reset your password, please use the "Forgot Password?" link
+                  on the login page.<br>
+                  <br>
+                  For further assistance, contact your local service desk.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NON-EMPLYOEE Need Help Modal -->
+    <div class="modal fade" id="nonEmployeeHelpModal" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h3 class="modal-title" id="helpModalLabel">
+              Help for customers and partners...
+            </h3>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12">
+                <p>
+                  To <b>reset your password</b>, please use the "Forgot
+                  Password?" link on the login page.<br>
+                  <br>
+                  For further assistance, you can contact our business unit
+                  support desks:<br>
+                </p>
+                <ul>
+                  <!-- The at-signs are escaped for proper FCC handling -->
+                  <li>
+                    <b>Building Efficiency</b> users, send email to
+                    <a href="mailto:cg-portal.administrator@jci.com">cg-portal.administrator@jci.com</a>.
+                  </li>
+                  <li>
+                    <b>Power Solutions</b> users, send email to
+                    <a href="mailto:ps-itsecurity@jci.com">ps-itsecurity@jci.com</a>.
+                  </li>
+                  <!--		<li><b>Automotive Experience</b> users, send email to <a href="mailto:ae-global-pcs-operations-team&#64;jci.com">ae-global-pcs-operations-team&#64;jci.com</a>.</li> -->
+                  <li>
+                    <b>Corporate</b> users, send email to
+                    <a href="mailto:Collaborative.technologies@jci.com?subject=SharePoint%20Partner%20Site%20Issue)">Collaborative.technologies@jci.com</a>.
+                  </li>
+                </ul>
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  
+  
+  
+  
+  
+
