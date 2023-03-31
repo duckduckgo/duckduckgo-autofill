@@ -17463,6 +17463,10 @@ const credentialsSchema = _zod.z.object({
   id: _zod.z.string().optional(),
   username: _zod.z.string(),
   password: _zod.z.string(),
+  origin: _zod.z.object({
+    url: _zod.z.string(),
+    partialMatch: _zod.z.boolean()
+  }).optional(),
   credentialsProvider: _zod.z.union([_zod.z.literal("duckduckgo"), _zod.z.literal("bitwarden")]).optional(),
   providerStatus: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]).optional()
 });

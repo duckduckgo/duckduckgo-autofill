@@ -195,6 +195,10 @@ export interface Credentials {
    */
   username: string;
   password: string;
+  origin?: {
+    url: string;
+    partialMatch: boolean;
+  };
   credentialsProvider?: "duckduckgo" | "bitwarden";
   providerStatus?: "locked" | "unlocked";
 }
