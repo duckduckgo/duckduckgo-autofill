@@ -94,6 +94,7 @@ const inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
         type: 'credentials',
+        displayName: 'Logins',
         getIconBase: (input, {device}) => {
             if (!canBeInteractedWith(input)) return ''
 
@@ -131,6 +132,7 @@ const inputTypeConfig = {
     /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
         type: 'creditCards',
+        displayName: 'Credit Cards',
         getIconBase: () => '',
         getIconFilled: () => '',
         getIconAlternate: () => '',
@@ -143,6 +145,7 @@ const inputTypeConfig = {
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
         type: 'identities',
+        displayName: 'Addresses',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,
@@ -155,6 +158,7 @@ const inputTypeConfig = {
     /** @type {UnknownInputTypeConfig} */
     unknown: {
         type: 'unknown',
+        displayName: '',
         getIconBase: () => '',
         getIconFilled: () => '',
         getIconAlternate: () => '',
