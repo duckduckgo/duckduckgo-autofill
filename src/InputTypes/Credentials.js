@@ -20,7 +20,7 @@ class CredentialsTooltipItem {
         }
 
         if (this.#data.origin?.url) {
-            return `Login for ${truncateFromMiddle(this.#data.origin.url)}}`
+            return `Login for ${truncateFromMiddle(this.#data.origin.url)}`
         }
 
         return ''
