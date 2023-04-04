@@ -12,8 +12,28 @@ class CredentialsTooltipItem {
         this.#data = data
     }
     id = () => String(this.#data.id)
-    labelMedium = (_subtype) => this.#data.username
-    labelSmall = (_subtype) => '•••••••••••••••'
+    labelMedium = (_subtype) => {
+        if (this.#data.username) {
+            return this.#data.username
+        }
+
+        if (this.#data.origin?.url) {
+            return `Login for ${this.#data.origin.url}}`
+        }
+
+        return ''
+    }
+    labelSmall = (_subtype) => {
+        if (this.#data.origin?.partialMatch) {
+            return `From ${this.#data.origin.url}`
+        }
+
+        if (this.#data.origin?.partialMatch === false) {
+            return 'From This Website'
+        }
+
+        return '•••••••••••••••'
+    }
     credentialsProvider = () => this.#data.credentialsProvider
 }
 
