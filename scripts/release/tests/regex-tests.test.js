@@ -12,12 +12,12 @@ dependencies: [
 ]`
         const examplePackageResolved = `
 {
-    "package": "Autofill",
-    "repositoryURL": "https://github.com/duckduckgo/duckduckgo-autofill.git",
-    "state": {
-        "branch": null,
-        "revision": "d29c5abc7f473b69f3d81d8a15e137ed3aab029d",
-        "version": "5.0.1"
+    "identity" : "duckduckgo-autofill",
+    "kind" : "remoteSourceControl",
+    "location" : "https://github.com/duckduckgo/duckduckgo-autofill.git",
+    "state" : {
+        "revision" : "4aee97d550112ba6551e61ea8019fb1f1a2d3af7",
+        "version" : "6.4.3"
     }
 }`
 
@@ -25,8 +25,8 @@ dependencies: [
         expect(updatedPackageSwift).toContain(`"https://github.com/duckduckgo/duckduckgo-autofill.git", .exact("${version}")`)
 
         const updatedPackageResolved = updatePackageResolved(examplePackageResolved, version, commit)
-        expect(updatedPackageResolved).toContain(`"revision": "${commit}"`)
-        expect(updatedPackageResolved).toContain(`"version": "${version}"`)
+        expect(updatedPackageResolved).toContain(`"revision" : "${commit}"`)
+        expect(updatedPackageResolved).toContain(`"version" : "${version}"`)
     })
 
     test('Apple platforms can be updated successfully', () => {
