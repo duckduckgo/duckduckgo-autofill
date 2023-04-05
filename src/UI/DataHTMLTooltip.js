@@ -44,7 +44,7 @@ ${css}
         <hr />
         <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
             <span class="tooltip__button__text-container">
-                <span class="label label--medium">Manage ${config.displayName}</span>
+                <span class="label label--medium">Manage ${config.displayName}…</span>
             </span>
         </button>
     </div>

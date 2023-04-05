@@ -15121,7 +15121,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
       const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
       return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data ").concat(dataTypeClass, " ").concat(providerIconClass, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
-    }).join(''), "\n        <hr />\n        <button id=\"manage-button\" class=\"tooltip__button tooltip__button--manage\" type=\"button\">\n            <span class=\"tooltip__button__text-container\">\n                <span class=\"label label--medium\">Manage ").concat(config.displayName, "</span>\n            </span>\n        </button>\n    </div>\n</div>");
+    }).join(''), "\n        <hr />\n        <button id=\"manage-button\" class=\"tooltip__button tooltip__button--manage\" type=\"button\">\n            <span class=\"tooltip__button__text-container\">\n                <span class=\"label label--medium\">Manage ").concat(config.displayName, "\u2026</span>\n            </span>\n        </button>\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
@@ -17077,7 +17077,7 @@ function whenIdle(callback) {
   };
 }
 /**
- * Truncate string from the middle if exceeds the totalLength (default: 32)
+ * Truncate string from the middle if exceeds the totalLength (default: 30)
  * @param {string} string
  * @param {number} totalLength
  * @returns {string}
@@ -17085,15 +17085,14 @@ function whenIdle(callback) {
 
 
 function truncateFromMiddle(string) {
-  let totalLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 32;
+  let totalLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 30;
 
   if (totalLength < 4) {
     throw new Error('Do not use with strings shorter than 4');
   }
 
   if (string.length <= totalLength) return string;
-  const excess = string.slice(totalLength / 2, totalLength / -2);
-  const truncated = string.replace(excess, '…');
+  const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2));
   return truncated;
 }
 

@@ -414,20 +414,19 @@ function whenIdle (callback) {
 }
 
 /**
- * Truncate string from the middle if exceeds the totalLength (default: 32)
+ * Truncate string from the middle if exceeds the totalLength (default: 30)
  * @param {string} string
  * @param {number} totalLength
  * @returns {string}
  */
-function truncateFromMiddle (string, totalLength = 32) {
+function truncateFromMiddle (string, totalLength = 30) {
     if (totalLength < 4) {
         throw new Error('Do not use with strings shorter than 4')
     }
 
     if (string.length <= totalLength) return string
 
-    const excess = string.slice(totalLength / 2, totalLength / -2)
-    const truncated = string.replace(excess, '…')
+    const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2))
     return truncated
 }
 
