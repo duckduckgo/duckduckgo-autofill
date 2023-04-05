@@ -100,7 +100,7 @@ function updatePackageSwift (packageSwiftContent, version) {
  */
 function updatePackageResolved (packageResolvedContent, version, commit) {
     const autofillPackageResolvedRegex = new RegExp(
-        /("package": "Autofill",\s+"repositoryURL": "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state": {\s+"branch": null,\s+"revision": ")(\w+)(",\s+"version": ")([\d.]+)("\s+})/,
+        /("location" : "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : ")([\d.]+)("\s+})/,
         'i'
     )
 
