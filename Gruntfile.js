@@ -57,7 +57,8 @@ module.exports = function (grunt) {
                     ]
                 },
                 files: {
-                    'dist/autofill.js': ['src/autofill.js']
+                    'dist/autofill.js': ['src/autofill.js'],
+                    'dist/pw.js': ['./packages/password/index.js']
                 }
             },
             debug: {

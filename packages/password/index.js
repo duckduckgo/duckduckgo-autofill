@@ -115,3 +115,5 @@ export {
     ParserError,
     constants
 }
+
+window._android_pw = generate;
