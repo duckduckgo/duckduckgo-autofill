@@ -15111,6 +15111,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       return shouldShow;
     };
 
+    const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress'].includes(item.id()));
     const topClass = wrapperClass || '';
     const dataTypeClass = "tooltip__button--data--".concat(config.type);
     this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\" hidden>\n    <div class=\"tooltip tooltip--data\">\n        ").concat(items.map(item => {
@@ -15122,19 +15123,23 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
       const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
       return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data ").concat(dataTypeClass, " ").concat(providerIconClass, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
-    }).join(''), "\n        <hr />\n        <button id=\"manage-button\" class=\"tooltip__button tooltip__button--manage\" type=\"button\">\n            <span class=\"tooltip__button__text-container\">\n                <span class=\"label label--medium\">Manage ").concat(config.displayName, "\u2026</span>\n            </span>\n        </button>\n    </div>\n</div>");
+    }).join(''), "\n        ").concat(shouldShowManageButton ? "\n            <hr />\n            <button id=\"manage-button\" class=\"tooltip__button tooltip__button--manage\" type=\"button\">\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">Manage ".concat(config.displayName, "\u2026</span>\n                </span>\n            </button>") : '', "\n    </div>\n</div>");
     this.wrapper = this.shadow.querySelector('.wrapper');
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
-    this.manageButton = this.shadow.getElementById('manage-button');
-    this.registerClickableButton(this.manageButton, () => {
-      callbacks.onManage(config.type);
-    });
     this.autofillButtons.forEach(btn => {
       this.registerClickableButton(btn, () => {
         callbacks.onSelect(btn.id);
       });
     });
+    this.manageButton = this.shadow.getElementById('manage-button');
+
+    if (this.manageButton) {
+      this.registerClickableButton(this.manageButton, () => {
+        callbacks.onManage(config.type);
+      });
+    }
+
     this.init();
     return this;
   }

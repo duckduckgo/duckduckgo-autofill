@@ -17,6 +17,8 @@ class DataHTMLTooltip extends HTMLTooltip {
             return shouldShow
         }
 
+        const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress'].includes(item.id()))
+
         const topClass = wrapperClass || ''
         const dataTypeClass = `tooltip__button--data--${config.type}`
         this.shadow.innerHTML = `
@@ -41,28 +43,32 @@ ${css}
             </button>
         `
     }).join('')}
-        <hr />
-        <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
-            <span class="tooltip__button__text-container">
-                <span class="label label--medium">Manage ${config.displayName}…</span>
-            </span>
-        </button>
+        ${shouldShowManageButton ? `
+            <hr />
+            <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
+                <span class="tooltip__button__text-container">
+                    <span class="label label--medium">Manage ${config.displayName}…</span>
+                </span>
+            </button>`
+        : ''}
     </div>
 </div>`
         this.wrapper = this.shadow.querySelector('.wrapper')
         this.tooltip = this.shadow.querySelector('.tooltip')
         this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button')
 
-        this.manageButton = this.shadow.getElementById('manage-button')
-        this.registerClickableButton(this.manageButton, () => {
-            callbacks.onManage(config.type)
-        })
-
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
                 callbacks.onSelect(btn.id)
             })
         })
+
+        this.manageButton = this.shadow.getElementById('manage-button')
+        if (this.manageButton) {
+            this.registerClickableButton(this.manageButton, () => {
+                callbacks.onManage(config.type)
+            })
+        }
 
         this.init()
         return this
