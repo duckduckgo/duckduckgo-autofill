@@ -22,6 +22,15 @@ dependencies: [
     }
 }`
 
+        const updatedPackageSwift = updatePackageSwift(examplePackageSwift, version)
+        expect(updatedPackageSwift).toContain(`"https://github.com/duckduckgo/duckduckgo-autofill.git", .exact("${version}")`)
+
+        const updatedPackageResolvedForBSK = updatePackageResolved(examplePackageResolvedForBSK, {autofill: {version, commit}})
+        expect(updatedPackageResolvedForBSK).toContain(`"revision" : "${commit}"`)
+        expect(updatedPackageResolvedForBSK).toContain(`"version" : "${version}"`)
+    })
+
+    test('macOS can be updated successfully', () => {
         const examplePackageResolvedForMacOS = `
 {
         "identity" : "browserserviceskit",
@@ -50,13 +59,6 @@ dependencies: [
             "version" : "6.4.3"
         }
     },`
-
-        const updatedPackageSwift = updatePackageSwift(examplePackageSwift, version)
-        expect(updatedPackageSwift).toContain(`"https://github.com/duckduckgo/duckduckgo-autofill.git", .exact("${version}")`)
-
-        const updatedPackageResolvedForBSK = updatePackageResolved(examplePackageResolvedForBSK, {autofill: {version, commit}})
-        expect(updatedPackageResolvedForBSK).toContain(`"revision" : "${commit}"`)
-        expect(updatedPackageResolvedForBSK).toContain(`"version" : "${version}"`)
 
         const substitutions = {
             autofill: {version, commit},
