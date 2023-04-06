@@ -394,7 +394,7 @@ class InterfacePrototype {
                 if (Array.isArray(data.credentials) && data.credentials.length > 0) {
                     return data.credentials
                 } else {
-                    return this.getLocalCredentials()
+                    return this.getLocalCredentials().filter(cred => !!cred[subtype] || subtype === 'password')
                 }
             }
         }
