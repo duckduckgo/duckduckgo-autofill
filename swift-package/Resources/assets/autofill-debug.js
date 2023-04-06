@@ -7944,6 +7944,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       wrapperClass: 'top-autofill',
       tooltipPositionClass: () => '.wrapper { transform: none; }',
       setSize: details => this.deviceApi.notify((0, _index.createNotification)('setSize', details)),
+      remove: async () => this._closeAutofillParent(),
       testMode: this.isTestMode()
     });
   }
@@ -8763,7 +8764,7 @@ class InterfacePrototype {
         if (Array.isArray(data.credentials) && data.credentials.length > 0) {
           return data.credentials;
         } else {
-          return this.getLocalCredentials();
+          return this.getLocalCredentials().filter(cred => !!cred[subtype] || subtype === 'password');
         }
       }
     }
@@ -16023,6 +16024,8 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 
   _onManage(type) {
+    this.removeTooltip();
+
     switch (type) {
       case 'credentials':
         return this._options.device.openManagePasswords();
