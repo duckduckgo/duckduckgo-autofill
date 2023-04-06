@@ -60,6 +60,18 @@
         "inputWidth",
         "wasFromClick"
       ]
+    },
+    "pw": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input": {
+          "type": "string"
+        },
+        "domain": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [

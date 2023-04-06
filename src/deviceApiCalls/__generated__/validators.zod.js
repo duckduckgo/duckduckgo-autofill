@@ -209,7 +209,11 @@ export const getAutofillDataRequestSchema = z.object({
     subType: z.string(),
     trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup")]).optional(),
     serializedInputContext: z.string().optional(),
-    triggerContext: triggerContextSchema.optional()
+    triggerContext: triggerContextSchema.optional(),
+    pw: z.object({
+        input: z.string().optional(),
+        domain: z.string().optional()
+    }).optional()
 });
 
 export const getAutofillDataResponseSchema = z.object({

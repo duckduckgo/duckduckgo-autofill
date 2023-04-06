@@ -16038,7 +16038,11 @@ class NativeUIController extends _UIController.UIController {
       inputType,
       mainType,
       subType,
-      trigger
+      trigger,
+      pw: {
+        input: input.getAttribute('passwordrules') || undefined,
+        domain: window.location.hostname
+      }
     };
     device.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(payload)).then(resp => {
       switch (resp.action) {
@@ -17671,7 +17675,11 @@ const getAutofillDataRequestSchema = _zod.z.object({
   subType: _zod.z.string(),
   trigger: _zod.z.union([_zod.z.literal("userInitiated"), _zod.z.literal("autoprompt"), _zod.z.literal("postSignup")]).optional(),
   serializedInputContext: _zod.z.string().optional(),
-  triggerContext: triggerContextSchema.optional()
+  triggerContext: triggerContextSchema.optional(),
+  pw: _zod.z.object({
+    input: _zod.z.string().optional(),
+    domain: _zod.z.string().optional()
+  }).optional()
 });
 
 exports.getAutofillDataRequestSchema = getAutofillDataRequestSchema;

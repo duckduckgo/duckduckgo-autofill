@@ -160,6 +160,10 @@ export interface GetAutofillDataRequest {
    */
   serializedInputContext?: string;
   triggerContext?: TriggerContext;
+  pw?: {
+    input?: string;
+    domain?: string;
+  };
 }
 /**
  * This is the top-level context data, such as the current URL

@@ -12362,7 +12362,11 @@ class NativeUIController extends _UIController.UIController {
       inputType,
       mainType,
       subType,
-      trigger
+      trigger,
+      pw: {
+        input: input.getAttribute('passwordrules') || undefined,
+        domain: window.location.hostname
+      }
     };
     device.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(payload)).then(resp => {
       switch (resp.action) {
