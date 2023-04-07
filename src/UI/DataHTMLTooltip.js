@@ -18,6 +18,7 @@ class DataHTMLTooltip extends HTMLTooltip {
             return shouldShow
         }
 
+        // Don't show Manage… when we only have Email Protection addresses, or the provider is locked
         const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', PROVIDER_LOCKED].includes(item.id()))
 
         const topClass = wrapperClass || ''

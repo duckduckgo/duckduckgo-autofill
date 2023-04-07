@@ -11435,7 +11435,8 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       const shouldShow = ['personalAddress', 'privateAddress'].includes(dataId) && !hasAddedSeparator;
       if (shouldShow) hasAddedSeparator = true;
       return shouldShow;
-    };
+    }; // Don't show Manage… when we only have Email Protection addresses, or the provider is locked
+
 
     const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', _Credentials.PROVIDER_LOCKED].includes(item.id()));
     const topClass = wrapperClass || '';
