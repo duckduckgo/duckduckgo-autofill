@@ -1,0 +1,205 @@
+<!--
+  https://accounts.paytm.com/register
+  rank: 6074
+  testRunId: 67
+  testResultId: 243977
+-->
+<form method="post" id="signupForm" ng-submit="submitSignupForm()" name="formNew.signupForm" novalidate="" autocomplete="off" class="ng-pristine ng-invalid ng-invalid-required ng-valid-maxlength">
+  <!-- ngIf: subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'diy' || subTheme == 'dashboard' || subTheme == 'mp-html5' || subTheme == 'mall-html5' || subTheme == 'panel' || subTheme == 'sellerpanel' -->
+  <div ng-if="subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'diy' || subTheme == 'dashboard' || subTheme == 'mp-html5' || subTheme == 'mall-html5' || subTheme == 'panel' || subTheme == 'sellerpanel'" ng-show="!parkedEmail" class="ng-scope" aria-hidden="false">
+    <!-- Hidden Field -->
+    <input type="hidden" name="csrfToken" ng-value="sessionData.csrfToken" autocomplete="off" value="6417c290-04ba-5c8a-ae3c-2bc178b05754">
+    <!-- Hidden Field -->
+
+    <div class="help-block">
+      <span class="error ng-binding ng-hide" ng-show="genericError" ng-bind="genericError" aria-hidden="true"></span>
+    </div>
+
+    <!-- Mobile input start-->
+    <md-content layout-padding="" class="md-default-theme">
+      <md-input-container class="md-default-theme">
+        <label ng-bind="text.mobileInputLabel" class="ng-binding" for="input_0">Mobile Number</label>
+        <input type="text" ng-class="{'number-new': formNew.signupForm.mobileNumber.$valid}" name="mobileNumber" ng-model="sessionData.mobileNumber" data-required="" maxlength="10" number-only="mobile" ng-focus="sessionData.mobileError = '';" data-ng-trim="false" tabindex="1" ga-keyup-event="" screen-name="auth-init/signup/web" event-category="signup" oauth-id="input_phone" event-action="signup_initiated" event-type="customEvent" event-label="phone number" class="ng-pristine ng-untouched md-input ng-empty ng-invalid ng-invalid-required ng-valid-maxlength" id="input_0" aria-invalid="true" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Mobile Number
+parseable name: mobileNumber
+section: mobileNumber_0_24
+field signature: 2986498076
+form signature: 8759231194030746348
+form signature in host form: 8759231194030746348
+field frame token: EC2335097ADE97855E531D62B8203EB9
+form renderer id: 2
+field renderer id: 24" data-ddg-testresultelementid="572082" data-manual-scoring="username OR emailAddress">
+
+        <span class="number-prefix-new ng-hide" ng-show="formNew.signupForm.mobileNumber.$valid" aria-hidden="true">+91</span>
+
+        <div ng-messages="formNew.signupForm.mobileNumber.$error" aria-live="assertive">
+          <span ng-show="(formNew.signupForm.mobileNumber.$dirty || showRequired) &amp;&amp; formNew.signupForm.mobileNumber.$invalid" aria-hidden="true" class="ng-hide">
+            <span class="error" ng-show="formNew.signupForm.mobileNumber.$error.required || formNew.signupForm.mobileNumber.$error.parse" aria-hidden="false">
+              Mobile Number is Compulsory
+            </span>
+            <span class="error ng-hide" ng-show="!formNew.signupForm.mobileNumber.$error.required &amp;&amp; formNew.signupForm.mobileNumber.$error.mobileValid" aria-hidden="true">
+              Mobile Number must be valid.
+            </span>
+          </span>
+
+          <!-- Error message from backend -->
+          <span class="error ng-binding ng-hide" ng-show="sessionData.mobileError" ng-bind="sessionData.mobileError" aria-hidden="true"></span>
+        </div>
+      </md-input-container>
+      <!-- Fake fields are a workaround for chrome autofill getting the wrong fields -->
+      <input type="text" name="fakeusernameremembered" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: There seems to be some problem with the email Id you entered and you cannot use it as your signup em
+parseable name: fakeusernameremembered
+section: mobileNumber_0_24
+field signature: 1659732505
+form signature: 8759231194030746348
+form signature in host form: 8759231194030746348
+field frame token: EC2335097ADE97855E531D62B8203EB9
+form renderer id: 2
+field renderer id: 25" data-ddg-testresultelementid="572083" data-manual-scoring="username OR emailAddress">
+      <input type="password" name="fakepasswordremembered" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: There seems to be some problem with the email Id you entered and you cannot use it as your signup em
+parseable name: fakepasswordremembered
+section: mobileNumber_0_24
+field signature: 4195508907
+form signature: 8759231194030746348
+form signature in host form: 8759231194030746348
+field frame token: EC2335097ADE97855E531D62B8203EB9
+form renderer id: 2
+field renderer id: 26" data-ddg-testresultelementid="572084">
+      <!-- Fake fields end-->
+
+      <!-- ngIf: subTheme == 'diy' -->
+      <!-- ngIf: !showPass --><md-input-container ng-if="!showPass" class="ng-scope md-default-theme">
+        <label ng-bind="text.passwordInputLabel" class="ng-binding" for="input_1">Create Paytm Password</label>
+        <a class="showPassword" ng-show="subTheme == 'mp-html5' || subTheme == 'mall-html5' || subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'dashboard'" ng-click="showPassClick()" tabindex="3" aria-hidden="false">Show</a>
+
+        <input type="password" class="password-new ng-pristine ng-untouched md-input ng-empty ng-invalid ng-invalid-required" name="loginPassword" ga-keyup-event="" screen-name="auth-init/signup/web" event-category="signup" event-action="signup_initiated" event-type="customEvent" oauth-id="input_password" event-label="password" ng-model="sessionData.password" data-ng-trim="false" data-required="" ng-focus="sessionData.passwordError = ''; sessionData.pwdOnFocus = true;" ng-blur="sessionData.pwdOnFocus = false" tabindex="1" passwordrules="minlength: 5; maxlength: 15; required: lower; required: upper; required: digit;" id="input_1" aria-invalid="true" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Create Paytm Password
+parseable name: loginPassword
+section: mobileNumber_0_24
+field signature: 2696689794
+form signature: 8759231194030746348
+form signature in host form: 8759231194030746348
+field frame token: EC2335097ADE97855E531D62B8203EB9
+form renderer id: 2
+field renderer id: 29" data-ddg-testresultelementid="572085" data-manual-scoring="password"> </md-input-container><!-- end ngIf: !showPass -->
+
+      <!-- ngIf: showPass -->
+      <!-- ngIf: (subTheme == 'mp-web') && sessionData.pwdOnFocus && showPasswordStrength -->
+      <!-- ngIf: (subTheme == 'mp-mall') && sessionData.pwdOnFocus -->
+      <span class="terms-text ng-hide" ng-show="(subTheme == 'mp-html5' || subTheme == 'mall-html5' || subTheme == 'pos') &amp;&amp; (!((formNew.signupForm.loginPassword.$dirty || showRequired) &amp;&amp; formNew.signupForm.loginPassword.$invalid) &amp;&amp; !sessionData.passwordError)" aria-hidden="true">Minimum 5 characters. Atleast 1 number and 1 alphabet</span>
+
+      <div ng-messages="formNew.signupForm.loginPassword.$error" aria-live="assertive">
+        <span ng-show="(formNew.signupForm.loginPassword.$dirty || showRequired) &amp;&amp; formNew.signupForm.loginPassword.$invalid" aria-hidden="true" class="ng-hide">
+          <span class="error" ng-show="formNew.signupForm.loginPassword.$error.required" aria-hidden="false">Password is Compulsory.</span>
+        </span>
+        <!-- Error message from backend -->
+        <span class="error ng-binding ng-hide" ng-show="sessionData.passwordError" ng-bind="sessionData.passwordError" aria-hidden="true"></span>
+      </div>
+
+      <!-- ngIf: subTheme != 'sellerpanel' && subTheme != 'diy' --><md-input-container ng-if="subTheme != 'sellerpanel' &amp;&amp; subTheme != 'diy'" class="ng-scope md-default-theme">
+        <label ng-show="(subTheme === 'mp-mall' || subTheme == 'mp-web' || subTheme == 'pos' || subTheme === 'panel')" for="input_2" aria-hidden="false">
+          Email ID
+          <span class="custom-optional ng-hide" ng-class="{'custom-blue': emailFocus}" ng-show="sessionData.email" aria-hidden="true">(optional)</span></label>
+
+        <!-- ngIf: (subTheme === 'mp-mall' || subTheme == 'mp-web' || subTheme == 'pos' || subTheme === 'panel') && !sessionData.email --><span ng-if="(subTheme === 'mp-mall' || subTheme == 'mp-web' || subTheme == 'pos' || subTheme === 'panel') &amp;&amp; !sessionData.email" class="optional ng-scope">(optional)</span><!-- end ngIf: (subTheme === 'mp-mall' || subTheme == 'mp-web' || subTheme == 'pos' || subTheme === 'panel') && !sessionData.email -->
+        <!-- ngIf: subTheme === 'mp-html5' || subTheme === 'mall-html5' || subTheme === 'diy' -->
+        <!-- ngIf: subTheme === 'dashboard' -->
+        <input type="text" name="email" ng-model="sessionData.email" data-required="" email-validate="" data-ng-trim="false" ng-focus="sessionData.emailError = ''; emailFocus = true;" ga-keyup-event="" screen-name="auth-init/signup/web" event-category="signup" event-action="signup_initiated" event-type="customEvent" event-label="email ID" oauth-id="input_email" ng-keyup="intiatedBool &amp;&amp; signUpIntiatedGA()" ng-blur="emailFocus = false" tabindex="4" class="ng-pristine ng-untouched md-input ng-empty ng-invalid ng-invalid-required" id="input_2" aria-invalid="true" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: Email ID (optional)
+parseable name: email
+section: mobileNumber_0_24
+field signature: 420638584
+form signature: 8759231194030746348
+form signature in host form: 8759231194030746348
+field frame token: EC2335097ADE97855E531D62B8203EB9
+form renderer id: 2
+field renderer id: 30" data-ddg-testresultelementid="572086" data-manual-scoring="emailAddress">
+
+        <div ng-messages="formNew.signupForm.email.$error" ng-show="formNew.signupForm.email.$dirty &amp;&amp; formNew.signupForm.email.$invalid || sessionData.emailError" aria-live="assertive" aria-hidden="true" class="ng-hide">
+          <span class="error ng-hide" ng-show="!formNew.signupForm.email.$error.required &amp;&amp; formNew.signupForm.email.$error.emailValid" aria-hidden="true">Please enter a valid email address.</span>
+          <!-- Error message from backend -->
+          <span class="error ng-binding ng-hide" ng-show="sessionData.emailError" ng-bind="sessionData.emailError" aria-hidden="true"></span>
+        </div> </md-input-container><!-- end ngIf: subTheme != 'sellerpanel' && subTheme != 'diy' -->
+
+      <!-- ngIf: subTheme == 'sellerpanel' -->
+
+      <md-checkbox md-no-ink="" ng-model="dobAgreement" oauth-id="check_consent" aria-label="Checkbox 1" class="md-primary ng-pristine ng-untouched ng-valid md-default-theme ng-not-empty md-checked ng-hide" ng-show="subTheme == 'diy' || subTheme == 'dashboard' || subTheme == 'sellerpanel'" role="checkbox" tabindex="0" aria-hidden="true" aria-checked="true" aria-invalid="false"><div class="md-container" md-ink-ripple="" md-ink-ripple-checkbox="">
+          <div class="md-icon"></div>
+        </div>
+        <div ng-transclude="" class="md-label">
+          <!-- ngIf: subTheme != 'diy' && subTheme != 'dashboard' && subTheme != 'mp-web' && subTheme != 'pos' && subTheme != 'mp-mall' -->
+          <!-- ngIf: subTheme == 'diy' -->
+          <!-- ngIf: subTheme == 'dashboard'  -->
+        </div></md-checkbox>
+      <div class="spinner-new" ng-show="subTheme != 'mp-html5' &amp;&amp; subTheme != 'mall-html5' &amp;&amp; subTheme != 'dashboard'" aria-hidden="false">
+        <md-progress-circular md-mode="indeterminate" class="md-hue-2 md-primary load-white spinner-new-signup md-default-theme ng-hide" ng-show="spinnerVisible" md-diameter="20" aria-valuemin="0" aria-valuemax="100" role="progressbar" aria-hidden="true"><div class="md-spinner-wrapper">
+            <div class="md-inner">
+              <div class="md-gap"></div>
+              <div class="md-left"><div class="md-half-circle"></div></div>
+              <div class="md-right"><div class="md-half-circle"></div></div>
+            </div></div></md-progress-circular>
+      </div>
+
+      <!-- ngIf: subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'dashboard' || subTheme == 'mp-html5' || subTheme == 'mall-html5' -->
+      <ul ng-if="subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'dashboard' || subTheme == 'mp-html5' || subTheme == 'mall-html5'" ng-class="{'tnc-signup': subTheme == 'mp-html5' || subTheme == 'mall-html5'}" class="ng-scope">
+        <li class="terms-cond-new" ng-class="{'signup-terms-cond' : subTheme == 'dashboard'}">
+          <span class="terms-text">By creating this account, you agree to our
+            <a tabindex="5" href="https://appfaq.paytm.com/legal/#" target="_blank" ng-bind="text.TandCText" ga-clickevent="" screen-name="auth-init/signup/web" event-category="signup" event-action="tc_clicked" event-type="customEvent" event-label="" class="ng-binding" rel="noopener noreferrer">Terms &amp; Conditions
+            </a></span>
+          <span class="terms-text">&amp;
+            <a tabindex="6" href="https://pages.paytm.com/privacy.html" target="_blank" ga-clickevent="" screen-name="auth-init/signup/web" event-category="signup" event-action="pp_clicked" event-type="customEvent" event-label="" rel="noopener noreferrer">Privacy Policy.</a></span>
+        </li>
+      </ul>
+      <!-- end ngIf: subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'dashboard' || subTheme == 'mp-html5' || subTheme == 'mall-html5' -->
+
+      <button class="md-raised md-primary btn-new md-button md-default-theme ng-hide" ng-transclude="" oauth-id="signup_button" type="submit" ng-disabled="!dobAgreement" ng-show="formBased" name="signupBtn" ga-clickevent="" aria-hidden="true">
+        <!-- ngIf: subTheme != 'mp-html5' && subTheme != 'mall-html5' && subTheme != 'diy'  && subTheme != 'dashboard' --><span ng-if="subTheme != 'mp-html5' &amp;&amp; subTheme != 'mall-html5' &amp;&amp; subTheme != 'diy'  &amp;&amp; subTheme != 'dashboard'" class="ng-scope"><!-- ngIf: signUpData.button.showLock --><!-- end ngIf: signUpData.button.showLock -->Create your Paytm
+          Wallet</span><!-- end ngIf: subTheme != 'mp-html5' && subTheme != 'mall-html5' && subTheme != 'diy'  && subTheme != 'dashboard' -->
+        <!-- ngIf: subTheme == 'diy' || subTheme == 'dashboard'  -->
+        <!-- ngIf: subTheme == 'mp-html5' || subTheme == 'mall-html5' -->
+      </button>
+      <button class="md-raised md-primary btn-new signup-btn md-button md-default-theme btn-signup" ng-transclude="" oauth-id="signup_button" ng-class="{'btn-signup' : subTheme != 'dashboard'}" type="button" ng-disabled="!dobAgreement || spinnerVisibleMobile" ng-click="continueClick()" tabindex="7" ng-show="!formBased" name="signupBtn" aria-hidden="false">
+        <!-- ngIf: subTheme != 'mp-html5' && subTheme != 'mall-html5' && subTheme != 'mp-web' && subTheme != 'pos' && subTheme != 'mp-mall' && subTheme != 'diy'  && subTheme != 'dashboard'  && subTheme != 'sellerpanel' -->
+        <!-- ngIf: subTheme === 'mp-mall' || subTheme === 'mp-web' || subTheme == 'pos' --><span ng-if="subTheme === 'mp-mall' || subTheme === 'mp-web' || subTheme == 'pos'" ga-clickevent="" screen-name="auth-init/signup/web" event-category="signup_v2" event-action="proceed_clicked" event-type="customEvent" class="ng-scope">Proceed</span><!-- end ngIf: subTheme === 'mp-mall' || subTheme === 'mp-web' || subTheme == 'pos' -->
+        <!-- ngIf: subTheme === 'sellerpanel' -->
+        <!-- ngIf: subTheme == 'diy' -->
+        <!-- ngIf: subTheme == 'dashboard' -->
+        <div class="spinner-new ng-scope ng-hide" ng-show="subTheme == 'dashboard'" aria-hidden="true">
+          <md-progress-circular md-mode="indeterminate" class="md-hue-2 md-primary load-white spinner-new-signup md-default-theme ng-hide" ng-show="spinnerVisible" md-diameter="20" aria-valuemin="0" aria-valuemax="100" role="progressbar" aria-hidden="true"><div class="md-spinner-wrapper">
+              <div class="md-inner">
+                <div class="md-gap"></div>
+                <div class="md-left"><div class="md-half-circle"></div></div>
+                <div class="md-right"><div class="md-half-circle"></div></div>
+              </div></div></md-progress-circular>
+        </div>
+        <!-- ngIf: subTheme == 'mp-html5' || subTheme == 'mall-html5' -->
+      </button>
+
+      <!--  -->
+      <!-- ngIf: subTheme == 'diy' -->
+      <!-- ngIf: subTheme == 'dashboard' -->
+
+      <!-- ngIf: subTheme != 'mp-html5' && subTheme != 'mall-html5' && subTheme != 'mp-web' && subTheme != 'pos' && subTheme != 'dashboard' && subTheme != 'mp-mall' -->
+    </md-content>
+  </div>
+  <!-- end ngIf: subTheme == 'mp-web' || subTheme == 'pos' || subTheme == 'mp-mall' || subTheme == 'diy' || subTheme == 'dashboard' || subTheme == 'mp-html5' || subTheme == 'mall-html5' || subTheme == 'panel' || subTheme == 'sellerpanel' -->
+
+  <div class="parked-email-message ng-hide" ng-show="parkedEmail" aria-hidden="true">
+    There seems to be some problem with the email Id you entered and you cannot
+    use it as your signup email.
+  </div>
+
+  <!-- ngIf: subTheme != 'mp-web' && subTheme != 'pos' && subTheme != 'mp-mall' && subTheme != 'diy' && subTheme != 'dashboard' && subTheme != 'mp-html5' && subTheme != 'mall-html5' && subTheme != 'panel' && subTheme != 'sellerpanel' -->
+</form>

@@ -1,0 +1,480 @@
+<!--
+  https://www.umu.com/auth/register
+  rank: 7808
+  testRunId: 67
+  testResultId: 244848
+-->
+
+  
+
+  <div>
+    
+
+    <div ng-controller="mainController" class="ng-scope">
+      <!-- uiView: -->
+      <div ui-view="" class="ng-scope">
+        <!-- 用户注册 -->
+        <div ng-controller="RegisterController" class="ng-scope">
+          <div class="register-page-header page-header ng-isolate-scope" ng-class="{'sibling-sub-header': siblingSubHeader}" ng-show="showHeader">
+            <div class="page-header-wrap">
+              <a class="page-header-logo" ng-class="{'trackEvent': trackEvent}" data-track-cat="" data-track-label="" href="javascript:;" ng-click="logoClick()">
+                <!-- ngIf: !!logoPc -->
+                <!-- ngIf: !logoPc && !hideDefaultLogo -->
+                <div class="img ng-scope" ng-if="!logoPc &amp;&amp; !hideDefaultLogo"></div>
+                <!-- end ngIf: !logoPc && !hideDefaultLogo -->
+              </a>
+              <div ng-transclude="">
+                <authorization-header-switch page="'register'" class="ng-scope ng-isolate-scope"><div class="account-create-header-switch clearfix">
+                    <!-- ngIf: $ctrl.isShow('toLogin') -->
+                    <div class="switch-item switch-login ng-scope" ng-if="$ctrl.isShow('toLogin')">
+                      <div class="title">
+                        <span>Have an account?</span>
+                        <a href="javascript:" class="btn btn-primary" ng-click="$ctrl.toLogin()">Log In</a>
+                      </div>
+                    </div>
+                    <!-- end ngIf: $ctrl.isShow('toLogin') -->
+                    <!-- ngIf: $ctrl.isShow('toRegister') -->
+                    <!-- ngIf: $ctrl.isShow('toLogOut') -->
+                  </div></authorization-header-switch>
+              </div>
+            </div>
+          </div>
+
+          <account-register-background class="ng-isolate-scope"><!-- 注册头部指引 -->
+            <!-- 设置账户 -->
+            <!-- 完善信息 -->
+            <!-- 注册成功 -->
+            <div class="account-register-background">
+              
+              </div></account-register-background>
+
+          <!-- 用户注册第一步 -->
+          <div class="authorization-page">
+            <div class="account-top">
+              <account-create-progress step="1" class="ng-isolate-scope"><!-- 注册头部指引 -->
+                <!-- 设置账户 -->
+                <!-- 完善信息 -->
+                <!-- 注册成功 -->
+                <div class="account-create-progress">
+                  <div class="steps">
+                    <div class="step active" ng-class="{'active': $ctrl.step >= 1, 'done': $ctrl.step > 1}">
+                      <div class="num"><em>1</em></div>
+                      <div class="title">Sign up</div>
+                    </div>
+                    <div class="step" ng-class="{'active': $ctrl.step >= 2, 'done': $ctrl.step > 2}">
+                      <div class="num"><em>2</em></div>
+                      <div class="title">Complete your profile</div>
+                    </div>
+                    <div class="step" ng-class="{'active': $ctrl.step >= 3, 'done': $ctrl.step > 3}">
+                      <div class="num"><em>3</em></div>
+                      <div class="title">Use UMU</div>
+                    </div>
+                  </div>
+                </div></account-create-progress>
+            </div>
+
+            <div class="account-page bear-card as-container">
+              <div class="account-page-wrap">
+                <div class="account-register">
+                  <div class="account-page-slogen">
+                    <div class="img">
+                      
+                    </div>
+                    <div class="text">Create your UMU account</div>
+                  </div>
+                  <!-- 非cn站点，切换email和mobile两种注册方式 -->
+                  <div class="account-register-type-change">
+                    <ul class="tabs tabs-theme-stick">
+                      <li class="tab-item current" ng-class="{'current': vm.type == vm.CONST.REGISTER_TYPE_EMAIL}">
+                        <!-- Email -->
+                        <a ui-sref="register({type:vm.CONST.REGISTER_TYPE_EMAIL})" class="tab-action" href="#/register?type=1">Email</a>
+                      </li>
+                      <!-- Mobile -->
+                      <li class="tab-item" ng-class="{'current': vm.type == vm.CONST.REGISTER_TYPE_PHONE}">
+                        <a ui-sref="register({type:vm.CONST.REGISTER_TYPE_PHONE})" class="tab-action" href="#/register?type=2">Mobile</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="account-page-form">
+                    <form class="account-register-form ng-pristine ng-isolate-scope ng-valid-maxlength ng-valid ng-valid-required" name="accountRegisterForm" autocomplete="off" barrier-free-form="vm.triggerSubmit()">
+                      <!-- 输入手机号 -->
+                      <!-- ngIf: vm.type != vm.CONST.REGISTER_TYPE_EMAIL -->
+
+                      <!-- ngIf: vm.type == vm.CONST.REGISTER_TYPE_EMAIL -->
+                      <div class="form-row ng-scope" ng-if="vm.type == vm.CONST.REGISTER_TYPE_EMAIL">
+                        <!-- 电子邮箱 -->
+                        <div class="form-row-label">Email</div>
+                        <div class="form-row-body">
+                          <authorization-email-input ng-model="vm.email" on-type="vm.onEmailType()" input-placeholder="Email address" input-name="email" validate-value="vm.validateEmailValue()" ng-click="vm.onInputClick()" class="register-email-input ng-pristine ng-untouched ng-valid ng-isolate-scope ng-empty"><autocomplete ng-model="ngModel" is-disabled="!vm.emailAllowed" attr-placeholder="Email address" click-activation="false" data="vm.emailDataList" on-type="vm.onType" on-select="vm.onSelect" attr-inputclass="input-text auth-email-input" attr-class="input-box" attr-inputname="email" order-by="nope" class="ng-pristine ng-untouched ng-valid ng-isolate-scope ng-empty">
+                              <div class="autocomplete input-box" id="">
+                                <input type="text" ng-model="searchParam" placeholder="Email address" class="input-text auth-email-input ng-valid ng-valid-required ng-touched" id="" name="email" ng-class="{disabled:isDisabled}" ng-disabled="isDisabled" ng-required="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email address
+parseable name: email
+section: email_0_30
+field signature: 420638584
+form signature: 14730201976172774795
+form signature in host form: 14730201976172774795
+field frame token: 929C7B14734603BBAEE8F10B397F9D40
+form renderer id: 1
+field renderer id: 30" data-ddg-testresultelementid="578849" data-manual-scoring="emailAddress">
+                                <ul ng-show="completing &amp;&amp; (listData = (suggestions | filter:searchFilter:comparator)).length > 0 &amp;&amp; !isDisabled &amp;&amp; !(listData.length == 1 &amp;&amp; searchFilter == listData[0])" class="ng-hide">
+                                  <div class="item-wrap">
+                                    <!-- ngRepeat: suggestion in listData | orderBy: orderBy || 'toString()' track by $index -->
+                                  </div>
+                                </ul>
+                                <input type="text" class="focus-helper" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email
+parseable name: 
+section: email_0_30
+field signature: 1318412689
+form signature: 14730201976172774795
+form signature in host form: 14730201976172774795
+field frame token: 929C7B14734603BBAEE8F10B397F9D40
+form renderer id: 1
+field renderer id: 37" data-ddg-testresultelementid="578850" data-manual-scoring="username OR emailAddress"></div></autocomplete></authorization-email-input>
+                        </div>
+                        <div class="form-row-tip theme-static">
+                          <div ng-messages="accountRegisterForm.email.$error" class="static-error-tip ng-active">
+                            <!-- 必填 -->
+                            <!-- ngMessage: required -->
+                            <div ng-message="required" class="ng-scope">
+                              You can’t leave this blank
+                            </div>
+                            <!-- 邮箱格式不正确 -->
+                            <!-- ngMessage: error -->
+                          </div>
+                        </div>
+                      </div>
+                      <!-- end ngIf: vm.type == vm.CONST.REGISTER_TYPE_EMAIL -->
+
+                      <div class="form-row">
+                        <!-- 设置密码 -->
+                        <div class="form-row-label">Password</div>
+                        <div class="form-row-body">
+                          <div class="input-box password-input">
+                            <password-visible-toggle-wrap class="ng-isolate-scope"><div class="password-visible-toggle-wrap">
+                                <div ng-transclude="">
+                                  <input type="password" class="input-text register-password-input ng-pristine ng-untouched ng-valid ng-scope ng-empty ng-valid-maxlength" ng-class="{'input-invalid': vm.isPwdValid === false}" ng-model="vm.pwd" name="pwd" placeholder="Please enter 8-16 alphanumeric characters" maxlength="100" ng-blur="vm.validatePasswordValue()" ng-click="vm.onInputClick()" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Please enter 8-16 alphanumeric characters
+parseable name: pwd
+section: email_0_30
+field signature: 2597353482
+form signature: 14730201976172774795
+form signature in host form: 14730201976172774795
+field frame token: 929C7B14734603BBAEE8F10B397F9D40
+form renderer id: 1
+field renderer id: 27" data-ddg-testresultelementid="578851" data-manual-scoring="password">
+                                  <iconfont ng-show="!!vm.isPwdValid" type="Complete" class="iconfont password-validate-success ng-scope ng-isolate-scope ng-hide">
+                                  </iconfont>
+                                </div>
+                                <!-- ngIf: !visible --><iconfont type="Dismiss" ng-if="!visible" ng-click="tooglePWD()" class="iconfont toggle-switch ng-scope ng-isolate-scope"> </iconfont><!-- end ngIf: !visible -->
+                                <!-- ngIf: visible -->
+                              </div>
+                            </password-visible-toggle-wrap>
+                          </div>
+                        </div>
+                        <div class="form-row-tip theme-static">
+                          <div ng-messages="accountRegisterForm.pwd.$error" class="static-error-tip ng-inactive">
+                            <!-- 密码必填 -->
+                            <!-- ngMessage: required -->
+                            <!-- 请输入8-16位的字母和数字 -->
+                            <!-- ngMessage: error -->
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="form-row">
+                        <!-- 确认密码 -->
+                        <div class="form-row-label">Confirm password</div>
+                        <div class="form-row-body">
+                          <div class="input-box password-input">
+                            <password-visible-toggle-wrap class="ng-isolate-scope"><div class="password-visible-toggle-wrap">
+                                <div ng-transclude="">
+                                  <input type="password" class="input-text ng-pristine ng-untouched ng-valid ng-scope ng-empty ng-valid-maxlength" ng-class="{'input-invalid': vm.isRpwdValid === false}" ng-model="vm.rpwd" name="rpwd" placeholder="Password" maxlength="100" ng-blur="vm.validateRepeatPasswordValue()" ng-click="vm.onInputClick()" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: rpwd
+section: email_0_30
+field signature: 3277139851
+form signature: 14730201976172774795
+form signature in host form: 14730201976172774795
+field frame token: 929C7B14734603BBAEE8F10B397F9D40
+form renderer id: 1
+field renderer id: 28" data-ddg-testresultelementid="578852" data-manual-scoring="password">
+                                  <iconfont ng-show="!!vm.isRpwdValid" type="Complete" class="iconfont password-validate-success ng-scope ng-isolate-scope ng-hide">
+                                  </iconfont>
+                                </div>
+                                <!-- ngIf: !visible --><iconfont type="Dismiss" ng-if="!visible" ng-click="tooglePWD()" class="iconfont toggle-switch ng-scope ng-isolate-scope"> </iconfont><!-- end ngIf: !visible -->
+                                <!-- ngIf: visible -->
+                              </div>
+                            </password-visible-toggle-wrap>
+                          </div>
+                        </div>
+                        <div class="form-row-tip theme-static">
+                          <div ng-messages="accountRegisterForm.rpwd.$error" class="static-error-tip ng-inactive">
+                            <!-- 确认密码必填 -->
+                            <!-- ngMessage: required -->
+                            <!-- 请输入8-16位的字母和数字 -->
+                            <!-- ngMessage: error -->
+                            <!-- 两次输入的密码不一致 -->
+                            <!-- ngMessage: different -->
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+
+                    <div class="account-register-info">
+                      <!-- 点击“下一步”，表明您已阅读并同意 -->
+                      By creating an account you agree to the UMU
+                      <a href="/staticPage/termcondition.html" target="_blank" ng-target="_blank" class="btn btn-text">
+                        Terms &amp; Conditions</a>
+                      <!-- 和 -->
+                      and
+                      <a href="/staticPage/privacy-policy.html" target="_blank" ng-target="_blank" class="btn btn-text">
+                        Privacy Policy</a>
+                    </div>
+
+                    <div class="account-register-submit account-page-submit">
+                      <!-- 下一步 -->
+                      <a class="btn btn-in-form ajax-button-wrapper" ng-class="{'disabled': buttonDisabled}" ng-click="doRequest()" button-class="btn btn-in-form" trigger-request="vm.triggerRequest" request-promise="vm.submit()" loading="vm.loading">
+                        <span ng-transclude=""><span class="ng-scope">Continue</span></span>
+                        <!-- ngIf: loading -->
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="account-register-picture">
+                  <!-- ngIf: vm.isBrown -->
+                  <!-- ngIf: !vm.isBrown --><!-- end ngIf: !vm.isBrown -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="btn_fixed ng-isolate-scope" id="fankui">
+        <a class="goTop ng-scope" href="javascript:;"><span class="icon_top"></span>Back to top</a>
+        <!-- ngIf: !isShowSkillTip --><a class="btn_FB ng-scope ng-isolate-scope" href="javascript:;" ng-click="feedback()" ng-if="!isShowSkillTip">FEEDBACK</a><!-- end ngIf: !isShowSkillTip -->
+        <!-- ngIf: !!isShowSkillTip -->
+      </div>
+    </div>
+    <div>
+      <div id="footer">
+        <ul class="nav">
+          <li>
+            <a class="trackEvent" data-track-cat="home" data-track-label="aboutUs" href="/staticPage/about-us.html">About Us</a>
+          </li>
+          <li>
+            <a class="trackEvent" data-track-cat="home" data-track-label="termcondition" href="/staticPage/termcondition.html">Terms &amp; Conditions</a>
+          </li>
+          <li>
+            <a class="trackEvent" data-track-cat="home" data-track-label="mailToUs" href="mailto:support@umu.com">Contact Us</a>
+          </li>
+
+          <li>
+            <div class="site-lang-switch">
+              <lang-switch is-editing="true" auto-save="true" class="ng-isolate-scope"><div class="lang-select">
+                  <!-- ngIf: $ctrl.isEditing -->
+                  <div class="lang-select-list ng-scope" ng-if="$ctrl.isEditing">
+                    <div class="select-box switch-select ng-isolate-scope" ng-class="[(theme ? theme : ''), (isDisabled ? 'disabled' : ''), (isShowSelectList ? 'active': '')]" data="$ctrl.langList" selected="selected" selected-value="$ctrl.selectedLangValue" click="$ctrl.onSelectedChanged">
+                      <!-- ng-mouseleave="isShowSelectList=false" -->
+                      <!-- ngIf: !isIcon --><span class="current ng-binding ng-scope" ng-if="!isIcon" ng-click="onShowSelectList($event)" ng-show="!isShowDisableLabel()">
+                        English </span><!-- end ngIf: !isIcon -->
+                      <!-- ngIf: isIcon -->
+                      <span class="current ng-binding ng-hide" ng-show="isShowDisableLabel()">
+                      </span>
+                      <input class="select-inner-input input-text ng-pristine ng-untouched ng-valid ng-empty ng-valid-maxlength ng-hide" ng-show="otherTrigger!='undefined' &amp;&amp; selected == otherTrigger" placeholder="" type="text" autocomplete="off" maxlength="" ng-model="other" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: English
+parseable name: 
+section: _0_34
+field signature: 1318412689
+form signature: 9232614919399003462
+form signature in host form: 9232614919399003462
+field frame token: 929C7B14734603BBAEE8F10B397F9D40
+form renderer id: 0
+field renderer id: 34
+autocomplete: off" data-ddg-testresultelementid="578853">
+                      <div class="select-list ng-hide" ng-show="isShowSelectList">
+                        <!-- ngIf: isFiltered -->
+                        <ul class="select-list-wrap">
+                          <!-- ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope selected" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">English</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Español</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Français</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Deutsch</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Português</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Italiano</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Русский</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">简体中文</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">한국어</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">日本語</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">ภาษาไทย</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Tiếng Việt</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                          <li ng-repeat="item in listData | filter:$ctrl.filterValue track by $index" class="select-list-item ng-scope" ng-class="{'selected':selected == item.key, 'disabled':item.disabled == true}" ng-click="onSelected(item)">
+                            <!-- ngIf: selectIcon -->
+                            <!-- ngIf: !isIcon --><span class="item-content ng-binding ng-scope" ng-if="!isIcon">Bahasa Indonesia</span><!-- end ngIf: !isIcon -->
+                            <!-- ngIf: isIcon -->
+                          </li>
+                          <!-- end ngRepeat: item in listData | filter:$ctrl.filterValue track by $index -->
+                        </ul>
+                      </div>
+                      <input type="hidden" name="select-1679076912428" value="en-us" ng-model="selected" class="ng-pristine ng-untouched ng-valid ng-not-empty">
+                    </div>
+                  </div>
+                  <!-- end ngIf: $ctrl.isEditing -->
+                  <!-- ngIf: !$ctrl.isEditing -->
+                </div></lang-switch>
+            </div>
+          </li>
+        </ul>
+
+        <p class="copyright">
+          Copyright © 2023 UMU Technology Co., Limited. All Rights Reserved.
+        </p>
+      </div>
+
+      
+
+      
+
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+      
+
+      
+
+      
+      
+
+      
+
+      
+
+      
+    </div>
+  </div>
+  <div>
+    
+
+    <div class="gdpr-bar-web clearfix" id="gdpr-bar-id">
+      <p class="gdpr-bar-title">This Website Uses Cookies</p>
+      <p class="gdpr-bar-content">
+        We use cookies to personalize your experience and analyze our site
+        traffic. By using our site, you consent to our use of cookies.
+      </p>
+      <div class="btn-container">
+        <a href="javascript:" class="gdpr-bar-decline-btn">Decline Cookies</a><a href="javascript:" class="gdpr-bar-accept-btn">Accept Cookies</a>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="grecaptcha-badge" data-style="bottomright">
+      <div class="grecaptcha-logo">
+        
+      </div>
+      <div class="grecaptcha-error"></div>
+      <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: .gdpr-bar-web {
+        position: fixed;
+        bottom: 32px;
+        left: 32px;
+        right: 32
+parseable name: g-recaptcha-response
+section: _0_34
+field signature: 3309787731
+form signature: 9232614919399003462
+form signature in host form: 9232614919399003462
+field frame token: 929C7B14734603BBAEE8F10B397F9D40
+form renderer id: 0
+field renderer id: 36" data-ddg-testresultelementid="578854"></textarea>
+    </div>
+    
+  </div>
+

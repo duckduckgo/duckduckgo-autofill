@@ -94,21 +94,47 @@ function updatePackageSwift (packageSwiftContent, version) {
 /**
  * Provide the source Package.resolved for BSK and get it updated with the autofill version
  * @param {string} packageResolvedContent
- * @param {string} version
- * @param {string} commit
+ * @param {{
+ *     autofill: {
+ *         version: string,
+ *         commit: string
+ *     },
+ *     bsk?: {
+ *         commit: string
+ *     }
+ * }} substitutions
  * @returns {string}
  */
-function updatePackageResolved (packageResolvedContent, version, commit) {
-    const autofillPackageResolvedRegex = new RegExp(
-        /("package": "Autofill",\s+"repositoryURL": "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state": {\s+"branch": null,\s+"revision": ")(\w+)(",\s+"version": ")([\d.]+)("\s+})/,
-        'i'
-    )
+function updatePackageResolved (packageResolvedContent, substitutions) {
+    let updatedContent = packageResolvedContent
 
-    return replaceInString(
-        packageResolvedContent,
-        autofillPackageResolvedRegex,
-        `$1${commit}$3${version}$5`
-    )
+    if (substitutions.autofill) {
+        const autofillRegex = new RegExp(
+            /("location" : "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : ")([\d.]+)("\s+})/,
+            'i'
+        )
+
+        updatedContent = replaceInString(
+            updatedContent,
+            autofillRegex,
+            `$1${substitutions.autofill.commit}$3${substitutions.autofill.version}$5`
+        )
+    }
+
+    if (substitutions.bsk) {
+        const bskRegex = new RegExp(
+            /("location" : "https:\/\/github.com\/duckduckgo\/BrowserServicesKit",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/,
+            'i'
+        )
+
+        updatedContent = replaceInString(
+            updatedContent,
+            bskRegex,
+            `$1${substitutions.bsk.commit}$4`
+        )
+    }
+
+    return updatedContent
 }
 
 module.exports = {

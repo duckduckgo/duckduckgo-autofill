@@ -1,0 +1,804 @@
+<!--
+  https://websso.iaea.org/IM/UserRegistrationPage.aspx
+  rank: 5777
+  testRunId: 67
+  testResultId: 243815
+-->
+<form action="/IM/UserRegistrationPage.aspx" class="form-horizontal" method="post" novalidate="novalidate">
+  <input name="__RequestVerificationToken" type="hidden" value="trjqiO3CDRt0eqNsnSZ53ZcXW3wlNkSADnrWZt3yISL0Eqr7QWDDKL72Yp6OKAUUlyfHt_D_DnqQw2R430wWM8YRhw01">
+  <div class="alert alert-info">
+    <p>
+      If you already have a NUCLEUS account, you can
+      <a class="link-signin" href="/login/redirect.asp?target=https://websso.iaea.org/IM/UserRegistrationPage.aspx">Sign In</a>
+      to access <span class="app-id">NUCLEUS</span>.
+    </p>
+    <p>
+      Otherwise, please enter all the required fields to set up your NUCLEUS
+      account.
+    </p>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>Account Information</b>
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_UserId">User name:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-length="Please enter a username with at least 6 characters." data-val-length-max="50" data-val-length-min="6" data-val-regex="Please enter a username containing only English letters, digits, underscores and periods." data-val-regex-pattern="^[a-zA-Z0-9_.]*$" data-val-remote="Your selected username is already registered, please enter another username." data-val-remote-additionalfields="*.UserId" data-val-remote-type="POST" data-val-remote-url="/Account/CheckUsernameExists" data-val-required="Please enter your user name." id="UserInformation_UserId" name="UserInformation.UserId" placeholder="" type="text" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: User name:*
+parseable name: UserInformation.UserId
+section: UserInformation.UserId_0_3
+field signature: 2510075660
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 3" data-ddg-testresultelementid="571093" data-manual-scoring="username OR emailAddress">
+          <span class="help-block">Minimum 6 characters and must only contain English letters, digits,
+            underscores and periods.</span>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.UserId" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_EmailAddress">Email address:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-email="The Email address: field is not a valid e-mail address." data-val-regex="Please enter a valid email address." data-val-regex-pattern="^[a-zA-Z0-9!#$%&amp;'*+/=?^_`{}~-]+(?:\.[a-zA-Z0-9!#$%&amp;'*+/=?^_`{}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$" data-val-remote="The selected email address is already being used by an existing user. Please ensure you have entered your email address correctly. If you have entered your email address correctly but have forgotten your password, please <a class='link-forgotpassword' href='javascript:forgotPassword();'>click here</a> to reset your password. Otherwise, please choose another email address to register." data-val-remote-additionalfields="*.EmailAddress" data-val-remote-type="POST" data-val-remote-url="/Account/CheckEmailExists" data-val-required="Please enter your email address." id="UserInformation_EmailAddress" name="UserInformation.EmailAddress" placeholder="" type="text" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email address:*
+parseable name: UserInformation.EmailAddress
+section: UserInformation.UserId_0_3
+field signature: 1857363723
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 4" data-ddg-testresultelementid="571094" data-manual-scoring="emailAddress">
+          <span class="help-block">Example: yourname@domain.com</span>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.EmailAddress" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="Password">Password:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-length="Please enter a password at least 8 characters long." data-val-length-max="50" data-val-length-min="8" data-val-notlikeliteralpassword="Literal 'password', is not allowed as part of your password!" data-val-notlikeliteralpassword-otherproperty="notlikeliteralpassword" data-val-notlikeuserinformationemailaddress="The Password cannot contain Email address." data-val-notlikeuserinformationemailaddress-otherproperty="UserInformation.EmailAddress" data-val-notlikeuserinformationfirstname="The Password cannot contain First name." data-val-notlikeuserinformationfirstname-otherproperty="UserInformation.FirstName" data-val-notlikeuserinformationlastname="The Password cannot contain Last name." data-val-notlikeuserinformationlastname-otherproperty="UserInformation.LastName" data-val-notlikeuserinformationuserid="The Password cannot contain User name." data-val-notlikeuserinformationuserid-otherproperty="UserInformation.UserId" data-val-regex="Please enter a password containing at least one lower case letter, one number and one symbol." data-val-regex-pattern="^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[\d])(?=\S*[\W])\S*$" data-val-required="Please enter a password." id="Password" name="Password" placeholder="" type="password" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password:*
+parseable name: Password
+section: UserInformation.UserId_0_3
+field signature: 3935904101
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 5" data-ddg-testresultelementid="571095" data-manual-scoring="password">
+          <span class="help-block">
+            Password must be at least 8 characters long and contain at least one
+            lower case letter, one number and one non-alphanumeric character. It
+            cannot contain your user name, email address, first name or your
+            last name. Please do not use literal 'password'.
+          </span>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="ConfirmPassword">Confirm your password:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-equalto="Password and confirmation password do not match." data-val-equalto-other="*.Password" data-val-required="Confirm Password is required. " id="ConfirmPassword" name="ConfirmPassword" placeholder="" type="password" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Confirm your password:*
+parseable name: ConfirmPassword
+section: UserInformation.UserId_0_3
+field signature: 3280187023
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 6" data-ddg-testresultelementid="571097" data-manual-scoring="password">
+          <span class="help-block">Please enter your password again to confirm.</span>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>Personal Information</b>
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_Title">Title:</label>
+        </div>
+        <div class="col-sm-6">
+          <select class="form-control" data-val="true" data-val-length="The field Title: must be a string with a maximum length of 4." data-val-length-max="4" id="UserInformation_Title" name="UserInformation.Title" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Title:
+parseable name: UserInformation.Title
+section: UserInformation.UserId_0_3
+field signature: 4132941369
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 7" data-ddg-testresultelementid="571099">
+            <option value="None">None</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Ms.">Ms.</option>
+            <option value="Mr.">Mr.</option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.Title" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_FirstName">First name:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-length="The field First name: must be a string with a maximum length of 50." data-val-length-max="50" data-val-required="Please enter your first name." id="UserInformation_FirstName" name="UserInformation.FirstName" placeholder="" type="text" value="" autofill-information="overall type: NAME_FIRST
+server type: NO_SERVER_DATA
+heuristic type: NAME_FIRST
+label: First name:*
+parseable name: UserInformation.FirstName
+section: UserInformation.UserId_0_3
+field signature: 114341058
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 8" data-ddg-testresultelementid="571101" data-manual-scoring="firstName">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.FirstName" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_MiddleName">Middle name:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-length="The field Middle name: must be a string with a maximum length of 50." data-val-length-max="50" id="UserInformation_MiddleName" name="UserInformation.MiddleName" placeholder="" type="text" value="" autofill-information="overall type: NAME_MIDDLE
+server type: NO_SERVER_DATA
+heuristic type: NAME_MIDDLE
+label: Middle name:
+parseable name: UserInformation.MiddleName
+section: UserInformation.UserId_0_3
+field signature: 2946713319
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 9" data-ddg-testresultelementid="571103" data-manual-scoring="middleName">
+        </div>
+        <div class="col-sm-2">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.MiddleName" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_LastName">Last name:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-length="The field Last name: must be a string with a minimum length of 2 and a maximum length of 50." data-val-length-max="50" data-val-length-min="2" data-val-required="Please enter your last name." id="UserInformation_LastName" name="UserInformation.LastName" placeholder="" type="text" value="" autofill-information="overall type: NAME_LAST
+server type: NO_SERVER_DATA
+heuristic type: NAME_LAST
+label: Last name:*
+parseable name: UserInformation.LastName
+section: UserInformation.UserId_0_3
+field signature: 2837730133
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 10" data-ddg-testresultelementid="571105" data-manual-scoring="lastName">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.LastName" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_CountryIsoCode">Country:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <select class="form-control" data-val="true" data-val-required="Please select a country." id="UserInformation_CountryIsoCode" name="UserInformation.CountryIsoCode" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country:*
+parseable name: UserInformation.CountryIsoCode
+section: UserInformation.UserId_0_3
+field signature: 3370485221
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 11" data-ddg-testresultelementid="571107" data-manual-scoring="addressCountryCode">
+            <option value="">Select your country</option>
+            <option value="Afghanistan">Afghanistan</option>
+            <option value="Albania">Albania</option>
+            <option value="Algeria">Algeria</option>
+            <option value="American Samoa">American Samoa</option>
+            <option value="Andorra">Andorra</option>
+            <option value="Angola">Angola</option>
+            <option value="Anguilla">Anguilla</option>
+            <option value="Antarctica">Antarctica</option>
+            <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Armenia">Armenia</option>
+            <option value="Aruba">Aruba</option>
+            <option value="Australia">Australia</option>
+            <option value="Austria">Austria</option>
+            <option value="Azerbaijan">Azerbaijan</option>
+            <option value="Bahamas">Bahamas</option>
+            <option value="Bahrain">Bahrain</option>
+            <option value="Bangladesh">Bangladesh</option>
+            <option value="Barbados">Barbados</option>
+            <option value="Belarus">Belarus</option>
+            <option value="Belgium">Belgium</option>
+            <option value="Belize">Belize</option>
+            <option value="Benin">Benin</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Bhutan">Bhutan</option>
+            <option value="Bolivia, Plurinational State of">
+              Bolivia, Plurinational State of
+            </option>
+            <option value="Bosnia and Herzegovina">
+              Bosnia and Herzegovina
+            </option>
+            <option value="Botswana">Botswana</option>
+            <option value="Bouvet Island">Bouvet Island</option>
+            <option value="Brazil">Brazil</option>
+            <option value="British Indian Ocean Territory">
+              British Indian Ocean Territory
+            </option>
+            <option value="Brunei Darussalam">Brunei Darussalam</option>
+            <option value="Bulgaria">Bulgaria</option>
+            <option value="Burkina Faso">Burkina Faso</option>
+            <option value="Burundi">Burundi</option>
+            <option value="Cabo Verde">Cabo Verde</option>
+            <option value="Cambodia">Cambodia</option>
+            <option value="Cameroon">Cameroon</option>
+            <option value="Canada">Canada</option>
+            <option value="Cayman Islands">Cayman Islands</option>
+            <option value="Central African Republic">
+              Central African Republic
+            </option>
+            <option value="Chad">Chad</option>
+            <option value="Chile">Chile</option>
+            <option value="China">China</option>
+            <option value="Christmas Island">Christmas Island</option>
+            <option value="Cocos (Keeling) Islands">
+              Cocos (Keeling) Islands
+            </option>
+            <option value="Colombia">Colombia</option>
+            <option value="Comoros">Comoros</option>
+            <option value="Congo">Congo</option>
+            <option value="Cook Islands">Cook Islands</option>
+            <option value="Costa Rica">Costa Rica</option>
+            <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+            <option value="Croatia">Croatia</option>
+            <option value="Cuba">Cuba</option>
+            <option value="Cyprus">Cyprus</option>
+            <option value="Czech Republic">Czech Republic</option>
+            <option value="Dem. P.R. of Korea">Dem. P.R. of Korea</option>
+            <option value="Democratic Republic of the Congo">
+              Democratic Republic of the Congo
+            </option>
+            <option value="Denmark">Denmark</option>
+            <option value="Djibouti">Djibouti</option>
+            <option value="Dominica">Dominica</option>
+            <option value="Dominican Republic">Dominican Republic</option>
+            <option value="Ecuador">Ecuador</option>
+            <option value="Egypt">Egypt</option>
+            <option value="El Salvador">El Salvador</option>
+            <option value="Equatorial Guinea">Equatorial Guinea</option>
+            <option value="Eritrea">Eritrea</option>
+            <option value="Estonia">Estonia</option>
+            <option value="Eswatini">Eswatini</option>
+            <option value="Ethiopia">Ethiopia</option>
+            <option value="Falkland Islands (Malvinas)">
+              Falkland Islands (Malvinas)
+            </option>
+            <option value="Faroe Islands">Faroe Islands</option>
+            <option value="Fiji">Fiji</option>
+            <option value="Finland">Finland</option>
+            <option value="France">France</option>
+            <option value="French Guiana">French Guiana</option>
+            <option value="French Polynesia">French Polynesia</option>
+            <option value="French Southern Territories">
+              French Southern Territories
+            </option>
+            <option value="Gabon">Gabon</option>
+            <option value="Gambia, The">Gambia, The</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Germany">Germany</option>
+            <option value="Ghana">Ghana</option>
+            <option value="Gibraltar">Gibraltar</option>
+            <option value="Greece">Greece</option>
+            <option value="Greenland">Greenland</option>
+            <option value="Grenada">Grenada</option>
+            <option value="Guadeloupe">Guadeloupe</option>
+            <option value="Guam">Guam</option>
+            <option value="Guatemala">Guatemala</option>
+            <option value="Guinea">Guinea</option>
+            <option value="Guinea-Bissau">Guinea-Bissau</option>
+            <option value="Guyana">Guyana</option>
+            <option value="Haiti">Haiti</option>
+            <option value="Heard Island&amp;McDonald Islands">
+              Heard Island&amp;McDonald Islands
+            </option>
+            <option value="Holy See">Holy See</option>
+            <option value="Honduras">Honduras</option>
+            <option value="Hungary">Hungary</option>
+            <option value="Iceland">Iceland</option>
+            <option value="India">India</option>
+            <option value="Indonesia">Indonesia</option>
+            <option value="Iran, Islamic Republic of">
+              Iran, Islamic Republic of
+            </option>
+            <option value="Iraq">Iraq</option>
+            <option value="Ireland">Ireland</option>
+            <option value="Israel">Israel</option>
+            <option value="Italy">Italy</option>
+            <option value="Jamaica">Jamaica</option>
+            <option value="Japan">Japan</option>
+            <option value="Jordan">Jordan</option>
+            <option value="Kazakhstan">Kazakhstan</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Kiribati">Kiribati</option>
+            <option value="Korea, Republic of">Korea, Republic of</option>
+            <option value="Kuwait">Kuwait</option>
+            <option value="Kyrgyzstan">Kyrgyzstan</option>
+            <option value="Lao People's Democratic Republic">
+              Lao People's Democratic Republic
+            </option>
+            <option value="Latvia">Latvia</option>
+            <option value="Lebanon">Lebanon</option>
+            <option value="Lesotho">Lesotho</option>
+            <option value="Liberia">Liberia</option>
+            <option value="Libya">Libya</option>
+            <option value="Liechtenstein">Liechtenstein</option>
+            <option value="Lithuania">Lithuania</option>
+            <option value="Luxembourg">Luxembourg</option>
+            <option value="Macau, China">Macau, China</option>
+            <option value="Madagascar">Madagascar</option>
+            <option value="Malawi">Malawi</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Maldives">Maldives</option>
+            <option value="Mali">Mali</option>
+            <option value="Malta">Malta</option>
+            <option value="Marshall Islands">Marshall Islands</option>
+            <option value="Martinique">Martinique</option>
+            <option value="Mauritania">Mauritania</option>
+            <option value="Mauritius">Mauritius</option>
+            <option value="Mayotte">Mayotte</option>
+            <option value="Mexico">Mexico</option>
+            <option value="Micronesia (Fed. States of)">
+              Micronesia (Fed. States of)
+            </option>
+            <option value="Monaco">Monaco</option>
+            <option value="Mongolia">Mongolia</option>
+            <option value="Montenegro">Montenegro</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Morocco">Morocco</option>
+            <option value="Mozambique">Mozambique</option>
+            <option value="Myanmar">Myanmar</option>
+            <option value="Namibia">Namibia</option>
+            <option value="Nauru">Nauru</option>
+            <option value="Nepal">Nepal</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="Netherlands Antilles">Netherlands Antilles</option>
+            <option value="New Caledonia">New Caledonia</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Nicaragua">Nicaragua</option>
+            <option value="Niger">Niger</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Niue">Niue</option>
+            <option value="Norfolk Islands">Norfolk Islands</option>
+            <option value="North Macedonia">North Macedonia</option>
+            <option value="Northern Mariana Islands">
+              Northern Mariana Islands
+            </option>
+            <option value="Norway">Norway</option>
+            <option value="Oman">Oman</option>
+            <option value="Pakistan">Pakistan</option>
+            <option value="Palau">Palau</option>
+            <option value="Panama">Panama</option>
+            <option value="Papua New Guinea">Papua New Guinea</option>
+            <option value="Paraguay">Paraguay</option>
+            <option value="Peru">Peru</option>
+            <option value="Philippines">Philippines</option>
+            <option value="Pitcairn Islands">Pitcairn Islands</option>
+            <option value="Poland">Poland</option>
+            <option value="Portugal">Portugal</option>
+            <option value="Puerto Rico">Puerto Rico</option>
+            <option value="Qatar">Qatar</option>
+            <option value="Republic of Moldova">Republic of Moldova</option>
+            <option value="Reunion">Reunion</option>
+            <option value="Romania">Romania</option>
+            <option value="Russian Federation">Russian Federation</option>
+            <option value="Rwanda">Rwanda</option>
+            <option value="S.Georgia &amp; S.Sandwich Islands">
+              S.Georgia &amp; S.Sandwich Islands
+            </option>
+            <option value="Saint Helena">Saint Helena</option>
+            <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+            <option value="Saint Lucia">Saint Lucia</option>
+            <option value="Saint Pierre and Miquelon">
+              Saint Pierre and Miquelon
+            </option>
+            <option value="Saint Vincent and the Grenadines">
+              Saint Vincent and the Grenadines
+            </option>
+            <option value="Samoa">Samoa</option>
+            <option value="San Marino">San Marino</option>
+            <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+            <option value="Saudi Arabia">Saudi Arabia</option>
+            <option value="Senegal">Senegal</option>
+            <option value="Serbia">Serbia</option>
+            <option value="Seychelles">Seychelles</option>
+            <option value="Sierra Leone">Sierra Leone</option>
+            <option value="Singapore">Singapore</option>
+            <option value="Slovakia">Slovakia</option>
+            <option value="Slovenia">Slovenia</option>
+            <option value="Solomon Islands">Solomon Islands</option>
+            <option value="Somalia">Somalia</option>
+            <option value="South Africa">South Africa</option>
+            <option value="South Sudan">South Sudan</option>
+            <option value="Spain">Spain</option>
+            <option value="Sri Lanka">Sri Lanka</option>
+            <option value="Sudan">Sudan</option>
+            <option value="Suriname">Suriname</option>
+            <option value="Svalbard and Jan Mayen Islands">
+              Svalbard and Jan Mayen Islands
+            </option>
+            <option value="Sweden">Sweden</option>
+            <option value="Switzerland">Switzerland</option>
+            <option value="Syrian Arab Republic">Syrian Arab Republic</option>
+            <option value="T.T.U.T.J of T. Palestinian A.">
+              T.T.U.T.J of T. Palestinian A.
+            </option>
+            <option value="Taiwan, China">Taiwan, China</option>
+            <option value="Tajikistan">Tajikistan</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Timor Leste">Timor Leste</option>
+            <option value="Togo">Togo</option>
+            <option value="Tokelau">Tokelau</option>
+            <option value="Tonga">Tonga</option>
+            <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+            <option value="Tunisia">Tunisia</option>
+            <option value="Türkiye">Türkiye</option>
+            <option value="Turkmenistan">Turkmenistan</option>
+            <option value="Turks and Caicos Islands">
+              Turks and Caicos Islands
+            </option>
+            <option value="Tuvalu">Tuvalu</option>
+            <option value="Uganda">Uganda</option>
+            <option value="Ukraine">Ukraine</option>
+            <option value="United Arab Emirates">United Arab Emirates</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United Republic of Tanzania">
+              United Republic of Tanzania
+            </option>
+            <option value="United States of America">
+              United States of America
+            </option>
+            <option value="Uruguay">Uruguay</option>
+            <option value="US Minor Outlying Islands">
+              US Minor Outlying Islands
+            </option>
+            <option value="Uzbekistan">Uzbekistan</option>
+            <option value="Vanuatu">Vanuatu</option>
+            <option value="Venezuela, Bolivarian Republic of">
+              Venezuela, Bolivarian Republic of
+            </option>
+            <option value="Viet Nam">Viet Nam</option>
+            <option value="Virgin Islands (US)">Virgin Islands (US)</option>
+            <option value="Virgin Islands, British">
+              Virgin Islands, British
+            </option>
+            <option value="Wallis and Futuna Islands">
+              Wallis and Futuna Islands
+            </option>
+            <option value="Western Sahara">Western Sahara</option>
+            <option value="Yemen">Yemen</option>
+            <option value="Zambia">Zambia</option>
+            <option value="Zimbabwe">Zimbabwe</option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.CountryIsoCode" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <hr>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_Institution">Institution:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" id="UserInformation_Institution" name="UserInformation.Institution" placeholder="" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Institution:
+parseable name: UserInformation.Institution
+section: UserInformation.UserId_0_3
+field signature: 467545134
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 12" data-ddg-testresultelementid="571109">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.Institution" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_Address">Address:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" id="UserInformation_Address" name="UserInformation.Address" placeholder="" type="text" value="" autofill-information="overall type: ADDRESS_HOME_LINE1
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_LINE1
+label: Address:
+parseable name: UserInformation.Address
+section: UserInformation.UserId_0_3
+field signature: 2403407375
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 13" data-ddg-testresultelementid="571111" data-manual-scoring="addressStreet">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.Address" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_Postbox">Post box:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-length="The field Post box: must be a string with a maximum length of 25." data-val-length-max="25" id="UserInformation_Postbox" name="UserInformation.Postbox" placeholder="" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Post box:
+parseable name: UserInformation.Postbox
+section: UserInformation.UserId_0_3
+field signature: 2748325524
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 14" data-ddg-testresultelementid="571113">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.Postbox" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_City">City:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" id="UserInformation_City" name="UserInformation.City" placeholder="" type="text" value="" autofill-information="overall type: ADDRESS_HOME_CITY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_CITY
+label: City:
+parseable name: UserInformation.City
+section: UserInformation.UserId_0_3
+field signature: 3153319992
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 15" data-ddg-testresultelementid="571115" data-manual-scoring="addressCity">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.City" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_PostalCode">Postal Code:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" id="UserInformation_PostalCode" name="UserInformation.PostalCode" placeholder="" type="text" value="" autofill-information="overall type: ADDRESS_HOME_ZIP
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_ZIP
+label: Postal Code:
+parseable name: UserInformation.PostalCode
+section: UserInformation.UserId_0_3
+field signature: 618773941
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 16" data-ddg-testresultelementid="571117" data-manual-scoring="addressPostalCode">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.PostalCode" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <hr>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_Phone">Phone:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-phone="The Phone: field is not a valid phone number." data-val-regex="Please enter a valid phone number." data-val-regex-pattern="^.*[0-9].*$" id="UserInformation_Phone" name="UserInformation.Phone" placeholder="" type="text" value="" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Phone:
+parseable name: UserInformation.Phone
+section: UserInformation.UserId_0_3
+field signature: 3415438688
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 17" data-ddg-testresultelementid="571119" data-manual-scoring="phone">
+          <span class="help-block">Example: +4315555555</span>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.Phone" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_Fax">Fax:</label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-regex="Please enter a valid fax number." data-val-regex-pattern="^.*[0-9].*$" id="UserInformation_Fax" name="UserInformation.Fax" placeholder="" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Fax:
+parseable name: UserInformation.Fax
+section: UserInformation.UserId_0_3
+field signature: 1400872507
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 18" data-ddg-testresultelementid="571121">
+          <span class="help-block">Example: +4315555555-7</span>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.Fax" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <hr>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_SecurityQuestion">Secret question:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <select class="form-control" data-val="true" data-val-required="Please select a secret question." id="UserInformation_SecurityQuestion" name="UserInformation.SecurityQuestion" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Secret question:*
+parseable name: UserInformation.SecurityQuestion
+section: UserInformation.UserId_0_3
+field signature: 2486931673
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 19" data-ddg-testresultelementid="571123">
+            <option value="What is the name of the 1st school you attended">
+              What is the name of the 1st school you attended?
+            </option>
+            <option value=" Who is your favourite historic figure">
+              Who is your favourite historic figure?
+            </option>
+            <option value="What is the name of your best friend">
+              What is the name of your best friend?
+            </option>
+            <option value="What is your mother's maiden name">
+              What is your mother's maiden name?
+            </option>
+            <option value="What is your favourite colour">
+              What is your favourite colour?
+            </option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.SecurityQuestion" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="UserInformation_SecurityAnswer">Your answer:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-minlength="Please enter an answer to your secret question that is least three characters long." data-val-minlength-min="3" data-val-required="Please enter the answer to your secret question." id="UserInformation_SecurityAnswer" name="UserInformation.SecurityAnswer" placeholder="" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Your answer:*
+parseable name: UserInformation.SecurityAnswer
+section: UserInformation.UserId_0_3
+field signature: 1186393141
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 20" data-ddg-testresultelementid="571125">
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="UserInformation.SecurityAnswer" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-2">
+          <label for="CaptchaKey">Enter characters shown in the image:<i>*</i></label>
+        </div>
+        <div class="col-sm-6">
+          
+          <p class="field-hint">
+            Can't read this?
+            <a href="javascript:void(0);" onclick="LoadCaptchaImage();">Load a new image</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-6">
+          <input class="form-control" data-val="true" data-val-required="Please enter the text contained in the image above." id="CaptchaKey" name="CaptchaKey" placeholder="" type="text" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Enter characters shown in the image:*
+parseable name: CaptchaKey
+section: UserInformation.UserId_0_3
+field signature: 116017547
+form signature: 18442308201402283336
+form signature in host form: 18442308201402283336
+field frame token: B85F822EADAE86F13A18DE30C3977C28
+form renderer id: 1
+field renderer id: 21" data-ddg-testresultelementid="571127">
+          <p class="field-hint">No spaces</p>
+        </div>
+        <div class="col-sm-4">
+          <span class="field-validation-valid" data-valmsg-for="CaptchaKey" data-valmsg-replace="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p>
+    Clicking on <b>I Accept</b> implies that you have read and agreed to the
+    <a cssclass="contexthelp" runat="server" href="javascript:termsOfUse()" tooltip="Terms of Use">Terms of Use</a>
+    and you will then be a registered NUCLEUS user.
+  </p>
+  <div class="pull-right">
+    <button class="btn" id="btnClear">Clear</button>
+    <button type="submit" id="validate" class="btn btn-primary btn-stretched">
+      I Accept
+    </button>
+  </div>
+</form>

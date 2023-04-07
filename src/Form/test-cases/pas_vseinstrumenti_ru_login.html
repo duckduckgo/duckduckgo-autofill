@@ -1,0 +1,266 @@
+<!--
+  https://pas.vseinstrumenti.ru/site/login
+  rank: 4199
+  testRunId: 67
+  testResultId: 242869
+-->
+
+  <div class="wrap">
+    <header class="app-header">
+      <a href="/" class="app-logo">
+        
+      </a>
+      <div class="app-site-name">Кабинет поставщика</div>
+      <ul id="w0" class="app-menu nav"></ul>
+    </header>
+
+    <div class="container container-full-width">
+      <div class="content">
+        <div id="blockProcess" class="small-progress"></div>
+        <div id="pas-progress-bar" class="hidden">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="overflow-text"></div>
+          </div>
+        </div>
+
+        <div class="page-content no-bg-content">
+          <div class="site-login">
+            <h1>Вход в личный кабинет</h1>
+            <div class="login-panel">
+              <ul class="nav nav-tabs">
+                <li class="nav-item active">
+                  <a class="nav-link active" data-toggle="tab" href="#email">По email</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#phone">По телефону</a>
+                </li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane fade in active" id="email">
+                  <form id="login-form" action="/site/login" method="post">
+                    <input type="hidden" name="_csrf-frontend" value="wyrpmUBrasEoNcfHbFdcHYvDrbxDy1LRDC8Mz_eeXLuGRY2rBRJeh2x_v41cP2lXwbTUiAyhMb1VGlyYnttq6g==">
+                    <div class="login__block">
+                      <div class="form-group field-loginform-username required has-error">
+                        <input type="text" id="loginform-username" class="email__input input" name="LoginForm[username]" value="" autofocus="" placeholder="Электронная почта" aria-required="true" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: Электронная почта
+parseable name: LoginForm[username]
+section: LoginForm[username]_0_2
+field signature: 3034257206
+form signature: 2309099034385091641
+form signature in host form: 2309099034385091641
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 1
+field renderer id: 2" aria-invalid="true" data-ddg-testresultelementid="564548" data-manual-scoring="username OR emailAddress">
+
+                        <p class="help-block help-block-error">
+                          Необходимо заполнить «Логин».
+                        </p>
+                      </div>
+                    </div>
+                    <div class="form-group field-loginform-password required">
+                      <input type="password" id="loginform-password" class="password__input input" name="LoginForm[password]" value="" autocomplete="on" aria-required="true" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Нет аккаунта? Зарегистрируйтесь
+parseable name: LoginForm[password]
+section: LoginForm[username]_0_2
+field signature: 1621849411
+form signature: 2309099034385091641
+form signature in host form: 2309099034385091641
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 1
+field renderer id: 3
+autocomplete: on" data-ddg-testresultelementid="564549" data-manual-scoring="password">
+
+                      <p class="help-block help-block-error"></p>
+                    </div>
+                    <div class="remember__password">
+                      <a href="/site/request-password-reset">Забыли пароль?</a>
+                    </div>
+                    <button type="submit" name="login-button" class="btn primary-button">
+                      Войти в личный кабинет
+                    </button>
+                  </form>
+                  <div class="no-account">
+                    Нет аккаунта? <a href="/site/register">Зарегистрируйтесь</a>
+                  </div>
+                </div>
+                <div class="tab-pane fade phone-login" id="phone">
+                  <div class="login__block">
+                    <div class="input_phone_block">
+                      <form id="login-by-phone-form" action="/site/phone-login" method="post" data-form-name="PhoneLoginForm" data-sms-code-expire-seconds="60" data-send-new-sms-code-url="/site/send-sms-code">
+                        <input type="hidden" name="_csrf-frontend" value="wyrpmUBrasEoNcfHbFdcHYvDrbxDy1LRDC8Mz_eeXLuGRY2rBRJeh2x_v41cP2lXwbTUiAyhMb1VGlyYnttq6g==">
+                        <div class="form-group field-phoneloginform-phone required">
+                          <input type="text" id="phoneloginform-phone" class="form-control" name="PhoneLoginForm[phone]" aria-required="true" data-plugin-inputmask="inputmask_59f8b846" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Введите код, который мы отправили на ваш телефон
+parseable name: PhoneLoginForm[phone]
+section: PhoneLoginForm[phone]_0_6
+field signature: 216928641
+form signature: 12458424640605061428
+form signature in host form: 12458424640605061428
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 2
+field renderer id: 6" data-ddg-testresultelementid="564550">
+
+                          <p class="help-block help-block-error"></p>
+                        </div>
+                        <div class="form-group field-phoneloginform-isvalidphone">
+                          <input type="hidden" id="phoneloginform-isvalidphone" class="is_valid_phone" name="PhoneLoginForm[isValidPhone]" value="">
+
+                          <p class="help-block help-block-error"></p>
+                        </div>
+                        <div class="init_block_phone">
+                          <button type="submit" id="login-by-phone-button" name="login-by-phone-button" class="btn primary-button">
+                            Продолжить
+                          </button>
+                          <div class="no-account">
+                            Нет аккаунта?
+                            <a href="/site/register">Зарегистрируйтесь</a>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div class="wait_for_code_block">
+                      <div class="code__input_group">
+                        <fieldset>
+                          <input type="text" class="code_short_input" name="code[0]" size="1" maxlength="1" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: code[0]
+section: code[0]_0_10
+field signature: 1475582941
+form signature: 6344040871466602088
+form signature in host form: 6344040871466602088
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 0
+field renderer id: 10" data-ddg-testresultelementid="564551">
+                          <input type="text" class="code_short_input" name="code[1]" size="1" maxlength="1" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: code[1]
+section: code[0]_0_10
+field signature: 2327570102
+form signature: 6344040871466602088
+form signature in host form: 6344040871466602088
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 0
+field renderer id: 11" data-ddg-testresultelementid="564552">
+                          <input type="text" class="code_short_input" name="code[2]" size="1" maxlength="1" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: code[2]
+section: code[0]_0_10
+field signature: 3261605526
+form signature: 6344040871466602088
+form signature in host form: 6344040871466602088
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 0
+field renderer id: 12" data-ddg-testresultelementid="564553">
+                          <input type="text" class="code_short_input" name="code[3]" size="1" maxlength="1" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: code[3]
+section: code[0]_0_10
+field signature: 3635220909
+form signature: 6344040871466602088
+form signature in host form: 6344040871466602088
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 0
+field renderer id: 13" data-ddg-testresultelementid="564554">
+                          <input type="text" class="code_short_input" name="code[4]" size="1" maxlength="1" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 
+parseable name: code[4]
+section: code[0]_0_10
+field signature: 536519231
+form signature: 6344040871466602088
+form signature in host form: 6344040871466602088
+field frame token: E5CF348F36C891B83A9B790BCA4A7B4B
+form renderer id: 0
+field renderer id: 14" data-ddg-testresultelementid="564555">
+                        </fieldset>
+                        <button name="login-by-sms-code-button" class="btn primary-button sms-button disable-sms-send">
+                          Готово
+                        </button>
+                      </div>
+
+                      <div class="code__description">
+                        Введите код, который мы отправили на ваш телефон
+                      </div>
+                      <div class="timer">
+                        <a href="#" class="resend disabled">Отправить повторно</a>
+                        <span id="countdown"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer main-footer">
+    <div class="container container-full-width">
+      <p>
+        <span class="pull-left">© Личный кабинет поставщика 2023</span>
+      </p>
+    </div>
+  </footer>
+
+  <div id="ajaxCrudModal" class="fade modal" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+            ×
+          </button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  <noscript><iframe
+      src="//www.googletagmanager.com/ns.html?id=GTM-MQX6JL"
+      height="0"
+      width="0"
+      style="display: none; visibility: hidden"
+    ></iframe
+  ></noscript>
+  
+  
+

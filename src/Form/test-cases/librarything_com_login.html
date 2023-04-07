@@ -1,0 +1,739 @@
+<!--
+  https://librarything.com
+  rank: 8813
+  testRunId: 67
+  testResultId: 245400
+-->
+
+  <a class="anchor" name="top"></a><a class="anchor" name="t"></a>
+  <div id="masthead" class="chrome webkit osx lt1">
+    <a href="/" target="_top">
+      <div id="masthead_logo_wordmark">
+        
+        <!-- <div id="masthead_wordmark"></div> -->
+        <!-- <img id="masthead_wordmark" src="https://image.librarything.com/pics/lt-wordmark-2013@2x.png" alt="LibraryThing" width="200px" /> -->
+      </div>
+    </a>
+    <div id="tabs">
+      <a class="sitenav_item selected g1" data-icon="" id="masttab_home" href="/" target="_top">Home</a><a class="sitenav_item g3" id="masttab_groups" href="/ngroups" target="_top">Groups</a><a class="sitenav_item g3 spacer_after" id="masttab_talk" href="/talk" target="_top">Talk</a><a class="sitenav_item g4" id="masttab_explore" href="/explore" target="_top">Explore</a>
+    </div>
+
+    <div id="mast_alt">
+      <div id="mastsearch">
+        <form action="/search.php" method="GET" target="_top" id="sbarform" name="sbarform">
+          <div id="mastsearch_container">
+            <input type="text" id="mastsearch_query" tabindex="1" placeholder="Search site" name="term" data-ddg-testresultelementid="583457">
+            
+          </div>
+        </form>
+      </div>
+
+      <div id="mastuser">
+        <ul>
+          <li class="mastuseritem">
+            <a href="#" onclick="languagelist(); return false;">English</a>
+          </li>
+          <li class="mastuseritem">
+            <a href="https://wiki.librarything.com/index.php/HelpThing:Index" target="_top">Help</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div id="mast_rule"></div>
+    <ul id="languagechoice" onmouseover="languagemenu=true;" onmouseout="languagemenu=false;setTimeout(function(){if (!languagemenu) {document.getElementById('languagechoice').style.display='none';}},1000);">
+      <li>
+        <a href="http://al.librarything.com">Albanian</a>
+      </li>
+      <li>
+        <a href="http://baq.librarything.com">Basque</a>
+      </li>
+      <li>
+        <a href="http://bg.librarything.com">Bulgarian</a>
+      </li>
+      <li>
+        <a href="http://cat.librarything.com">Catalan</a>
+      </li>
+      <li>
+        <a href="http://hr.librarything.com">Croatian</a>
+      </li>
+      <li>
+        <a href="http://cz.librarything.com">Czech</a>
+      </li>
+      <li>
+        <a href="http://dk.librarything.com">Danish</a>
+      </li>
+      <li>
+        <a href="http://www.librarything.nl">Dutch</a>
+      </li>
+      <li>
+        <a href="http://www.librarything.com">English</a>
+      </li>
+      <li>
+        <a href="http://epo.librarything.com">Esperanto</a>
+      </li>
+      <li>
+        <a href="http://ee.librarything.com">Estonian</a>
+      </li>
+      <li>
+        <a href="http://www.librarything.fr">French</a>
+      </li>
+      <li>
+        <a href="http://fi.librarything.com">Finnish</a>
+      </li>
+      <li>
+        <a href="http://www.librarything.de">German</a>
+      </li>
+      <li>
+        <a href="http://gr.librarything.com">Greek</a>
+      </li>
+      <li>
+        <a href="http://hin.librarything.com">Hindi</a>
+      </li>
+      <li>
+        <a href="http://hu.librarything.com">Hungarian</a>
+      </li>
+      <li>
+        <a href="http://is.librarything.com">Icelandic</a>
+      </li>
+      <li>
+        <a href="http://ind.librarything.com">Indonesian</a>
+      </li>
+      <li>
+        <a href="http://ie.librarything.com">Irish</a>
+      </li>
+      <li>
+        <a href="http://www.librarything.it">Italian</a>
+      </li>
+      <li>
+        <a href="http://lat.librarything.com">Latin</a>
+      </li>
+      <li>
+        <a href="http://lv.librarything.com">Latvian</a>
+      </li>
+      <li>
+        <a href="http://lt.librarything.com">Lithuanian</a>
+      </li>
+      <li>
+        <a href="http://no.librarything.com">Norwegian</a>
+      </li>
+      <li>
+        <a href="http://pir.librarything.com">Piratical</a>
+      </li>
+      <li>
+        <a href="http://pl.librarything.com">Polish</a>
+      </li>
+      <li>
+        <a href="http://br.librarything.com">Portuguese (Brazil)</a>
+      </li>
+      <li>
+        <a href="http://pt.librarything.com">Portuguese (Portugal)</a>
+      </li>
+      <li>
+        <a href="http://ro.librarything.com">Romanian</a>
+      </li>
+      <li>
+        <a href="http://sk.librarything.com">Slovak</a>
+      </li>
+      <li>
+        <a href="http://es.librarything.com">Spanish</a>
+      </li>
+      <li>
+        <a href="http://se.librarything.com">Swedish</a>
+      </li>
+      <li>
+        <a href="http://tgl.librarything.com">Tagalog</a>
+      </li>
+      <li>
+        <a href="http://tr.librarything.com">Turkish</a>
+      </li>
+      <li>
+        <a href="http://cym.librarything.com">Welsh</a>
+      </li>
+    </ul>
+  </div>
+  <div id="gdpr_notice" class="">
+    <button class="btn" id="gdpr_closebutton" onclick="gdpr_notice_clicked();return false;">
+      I Agree
+    </button>
+    <div id="gdpr_content">
+      This site uses cookies to deliver our services, improve performance, for
+      analytics, and (if not signed in) for advertising. By using LibraryThing
+      you acknowledge that you have read and understand our
+      <a href="/privacy" class="alwaysblue">Terms of Service and Privacy Policy</a>. Your use of the site and services is subject to these policies and
+      terms.
+    </div>
+  </div>
+  <div>
+    
+  </div>
+  <div class="content">
+    <div id="container">
+      <table cellspacing="0" cellpadding="0" border="0" class="topcontent content" valign="top">
+        <tbody>
+          <tr>
+            <td class="right advertisement">
+              <div id="primary-content">
+                <div class="primary-background"></div>
+                <div class="inside">
+                  <h1>A home for your books.</h1>
+                  <p>
+                    Enter what you’re reading or your whole library. It’s an
+                    easy, library-quality catalog.
+                  </p>
+                  <h1>A community of 2,800,000 book lovers.</h1>
+                  <p>
+                    LibraryThing connects you to people who read what you do.
+                  </p>
+                </div>
+              </div>
+            </td>
+            <td class="left signin_container">
+              <form method="POST" action="/enter/start" id="form" name="signup">
+                <div id="already_new" class="">
+                  <div class="signin already greenbox" id="alreadyS">
+                    <h2 class="first">Become a Member?</h2>
+                    <input class="button frontpagebutton" onclick="javascript:flipsignup();" type="button" value="Join now">
+                    <h2>
+                      Already a member?
+                    </h2>
+                    <center>
+                      <table border="0" cellspacing="0" cellpadding="0" class="signin">
+                        <tbody>
+                          <tr>
+                            <td class="l" valign="bottom">name</td>
+                            <td>
+                              <input name="formusername" id="already_formusername" autocapitalize="off" autocorrect="off" class="input" size="15" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: name
+parseable name: formusername
+section: formusername_0_14
+field signature: 2792502923
+form signature: 3772988888989104391
+form signature in host form: 3772988888989104391
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 3
+field renderer id: 14" data-ddg-testresultelementid="583450" data-manual-scoring="username OR emailAddress">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td class="l">password</td>
+                            <td>
+                              <input name="formpassword" type="password" class="input" maxlength="128" size="15" value="" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: password
+parseable name: formpassword
+section: formusername_0_14
+field signature: 522860507
+form signature: 3772988888989104391
+form signature in host form: 3772988888989104391
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 3
+field renderer id: 15" data-ddg-testresultelementid="583451" data-manual-scoring="password">
+                            </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td>
+                              <input type="submit" name="index_signin_already" class="button frontpagebutton" value="Sign in">
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </center>
+                    <div class="orsigninwith">
+                      <center>
+                        or sign in with...
+                        <a href="/enter/start/facebook"></a><a href="/enter/start/twitter"></a>
+                      </center>
+                    </div>
+                    <div id="baby">
+                      <a href="/lostsomething">forgot</a> /
+                      <a href="/organizations">organizations</a> /
+                      <a href="/privacy">terms</a>
+                    </div>
+                  </div>
+                  
+                    <div class="signin new" id="newS">
+                      <h2 class="first">Become a Member</h2>
+                      <center>
+                        <table border="0" cellspacing="0" cellpadding="0" class="signin">
+                          <tbody>
+                            <tr>
+                              <td class="l" valign="bottom">name</td>
+                              <td>
+                                <input name="new_formusername" id="new_formusername" autocapitalize="off" autocorrect="off" class="input" size="15" value="" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: name
+parseable name: new_formusername
+section: new_formusername_0_17
+field signature: 1664378665
+form signature: 2861326705928400343
+form signature in host form: 2861326705928400343
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 4
+field renderer id: 17" data-ddg-testresultelementid="583452" data-manual-scoring="username OR emailAddress">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="l">password</td>
+                              <td>
+                                <input name="new_formpassword" id="new_formpassword" type="password" class="input" maxlength="128" size="15" autocorrect="off" autocapitalize="off" value="" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
+server type: ACCOUNT_CREATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: password
+parseable name: new_formpassword
+section: new_formusername_0_17
+field signature: 1446636573
+form signature: 2861326705928400343
+form signature in host form: 2861326705928400343
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 4
+field renderer id: 18" data-ddg-testresultelementid="583453" data-manual-scoring="password">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="l"></td>
+                              <td>
+                                <div id="pwsm" class="pw_hint score0">
+                                  <ul id="pws_meter">
+                                    <li id="pws1" class="pws" onclick="show_pw_info();return false;"></li>
+                                    <li id="pws2" class="pws" onclick="show_pw_info();return false;"></li>
+                                    <li id="pws3" class="pws" onclick="show_pw_info();return false;"></li>
+                                  </ul>
+                                </div>
+                                <div class="pw_hint_label_small">
+                                  password strength
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="l">confirm password</td>
+                              <td>
+                                <input name="new_formpassword_confirm" id="new_formpassword_confirm" type="password" class="input" maxlength="128" size="15" autocorrect="off" autocapitalize="off" value="" autofill-information="overall type: CONFIRMATION_PASSWORD
+server type: CONFIRMATION_PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: confirm password
+parseable name: new_formpassword_confirm
+section: new_formusername_0_17
+field signature: 2599382843
+form signature: 2861326705928400343
+form signature in host form: 2861326705928400343
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 4
+field renderer id: 19" data-ddg-testresultelementid="583454" data-manual-scoring="password">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="l">email (recommended)</td>
+                              <td>
+                                <input name="formemail" id="formemail" type="email" class="input" size="15" maxlength="128" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: EMAIL_ADDRESS
+label: email (recommended)
+parseable name: formemail
+section: new_formusername_0_17
+field signature: 2897647795
+form signature: 2861326705928400343
+form signature in host form: 2861326705928400343
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 4
+field renderer id: 20" data-ddg-testresultelementid="583455" data-manual-scoring="emailAddress">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="l">type</td>
+                              <td>
+                                <select name="orgtype" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: type
+parseable name: orgtype
+section: new_formusername_0_17
+field signature: 3329248591
+form signature: 2861326705928400343
+form signature in host form: 2861326705928400343
+field frame token: F13507040562CAD055269B44E3111425
+form renderer id: 4
+field renderer id: 21" data-ddg-testresultelementid="583456">
+                                  <option value="0" selected="">
+                                    personal
+                                  </option>
+                                  <option value="3">organization</option>
+                                </select>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </center>
+                      <input type="submit" name="index_signin_new" class="button frontpagebutton" value="Join now">
+                      <div class="orsigninwith">
+                        <center>
+                          or join with...
+                          <a href="/enter/start/facebook"></a><a href="/enter/start/twitter"></a>
+                        </center>
+                      </div>
+                      <div id="baby">
+                        <a href="/lostsomething">forgot</a> /
+                        <a href="/organizations">organizations</a> /
+                        <a href="/privacy">terms</a>
+                      </div>
+                      <input type="hidden" name="howmanypics" value=""><input type="hidden" name="whichpic" value=""><input type="hidden" name="language" value=""><input class="button frontpagebutton" onclick="javascript:flipsignup();" type="button" value="Already a member?">
+                    </div>
+                  
+                  
+                </div></form>
+              
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table cellspacing="15px" cellpadding="0" border="0" class="homepage_sidekicks">
+        <tbody>
+          <tr>
+            <td class="homepage_sidekick_box yellowbox">
+              <div id="list2" class="home-module2">
+                <h2>Check it out</h2>
+                <ul>
+                  <li><a href="/tour/">Take the tour</a>.</li>
+                  <li>
+                    <span class="b"><a href="javascript:flipsignup(true)">Sign up</a>. It's
+                      more fun than the tour.</span>
+                  </li>
+                </ul>
+                <br>
+                <h2>What’s Good?</h2>
+                <ul>
+                  <li>
+                    <span class="b">Catalog your books from Amazon, the Library of Congress
+                      and 4,941 other libraries.</span>
+                  </li>
+                  <li>
+                    <span class="b">Catalog your movies and music too.</span>
+                  </li>
+                  <li><span class="b">LibraryThing is entirely free.</span></li>
+                  <li><span class="b">Find new books to read.</span></li>
+                  <li>
+                    <span class="b">Talk about what you love with other committed
+                      bibliophiles.</span>
+                  </li>
+                  <li><span class="b">Track and lend your books.</span></li>
+                  <li>
+                    <span class="b">Snag a book from over 2000 early-release books every
+                      month.</span>
+                  </li>
+                  <li>
+                    <span class="b">Available in many languages:
+                      <a href="https://www.librarything.de"></a>
+                      <a href="https://www.librarything.fr"></a>
+                      <a href="https://www.librarything.nl"></a>
+                      <a href="https://www.librarything.es"></a>
+                      <a href="https://br.librarything.com"></a>
+                      <a href="https://pt.librarything.com"></a>
+                      <a href="https://www.librarything.it"></a>
+                      <a href="https://ru.librarything.com"></a>
+                      <a href="https://dk.librarything.com"></a>
+                      <a href="https://fi.librarything.com"></a>
+                      <a href="https://se.librarything.com"></a>
+                      <a href="https://no.librarything.com"></a>
+                      <a href="https://tr.librarything.com"></a>
+                      <a href="https://pl.librarything.com"></a>
+                      <a href="https://ro.librarything.com"></a>
+                      <a href="https://al.librarything.com"></a>
+                      <a href="https://cz.librarything.com"></a>
+                      <a href="https://gr.librarything.com"></a>
+                      <a href="https://jp.librarything.com"></a>
+                      <a href="https://hin.librarything.com"></a>
+                      <a href="https://cat.librarything.com"></a>
+                      <a href="https://cym.librarything.com"></a>
+                    </span>
+                    (<a href="#" onclick="languagelist(); return false;">others</a>)
+                  </li>
+                </ul>
+              </div>
+            </td>
+            <td class="homepage_sidekick_box yellowbox">
+              <div id="members" class="home-module2">
+                <h2>Recent Activity</h2>
+                <table cellspacing="0" cellpadding="0" border="0" class="ff">
+                  <tbody>
+                    <tr>
+                      <td class="left">
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="29962863" href="/work/29962863/236903708" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/Accitanus">Accitanus</a> added,
+                              reviewed:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="29962863" href="/work/29962863/236903708" class="popup_registered">HISTORIA DE GRECIA</a>
+                              by
+                              <a href="/author/antoniotovarymartnsr">ANTONIO TOVAR y MARTÍN S. RUIPÉREZ</a>
+                            </div>
+                            <div class="ui_jump_link ui_jump_link">
+                              <a id="u_03dc" class="bluelink" href="/review/236903708">Read Review&nbsp;<i class="fa-regular fa-chevron-right"></i></a>
+                            </div>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="257214" href="/work/257214/236903670" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/dgmathis">dgmathis</a> reviewed,
+                              added:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="257214" href="/work/257214/236903670" class="popup_registered">The Man in the Gray Flannel Suit</a>
+                              by <a href="/author/wilsonsloan">Sloan Wilson</a>
+                            </div>
+                            <div class="ui_jump_link ui_jump_link">
+                              <a id="u_31ef" class="bluelink" href="/review/236903670">Read Review&nbsp;<i class="fa-regular fa-chevron-right"></i></a>
+                            </div>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="17619176" href="/work/17619176/236903605" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/BostonArchaeology">BostonArchaeology</a>
+                              rated, added:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="17619176" href="/work/17619176/236903605" class="popup_registered">A History of Boston in 50 Artifacts</a>
+                              by
+                              <a href="/author/bagleyjosephm">Joseph M. Bagley</a>
+                            </div>
+                            <span id="rate-u_d581f34c" title="5 Stars" aria-title="5 Stars" class="rating rating-style-306" data-fn="ratingWidget_fromSettingsA"><span class="rw"><input type="hidden" value="10" name="form_rating" id="form_rating"></span><i data-rating_value="2" class="fas fa-star selected"></i><i data-rating_value="4" class="fas fa-star selected"></i><i data-rating_value="6" class="fas fa-star selected"></i><i data-rating_value="8" class="fas fa-star selected"></i><i data-rating_value="9" class="fas fa-star selected"></i></span>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="9396026" href="/work/9396026/236903772" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/Babyted">Babyted</a> rated,
+                              added:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="9396026" href="/work/9396026/236903772" class="popup_registered">The Ice Cream Girls</a>
+                              by
+                              <a href="/author/koomsondorothy">Dorothy Koomson</a>
+                            </div>
+                            <span id="rate-u_55984f67" title="3 Stars" aria-title="3 Stars" class="rating rating-style-306" data-fn="ratingWidget_fromSettingsA"><span class="rw"><input type="hidden" value="6" name="form_rating" id="form_rating"></span><i data-rating_value="2" class="fas fa-star selected"></i><i data-rating_value="4" class="fas fa-star selected"></i><i data-rating_value="5" class="fas fa-star selected"></i><i data-rating_value="8" class="fas fa-star empty"></i><i data-rating_value="10" class="fas fa-star empty"></i></span>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="24488774" href="/work/24488774/236903659" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/katimae">katimae</a> added,
+                              rated:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="24488774" href="/work/24488774/236903659" class="popup_registered">White Ivy: A Novel</a>
+                              by <a href="/author/yangsusie">Susie Yang</a>
+                            </div>
+                            <span id="rate-u_800e0ed7" title="4 Stars" aria-title="4 Stars" class="rating rating-style-306" data-fn="ratingWidget_fromSettingsA"><span class="rw"><input type="hidden" value="8" name="form_rating" id="form_rating"></span><i data-rating_value="2" class="fas fa-star selected"></i><i data-rating_value="4" class="fas fa-star selected"></i><i data-rating_value="6" class="fas fa-star selected"></i><i data-rating_value="7" class="fas fa-star selected"></i><i data-rating_value="10" class="fas fa-star empty"></i></span>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="24977818" href="/work/24977818/236903595" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/Eurekas">Eurekas</a>
+                              rated:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="24977818" href="/work/24977818/236903595" class="popup_registered">Another Time, Another Place (Chronicles of St.
+                                Mary's)</a>
+                              by <a href="/author/taylorjodi">Jodi Taylor</a>
+                            </div>
+                            <span id="rate-u_a1d3d959" title="5 Stars" aria-title="5 Stars" class="rating rating-style-306" data-fn="ratingWidget_fromSettingsA"><span class="rw"><input type="hidden" value="10" name="form_rating" id="form_rating"></span><i data-rating_value="2" class="fas fa-star selected"></i><i data-rating_value="4" class="fas fa-star selected"></i><i data-rating_value="6" class="fas fa-star selected"></i><i data-rating_value="8" class="fas fa-star selected"></i><i data-rating_value="9" class="fas fa-star selected"></i></span>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="2225" href="/work/2225/236903393" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/Hokma">Hokma</a> rated:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="2225" href="/work/2225/236903393" class="popup_registered">Romeu e Julieta (Portuguese Edition)</a>
+                              by
+                              <a href="/author/shakespearewilliam">William Shakespeare</a>
+                            </div>
+                            <span id="rate-u_ec1c9e2f" title="4 Stars" aria-title="4 Stars" class="rating rating-style-306" data-fn="ratingWidget_fromSettingsA"><span class="rw"><input type="hidden" value="8" name="form_rating" id="form_rating"></span><i data-rating_value="2" class="fas fa-star selected"></i><i data-rating_value="4" class="fas fa-star selected"></i><i data-rating_value="6" class="fas fa-star selected"></i><i data-rating_value="7" class="fas fa-star selected"></i><i data-rating_value="10" class="fas fa-star empty"></i></span>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                        <div class="ffarea">
+                          <div class="ff_cover floatleft marginright">
+                            <a data-workid="11100634" href="/work/11100634/236903470" class="popup_registered"></a>
+                          </div>
+                          <div class="ff_text ff_text_with_cover">
+                            <div class="ff_useraction">
+                              <a href="/profile/Hokma">Hokma</a> rated:<br>
+                            </div>
+                            <div class="ff_title">
+                              <a data-workid="11100634" href="/work/11100634/236903470" class="popup_registered">Anatomia da Influencia (Em Portugues do
+                                Brasil)</a>
+                              by <a href="/author/bloomharold">Harold Bloom</a>
+                            </div>
+                            <span id="rate-u_af5d5d45" title="4 Stars" aria-title="4 Stars" class="rating rating-style-306" data-fn="ratingWidget_fromSettingsA"><span class="rw"><input type="hidden" value="8" name="form_rating" id="form_rating"></span><i data-rating_value="2" class="fas fa-star selected"></i><i data-rating_value="4" class="fas fa-star selected"></i><i data-rating_value="6" class="fas fa-star selected"></i><i data-rating_value="7" class="fas fa-star selected"></i><i data-rating_value="10" class="fas fa-star empty"></i></span>
+                          </div>
+                          <div class="clear"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="clear">&nbsp;</div>
+      <div class="homepage_press_quotes">
+        <div id="press">
+          <ul>
+            <li>
+              
+            </li>
+            <li>
+              
+            </li>
+            <li>
+              
+            </li>
+            <li>
+              
+            </li>
+            <li>
+              
+            </li>
+            <li>
+              
+            </li>
+            <li>
+              
+            </li>
+          </ul>
+        </div>
+        <div id="quotes">
+          <div id="quote1">
+            <p>
+              “Of course, LibraryThing is even more useful if you post your book
+              collection, and the process is wonderfully easy.” (<a href="http://www.pcmag.com/article2/0,2817,2007135,00.asp">link</a>)
+            </p>
+          </div>
+
+          <div id="quote2">
+            <p>
+              “LibraryThing is an impressive cataloging app that feels like
+              del.icio.us<br>for books” (<a href="http://lifehacker.com/software/personal-organizers/catalog-your-books-with-librarything-125950.php">link</a>)
+            </p>
+          </div>
+
+          <div id="quote3">
+            <p>
+              “There are also suggestions of related books to read; it's a
+              <br>virtual feast of information.” <i>All Things Considered</i>
+            </p>
+          </div>
+
+          <div id="quote4">
+            <p>
+              “Many social connections thrive at the site. Although members can
+              keep all details of their online catalog private, most choose to
+              display their libraries...” (<a href="http://blog.librarything.com/main/2007/03/the-new-york-times-covers-librarything/">link</a>)
+            </p>
+          </div>
+
+          <div id="quote5">
+            <p>
+              “LibraryThing can also connect likeminded readers — a sort of
+              MySpace for bookworms.”
+            </p>
+          </div>
+
+          <div id="quote6">
+            <p>
+              “Now, with LibraryThing.com, we can peek at thousands of
+              libraries.”
+            </p>
+          </div>
+
+          <div id="quote7">
+            <p>
+              “Not surprisingly, librarians love LibraryThing.”<br>
+              <i>Library Journal</i> (March 15, 2007)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="signinholder">
+        <div id="become-member">
+          <h2 class="first">Become a member</h2>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      
+      
+      
+      <div class="bottombar">
+        <a href="/about" target="_top">About</a> |
+        <a href="/contact" target="_top">Contact</a> |
+        <a href="/privacy" target="_top">Privacy/Terms</a> |
+        <a href="https://wiki.librarything.com/index.php/Help_and_FAQ" target="_top">Help/FAQs</a>
+        | <a href="https://blog.librarything.com/main/" target="_top">Blog</a> |
+        <a href="/more/store" target="_top">Store</a> |
+        <a href="/APIs_and_Feeds.php" target="_top">APIs</a> |
+        <a href="https://www.librarycat.org" target="_top">TinyCat</a> |
+        <a target="_top" href="/legacylibraries">Legacy Libraries</a> |
+        <a target="_top" href="/er/list">Early Reviewers</a> |
+        <a target="_top" href="/commonknowledge/">Common Knowledge</a> |
+        <a href="/zeitgeist" target="_top">184,980,901 books!</a> |
+        <a href="/togglescrolling.php" target="_top">Top bar: Always visible</a>
+        <div class="copyright">
+          Copyright LibraryThing and/or members of LibraryThing, authors,
+          publishers, libraries, cover designers, Amazon, Bol, Bruna, etc.
+          <span id="device_note"> | Mouse device</span>
+        </div>
+      </div>
+      <a name="bottom"></a>
+    </div>
+
+    <div id="fb-root"></div>
+  </div>
+  <!-- content -->
+
+  
+
