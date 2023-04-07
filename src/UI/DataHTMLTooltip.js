@@ -1,5 +1,6 @@
 import { escapeXML } from '../autofill-utils.js'
 import HTMLTooltip from './HTMLTooltip.js'
+import {PROVIDER_LOCKED} from '../InputTypes/Credentials.js'
 
 class DataHTMLTooltip extends HTMLTooltip {
     /**
@@ -17,7 +18,7 @@ class DataHTMLTooltip extends HTMLTooltip {
             return shouldShow
         }
 
-        const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress'].includes(item.id()))
+        const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', PROVIDER_LOCKED].includes(item.id()))
 
         const topClass = wrapperClass || ''
         const dataTypeClass = `tooltip__button--data--${config.type}`
