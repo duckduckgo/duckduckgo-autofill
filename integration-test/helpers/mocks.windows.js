@@ -1,4 +1,4 @@
-import {createAvailableInputTypes} from './utils.js'
+import {createAvailableInputTypes, withDataType} from './utils.js'
 
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
@@ -79,6 +79,11 @@ export function createWindowsMocks () {
         withPersonalEmail (_email) {
             return this
         },
+        withEmailProtection (emails) {
+            return this
+                .withPrivateEmail(emails.privateAddress)
+                .withPersonalEmail(emails.personalAddress)
+        },
         withAvailableInputTypes (inputTypes) {
             mocks.getAvailableInputTypes = inputTypes
             return this
@@ -101,6 +106,9 @@ export function createWindowsMocks () {
         withIdentity: function () {
             throw new Error('Function not implemented.')
         },
+        withCreditCard: function () {
+            throw new Error('Function not implemented.')
+        },
         withCredentials: function (credentials) {
             mocks.getAutofillInitData.credentials.push(credentials)
             mocks.getAutofillCredentials = credentials
@@ -109,6 +117,9 @@ export function createWindowsMocks () {
             mocks.getAutofillInitData.serializedInputContext = JSON.stringify(topContextData)
             mocks.getAutofillData = { credentials, action: 'fill' }
             return this
+        },
+        withDataType: function (data) {
+            return withDataType(this, data)
         },
         tap () {
             return this

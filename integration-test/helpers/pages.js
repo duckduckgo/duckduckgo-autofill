@@ -729,6 +729,10 @@ export function overlayPage (page) {
                 const calls = window.__playwright_autofill.mocks.calls
                 return calls.some(call => call[0] === 'selectedDetail')
             })
+        },
+        async assertTextNotPresent (text) {
+            const button = await page.locator(`button:has-text("${text}")`)
+            await expect(button).toHaveCount(0)
         }
     }
 }
