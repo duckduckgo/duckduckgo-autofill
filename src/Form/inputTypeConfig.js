@@ -145,7 +145,7 @@ const inputTypeConfig = {
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
         type: 'identities',
-        displayName: 'Addresses',
+        displayName: 'Identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,

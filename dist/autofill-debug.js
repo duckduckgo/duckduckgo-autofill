@@ -8764,7 +8764,7 @@ class InterfacePrototype {
         if (Array.isArray(data.credentials) && data.credentials.length > 0) {
           return data.credentials;
         } else {
-          return this.getLocalCredentials().filter(cred => !!cred[subtype] || subtype === 'password');
+          return this.getLocalCredentials().filter(cred => !!cred[subtype] || subtype === 'password' || cred.id === _Credentials.PROVIDER_LOCKED);
         }
       }
     }
@@ -11886,7 +11886,7 @@ const inputTypeConfig = {
   /** @type {IdentitiesInputTypeConfig} */
   identities: {
     type: 'identities',
-    displayName: 'Addresses',
+    displayName: 'Identities',
     getIconBase: getIdentitiesIcon,
     getIconFilled: getIdentitiesIcon,
     getIconAlternate: getIdentitiesAlternateIcon,
@@ -14082,7 +14082,7 @@ class CredentialsTooltipItem {
       }
 
       if (((_classPrivateFieldGet4 = _classPrivateFieldGet(this, _data).origin) === null || _classPrivateFieldGet4 === void 0 ? void 0 : _classPrivateFieldGet4.partialMatch) === false) {
-        return 'From This Website';
+        return 'From this website';
       }
 
       return '•••••••••••••••';
@@ -15090,6 +15090,8 @@ var _autofillUtils = require("../autofill-utils.js");
 
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
 
+var _Credentials = require("../InputTypes/Credentials.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class DataHTMLTooltip extends _HTMLTooltip.default {
@@ -15111,7 +15113,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       return shouldShow;
     };
 
-    const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress'].includes(item.id()));
+    const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', _Credentials.PROVIDER_LOCKED].includes(item.id()));
     const topClass = wrapperClass || '';
     const dataTypeClass = "tooltip__button--data--".concat(config.type);
     this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\" hidden>\n    <div class=\"tooltip tooltip--data\">\n        ").concat(items.map(item => {
@@ -15149,7 +15151,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils.js":62,"./HTMLTooltip.js":55}],53:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":46,"../autofill-utils.js":62,"./HTMLTooltip.js":55}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

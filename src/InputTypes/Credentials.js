@@ -31,7 +31,7 @@ class CredentialsTooltipItem {
         }
 
         if (this.#data.origin?.partialMatch === false) {
-            return 'From This Website'
+            return 'From this website'
         }
 
         return '•••••••••••••••'
