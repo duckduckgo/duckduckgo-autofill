@@ -10392,7 +10392,7 @@ class CredentialsTooltipItem {
       }
 
       if ((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _data).origin) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.url) {
-        return "Login for ".concat((0, _autofillUtils.truncateFromMiddle)(_classPrivateFieldGet(this, _data).origin.url));
+        return "Password for ".concat((0, _autofillUtils.truncateFromMiddle)(_classPrivateFieldGet(this, _data).origin.url));
       }
 
       return '';

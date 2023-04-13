@@ -161,14 +161,14 @@ test.describe('Auto-fill a login form on macOS', () => {
             {
                 description: 'when there\'s no username and we clicked on a username field',
                 credentials: {...baseCredential, username: ''},
-                expectedText: 'Login for example.com',
+                expectedText: 'Password for example.com',
                 inputTypeTrigger: 'credentials.username',
                 shouldRender: false
             },
             {
                 description: 'when there\'s no username and we clicked on a password field',
                 credentials: {...baseCredential, username: ''},
-                expectedText: 'Login for example.com',
+                expectedText: 'Password for example.com',
                 inputTypeTrigger: 'credentials.password',
                 shouldRender: true
             }
