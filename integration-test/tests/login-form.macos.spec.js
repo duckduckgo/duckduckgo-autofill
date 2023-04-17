@@ -531,7 +531,7 @@ test.describe('Auto-fill a login form on macOS', () => {
     test.describe('The manage button', () => {
         const testCases = [
             {
-                description: 'when Bitwarden is locked',
+                description: 'when Bitwarden is locked it should not show',
                 credentials: {
                     id: 'provider_locked',
                     username: '',
@@ -561,7 +561,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 expectedLabel: 'Manage Identities…'
             },
             {
-                description: 'with Email Protection and no identities',
+                description: 'with Email Protection and no identities should not show',
                 emailProtection: {personalAddress, privateAddress},
                 expectedLabel: null
             },
@@ -592,6 +592,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await overlay.navigate()
                 if (expectedLabel) {
                     await overlay.clickButtonWithText(expectedLabel)
+                    await overlay.assertCloseAutofillParent()
                 } else {
                     await overlay.assertTextNotPresent('Manage')
                 }

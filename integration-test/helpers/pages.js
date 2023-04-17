@@ -721,6 +721,10 @@ export function overlayPage (page) {
             const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
             expect(closeAutofillParentCalls.length).toBe(0)
         },
+        async assertCloseAutofillParent () {
+            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], true)
+            expect(closeAutofillParentCalls.length).toBe(1)
+        },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
          */

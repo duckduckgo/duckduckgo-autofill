@@ -215,7 +215,10 @@ export function createWebkitMocks (platform = 'macos') {
         askToUnlockProvider: null,
         /** @type {CheckCredentialsProviderStatusTypes[]} */
         checkCredentialsProviderStatus: [],
-        sendJSPixel: null
+        sendJSPixel: null,
+        pmHandlerOpenManagePasswords: null,
+        pmHandlerOpenManageCreditCards: null,
+        pmHandlerOpenManageIdentities: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
