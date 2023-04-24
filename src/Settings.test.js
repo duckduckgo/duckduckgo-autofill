@@ -2,6 +2,8 @@ import { DeviceApi } from '../packages/device-api/index.js'
 import { createGlobalConfig } from './config.js'
 import { Settings } from './Settings.js'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import InterfacePrototype from './DeviceInterface/InterfacePrototype.js'
+import { InContextSignup } from './InContextSignup.js'
 
 const createAvailableInputTypes = (overrides) => {
     const base = Settings.defaults.availableInputTypes
@@ -18,9 +20,13 @@ const createGlobalConfigWithDefaults = (defaults) => {
     }
 }
 
+jest.mock('./InContextSignup.js')
+
 describe('Settings', () => {
     it('feature toggles + input types combinations ', async () => {
-    /** @type {[import("./Settings").AutofillFeatureToggles, import("./Settings").AvailableInputTypes, (settings: Settings) => void][]} */
+        const inContextSignupMock = new InContextSignup(InterfacePrototype.default())
+
+        /** @type {[import("./Settings").AutofillFeatureToggles, import("./Settings").AvailableInputTypes, (settings: Settings) => void][]} */
         const cases = [
             [
                 { inputType_credentials: true },
@@ -29,8 +35,8 @@ describe('Settings', () => {
                         credentials: {username: true, password: true}
                     })
                 },
-                async (settings) => {
-                    expect(await settings.canAutofillType('credentials', 'password')).toBe(true)
+                (settings) => {
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password' }, null)).toBe(true)
                 }
             ],
             [
@@ -40,8 +46,8 @@ describe('Settings', () => {
                         credentials: {username: true, password: true}
                     })
                 },
-                async (settings) => {
-                    expect(await settings.canAutofillType('credentials', 'password')).toBe(false)
+                (settings) => {
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password' }, null)).toBe(false)
                 }
             ],
             [
@@ -51,8 +57,8 @@ describe('Settings', () => {
                         credentials: {username: true, password: true}
                     })
                 },
-                async (settings) => {
-                    expect(await settings.canAutofillType('credentials', 'password')).toBe(false)
+                (settings) => {
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password' }, null)).toBe(false)
                 }
             ],
             [
@@ -62,8 +68,8 @@ describe('Settings', () => {
                         identities: {firstName: true, lastName: true}
                     })
                 },
-                async (settings) => {
-                    expect(await settings.canAutofillType('identities', 'fullName')).toBe(true)
+                (settings) => {
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName' }, null)).toBe(true)
                 }
             ],
             [
@@ -73,8 +79,8 @@ describe('Settings', () => {
                         identities: {firstName: false, lastName: false}
                     })
                 },
-                async (settings) => {
-                    expect(await settings.canAutofillType('identities', 'fullName')).toBe(false)
+                (settings) => {
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName' }, null)).toBe(false)
                 }
             ],
             [
@@ -84,8 +90,19 @@ describe('Settings', () => {
                         identities: {emailAddress: true}
                     })
                 },
-                async (settings) => {
-                    expect(await settings.canAutofillType('identities', 'emailAddress')).toBe(true)
+                (settings) => {
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress' }, null)).toBe(true)
+                }
+            ],
+            [
+                {},
+                {
+                    ...createAvailableInputTypes()
+                },
+                (settings) => {
+                    // @ts-ignore
+                    inContextSignupMock.isAvailable.mockReturnValue(true)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress' }, inContextSignupMock)).toBe(true)
                 }
             ]
         ]

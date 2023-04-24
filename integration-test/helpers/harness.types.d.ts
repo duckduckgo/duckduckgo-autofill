@@ -34,6 +34,8 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withPersonalEmail(email: string): MockBuilder<State, Mocks>
     // Add Email Protection emails
     withEmailProtection(emails: {personalAddress: string, privateAddress: string}): MockBuilder<State, Mocks>
+    // Set in-context signup as dismissed
+    withIncontextSignipDismissed()
     // Add an identity
     withIdentity(identity: IdentityObject, inputType?: SupportedTypes): MockBuilder<State, Mocks>
     // Add a credit card

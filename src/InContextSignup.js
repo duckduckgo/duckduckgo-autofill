@@ -1,6 +1,8 @@
 import {
+    StartEmailProtectionSignupCall,
     GetIncontextSignupDismissedAtCall,
-    SetIncontextSignupPermanentlyDismissedAtCall
+    SetIncontextSignupPermanentlyDismissedAtCall,
+    CloseAutofillParentCall
 } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 import { isLocalNetwork, isValidTLD } from './autofill-utils.js'
 
@@ -14,12 +16,51 @@ export class InContextSignup {
 
     async init () {
         await this.refreshData()
+        this.addNativeAccessibleGlobalFunctions()
+    }
+
+    addNativeAccessibleGlobalFunctions () {
+        if (!this.device.globalConfig.hasModernWebkitAPI) return
+
+        try {
+            // Set up a function which can be called from the native layer after completed sign-up or sign-in.
+            Object.defineProperty(window, 'openAutofillAfterClosingEmailProtectionTab', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: () => {
+                    this.openAutofillTooltip()
+                }
+            })
+        } catch (e) {
+            // Ignore if function can't be set up, it's a UX enhancement not a critical flow
+        }
     }
 
     async refreshData () {
         const incontextSignupDismissedAt = await this.device.deviceApi.request(new GetIncontextSignupDismissedAtCall(null))
         this.permanentlyDismissedAt = incontextSignupDismissedAt.permanentlyDismissedAt
         this.isInstalledRecently = incontextSignupDismissedAt.isInstalledRecently
+    }
+
+    async openAutofillTooltip () {
+        // Make sure we're working with the latest data
+        await this.device.refreshData()
+
+        // Make sure the tooltip is closed before we try to open it
+        await this.device.uiController?.removeTooltip('stateChange')
+
+        // Make sure the input doesn't have focus so we can focus on it again
+        const activeInput = this.device.activeForm?.activeInput
+        activeInput?.blur()
+
+        // Focus on the active input to open the tooltip
+        const focusActiveInput = () => {
+            activeInput?.focus()
+        }
+        document.hasFocus()
+            ? focusActiveInput()
+            : document.addEventListener('visibilitychange', focusActiveInput, {once: true})
     }
 
     isPermanentlyDismissed () {
@@ -32,23 +73,47 @@ export class InContextSignup {
         return isValidTLD() && !isLocalNetwork()
     }
 
-    isAvailable () {
-        const isEnabled = this.device.settings?.featureToggles.emailProtection_incontext_signup
-        const isLoggedIn = this.device.isDeviceSignedIn()
-        return isEnabled && !isLoggedIn && !this.isPermanentlyDismissed() && this.isOnValidDomain() && this.isInstalledRecently
+    isAllowedByDevice () {
+        if (typeof this.isInstalledRecently === 'boolean') {
+            return this.isInstalledRecently
+        } else {
+            // Don't restrict in-context signup based on recent installation
+            // if the device hasn't provided a clear indication
+            return true
+        }
+    }
+
+    /**
+     * @param {import('./Form/matching.js').SupportedSubTypes | "unknown"} [inputType]
+     * @returns {boolean}
+     */
+    isAvailable (inputType = 'emailAddress') {
+        const isEmailInput = inputType === 'emailAddress'
+        const isEmailProtectionEnabled = !!this.device.settings?.featureToggles.emailProtection
+        const isIncontextSignupEnabled = !!this.device.settings?.featureToggles.emailProtection_incontext_signup
+        const isNotAlreadyLoggedIn = !this.device.isDeviceSignedIn()
+        const isNotDismissed = !this.isPermanentlyDismissed()
+        const isOnExpectedPage = this.device.globalConfig.isTopFrame || this.isOnValidDomain()
+        const isAllowedByDevice = this.isAllowedByDevice()
+        return isEmailInput && isEmailProtectionEnabled && isIncontextSignupEnabled && isNotAlreadyLoggedIn && isNotDismissed && isOnExpectedPage && isAllowedByDevice
     }
 
     onIncontextSignup () {
+        this.device.deviceApi.notify(new StartEmailProtectionSignupCall({}))
         this.device.firePixel({pixelName: 'incontext_primary_cta'})
     }
 
-    onIncontextSignupDismissed () {
-        this.device.removeAutofillUIFromPage()
+    onIncontextSignupDismissed (options = { shouldHideTooltip: true }) {
         this.permanentlyDismissedAt = new Date().getTime()
         this.device.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: this.permanentlyDismissedAt }))
         this.device.firePixel({pixelName: 'incontext_dismiss_persisted'})
+        if (options.shouldHideTooltip) {
+            this.device.removeAutofillUIFromPage()
+            this.device.deviceApi.notify(new CloseAutofillParentCall(null))
+        }
     }
 
+    // In-context signup can be closed when displayed as a stand-alone tooltip, e.g. extension
     onIncontextSignupClosed () {
         this.device.activeForm?.dismissTooltip()
         this.device.firePixel({pixelName: 'incontext_close_x'})

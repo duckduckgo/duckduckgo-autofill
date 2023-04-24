@@ -158,25 +158,68 @@ export class Settings {
     }
 
     /**
-     * Checks if a mainType/subtype pair can be autofilled with the data we have
-     * @param {SupportedMainTypes} mainType
-     * @param {string} subtype
+     * Checks if input type is one which we can't autofill
+     * @param {{
+     *   mainType: SupportedMainTypes
+     *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+     * }} types
+     * @returns {boolean}
+     */
+    isTypeUnavailable ({mainType, subtype}) {
+        if (mainType === 'unknown') return true
+        if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Requests data from remote
+     * @returns {Promise<>}
+     */
+    async populateData () {
+        const availableInputTypesFromRemote = await this.getAvailableInputTypes()
+        this.setAvailableInputTypes(availableInputTypesFromRemote)
+    }
+
+    /**
+     * Requests data from remote if not available
+     * @param {{
+     *   mainType: SupportedMainTypes
+     *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+     * }} types
      * @returns {Promise<boolean>}
      */
-    async canAutofillType (mainType, subtype) {
-        if (mainType === 'unknown') return false
-        if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
-            return false
+    async populateDataIfNeeded ({mainType, subtype}) {
+        if (this.isTypeUnavailable({mainType, subtype})) return false
+        if (this.availableInputTypes?.[mainType] === undefined) {
+            await this.populateData()
+            return true
         }
+        return false
+    }
+
+    /**
+     * Checks if items will show in the autofill menu, including in-context signup.
+     * Triggers side-effect if input types is not already available.
+     * @param {{
+     *   mainType: SupportedMainTypes
+     *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+     * }} types
+     * @param {import("./InContextSignup.js").InContextSignup?} inContextSignup
+     * @returns {boolean}
+     */
+    canAutofillType ({mainType, subtype}, inContextSignup) {
+        if (this.isTypeUnavailable({ mainType, subtype })) return false
 
         // If it's an email field and Email Protection is enabled, return true regardless of other options
-        if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+        const isEmailProtectionEnabled = this.featureToggles.emailProtection && this.availableInputTypes.email
+        if (subtype === 'emailAddress' && isEmailProtectionEnabled) {
             return true
         }
 
-        if (this.availableInputTypes?.[mainType] === undefined) {
-            const availableInputTypesFromRemote = await this.getAvailableInputTypes()
-            this.setAvailableInputTypes(availableInputTypesFromRemote)
+        if (inContextSignup?.isAvailable(subtype)) {
+            return true
         }
 
         if (subtype === 'fullName') {

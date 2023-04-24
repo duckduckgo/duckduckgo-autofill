@@ -39,7 +39,7 @@ test.describe('chrome extension', () => {
         await emailPage.assertExtensionPixelsCaptured(['email_incontext_eligible', 'incontext_show', 'incontext_primary_cta'])
     })
 
-    test('should allow tooptip to be dismissed', async ({page}) => {
+    test('should allow tooltip to be dismissed', async ({page}) => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
@@ -60,7 +60,7 @@ test.describe('chrome extension', () => {
         await emailPage.assertExtensionPixelsCaptured(['email_incontext_eligible', 'incontext_show', 'incontext_dismiss_persisted'])
     })
 
-    test('should allow tooptip to be closed', async ({page}) => {
+    test('should allow tooltip to be closed', async ({page}) => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
@@ -68,7 +68,7 @@ test.describe('chrome extension', () => {
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
-        // Permanently dismiss tooltip
+        // Dismiss tooltip
         await emailPage.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
         await incontextSignup.closeTooltip()

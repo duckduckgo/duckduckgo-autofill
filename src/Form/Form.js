@@ -220,7 +220,7 @@ class Form {
         return Boolean(credentials || creditCards || identities)
     }
 
-    removeTooltip () {
+    async removeTooltip () {
         const tooltip = this.device.isTooltipActive()
         if (
             this.isAutofilling ||
@@ -228,7 +228,7 @@ class Form {
         ) {
             return
         }
-        this.device.removeTooltip()
+        await this.device.removeTooltip()
         this.intObs?.disconnect()
     }
 
@@ -265,6 +265,7 @@ class Form {
 
     removeInputDecoration (input) {
         removeInlineStyles(input, getIconStylesBase(input, this))
+        removeInlineStyles(input, getIconStylesAlternate(input, this))
         input.removeAttribute(ATTR_AUTOFILL)
     }
     removeAllDecorations () {
@@ -580,10 +581,30 @@ class Form {
 
     shouldOpenTooltip (e, input) {
         if (!isPotentiallyViewable(input)) return false
-        if (this.device.globalConfig.isApp) return true
-        if (this.device.globalConfig.isWindows) return true
+
+        // Always open if the user has clicked on the Dax icon
         if (isEventWithinDax(e, input)) return true
-        if (this.device.inContextSignup?.isAvailable()) return false
+        if (this.device.globalConfig.isWindows) return true
+
+        const subtype = getInputSubtype(input)
+        const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype)
+
+        if (this.device.globalConfig.isApp) {
+            const mainType = getInputMainType(input)
+            // Check if, without in-context signup (passed as `null` below),
+            // we'd have any other items to show. This lets us know if we're
+            // just showing in-context signup, or with other autofill items.
+            const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype }, null)
+
+            // Don't open the tooltip on input focus whenever it'll only show in-context signup
+            if (!hasSavedDetails && isIncontextSignupAvailable) return false
+            return true
+        }
+
+        if (this.device.globalConfig.isExtension) {
+            // Don't open the tooltip on input focus whenever it's showing in-context signup
+            if (isIncontextSignupAvailable) return false
+        }
 
         return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled'))
     }
@@ -711,7 +732,8 @@ class Form {
 
         const mainType = getInputMainType(input)
         const subtype = getInputSubtype(input)
-        if (await this.device.settings.canAutofillType(mainType, subtype)) {
+        await this.device.settings.populateDataIfNeeded({ mainType, subtype })
+        if (this.device.settings.canAutofillType({ mainType, subtype }, this.device.inContextSignup)) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {
                 // safeExecute checks that the element is on screen according to IntersectionObserver

@@ -86,6 +86,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      */
     async setupAutofill () {
         await this._getAutofillInitData()
+        await this.inContextSignup.init()
         const signedIn = await this._checkDeviceSignedIn()
 
         if (signedIn) {

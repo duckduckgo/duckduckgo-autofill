@@ -203,3 +203,15 @@ export class EmailProtectionRefreshPrivateAddressCall extends DeviceApiCall {
   id = "emailProtectionRefreshPrivateAddressResponse"
   resultValidator = emailProtectionRefreshPrivateAddressResultSchema
 }
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class StartEmailProtectionSignupCall extends DeviceApiCall {
+  method = "startEmailProtectionSignup"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class CloseEmailProtectionTabCall extends DeviceApiCall {
+  method = "closeEmailProtectionTab"
+}

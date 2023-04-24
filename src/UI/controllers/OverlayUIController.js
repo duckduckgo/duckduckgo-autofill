@@ -156,9 +156,9 @@ export class OverlayUIController extends UIController {
         }
 
         try {
-            await this._options.show(details)
             this.#state = 'parentShown'
             this._attachListeners()
+            await this._options.show(details)
         } catch (e) {
             console.error('could not show parent', e)
             this.#state = 'idle'
@@ -215,8 +215,11 @@ export class OverlayUIController extends UIController {
                 return
             }
         }
-        this._options.remove()
-            .catch(e => console.error('Could not close parent', e))
+        try {
+            await this._options.remove()
+        } catch (e) {
+            console.error('Could not close parent', e)
+        }
         this.#state = 'idle'
         this._removeListeners()
         this._mutObs?.disconnect()

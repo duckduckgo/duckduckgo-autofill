@@ -188,6 +188,14 @@
         "id": { "type": "string", "const":  "emailProtectionRefreshPrivateAddressResponse"},
         "resultValidator": { "$ref":  "./schemas/emailProtectionRefreshPrivateAddress.result.json" }
       }
+    },
+    "startEmailProtectionSignup": {
+      "type": "object",
+      "description": "Used by macOS to open a new tab to sign up for Email Protection"
+    },
+    "closeEmailProtectionTab": {
+      "type": "object",
+      "description": "Used by macOS to close the Email Protection tab after successful in-context sign-up or login"
     }
   }
 }

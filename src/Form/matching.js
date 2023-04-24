@@ -237,10 +237,12 @@ class Matching {
 
             if (this.subtypeFromMatchers('email', input) && this.isInputLargeEnough('email', input)) {
                 if (opts.isLogin || opts.isHybrid) {
+                    // TODO: Being this support back in the future
+                    // https://app.asana.com/0/1198964220583541/1204686960531034/f
                     // Show identities when supported and there are no credentials
-                    if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
-                        return 'identities.emailAddress'
-                    }
+                    // if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
+                    //     return 'identities.emailAddress'
+                    // }
 
                     return 'credentials.username'
                 }

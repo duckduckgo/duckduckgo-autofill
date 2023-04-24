@@ -11,6 +11,7 @@ import {
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
 import {InContextSignup} from '../InContextSignup.js'
+import { getInputSubtype } from '../Form/matching.js'
 
 const TOOLTIP_TYPES = {
     EmailProtection: 'EmailProtection',
@@ -48,7 +49,8 @@ class ExtensionInterface extends InterfacePrototype {
             return TOOLTIP_TYPES.EmailProtection
         }
 
-        if (this.inContextSignup?.isAvailable()) {
+        const inputType = this.activeForm?.activeInput ? getInputSubtype(this.activeForm.activeInput) : undefined
+        if (this.inContextSignup?.isAvailable(inputType)) {
             return TOOLTIP_TYPES.EmailSignup
         }
 

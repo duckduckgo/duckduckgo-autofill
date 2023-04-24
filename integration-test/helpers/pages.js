@@ -8,7 +8,7 @@ const ATTR_AUTOFILL = 'data-ddg-autofill'
 export function incontextSignupPage (page) {
     const {selectors} = constants.fields.email
     const getCallToAction = () => page.locator(`text=Protect My Email`)
-    const getTooltip = () => page.locator('.tooltip--email')
+    const getTooltip = () => page.locator('.tooltip--email, .tooltip__incontext')
     return {
         async assertIsShowing () {
             await expect(getCallToAction()).toBeVisible()
@@ -683,6 +683,10 @@ export function emailAutofillPage (page) {
                 await page.goto(emailAutofillPageName)
             }
         },
+        async clickOnPage () {
+            const heading = page.locator('h2')
+            await heading.click()
+        },
         async clickIntoInput () {
             const input = page.locator(selectors.identity)
             // click the input field (not within Dax icon)
@@ -713,6 +717,10 @@ export function emailAutofillPage (page) {
             const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
             expect(firedPixels).toEqual(pixels)
         },
+        async assertNoPixelsFired () {
+            const calls = await mockedCalls(page, ['sendJSPixel'], false)
+            expect(calls.length).toBe(0)
+        },
         async assertExtensionPixelsCaptured (expectedPixels) {
             let [backgroundPage] = await page.context().backgroundPages()
             const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
@@ -727,9 +735,14 @@ export function emailAutofillPage (page) {
             const input = page.locator(selectors.identity)
             expect(input).toHaveAttribute(ATTR_AUTOFILL, 'true')
         },
-        async assertDaxIconIsHidden () {
-            const input = page.locator(selectors.identity)
-            expect(input).not.toHaveAttribute(ATTR_AUTOFILL, 'true')
+        async assertDaxIconIsHidden ({ checking = 'autofill' } = {}) {
+            const input = await page.locator(selectors.identity)
+            if (checking === 'style') {
+                const style = await input.getAttribute('style')
+                expect(style).toBeNull()
+            } else {
+                expect(input).not.toHaveAttribute(ATTR_AUTOFILL, 'true')
+            }
         }
     }
 }
