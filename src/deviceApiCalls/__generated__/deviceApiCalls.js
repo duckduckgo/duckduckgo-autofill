@@ -12,7 +12,10 @@ import {
     selectedDetailParamsSchema,
     askToUnlockProviderResultSchema,
     checkCredentialsProviderStatusResultSchema,
-    sendJSPixelParamsSchema
+    sendJSPixelParamsSchema,
+    storeUserDataParamsSchema,
+    getUserDataResultSchema,
+    getEmailProtectionCapabilitiesResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -107,4 +110,34 @@ export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
 export class SendJSPixelCall extends DeviceApiCall {
   method = "sendJSPixel"
   paramsValidator = sendJSPixelParamsSchema
+}
+/**
+ * @extends {DeviceApiCall<storeUserDataParamsSchema, any>} 
+ */
+export class StoreUserDataCall extends DeviceApiCall {
+  method = "storeUserData"
+  id = "storeUserDataResponse"
+  paramsValidator = storeUserDataParamsSchema
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class RemoveUserDataCall extends DeviceApiCall {
+  method = "removeUserData"
+}
+/**
+ * @extends {DeviceApiCall<any, getUserDataResultSchema>} 
+ */
+export class GetUserDataCall extends DeviceApiCall {
+  method = "getUserData"
+  id = "getUserDataResponse"
+  resultValidator = getUserDataResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, getEmailProtectionCapabilitiesResultSchema>} 
+ */
+export class GetEmailProtectionCapabilitiesCall extends DeviceApiCall {
+  method = "getEmailProtectionCapabilities"
+  id = "getEmailProtectionCapabilitiesResponse"
+  resultValidator = getEmailProtectionCapabilitiesResultSchema
 }

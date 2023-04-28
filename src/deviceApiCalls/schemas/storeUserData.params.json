@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "StoreUserDataParams",
+    "type": "object",
+    "description": "Used to store Email Protection auth credentials.",
+    "additionalProperties": false,
+    "properties": {
+      "token": {
+        "type": "string"
+      },
+      "username": {
+        "type": "string"
+      },
+      "cohort": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "token",
+      "username",
+      "cohort"
+    ]
+  }
+  

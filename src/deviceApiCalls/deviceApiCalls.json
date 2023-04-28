@@ -47,5 +47,23 @@
   },
   "sendJSPixel": {
     "paramsValidator": "./schemas/sendJSPixel.params.json"
+  },
+  "storeUserData": {
+    "id": "storeUserDataResponse",
+    "description": "Used to store Email Protection auth credentials (logging in)",
+    "paramsValidator": "./schemas/storeUserData.params.json"
+  },
+  "removeUserData": {
+    "description": "Used to remove Email Protection auth credentials (logging out)"
+  },
+  "getUserData": {
+    "id": "getUserDataResponse",
+    "description": "Used to get Email Protection auth credentials or check if a user is logged in.",
+    "resultValidator": "./schemas/getUserData.result.json"
+  },
+  "getEmailProtectionCapabilities": {
+    "id": "getEmailProtectionCapabilitiesResponse",
+    "description": "",
+    "resultValidator": "./schemas/getEmailProtectionCapabilities.result.json"
   }
 }

@@ -474,6 +474,20 @@ export interface GenericError {
   message: string;
 }
 
+// getEmailProtectionCapabilities.result.json
+
+export interface GetEmailProtectionCapabilitiesResult {
+  success?: {
+    addUserData?: boolean;
+    getUserData?: boolean;
+    removeUserData?: boolean;
+  };
+  error?: GenericError;
+}
+export interface GenericError {
+  message: string;
+}
+
 // getRuntimeConfiguration.result.json
 
 /**
@@ -523,6 +537,23 @@ export interface UserPreferences {
       };
     };
   };
+}
+export interface GenericError {
+  message: string;
+}
+
+// getUserData.result.json
+
+/**
+ * Used to get Email Protection auth credentials or check if a user is logged in.
+ */
+export interface GetUserDataResult {
+  success?: {
+    userName: string;
+    nextAlias: string;
+    token: string;
+  };
+  error?: GenericError;
 }
 export interface GenericError {
   message: string;
@@ -685,4 +716,15 @@ export interface OutgoingCredentials {
    * Optional password
    */
   password?: string;
+}
+
+// storeUserData.params.json
+
+/**
+ * Used to store Email Protection auth credentials.
+ */
+export interface StoreUserDataParams {
+  token: string;
+  username: string;
+  cohort: string;
 }

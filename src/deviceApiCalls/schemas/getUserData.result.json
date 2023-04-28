@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GetUserDataResult",
+    "type": "object",
+    "description": "Used to get Email Protection auth credentials or check if a user is logged in.",
+    "additionalProperties": false,
+    "properties": {
+      "success": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "nextAlias": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": ["userName", "nextAlias", "token"]
+      },
+      "error": {
+        "$ref": "./error.json"
+      }
+    }
+  }
+  

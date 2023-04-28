@@ -123,6 +123,15 @@ export const getAvailableInputTypesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
+export const getEmailProtectionCapabilitiesResultSchema = z.object({
+    success: z.object({
+        addUserData: z.boolean().optional(),
+        getUserData: z.boolean().optional(),
+        removeUserData: z.boolean().optional()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
 export const contentScopeFeaturesItemSettingsSchema = z.record(z.unknown());
 
 export const userPreferencesSchema = z.object({
@@ -135,6 +144,15 @@ export const userPreferencesSchema = z.object({
     features: z.record(z.object({
         settings: z.record(z.unknown())
     }))
+});
+
+export const getUserDataResultSchema = z.object({
+    success: z.object({
+        userName: z.string(),
+        nextAlias: z.string(),
+        token: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
 });
 
 export const contentScopeFeaturesSchema = z.record(z.object({
@@ -160,6 +178,12 @@ export const setSizeParamsSchema = z.object({
 export const outgoingCredentialsSchema = z.object({
     username: z.string().optional(),
     password: z.string().optional()
+});
+
+export const storeUserDataParamsSchema = z.object({
+    token: z.string(),
+    username: z.string(),
+    cohort: z.string()
 });
 
 export const askToUnlockProviderResultSchema = z.object({
