@@ -10079,7 +10079,7 @@ class Form {
     const subtype = (0, _matching.getInputSubtype)(input);
 
     if (subtype === 'emailAddress') {
-      this.addListener(input, 'focus', () => {
+      this.addListener(input, 'pointerdown', () => {
         this.device.firePixel({
           pixelName: 'incontext_eligible'
         });

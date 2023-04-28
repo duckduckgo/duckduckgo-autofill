@@ -378,7 +378,7 @@ class Form {
         // TODO: temporary pixel
         const subtype = getInputSubtype(input)
         if (subtype === 'emailAddress') {
-            this.addListener(input, 'focus', () => {
+            this.addListener(input, 'pointerdown', () => {
                 this.device.firePixel({pixelName: 'incontext_eligible'})
             }, {once: true})
         }
