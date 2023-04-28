@@ -109,6 +109,9 @@ class AndroidInterface extends InterfacePrototype {
             }
         })
     }
+
+    /** Noop */
+    firePixel (_pixelParam) {}
 }
 
 export {AndroidInterface}
