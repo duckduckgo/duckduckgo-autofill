@@ -1,10 +1,12 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import {OverlayUIController} from '../UI/controllers/OverlayUIController.js'
-import {CloseAutofillParentCall, GetAutofillDataCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {CloseAutofillParentCall, GetAutofillDataCall, StoreUserDataCall, RemoveUserDataCall, GetUserDataCall, GetEmailProtectionCapabilitiesCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
  */
+
+const EMAIL_PROTECTION_LOGOUT_MESSAGE = 'EMAIL_PROTECTION_LOGOUT_MESSAGE'
 
 export class WindowsInterface extends InterfacePrototype {
     ready = false;
@@ -17,6 +19,75 @@ export class WindowsInterface extends InterfacePrototype {
     async isEnabled () {
         return true
     }
+
+
+////////////////////////////
+    loggedIn = false;
+
+    // DONE!
+    getEmailProtectionCapabilities() {
+        return this.deviceApi.request(new GetEmailProtectionCapabilitiesCall({}))
+    }
+
+    // line 165 apple interface
+    // line 29 android interface
+    // deprecated?
+    isDeviceSignedIn() {
+        console.log('isDeviceSignedIn')
+        return this.loggedIn
+    }
+
+        async setupAutofill () {
+            // TODO we need some way to trigger an init on the windows side... so it can check the vault for auth and send out events
+            const signedIn = await this._checkDeviceSignedIn()
+        // if (signedIn) {
+        //     if (this.globalConfig.isApp) {
+        //         await this.getAddresses()
+        //     }
+        // }
+    }
+
+    async _checkDeviceSignedIn () {
+        let result
+
+        try {
+            result = await this.getUserData()
+        } catch (e)
+        {
+            console.warn('e', e)
+        }
+
+        this.isDeviceSignedIn = () => !!result?.userName
+        return this.isDeviceSignedIn()
+    }
+
+    // DONE? need to test
+    addLogoutListener (handler) {
+        // Only deal with logging out if we're in the email web app
+        if (!this.globalConfig.isDDGDomain) return
+
+        windowsInteropAddEventListener('message', (e) => {
+            if (this.globalConfig.isDDGDomain && e.data === EMAIL_PROTECTION_LOGOUT_MESSAGE) {
+                handler()
+            }
+        })
+    }
+
+    // DONE!
+    storeUserData ({addUserData}) {
+        /* the extension does:
+export const isValidUsername = (userName) => /^[a-z0-9_]+$/.test(userName)
+export const isValidToken = (token) => /^[a-z0-9]+$/.test(token)
+*/
+        return this.deviceApi.request(new StoreUserDataCall(addUserData))
+    }
+    removeUserData () {
+        return this.deviceApi.request(new RemoveUserDataCall({}))
+    }
+    getUserData() {
+        return this.deviceApi.request(new GetUserDataCall({}))
+    }
+//////////////////////
 
     isEnabledViaSettings () {
         return Boolean(this.settings.enabled)
