@@ -121,7 +121,8 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.navigate()
                 await page.waitForTimeout(200)
 
-                await page.keyboard.press('Tab')
+                const emailField = await page.locator('#email')
+                await emailField.focus()
                 await login.assertFocusMessage()
             })
         })
