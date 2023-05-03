@@ -3766,6 +3766,10 @@ class AndroidInterface extends _InterfacePrototype.default {
       }
     });
   }
+  /** Noop */
+
+
+  firePixel(_pixelParam) {}
 
 }
 
@@ -6261,9 +6265,10 @@ class Form {
       let {
         el,
         type,
-        fn
+        fn,
+        opts
       } = _ref;
-      return el.removeEventListener(type, fn);
+      return el.removeEventListener(type, fn, opts);
     });
   }
 
@@ -6393,17 +6398,39 @@ class Form {
     };
     this.matching.setInputType(input, this.form, opts);
     const mainInputType = (0, _matching.getInputMainType)(input);
-    this.inputs[mainInputType].add(input);
+    this.inputs[mainInputType].add(input); // TODO: temporary pixel
+
+    const subtype = (0, _matching.getInputSubtype)(input);
+
+    if (subtype === 'emailAddress') {
+      this.addListener(input, 'pointerdown', () => {
+        this.device.firePixel({
+          pixelName: 'incontext_eligible'
+        });
+      }, {
+        once: true
+      });
+    }
+
     this.decorateInput(input);
     return this;
   }
+  /**
+   * Adds event listeners and keeps track of them for subsequent removal
+   * @param {HTMLElement} el
+   * @param {Event['type']} type
+   * @param {() => void} fn
+   * @param {AddEventListenerOptions} [opts]
+   */
 
-  addListener(el, type, fn) {
-    el.addEventListener(type, fn);
+
+  addListener(el, type, fn, opts) {
+    el.addEventListener(type, fn, opts);
     this.listeners.add({
       el,
       type,
-      fn
+      fn,
+      opts
     });
   }
 

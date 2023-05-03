@@ -36,7 +36,7 @@ test.describe('chrome extension', () => {
         await emailProtectionPage.close()
 
         // Confirm pixels triggered
-        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_primary_cta'])
+        await emailPage.assertExtensionPixelsCaptured(['incontext_eligible', 'incontext_show', 'incontext_primary_cta'])
     })
 
     test('should allow tooptip to be dismissed', async ({page}) => {
@@ -57,7 +57,7 @@ test.describe('chrome extension', () => {
         await emailPage.assertDaxIconIsHidden()
 
         // Confirm pixels triggered
-        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_persisted'])
+        await emailPage.assertExtensionPixelsCaptured(['incontext_eligible', 'incontext_show', 'incontext_dismiss_persisted'])
     })
 
     test('should allow tooptip to be closed', async ({page}) => {
@@ -78,7 +78,7 @@ test.describe('chrome extension', () => {
         await emailPage.assertDaxIconIsShowing()
 
         // Confirm pixels triggered
-        await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_close_x'])
+        await emailPage.assertExtensionPixelsCaptured(['incontext_eligible', 'incontext_show', 'incontext_close_x'])
     })
 
     test('should display properly in iframes with small width', async ({page}) => {

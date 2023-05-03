@@ -249,7 +249,7 @@ class Form {
     }
     removeAllDecorations () {
         this.execOnInputs((input) => this.removeInputDecoration(input))
-        this.listeners.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
+        this.listeners.forEach(({el, type, fn, opts}) => el.removeEventListener(type, fn, opts))
     }
     redecorateAllInputs () {
         this.removeAllDecorations()
@@ -375,14 +375,29 @@ class Form {
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
 
+        // TODO: temporary pixel
+        const subtype = getInputSubtype(input)
+        if (subtype === 'emailAddress') {
+            this.addListener(input, 'pointerdown', () => {
+                this.device.firePixel({pixelName: 'incontext_eligible'})
+            }, {once: true})
+        }
+
         this.decorateInput(input)
 
         return this
     }
 
-    addListener (el, type, fn) {
-        el.addEventListener(type, fn)
-        this.listeners.add({el, type, fn})
+    /**
+     * Adds event listeners and keeps track of them for subsequent removal
+     * @param {HTMLElement} el
+     * @param {Event['type']} type
+     * @param {() => void} fn
+     * @param {AddEventListenerOptions} [opts]
+     */
+    addListener (el, type, fn, opts) {
+        el.addEventListener(type, fn, opts)
+        this.listeners.add({el, type, fn, opts})
     }
 
     addAutofillStyles (input) {
