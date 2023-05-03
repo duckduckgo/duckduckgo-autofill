@@ -19,7 +19,7 @@ const attachAndReturnGenericForm = (form) => {
 
     const buttons = formEl.querySelectorAll('button, [role=button]')
     buttons.forEach((button) => {
-        // We're doing this so that isVisible(button) === true. See jest.setup.js for more info
+        // We're doing this so that isPotentiallyViewable(button) === true. See jest.setup.js for more info
         // @ts-ignore
         button._jsdomMockClientWidth = 150
         // @ts-ignore

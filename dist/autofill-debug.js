@@ -10012,7 +10012,7 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    return allButtons.filter(btn => (0, _autofillUtils.isVisible)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
+    return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
 
   attemptSubmissionIfNeeded() {
@@ -10023,12 +10023,12 @@ class Form {
 
     let isThereAnEmptyVisibleField = false;
     this.execOnInputs(input => {
-      if (input.value === '' && (0, _autofillUtils.isVisible)(input)) isThereAnEmptyVisibleField = true;
+      if (input.value === '' && (0, _autofillUtils.isPotentiallyViewable)(input)) isThereAnEmptyVisibleField = true;
     }, 'all', false);
     if (isThereAnEmptyVisibleField) return; // We're not using .submit() to minimise breakage with client-side forms
 
     this.submitButtons.forEach(button => {
-      if ((0, _autofillUtils.isVisible)(button)) {
+      if ((0, _autofillUtils.isPotentiallyViewable)(button)) {
         button.click();
       }
     });
@@ -10191,7 +10191,7 @@ class Form {
         storedClick.delete(input);
       }
 
-      if (this.shouldOpenTooltip(e, input) && (0, _autofillUtils.isVisible)(input)) {
+      if (this.shouldOpenTooltip(e, input)) {
         // On mobile and extensions we don't trigger the focus event to avoid
         // keyboard flashing and conflicts with browsers' own tooltips
         if ((this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) && // Avoid the icon capturing clicks on small fields making it impossible to focus
@@ -10225,6 +10225,7 @@ class Form {
   shouldOpenTooltip(e, input) {
     var _this$device$inContex;
 
+    if (!(0, _autofillUtils.isPotentiallyViewable)(input)) return false;
     if (this.device.globalConfig.isApp) return true;
     if (this.device.globalConfig.isWindows) return true;
     if ((0, _autofillUtils.isEventWithinDax)(e, input)) return true;
@@ -10234,7 +10235,7 @@ class Form {
 
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // Do not autofill if it's disabled or readonly to avoid potential breakage
+    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isPotentiallyViewable)(input)) return; // Do not autofill if it's disabled or readonly to avoid potential breakage
 
     if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // @ts-ignore
 
@@ -10322,7 +10323,7 @@ class Form {
   }
 
   getFirstViableCredentialsInput() {
-    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isVisible)(input));
+    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isPotentiallyViewable)(input));
   }
 
   async promptLoginIfNeeded() {
@@ -10351,7 +10352,7 @@ class Form {
 
           if (this.form.contains(topMostElementFromPoint)) {
             this.execOnInputs(input => {
-              if ((0, _autofillUtils.isVisible)(input)) {
+              if ((0, _autofillUtils.isPotentiallyViewable)(input)) {
                 this.touched.add(input);
               }
             }, 'credentials');
@@ -16518,8 +16519,9 @@ exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyle
 exports.escapeXML = escapeXML;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 exports.isLocalNetwork = isLocalNetwork;
+exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = void 0;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
 exports.shouldLog = shouldLog;
 exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
@@ -16782,7 +16784,7 @@ const safeExecute = function (el, fn) {
 
 exports.safeExecute = safeExecute;
 
-const isVisible = el => {
+const isPotentiallyViewable = el => {
   const computedStyle = window.getComputedStyle(el);
   const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1');
   const visibility = computedStyle.getPropertyValue('visibility');
@@ -16796,7 +16798,7 @@ const isVisible = el => {
  */
 
 
-exports.isVisible = isVisible;
+exports.isPotentiallyViewable = isPotentiallyViewable;
 
 const getDaxBoundingBox = input => {
   const {

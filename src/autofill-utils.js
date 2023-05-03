@@ -217,7 +217,7 @@ const safeExecute = (el, fn, _opts = {}) => {
  * @param {HTMLElement} el
  * @return {boolean}
  */
-const isVisible = (el) => {
+const isPotentiallyViewable = (el) => {
     const computedStyle = window.getComputedStyle(el)
     const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
     const visibility = computedStyle.getPropertyValue('visibility')
@@ -422,7 +422,7 @@ export {
     autofillEnabled,
     setValue,
     safeExecute,
-    isVisible,
+    isPotentiallyViewable,
     getDaxBoundingBox,
     isEventWithinDax,
     addInlineStyles,

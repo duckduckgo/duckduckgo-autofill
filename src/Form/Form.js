@@ -6,7 +6,7 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isVisible, buttonMatchesFormType,
+    isPotentiallyViewable, buttonMatchesFormType,
     safeExecute, getText, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
@@ -312,7 +312,7 @@ class Form {
 
         return allButtons
             .filter((btn) =>
-                isVisible(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
             )
     }
 
@@ -326,13 +326,13 @@ class Form {
         // this is to avoid loops where a captcha keeps failing for the user
         let isThereAnEmptyVisibleField = false
         this.execOnInputs((input) => {
-            if (input.value === '' && isVisible(input)) isThereAnEmptyVisibleField = true
+            if (input.value === '' && isPotentiallyViewable(input)) isThereAnEmptyVisibleField = true
         }, 'all', false)
         if (isThereAnEmptyVisibleField) return
 
         // We're not using .submit() to minimise breakage with client-side forms
         this.submitButtons.forEach((button) => {
-            if (isVisible(button)) {
+            if (isPotentiallyViewable(button)) {
                 button.click()
             }
         })
@@ -485,7 +485,7 @@ class Form {
                 storedClick.delete(input)
             }
 
-            if (this.shouldOpenTooltip(e, input) && isVisible(input)) {
+            if (this.shouldOpenTooltip(e, input)) {
                 // On mobile and extensions we don't trigger the focus event to avoid
                 // keyboard flashing and conflicts with browsers' own tooltips
                 if (
@@ -519,6 +519,7 @@ class Form {
     }
 
     shouldOpenTooltip (e, input) {
+        if (!isPotentiallyViewable(input)) return false
         if (this.device.globalConfig.isApp) return true
         if (this.device.globalConfig.isWindows) return true
         if (isEventWithinDax(e, input)) return true
@@ -529,7 +530,7 @@ class Form {
 
     autofillInput (input, string, dataType) {
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-        if (input instanceof HTMLInputElement && !isVisible(input)) return
+        if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return
         // Do not autofill if it's disabled or readonly to avoid potential breakage
         if (!canBeInteractedWith(input)) return
 
@@ -624,7 +625,7 @@ class Form {
     }
 
     getFirstViableCredentialsInput () {
-        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isVisible(input))
+        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input))
     }
 
     async promptLoginIfNeeded () {
@@ -648,7 +649,7 @@ class Form {
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
                     if (this.form.contains(topMostElementFromPoint)) {
                         this.execOnInputs((input) => {
-                            if (isVisible(input)) {
+                            if (isPotentiallyViewable(input)) {
                                 this.touched.add(input)
                             }
                         }, 'credentials')
