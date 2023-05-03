@@ -221,10 +221,11 @@ const isVisible = (el) => {
     const computedStyle = window.getComputedStyle(el)
     const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
     const visibility = computedStyle.getPropertyValue('visibility')
+    const opacityThreshold = 0.6
 
     return el.clientWidth !== 0 &&
         el.clientHeight !== 0 &&
-        opacity > 0 &&
+        opacity > opacityThreshold &&
         visibility !== 'hidden'
 }
 

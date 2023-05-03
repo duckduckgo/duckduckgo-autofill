@@ -96,13 +96,33 @@ test.describe('Auto-fill a login form on macOS', () => {
             await testLoginPage(page)
         })
         test.describe('with overlay', () => {
-            test('with click and focus', async ({page}) => {
+            test('with click', async ({page}) => {
                 const login = await testLoginPage(page, {overlay: true, pageType: 'withExtraText'})
                 // this is not ideal as it's checking an implementation detail.
                 // But it's done to ensure we're not getting a false positive
                 // and definitely loading the overlay code paths
                 await login.assertParentOpened()
-                await login.assertClickAndFocusMessages()
+                await login.assertClickMessage()
+            })
+            test('with focus', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await mocks(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({overlay: true}))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, {overlay: true})
+
+                await login.navigate()
+                await page.waitForTimeout(200)
+
+                await page.keyboard.press('Tab')
+                await login.assertFocusMessage()
             })
         })
         test('by clicking a label', async ({page}) => {

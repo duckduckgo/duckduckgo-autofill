@@ -187,6 +187,9 @@ export class HTMLTooltipUIController extends UIController {
             e.preventDefault()
             e.stopImmediatePropagation()
 
+            const isMainMouseButton = e.button === 0
+            if (!isMainMouseButton) return
+
             const activeTooltip = this.getActiveTooltip()
             if (!activeTooltip) {
                 console.warn('Could not get activeTooltip')

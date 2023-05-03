@@ -463,7 +463,8 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.isAutofilling) {
+            // Avoid firing multiple times
+            if (this.isAutofilling || this.device.isTooltipActive()) {
                 return
             }
 
@@ -484,7 +485,7 @@ class Form {
                 storedClick.delete(input)
             }
 
-            if (this.shouldOpenTooltip(e, input)) {
+            if (this.shouldOpenTooltip(e, input) && isVisible(input)) {
                 // On mobile and extensions we don't trigger the focus event to avoid
                 // keyboard flashing and conflicts with browsers' own tooltips
                 if (

@@ -6493,7 +6493,8 @@ class Form {
     };
 
     const handler = e => {
-      if (this.isAutofilling) {
+      // Avoid firing multiple times
+      if (this.isAutofilling || this.device.isTooltipActive()) {
         return;
       }
 
@@ -6511,7 +6512,7 @@ class Form {
         storedClick.delete(input);
       }
 
-      if (this.shouldOpenTooltip(e, input)) {
+      if (this.shouldOpenTooltip(e, input) && (0, _autofillUtils.isVisible)(input)) {
         // On mobile and extensions we don't trigger the focus event to avoid
         // keyboard flashing and conflicts with browsers' own tooltips
         if ((this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) && // Avoid the icon capturing clicks on small fields making it impossible to focus
@@ -11417,7 +11418,10 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
     this.autofillButtons.forEach(btn => {
       this.registerClickableButton(btn, () => {
-        callbacks.onSelect(btn.id);
+        // Fire only if the cursor is hovering the button
+        if (btn.matches('.tooltip__button:hover, .currentFocus')) {
+          callbacks.onSelect(btn.id);
+        }
       });
     });
     this.init();
@@ -12213,6 +12217,8 @@ class HTMLTooltipUIController extends _UIController.UIController {
     if (e.target.nodeName === 'DDG-AUTOFILL') {
       e.preventDefault();
       e.stopImmediatePropagation();
+      const isMainMouseButton = e.button === 0;
+      if (!isMainMouseButton) return;
       const activeTooltip = this.getActiveTooltip();
 
       if (!activeTooltip) {
@@ -12520,16 +12526,21 @@ class OverlayUIController extends _UIController.UIController {
       subtree: true
     });
 
+    const position = getPosition();
     let delay = 0;
 
-    if (!click && !this.elementIsInViewport(getPosition())) {
+    if (!click && !this.elementIsInViewport(position)) {
       input.scrollIntoView(true);
       delay = 500;
     }
 
+    _classPrivateFieldSet(this, _state, 'parentShown');
+
     setTimeout(() => {
-      this.showTopTooltip(click, getPosition(), topContextData).catch(e => {
+      this.showTopTooltip(click, position, topContextData).catch(e => {
         console.error('error from showTopTooltip', e);
+
+        _classPrivateFieldSet(this, _state, 'idle');
       });
     }, delay);
   }
@@ -12606,6 +12617,8 @@ class OverlayUIController extends _UIController.UIController {
       this._attachListeners();
     } catch (e) {
       console.error('could not show parent', e);
+
+      _classPrivateFieldSet(this, _state, 'idle');
     }
   }
 
@@ -12679,6 +12692,10 @@ class OverlayUIController extends _UIController.UIController {
     this._removeListeners();
 
     (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
+  }
+
+  isActive() {
+    return _classPrivateFieldGet(this, _state) === 'parentShown';
   }
 
 }
@@ -13090,7 +13107,8 @@ const isVisible = el => {
   const computedStyle = window.getComputedStyle(el);
   const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1');
   const visibility = computedStyle.getPropertyValue('visibility');
-  return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > 0 && visibility !== 'hidden';
+  const opacityThreshold = 0.6;
+  return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > opacityThreshold && visibility !== 'hidden';
 };
 /**
  * Gets the bounding box of the icon

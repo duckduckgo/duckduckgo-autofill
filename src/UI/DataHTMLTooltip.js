@@ -49,7 +49,10 @@ ${css}
 
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
-                callbacks.onSelect(btn.id)
+                // Fire only if the cursor is hovering the button
+                if (btn.matches('.tooltip__button:hover, .currentFocus')) {
+                    callbacks.onSelect(btn.id)
+                }
             })
         })
 
