@@ -63,10 +63,10 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
 /**
  * Tries to infer the element locale or returns 'en'
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @return {string | 'en'}
+ * @return {string}
  */
 const inferElementLocale = (el) =>
-    el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+    el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || ''
 
 /**
  * Tries to format the country code into a localised country name
@@ -78,7 +78,7 @@ const getCountryName = (el, options = {}) => {
     if (!addressCountryCode) return ''
 
     // Try to infer the field language or fallback to en
-    const elLocale = inferElementLocale(el)
+    const elLocale = inferElementLocale(el) || 'en'
     const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode)
 
     // If it's a select el we try to find a suitable match to autofill
@@ -120,7 +120,7 @@ const getLocalisedCountryNamesToCodes = (el) => {
     if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES
 
     // Try to infer the field language or fallback to en
-    const elLocale = inferElementLocale(el)
+    const elLocale = inferElementLocale(el) || 'en'
 
     return Object.fromEntries(
         Object.entries(COUNTRY_CODES_TO_NAMES)
@@ -202,9 +202,10 @@ const shouldStoreCreditCards = ({creditCards}) => {
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
+ * @param {string} inferredLocale
  * @return {DataStorageObject}
  */
-const prepareFormValuesForStorage = (formValues) => {
+const prepareFormValuesForStorage = (formValues, inferredLocale) => {
     /** @type {Partial<InternalDataStorageObject>} */
     let {credentials, identities, creditCards} = formValues
 
@@ -263,7 +264,7 @@ const prepareFormValuesForStorage = (formValues) => {
         creditCards = undefined
     }
 
-    return {credentials, identities, creditCards}
+    return {credentials, identities, creditCards, locale: inferredLocale}
 }
 
 export {
@@ -272,6 +273,7 @@ export {
     formatFullName,
     getCountryDisplayName,
     getCountryName,
+    inferElementLocale,
     inferCountryCodeFromElement,
     getMMAndYYYYFromString,
     prepareFormValuesForStorage

@@ -67,6 +67,7 @@ interface DataStorageObject {
      credentials?: CredentialsObject,
      creditCards?: CreditCardObject,
      identities?: IdentityObject,
+     locale: string
 }
 
 interface InternalDataStorageObject {

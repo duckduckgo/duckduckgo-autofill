@@ -61,7 +61,7 @@ describe('prepareFormValuesForStorage()', () => {
                 creditCards: {},
                 // @ts-ignore
                 identities: {}
-            })
+            }, 'en')
             expect(values.credentials).toBeUndefined()
         })
         it('accepts password only', () => {
@@ -72,7 +72,7 @@ describe('prepareFormValuesForStorage()', () => {
                 creditCards: {},
                 // @ts-ignore
                 identities: {}
-            })
+            }, 'en')
             expect(values.credentials?.password).toBe('123456')
         })
         it('accepts username+password', () => {
@@ -83,7 +83,7 @@ describe('prepareFormValuesForStorage()', () => {
                 creditCards: {},
                 // @ts-ignore
                 identities: {}
-            })
+            }, 'en')
             expect(values.credentials).toEqual(inputCredentials)
         })
     })

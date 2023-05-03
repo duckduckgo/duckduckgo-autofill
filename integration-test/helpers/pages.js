@@ -475,7 +475,8 @@ export function loginPage (page, opts = {}) {
             expect(mockCalls).toHaveLength(1)
             const [, sent] = mockCalls[0]
             const expected = {
-                credentials: data
+                credentials: data,
+                locale: 'unknown'
             }
             if (platform === 'ios' || platform === 'macos') {
                 expected.messageHandling = {secret: 'PLACEHOLDER_SECRET'}

@@ -6131,7 +6131,8 @@ class Form {
 
 
   getValues() {
-    const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards].reduce((output, inputEl) => {
+    const capturedElements = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards];
+    const formValues = capturedElements.reduce((output, inputEl) => {
       var _output$mainType, _value;
 
       const mainType = (0, _matching.getInputMainType)(inputEl);
@@ -6191,7 +6192,8 @@ class Form {
       }
     }
 
-    return (0, _formatters.prepareFormValuesForStorage)(formValues);
+    const inferredLocale = (0, _formatters.inferElementLocale)(capturedElements[0]) || 'unknown';
+    return (0, _formatters.prepareFormValuesForStorage)(formValues, inferredLocale);
   }
   /**
    * Determine if the form has values we want to store in the device
@@ -7585,7 +7587,7 @@ exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatFullName = exports.formatCCYear = void 0;
+exports.prepareFormValuesForStorage = exports.inferElementLocale = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatFullName = exports.formatCCYear = void 0;
 
 var _matching = require("./matching.js");
 
@@ -7669,7 +7671,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
 /**
  * Tries to infer the element locale or returns 'en'
  * @param {HTMLInputElement | HTMLSelectElement} el
- * @return {string | 'en'}
+ * @return {string}
  */
 
 
@@ -7678,7 +7680,7 @@ exports.getCountryDisplayName = getCountryDisplayName;
 const inferElementLocale = el => {
   var _el$form;
 
-  return el.lang || ((_el$form = el.form) === null || _el$form === void 0 ? void 0 : _el$form.lang) || document.body.lang || document.documentElement.lang || 'en';
+  return el.lang || ((_el$form = el.form) === null || _el$form === void 0 ? void 0 : _el$form.lang) || document.body.lang || document.documentElement.lang || '';
 };
 /**
  * Tries to format the country code into a localised country name
@@ -7687,6 +7689,8 @@ const inferElementLocale = el => {
  */
 
 
+exports.inferElementLocale = inferElementLocale;
+
 const getCountryName = function (el) {
   let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   const {
@@ -7694,7 +7698,7 @@ const getCountryName = function (el) {
   } = options;
   if (!addressCountryCode) return ''; // Try to infer the field language or fallback to en
 
-  const elLocale = inferElementLocale(el);
+  const elLocale = inferElementLocale(el) || 'en';
   const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode); // If it's a select el we try to find a suitable match to autofill
 
   if (el.nodeName === 'SELECT') {
@@ -7729,7 +7733,7 @@ exports.getCountryName = getCountryName;
 const getLocalisedCountryNamesToCodes = el => {
   if (typeof Intl.DisplayNames !== 'function') return _countryNames.COUNTRY_NAMES_TO_CODES; // Try to infer the field language or fallback to en
 
-  const elLocale = inferElementLocale(el);
+  const elLocale = inferElementLocale(el) || 'en';
   return Object.fromEntries(Object.entries(_countryNames.COUNTRY_CODES_TO_NAMES).map(_ref2 => {
     let [code] = _ref2;
     return [getCountryDisplayName(elLocale, code), code];
@@ -7831,11 +7835,12 @@ const shouldStoreCreditCards = _ref5 => {
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
+ * @param {string} inferredLocale
  * @return {DataStorageObject}
  */
 
 
-const prepareFormValuesForStorage = formValues => {
+const prepareFormValuesForStorage = (formValues, inferredLocale) => {
   var _identities, _identities2;
 
   /** @type {Partial<InternalDataStorageObject>} */
@@ -7916,7 +7921,8 @@ const prepareFormValuesForStorage = formValues => {
   return {
     credentials,
     identities,
-    creditCards
+    creditCards,
+    locale: inferredLocale
   };
 };
 

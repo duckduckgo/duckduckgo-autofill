@@ -126,6 +126,7 @@ describe('AppleDeviceInterface: postAutofill', () => {
             },
             'creditCards': undefined,
             'identities': undefined,
+            'locale': 'unknown',
             messageHandling: {
                 'secret': 'PLACEHOLDER_SECRET'
             }
@@ -166,7 +167,8 @@ describe('AppleDeviceInterface: postSubmit', () => {
                 password: '123456',
                 username: '',
                 id: ''
-            }
+            },
+            locale: 'en'
         }
         device.postSubmit(formValues, form)
         expect(spy).not.toHaveBeenCalled()
@@ -185,7 +187,8 @@ describe('AppleDeviceInterface: postSubmit', () => {
                 password: '123456',
                 username: 'duck@example.com',
                 id: ''
-            }
+            },
+            locale: 'en'
         }
         device.postSubmit(formValues, form)
         expect(spy).not.toHaveBeenCalled()
@@ -210,7 +213,8 @@ describe('AppleDeviceInterface: postSubmit', () => {
                 password: device.passwordGenerator.password,
                 username: 'duck@example.com',
                 id: ''
-            }
+            },
+            locale: 'en'
         }
         const expected = {
             credentials: {
@@ -221,7 +225,8 @@ describe('AppleDeviceInterface: postSubmit', () => {
             },
             messageHandling: {
                 'secret': 'PLACEHOLDER_SECRET'
-            }
+            },
+            locale: 'en'
         }
         device.postSubmit(formValues, form)
         expect(spy).toHaveBeenCalledTimes(1)

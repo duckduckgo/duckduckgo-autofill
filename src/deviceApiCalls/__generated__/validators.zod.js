@@ -230,7 +230,8 @@ export const runtimeConfigurationSchema = z.object({
 });
 
 export const storeFormDataSchema = z.object({
-    credentials: outgoingCredentialsSchema.optional()
+    credentials: outgoingCredentialsSchema.optional(),
+    locale: z.string().optional()
 });
 
 export const getAvailableInputTypesResultSchema = z.object({

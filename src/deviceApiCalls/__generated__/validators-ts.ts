@@ -257,6 +257,7 @@ export interface UserPreferences {
  */
 export interface StoreFormData {
   credentials?: OutgoingCredentials;
+  locale?: string;
 }
 export interface OutgoingCredentials {
   /**

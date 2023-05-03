@@ -19,7 +19,7 @@ import {
     formatCCYear,
     getCountryName,
     prepareFormValuesForStorage,
-    inferCountryCodeFromElement
+    inferCountryCodeFromElement, inferElementLocale
 } from './formatters.js'
 
 import {constants} from '../constants.js'
@@ -138,7 +138,8 @@ class Form {
 
     /** @return {DataStorageObject} */
     getValues () {
-        const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
+        const capturedElements = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
+        const formValues = capturedElements
             .reduce((output, inputEl) => {
                 const mainType = getInputMainType(inputEl)
                 const subtype = getInputSubtype(inputEl)
@@ -188,7 +189,9 @@ class Form {
             }
         }
 
-        return prepareFormValuesForStorage(formValues)
+        const inferredLocale = inferElementLocale(capturedElements[0]) || 'unknown'
+
+        return prepareFormValuesForStorage(formValues, inferredLocale)
     }
 
     /**
