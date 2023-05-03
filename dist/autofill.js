@@ -3042,6 +3042,9 @@ module.exports={
   "fc2.com": {
     "password-rules": "minlength: 8; maxlength: 16;"
   },
+  "fccaccessonline.com": {
+    "password-rules": "minlength: 8; maxlength: 14; max-consecutive: 3; required: lower; required: upper; required: digit; required: [!#$%*^_];"
+  },
   "fedex.com": {
     "password-rules": "minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&*_+=`|(){}[:;,.?]];"
   },
@@ -6338,7 +6341,7 @@ class Form {
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    return allButtons.filter(btn => (0, _autofillUtils.isVisible)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
+    return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
 
   attemptSubmissionIfNeeded() {
@@ -6349,12 +6352,12 @@ class Form {
 
     let isThereAnEmptyVisibleField = false;
     this.execOnInputs(input => {
-      if (input.value === '' && (0, _autofillUtils.isVisible)(input)) isThereAnEmptyVisibleField = true;
+      if (input.value === '' && (0, _autofillUtils.isPotentiallyViewable)(input)) isThereAnEmptyVisibleField = true;
     }, 'all', false);
     if (isThereAnEmptyVisibleField) return; // We're not using .submit() to minimise breakage with client-side forms
 
     this.submitButtons.forEach(button => {
-      if ((0, _autofillUtils.isVisible)(button)) {
+      if ((0, _autofillUtils.isPotentiallyViewable)(button)) {
         button.click();
       }
     });
@@ -6520,7 +6523,8 @@ class Form {
     };
 
     const handler = e => {
-      if (this.isAutofilling) {
+      // Avoid firing multiple times
+      if (this.isAutofilling || this.device.isTooltipActive()) {
         return;
       }
 
@@ -6572,6 +6576,7 @@ class Form {
   shouldOpenTooltip(e, input) {
     var _this$device$inContex;
 
+    if (!(0, _autofillUtils.isPotentiallyViewable)(input)) return false;
     if (this.device.globalConfig.isApp) return true;
     if (this.device.globalConfig.isWindows) return true;
     if ((0, _autofillUtils.isEventWithinDax)(e, input)) return true;
@@ -6581,7 +6586,7 @@ class Form {
 
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isVisible)(input)) return; // Do not autofill if it's disabled or readonly to avoid potential breakage
+    if (input instanceof HTMLInputElement && !(0, _autofillUtils.isPotentiallyViewable)(input)) return; // Do not autofill if it's disabled or readonly to avoid potential breakage
 
     if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // @ts-ignore
 
@@ -6669,7 +6674,7 @@ class Form {
   }
 
   getFirstViableCredentialsInput() {
-    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isVisible)(input));
+    return [...this.inputs.credentials].find(input => (0, _inputTypeConfig.canBeInteractedWith)(input) && (0, _autofillUtils.isPotentiallyViewable)(input));
   }
 
   async promptLoginIfNeeded() {
@@ -6698,7 +6703,7 @@ class Form {
 
           if (this.form.contains(topMostElementFromPoint)) {
             this.execOnInputs(input => {
-              if ((0, _autofillUtils.isVisible)(input)) {
+              if ((0, _autofillUtils.isPotentiallyViewable)(input)) {
                 this.touched.add(input);
               }
             }, 'credentials');
@@ -11444,7 +11449,10 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
     this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
     this.autofillButtons.forEach(btn => {
       this.registerClickableButton(btn, () => {
-        callbacks.onSelect(btn.id);
+        // Fire only if the cursor is hovering the button
+        if (btn.matches('.tooltip__button:hover, .currentFocus')) {
+          callbacks.onSelect(btn.id);
+        }
       });
     });
     this.init();
@@ -12240,6 +12248,8 @@ class HTMLTooltipUIController extends _UIController.UIController {
     if (e.target.nodeName === 'DDG-AUTOFILL') {
       e.preventDefault();
       e.stopImmediatePropagation();
+      const isMainMouseButton = e.button === 0;
+      if (!isMainMouseButton) return;
       const activeTooltip = this.getActiveTooltip();
 
       if (!activeTooltip) {
@@ -12547,16 +12557,21 @@ class OverlayUIController extends _UIController.UIController {
       subtree: true
     });
 
+    const position = getPosition();
     let delay = 0;
 
-    if (!click && !this.elementIsInViewport(getPosition())) {
+    if (!click && !this.elementIsInViewport(position)) {
       input.scrollIntoView(true);
       delay = 500;
     }
 
+    _classPrivateFieldSet(this, _state, 'parentShown');
+
     setTimeout(() => {
-      this.showTopTooltip(click, getPosition(), topContextData).catch(e => {
+      this.showTopTooltip(click, position, topContextData).catch(e => {
         console.error('error from showTopTooltip', e);
+
+        _classPrivateFieldSet(this, _state, 'idle');
       });
     }, delay);
   }
@@ -12633,6 +12648,8 @@ class OverlayUIController extends _UIController.UIController {
       this._attachListeners();
     } catch (e) {
       console.error('could not show parent', e);
+
+      _classPrivateFieldSet(this, _state, 'idle');
     }
   }
 
@@ -12706,6 +12723,10 @@ class OverlayUIController extends _UIController.UIController {
     this._removeListeners();
 
     (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
+  }
+
+  isActive() {
+    return _classPrivateFieldGet(this, _state) === 'parentShown';
   }
 
 }
@@ -12849,8 +12870,9 @@ exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyle
 exports.escapeXML = escapeXML;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 exports.isLocalNetwork = isLocalNetwork;
+exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = void 0;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
 exports.shouldLog = shouldLog;
 exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
@@ -13113,11 +13135,12 @@ const safeExecute = function (el, fn) {
 
 exports.safeExecute = safeExecute;
 
-const isVisible = el => {
+const isPotentiallyViewable = el => {
   const computedStyle = window.getComputedStyle(el);
   const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1');
   const visibility = computedStyle.getPropertyValue('visibility');
-  return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > 0 && visibility !== 'hidden';
+  const opacityThreshold = 0.6;
+  return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > opacityThreshold && visibility !== 'hidden';
 };
 /**
  * Gets the bounding box of the icon
@@ -13126,7 +13149,7 @@ const isVisible = el => {
  */
 
 
-exports.isVisible = isVisible;
+exports.isPotentiallyViewable = isPotentiallyViewable;
 
 const getDaxBoundingBox = input => {
   const {

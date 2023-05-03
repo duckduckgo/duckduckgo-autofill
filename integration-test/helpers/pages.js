@@ -486,19 +486,25 @@ export function loginPage (page, opts = {}) {
             }
         },
         /**
-         * This is here to capture EXISTING functionality of `macOS` in production and prevent
-         * accidental changes to how `showAutofillParent` messages are sent
          * @returns {Promise<void>}
          */
-        async assertClickAndFocusMessages () {
+        async assertClickMessage () {
             const calls = await mockedCalls(page, ['showAutofillParent'])
-            expect(calls.length).toBe(2)
+            expect(calls.length).toBe(1)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
             // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
-            const [call1, call2] = calls
+            const [call1] = calls
             expect(call1[1].wasFromClick).toBe(true)
-            expect(call2[1].wasFromClick).toBe(false)
+        },
+        async assertFocusMessage () {
+            const calls = await mockedCalls(page, ['showAutofillParent'])
+            expect(calls.length).toBe(1)
+
+            // each call is captured as a tuple like this: [name, params, response], which is why
+            // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
+            const [call1] = calls
+            expect(call1[1].wasFromClick).toBe(false)
         },
         async assertFormSubmitted () {
             const submittedMsg = await page.locator('h1:has-text("Submitted!")')

@@ -217,14 +217,15 @@ const safeExecute = (el, fn, _opts = {}) => {
  * @param {HTMLElement} el
  * @return {boolean}
  */
-const isVisible = (el) => {
+const isPotentiallyViewable = (el) => {
     const computedStyle = window.getComputedStyle(el)
     const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
     const visibility = computedStyle.getPropertyValue('visibility')
+    const opacityThreshold = 0.6
 
     return el.clientWidth !== 0 &&
         el.clientHeight !== 0 &&
-        opacity > 0 &&
+        opacity > opacityThreshold &&
         visibility !== 'hidden'
 }
 
@@ -421,7 +422,7 @@ export {
     autofillEnabled,
     setValue,
     safeExecute,
-    isVisible,
+    isPotentiallyViewable,
     getDaxBoundingBox,
     isEventWithinDax,
     addInlineStyles,
