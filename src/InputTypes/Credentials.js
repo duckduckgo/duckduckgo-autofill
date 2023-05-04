@@ -26,12 +26,8 @@ class CredentialsTooltipItem {
         return ''
     }
     labelSmall = (_subtype) => {
-        if (this.#data.origin?.partialMatch) {
-            return `From ${truncateFromMiddle(this.#data.origin.url)}`
-        }
-
-        if (this.#data.origin?.partialMatch === false) {
-            return 'From this website'
+        if (this.#data.origin?.url) {
+            return truncateFromMiddle(this.#data.origin.url)
         }
 
         return '•••••••••••••••'

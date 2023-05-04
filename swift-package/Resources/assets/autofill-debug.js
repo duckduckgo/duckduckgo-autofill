@@ -14075,14 +14075,10 @@ class CredentialsTooltipItem {
     });
 
     _defineProperty(this, "labelSmall", _subtype => {
-      var _classPrivateFieldGet3, _classPrivateFieldGet4;
+      var _classPrivateFieldGet3;
 
-      if ((_classPrivateFieldGet3 = _classPrivateFieldGet(this, _data).origin) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.partialMatch) {
-        return "From ".concat((0, _autofillUtils.truncateFromMiddle)(_classPrivateFieldGet(this, _data).origin.url));
-      }
-
-      if (((_classPrivateFieldGet4 = _classPrivateFieldGet(this, _data).origin) === null || _classPrivateFieldGet4 === void 0 ? void 0 : _classPrivateFieldGet4.partialMatch) === false) {
-        return 'From this website';
+      if ((_classPrivateFieldGet3 = _classPrivateFieldGet(this, _data).origin) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.url) {
+        return (0, _autofillUtils.truncateFromMiddle)(_classPrivateFieldGet(this, _data).origin.url);
       }
 
       return '•••••••••••••••';
@@ -17563,8 +17559,7 @@ const credentialsSchema = _zod.z.object({
   username: _zod.z.string(),
   password: _zod.z.string(),
   origin: _zod.z.object({
-    url: _zod.z.string(),
-    partialMatch: _zod.z.boolean()
+    url: _zod.z.string()
   }).optional(),
   credentialsProvider: _zod.z.union([_zod.z.literal("duckduckgo"), _zod.z.literal("bitwarden")]).optional(),
   providerStatus: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]).optional()

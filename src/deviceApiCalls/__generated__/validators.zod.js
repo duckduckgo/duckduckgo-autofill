@@ -36,8 +36,7 @@ export const credentialsSchema = z.object({
     username: z.string(),
     password: z.string(),
     origin: z.object({
-        url: z.string(),
-        partialMatch: z.boolean()
+        url: z.string()
     }).optional(),
     credentialsProvider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional(),
     providerStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
