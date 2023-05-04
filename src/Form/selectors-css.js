@@ -1,5 +1,5 @@
 const FORM_INPUTS_SELECTOR = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
 [autocomplete=username],
 select`
 
@@ -13,7 +13,7 @@ a[href="#"][id*=btn i]`
 
 const email = `
 input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
-input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),
 input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),
 input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
@@ -134,7 +134,11 @@ const fullName = `
 [name*=your-name i], [autocomplete*=your-name i]`
 
 const phone = `
-[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]), [name*=mobile i]:not([name*=type i]), [autocomplete=tel], [placeholder*="phone number" i]`
+[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),
+[name*=mobile i]:not([name*=type i]),
+[autocomplete=tel],
+[autocomplete="tel-national"],
+[placeholder*="phone number" i]`
 
 const addressStreet1 = `
 [name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],
@@ -194,11 +198,14 @@ const username = [
     `input[name="user_id" i]`,
     `input[name="user-id" i]`,
     `input[id="login-id" i]`,
+    `input[name="login" i]`,
     `input[name=accountname i]`,
     `input[autocomplete=username i]`,
     `input[name*=accountid i]`,
     `input[name="j_username" i]`,
     `input[id="username" i]`,
+    `input[name="_user" i]`,
+    `input[name="login_username" i]`,
     `input[placeholder^="username" i]`
 ]
 
