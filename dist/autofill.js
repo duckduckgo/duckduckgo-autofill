@@ -8623,16 +8623,17 @@ const matchingConfiguration = {
       matchers: {
         email: {
           match: '.mail\\b|apple.?id',
-          skip: 'phone|name|reservation number|code',
+          skip: 'phone|name|number|code',
           forceUnknown: 'search|filter|subject|title|\btab\b'
         },
         password: {
           match: 'password',
-          skip: 'email',
+          skip: 'email|one-time',
           forceUnknown: 'captcha|mfa|2fa|two factor'
         },
         username: {
-          match: '(user|account|login|net)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername',
+          match: '(user|account|login|net)((.)?(name|i.?d.?|login).?)?(.?((or|/).+|\\*|:))?$|benutzername',
+          skip: 'phone',
           forceUnknown: 'search|policy'
         },
         // CC
@@ -10151,11 +10152,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
-const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\n[autocomplete=username],\nselect";
+const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\n[autocomplete=username],\nselect";
 exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
 const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
 exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
-const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
+const email = "\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]"; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
 const password = "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])";
@@ -10169,7 +10170,7 @@ const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firs
 const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
 const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
 const fullName = "\n[name=name], [autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
-const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]), [name*=mobile i]:not([name*=type i]), [autocomplete=tel], [placeholder*=\"phone number\" i]";
+const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),\n[name*=mobile i]:not([name*=type i]),\n[autocomplete=tel],\n[autocomplete=\"tel-national\"],\n[placeholder*=\"phone number\" i]";
 const addressStreet1 = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
 const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
 const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
@@ -10182,7 +10183,7 @@ const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=
 const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
 const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
+"input[name=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[name=\"login\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"username\" i]", "input[name=\"_user\" i]", "input[name=\"login_username\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 // Exported here for now, to be moved to configuration later
