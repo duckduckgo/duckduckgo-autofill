@@ -146,17 +146,17 @@ test.describe('Auto-fill a login form on macOS', () => {
             {
                 description: 'when credentials come from the same domain',
                 credentials: {...baseCredential, origin: {url: 'example.com', partialMatch: false}},
-                expectedText: 'From this website'
+                expectedText: 'example.com'
             },
             {
                 description: 'when credentials come from a subdomain',
                 credentials: {...baseCredential, origin: {url: 'sub.example.com', partialMatch: true}},
-                expectedText: 'From sub.example.com'
+                expectedText: 'sub.example.com'
             },
             {
                 description: 'when credentials come from a very long subdomain',
                 credentials: {...baseCredential, origin: {url: 'looooooooooooooooooooooooooong.example.com', partialMatch: true}},
-                expectedText: 'From loooooooooooooo…ong.example.com'
+                expectedText: 'loooooooooooooo…ong.example.com'
             },
             {
                 description: 'when there\'s no username and we clicked on a username field',
