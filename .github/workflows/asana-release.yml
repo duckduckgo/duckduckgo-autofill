@@ -19,21 +19,12 @@ jobs:
     outputs:
       asana-output: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
     steps:
-      # Checkout release scripts and set up
+      # --- Setup ---
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Effect ---
       - name: Create Asana Tasks
         id: create-asana-tasks
         env:
@@ -52,6 +43,12 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: create_asana_tasks
     steps:
+      # --- Setup ---
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Action ---
       - name: Checkout Android
         uses: actions/checkout@v3
         with:
@@ -67,21 +64,6 @@ jobs:
           cd android
           npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
           cd ..
-
-      # Checkout release scripts and set up
-      - uses: actions/checkout@v3
-        with:
-          path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
       - name: Create Android PR Body
         env:
           ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
@@ -92,6 +74,7 @@ jobs:
           echo "PR_BODY_ANDROID<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "$DELIMITER" >> $GITHUB_ENV
+      # --- Effect ---
       - name: Create PR for Android
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: create-pr
@@ -118,21 +101,12 @@ jobs:
       pull-request-head-sha: ${{ steps.create-pr.outputs.pull-request-head-sha }}
     needs: create_asana_tasks
     steps:
-      # Checkout release scripts and set up
+      # --- Setup ---
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Action ---
       - name: Checkout BSK
         uses: actions/checkout@v3
         with:
@@ -141,8 +115,6 @@ jobs:
           ref: main
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update BSK autofill reference
-        env:
-          VERSION: ${{ github.event.release.tag_name }}
         run: |
           node ./autofill/scripts/release/update-bsk-repo.js
       - name: Create BSK PR Body
@@ -155,6 +127,7 @@ jobs:
           echo "PR_BODY_BSK<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "$DELIMITER" >> $GITHUB_ENV
+      # --- Effect ---
       - name: Create PR for BSK
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: create-pr
@@ -177,21 +150,12 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: [create_asana_tasks, update_bsk]
     steps:
-      # Checkout release scripts and set up
+      # --- Setup ---
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Action ---
       - name: Checkout iOS
         uses: actions/checkout@v3
         with:
@@ -215,6 +179,7 @@ jobs:
           echo "PR_BODY_IOS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "$DELIMITER" >> $GITHUB_ENV
+      # --- Effect ---
       - name: Create PR for iOS
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: create-pr
@@ -237,21 +202,12 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: [create_asana_tasks, update_bsk]
     steps:
-      # Checkout release scripts and set up
+      # --- Setup ---
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Action ---
       - name: Checkout macOS
         uses: actions/checkout@v3
         with:
@@ -275,6 +231,7 @@ jobs:
           echo "PR_BODY_MACOS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "$DELIMITER" >> $GITHUB_ENV
+      # --- Effect ---
       - name: Create PR for macOS
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: create-pr
@@ -297,6 +254,12 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: create_asana_tasks
     steps:
+      # --- Setup ---
+      - uses: actions/checkout@v3
+        with:
+          path: autofill/
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Action ---
       - name: Checkout Extensions
         uses: actions/checkout@v3
         with:
@@ -312,22 +275,6 @@ jobs:
           cd extensions
           npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
           cd ..
-
-      # Checkout release scripts and set up
-      - uses: actions/checkout@v3
-        with:
-          path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
       - name: Create Extensions PR Body
         env:
           ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
@@ -338,6 +285,7 @@ jobs:
           echo "PR_BODY_EXTENSIONS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "$DELIMITER" >> $GITHUB_ENV
+      # --- Effect ---
       - name: Create PR for Extensions
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: create-pr
@@ -362,21 +310,12 @@ jobs:
       pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
     needs: create_asana_tasks
     steps:
-      # Checkout release scripts and set up
+      # --- Setup ---
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Action ---
       - name: Checkout Windows
         uses: actions/checkout@v3
         with:
@@ -401,6 +340,7 @@ jobs:
           echo "PR_BODY_WINDOWS<<$DELIMITER" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "$DELIMITER" >> $GITHUB_ENV
+      # --- Effect ---
       - name: Create PR for Windows
         uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
         id: create-pr
@@ -420,24 +360,17 @@ jobs:
 
   update_asana_tasks:
     runs-on: ubuntu-20.04
-    if: ${{ always() }} # Always run this final step, even if any of the updates have failed
+    # Always run this final step, even if any of the updates have failed
+    # unless the previous jobs were cancelled
+    if: ${{ always() && !contains(needs.*.result, 'cancelled') }}
     needs: [create_asana_tasks, update_bsk, update_ios, update_macos, update_android, update_extensions, update_windows]
     steps:
-      # Checkout release scripts and set up
+      # --- Setup ---
       - uses: actions/checkout@v3
         with:
           path: autofill/
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'autofill/.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: 'autofill/package-lock.json'
-      - name: Setup autofill
-        run: |
-          cd autofill
-          npm install
-          cd ..
-
+      - uses: ./autofill/.github/actions/setup-release-scripts
+      # --- Effect ---
       - name: Update Asana tasks
         env:
           ASANA_ACCESS_TOKEN: ${{ secrets.NATIVE_APPS_WORKFLOW }}
@@ -451,11 +384,13 @@ jobs:
           node ./autofill/scripts/release/asana-update-tasks.js
 
       - name: Ouput workflow summary
+        # Show failure message if any of the jobs report failed
         if: ${{ contains(needs.*.result, 'failure') }}
         run: |
           echo "Release process completed but with failures reported." >> $GITHUB_STEP_SUMMARY
           echo "Please review the job output to see which steps require manual intervention." >> $GITHUB_STEP_SUMMARY
       - name: Ouput workflow summary
+        # Show success message as long as none of the jobs report failed
         if: ${{ !contains(needs.*.result, 'failure') }}
         run: |
           echo "Release process completed successfully." >> $GITHUB_STEP_SUMMARY
