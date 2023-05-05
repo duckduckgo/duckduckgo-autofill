@@ -25,6 +25,10 @@ export const sendJSPixelParamsSchema = z.union([z.object({
         pixelName: z.literal("email_incontext_eligible")
     })]);
 
+export const generatedPasswordSchema = z.object({
+    value: z.string()
+});
+
 export const triggerContextSchema = z.object({
     inputTop: z.number(),
     inputLeft: z.number(),
@@ -206,6 +210,7 @@ export const getAliasResultSchema = z.object({
 });
 
 export const getAutofillDataRequestSchema = z.object({
+    generatedPassword: generatedPasswordSchema.optional(),
     inputType: z.string(),
     mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
     subType: z.string(),
@@ -218,7 +223,7 @@ export const getAutofillDataResponseSchema = z.object({
     type: z.literal("getAutofillDataResponse").optional(),
     success: z.object({
         credentials: credentialsSchema.optional(),
-        action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none")])
+        action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
 });

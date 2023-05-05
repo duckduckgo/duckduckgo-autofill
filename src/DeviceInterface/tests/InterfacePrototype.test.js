@@ -26,7 +26,13 @@ describe('InterfacePrototype', function () {
         const input = /** @type {HTMLInputElement} */ (formEl.querySelector('input'))
         const formInstance = new Form(formEl, input, device)
 
-        device.attachTooltip(formInstance, input, null)
+        device.attachTooltip({
+            form: formInstance,
+            input: input,
+            click: null,
+            trigger: 'userInitiated',
+            triggerMetaData: {type: 'explicit-opt-in'}
+        })
         expect(uiController.attach).not.toHaveBeenCalled()
 
         mockedDoc.mockRestore()

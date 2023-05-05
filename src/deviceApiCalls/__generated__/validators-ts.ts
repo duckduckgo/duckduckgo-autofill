@@ -142,6 +142,7 @@ export interface API {
  * This describes the argument given to `getAutofillData(data)`
  */
 export interface GetAutofillDataRequest {
+  generatedPassword?: GeneratedPassword;
   /**
    * This is the combined input type, such as `credentials.username`
    */
@@ -164,6 +165,9 @@ export interface GetAutofillDataRequest {
   serializedInputContext?: string;
   triggerContext?: TriggerContext;
 }
+export interface GeneratedPassword {
+  value: string;
+}
 /**
  * This is the top-level context data, such as the current URL
  */
@@ -184,7 +188,7 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
-    action: "fill" | "focus" | "none";
+    action: "fill" | "focus" | "none" | "acceptGeneratedPassword" | "rejectGeneratedPassword";
   };
   error?: GenericError;
 }

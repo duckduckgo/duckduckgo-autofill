@@ -40,6 +40,7 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withRemoteAutofillState?(handlers: 'enabled' | 'disabled'): MockBuilder<State, Mocks>
     withAskToUnlockProvider?(): MockBuilder<State, Mocks>
     withCheckCredentialsProviderStatus?(): MockBuilder<State, Mocks>
+    withPasswordDecision?(choice: "accept" | "reject" | "dismiss"): MockBuilder<State, Mocks>
     // Remove handlers to test roll-out logic
     removeHandlers?(handlers: (keyof Mocks)[]): MockBuilder<State, Mocks>
     // observe the current state

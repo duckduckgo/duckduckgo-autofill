@@ -503,13 +503,14 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
+                const iconClicked = isEventWithinDax(e, input)
                 // On mobile and extensions we don't trigger the focus event to avoid
                 // keyboard flashing and conflicts with browsers' own tooltips
                 if (
                     (this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) &&
                     // Avoid the icon capturing clicks on small fields making it impossible to focus
                     input.offsetWidth > 50 &&
-                    isEventWithinDax(e, input)
+                    iconClicked
                 ) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
@@ -517,7 +518,17 @@ class Form {
                 }
 
                 this.touched.add(input)
-                this.device.attachTooltip(this, input, click)
+                this.device.attachTooltip({
+                    form: this,
+                    input: input,
+                    click: click,
+                    trigger: 'userInitiated',
+                    triggerMetaData: {
+                        // An 'icon' click is very different to a field click or focus.
+                        // It indicates an explicit opt-in to the feature.
+                        type: iconClicked ? 'explicit-opt-in' : 'implicit-opt-in'
+                    }
+                })
 
                 const activeStyles = getIconStylesAlternate(input, this)
                 addInlineStyles(input, activeStyles)
@@ -670,7 +681,15 @@ class Form {
                                 this.touched.add(input)
                             }
                         }, 'credentials')
-                        this.device.attachTooltip(this, input, null, 'autoprompt')
+                        this.device.attachTooltip({
+                            form: this,
+                            input: input,
+                            click: null,
+                            trigger: 'autoprompt',
+                            triggerMetaData: {
+                                type: 'implicit-opt-in'
+                            }
+                        })
                     }
                 })
             }, 200)

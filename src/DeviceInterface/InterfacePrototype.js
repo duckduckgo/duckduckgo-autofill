@@ -402,12 +402,20 @@ class InterfacePrototype {
     }
 
     /**
-     * @param {import("../Form/Form").Form} form
-     * @param {HTMLInputElement} input
-     * @param {{ x: number; y: number; } | null} click
-     * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
+     * @param {object} params
+     * @param {import("../Form/Form").Form} params.form
+     * @param {HTMLInputElement} params.input
+     * @param {{ x: number; y: number; } | null} params.click
+     * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
+     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
      */
-    attachTooltip (form, input, click, trigger = 'userInitiated') {
+    attachTooltip (params) {
+        const {
+            form,
+            input,
+            click,
+            trigger
+        } = params
         // Avoid flashing tooltip from background tabs on macOS
         if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return
         // Only autoprompt on mobile devices
@@ -444,7 +452,16 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form)
 
-        this.uiController?.attach({input, form, click, getPosition, topContextData: processedTopContext, device: this, trigger})
+        this.uiController?.attach({
+            input,
+            form,
+            click,
+            getPosition,
+            topContextData: processedTopContext,
+            device: this,
+            trigger,
+            triggerMetaData: params.triggerMetaData
+        })
 
         if (trigger === 'autoprompt') {
             this.autopromptFired = true

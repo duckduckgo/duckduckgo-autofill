@@ -111,6 +111,23 @@ export function createAndroidMocks () {
             }
             return this
         },
+        /**
+         * @returns {MockBuilder}
+         */
+        withPasswordDecision: function (choice) {
+            if (choice === 'accept') {
+                mocks.getAutofillData = {
+                    action: 'acceptGeneratedPassword'
+                }
+            } else if (choice === 'reject') {
+                mocks.getAutofillData = {
+                    action: 'rejectGeneratedPassword'
+                }
+            } else {
+                mocks.getAutofillData = { action: 'none' }
+            }
+            return this
+        },
         withCheckCredentialsProviderStatus: function () {
             return this
         },

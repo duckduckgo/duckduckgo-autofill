@@ -88,6 +88,55 @@ export function signupPage (page) {
         async navigate () {
             await page.goto(constants.pages['signup'])
         },
+        async clickIntoPasswordField () {
+            const input = page.locator('#password')
+            await input.click()
+        },
+        async clickIntoPasswordConfirmationField () {
+            const input = page.locator('#password-2')
+            await input.click()
+        },
+        /**
+         * @param {number} times
+         * @param {Platform} platform
+         * @return {Promise<void>}
+         */
+        async assertPasswordWasSuggestedTimes (times = 1, platform) {
+            const calls = await mockedCalls(page, ['getAutofillData'])
+            const suggested = calls.filter(call => {
+                let json
+                if (platform === 'android') {
+                    // @ts-expect-error - on Android this is a string
+                    json = JSON.parse(call[1])
+                } else {
+                    json = call[1]
+                }
+                return Boolean(json.generatedPassword)
+            })
+            expect(suggested.length).toBe(times)
+        },
+        async assertPasswordWasAutofilled () {
+            await page.waitForFunction(() => {
+                const pw = /** @type {HTMLInputElement} */ (document.querySelector('#password'))
+                return pw?.value.length > 0
+            })
+            const input = await page.locator('#password').inputValue()
+            const input2 = await page.locator('#password-2').inputValue()
+            expect(input.length).toBeGreaterThan(9)
+            expect(input).toEqual(input2)
+        },
+        async assertPasswordWasNotAutofilled () {
+            // ensure there was time to autofill, otherwise it can give a false negative
+            await page.waitForTimeout(100)
+            const input = await page.locator('#password').inputValue()
+            const input2 = await page.locator('#password-2').inputValue()
+            expect(input).toEqual('')
+            expect(input2).toEqual('')
+        },
+        async clickDirectlyOnPasswordIcon () {
+            const input = page.locator('#password')
+            await clickOnIcon(input)
+        },
         async selectGeneratedPassword () {
             const input = page.locator('#password')
             await input.click()
