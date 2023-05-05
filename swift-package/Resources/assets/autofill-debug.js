@@ -10085,7 +10085,7 @@ class Form {
       if (subtype === 'emailAddress') {
         this.addListener(input, 'pointerdown', () => {
           this.device.firePixel({
-            pixelName: 'incontext_eligible'
+            pixelName: 'email_incontext_eligible'
           });
         }, {
           once: true
@@ -17499,7 +17499,7 @@ const sendJSPixelParamsSchema = _zod.z.union([_zod.z.object({
 }), _zod.z.object({
   pixelName: _zod.z.literal("incontext_close_x")
 }), _zod.z.object({
-  pixelName: _zod.z.literal("incontext_eligible")
+  pixelName: _zod.z.literal("email_incontext_eligible")
 })]);
 
 exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
