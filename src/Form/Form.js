@@ -376,11 +376,13 @@ class Form {
         this.inputs[mainInputType].add(input)
 
         // TODO: temporary pixel
-        const subtype = getInputSubtype(input)
-        if (subtype === 'emailAddress') {
-            this.addListener(input, 'pointerdown', () => {
-                this.device.firePixel({pixelName: 'incontext_eligible'})
-            }, {once: true})
+        if (this.device.globalConfig.isExtension) {
+            const subtype = getInputSubtype(input)
+            if (subtype === 'emailAddress') {
+                this.addListener(input, 'pointerdown', () => {
+                    this.device.firePixel({pixelName: 'email_incontext_eligible'})
+                }, {once: true})
+            }
         }
 
         this.decorateInput(input)
