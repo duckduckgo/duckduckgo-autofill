@@ -228,6 +228,7 @@ jobs:
           repository: duckduckgo/windows-browser
           path: windows/
           ref: develop
+          submodules: true
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update Windows autofill reference
         run: |
