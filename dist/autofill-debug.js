@@ -10079,16 +10079,18 @@ class Form {
     const mainInputType = (0, _matching.getInputMainType)(input);
     this.inputs[mainInputType].add(input); // TODO: temporary pixel
 
-    const subtype = (0, _matching.getInputSubtype)(input);
+    if (this.device.globalConfig.isExtension) {
+      const subtype = (0, _matching.getInputSubtype)(input);
 
-    if (subtype === 'emailAddress') {
-      this.addListener(input, 'pointerdown', () => {
-        this.device.firePixel({
-          pixelName: 'incontext_eligible'
+      if (subtype === 'emailAddress') {
+        this.addListener(input, 'pointerdown', () => {
+          this.device.firePixel({
+            pixelName: 'incontext_eligible'
+          });
+        }, {
+          once: true
         });
-      }, {
-        once: true
-      });
+      }
     }
 
     this.decorateInput(input);

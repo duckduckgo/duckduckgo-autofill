@@ -52,7 +52,6 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            {pixelName: 'incontext_eligible'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
             {pixelName: 'autofill_personal_address'}
         ])
@@ -69,7 +68,6 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            {pixelName: 'incontext_eligible'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
             {pixelName: 'autofill_personal_address'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
@@ -148,7 +146,6 @@ test.describe('macos', () => {
             await signup.selectFirstEmailField(identityWithDuckAddress.emailAddress)
             await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
             await signup.assertPixelsFired([
-                {pixelName: 'incontext_eligible'},
                 {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
                 {pixelName: 'autofill_personal_address'}
             ])
@@ -211,7 +208,6 @@ test.describe('macos', () => {
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
         await signup.assertPixelsFired([
-            {pixelName: 'incontext_eligible'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
             {pixelName: 'autofill_personal_address'}
         ])
