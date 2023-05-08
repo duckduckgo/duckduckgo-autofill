@@ -105,7 +105,7 @@
 }
 .tooltip__button.currentFocus,
 .tooltip__button:hover {
-    background-color: rgba(0, 121, 242, 0.9);
+    background-color: #3969EF;
     color: #FFFFFF;
 }
 
@@ -120,6 +120,10 @@
     line-height: 16px;
     text-align: left;
     border-radius: 3px;
+}
+.tooltip--data__item-container {
+    max-height: 220px;
+    overflow: auto;
 }
 .tooltip__button--data:first-child {
     margin-top: 0;
