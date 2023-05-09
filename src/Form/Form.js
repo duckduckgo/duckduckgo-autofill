@@ -136,8 +136,12 @@ class Form {
         this.handlerExecuted = true
     }
 
-    /** @return {DataStorageObject} */
-    getValues () {
+    /**
+     * Reads the values from the form
+     * @param {boolean} shouldPrepareForStorage
+     * @return {DataStorageObject}
+     */
+    getValues (shouldPrepareForStorage = true) {
         const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
             .reduce((output, inputEl) => {
                 const mainType = getInputMainType(inputEl)
@@ -188,7 +192,7 @@ class Form {
             }
         }
 
-        return prepareFormValuesForStorage(formValues)
+        return shouldPrepareForStorage ? prepareFormValuesForStorage(formValues) : formValues
     }
 
     /**

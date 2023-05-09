@@ -26,7 +26,8 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     })]);
 
 export const generatedPasswordSchema = z.object({
-    value: z.string()
+    value: z.string(),
+    username: z.string()
 });
 
 export const triggerContextSchema = z.object({
