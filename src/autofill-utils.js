@@ -414,6 +414,23 @@ function whenIdle (callback) {
     }
 }
 
+/**
+ * Truncate string from the middle if exceeds the totalLength (default: 30)
+ * @param {string} string
+ * @param {number} totalLength
+ * @returns {string}
+ */
+function truncateFromMiddle (string, totalLength = 30) {
+    if (totalLength < 4) {
+        throw new Error('Do not use with strings shorter than 4')
+    }
+
+    if (string.length <= totalLength) return string
+
+    const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2))
+    return truncated
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -438,5 +455,6 @@ export {
     isValidTLD,
     wasAutofilledByChrome,
     shouldLog,
-    whenIdle
+    whenIdle,
+    truncateFromMiddle
 }

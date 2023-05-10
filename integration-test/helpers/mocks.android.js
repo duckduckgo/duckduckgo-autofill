@@ -3,7 +3,7 @@
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  */
-import {createAvailableInputTypes} from './utils.js'
+import {createAvailableInputTypes, withDataType} from './utils.js'
 
 /**
  * @param {object} [overrides]
@@ -91,10 +91,18 @@ export function createAndroidMocks () {
             mocks.isSignedIn = 'true'
             return this
         },
+        withEmailProtection (emails) {
+            return this
+                .withPrivateEmail(emails.privateAddress)
+                .withPersonalEmail(emails.personalAddress)
+        },
         withAvailableInputTypes (_inputTypes) {
             throw new Error('cannot set mock withAvailableInputTypes on Android, use string replacements instead')
         },
         withIdentity: function () {
+            throw new Error('Function not implemented.')
+        },
+        withCreditCard: function () {
             throw new Error('Function not implemented.')
         },
         withFeatureToggles (_featureToggles) {
@@ -110,6 +118,9 @@ export function createAndroidMocks () {
                 credentials
             }
             return this
+        },
+        withDataType: function (data) {
+            return withDataType(this, data)
         },
         withCheckCredentialsProviderStatus: function () {
             return this

@@ -1,4 +1,4 @@
-import { createAvailableInputTypes } from './utils.js'
+import {createAvailableInputTypes, withDataType} from './utils.js'
 import {constants} from './mocks.js'
 
 /**
@@ -215,7 +215,10 @@ export function createWebkitMocks (platform = 'macos') {
         askToUnlockProvider: null,
         /** @type {CheckCredentialsProviderStatusTypes[]} */
         checkCredentialsProviderStatus: [],
-        sendJSPixel: null
+        sendJSPixel: null,
+        pmHandlerOpenManagePasswords: null,
+        pmHandlerOpenManageCreditCards: null,
+        pmHandlerOpenManageIdentities: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -238,14 +241,27 @@ export function createWebkitMocks (platform = 'macos') {
             }
             return this
         },
-        withIdentity (identity) {
+        withEmailProtection (emails) {
+            return this
+                .withPrivateEmail(emails.privateAddress)
+                .withPersonalEmail(emails.personalAddress)
+        },
+        withIdentity (identity, inputType = 'identities.firstName') {
             webkitBase.pmHandlerGetAutofillInitData.success.identities.push(identity)
+            const topContextData = {inputType}
+            webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             return this
         },
-        withCredentials: function (credentials) {
+        withCreditCard (creditCard, inputType = 'creditCards.cardNumber') {
+            webkitBase.pmHandlerGetAutofillInitData.success.creditCards.push(creditCard)
+            const topContextData = {inputType}
+            webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
+            return this
+        },
+        withCredentials: function (credentials, inputType = 'credentials.username') {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             /** @type {TopContextData} */
-            const topContextData = {inputType: 'credentials.username'}
+            const topContextData = {inputType}
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
             webkitBase.getAutofillData = { success: { credentials, action: 'fill' } }
@@ -261,6 +277,9 @@ export function createWebkitMocks (platform = 'macos') {
                 {type: 'stop'}
             ]
             return this
+        },
+        withDataType: function (data) {
+            return withDataType(this, data)
         },
         withAvailableInputTypes: function (inputTypes) {
             webkitBase.getAvailableInputTypes = {success: inputTypes}

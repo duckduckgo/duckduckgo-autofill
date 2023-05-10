@@ -1,11 +1,12 @@
 import { escapeXML } from '../autofill-utils.js'
 import HTMLTooltip from './HTMLTooltip.js'
+import {PROVIDER_LOCKED} from '../InputTypes/Credentials.js'
 
 class DataHTMLTooltip extends HTMLTooltip {
     /**
      * @param {InputTypeConfigs} config
      * @param {TooltipItemRenderer[]} items
-     * @param {{onSelect(id:string): void}} callbacks
+     * @param {{onSelect(id:string): void, onManage(type:InputTypeConfigs['type']): void}} callbacks
      */
     render (config, items, callbacks) {
         const {wrapperClass, css} = this.options
@@ -16,6 +17,9 @@ class DataHTMLTooltip extends HTMLTooltip {
             if (shouldShow) hasAddedSeparator = true
             return shouldShow
         }
+
+        // Don't show Manage… when we only have Email Protection addresses, or the provider is locked
+        const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', PROVIDER_LOCKED].includes(item.id()))
 
         const topClass = wrapperClass || ''
         const dataTypeClass = `tooltip__button--data--${config.type}`
@@ -31,16 +35,24 @@ ${css}
         const label = item.label?.(this.subtype)
 
         return `
-            ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
-            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button" >
-                <span class="tooltip__button__text-container">
-                    <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
-                    ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
-                    ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
-                </span>
-            </button>
-        `
+                ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
+                <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button" >
+                    <span class="tooltip__button__text-container">
+                        <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
+                        ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
+                        ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
+                    </span>
+                </button>
+            `
     }).join('')}
+        ${shouldShowManageButton ? `
+            <hr />
+            <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
+                <span class="tooltip__button__text-container">
+                    <span class="label label--medium">Manage ${config.displayName}…</span>
+                </span>
+            </button>`
+        : ''}
     </div>
 </div>`
         this.wrapper = this.shadow.querySelector('.wrapper')
@@ -55,6 +67,13 @@ ${css}
                 }
             })
         })
+
+        this.manageButton = this.shadow.getElementById('manage-button')
+        if (this.manageButton) {
+            this.registerClickableButton(this.manageButton, () => {
+                callbacks.onManage(config.type)
+            })
+        }
 
         this.init()
         return this
