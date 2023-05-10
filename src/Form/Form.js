@@ -632,7 +632,10 @@ class Form {
                 autofillData = getCountryName(input, data)
             }
 
-            if (autofillData) this.autofillInput(input, autofillData, dataType)
+            if (autofillData) {
+                this.autofillInput(input, autofillData, dataType)
+                this.touched.add(input)
+            }
         }, dataType)
 
         this.isAutofilling = false
@@ -654,6 +657,17 @@ class Form {
         this.device.postAutofill?.(data, dataType, this)
 
         this.removeTooltip()
+    }
+
+    /**
+     * Set all inputs of the data type to "touched"
+     * @param {'all' | SupportedMainTypes} dataType
+     */
+    touchAllInputs (dataType = 'all') {
+        this.execOnInputs(
+            (input) => this.touched.add(input),
+            dataType
+        )
     }
 
     getFirstViableCredentialsInput () {

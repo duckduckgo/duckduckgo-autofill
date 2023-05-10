@@ -83,6 +83,7 @@ export class NativeUIController extends UIController {
                 }
                 case 'rejectGeneratedPassword': {
                     this.#passwordStatus = 'rejected'
+                    form.touchAllInputs('credentials')
                     break
                 }
                 default: {

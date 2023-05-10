@@ -10367,7 +10367,10 @@ class Form {
         autofillData = (0, _formatters.getCountryName)(input, data);
       }
 
-      if (autofillData) this.autofillInput(input, autofillData, dataType);
+      if (autofillData) {
+        this.autofillInput(input, autofillData, dataType);
+        this.touched.add(input);
+      }
     }, dataType);
     this.isAutofilling = false; // After autofill we check if form values match the data provided…
 
@@ -10386,6 +10389,16 @@ class Form {
 
     (_this$device$postAuto = (_this$device2 = this.device).postAutofill) === null || _this$device$postAuto === void 0 ? void 0 : _this$device$postAuto.call(_this$device2, data, dataType, this);
     this.removeTooltip();
+  }
+  /**
+   * Set all inputs of the data type to "touched"
+   * @param {'all' | SupportedMainTypes} dataType
+   */
+
+
+  touchAllInputs() {
+    let dataType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'all';
+    this.execOnInputs(input => this.touched.add(input), dataType);
   }
 
   getFirstViableCredentialsInput() {
@@ -16198,6 +16211,7 @@ class NativeUIController extends _UIController.UIController {
           {
             _classPrivateFieldSet(this, _passwordStatus, 'rejected');
 
+            form.touchAllInputs('credentials');
             break;
           }
 
