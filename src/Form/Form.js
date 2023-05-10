@@ -590,6 +590,7 @@ class Form {
 
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input, this))
+        this.touched.add(input)
 
         // If the user changes the value, remove the decoration
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
@@ -636,7 +637,6 @@ class Form {
 
             if (autofillData) {
                 this.autofillInput(input, autofillData, dataType)
-                this.touched.add(input)
             }
         }, dataType)
 

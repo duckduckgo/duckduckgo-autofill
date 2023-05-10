@@ -9934,6 +9934,7 @@ class Form {
   }
 
   removeInputHighlight(input) {
+    if (!input.classList.contains('ddg-autofilled')) return;
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this));
     (0, _autofillUtils.removeInlineStyles)(input, {
       'cursor': 'pointer'
@@ -10320,7 +10321,8 @@ class Form {
     const successful = (0, _autofillUtils.setValue)(input, string, this.device.globalConfig);
     if (!successful) return;
     input.classList.add('ddg-autofilled');
-    (0, _autofillUtils.addInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this)); // If the user changes the value, remove the decoration
+    (0, _autofillUtils.addInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this));
+    this.touched.add(input); // If the user changes the value, remove the decoration
 
     input.addEventListener('input', e => this.removeAllHighlights(e, dataType), {
       once: true
@@ -10369,7 +10371,6 @@ class Form {
 
       if (autofillData) {
         this.autofillInput(input, autofillData, dataType);
-        this.touched.add(input);
       }
     }, dataType);
     this.isAutofilling = false; // After autofill we check if form values match the data provided…
