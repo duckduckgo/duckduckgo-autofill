@@ -33,4 +33,14 @@ const attachAndReturnGenericForm = (form) => {
     return formEl
 }
 
-export {attachAndReturnGenericForm}
+const attachAndReturnGenericLoginForm = () => {
+    const loginForm = `
+<form>
+    <input type="text" value="testUsername" autocomplete="username" />
+    <input type="password" value="testPassword" autocomplete="current-password" />
+    <button type="submit">Login</button>
+</form>`
+    return attachAndReturnGenericForm(loginForm)
+}
+
+export {attachAndReturnGenericForm, attachAndReturnGenericLoginForm}
