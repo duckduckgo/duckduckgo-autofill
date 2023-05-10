@@ -223,6 +223,8 @@ class Form {
     }
 
     removeInputHighlight (input) {
+        if (!input.classList.contains('ddg-autofilled')) return
+
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
         removeInlineStyles(input, {'cursor': 'pointer'})
         input.classList.remove('ddg-autofilled')
