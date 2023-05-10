@@ -80,7 +80,7 @@ function updateProjectPbxproj (projectPbxprojContent, commit) {
  */
 function updatePackageSwift (packageSwiftContent, version) {
     const autofillPackageSwiftRegex = new RegExp(
-        /(\.package\(name: "Autofill", url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", \.exact\(")(.+)("\)\),)/,
+        /(\.package\(url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", exact: ")(.+)("\),)/,
         'i'
     )
 

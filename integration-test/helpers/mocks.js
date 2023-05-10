@@ -95,6 +95,7 @@ export const constants = {
     },
     iconMatchers: {
         key: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4w',
-        dax: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBo'
+        // This is the same icon as `daxBase64` in `src/Form/logo-svg.js`
+        dax: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2a'
     }
 }

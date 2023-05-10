@@ -34,7 +34,7 @@ test.describe('chrome extension', () => {
         await emailPage.assertEmailValue(personalAddress)
 
         // ensure background page received pixel
-        await emailPage.assertExtensionPixelsCaptured(['autofill_show', 'autofill_personal_address'])
+        await emailPage.assertExtensionPixelsCaptured(['email_incontext_eligible', 'autofill_show', 'autofill_personal_address'])
 
         // now ensure a second click into the input doesn't show the dropdown
         await emailPage.clickIntoInput()
@@ -52,6 +52,6 @@ test.describe('chrome extension', () => {
         await emailPage.assertEmailValue(privateAddress0)
 
         // assert that the background page received  pixel
-        await emailPage.assertExtensionPixelsCaptured(['autofill_show', 'autofill_personal_address', 'autofill_show', 'autofill_private_address'])
+        await emailPage.assertExtensionPixelsCaptured(['email_incontext_eligible', 'autofill_show', 'autofill_personal_address', 'autofill_show', 'autofill_private_address'])
     })
 })

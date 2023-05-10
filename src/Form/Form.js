@@ -6,7 +6,7 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isVisible, buttonMatchesFormType,
+    isPotentiallyViewable, buttonMatchesFormType,
     safeExecute, getText, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
@@ -249,7 +249,7 @@ class Form {
     }
     removeAllDecorations () {
         this.execOnInputs((input) => this.removeInputDecoration(input))
-        this.listeners.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
+        this.listeners.forEach(({el, type, fn, opts}) => el.removeEventListener(type, fn, opts))
     }
     redecorateAllInputs () {
         this.removeAllDecorations()
@@ -312,7 +312,7 @@ class Form {
 
         return allButtons
             .filter((btn) =>
-                isVisible(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
             )
     }
 
@@ -326,13 +326,13 @@ class Form {
         // this is to avoid loops where a captcha keeps failing for the user
         let isThereAnEmptyVisibleField = false
         this.execOnInputs((input) => {
-            if (input.value === '' && isVisible(input)) isThereAnEmptyVisibleField = true
+            if (input.value === '' && isPotentiallyViewable(input)) isThereAnEmptyVisibleField = true
         }, 'all', false)
         if (isThereAnEmptyVisibleField) return
 
         // We're not using .submit() to minimise breakage with client-side forms
         this.submitButtons.forEach((button) => {
-            if (isVisible(button)) {
+            if (isPotentiallyViewable(button)) {
                 button.click()
             }
         })
@@ -375,14 +375,31 @@ class Form {
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
 
+        // TODO: temporary pixel
+        if (this.device.globalConfig.isExtension) {
+            const subtype = getInputSubtype(input)
+            if (subtype === 'emailAddress') {
+                this.addListener(input, 'pointerdown', () => {
+                    this.device.firePixel({pixelName: 'email_incontext_eligible'})
+                }, {once: true})
+            }
+        }
+
         this.decorateInput(input)
 
         return this
     }
 
-    addListener (el, type, fn) {
-        el.addEventListener(type, fn)
-        this.listeners.add({el, type, fn})
+    /**
+     * Adds event listeners and keeps track of them for subsequent removal
+     * @param {HTMLElement} el
+     * @param {Event['type']} type
+     * @param {() => void} fn
+     * @param {AddEventListenerOptions} [opts]
+     */
+    addListener (el, type, fn, opts) {
+        el.addEventListener(type, fn, opts)
+        this.listeners.add({el, type, fn, opts})
     }
 
     addAutofillStyles (input) {
@@ -463,7 +480,8 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.isAutofilling) {
+            // Avoid firing multiple times
+            if (this.isAutofilling || this.device.isTooltipActive()) {
                 return
             }
 
@@ -518,6 +536,7 @@ class Form {
     }
 
     shouldOpenTooltip (e, input) {
+        if (!isPotentiallyViewable(input)) return false
         if (this.device.globalConfig.isApp) return true
         if (this.device.globalConfig.isWindows) return true
         if (isEventWithinDax(e, input)) return true
@@ -528,7 +547,7 @@ class Form {
 
     autofillInput (input, string, dataType) {
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-        if (input instanceof HTMLInputElement && !isVisible(input)) return
+        if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return
         // Do not autofill if it's disabled or readonly to avoid potential breakage
         if (!canBeInteractedWith(input)) return
 
@@ -623,7 +642,7 @@ class Form {
     }
 
     getFirstViableCredentialsInput () {
-        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isVisible(input))
+        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input))
     }
 
     async promptLoginIfNeeded () {
@@ -647,7 +666,7 @@ class Form {
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
                     if (this.form.contains(topMostElementFromPoint)) {
                         this.execOnInputs((input) => {
-                            if (isVisible(input)) {
+                            if (isPotentiallyViewable(input)) {
                                 this.touched.add(input)
                             }
                         }, 'credentials')
