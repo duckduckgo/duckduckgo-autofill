@@ -27,7 +27,6 @@ class DataHTMLTooltip extends HTMLTooltip {
 ${css}
 <div class="wrapper wrapper--data ${topClass}" hidden>
     <div class="tooltip tooltip--data">
-        <div class="tooltip--data__item-container">
         ${items.map((item) => {
         const credentialsProvider = item.credentialsProvider?.()
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
@@ -46,7 +45,6 @@ ${css}
                 </button>
             `
     }).join('')}
-        </div>
         ${shouldShowManageButton ? `
             <hr />
             <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">

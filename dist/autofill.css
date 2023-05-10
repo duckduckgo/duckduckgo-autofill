@@ -41,6 +41,8 @@
     font-size: 13px;
     line-height: 14px;
     width: 315px;
+    max-height: 290px;
+    overflow-y: auto;
 }
 :not(.top-autofill) .tooltip--data {
     top: 100%;
