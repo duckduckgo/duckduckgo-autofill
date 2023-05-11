@@ -175,14 +175,6 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
 
     /**
-     * Sends credentials to the native layer
-     * @param {{username: string, password: string}} credentials
-     */
-    storeCredentials (credentials) {
-        return this.deviceApi.notify(createNotification('pmHandlerStoreCredentials', credentials))
-    }
-
-    /**
      * Gets the init data from the device
      * @returns {APIResponse<PMData>}
      */

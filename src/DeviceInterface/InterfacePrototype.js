@@ -666,7 +666,6 @@ class InterfacePrototype {
         return null
     }
     // PM endpoints
-    storeCredentials (_opts) {}
     getAccounts () {}
     /**
      * Gets credentials ready for autofill
