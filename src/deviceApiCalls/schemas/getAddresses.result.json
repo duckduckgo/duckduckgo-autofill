@@ -1,25 +1,22 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "GetUserDataResult",
+    "title": "GetAddressesResult",
     "type": "object",
-    "description": "Used to get Email Protection auth credentials",
+    "description": "Used to get both Email Protection addresses (personal and private)",
     "additionalProperties": false,
     "properties": {
       "success": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "userName": {
+          "personalAddress": {
             "type": "string"
           },
-          "nextAlias": {
-            "type": "string"
-          },
-          "token": {
+          "privateAddress": {
             "type": "string"
           }
         },
-        "required": ["userName", "nextAlias", "token"]
+        "required": ["personalAddress", "privateAddress"]
       },
       "error": {
         "$ref": "./error.json"

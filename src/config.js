@@ -49,7 +49,7 @@ function createGlobalConfig (overrides) {
     // @ts-ignore
     const isAndroid = userPreferences?.platform.name === 'android' || /Android.*DuckDuckGo\/\d/i.test(window.navigator.userAgent)
     // @ts-ignore
-    const isDDGApp = ['ios', 'android', 'macos', 'windows'].includes(userPreferences?.platform.name) || isAndroid
+    const isDDGApp = ['ios', 'android', 'macos', 'windows'].includes(userPreferences?.platform.name) || isAndroid || isWindows
     // @ts-ignore
     const isMobileApp = ['ios', 'android'].includes(userPreferences?.platform.name) || isAndroid
     const isFirefox = navigator.userAgent.includes('Firefox')

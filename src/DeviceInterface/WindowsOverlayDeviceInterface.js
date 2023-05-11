@@ -1,10 +1,12 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
 import {
+    GetAddressesCall,
     GetAutofillInitDataCall,
+    GetIsLoggedInCall,
     SetSizeCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {overlayApi} from './overlayApi.js'
+import { overlayApi } from './overlayApi.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -56,6 +58,11 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {Promise<void>}
      */
     async setupAutofill () {
+        const loggedIn = await this._getIsLoggedIn()
+        if (loggedIn) {
+            await this.getAddresses()
+        }
+
         const response = await this.deviceApi.request(new GetAutofillInitDataCall(null))
         // @ts-ignore
         this.storeLocalData(response)
@@ -75,5 +82,33 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      */
     async selectedDetail (data, type) {
         return this.overlay.selectedDetail(data, type)
+    }
+
+    /**
+     * Email Protection calls
+     */
+
+    async _getIsLoggedIn () {
+        const isLoggedIn = await this.deviceApi.request(new GetIsLoggedInCall({}))
+
+        this.isDeviceSignedIn = () => isLoggedIn
+        return isLoggedIn
+    }
+
+    async getAddresses () {
+        const addresses = await this.deviceApi.request(new GetAddressesCall({}))
+
+        this.storeLocalAddresses(addresses)
+        return addresses
+    }
+
+    /**
+ * Gets a single identity obj once the user requests it
+ * @param {Number} id
+ * @returns {Promise<{success: IdentityObject|undefined}>}
+ */
+    getAutofillIdentity (id) {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
+        return Promise.resolve({ success: identity })
     }
 }

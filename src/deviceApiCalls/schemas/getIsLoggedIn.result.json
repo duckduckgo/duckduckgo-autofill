@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GetIsLoggedInResult",
+    "type": "object",
+    "description": "Used to get check if a user is logged in to Email Protection",
+    "additionalProperties": false,
+    "properties": {
+      "success": {
+        "type": "boolean"
+      },
+      "error": {
+        "$ref": "./error.json"
+      }
+    }
+  }
+  

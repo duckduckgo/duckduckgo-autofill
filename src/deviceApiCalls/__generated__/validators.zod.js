@@ -63,6 +63,14 @@ export const providerStatusUpdatedSchema = z.object({
     availableInputTypes: availableInputTypesSchema
 });
 
+export const getAddressesResultSchema = z.object({
+    success: z.object({
+        personalAddress: z.string(),
+        privateAddress: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
 export const getAliasParamsSchema = z.object({
     requiresUserPermission: z.boolean(),
     shouldConsumeAliasIfProvided: z.boolean()
@@ -132,6 +140,11 @@ export const getEmailProtectionCapabilitiesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
+export const getIsLoggedInResultSchema = z.object({
+    success: z.boolean().optional(),
+    error: genericErrorSchema.optional()
+});
+
 export const contentScopeFeaturesItemSettingsSchema = z.record(z.unknown());
 
 export const userPreferencesSchema = z.object({
@@ -151,6 +164,14 @@ export const getUserDataResultSchema = z.object({
         userName: z.string(),
         nextAlias: z.string(),
         token: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const refreshAliasResultSchema = z.object({
+    success: z.object({
+        personalAddress: z.string(),
+        privateAddress: z.string()
     }).optional(),
     error: genericErrorSchema.optional()
 });

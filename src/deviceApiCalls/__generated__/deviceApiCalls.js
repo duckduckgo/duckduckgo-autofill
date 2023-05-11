@@ -14,8 +14,11 @@ import {
     checkCredentialsProviderStatusResultSchema,
     sendJSPixelParamsSchema,
     storeUserDataParamsSchema,
+    getIsLoggedInResultSchema,
     getUserDataResultSchema,
-    getEmailProtectionCapabilitiesResultSchema
+    getEmailProtectionCapabilitiesResultSchema,
+    getAddressesResultSchema,
+    refreshAliasResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -126,6 +129,14 @@ export class RemoveUserDataCall extends DeviceApiCall {
   method = "removeUserData"
 }
 /**
+ * @extends {DeviceApiCall<any, getIsLoggedInResultSchema>} 
+ */
+export class GetIsLoggedInCall extends DeviceApiCall {
+  method = "getIsLoggedIn"
+  id = "getIsLoggedInResponse"
+  resultValidator = getIsLoggedInResultSchema
+}
+/**
  * @extends {DeviceApiCall<any, getUserDataResultSchema>} 
  */
 export class GetUserDataCall extends DeviceApiCall {
@@ -140,4 +151,20 @@ export class GetEmailProtectionCapabilitiesCall extends DeviceApiCall {
   method = "getEmailProtectionCapabilities"
   id = "getEmailProtectionCapabilitiesResponse"
   resultValidator = getEmailProtectionCapabilitiesResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, getAddressesResultSchema>} 
+ */
+export class GetAddressesCall extends DeviceApiCall {
+  method = "getAddresses"
+  id = "getAddressesResponse"
+  resultValidator = getAddressesResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, refreshAliasResultSchema>} 
+ */
+export class RefreshAliasCall extends DeviceApiCall {
+  method = "refreshAlias"
+  id = "refreshAliasResponse"
+  resultValidator = refreshAliasResultSchema
 }

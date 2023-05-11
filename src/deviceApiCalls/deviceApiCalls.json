@@ -56,14 +56,29 @@
   "removeUserData": {
     "description": "Used to remove Email Protection auth credentials (logging out)"
   },
+  "getIsLoggedIn": {
+    "id": "getIsLoggedInResponse",
+    "description": "Used to get check if a user is logged in to Email Protection",
+    "resultValidator": "./schemas/getIsLoggedIn.result.json"
+  },
   "getUserData": {
     "id": "getUserDataResponse",
-    "description": "Used to get Email Protection auth credentials or check if a user is logged in.",
+    "description": "Used to get Email Protection auth credentials",
     "resultValidator": "./schemas/getUserData.result.json"
   },
   "getEmailProtectionCapabilities": {
     "id": "getEmailProtectionCapabilitiesResponse",
     "description": "",
     "resultValidator": "./schemas/getEmailProtectionCapabilities.result.json"
+  },
+  "getAddresses": {
+    "id": "getAddressesResponse",
+    "description": "Used to get both Email Protection addresses (personal and private)",
+    "resultValidator": "./schemas/getAddresses.result.json"
+  },
+  "refreshAlias": {
+    "id": "refreshAliasResponse",
+    "description": "Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)",
+    "resultValidator": "./schemas/refreshAlias.result.json"
   }
 }
