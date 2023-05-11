@@ -6502,7 +6502,8 @@ class Form {
           });
         }
       });
-    }
+    } // TODO: can it be removed?
+
 
     function getMainClickCoords(e) {
       if (!e.isTrusted) return;
@@ -6513,6 +6514,7 @@ class Form {
         y: e.clientY
       };
     } // Store the click to a label so we can use the click when the field is focused
+    // TODO: can it be removed?
 
 
     let storedClick = new WeakMap();
@@ -6531,12 +6533,15 @@ class Form {
     };
 
     const handler = e => {
-      // Avoid firing multiple times
+      console.log('topo'); // Avoid firing multiple times
+
       if (this.isAutofilling || this.device.isTooltipActive()) {
         return;
       }
 
-      const input = e.target;
+      const isLabel = e.target instanceof HTMLLabelElement;
+      const input = isLabel ? e.target.control : e.target;
+      if (!input || !this.inputs.all.has(input)) return;
       let click = null;
       if ((0, _autofillUtils.wasAutofilledByChrome)(input)) return;
       if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // Checks for pointerdown event
@@ -6584,7 +6589,12 @@ class Form {
       const events = ['pointerdown'];
       if (!this.device.globalConfig.isMobileApp) events.push('focus');
       (_input$labels = input.labels) === null || _input$labels === void 0 ? void 0 : _input$labels.forEach(label => {
-        this.addListener(label, 'pointerdown', handlerLabel);
+        if (this.device.globalConfig.isMobileApp) {
+          this.addListener(label, 'pointerdown', handler);
+        } else {
+          // TODO: can it be removed?
+          this.addListener(label, 'pointerdown', handlerLabel);
+        }
       });
       events.forEach(ev => this.addListener(input, ev, handler));
     }
@@ -12513,9 +12523,12 @@ class NativeUIController extends _UIController.UIController {
 
         case 'rejectGeneratedPassword':
           {
+            var _form$activeInput2;
+
             _classPrivateFieldSet(this, _passwordStatus, 'rejected');
 
             form.touchAllInputs('credentials');
+            (_form$activeInput2 = form.activeInput) === null || _form$activeInput2 === void 0 ? void 0 : _form$activeInput2.focus();
             break;
           }
 

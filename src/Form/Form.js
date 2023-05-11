@@ -460,6 +460,7 @@ class Form {
             })
         }
 
+        // TODO: can it be removed?
         function getMainClickCoords (e) {
             if (!e.isTrusted) return
             const isMainMouseButton = e.button === 0
@@ -471,6 +472,7 @@ class Form {
         }
 
         // Store the click to a label so we can use the click when the field is focused
+        // TODO: can it be removed?
         let storedClick = new WeakMap()
         let timeout = null
         const handlerLabel = (e) => {
@@ -486,12 +488,17 @@ class Form {
         }
 
         const handler = (e) => {
+            console.log('topo')
             // Avoid firing multiple times
             if (this.isAutofilling || this.device.isTooltipActive()) {
                 return
             }
 
-            const input = e.target
+            const isLabel = e.target instanceof HTMLLabelElement
+
+            const input = isLabel ? e.target.control : e.target
+            if (!input || !this.inputs.all.has(input)) return
+
             let click = null
 
             if (wasAutofilledByChrome(input)) return
@@ -545,7 +552,12 @@ class Form {
             const events = ['pointerdown']
             if (!this.device.globalConfig.isMobileApp) events.push('focus')
             input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', handlerLabel)
+                if (this.device.globalConfig.isMobileApp) {
+                    this.addListener(label, 'pointerdown', handler)
+                } else {
+                    // TODO: can it be removed?
+                    this.addListener(label, 'pointerdown', handlerLabel)
+                }
             })
             events.forEach((ev) => this.addListener(input, ev, handler))
         }
