@@ -120,7 +120,7 @@ test.describe('Android Save prompts', () => {
             }
 
             await login.submitLoginForm(credentials)
-            await login.shouldNotPromptToSave('android')
+            await login.shouldNotPromptToSave()
         })
     })
 

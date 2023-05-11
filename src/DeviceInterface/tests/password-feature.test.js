@@ -7,11 +7,11 @@ import {Form} from '../../Form/Form.js'
 import {attachAndReturnGenericForm, attachAndReturnGenericLoginForm} from '../../test-utils.js'
 import {createScanner} from '../../Scanner.js'
 
-function pmHandlerStoreDataSpy () {
+function storeFormDataSpy () {
     const spy = jest.fn().mockReturnValueOnce(Promise.resolve(null))
     window.webkit = {
         messageHandlers: {
-            pmHandlerStoreData: {
+            storeFormData: {
                 postMessage: spy
             }
         }
@@ -105,7 +105,7 @@ describe('AppleDeviceInterface: preAttachTooltip', () => {
 describe('AppleDeviceInterface: postAutofill', () => {
     let spy
     beforeEach(() => {
-        spy = pmHandlerStoreDataSpy()
+        spy = storeFormDataSpy()
     })
     it('performs a save if a generated password was used', async () => {
         const formEl = attachAndReturnGenericForm()
@@ -134,6 +134,7 @@ describe('AppleDeviceInterface: postAutofill', () => {
             },
             'creditCards': undefined,
             'identities': undefined,
+            trigger: 'passwordGeneration',
             messageHandling: {
                 'secret': 'PLACEHOLDER_SECRET'
             }
@@ -158,7 +159,7 @@ describe('AppleDeviceInterface: postAutofill', () => {
 describe('AppleDeviceInterface: postSubmit', () => {
     let spy
     beforeEach(() => {
-        spy = pmHandlerStoreDataSpy()
+        spy = storeFormDataSpy()
         document.body.innerHTML = '<form><input name="password"/></form>'
     })
     it('DOES NOT perform a save when hasValues() === false', () => {
@@ -227,6 +228,7 @@ describe('AppleDeviceInterface: postSubmit', () => {
                 username: 'duck@example.com',
                 id: ''
             },
+            trigger: 'formSubmission',
             messageHandling: {
                 'secret': 'PLACEHOLDER_SECRET'
             }

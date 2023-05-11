@@ -224,12 +224,7 @@ export function signupPage (page) {
          */
         async assertWasPromptedToSave (credentials, platform) {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            const mockNames = {
-                ios: 'pmHandlerStoreData',
-                macos: 'pmHandlerStoreData',
-                android: 'storeFormData'
-            }
-            const mockCalls = calls.find(([name]) => name === mockNames[platform])
+            const mockCalls = calls.find(([name]) => name === 'storeFormData')
             let [, sent] = mockCalls
             if (platform === 'android') {
                 expect(typeof sent).toBe('string')
@@ -460,15 +455,9 @@ export function loginPage (page, opts = {}) {
         async submitFormAsIs () {
             await page.click('#login button[type="submit"]')
         },
-        /** @param {Platform} platform */
-        async shouldNotPromptToSave (platform = 'ios') {
+        async shouldNotPromptToSave () {
             let mockCalls = []
-            if (['ios', 'macos'].includes(platform)) {
-                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'], false)
-            }
-            if (platform === 'android') {
-                mockCalls = await mockedCalls(page, ['storeFormData'], false)
-            }
+            mockCalls = await mockedCalls(page, ['storeFormData'], false)
 
             expect(mockCalls.length).toBe(0)
         },
@@ -514,17 +503,12 @@ export function loginPage (page, opts = {}) {
          */
         async assertWasPromptedToSave (data, platform = 'ios') {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            // todo(Shane): is it too apple specific?
-            const mockNames = {
-                ios: 'pmHandlerStoreData',
-                macos: 'pmHandlerStoreData',
-                android: 'storeFormData'
-            }
-            const mockCalls = calls.filter(([name]) => name === mockNames[platform])
+            const mockCalls = calls.filter(([name]) => name === 'storeFormData')
             expect(mockCalls).toHaveLength(1)
             const [, sent] = mockCalls[0]
             const expected = {
-                credentials: data
+                credentials: data,
+                trigger: 'formSubmission'
             }
             if (platform === 'ios' || platform === 'macos') {
                 expected.messageHandling = {secret: 'PLACEHOLDER_SECRET'}

@@ -183,15 +183,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * Sends form data to the native layer
-     * @deprecated should use the base implementation once available on Apple devices (instead of this override)
-     * @param {DataStorageObject} data
-     */
-    storeFormData (data) {
-        this.deviceApi.notify(createNotification('pmHandlerStoreData', data))
-    }
-
-    /**
      * Gets the init data from the device
      * @returns {APIResponse<PMData>}
      */

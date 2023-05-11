@@ -262,6 +262,7 @@ export interface UserPreferences {
  */
 export interface StoreFormData {
   credentials?: OutgoingCredentials;
+  trigger?: "formSubmission" | "passwordGeneration";
 }
 export interface OutgoingCredentials {
   /**
