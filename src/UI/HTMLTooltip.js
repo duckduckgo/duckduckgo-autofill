@@ -288,9 +288,13 @@ export class HTMLTooltip {
     dispatchClick () {
         const handler = this.clickableButtons.get(this.activeButton)
         if (handler) {
-            safeExecute(this.activeButton, handler, {
-                checkVisibility: this.options.checkVisibility
-            })
+            if (this.activeButton.matches('wrapper--data:not(.top-autofill) .tooltip__button:hover, .currentFocus')) {
+                safeExecute(this.activeButton, handler, {
+                    checkVisibility: this.options.checkVisibility
+                })
+            } else {
+                console.warn('The button doesn\'t seem to be hovered. Please check.')
+            }
         }
     }
     setupSizeListener () {

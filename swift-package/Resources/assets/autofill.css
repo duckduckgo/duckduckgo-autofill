@@ -106,7 +106,7 @@
     border-radius: 6px;
 }
 .tooltip__button.currentFocus,
-.tooltip__button:hover {
+wrapper--data:not(.top-autofill) .tooltip__button:hover {
     background-color: #3969EF;
     color: #FFFFFF;
 }
@@ -157,7 +157,7 @@
     background-position: right bottom;
 }
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
-.tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
+wrapper--data:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
     filter: invert(100%);
 }
 @media (prefers-color-scheme: dark) {
@@ -204,9 +204,7 @@
     }
 }
 .tooltip__button.currentFocus .label,
-.tooltip__button:hover .label,
-.tooltip__button.currentFocus .label,
-.tooltip__button:hover .label {
+wrapper--data:not(.top-autofill) .tooltip__button:hover .label {
     color: #FFFFFF;
 }
 
