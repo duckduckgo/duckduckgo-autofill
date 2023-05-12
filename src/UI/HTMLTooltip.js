@@ -288,7 +288,7 @@ export class HTMLTooltip {
     dispatchClick () {
         const handler = this.clickableButtons.get(this.activeButton)
         if (handler) {
-            if (this.activeButton.matches('wrapper--data:not(.top-autofill) .tooltip__button:hover, .currentFocus')) {
+            if (this.activeButton.matches('.wrapper--data:not(.top-autofill) .tooltip__button:hover, .currentFocus')) {
                 safeExecute(this.activeButton, handler, {
                     checkVisibility: this.options.checkVisibility
                 })

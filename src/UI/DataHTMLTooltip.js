@@ -62,7 +62,7 @@ ${css}
         this.autofillButtons.forEach((btn) => {
             this.registerClickableButton(btn, () => {
                 // Fire only if the cursor is hovering the button
-                if (btn.matches('wrapper--data:not(.top-autofill) .tooltip__button:hover, .currentFocus')) {
+                if (btn.matches('.wrapper--data:not(.top-autofill) .tooltip__button:hover, .currentFocus')) {
                     callbacks.onSelect(btn.id)
                 } else {
                     console.warn('The button doesn\'t seem to be hovered. Please check.')
