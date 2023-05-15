@@ -103,10 +103,10 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
     }
 
     /**
- * Gets a single identity obj once the user requests it
- * @param {Number} id
- * @returns {Promise<{success: IdentityObject|undefined}>}
- */
+     * Gets a single identity obj once the user requests it
+     * @param {Number} id
+     * @returns {Promise<{success: IdentityObject|undefined}>}
+     */
     getAutofillIdentity (id) {
         const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
         return Promise.resolve({ success: identity })
