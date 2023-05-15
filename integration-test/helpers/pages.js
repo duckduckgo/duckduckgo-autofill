@@ -1,7 +1,7 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
 import {mockedCalls} from './harness.js'
-import {clickOnIcon} from './utils.js'
+import {addTopAutofillMouseFocus, clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
@@ -714,7 +714,8 @@ export function overlayPage (page) {
          * @returns {Promise<void>}
          */
         async clickButtonWithText (text) {
-            const button = await page.waitForSelector(`button:has-text("${text}")`)
+            const button = await page.locator(`button:has-text("${text}")`)
+            await addTopAutofillMouseFocus(page, button)
             await button.click({ force: true })
         },
         /**
