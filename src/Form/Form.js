@@ -460,7 +460,7 @@ class Form {
             })
         }
 
-        // TODO: can it be removed?
+        // We need click coordinates to position the tooltip when the field is in an iframe
         function getMainClickCoords (e) {
             if (!e.isTrusted) return
             const isMainMouseButton = e.button === 0
@@ -472,7 +472,7 @@ class Form {
         }
 
         // Store the click to a label so we can use the click when the field is focused
-        // TODO: can it be removed?
+        // Needed to handle label clicks when the form is in an iframe
         let storedClick = new WeakMap()
         let timeout = null
         const handlerLabel = (e) => {
@@ -488,14 +488,13 @@ class Form {
         }
 
         const handler = (e) => {
-            console.log('topo')
             // Avoid firing multiple times
             if (this.isAutofilling || this.device.isTooltipActive()) {
                 return
             }
 
+            // On mobile, we don't trigger on focus, so here we get the target control on label click
             const isLabel = e.target instanceof HTMLLabelElement
-
             const input = isLabel ? e.target.control : e.target
             if (!input || !this.inputs.all.has(input)) return
 
@@ -505,7 +504,7 @@ class Form {
 
             if (!canBeInteractedWith(input)) return
 
-            // Checks for pointerdown event
+            // Checks for pointerdown event. Needed for positioning when fields are within an iframe
             if (e.type === 'pointerdown') {
                 click = getMainClickCoords(e)
                 if (!click) return
@@ -553,9 +552,10 @@ class Form {
             if (!this.device.globalConfig.isMobileApp) events.push('focus')
             input.labels?.forEach((label) => {
                 if (this.device.globalConfig.isMobileApp) {
+                    // On mobile devices we don't trigger on focus, so we use the click handler here
                     this.addListener(label, 'pointerdown', handler)
                 } else {
-                    // TODO: can it be removed?
+                    // Needed to handle label clicks when the form is in an iframe
                     this.addListener(label, 'pointerdown', handlerLabel)
                 }
             })
