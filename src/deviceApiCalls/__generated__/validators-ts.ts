@@ -167,6 +167,7 @@ export interface GetAutofillDataRequest {
 }
 export interface GeneratedPassword {
   value: string;
+  username: string;
 }
 /**
  * This is the top-level context data, such as the current URL
@@ -261,6 +262,7 @@ export interface UserPreferences {
  */
 export interface StoreFormData {
   credentials?: OutgoingCredentials;
+  trigger?: "formSubmission" | "passwordGeneration";
 }
 export interface OutgoingCredentials {
   /**

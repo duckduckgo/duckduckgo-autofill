@@ -128,7 +128,7 @@ class Form {
 
         if (this.handlerExecuted) return
 
-        const values = this.getValues()
+        const values = this.getValuesReadyForStorage()
 
         this.device.postSubmit?.(values, this)
 
@@ -136,8 +136,11 @@ class Form {
         this.handlerExecuted = true
     }
 
-    /** @return {DataStorageObject} */
-    getValues () {
+    /**
+     * Reads the values from the form without preparing to store them
+     * @return {InternalDataStorageObject}
+     */
+    getRawValues () {
         const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
             .reduce((output, inputEl) => {
                 const mainType = getInputMainType(inputEl)
@@ -188,6 +191,15 @@ class Form {
             }
         }
 
+        return formValues
+    }
+
+    /**
+     * Return form values ready for storage
+     * @returns {DataStorageObject}
+     */
+    getValuesReadyForStorage () {
+        const formValues = this.getRawValues()
         return prepareFormValuesForStorage(formValues)
     }
 
@@ -197,7 +209,7 @@ class Form {
      * @return {boolean}
      */
     hasValues (values) {
-        const {credentials, creditCards, identities} = values || this.getValues()
+        const {credentials, creditCards, identities} = values || this.getValuesReadyForStorage()
 
         return Boolean(credentials || creditCards || identities)
     }
@@ -219,6 +231,8 @@ class Form {
     }
 
     removeInputHighlight (input) {
+        if (!input.classList.contains('ddg-autofilled')) return
+
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
         removeInlineStyles(input, {'cursor': 'pointer'})
         input.classList.remove('ddg-autofilled')
@@ -454,6 +468,7 @@ class Form {
             })
         }
 
+        // We need click coordinates to position the tooltip when the field is in an iframe
         function getMainClickCoords (e) {
             if (!e.isTrusted) return
             const isMainMouseButton = e.button === 0
@@ -465,6 +480,7 @@ class Form {
         }
 
         // Store the click to a label so we can use the click when the field is focused
+        // Needed to handle label clicks when the form is in an iframe
         let storedClick = new WeakMap()
         let timeout = null
         const handlerLabel = (e) => {
@@ -485,14 +501,18 @@ class Form {
                 return
             }
 
-            const input = e.target
+            // On mobile, we don't trigger on focus, so here we get the target control on label click
+            const isLabel = e.target instanceof HTMLLabelElement
+            const input = isLabel ? e.target.control : e.target
+            if (!input || !this.inputs.all.has(input)) return
+
             let click = null
 
             if (wasAutofilledByChrome(input)) return
 
             if (!canBeInteractedWith(input)) return
 
-            // Checks for pointerdown event
+            // Checks for pointerdown event. Needed for positioning when fields are within an iframe
             if (e.type === 'pointerdown') {
                 click = getMainClickCoords(e)
                 if (!click) return
@@ -539,7 +559,13 @@ class Form {
             const events = ['pointerdown']
             if (!this.device.globalConfig.isMobileApp) events.push('focus')
             input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', handlerLabel)
+                if (this.device.globalConfig.isMobileApp) {
+                    // On mobile devices we don't trigger on focus, so we use the click handler here
+                    this.addListener(label, 'pointerdown', handler)
+                } else {
+                    // Needed to handle label clicks when the form is in an iframe
+                    this.addListener(label, 'pointerdown', handlerLabel)
+                }
             })
             events.forEach((ev) => this.addListener(input, ev, handler))
         }
@@ -584,6 +610,7 @@ class Form {
 
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input, this))
+        this.touched.add(input)
 
         // If the user changes the value, remove the decoration
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
@@ -628,13 +655,15 @@ class Form {
                 autofillData = getCountryName(input, data)
             }
 
-            if (autofillData) this.autofillInput(input, autofillData, dataType)
+            if (autofillData) {
+                this.autofillInput(input, autofillData, dataType)
+            }
         }, dataType)
 
         this.isAutofilling = false
 
         // After autofill we check if form values match the data provided…
-        const formValues = this.getValues()
+        const formValues = this.getValuesReadyForStorage()
         const areAllFormValuesKnown = Object.keys(formValues[dataType] || {})
             .every((subtype) => formValues[dataType][subtype] === data[subtype])
         if (areAllFormValuesKnown) {
@@ -650,6 +679,17 @@ class Form {
         this.device.postAutofill?.(data, dataType, this)
 
         this.removeTooltip()
+    }
+
+    /**
+     * Set all inputs of the data type to "touched"
+     * @param {'all' | SupportedMainTypes} dataType
+     */
+    touchAllInputs (dataType = 'all') {
+        this.execOnInputs(
+            (input) => this.touched.add(input),
+            dataType
+        )
     }
 
     getFirstViableCredentialsInput () {

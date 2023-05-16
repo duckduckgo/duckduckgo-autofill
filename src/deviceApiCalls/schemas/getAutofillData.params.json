@@ -12,10 +12,14 @@
       "properties": {
         "value": {
           "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       },
       "required": [
-        "value"
+        "value",
+        "username"
       ]
     },
     "inputType": {

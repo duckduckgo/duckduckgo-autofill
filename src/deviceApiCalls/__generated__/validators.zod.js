@@ -26,7 +26,8 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     })]);
 
 export const generatedPasswordSchema = z.object({
-    value: z.string()
+    value: z.string(),
+    username: z.string()
 });
 
 export const triggerContextSchema = z.object({
@@ -235,7 +236,8 @@ export const runtimeConfigurationSchema = z.object({
 });
 
 export const storeFormDataSchema = z.object({
-    credentials: outgoingCredentialsSchema.optional()
+    credentials: outgoingCredentialsSchema.optional(),
+    trigger: z.union([z.literal("formSubmission"), z.literal("passwordGeneration")]).optional()
 });
 
 export const getAvailableInputTypesResultSchema = z.object({

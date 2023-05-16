@@ -128,7 +128,6 @@ export const macosWithoutOverlay = () => {
             'emailHandlerGetAddresses',
             'emailHandlerCheckAppSignedInStatus',
             'pmHandlerGetAutofillInitData',
-            'pmHandlerStoreData',
             'pmHandlerGetAccounts',
             'pmHandlerGetAutofillCredentials',
             'pmHandlerGetIdentity',
@@ -197,7 +196,6 @@ export function createWebkitMocks (platform = 'macos') {
         },
         closeAutofillParent: {},
         getSelectedCredentials: [{type: 'stop'}],
-        pmHandlerStoreData: {},
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
