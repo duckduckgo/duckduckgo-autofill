@@ -5472,13 +5472,13 @@ class InterfacePrototype {
     const checks = [topContextData.inputType === 'credentials.password', this.settings.featureToggles.password_generation, form.isSignup]; // if all checks pass, generate and save a password
 
     if (checks.every(Boolean)) {
-      var _form$getValues$crede;
+      var _form$getRawValues$cr;
 
       const password = this.passwordGenerator.generate({
         input: input.getAttribute('passwordrules'),
         domain: window.location.hostname
       });
-      const username = ((_form$getValues$crede = form.getValues(false).credentials) === null || _form$getValues$crede === void 0 ? void 0 : _form$getValues$crede.username) || ''; // append the new credential to the topContextData so that the top autofill can display it
+      const username = ((_form$getRawValues$cr = form.getRawValues().credentials) === null || _form$getRawValues$cr === void 0 ? void 0 : _form$getRawValues$cr.username) || ''; // append the new credential to the topContextData so that the top autofill can display it
 
       topContextData.credentials = [(0, _Credentials.fromPassword)(password, username)];
     }
@@ -5503,11 +5503,11 @@ class InterfacePrototype {
     !this.globalConfig.isAndroid) {
       var _formValues$credentia;
 
-      const formValues = formObj.getValues();
+      const formValues = formObj.getValuesReadyForStorage();
 
       if (((_formValues$credentia = formValues.credentials) === null || _formValues$credentia === void 0 ? void 0 : _formValues$credentia.password) === data.password) {
-        const readyForStorage = (0, _autofillUtils.prepareForFormStorage)(formValues, 'passwordGeneration', data.password);
-        this.storeFormData(readyForStorage);
+        const formData = (0, _autofillUtils.prepareForFormStorage)(formValues, 'passwordGeneration', data.password);
+        this.storeFormData(formData);
       }
     }
 
@@ -5534,8 +5534,8 @@ class InterfacePrototype {
     const checks = [form.shouldPromptToStoreData, this.passwordGenerator.generated];
 
     if (checks.some(Boolean)) {
-      const readyForStorage = (0, _autofillUtils.prepareForFormStorage)(values, 'formSubmission', this.passwordGenerator.password);
-      this.storeFormData(readyForStorage);
+      const formData = (0, _autofillUtils.prepareForFormStorage)(values, 'formSubmission', this.passwordGenerator.password);
+      this.storeFormData(formData);
     }
   }
   /**
@@ -6125,20 +6125,18 @@ class Form {
     }
 
     if (this.handlerExecuted) return;
-    const values = this.getValues();
+    const values = this.getValuesReadyForStorage();
     (_this$device$postSubm = (_this$device = this.device).postSubmit) === null || _this$device$postSubm === void 0 ? void 0 : _this$device$postSubm.call(_this$device, values, this); // mark this form as being handled
 
     this.handlerExecuted = true;
   }
   /**
-   * Reads the values from the form
-   * @param {boolean} shouldPrepareForStorage
-   * @return {DataStorageObject}
+   * Reads the values from the form without preparing to store them
+   * @return {InternalDataStorageObject}
    */
 
 
-  getValues() {
-    let shouldPrepareForStorage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+  getRawValues() {
     const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards].reduce((output, inputEl) => {
       var _output$mainType, _value;
 
@@ -6199,7 +6197,17 @@ class Form {
       }
     }
 
-    return shouldPrepareForStorage ? (0, _formatters.prepareFormValuesForStorage)(formValues) : formValues;
+    return formValues;
+  }
+  /**
+   * Return form values ready for storage
+   * @returns {DataStorageObject}
+   */
+
+
+  getValuesReadyForStorage() {
+    const formValues = this.getRawValues();
+    return (0, _formatters.prepareFormValuesForStorage)(formValues);
   }
   /**
    * Determine if the form has values we want to store in the device
@@ -6213,7 +6221,7 @@ class Form {
       credentials,
       creditCards,
       identities
-    } = values || this.getValues();
+    } = values || this.getValuesReadyForStorage();
     return Boolean(credentials || creditCards || identities);
   }
 
@@ -6689,7 +6697,7 @@ class Form {
     }, dataType);
     this.isAutofilling = false; // After autofill we check if form values match the data provided…
 
-    const formValues = this.getValues();
+    const formValues = this.getValuesReadyForStorage();
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
 
     if (areAllFormValuesKnown) {

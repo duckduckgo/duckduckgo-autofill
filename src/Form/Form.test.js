@@ -297,7 +297,7 @@ describe('Test the form class reading values correctly', () => {
         const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
         const formClass = scanner.forms.get(formEl)
         const hasValues = formClass?.hasValues()
-        const formValues = formClass?.getValues()
+        const formValues = formClass?.getValuesReadyForStorage()
 
         expect(hasValues).toBe(expHasValues)
         expect(formValues).toMatchObject(expValues)

@@ -128,7 +128,7 @@ class Form {
 
         if (this.handlerExecuted) return
 
-        const values = this.getValues()
+        const values = this.getValuesReadyForStorage()
 
         this.device.postSubmit?.(values, this)
 
@@ -137,11 +137,10 @@ class Form {
     }
 
     /**
-     * Reads the values from the form
-     * @param {boolean} shouldPrepareForStorage
-     * @return {DataStorageObject}
+     * Reads the values from the form without preparing to store them
+     * @return {InternalDataStorageObject}
      */
-    getValues (shouldPrepareForStorage = true) {
+    getRawValues () {
         const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
             .reduce((output, inputEl) => {
                 const mainType = getInputMainType(inputEl)
@@ -192,7 +191,16 @@ class Form {
             }
         }
 
-        return shouldPrepareForStorage ? prepareFormValuesForStorage(formValues) : formValues
+        return formValues
+    }
+
+    /**
+     * Return form values ready for storage
+     * @returns {DataStorageObject}
+     */
+    getValuesReadyForStorage () {
+        const formValues = this.getRawValues()
+        return prepareFormValuesForStorage(formValues)
     }
 
     /**
@@ -201,7 +209,7 @@ class Form {
      * @return {boolean}
      */
     hasValues (values) {
-        const {credentials, creditCards, identities} = values || this.getValues()
+        const {credentials, creditCards, identities} = values || this.getValuesReadyForStorage()
 
         return Boolean(credentials || creditCards || identities)
     }
@@ -655,7 +663,7 @@ class Form {
         this.isAutofilling = false
 
         // After autofill we check if form values match the data provided…
-        const formValues = this.getValues()
+        const formValues = this.getValuesReadyForStorage()
         const areAllFormValuesKnown = Object.keys(formValues[dataType] || {})
             .every((subtype) => formValues[dataType][subtype] === data[subtype])
         if (areAllFormValuesKnown) {

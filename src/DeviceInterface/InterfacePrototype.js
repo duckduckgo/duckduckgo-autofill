@@ -713,7 +713,7 @@ class InterfacePrototype {
                 domain: window.location.hostname
             })
 
-            const username = form.getValues(false).credentials?.username || ''
+            const username = form.getRawValues().credentials?.username || ''
 
             // append the new credential to the topContextData so that the top autofill can display it
             topContextData.credentials = [fromPassword(password, username)]
@@ -739,10 +739,10 @@ class InterfacePrototype {
             // Don't send message on Android to avoid potential abuse. Data is saved on native confirmation instead.
             !this.globalConfig.isAndroid
         ) {
-            const formValues = formObj.getValues()
+            const formValues = formObj.getValuesReadyForStorage()
             if (formValues.credentials?.password === data.password) {
-                const readyForStorage = prepareForFormStorage(formValues, 'passwordGeneration', data.password)
-                this.storeFormData(readyForStorage)
+                const formData = prepareForFormStorage(formValues, 'passwordGeneration', data.password)
+                this.storeFormData(formData)
             }
         }
 
@@ -771,8 +771,8 @@ class InterfacePrototype {
         ]
 
         if (checks.some(Boolean)) {
-            const readyForStorage = prepareForFormStorage(values, 'formSubmission', this.passwordGenerator.password)
-            this.storeFormData(readyForStorage)
+            const formData = prepareForFormStorage(values, 'formSubmission', this.passwordGenerator.password)
+            this.storeFormData(formData)
         }
     }
 
