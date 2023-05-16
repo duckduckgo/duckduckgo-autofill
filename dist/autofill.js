@@ -12820,23 +12820,26 @@ class OverlayUIController extends _UIController.UIController {
       subtree: true
     });
 
-    const position = getPosition();
-    let delay = 0;
+    const position = getPosition(); // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
 
     if (!click && !this.elementIsInViewport(position)) {
+      var _this$_mutObs;
+
       input.scrollIntoView(true);
-      delay = 500;
+      (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
+      setTimeout(() => {
+        this.attach(args);
+      }, 50);
+      return;
     }
 
     _classPrivateFieldSet(this, _state, 'parentShown');
 
-    setTimeout(() => {
-      this.showTopTooltip(click, position, topContextData).catch(e => {
-        console.error('error from showTopTooltip', e);
+    this.showTopTooltip(click, position, topContextData).catch(e => {
+      console.error('error from showTopTooltip', e);
 
-        _classPrivateFieldSet(this, _state, 'idle');
-      });
-    }, delay);
+      _classPrivateFieldSet(this, _state, 'idle');
+    });
   }
   /**
    * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
@@ -12970,7 +12973,7 @@ class OverlayUIController extends _UIController.UIController {
 
 
   async removeTooltip(trigger) {
-    var _this$_mutObs;
+    var _this$_mutObs2;
 
     // for none pointer events, check to see if the tooltip is open before trying to close it
     if (trigger !== 'pointerdown') {
@@ -12985,7 +12988,7 @@ class OverlayUIController extends _UIController.UIController {
 
     this._removeListeners();
 
-    (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
+    (_this$_mutObs2 = this._mutObs) === null || _this$_mutObs2 === void 0 ? void 0 : _this$_mutObs2.disconnect();
   }
 
   isActive() {

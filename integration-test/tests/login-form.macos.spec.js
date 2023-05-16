@@ -125,6 +125,28 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await emailField.focus()
                 await login.assertFocusMessage()
             })
+            test('when focusing a field below the fold', async ({page}) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page)
+
+                await mocks(page)
+
+                // Load the autofill.js script with replacements
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({overlay: true}))
+                    .platform('macos')
+                    .applyTo(page)
+
+                const login = loginPage(page, {overlay: true})
+
+                await login.navigate()
+                await page.waitForTimeout(200)
+
+                const offScreenField = await page.locator('#password-3')
+                await offScreenField.focus()
+
+                await login.assertFocusMessage()
+            })
         })
         test('by clicking a label', async ({page}) => {
             await testLoginPage(page, {clickLabel: true, pageType: 'withExtraText'})

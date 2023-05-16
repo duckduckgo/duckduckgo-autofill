@@ -77,19 +77,21 @@ export class OverlayUIController extends UIController {
 
         const position = getPosition()
 
-        let delay = 0
+        // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
         if (!click && !this.elementIsInViewport(position)) {
             input.scrollIntoView(true)
-            delay = 500
+            this._mutObs?.disconnect()
+            setTimeout(() => {
+                this.attach(args)
+            }, 50)
+            return
         }
         this.#state = 'parentShown'
-        setTimeout(() => {
-            this.showTopTooltip(click, position, topContextData)
-                .catch(e => {
-                    console.error('error from showTopTooltip', e)
-                    this.#state = 'idle'
-                })
-        }, delay)
+        this.showTopTooltip(click, position, topContextData)
+            .catch(e => {
+                console.error('error from showTopTooltip', e)
+                this.#state = 'idle'
+            })
     }
 
     /**
