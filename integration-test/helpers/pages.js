@@ -88,6 +88,55 @@ export function signupPage (page) {
         async navigate () {
             await page.goto(constants.pages['signup'])
         },
+        async clickIntoPasswordField () {
+            const input = page.locator('#password')
+            await input.click()
+        },
+        async clickIntoPasswordConfirmationField () {
+            const input = page.locator('#password-2')
+            await input.click()
+        },
+        /**
+         * @param {number} times
+         * @param {Platform} platform
+         * @return {Promise<void>}
+         */
+        async assertPasswordWasSuggestedTimes (times = 1, platform) {
+            const calls = await mockedCalls(page, ['getAutofillData'])
+            const suggested = calls.filter(call => {
+                let json
+                if (platform === 'android') {
+                    // @ts-expect-error - on Android this is a string
+                    json = JSON.parse(call[1])
+                } else {
+                    json = call[1]
+                }
+                return Boolean(json.generatedPassword)
+            })
+            expect(suggested.length).toBe(times)
+        },
+        async assertPasswordWasAutofilled () {
+            await page.waitForFunction(() => {
+                const pw = /** @type {HTMLInputElement} */ (document.querySelector('#password'))
+                return pw?.value.length > 0
+            })
+            const input = await page.locator('#password').inputValue()
+            const input2 = await page.locator('#password-2').inputValue()
+            expect(input.length).toBeGreaterThan(9)
+            expect(input).toEqual(input2)
+        },
+        async assertPasswordWasNotAutofilled () {
+            // ensure there was time to autofill, otherwise it can give a false negative
+            await page.waitForTimeout(100)
+            const input = await page.locator('#password').inputValue()
+            const input2 = await page.locator('#password-2').inputValue()
+            expect(input).toEqual('')
+            expect(input2).toEqual('')
+        },
+        async clickDirectlyOnPasswordIcon () {
+            const input = page.locator('#password')
+            await clickOnIcon(input)
+        },
         async selectGeneratedPassword () {
             const input = page.locator('#password')
             await input.click()
@@ -175,12 +224,7 @@ export function signupPage (page) {
          */
         async assertWasPromptedToSave (credentials, platform) {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            const mockNames = {
-                ios: 'pmHandlerStoreData',
-                macos: 'pmHandlerStoreData',
-                android: 'storeFormData'
-            }
-            const mockCalls = calls.find(([name]) => name === mockNames[platform])
+            const mockCalls = calls.find(([name]) => name === 'storeFormData')
             let [, sent] = mockCalls
             if (platform === 'android') {
                 expect(typeof sent).toBe('string')
@@ -411,15 +455,9 @@ export function loginPage (page, opts = {}) {
         async submitFormAsIs () {
             await page.click('#login button[type="submit"]')
         },
-        /** @param {Platform} platform */
-        async shouldNotPromptToSave (platform = 'ios') {
+        async shouldNotPromptToSave () {
             let mockCalls = []
-            if (['ios', 'macos'].includes(platform)) {
-                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'], false)
-            }
-            if (platform === 'android') {
-                mockCalls = await mockedCalls(page, ['storeFormData'], false)
-            }
+            mockCalls = await mockedCalls(page, ['storeFormData'], false)
 
             expect(mockCalls.length).toBe(0)
         },
@@ -465,17 +503,12 @@ export function loginPage (page, opts = {}) {
          */
         async assertWasPromptedToSave (data, platform = 'ios') {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            // todo(Shane): is it too apple specific?
-            const mockNames = {
-                ios: 'pmHandlerStoreData',
-                macos: 'pmHandlerStoreData',
-                android: 'storeFormData'
-            }
-            const mockCalls = calls.filter(([name]) => name === mockNames[platform])
+            const mockCalls = calls.filter(([name]) => name === 'storeFormData')
             expect(mockCalls).toHaveLength(1)
             const [, sent] = mockCalls[0]
             const expected = {
-                credentials: data
+                credentials: data,
+                trigger: 'formSubmission'
             }
             if (platform === 'ios' || platform === 'macos') {
                 expected.messageHandling = {secret: 'PLACEHOLDER_SECRET'}

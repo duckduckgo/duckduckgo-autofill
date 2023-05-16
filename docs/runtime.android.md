@@ -135,7 +135,8 @@ const data = {
   "credentials": {
     "username": "dax@duck.com",
     "password": "123456"
-  }
+  },
+  "trigger": "passwordGeneration"
 }
 window.BrowserAutofill.storeFormData(JSON.stringify(data))
 
@@ -146,7 +147,8 @@ window.BrowserAutofill.storeFormData(JSON.stringify(data))
 const data = {
   "credentials": {
     "password": "123456"
-  }
+  },
+  "trigger": "formSubmission"
 }
 window.BrowserAutofill.storeFormData(JSON.stringify(data))
 ```
@@ -213,5 +215,44 @@ window.BrowserAutofill.storeFormData(JSON.stringify(data))
   "success": {
     "action": "none"
   }
+}
+```
+
+---
+
+## Password generation 
+
+**`request`** example when a password can be generated
+
+```json
+{
+  "inputType": "credentials.password",
+  "mainType": "credentials",
+  "subType": "password",
+  "trigger": "userInitiated",
+  "generatedPassword": {
+    "username": "user@name.com",
+    "value": "r3nd0mP@ssword"
+  }
+}
+```
+
+**`response`** examples
+
+```json
+{
+  "success": {
+    "action": "acceptGeneratedPassword"
+  },
+  "type": "getAutofillDataResponse"
+}
+```
+
+```json
+{
+  "success": {
+    "action": "rejectGeneratedPassword"
+  },
+  "type": "getAutofillDataResponse"
 }
 ```
