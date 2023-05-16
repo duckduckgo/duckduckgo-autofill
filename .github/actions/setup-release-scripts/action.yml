@@ -1,0 +1,15 @@
+name: 'Setup Release Scripts'
+description: 'Install release script dependencies using correct node version'
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: 'autofill/.nvmrc'
+        cache: 'npm'
+        cache-dependency-path: 'autofill/package-lock.json'
+    - run: |
+        cd autofill
+        npm install
+        cd ..
+      shell: bash

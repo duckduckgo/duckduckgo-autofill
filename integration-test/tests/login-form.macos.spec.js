@@ -10,7 +10,7 @@ import {createAvailableInputTypes} from '../helpers/utils.js'
  */
 const test = base.extend({})
 
-const {personalAddress} = constants.fields.email
+const {personalAddress, privateAddress0: privateAddress} = constants.fields.email
 const password = '123456'
 
 /**
@@ -145,6 +145,82 @@ test.describe('Auto-fill a login form on macOS', () => {
             await overlay.clickButtonWithText(personalAddress)
             await overlay.doesNotCloseParentAfterCall('pmHandlerGetAutofillCredentials')
         })
+    })
+    test.describe('Displays the correct button text', () => {
+        /** @type {CredentialsMock} */
+        const baseCredential = {
+            id: '01',
+            username: personalAddress,
+            password,
+            credentialsProvider: 'duckduckgo',
+            origin: {
+                url: 'example.com',
+                partialMatch: false
+            }
+        }
+        const testCases = [
+            {
+                description: 'when the origin is not provided',
+                credentials: {...baseCredential, origin: undefined},
+                expectedText: '•••••••••••••••'
+            },
+            {
+                description: 'when credentials come from the same domain',
+                credentials: {...baseCredential, origin: {url: 'example.com', partialMatch: false}},
+                expectedText: 'example.com'
+            },
+            {
+                description: 'when credentials come from a subdomain',
+                credentials: {...baseCredential, origin: {url: 'sub.example.com', partialMatch: true}},
+                expectedText: 'sub.example.com'
+            },
+            {
+                description: 'when credentials come from a very long subdomain',
+                credentials: {...baseCredential, origin: {url: 'looooooooooooooooooooooooooong.example.com', partialMatch: true}},
+                expectedText: 'loooooooooooooo…ong.example.com'
+            },
+            {
+                description: 'when there\'s no username and we clicked on a username field',
+                credentials: {...baseCredential, username: ''},
+                expectedText: 'Password for example.com',
+                inputTypeTrigger: 'credentials.username',
+                shouldRender: false
+            },
+            {
+                description: 'when there\'s no username and we clicked on a password field',
+                credentials: {...baseCredential, username: ''},
+                expectedText: 'Password for example.com',
+                inputTypeTrigger: 'credentials.password',
+                shouldRender: true
+            }
+        ]
+
+        for (const testCase of testCases) {
+            const {description, credentials, expectedText, inputTypeTrigger = 'credentials.username', shouldRender = true} = testCase
+            test(description, async ({page}) => {
+                await forwardConsoleMessages(page)
+                await createWebkitMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes())
+                    .withCredentials(credentials, inputTypeTrigger)
+                    .applyTo(page)
+
+                // Pretend we're running in a top-frame scenario
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({overlay: true}))
+                    .replace('isTopFrame', true)
+                    .platform('macos')
+                    .applyTo(page)
+
+                const overlay = overlayPage(page)
+                await overlay.navigate()
+                if (shouldRender) {
+                    await overlay.clickButtonWithText(expectedText)
+                    await overlay.doesNotCloseParentAfterCall('pmHandlerGetAutofillCredentials')
+                } else {
+                    await overlay.assertTextNotPresent(expectedText)
+                }
+            })
+        }
     })
     test.describe('When availableInputTypes API is available', () => {
         test.describe('and I have saved credentials', () => {
@@ -471,5 +547,77 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.fieldsContainIcons()
             })
         })
+    })
+
+    test.describe('The manage button', () => {
+        const testCases = [
+            {
+                description: 'when Bitwarden is locked it should not show',
+                credentials: {
+                    id: 'provider_locked',
+                    username: '',
+                    password,
+                    credentialsProvider: 'bitwarden'
+                },
+                expectedLabel: null
+            },
+            {
+                description: 'with credentials',
+                credentials: {
+                    id: '1',
+                    username: personalAddress,
+                    password
+                },
+                expectedLabel: 'Manage Logins…'
+            },
+            {
+                description: 'with identities',
+                identity: constants.fields.identity,
+                expectedLabel: 'Manage Identities…'
+            },
+            {
+                description: 'with identities and Email Protection',
+                identity: constants.fields.identity,
+                emailProtection: {personalAddress, privateAddress},
+                expectedLabel: 'Manage Identities…'
+            },
+            {
+                description: 'with Email Protection and no identities should not show',
+                emailProtection: {personalAddress, privateAddress},
+                expectedLabel: null
+            },
+            {
+                description: 'with credit card',
+                creditCard: constants.fields.creditCard,
+                expectedLabel: 'Manage Credit Cards…'
+            }
+        ]
+
+        for (const testCase of testCases) {
+            const {description, credentials, identity, creditCard, expectedLabel} = testCase
+            test(description, async ({page}) => {
+                await forwardConsoleMessages(page)
+                await createWebkitMocks()
+                    .withAvailableInputTypes(createAvailableInputTypes())
+                    .withDataType({credentials, identity, creditCard})
+                    .applyTo(page)
+
+                // Pretend we're running in a top-frame scenario
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({overlay: true}))
+                    .replace('isTopFrame', true)
+                    .platform('macos')
+                    .applyTo(page)
+
+                const overlay = overlayPage(page)
+                await overlay.navigate()
+                if (expectedLabel) {
+                    await overlay.clickButtonWithText(expectedLabel)
+                    await overlay.assertCloseAutofillParent()
+                } else {
+                    await overlay.assertTextNotPresent('Manage')
+                }
+            })
+        }
     })
 })

@@ -394,7 +394,7 @@ class InterfacePrototype {
                 if (Array.isArray(data.credentials) && data.credentials.length > 0) {
                     return data.credentials
                 } else {
-                    return this.getLocalCredentials()
+                    return this.getLocalCredentials().filter(cred => !!cred[subtype] || subtype === 'password' || cred.id === PROVIDER_LOCKED)
                 }
             }
         }
@@ -681,6 +681,8 @@ class InterfacePrototype {
     async getAutofillIdentity (_id) { throw new Error('getAutofillIdentity unimplemented') }
 
     openManagePasswords () {}
+    openManageCreditCards () {}
+    openManageIdentities () {}
 
     /** @param {StoreFormData} values */
     storeFormData (values) {

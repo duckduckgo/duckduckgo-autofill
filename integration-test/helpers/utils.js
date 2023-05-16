@@ -35,4 +35,26 @@ const clickOnIcon = async (input) => {
     await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
 }
 
-export {createAvailableInputTypes, stripDuckExtension, clickOnIcon}
+/**
+ * @param {MockBuilder} builder
+ * @param {{
+ *     credentials?: CredentialsMock,
+ *     identity?: IdentityObject,
+ *     creditCard?: CreditCardObject,
+ *     emailProtection?: {personalAddress: string, privateAddress: string}
+ * }} data
+ * @returns {MockBuilder}
+ */
+function withDataType (builder, {credentials, identity, creditCard, emailProtection}) {
+    if (credentials) builder.withCredentials(credentials)
+
+    if (identity) builder.withIdentity(identity)
+
+    if (creditCard) builder.withCreditCard(creditCard)
+
+    if (emailProtection) builder.withEmailProtection(emailProtection)
+
+    return builder
+}
+
+export {createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType}

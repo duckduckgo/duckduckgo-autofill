@@ -760,6 +760,10 @@ export function overlayPage (page) {
             const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
             expect(closeAutofillParentCalls.length).toBe(0)
         },
+        async assertCloseAutofillParent () {
+            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], true)
+            expect(closeAutofillParentCalls.length).toBe(1)
+        },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
          */
@@ -768,6 +772,10 @@ export function overlayPage (page) {
                 const calls = window.__playwright_autofill.mocks.calls
                 return calls.some(call => call[0] === 'selectedDetail')
             })
+        },
+        async assertTextNotPresent (text) {
+            const button = await page.locator(`button:has-text("${text}")`)
+            await expect(button).toHaveCount(0)
         }
     }
 }
