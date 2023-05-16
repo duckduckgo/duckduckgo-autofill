@@ -57,4 +57,24 @@ function withDataType (builder, {credentials, identity, creditCard, emailProtect
     return builder
 }
 
-export {createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType}
+/**
+ * Fires the events needed to set .currentFocus to the topAutofill button
+ * @param {import("@playwright/test").Page} page
+ * @param {import('@playwright/test').Locator} button
+ * @returns {Promise<void>}
+ */
+async function addTopAutofillMouseFocus (page, button) {
+    const coords = await button.boundingBox({timeout: 1000})
+    const x = coords?.x || 10
+    const y = coords?.y || 10
+    await page.evaluate(({x, y}) => {
+        const event = new CustomEvent('mouseMove', {detail: {x: x + 30, y: y + 10}})
+        window.dispatchEvent(event)
+    }, {x, y})
+    await page.evaluate(({x, y}) => {
+        const moved = new CustomEvent('mouseMove', {detail: {x: x + 50, y: y + 15}})
+        window.dispatchEvent(moved)
+    }, {x, y})
+}
+
+export {createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType, addTopAutofillMouseFocus}

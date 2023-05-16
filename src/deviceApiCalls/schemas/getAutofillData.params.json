@@ -5,6 +5,23 @@
   "description": "This describes the argument given to `getAutofillData(data)`",
   "additionalProperties": false,
   "properties": {
+    "generatedPassword": {
+      "title": "GeneratedPassword",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "username"
+      ]
+    },
     "inputType": {
       "description": "This is the combined input type, such as `credentials.username`",
       "type": "string"
