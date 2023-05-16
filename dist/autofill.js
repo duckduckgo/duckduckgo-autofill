@@ -12637,7 +12637,7 @@ class OverlayUIController extends _UIController.UIController {
       subtree: true
     });
 
-    const position = getPosition();
+    const position = getPosition(); // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
 
     if (!click && !this.elementIsInViewport(position)) {
       var _this$_mutObs;

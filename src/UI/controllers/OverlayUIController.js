@@ -77,6 +77,7 @@ export class OverlayUIController extends UIController {
 
         const position = getPosition()
 
+        // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
         if (!click && !this.elementIsInViewport(position)) {
             input.scrollIntoView(true)
             this._mutObs?.disconnect()
