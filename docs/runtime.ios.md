@@ -123,16 +123,19 @@ and the second only has a password, both fields will be `true`.
   "credentials": {
     "username": "dax@duck.com",
     "password": "123456"
-  }
+  },
+  "trigger": "passwordGeneration"
 }
 ```
 
 **request example 2**
+
 ```json
 {
   "credentials": {
     "password": "123456"
-  }
+  },
+  "trigger": "formSubmission"
 }
 ```
 
@@ -203,6 +206,7 @@ see:
   "subType": "password",
   "trigger": "userInitiated",
   "generatedPassword": {
+    "username": "user@name.com",
     "value": "r3nd0mP@ssword"
   }
 }

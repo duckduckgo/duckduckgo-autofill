@@ -287,7 +287,8 @@ const data = {
   "credentials": {
     "username": "dax@duck.com",
     "password": "123456"
-  }
+  },
+  "trigger": "formSubmission"
 }
 windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: data })
 ```
