@@ -805,10 +805,19 @@ const getRelatedText = (el, form, cssSelector) => {
     // If there is still no meaningful container return empty string
     if (scope === el || scope.nodeName === 'SELECT') return ''
 
-    // If the container has a select element, remove its contents to avoid noise
-    const text = removeExcessWhitespace(extractElementStrings(scope).join(' '))
+    let trimmedText = ''
+    const label = scope.querySelector('label')
+    if (label) {
+        // Try searching for a label first
+        trimmedText = removeExcessWhitespace(label.textContent)
+    } else {
+        // If the container has a select element, remove its contents to avoid noise
+        trimmedText = removeExcessWhitespace(extractElementStrings(scope).join(' '))
+    }
+
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
-    if (text.length < TEXT_LENGTH_CUTOFF) return text
+    if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText
+
     return ''
 }
 
