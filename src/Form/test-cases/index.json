@@ -290,7 +290,7 @@
   { "html": "www_eporner_com_login.html", "generated": true, "title": "Login & create account - EPORNER: HD Porn Tube", "expectedFailures": ["username OR emailAddress", "username OR emailAddress"], "comment": "rank: 527" },
   { "html": "www_eporner_com_signup.html", "generated": true, "title": "Login & create account - EPORNER: HD Porn Tube", "expectedFailures": ["username OR emailAddress", "username OR emailAddress"], "comment": "rank: 527" },
   { "html": "account_uwindsor_ca_login.html", "generated": true, "title": "UWin Account - University of Windsor", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 628" },
-  { "html": "apply_whitehouse_gov_login.html", "generated": true, "title": "Login", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 633" },
+  { "html": "apply_whitehouse_gov_login.html", "generated": true, "title": "Login", "expectedFailures": [], "comment": "rank: 633" },
   { "html": "account_nicovideo_jp_login.html", "generated": true, "title": "Login - ニコニコ", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 645" },
   { "html": "member_livedoor_com_login.html", "generated": true, "title": "livedoor ログイン", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 661" },
   { "html": "member_livedoor_com_signup.html", "generated": true, "title": "livedoor - ユーザー登録", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 661" },
