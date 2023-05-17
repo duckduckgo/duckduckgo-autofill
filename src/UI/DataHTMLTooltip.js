@@ -10,6 +10,7 @@ class DataHTMLTooltip extends HTMLTooltip {
      */
     render (config, items, callbacks) {
         const {wrapperClass, css} = this.options
+        const isTopAutofill = wrapperClass?.includes('top-autofill')
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId) => {
@@ -18,8 +19,10 @@ class DataHTMLTooltip extends HTMLTooltip {
             return shouldShow
         }
 
-        // Don't show Manage… when we only have Email Protection addresses, or the provider is locked
-        const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', PROVIDER_LOCKED].includes(item.id()))
+        // Only show manage Manage… when it's topAutofill, the provider is unlocked, and it's not just EmailProtection
+        const shouldShowManageButton =
+            isTopAutofill &&
+            items.some(item => !['personalAddress', 'privateAddress', PROVIDER_LOCKED].includes(item.id()))
 
         const topClass = wrapperClass || ''
         const dataTypeClass = `tooltip__button--data--${config.type}`
