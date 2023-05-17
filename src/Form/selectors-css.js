@@ -203,6 +203,8 @@ const username = [
     `input[autocomplete=username i]`,
     `input[name*=accountid i]`,
     `input[name="j_username" i]`,
+    // https://account.uwindsor.ca/login
+    `input[name="uwinid" i]`,
     `input[id="username" i]`,
     `input[name="_user" i]`,
     `input[name="login_username" i]`,
