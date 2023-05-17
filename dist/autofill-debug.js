@@ -15212,16 +15212,17 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
       wrapperClass,
       css
     } = this.options;
+    const isTopAutofill = wrapperClass === null || wrapperClass === void 0 ? void 0 : wrapperClass.includes('top-autofill');
     let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
 
     const shouldShowSeparator = dataId => {
       const shouldShow = ['personalAddress', 'privateAddress'].includes(dataId) && !hasAddedSeparator;
       if (shouldShow) hasAddedSeparator = true;
       return shouldShow;
-    }; // Don't show Manage… when we only have Email Protection addresses, or the provider is locked
+    }; // Only show manage Manage… when it's topAutofill, the provider is unlocked, and it's not just EmailProtection
 
 
-    const shouldShowManageButton = items.some(item => !['personalAddress', 'privateAddress', _Credentials.PROVIDER_LOCKED].includes(item.id()));
+    const shouldShowManageButton = isTopAutofill && items.some(item => !['personalAddress', 'privateAddress', _Credentials.PROVIDER_LOCKED].includes(item.id()));
     const topClass = wrapperClass || '';
     const dataTypeClass = "tooltip__button--data--".concat(config.type);
     this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\" hidden>\n    <div class=\"tooltip tooltip--data\">\n        ").concat(items.map(item => {
