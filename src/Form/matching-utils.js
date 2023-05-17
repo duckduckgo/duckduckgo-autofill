@@ -57,4 +57,23 @@ function getInputIdentifier (el) {
     return 'Field: ' + (label || placeholder || name || id)
 }
 
-export {logMatching}
+/**
+ *
+ * @param el
+ * @param allStrings
+ */
+function logUnmatched (el, allStrings) {
+    if (!shouldLog()) return
+
+    const fieldIdentifier = getInputIdentifier(el)
+
+    console.group(fieldIdentifier)
+    console.log(el)
+
+    const stringToLog = 'Field not matched.'
+
+    console.log(stringToLog, allStrings)
+    console.groupEnd()
+}
+
+export {logMatching, logUnmatched}

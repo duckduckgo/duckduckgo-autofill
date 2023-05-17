@@ -3,7 +3,7 @@ import { constants } from '../constants.js'
 import { extractElementStrings } from './label-util.js'
 import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
 import { matchingConfiguration } from './matching-configuration.js'
-import {logMatching} from './matching-utils.js'
+import {logMatching, logUnmatched} from './matching-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -258,6 +258,7 @@ class Matching {
             return `identities.${idSubtype}`
         }
 
+        logUnmatched(input, this.activeElementStrings)
         return 'unknown'
     }
 
