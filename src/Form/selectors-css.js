@@ -11,7 +11,8 @@ button:not([role=switch]):not([role=link]),
 a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
-const email = `
+const email = [
+    `
 input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),
 input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),
@@ -24,7 +25,10 @@ input:not([type])[aria-label*=email i]:not([aria-label*=search i]),
 input[name=username][type=email],
 input[autocomplete=username][type=email],
 input[autocomplete=username][placeholder*=email i],
-input[autocomplete=email]`
+input[autocomplete=email]`,
+    // https://account.nicovideo.jp/login
+    `input[name="mail_tel" i]`
+]
 
 // We've seen non-standard types like 'user'. This selector should get them, too
 const GENERIC_TEXT_FIELD = `
