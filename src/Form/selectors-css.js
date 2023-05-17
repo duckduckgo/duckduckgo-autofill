@@ -209,6 +209,8 @@ const username = [
     `input[name="j_username" i]`,
     // https://account.uwindsor.ca/login
     `input[name="uwinid" i]`,
+    // livedoor.com
+    `input[name="livedoor_id" i]`,
     `input[id="username" i]`,
     `input[name="_user" i]`,
     `input[name="login_username" i]`,
