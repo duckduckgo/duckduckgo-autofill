@@ -9228,11 +9228,11 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 
   getEmailProtectionCapabilities() {
-    return this.deviceApi.request(new _deviceApiCalls.GetEmailProtectionCapabilitiesCall({}));
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetCapabilitiesCall({}));
   }
 
   async _getIsLoggedIn() {
-    const isLoggedIn = await this.deviceApi.request(new _deviceApiCalls.GetIsLoggedInCall({}));
+    const isLoggedIn = await this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetIsLoggedInCall({}));
 
     this.isDeviceSignedIn = () => isLoggedIn;
 
@@ -9257,7 +9257,7 @@ class WindowsInterface extends _InterfacePrototype.default {
     let {
       addUserData
     } = _ref;
-    return this.deviceApi.request(new _deviceApiCalls.StoreUserDataCall(addUserData));
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionStoreUserDataCall(addUserData));
   }
   /**
    * @returns {Promise<any>}
@@ -9265,7 +9265,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 
   removeUserData() {
-    return this.deviceApi.request(new _deviceApiCalls.RemoveUserDataCall({}));
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionRemoveUserDataCall({}));
   }
   /**
    * @returns {Promise<any>}
@@ -9273,16 +9273,16 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 
   getUserData() {
-    return this.deviceApi.request(new _deviceApiCalls.GetUserDataCall({}));
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetUserDataCall({}));
   }
 
   async refreshAlias() {
-    const addresses = await this.deviceApi.request(new _deviceApiCalls.RefreshAliasCall({}));
+    const addresses = await this.deviceApi.request(new _deviceApiCalls.EmailProtectionRefreshPrivateAddressCall({}));
     this.storeLocalAddresses(addresses);
   }
 
   async getAddresses() {
-    const addresses = await this.deviceApi.request(new _deviceApiCalls.GetAddressesCall({}));
+    const addresses = await this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetAddressesCall({}));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
@@ -9394,7 +9394,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 
 
   async _getIsLoggedIn() {
-    const isLoggedIn = await this.deviceApi.request(new _deviceApiCalls.GetIsLoggedInCall({}));
+    const isLoggedIn = await this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetIsLoggedInCall({}));
 
     this.isDeviceSignedIn = () => isLoggedIn;
 
@@ -9402,7 +9402,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
   }
 
   async getAddresses() {
-    const addresses = await this.deviceApi.request(new _deviceApiCalls.GetAddressesCall({}));
+    const addresses = await this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetAddressesCall({}));
     this.storeLocalAddresses(addresses);
     return addresses;
   }
@@ -16313,7 +16313,7 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreUserDataCall = exports.StoreFormDataCall = exports.SetSizeCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.RemoveUserDataCall = exports.RefreshAliasCall = exports.GetUserDataCall = exports.GetRuntimeConfigurationCall = exports.GetIsLoggedInCall = exports.GetEmailProtectionCapabilitiesCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.GetAddressesCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
+exports.StoreFormDataCall = exports.SetSizeCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAddressesCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -16538,21 +16538,21 @@ class SendJSPixelCall extends _deviceApi.DeviceApiCall {
 
 }
 /**
- * @extends {DeviceApiCall<storeUserDataParamsSchema, any>} 
+ * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
  */
 
 
 exports.SendJSPixelCall = SendJSPixelCall;
 
-class StoreUserDataCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionStoreUserDataCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "storeUserData");
+    _defineProperty(this, "method", "emailProtectionStoreUserData");
 
-    _defineProperty(this, "id", "storeUserDataResponse");
+    _defineProperty(this, "id", "emailProtectionStoreUserDataResponse");
 
-    _defineProperty(this, "paramsValidator", _validatorsZod.storeUserDataParamsSchema);
+    _defineProperty(this, "paramsValidator", _validatorsZod.emailProtectionStoreUserDataParamsSchema);
   }
 
 }
@@ -16561,113 +16561,113 @@ class StoreUserDataCall extends _deviceApi.DeviceApiCall {
  */
 
 
-exports.StoreUserDataCall = StoreUserDataCall;
+exports.EmailProtectionStoreUserDataCall = EmailProtectionStoreUserDataCall;
 
-class RemoveUserDataCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionRemoveUserDataCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "removeUserData");
+    _defineProperty(this, "method", "emailProtectionRemoveUserData");
   }
 
 }
 /**
- * @extends {DeviceApiCall<any, getIsLoggedInResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetIsLoggedInResultSchema>} 
  */
 
 
-exports.RemoveUserDataCall = RemoveUserDataCall;
+exports.EmailProtectionRemoveUserDataCall = EmailProtectionRemoveUserDataCall;
 
-class GetIsLoggedInCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionGetIsLoggedInCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "getIsLoggedIn");
+    _defineProperty(this, "method", "emailProtectionGetIsLoggedIn");
 
-    _defineProperty(this, "id", "getIsLoggedInResponse");
+    _defineProperty(this, "id", "emailProtectionGetIsLoggedInResponse");
 
-    _defineProperty(this, "resultValidator", _validatorsZod.getIsLoggedInResultSchema);
+    _defineProperty(this, "resultValidator", _validatorsZod.emailProtectionGetIsLoggedInResultSchema);
   }
 
 }
 /**
- * @extends {DeviceApiCall<any, getUserDataResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetUserDataResultSchema>} 
  */
 
 
-exports.GetIsLoggedInCall = GetIsLoggedInCall;
+exports.EmailProtectionGetIsLoggedInCall = EmailProtectionGetIsLoggedInCall;
 
-class GetUserDataCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionGetUserDataCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "getUserData");
+    _defineProperty(this, "method", "emailProtectionGetUserData");
 
-    _defineProperty(this, "id", "getUserDataResponse");
+    _defineProperty(this, "id", "emailProtectionGetUserDataResponse");
 
-    _defineProperty(this, "resultValidator", _validatorsZod.getUserDataResultSchema);
+    _defineProperty(this, "resultValidator", _validatorsZod.emailProtectionGetUserDataResultSchema);
   }
 
 }
 /**
- * @extends {DeviceApiCall<any, getEmailProtectionCapabilitiesResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetCapabilitiesResultSchema>} 
  */
 
 
-exports.GetUserDataCall = GetUserDataCall;
+exports.EmailProtectionGetUserDataCall = EmailProtectionGetUserDataCall;
 
-class GetEmailProtectionCapabilitiesCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionGetCapabilitiesCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "getEmailProtectionCapabilities");
+    _defineProperty(this, "method", "emailProtectionGetCapabilities");
 
-    _defineProperty(this, "id", "getEmailProtectionCapabilitiesResponse");
+    _defineProperty(this, "id", "emailProtectionGetCapabilitiesResponse");
 
-    _defineProperty(this, "resultValidator", _validatorsZod.getEmailProtectionCapabilitiesResultSchema);
+    _defineProperty(this, "resultValidator", _validatorsZod.emailProtectionGetCapabilitiesResultSchema);
   }
 
 }
 /**
- * @extends {DeviceApiCall<any, getAddressesResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetAddressesResultSchema>} 
  */
 
 
-exports.GetEmailProtectionCapabilitiesCall = GetEmailProtectionCapabilitiesCall;
+exports.EmailProtectionGetCapabilitiesCall = EmailProtectionGetCapabilitiesCall;
 
-class GetAddressesCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionGetAddressesCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "getAddresses");
+    _defineProperty(this, "method", "emailProtectionGetAddresses");
 
-    _defineProperty(this, "id", "getAddressesResponse");
+    _defineProperty(this, "id", "emailProtectionGetAddressesResponse");
 
-    _defineProperty(this, "resultValidator", _validatorsZod.getAddressesResultSchema);
+    _defineProperty(this, "resultValidator", _validatorsZod.emailProtectionGetAddressesResultSchema);
   }
 
 }
 /**
- * @extends {DeviceApiCall<any, refreshAliasResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionRefreshPrivateAddressResultSchema>} 
  */
 
 
-exports.GetAddressesCall = GetAddressesCall;
+exports.EmailProtectionGetAddressesCall = EmailProtectionGetAddressesCall;
 
-class RefreshAliasCall extends _deviceApi.DeviceApiCall {
+class EmailProtectionRefreshPrivateAddressCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
 
-    _defineProperty(this, "method", "refreshAlias");
+    _defineProperty(this, "method", "emailProtectionRefreshPrivateAddress");
 
-    _defineProperty(this, "id", "refreshAliasResponse");
+    _defineProperty(this, "id", "emailProtectionRefreshPrivateAddressResponse");
 
-    _defineProperty(this, "resultValidator", _validatorsZod.refreshAliasResultSchema);
+    _defineProperty(this, "resultValidator", _validatorsZod.emailProtectionRefreshPrivateAddressResultSchema);
   }
 
 }
 
-exports.RefreshAliasCall = RefreshAliasCall;
+exports.EmailProtectionRefreshPrivateAddressCall = EmailProtectionRefreshPrivateAddressCall;
 
 },{"../../../packages/device-api":14,"./validators.zod.js":64}],64:[function(require,module,exports){
 "use strict";
@@ -16675,7 +16675,7 @@ exports.RefreshAliasCall = RefreshAliasCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeUserDataParamsSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.refreshAliasResultSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getUserDataResultSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIsLoggedInResultSchema = exports.getEmailProtectionCapabilitiesResultSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.getAddressesResultSchema = exports.genericErrorSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.contentScopeFeaturesSchema = exports.contentScopeFeaturesItemSettingsSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = void 0;
 
 var _zod = require("zod");
 
@@ -16752,7 +16752,7 @@ const providerStatusUpdatedSchema = _zod.z.object({
 
 exports.providerStatusUpdatedSchema = providerStatusUpdatedSchema;
 
-const getAddressesResultSchema = _zod.z.object({
+const emailProtectionGetAddressesResultSchema = _zod.z.object({
   success: _zod.z.object({
     personalAddress: _zod.z.string(),
     privateAddress: _zod.z.string()
@@ -16760,7 +16760,54 @@ const getAddressesResultSchema = _zod.z.object({
   error: genericErrorSchema.optional()
 });
 
-exports.getAddressesResultSchema = getAddressesResultSchema;
+exports.emailProtectionGetAddressesResultSchema = emailProtectionGetAddressesResultSchema;
+
+const emailProtectionGetCapabilitiesResultSchema = _zod.z.object({
+  success: _zod.z.object({
+    addUserData: _zod.z.boolean().optional(),
+    getUserData: _zod.z.boolean().optional(),
+    removeUserData: _zod.z.boolean().optional()
+  }).optional(),
+  error: genericErrorSchema.optional()
+});
+
+exports.emailProtectionGetCapabilitiesResultSchema = emailProtectionGetCapabilitiesResultSchema;
+
+const emailProtectionGetIsLoggedInResultSchema = _zod.z.object({
+  success: _zod.z.boolean().optional(),
+  error: genericErrorSchema.optional()
+});
+
+exports.emailProtectionGetIsLoggedInResultSchema = emailProtectionGetIsLoggedInResultSchema;
+
+const emailProtectionGetUserDataResultSchema = _zod.z.object({
+  success: _zod.z.object({
+    userName: _zod.z.string(),
+    nextAlias: _zod.z.string(),
+    token: _zod.z.string()
+  }).optional(),
+  error: genericErrorSchema.optional()
+});
+
+exports.emailProtectionGetUserDataResultSchema = emailProtectionGetUserDataResultSchema;
+
+const emailProtectionRefreshPrivateAddressResultSchema = _zod.z.object({
+  success: _zod.z.object({
+    personalAddress: _zod.z.string(),
+    privateAddress: _zod.z.string()
+  }).optional(),
+  error: genericErrorSchema.optional()
+});
+
+exports.emailProtectionRefreshPrivateAddressResultSchema = emailProtectionRefreshPrivateAddressResultSchema;
+
+const emailProtectionStoreUserDataParamsSchema = _zod.z.object({
+  token: _zod.z.string(),
+  userName: _zod.z.string(),
+  cohort: _zod.z.string()
+});
+
+exports.emailProtectionStoreUserDataParamsSchema = emailProtectionStoreUserDataParamsSchema;
 
 const getAliasParamsSchema = _zod.z.object({
   requiresUserPermission: _zod.z.boolean(),
@@ -16838,24 +16885,6 @@ const getAvailableInputTypesResultSchema = _zod.z.object({
 
 exports.getAvailableInputTypesResultSchema = getAvailableInputTypesResultSchema;
 
-const getEmailProtectionCapabilitiesResultSchema = _zod.z.object({
-  success: _zod.z.object({
-    addUserData: _zod.z.boolean().optional(),
-    getUserData: _zod.z.boolean().optional(),
-    removeUserData: _zod.z.boolean().optional()
-  }).optional(),
-  error: genericErrorSchema.optional()
-});
-
-exports.getEmailProtectionCapabilitiesResultSchema = getEmailProtectionCapabilitiesResultSchema;
-
-const getIsLoggedInResultSchema = _zod.z.object({
-  success: _zod.z.boolean().optional(),
-  error: genericErrorSchema.optional()
-});
-
-exports.getIsLoggedInResultSchema = getIsLoggedInResultSchema;
-
 const contentScopeFeaturesItemSettingsSchema = _zod.z.record(_zod.z.unknown());
 
 exports.contentScopeFeaturesItemSettingsSchema = contentScopeFeaturesItemSettingsSchema;
@@ -16873,27 +16902,6 @@ const userPreferencesSchema = _zod.z.object({
 });
 
 exports.userPreferencesSchema = userPreferencesSchema;
-
-const getUserDataResultSchema = _zod.z.object({
-  success: _zod.z.object({
-    userName: _zod.z.string(),
-    nextAlias: _zod.z.string(),
-    token: _zod.z.string()
-  }).optional(),
-  error: genericErrorSchema.optional()
-});
-
-exports.getUserDataResultSchema = getUserDataResultSchema;
-
-const refreshAliasResultSchema = _zod.z.object({
-  success: _zod.z.object({
-    personalAddress: _zod.z.string(),
-    privateAddress: _zod.z.string()
-  }).optional(),
-  error: genericErrorSchema.optional()
-});
-
-exports.refreshAliasResultSchema = refreshAliasResultSchema;
 
 const contentScopeFeaturesSchema = _zod.z.record(_zod.z.object({
   exceptions: _zod.z.array(_zod.z.unknown()),
@@ -16929,14 +16937,6 @@ const outgoingCredentialsSchema = _zod.z.object({
 });
 
 exports.outgoingCredentialsSchema = outgoingCredentialsSchema;
-
-const storeUserDataParamsSchema = _zod.z.object({
-  token: _zod.z.string(),
-  userName: _zod.z.string(),
-  cohort: _zod.z.string()
-});
-
-exports.storeUserDataParamsSchema = storeUserDataParamsSchema;
 
 const askToUnlockProviderResultSchema = _zod.z.object({
   type: _zod.z.literal("askToUnlockProviderResponse").optional(),

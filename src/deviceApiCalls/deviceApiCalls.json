@@ -48,37 +48,37 @@
   "sendJSPixel": {
     "paramsValidator": "./schemas/sendJSPixel.params.json"
   },
-  "storeUserData": {
-    "id": "storeUserDataResponse",
+  "emailProtectionStoreUserData": {
+    "id": "emailProtectionStoreUserDataResponse",
     "description": "Used to store Email Protection auth credentials (logging in)",
-    "paramsValidator": "./schemas/storeUserData.params.json"
+    "paramsValidator": "./schemas/emailProtectionStoreUserData.params.json"
   },
-  "removeUserData": {
+  "emailProtectionRemoveUserData": {
     "description": "Used to remove Email Protection auth credentials (logging out)"
   },
-  "getIsLoggedIn": {
-    "id": "getIsLoggedInResponse",
+  "emailProtectionGetIsLoggedIn": {
+    "id": "emailProtectionGetIsLoggedInResponse",
     "description": "Used to get check if a user is logged in to Email Protection",
-    "resultValidator": "./schemas/getIsLoggedIn.result.json"
+    "resultValidator": "./schemas/emailProtectionGetIsLoggedIn.result.json"
   },
-  "getUserData": {
-    "id": "getUserDataResponse",
+  "emailProtectionGetUserData": {
+    "id": "emailProtectionGetUserDataResponse",
     "description": "Used to get Email Protection auth credentials",
-    "resultValidator": "./schemas/getUserData.result.json"
+    "resultValidator": "./schemas/emailProtectionGetUserData.result.json"
   },
-  "getEmailProtectionCapabilities": {
-    "id": "getEmailProtectionCapabilitiesResponse",
+  "emailProtectionGetCapabilities": {
+    "id": "emailProtectionGetCapabilitiesResponse",
     "description": "Used by the Email Protection web app to determine which API functionality is available",
-    "resultValidator": "./schemas/getEmailProtectionCapabilities.result.json"
+    "resultValidator": "./schemas/emailProtectionGetCapabilities.result.json"
   },
-  "getAddresses": {
-    "id": "getAddressesResponse",
+  "emailProtectionGetAddresses": {
+    "id": "emailProtectionGetAddressesResponse",
     "description": "Used to get both Email Protection addresses (personal and private)",
-    "resultValidator": "./schemas/getAddresses.result.json"
+    "resultValidator": "./schemas/emailProtectionGetAddresses.result.json"
   },
-  "refreshAlias": {
-    "id": "refreshAliasResponse",
+  "emailProtectionRefreshPrivateAddress": {
+    "id": "emailProtectionRefreshPrivateAddressResponse",
     "description": "Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)",
-    "resultValidator": "./schemas/refreshAlias.result.json"
+    "resultValidator": "./schemas/emailProtectionRefreshPrivateAddress.result.json"
   }
 }

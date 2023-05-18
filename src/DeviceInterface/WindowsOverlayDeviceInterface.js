@@ -1,9 +1,9 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
 import {
-    GetAddressesCall,
+    EmailProtectionGetAddressesCall,
     GetAutofillInitDataCall,
-    GetIsLoggedInCall,
+    EmailProtectionGetIsLoggedInCall,
     SetSizeCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import { overlayApi } from './overlayApi.js'
@@ -89,14 +89,14 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      */
 
     async _getIsLoggedIn () {
-        const isLoggedIn = await this.deviceApi.request(new GetIsLoggedInCall({}))
+        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
 
         this.isDeviceSignedIn = () => isLoggedIn
         return isLoggedIn
     }
 
     async getAddresses () {
-        const addresses = await this.deviceApi.request(new GetAddressesCall({}))
+        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
 
         this.storeLocalAddresses(addresses)
         return addresses

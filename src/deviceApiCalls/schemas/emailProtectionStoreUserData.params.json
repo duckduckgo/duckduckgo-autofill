@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "StoreUserDataParams",
+    "title": "EmailProtectionStoreUserDataParams",
     "type": "object",
     "description": "Used to store Email Protection auth credentials.",
     "additionalProperties": false,

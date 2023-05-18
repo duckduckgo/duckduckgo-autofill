@@ -245,24 +245,98 @@ export interface Credentials {
   providerStatus?: "locked" | "unlocked";
 }
 
-// error.json
-
-export interface GenericError {
-  message: string;
-}
-
-// getAddresses.result.json
+// emailProtectionGetAddresses.result.json
 
 /**
  * Used to get both Email Protection addresses (personal and private)
  */
-export interface GetAddressesResult {
+export interface EmailProtectionGetAddressesResult {
   success?: {
     personalAddress: string;
     privateAddress: string;
   };
   error?: GenericError;
 }
+export interface GenericError {
+  message: string;
+}
+
+// emailProtectionGetCapabilities.result.json
+
+/**
+ * Used by the Email Protection web app to determine which API functionality is available
+ */
+export interface EmailProtectionGetCapabilitiesResult {
+  success?: {
+    addUserData?: boolean;
+    getUserData?: boolean;
+    removeUserData?: boolean;
+  };
+  error?: GenericError;
+}
+export interface GenericError {
+  message: string;
+}
+
+// emailProtectionGetIsLoggedIn.result.json
+
+/**
+ * Used to get check if a user is logged in to Email Protection
+ */
+export interface EmailProtectionGetIsLoggedInResult {
+  success?: boolean;
+  error?: GenericError;
+}
+export interface GenericError {
+  message: string;
+}
+
+// emailProtectionGetUserData.result.json
+
+/**
+ * Used to get Email Protection auth credentials
+ */
+export interface EmailProtectionGetUserDataResult {
+  success?: {
+    userName: string;
+    nextAlias: string;
+    token: string;
+  };
+  error?: GenericError;
+}
+export interface GenericError {
+  message: string;
+}
+
+// emailProtectionRefreshPrivateAddress.result.json
+
+/**
+ * Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)
+ */
+export interface EmailProtectionRefreshPrivateAddressResult {
+  success?: {
+    personalAddress: string;
+    privateAddress: string;
+  };
+  error?: GenericError;
+}
+export interface GenericError {
+  message: string;
+}
+
+// emailProtectionStoreUserData.params.json
+
+/**
+ * Used to store Email Protection auth credentials.
+ */
+export interface EmailProtectionStoreUserDataParams {
+  token: string;
+  userName: string;
+  cohort: string;
+}
+
+// error.json
+
 export interface GenericError {
   message: string;
 }
@@ -490,36 +564,6 @@ export interface GenericError {
   message: string;
 }
 
-// getEmailProtectionCapabilities.result.json
-
-/**
- * Used by the Email Protection web app to determine which API functionality is available
- */
-export interface GetEmailProtectionCapabilitiesResult {
-  success?: {
-    addUserData?: boolean;
-    getUserData?: boolean;
-    removeUserData?: boolean;
-  };
-  error?: GenericError;
-}
-export interface GenericError {
-  message: string;
-}
-
-// getIsLoggedIn.result.json
-
-/**
- * Used to get check if a user is logged in to Email Protection
- */
-export interface GetIsLoggedInResult {
-  success?: boolean;
-  error?: GenericError;
-}
-export interface GenericError {
-  message: string;
-}
-
 // getRuntimeConfiguration.result.json
 
 /**
@@ -569,23 +613,6 @@ export interface UserPreferences {
       };
     };
   };
-}
-export interface GenericError {
-  message: string;
-}
-
-// getUserData.result.json
-
-/**
- * Used to get Email Protection auth credentials
- */
-export interface GetUserDataResult {
-  success?: {
-    userName: string;
-    nextAlias: string;
-    token: string;
-  };
-  error?: GenericError;
 }
 export interface GenericError {
   message: string;
@@ -656,22 +683,6 @@ export interface AvailableInputTypes {
    */
   email?: boolean;
   credentialsProviderStatus?: "locked" | "unlocked";
-}
-
-// refreshAlias.result.json
-
-/**
- * Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)
- */
-export interface RefreshAliasResult {
-  success?: {
-    personalAddress: string;
-    privateAddress: string;
-  };
-  error?: GenericError;
-}
-export interface GenericError {
-  message: string;
 }
 
 // runtime-configuration.json
@@ -764,15 +775,4 @@ export interface OutgoingCredentials {
    * Optional password
    */
   password?: string;
-}
-
-// storeUserData.params.json
-
-/**
- * Used to store Email Protection auth credentials.
- */
-export interface StoreUserDataParams {
-  token: string;
-  userName: string;
-  cohort: string;
 }

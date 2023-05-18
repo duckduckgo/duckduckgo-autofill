@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "GetIsLoggedInResult",
+    "title": "EmailProtectionGetIsLoggedInResult",
     "type": "object",
     "description": "Used to get check if a user is logged in to Email Protection",
     "additionalProperties": false,

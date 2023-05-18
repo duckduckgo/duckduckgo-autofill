@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "GetAddressesResult",
+    "title": "EmailProtectionRefreshPrivateAddressResult",
     "type": "object",
-    "description": "Used to get both Email Protection addresses (personal and private)",
+    "description": "Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)",
     "additionalProperties": false,
     "properties": {
       "success": {

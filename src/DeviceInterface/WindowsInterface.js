@@ -1,6 +1,6 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
-import { CloseAutofillParentCall, GetAutofillDataCall, StoreUserDataCall, RemoveUserDataCall, GetUserDataCall, GetEmailProtectionCapabilitiesCall, RefreshAliasCall, GetAddressesCall, GetIsLoggedInCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import { CloseAutofillParentCall, GetAutofillDataCall, EmailProtectionStoreUserDataCall, EmailProtectionRemoveUserDataCall, EmailProtectionGetUserDataCall, EmailProtectionGetCapabilitiesCall, EmailProtectionRefreshPrivateAddressCall, EmailProtectionGetAddressesCall, EmailProtectionGetIsLoggedInCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
@@ -113,11 +113,11 @@ export class WindowsInterface extends InterfacePrototype {
      * @returns {Promise<any>}
      */
     getEmailProtectionCapabilities () {
-        return this.deviceApi.request(new GetEmailProtectionCapabilitiesCall({}))
+        return this.deviceApi.request(new EmailProtectionGetCapabilitiesCall({}))
     }
 
     async _getIsLoggedIn () {
-        const isLoggedIn = await this.deviceApi.request(new GetIsLoggedInCall({}))
+        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
 
         this.isDeviceSignedIn = () => isLoggedIn
         return isLoggedIn
@@ -138,28 +138,28 @@ export class WindowsInterface extends InterfacePrototype {
      * @returns {Promise<any>}
      */
     storeUserData ({ addUserData }) {
-        return this.deviceApi.request(new StoreUserDataCall(addUserData))
+        return this.deviceApi.request(new EmailProtectionStoreUserDataCall(addUserData))
     }
     /**
      * @returns {Promise<any>}
      */
     removeUserData () {
-        return this.deviceApi.request(new RemoveUserDataCall({}))
+        return this.deviceApi.request(new EmailProtectionRemoveUserDataCall({}))
     }
     /**
      * @returns {Promise<any>}
      */
     getUserData () {
-        return this.deviceApi.request(new GetUserDataCall({}))
+        return this.deviceApi.request(new EmailProtectionGetUserDataCall({}))
     }
 
     async refreshAlias () {
-        const addresses = await this.deviceApi.request(new RefreshAliasCall({}))
+        const addresses = await this.deviceApi.request(new EmailProtectionRefreshPrivateAddressCall({}))
 
         this.storeLocalAddresses(addresses)
     }
     async getAddresses () {
-        const addresses = await this.deviceApi.request(new GetAddressesCall({}))
+        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
 
         this.storeLocalAddresses(addresses)
         return addresses

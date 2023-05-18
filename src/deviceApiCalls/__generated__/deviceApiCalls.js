@@ -13,12 +13,12 @@ import {
     askToUnlockProviderResultSchema,
     checkCredentialsProviderStatusResultSchema,
     sendJSPixelParamsSchema,
-    storeUserDataParamsSchema,
-    getIsLoggedInResultSchema,
-    getUserDataResultSchema,
-    getEmailProtectionCapabilitiesResultSchema,
-    getAddressesResultSchema,
-    refreshAliasResultSchema
+    emailProtectionStoreUserDataParamsSchema,
+    emailProtectionGetIsLoggedInResultSchema,
+    emailProtectionGetUserDataResultSchema,
+    emailProtectionGetCapabilitiesResultSchema,
+    emailProtectionGetAddressesResultSchema,
+    emailProtectionRefreshPrivateAddressResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -115,56 +115,56 @@ export class SendJSPixelCall extends DeviceApiCall {
   paramsValidator = sendJSPixelParamsSchema
 }
 /**
- * @extends {DeviceApiCall<storeUserDataParamsSchema, any>} 
+ * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
  */
-export class StoreUserDataCall extends DeviceApiCall {
-  method = "storeUserData"
-  id = "storeUserDataResponse"
-  paramsValidator = storeUserDataParamsSchema
+export class EmailProtectionStoreUserDataCall extends DeviceApiCall {
+  method = "emailProtectionStoreUserData"
+  id = "emailProtectionStoreUserDataResponse"
+  paramsValidator = emailProtectionStoreUserDataParamsSchema
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
  */
-export class RemoveUserDataCall extends DeviceApiCall {
-  method = "removeUserData"
+export class EmailProtectionRemoveUserDataCall extends DeviceApiCall {
+  method = "emailProtectionRemoveUserData"
 }
 /**
- * @extends {DeviceApiCall<any, getIsLoggedInResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetIsLoggedInResultSchema>} 
  */
-export class GetIsLoggedInCall extends DeviceApiCall {
-  method = "getIsLoggedIn"
-  id = "getIsLoggedInResponse"
-  resultValidator = getIsLoggedInResultSchema
+export class EmailProtectionGetIsLoggedInCall extends DeviceApiCall {
+  method = "emailProtectionGetIsLoggedIn"
+  id = "emailProtectionGetIsLoggedInResponse"
+  resultValidator = emailProtectionGetIsLoggedInResultSchema
 }
 /**
- * @extends {DeviceApiCall<any, getUserDataResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetUserDataResultSchema>} 
  */
-export class GetUserDataCall extends DeviceApiCall {
-  method = "getUserData"
-  id = "getUserDataResponse"
-  resultValidator = getUserDataResultSchema
+export class EmailProtectionGetUserDataCall extends DeviceApiCall {
+  method = "emailProtectionGetUserData"
+  id = "emailProtectionGetUserDataResponse"
+  resultValidator = emailProtectionGetUserDataResultSchema
 }
 /**
- * @extends {DeviceApiCall<any, getEmailProtectionCapabilitiesResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetCapabilitiesResultSchema>} 
  */
-export class GetEmailProtectionCapabilitiesCall extends DeviceApiCall {
-  method = "getEmailProtectionCapabilities"
-  id = "getEmailProtectionCapabilitiesResponse"
-  resultValidator = getEmailProtectionCapabilitiesResultSchema
+export class EmailProtectionGetCapabilitiesCall extends DeviceApiCall {
+  method = "emailProtectionGetCapabilities"
+  id = "emailProtectionGetCapabilitiesResponse"
+  resultValidator = emailProtectionGetCapabilitiesResultSchema
 }
 /**
- * @extends {DeviceApiCall<any, getAddressesResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionGetAddressesResultSchema>} 
  */
-export class GetAddressesCall extends DeviceApiCall {
-  method = "getAddresses"
-  id = "getAddressesResponse"
-  resultValidator = getAddressesResultSchema
+export class EmailProtectionGetAddressesCall extends DeviceApiCall {
+  method = "emailProtectionGetAddresses"
+  id = "emailProtectionGetAddressesResponse"
+  resultValidator = emailProtectionGetAddressesResultSchema
 }
 /**
- * @extends {DeviceApiCall<any, refreshAliasResultSchema>} 
+ * @extends {DeviceApiCall<any, emailProtectionRefreshPrivateAddressResultSchema>} 
  */
-export class RefreshAliasCall extends DeviceApiCall {
-  method = "refreshAlias"
-  id = "refreshAliasResponse"
-  resultValidator = refreshAliasResultSchema
+export class EmailProtectionRefreshPrivateAddressCall extends DeviceApiCall {
+  method = "emailProtectionRefreshPrivateAddress"
+  id = "emailProtectionRefreshPrivateAddressResponse"
+  resultValidator = emailProtectionRefreshPrivateAddressResultSchema
 }

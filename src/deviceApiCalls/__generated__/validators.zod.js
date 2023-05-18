@@ -63,12 +63,49 @@ export const providerStatusUpdatedSchema = z.object({
     availableInputTypes: availableInputTypesSchema
 });
 
-export const getAddressesResultSchema = z.object({
+export const emailProtectionGetAddressesResultSchema = z.object({
     success: z.object({
         personalAddress: z.string(),
         privateAddress: z.string()
     }).optional(),
     error: genericErrorSchema.optional()
+});
+
+export const emailProtectionGetCapabilitiesResultSchema = z.object({
+    success: z.object({
+        addUserData: z.boolean().optional(),
+        getUserData: z.boolean().optional(),
+        removeUserData: z.boolean().optional()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionGetIsLoggedInResultSchema = z.object({
+    success: z.boolean().optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionGetUserDataResultSchema = z.object({
+    success: z.object({
+        userName: z.string(),
+        nextAlias: z.string(),
+        token: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionRefreshPrivateAddressResultSchema = z.object({
+    success: z.object({
+        personalAddress: z.string(),
+        privateAddress: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionStoreUserDataParamsSchema = z.object({
+    token: z.string(),
+    userName: z.string(),
+    cohort: z.string()
 });
 
 export const getAliasParamsSchema = z.object({
@@ -131,20 +168,6 @@ export const getAvailableInputTypesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
-export const getEmailProtectionCapabilitiesResultSchema = z.object({
-    success: z.object({
-        addUserData: z.boolean().optional(),
-        getUserData: z.boolean().optional(),
-        removeUserData: z.boolean().optional()
-    }).optional(),
-    error: genericErrorSchema.optional()
-});
-
-export const getIsLoggedInResultSchema = z.object({
-    success: z.boolean().optional(),
-    error: genericErrorSchema.optional()
-});
-
 export const contentScopeFeaturesItemSettingsSchema = z.record(z.unknown());
 
 export const userPreferencesSchema = z.object({
@@ -157,23 +180,6 @@ export const userPreferencesSchema = z.object({
     features: z.record(z.object({
         settings: z.record(z.unknown())
     }))
-});
-
-export const getUserDataResultSchema = z.object({
-    success: z.object({
-        userName: z.string(),
-        nextAlias: z.string(),
-        token: z.string()
-    }).optional(),
-    error: genericErrorSchema.optional()
-});
-
-export const refreshAliasResultSchema = z.object({
-    success: z.object({
-        personalAddress: z.string(),
-        privateAddress: z.string()
-    }).optional(),
-    error: genericErrorSchema.optional()
 });
 
 export const contentScopeFeaturesSchema = z.record(z.object({
@@ -199,12 +205,6 @@ export const setSizeParamsSchema = z.object({
 export const outgoingCredentialsSchema = z.object({
     username: z.string().optional(),
     password: z.string().optional()
-});
-
-export const storeUserDataParamsSchema = z.object({
-    token: z.string(),
-    userName: z.string(),
-    cohort: z.string()
 });
 
 export const askToUnlockProviderResultSchema = z.object({
