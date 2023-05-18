@@ -492,6 +492,9 @@ export interface GenericError {
 
 // getEmailProtectionCapabilities.result.json
 
+/**
+ * Used by the Email Protection web app to determine which API functionality is available
+ */
 export interface GetEmailProtectionCapabilitiesResult {
   success?: {
     addUserData?: boolean;
@@ -770,6 +773,6 @@ export interface OutgoingCredentials {
  */
 export interface StoreUserDataParams {
   token: string;
-  username: string;
+  userName: string;
   cohort: string;
 }

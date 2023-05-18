@@ -9407,10 +9407,10 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
     return addresses;
   }
   /**
-  * Gets a single identity obj once the user requests it
-  * @param {Number} id
-  * @returns {Promise<{success: IdentityObject|undefined}>}
-  */
+   * Gets a single identity obj once the user requests it
+   * @param {Number} id
+   * @returns {Promise<{success: IdentityObject|undefined}>}
+   */
 
 
   getAutofillIdentity(id) {
@@ -16932,7 +16932,7 @@ exports.outgoingCredentialsSchema = outgoingCredentialsSchema;
 
 const storeUserDataParamsSchema = _zod.z.object({
   token: _zod.z.string(),
-  username: _zod.z.string(),
+  userName: _zod.z.string(),
   cohort: _zod.z.string()
 });
 

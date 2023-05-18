@@ -8,7 +8,7 @@
       "token": {
         "type": "string"
       },
-      "username": {
+      "userName": {
         "type": "string"
       },
       "cohort": {
@@ -17,7 +17,7 @@
     },
     "required": [
       "token",
-      "username",
+      "userName",
       "cohort"
     ]
   }

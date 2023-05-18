@@ -68,7 +68,7 @@
   },
   "getEmailProtectionCapabilities": {
     "id": "getEmailProtectionCapabilitiesResponse",
-    "description": "",
+    "description": "Used by the Email Protection web app to determine which API functionality is available",
     "resultValidator": "./schemas/getEmailProtectionCapabilities.result.json"
   },
   "getAddresses": {

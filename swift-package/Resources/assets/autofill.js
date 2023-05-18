@@ -5731,10 +5731,10 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
     return addresses;
   }
   /**
-  * Gets a single identity obj once the user requests it
-  * @param {Number} id
-  * @returns {Promise<{success: IdentityObject|undefined}>}
-  */
+   * Gets a single identity obj once the user requests it
+   * @param {Number} id
+   * @returns {Promise<{success: IdentityObject|undefined}>}
+   */
 
 
   getAutofillIdentity(id) {

@@ -203,7 +203,7 @@ export const outgoingCredentialsSchema = z.object({
 
 export const storeUserDataParamsSchema = z.object({
     token: z.string(),
-    username: z.string(),
+    userName: z.string(),
     cohort: z.string()
 });
 
