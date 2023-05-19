@@ -54,7 +54,7 @@ class FormAnalyzer {
         // When marking for hybrid we also want to ensure other signals are weak
         const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10
 
-        return this.hybridSignal > 1 && areOtherSignalsWeak
+        return this.hybridSignal > 0 && areOtherSignalsWeak
     }
 
     get isLogin () {

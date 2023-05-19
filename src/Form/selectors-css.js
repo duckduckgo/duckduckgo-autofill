@@ -216,6 +216,12 @@ const username = [
     `input[name="ssousername" i]`,
     // https://secure.nsandi.com/
     `input[name="j_userlogin_pwd" i]`,
+    // https://weblogin.utoronto.ca
+    `input[name="user" i]`,
+    // https://customerportal.mastercard.com/login
+    `input[name$="_username" i]`,
+    // https://accounts.hindustantimes.com/?type=plain&ref=lm
+    `input[id="lmSsoinput" i]`,
     `input[id="username" i]`,
     `input[name="_user" i]`,
     `input[name="login_username" i]`,
