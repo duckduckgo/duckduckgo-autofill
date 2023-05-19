@@ -321,11 +321,13 @@ const isLikelyASubmitButton = (el) => {
     const ariaLabel = el.getAttribute('aria-label') || ''
     const title = el.title || ''
     const value = (el instanceof HTMLInputElement ? el.value || '' : '')
+    const dataTestId = el.getAttribute('data-test-id') || ''
     const contentExcludingLabel = text + ' ' + title + ' ' + value
 
     return (
         el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
+        /submit/i.test(dataTestId) ||
         SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
         (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
     ) &&

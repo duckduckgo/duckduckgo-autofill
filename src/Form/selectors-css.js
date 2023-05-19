@@ -207,10 +207,15 @@ const username = [
     `input[autocomplete=username i]`,
     `input[name*=accountid i]`,
     `input[name="j_username" i]`,
+    `input[id="j_username" i]`,
     // https://account.uwindsor.ca/login
     `input[name="uwinid" i]`,
     // livedoor.com
     `input[name="livedoor_id" i]`,
+    // https://login.oracle.com/mysso/signon.jsp?request_id=
+    `input[name="ssousername" i]`,
+    // https://secure.nsandi.com/
+    `input[name="j_userlogin_pwd" i]`,
     `input[id="username" i]`,
     `input[name="_user" i]`,
     `input[name="login_username" i]`,
