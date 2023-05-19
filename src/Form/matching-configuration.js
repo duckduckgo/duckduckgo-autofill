@@ -256,7 +256,7 @@ const matchingConfiguration = {
         ddgMatcher: {
             matchers: {
                 email: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b'},
-                password: {match: 'password', skip: 'email|one-time|error', forceUnknown: 'captcha|mfa|2fa|two factor'},
+                password: {match: 'password', skip: 'email|one-time|error|hint', forceUnknown: 'captcha|mfa|2fa|two factor'},
                 username: {match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername', skip: 'phone', forceUnknown: 'search|policy'},
 
                 // CC
