@@ -199,6 +199,7 @@ const username = [
     `input[name="loginId" i]`,
     // fix for https://online.mbank.pl/pl/Login
     `input[name="userid" i]`,
+    `input[id="userid" i]`,
     `input[name="user_id" i]`,
     `input[name="user-id" i]`,
     `input[id="login-id" i]`,
@@ -222,6 +223,15 @@ const username = [
     `input[name$="_username" i]`,
     // https://accounts.hindustantimes.com/?type=plain&ref=lm
     `input[id="lmSsoinput" i]`,
+    // bigcartel.com/login
+    `input[name="account_subdomain" i]`,
+    // https://www.mydns.jp/members/
+    `input[name="masterid" i]`,
+    // https://giris.turkiye.gov.tr
+    `input[name="tridField" i]`,
+    // https://membernetprb2c.b2clogin.com
+    `input[id="signInName" i]`,
+    `input[id="w3c_accountsbundle_accountrequeststep1_login" i]`,
     `input[id="username" i]`,
     `input[name="_user" i]`,
     `input[name="login_username" i]`,
