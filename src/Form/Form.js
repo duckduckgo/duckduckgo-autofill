@@ -173,6 +173,12 @@ class Form {
             })
             if (probableField?.value) {
                 formValues.credentials.username = probableField.value
+            } else if (
+                // If a form has phone + password(s) fields, save the phone as username
+                formValues.identities.phone &&
+                this.inputs.all.size - this.inputs.unknown.size < 4
+            ) {
+                formValues.credentials.username = formValues.identities.phone
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
                 this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
