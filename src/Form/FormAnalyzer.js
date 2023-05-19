@@ -23,26 +23,38 @@ class FormAnalyzer {
     constructor (form, input, matching) {
         this.form = form
         this.matching = matching || new Matching(matchingConfiguration)
+
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
          */
         this.autofillSignal = 0
         /**
+         * A hybrid form can be either a login or a signup, the site uses a single form for both
+         * @type {number}
+         */
+        this.hybridSignal = 0
+
+        /**
          * Collects the signals for debugging purposes
          * @type {string[]}
          */
         this.signals = []
 
-        /**
-         * A hybrid form can be either a login or a signup, the site uses a single form for both
-         * @type {boolean}
-         */
-        this.isHybrid = false
-
         this.evaluateElAttributes(input, 3, true)
         form ? this.evaluateForm() : this.evaluatePage()
         return this
+    }
+
+    /**
+     * Hybrid forms can be used for both login and signup
+     * @returns {boolean}
+     */
+    get isHybrid () {
+        // When marking for hybrid we also want to ensure other signals are weak
+        const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10
+
+        return this.hybridSignal > 1 && areOtherSignalsWeak
     }
 
     get isLogin () {
@@ -82,6 +94,18 @@ class FormAnalyzer {
     }
 
     /**
+     * Increases the probability that this is a hybrid form (can be either login or signup)
+     * @param {number} strength
+     * @param {string} signal
+     * @returns {FormAnalyzer}
+     */
+    increaseHybridSignal (strength, signal) {
+        this.hybridSignal += strength
+        this.signals.push(`${signal} (hybrid): +${strength}`)
+        return this
+    }
+
+    /**
      * Updates the Login<->Signup signal according to the provided parameters
      * @param {object} p
      * @param {string} p.string - The string to check
@@ -102,10 +126,9 @@ class FormAnalyzer {
     }) {
         const matchesLogin = string === 'current-password' || loginRegex.test(string)
 
-        // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
+        // Check explicitly for unified login/signup forms
         if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
-            this.signals.push(`hybrid form: ${signalType}`)
-            this.isHybrid = true
+            this.increaseHybridSignal(strength, signalType)
             return this
         }
 
