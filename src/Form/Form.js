@@ -97,7 +97,7 @@ class Form {
     logFormInfo () {
         if (!shouldLog()) return
 
-        console.log(`Form type: %c${this.getFormType()} ${this.formAnalyzer.autofillSignal}`, 'font-weight: bold')
+        console.log(`Form type: %c${this.getFormType()}`, 'font-weight: bold')
         console.log('Signals: ', this.formAnalyzer.signals)
         console.log('Wrapping element: ', this.form)
         console.log('Inputs: ', this.inputs)
@@ -105,9 +105,9 @@ class Form {
     }
 
     getFormType () {
-        if (this.isHybrid) return 'hybrid'
-        if (this.isLogin) return 'login'
-        if (this.isSignup) return 'signup'
+        if (this.isHybrid) return `hybrid (hybrid score: ${this.formAnalyzer.hybridSignal}, score: ${this.formAnalyzer.autofillSignal})`
+        if (this.isLogin) return `login (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`
+        if (this.isSignup) return `signup (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`
 
         return 'something went wrong'
     }
