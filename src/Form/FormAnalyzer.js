@@ -3,7 +3,7 @@ import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
-const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i)
+const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|unlock|logged in as/i)
 const signupRegex = new RegExp(
     /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i
 )
