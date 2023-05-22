@@ -1,11 +1,12 @@
 const FORM_INPUTS_SELECTOR = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
 [autocomplete=username],
 select`
 
 const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
 input[type=button],
+input[type=image],
 button:not([role=switch]):not([role=link]),
 [role=button],
 a[href="#"][id*=button i],
