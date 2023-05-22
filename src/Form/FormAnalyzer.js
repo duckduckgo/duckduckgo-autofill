@@ -124,7 +124,7 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false,
         shouldBeConservative = false
     }) {
-        const matchesLogin = string === 'current-password' || loginRegex.test(string)
+        const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string)
 
         // Check explicitly for unified login/signup forms
         if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
@@ -133,7 +133,7 @@ class FormAnalyzer {
         }
 
         const signupRegexToUse = shouldBeConservative ? conservativeSignupRegex : signupRegex
-        const matchesSignup = string === 'new-password' || signupRegexToUse.test(string)
+        const matchesSignup = /new.?password/i.test(string) || signupRegexToUse.test(string)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -205,7 +205,7 @@ class FormAnalyzer {
         if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
             this.updateSignal({
-                string: el.getAttribute('autocomplete') || '',
+                string: el.getAttribute('autocomplete') || el.getAttribute('name') || '',
                 strength: 10,
                 signalType: `explicit: ${el.getAttribute('autocomplete')}`
             })
