@@ -59,6 +59,13 @@ export function initFormSubmissionsApi (forms) {
                     filledForm?.submitHandler('global pointerdown event + filled form')
                 }
             }
+
+            // TODO: Temporary hack to support Google signin in different languages
+            if (/** @type HTMLElement */(event.target)?.closest('#passwordNext button, #identifierNext button')) {
+                // check if there's a form with values
+                const filledForm = [...forms.values()].find(form => form.hasValues())
+                filledForm?.submitHandler('global pointerdown event + google escape hatch')
+            }
         }
     }, true)
 

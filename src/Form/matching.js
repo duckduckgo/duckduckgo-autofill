@@ -244,6 +244,14 @@ class Matching {
                     return 'credentials.username'
                 }
 
+                // TODO: Temporary hack to support Google signin in different languages
+                if (
+                    window.location.href.includes('https://accounts.google.com/v3/signin/identifier') &&
+                    input.matches('[type=email][autocomplete=username]')
+                ) {
+                    return 'credentials.username'
+                }
+
                 return 'identities.emailAddress'
             }
 
