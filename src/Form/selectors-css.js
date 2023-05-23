@@ -35,7 +35,11 @@ input[autocomplete=email]`,
 const GENERIC_TEXT_FIELD = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
 
-const password = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])`
+const password = [
+    `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])`,
+    // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
+    'input.js-cloudsave-phrase'
+]
 
 const cardName = `
 input[autocomplete="cc-name" i],

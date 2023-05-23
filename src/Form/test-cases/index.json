@@ -487,6 +487,7 @@
   { "html": "www_neurology_org_login.html", "generated": true, "title": "User account | American Academy of Neurology Journals", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 9960" },
   { "html": "ibs_johnsoncontrols_com_login.html", "generated": true, "title": "Johnson Controls Login", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 9995" },
   { "html": "bitwarden_com_account-locked.html" },
+  { "html": "duckduckgo_cloudsave-passphrase.html" },
   { "html": "news_ycombinator_com.html", "hasExtraWrappers": false },
   { "html": "tigerglobal_com-investors.html", "hasExtraWrappers": false },
   { "html": "namecheap_com-login.html", "hasExtraWrappers": false },
