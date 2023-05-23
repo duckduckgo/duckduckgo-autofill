@@ -58,7 +58,7 @@ function getInputIdentifier (el) {
 }
 
 /**
- *
+ * Logs info when a field was not matched by the algo
  * @param el
  * @param allStrings
  */

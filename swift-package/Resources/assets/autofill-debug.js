@@ -12880,7 +12880,7 @@ function getInputIdentifier(el) {
   return 'Field: ' + (label || placeholder || name || id);
 }
 /**
- *
+ * Logs info when a field was not matched by the algo
  * @param el
  * @param allStrings
  */
