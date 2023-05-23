@@ -222,6 +222,8 @@ const username = [
     `input[name="ssousername" i]`,
     // https://secure.nsandi.com/
     `input[name="j_userlogin_pwd" i]`,
+    // https://freelance.habr.com/users/sign_up
+    `input[name="user[login]" i]`,
     // https://weblogin.utoronto.ca
     `input[name="user" i]`,
     // https://customerportal.mastercard.com/login

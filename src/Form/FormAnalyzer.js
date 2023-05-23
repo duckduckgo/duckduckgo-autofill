@@ -202,7 +202,7 @@ class FormAnalyzer {
             // These are explicit signals by the web author, so we weigh them heavily
             this.updateSignal({
                 string: el.getAttribute('autocomplete') || el.getAttribute('name') || '',
-                strength: 10,
+                strength: 5,
                 signalType: `explicit: ${el.getAttribute('autocomplete')}`
             })
         }
@@ -263,7 +263,7 @@ class FormAnalyzer {
 
         // A form with many fields is unlikely to be a login form
         const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
-        if (relevantFields.length > 4) {
+        if (relevantFields.length >= 4) {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
         }
 

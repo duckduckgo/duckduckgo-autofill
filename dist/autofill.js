@@ -7041,7 +7041,7 @@ class FormAnalyzer {
       // These are explicit signals by the web author, so we weigh them heavily
       this.updateSignal({
         string: el.getAttribute('autocomplete') || el.getAttribute('name') || '',
-        strength: 10,
+        strength: 5,
         signalType: "explicit: ".concat(el.getAttribute('autocomplete'))
       });
     } // check button contents
@@ -7115,7 +7115,7 @@ class FormAnalyzer {
 
     const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'));
 
-    if (relevantFields.length > 4) {
+    if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
     } // If we can't decide at this point, try reading page headings
 
@@ -10343,7 +10343,8 @@ const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "inpu
 "input[name=\"uwinid\" i]", // livedoor.com
 "input[name=\"livedoor_id\" i]", // https://login.oracle.com/mysso/signon.jsp?request_id=
 "input[name=\"ssousername\" i]", // https://secure.nsandi.com/
-"input[name=\"j_userlogin_pwd\" i]", // https://weblogin.utoronto.ca
+"input[name=\"j_userlogin_pwd\" i]", // https://freelance.habr.com/users/sign_up
+"input[name=\"user[login]\" i]", // https://weblogin.utoronto.ca
 "input[name=\"user\" i]", // https://customerportal.mastercard.com/login
 "input[name$=\"_username\" i]", // https://accounts.hindustantimes.com/?type=plain&ref=lm
 "input[id=\"lmSsoinput\" i]", // bigcartel.com/login
