@@ -10350,7 +10350,8 @@ const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "inpu
 "input[name=\"account_subdomain\" i]", // https://www.mydns.jp/members/
 "input[name=\"masterid\" i]", // https://giris.turkiye.gov.tr
 "input[name=\"tridField\" i]", // https://membernetprb2c.b2clogin.com
-"input[id=\"signInName\" i]", "input[id=\"w3c_accountsbundle_accountrequeststep1_login\" i]", "input[id=\"username\" i]", "input[name=\"_user\" i]", "input[name=\"login_username\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
+"input[id=\"signInName\" i]", // https://www.w3.org/accounts/request
+"input[id=\"w3c_accountsbundle_accountrequeststep1_login\" i]", "input[id=\"username\" i]", "input[name=\"_user\" i]", "input[name=\"login_username\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
 // todo: ensure these can be set via configuration
 
 // Exported here for now, to be moved to configuration later

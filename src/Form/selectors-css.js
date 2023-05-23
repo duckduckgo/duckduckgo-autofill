@@ -236,6 +236,7 @@ const username = [
     `input[name="tridField" i]`,
     // https://membernetprb2c.b2clogin.com
     `input[id="signInName" i]`,
+    // https://www.w3.org/accounts/request
     `input[id="w3c_accountsbundle_accountrequeststep1_login" i]`,
     `input[id="username" i]`,
     `input[name="_user" i]`,
