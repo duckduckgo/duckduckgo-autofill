@@ -183,11 +183,7 @@ class FormAnalyzer {
         this.evaluatePageTitle()
         this.evaluatePageHeadings()
         // Check for submit buttons
-        const buttons = document.querySelectorAll(`
-                button[type=submit],
-                button:not([type]),
-                [role=button]
-            `)
+        const buttons = document.querySelectorAll(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))
         buttons.forEach(button => {
             // if the button has a form, it's not related to our input, because our input has no form here
             if (button instanceof HTMLButtonElement) {
@@ -236,7 +232,7 @@ class FormAnalyzer {
         ) {
             // Unless it's a forgotten password link, we don't flip those links
             let shouldFlip = true
-            if (/(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
+            if (/(forgot(ten)?|reset) (your )?password|password forgotten| with /i.test(string)) {
                 shouldFlip = false
             }
             this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip})

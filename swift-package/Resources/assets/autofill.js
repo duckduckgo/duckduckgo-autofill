@@ -7022,7 +7022,7 @@ class FormAnalyzer {
     this.evaluatePageTitle();
     this.evaluatePageHeadings(); // Check for submit buttons
 
-    const buttons = document.querySelectorAll("\n                button[type=submit],\n                button:not([type]),\n                [role=button]\n            ");
+    const buttons = document.querySelectorAll(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'));
     buttons.forEach(button => {
       // if the button has a form, it's not related to our input, because our input has no form here
       if (button instanceof HTMLButtonElement) {
@@ -7073,7 +7073,7 @@ class FormAnalyzer {
       // Unless it's a forgotten password link, we don't flip those links
       let shouldFlip = true;
 
-      if (/(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
+      if (/(forgot(ten)?|reset) (your )?password|password forgotten| with /i.test(string)) {
         shouldFlip = false;
       }
 
@@ -8442,7 +8442,7 @@ const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
  */
 
 const extractElementStrings = element => {
-  const strings = [];
+  const strings = new Set();
 
   const _extractElementStrings = el => {
     if (EXCLUDED_TAGS.includes(el.tagName)) {
@@ -8454,7 +8454,7 @@ const extractElementStrings = element => {
       let trimmedText = (0, _matching.removeExcessWhitespace)(el.textContent);
 
       if (trimmedText) {
-        strings.push(trimmedText);
+        strings.add(trimmedText);
       }
 
       return;
@@ -8473,7 +8473,7 @@ const extractElementStrings = element => {
 
   _extractElementStrings(element);
 
-  return strings;
+  return [...strings];
 };
 
 exports.extractElementStrings = extractElementStrings;

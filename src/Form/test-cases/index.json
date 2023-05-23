@@ -491,5 +491,6 @@
   { "html": "news_ycombinator_com.html", "hasExtraWrappers": false },
   { "html": "tigerglobal_com-investors.html", "hasExtraWrappers": false },
   { "html": "namecheap_com-login.html", "hasExtraWrappers": false },
-  { "html": "namecheap_com-signup.html", "hasExtraWrappers": false }
+  { "html": "namecheap_com-signup.html", "hasExtraWrappers": false },
+  { "html": "ua_ctcorpmpc_com-signup.html" }
 ]
