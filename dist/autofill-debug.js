@@ -14809,7 +14809,8 @@ class DefaultScanner {
 
   getParentForm(input) {
     if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-      // When the form encloses the whole DOM, we try to identify more precise wrappers
+      // Use input.form unless it encloses most of the DOM
+      // In that case we proceed to identify more precise wrappers
       if (input.form && !(0, _autofillUtils.isFormLikelyToBeUsedAsPageWrapper)(input.form)) {
         return input.form;
       }
@@ -14827,8 +14828,7 @@ class DefaultScanner {
         return element;
       }
 
-      element = element.parentElement; // todo: These selectors should be configurable
-
+      element = element.parentElement;
       const inputs = element.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
       const buttons = element.querySelectorAll(_selectorsCss.SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
 
