@@ -145,6 +145,7 @@ class DefaultScanner {
      */
     getParentForm (input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
+            // When the form encloses the whole DOM, we try to identify more precise wrappers
             if (input.form && !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
                 return input.form
             }
@@ -153,7 +154,7 @@ class DefaultScanner {
         let element = input
         // traverse the DOM to search for related inputs
         while (element.parentElement && element.parentElement !== document.documentElement) {
-            // If parent includes a form return the current element to avoid overlapping forms
+            // Avoid overlapping containers or forms
             const siblingForm = element.parentElement?.querySelector('form')
             if (siblingForm && siblingForm !== element) {
                 return element
