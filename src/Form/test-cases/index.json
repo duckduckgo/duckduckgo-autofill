@@ -110,7 +110,7 @@
   { "html": "asana_tasklist.html" },
   { "html": "asana_search.html" },
   { "html": "aa_login.html" },
-  { "html": "hackernews_login_signup.html" },
+  { "html": "hackernews_login_signup.html", "hasExtraWrappers": false },
   { "html": "mkelectricalcontracting_contact.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "mbank_login.html", "expectedSubmitFalsePositives": 3 },
   { "html": "samash_checkout.html", "expectedFailures": ["emailAddress"] },
@@ -486,5 +486,9 @@
   { "html": "areaclientes_orange_es_login.html", "generated": true, "title": "Área de Clientes | Orange", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 9742" },
   { "html": "www_neurology_org_login.html", "generated": true, "title": "User account | American Academy of Neurology Journals", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 9960" },
   { "html": "ibs_johnsoncontrols_com_login.html", "generated": true, "title": "Johnson Controls Login", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 9995" },
-  { "html": "bitwarden_com_account-locked.html" }
+  { "html": "bitwarden_com_account-locked.html" },
+  { "html": "news_ycombinator_com.html", "hasExtraWrappers": false },
+  { "html": "tigerglobal_com-investors.html", "hasExtraWrappers": false },
+  { "html": "namecheap_com-login.html", "hasExtraWrappers": false },
+  { "html": "namecheap_com-signup.html", "hasExtraWrappers": false }
 ]

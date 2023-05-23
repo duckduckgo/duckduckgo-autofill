@@ -140,7 +140,15 @@ describe('Input Classifiers', () => {
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {
-    const { html, generated, expectedFailures = [], expectedSubmitFalsePositives = 0, expectedSubmitFalseNegatives = 0, title = '__test__' } = testCase
+    const {
+        html,
+        generated,
+        expectedFailures = [],
+        expectedSubmitFalsePositives = 0,
+        expectedSubmitFalseNegatives = 0,
+        title = '__test__',
+        hasExtraWrappers = true
+    } = testCase
 
     const testTextString = expectedFailures.length > 0
         ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
@@ -149,7 +157,14 @@ describe.each(testCases)('Test $html fields', (testCase) => {
     it(testTextString, () => {
         const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', html), 'utf-8')
 
-        document.body.innerHTML = testContent
+        let baseWrapper = document.body
+
+        if (hasExtraWrappers) {
+            baseWrapper = document.createElement('div')
+            document.body.appendChild(baseWrapper)
+        }
+
+        baseWrapper.innerHTML = testContent
         document.title = title
 
         const buttons = document.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
@@ -173,8 +188,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
         /**
-         * @type {HTMLElement[]}
-         */
+             * @type {HTMLElement[]}
+             */
         const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
 
         let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button)).length
@@ -191,7 +206,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const automaticallyScoredFields = Array.from(document.querySelectorAll('[data-ddg-inputtype]'))
 
         const getDetailsFromFailure = (field) => {
-            const { manualScoring, ddgInputtype, ...rest } = field.dataset
+            const {manualScoring, ddgInputtype, ...rest} = field.dataset
             // @ts-ignore
             field.style = ''
             return {
@@ -211,8 +226,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const falseScores = automaticallyScoredFields
             .filter(field =>
                 !manuallyScoredFields.includes(field) &&
-                field.getAttribute('data-ddg-inputtype') !== 'unknown' &&
-                field.tabIndex !== -1
+                    field.getAttribute('data-ddg-inputtype') !== 'unknown' &&
+                    field.tabIndex !== -1
             )
             .map(getDetailsFromFailure)
 
@@ -225,7 +240,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             falseNegatives: submitFalseNegatives
         }
 
-        testResults.push({ testCase, scores, submitButtonScores })
+        testResults.push({testCase, scores, submitButtonScores})
 
         let bad = scores.filter(x => x.inferredType !== x.manualScore)
         let failed = bad.map(x => x.manualScore)
