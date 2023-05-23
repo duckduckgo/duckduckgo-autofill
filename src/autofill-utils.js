@@ -448,6 +448,29 @@ function truncateFromMiddle (string, totalLength = 30) {
     return truncated
 }
 
+/**
+ * Determines if the form is likely to be enclosing most of the DOM
+ * @param {HTMLFormElement} form
+ * @returns {boolean}
+ */
+function isFormLikelyToBeUsedAsPageWrapper (form) {
+    if (form.parentElement !== document.body) return false
+
+    const formChildren = form.querySelectorAll('*').length
+    // If the form has few content elements, it's unlikely to cause issues anyway
+    if (formChildren < 100) return false
+
+    const bodyChildren = document.body.querySelectorAll('*').length
+
+    /**
+     * Percentage of the formChildren on the total body elements
+     * form * 100 / body = x
+     */
+    const formChildrenPercentage = formChildren * 100 / bodyChildren
+
+    return formChildrenPercentage > 50
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -474,5 +497,6 @@ export {
     wasAutofilledByChrome,
     shouldLog,
     whenIdle,
-    truncateFromMiddle
+    truncateFromMiddle,
+    isFormLikelyToBeUsedAsPageWrapper
 }
