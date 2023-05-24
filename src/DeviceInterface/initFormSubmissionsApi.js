@@ -60,6 +60,7 @@ export function initFormSubmissionsApi (forms) {
             }
 
             // TODO: Temporary hack to support Google signin in different languages
+            // https://app.asana.com/0/1198964220583541/1201650539303898/f
             if (/** @type HTMLElement */(event.target)?.closest('#passwordNext button, #identifierNext button')) {
                 // check if there's a form with values
                 const filledForm = [...forms.values()].find(form => form.hasValues())
