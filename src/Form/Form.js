@@ -19,7 +19,8 @@ import {
     formatCCYear,
     getCountryName,
     prepareFormValuesForStorage,
-    inferCountryCodeFromElement, inferElementLocale
+    inferCountryCodeFromElement,
+    inferElementLocale
 } from './formatters.js'
 
 import {constants} from '../constants.js'
