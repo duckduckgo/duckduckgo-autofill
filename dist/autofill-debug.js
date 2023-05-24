@@ -9565,6 +9565,7 @@ function initFormSubmissionsApi(forms) {
           filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler('global pointerdown event + filled form');
         }
       } // TODO: Temporary hack to support Google signin in different languages
+      // https://app.asana.com/0/1198964220583541/1201650539303898/f
 
 
       if (
@@ -12924,6 +12925,8 @@ var _matchingConfiguration = require("./matching-configuration.js");
 
 var _matchingUtils = require("./matching-utils.js");
 
+var _autofillUtils = require("../autofill-utils.js");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
@@ -13249,6 +13252,7 @@ class Matching {
 
           return 'credentials.username';
         } // TODO: Temporary hack to support Google signin in different languages
+        // https://app.asana.com/0/1198964220583541/1201650539303898/f
 
 
         if (window.location.href.includes('https://accounts.google.com/v3/signin/identifier') && input.matches('[type=email][autocomplete=username]')) {
@@ -13879,7 +13883,7 @@ const getRelatedText = (el, form, cssSelector) => {
 
   if (label) {
     // Try searching for a label first
-    trimmedText = removeExcessWhitespace(label.textContent);
+    trimmedText = removeExcessWhitespace((0, _autofillUtils.getText)(label));
   } else {
     // If the container has a select element, remove its contents to avoid noise
     trimmedText = removeExcessWhitespace((0, _labelUtil.extractElementStrings)(scope).join(' '));
@@ -13975,7 +13979,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants.js":65,"./label-util.js":38,"./matching-configuration.js":40,"./matching-utils.js":41,"./selectors-css.js":43,"./vendor-regex.js":44}],43:[function(require,module,exports){
+},{"../autofill-utils.js":62,"../constants.js":65,"./label-util.js":38,"./matching-configuration.js":40,"./matching-utils.js":41,"./selectors-css.js":43,"./vendor-regex.js":44}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17361,7 +17365,11 @@ const getText = el => {
   // this is important in order to give proper attribution of the text to the button
   if (el instanceof HTMLButtonElement) return (0, _matching.removeExcessWhitespace)(el.textContent);
   if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value;
-  if (el instanceof HTMLInputElement && el.type === 'image') return el.alt || el.value || el.title;
+
+  if (el instanceof HTMLInputElement && el.type === 'image') {
+    return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title);
+  }
+
   return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
 };
 /**
