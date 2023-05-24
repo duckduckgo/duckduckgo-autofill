@@ -31,6 +31,9 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      */
     overlay = overlayApi(this);
 
+    previousScreenX = 0;
+    previousScreenY = 0;
+
     /**
      * Because we're running inside the Overlay, we always create the HTML
      * Tooltip controller.
@@ -53,6 +56,36 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
              */
             checkVisibility: false
         })
+    }
+
+    addDeviceListeners() {
+        /**
+         * On Windows (vs. MacOS) we can use the built-in `mousemove`
+         * event and screen-relative positioning.
+         *
+         * Note: There's no cleanup required here since the Overlay has a fresh
+         * page load every time it's opened.
+         */
+        window.addEventListener('mousemove', (event) => {
+            // Don't set focus if the mouse hasn't moved ever
+            // This is to avoid clickjacking where an attacker puts the pulldown under the cursor
+            // and tricks the user into clicking
+            if (
+                (!this.previousScreenX && !this.previousScreenY) || // if no previous coords
+                (this.previousScreenX === event.screenX && this.previousScreenY === event.screenY) // or the mouse hasn't moved
+            ) {
+                this.previousScreenX = event.screenX
+                this.previousScreenY = event.screenY
+                return
+            }
+
+            const activeTooltip = this.uiController?.getActiveTooltip?.()
+            activeTooltip?.focus(event.x, event.y)
+            this.previousScreenX = event.screenX
+            this.previousScreenY = event.screenY
+        })
+
+        return super.addDeviceListeners()
     }
 
     /**

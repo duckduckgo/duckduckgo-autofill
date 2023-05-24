@@ -7913,6 +7913,10 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     _defineProperty(this, "stripCredentials", false);
 
     _defineProperty(this, "overlay", (0, _overlayApi.overlayApi)(this));
+
+    _defineProperty(this, "previousX", 0);
+
+    _defineProperty(this, "previousY", 0);
   }
 
   /**
@@ -7935,6 +7939,36 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
       remove: async () => this._closeAutofillParent(),
       testMode: this.isTestMode()
     });
+  }
+
+  addDeviceListeners() {
+    /**
+     * The native side will send a custom event 'mouseMove' to indicate
+     * that the HTMLTooltip should fake an element being focused.
+     *
+     * Note: There's no cleanup required here since the Overlay has a fresh
+     * page load every time it's opened.
+     */
+    window.addEventListener('mouseMove', event => {
+      var _this$uiController, _this$uiController$ge;
+
+      // Don't set focus if the mouse hasn't moved ever
+      // This is to avoid clickjacking where an attacker puts the pulldown under the cursor
+      // and tricks the user into clicking
+      if (!this.previousX && !this.previousY || // if no previous coords
+      this.previousX === event.detail.x && this.previousY === event.detail.y // or the mouse hasn't moved
+      ) {
+        this.previousX = event.detail.x;
+        this.previousY = event.detail.y;
+        return;
+      }
+
+      const activeTooltip = (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : (_this$uiController$ge = _this$uiController.getActiveTooltip) === null || _this$uiController$ge === void 0 ? void 0 : _this$uiController$ge.call(_this$uiController);
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
+      this.previousX = event.detail.x;
+      this.previousY = event.detail.y;
+    });
+    return super.addDeviceListeners();
   }
   /**
    * Since we're running inside the Overlay we can limit what happens here to
@@ -7980,7 +8014,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
   }
 
   providerStatusUpdated(data) {
-    var _this$uiController;
+    var _this$uiController2;
 
     const {
       credentials,
@@ -7990,7 +8024,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
     this.settings.setAvailableInputTypes(availableInputTypes);
     this.storeLocalCredentials(credentials); // rerender the tooltip
 
-    (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : _this$uiController.updateItems(credentials);
+    (_this$uiController2 = this.uiController) === null || _this$uiController2 === void 0 ? void 0 : _this$uiController2.updateItems(credentials);
   }
 
 }
@@ -9500,6 +9534,10 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
     _defineProperty(this, "stripCredentials", false);
 
     _defineProperty(this, "overlay", (0, _overlayApi.overlayApi)(this));
+
+    _defineProperty(this, "previousScreenX", 0);
+
+    _defineProperty(this, "previousScreenY", 0);
   }
 
   /**
@@ -9527,6 +9565,36 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
        */
       checkVisibility: false
     });
+  }
+
+  addDeviceListeners() {
+    /**
+     * On Windows (vs. MacOS) we can use the built-in `mousemove`
+     * event and screen-relative positioning.
+     *
+     * Note: There's no cleanup required here since the Overlay has a fresh
+     * page load every time it's opened.
+     */
+    window.addEventListener('mousemove', event => {
+      var _this$uiController, _this$uiController$ge;
+
+      // Don't set focus if the mouse hasn't moved ever
+      // This is to avoid clickjacking where an attacker puts the pulldown under the cursor
+      // and tricks the user into clicking
+      if (!this.previousScreenX && !this.previousScreenY || // if no previous coords
+      this.previousScreenX === event.screenX && this.previousScreenY === event.screenY // or the mouse hasn't moved
+      ) {
+        this.previousScreenX = event.screenX;
+        this.previousScreenY = event.screenY;
+        return;
+      }
+
+      const activeTooltip = (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : (_this$uiController$ge = _this$uiController.getActiveTooltip) === null || _this$uiController$ge === void 0 ? void 0 : _this$uiController$ge.call(_this$uiController);
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.x, event.y);
+      this.previousScreenX = event.screenX;
+      this.previousScreenY = event.screenY;
+    });
+    return super.addDeviceListeners();
   }
   /**
    * @returns {Promise<any>}
@@ -9751,41 +9819,12 @@ var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js
  * @param {import("./InterfacePrototype").default} device
  */
 function overlayApi(device) {
-  let previousX;
-  let previousY;
-  /**
-   * The native side will send a custom event 'mouseMove' to indicate
-   * that the HTMLTooltip should fake an element being focused.
-   *
-   * Note: There's no cleanup required here since the Overlay has a fresh
-   * page load every time it's opened.
-   */
-
-  window.addEventListener('mouseMove', event => {
-    var _device$uiController, _device$uiController$;
-
-    // Don't set focus if the mouse hasn't moved ever
-    // This is to avoid clickjacking where an attacker puts the pulldown under the cursor
-    // and tricks the user into clicking
-    if (!previousX && !previousY || // if no previous coords
-    previousX === event.detail.x && previousY === event.detail.y // or the mouse hasn't moved
-    ) {
-      previousX = event.detail.x;
-      previousY = event.detail.y;
-      return;
-    }
-
-    const activeTooltip = (_device$uiController = device.uiController) === null || _device$uiController === void 0 ? void 0 : (_device$uiController$ = _device$uiController.getActiveTooltip) === null || _device$uiController$ === void 0 ? void 0 : _device$uiController$.call(_device$uiController);
-    activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
-    previousX = event.detail.x;
-    previousY = event.detail.y;
-  });
   return {
     /**
      * When we are inside an 'overlay' - the HTML tooltip will be opened immediately
      */
     showImmediately() {
-      var _device$uiController2, _device$uiController3;
+      var _device$uiController, _device$uiController$;
 
       const topContextData = device.getTopContextData();
       if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values
@@ -9800,12 +9839,12 @@ function overlayApi(device) {
       }; // Create the tooltip, and set it as active
 
 
-      const tooltip = (_device$uiController2 = device.uiController) === null || _device$uiController2 === void 0 ? void 0 : (_device$uiController3 = _device$uiController2.createTooltip) === null || _device$uiController3 === void 0 ? void 0 : _device$uiController3.call(_device$uiController2, getPosition, topContextData);
+      const tooltip = (_device$uiController = device.uiController) === null || _device$uiController === void 0 ? void 0 : (_device$uiController$ = _device$uiController.createTooltip) === null || _device$uiController$ === void 0 ? void 0 : _device$uiController$.call(_device$uiController, getPosition, topContextData);
 
       if (tooltip) {
-        var _device$uiController4, _device$uiController5;
+        var _device$uiController2, _device$uiController3;
 
-        (_device$uiController4 = device.uiController) === null || _device$uiController4 === void 0 ? void 0 : (_device$uiController5 = _device$uiController4.setActiveTooltip) === null || _device$uiController5 === void 0 ? void 0 : _device$uiController5.call(_device$uiController4, tooltip);
+        (_device$uiController2 = device.uiController) === null || _device$uiController2 === void 0 ? void 0 : (_device$uiController3 = _device$uiController2.setActiveTooltip) === null || _device$uiController3 === void 0 ? void 0 : _device$uiController3.call(_device$uiController2, tooltip);
       }
     },
 
