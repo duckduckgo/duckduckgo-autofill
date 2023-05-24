@@ -92,4 +92,61 @@ test.describe('android', () => {
             await signup.assertEmailHasNoDaxIcon()
         })
     })
+    test.describe('password generation', () => {
+        const script = createAutofillScript()
+            .replaceAll(androidStringReplacements({
+                availableInputTypes: {},
+                featureToggles: {
+                    password_generation: true,
+                    inputType_credentials: true,
+                    inlineIcon_credentials: true,
+                    credentials_saving: true
+                }
+            }))
+            .platform('android')
+
+        test('should autofill with generated password', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page)
+            await signup.navigate()
+
+            // android specific mocks
+            await createAndroidMocks()
+                .withPasswordDecision?.('accept')
+                .applyTo(page)
+
+            // create + inject the script
+            await script.applyTo(page)
+
+            await signup.clickIntoPasswordField()
+            await signup.assertPasswordWasAutofilled()
+        })
+
+        test('should not autofill when password rejected', async ({page}) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page)
+            const signup = signupPage(page)
+            await signup.navigate()
+
+            // android specific mocks
+            await createAndroidMocks()
+                .withPasswordDecision?.('reject')
+                .applyTo(page)
+
+            // create + inject the script
+            await script.applyTo(page)
+
+            await signup.clickIntoPasswordField()
+            await signup.assertPasswordWasNotAutofilled()
+
+            // should not prompt again on second password field (which will be untouched)
+            await signup.clickIntoPasswordConfirmationField()
+            await signup.assertPasswordWasSuggestedTimes(1, 'android')
+
+            // SHOULD prompt again if icon clicked though, since that's explicit opt-in
+            await signup.clickDirectlyOnPasswordIcon()
+            await signup.assertPasswordWasSuggestedTimes(2, 'android')
+        })
+    })
 })

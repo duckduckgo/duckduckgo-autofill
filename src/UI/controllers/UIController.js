@@ -7,6 +7,7 @@
  * @property {TopContextData} topContextData
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
  * @property {import('../../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
+ * @property {{type: 'explicit-opt-in' | 'implicit-opt-in' | 'transactional'}} triggerMetaData - metadata about the trigger, used to make client-side decisions
  */
 
 /**

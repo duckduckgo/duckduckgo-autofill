@@ -1,4 +1,5 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
+import {appendGeneratedId} from './InputTypes/Credentials.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -65,6 +66,19 @@ const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
     }
 
     return true
+}
+
+/**
+ *
+ * @param {DataStorageObject} data
+ * @param {DataStorageObject['trigger']} trigger
+ * @param {string | undefined | null} generatedPassword
+ * @returns {DataStorageObject}
+ */
+const prepareForFormStorage = (data, trigger, generatedPassword) => {
+    const withGeneratedPassword = appendGeneratedId(data, generatedPassword)
+    withGeneratedPassword.trigger = trigger
+    return withGeneratedPassword
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
@@ -217,14 +231,15 @@ const safeExecute = (el, fn, _opts = {}) => {
  * @param {HTMLElement} el
  * @return {boolean}
  */
-const isVisible = (el) => {
+const isPotentiallyViewable = (el) => {
     const computedStyle = window.getComputedStyle(el)
     const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
     const visibility = computedStyle.getPropertyValue('visibility')
+    const opacityThreshold = 0.6
 
     return el.clientWidth !== 0 &&
         el.clientHeight !== 0 &&
-        opacity > 0 &&
+        opacity > opacityThreshold &&
         visibility !== 'hidden'
 }
 
@@ -306,11 +321,13 @@ const isLikelyASubmitButton = (el) => {
     const ariaLabel = el.getAttribute('aria-label') || ''
     const title = el.title || ''
     const value = (el instanceof HTMLInputElement ? el.value || '' : '')
+    const dataTestId = el.getAttribute('data-test-id') || ''
     const contentExcludingLabel = text + ' ' + title + ' ' + value
 
     return (
         el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
+        /submit/i.test(dataTestId) ||
         SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
         (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
     ) &&
@@ -344,6 +361,9 @@ const getText = (el) => {
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
     if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
+    if (el instanceof HTMLInputElement && el.type === 'image') {
+        return removeExcessWhitespace(el.alt || el.value || el.title)
+    }
 
     return removeExcessWhitespace(
         Array.from(el.childNodes).reduce((text, child) =>
@@ -413,15 +433,56 @@ function whenIdle (callback) {
     }
 }
 
+/**
+ * Truncate string from the middle if exceeds the totalLength (default: 30)
+ * @param {string} string
+ * @param {number} totalLength
+ * @returns {string}
+ */
+function truncateFromMiddle (string, totalLength = 30) {
+    if (totalLength < 4) {
+        throw new Error('Do not use with strings shorter than 4')
+    }
+
+    if (string.length <= totalLength) return string
+
+    const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2))
+    return truncated
+}
+
+/**
+ * Determines if the form is likely to be enclosing most of the DOM
+ * @param {HTMLFormElement} form
+ * @returns {boolean}
+ */
+function isFormLikelyToBeUsedAsPageWrapper (form) {
+    if (form.parentElement !== document.body) return false
+
+    const formChildren = form.querySelectorAll('*').length
+    // If the form has few content elements, it's unlikely to cause issues anyway
+    if (formChildren < 100) return false
+
+    const bodyChildren = document.body.querySelectorAll('*').length
+
+    /**
+     * Percentage of the formChildren on the total body elements
+     * form * 100 / body = x
+     */
+    const formChildrenPercentage = formChildren * 100 / bodyChildren
+
+    return formChildrenPercentage > 50
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,
     isIncontextSignupEnabledFromProcessedConfig,
+    prepareForFormStorage,
     autofillEnabled,
     setValue,
     safeExecute,
-    isVisible,
+    isPotentiallyViewable,
     getDaxBoundingBox,
     isEventWithinDax,
     addInlineStyles,
@@ -437,5 +498,7 @@ export {
     isValidTLD,
     wasAutofilledByChrome,
     shouldLog,
-    whenIdle
+    whenIdle,
+    truncateFromMiddle,
+    isFormLikelyToBeUsedAsPageWrapper
 }

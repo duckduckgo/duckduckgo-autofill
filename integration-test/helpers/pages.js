@@ -1,7 +1,7 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
 import {mockedCalls} from './harness.js'
-import {clickOnIcon} from './utils.js'
+import {addTopAutofillMouseFocus, clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
@@ -87,6 +87,55 @@ export function signupPage (page) {
     return {
         async navigate () {
             await page.goto(constants.pages['signup'])
+        },
+        async clickIntoPasswordField () {
+            const input = page.locator('#password')
+            await input.click()
+        },
+        async clickIntoPasswordConfirmationField () {
+            const input = page.locator('#password-2')
+            await input.click()
+        },
+        /**
+         * @param {number} times
+         * @param {Platform} platform
+         * @return {Promise<void>}
+         */
+        async assertPasswordWasSuggestedTimes (times = 1, platform) {
+            const calls = await mockedCalls(page, ['getAutofillData'])
+            const suggested = calls.filter(call => {
+                let json
+                if (platform === 'android') {
+                    // @ts-expect-error - on Android this is a string
+                    json = JSON.parse(call[1])
+                } else {
+                    json = call[1]
+                }
+                return Boolean(json.generatedPassword)
+            })
+            expect(suggested.length).toBe(times)
+        },
+        async assertPasswordWasAutofilled () {
+            await page.waitForFunction(() => {
+                const pw = /** @type {HTMLInputElement} */ (document.querySelector('#password'))
+                return pw?.value.length > 0
+            })
+            const input = await page.locator('#password').inputValue()
+            const input2 = await page.locator('#password-2').inputValue()
+            expect(input.length).toBeGreaterThan(9)
+            expect(input).toEqual(input2)
+        },
+        async assertPasswordWasNotAutofilled () {
+            // ensure there was time to autofill, otherwise it can give a false negative
+            await page.waitForTimeout(100)
+            const input = await page.locator('#password').inputValue()
+            const input2 = await page.locator('#password-2').inputValue()
+            expect(input).toEqual('')
+            expect(input2).toEqual('')
+        },
+        async clickDirectlyOnPasswordIcon () {
+            const input = page.locator('#password')
+            await clickOnIcon(input)
         },
         async selectGeneratedPassword () {
             const input = page.locator('#password')
@@ -175,12 +224,7 @@ export function signupPage (page) {
          */
         async assertWasPromptedToSave (credentials, platform) {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            const mockNames = {
-                ios: 'pmHandlerStoreData',
-                macos: 'pmHandlerStoreData',
-                android: 'storeFormData'
-            }
-            const mockCalls = calls.find(([name]) => name === mockNames[platform])
+            const mockCalls = calls.find(([name]) => name === 'storeFormData')
             let [, sent] = mockCalls
             if (platform === 'android') {
                 expect(typeof sent).toBe('string')
@@ -411,15 +455,9 @@ export function loginPage (page, opts = {}) {
         async submitFormAsIs () {
             await page.click('#login button[type="submit"]')
         },
-        /** @param {Platform} platform */
-        async shouldNotPromptToSave (platform = 'ios') {
+        async shouldNotPromptToSave () {
             let mockCalls = []
-            if (['ios', 'macos'].includes(platform)) {
-                mockCalls = await mockedCalls(page, ['pmHandlerStoreData'], false)
-            }
-            if (platform === 'android') {
-                mockCalls = await mockedCalls(page, ['storeFormData'], false)
-            }
+            mockCalls = await mockedCalls(page, ['storeFormData'], false)
 
             expect(mockCalls.length).toBe(0)
         },
@@ -465,17 +503,12 @@ export function loginPage (page, opts = {}) {
          */
         async assertWasPromptedToSave (data, platform = 'ios') {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            // todo(Shane): is it too apple specific?
-            const mockNames = {
-                ios: 'pmHandlerStoreData',
-                macos: 'pmHandlerStoreData',
-                android: 'storeFormData'
-            }
-            const mockCalls = calls.filter(([name]) => name === mockNames[platform])
+            const mockCalls = calls.filter(([name]) => name === 'storeFormData')
             expect(mockCalls).toHaveLength(1)
             const [, sent] = mockCalls[0]
             const expected = {
                 credentials: data,
+                trigger: 'formSubmission',
                 locale: 'unknown'
             }
             if (platform === 'ios' || platform === 'macos') {
@@ -487,19 +520,25 @@ export function loginPage (page, opts = {}) {
             }
         },
         /**
-         * This is here to capture EXISTING functionality of `macOS` in production and prevent
-         * accidental changes to how `showAutofillParent` messages are sent
          * @returns {Promise<void>}
          */
-        async assertClickAndFocusMessages () {
+        async assertClickMessage () {
             const calls = await mockedCalls(page, ['showAutofillParent'])
-            expect(calls.length).toBe(2)
+            expect(calls.length).toBe(1)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
             // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
-            const [call1, call2] = calls
+            const [call1] = calls
             expect(call1[1].wasFromClick).toBe(true)
-            expect(call2[1].wasFromClick).toBe(false)
+        },
+        async assertFocusMessage () {
+            const calls = await mockedCalls(page, ['showAutofillParent'])
+            expect(calls.length).toBe(1)
+
+            // each call is captured as a tuple like this: [name, params, response], which is why
+            // we use `call1[1]` and `call1[2]` - we're accessing the params sent in the request
+            const [call1] = calls
+            expect(call1[1].wasFromClick).toBe(false)
         },
         async assertFormSubmitted () {
             const submittedMsg = await page.locator('h1:has-text("Submitted!")')
@@ -709,7 +748,8 @@ export function overlayPage (page) {
          * @returns {Promise<void>}
          */
         async clickButtonWithText (text) {
-            const button = await page.waitForSelector(`button:has-text("${text}")`)
+            const button = await page.locator(`button:has-text("${text}")`)
+            await addTopAutofillMouseFocus(page, button)
             await button.click({ force: true })
         },
         /**
@@ -722,6 +762,10 @@ export function overlayPage (page) {
             const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
             expect(closeAutofillParentCalls.length).toBe(0)
         },
+        async assertCloseAutofillParent () {
+            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], true)
+            expect(closeAutofillParentCalls.length).toBe(1)
+        },
         /**
          * When we're in an overlay, 'closeAutofillParent' should not be called.
          */
@@ -730,6 +774,10 @@ export function overlayPage (page) {
                 const calls = window.__playwright_autofill.mocks.calls
                 return calls.some(call => call[0] === 'selectedDetail')
             })
+        },
+        async assertTextNotPresent (text) {
+            const button = await page.locator(`button:has-text("${text}")`)
+            await expect(button).toHaveCount(0)
         }
     }
 }

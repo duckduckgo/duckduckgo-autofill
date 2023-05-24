@@ -52,7 +52,6 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            {pixelName: 'incontext_eligible'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
             {pixelName: 'autofill_personal_address'}
         ])
@@ -69,7 +68,6 @@ test.describe('macos', () => {
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            {pixelName: 'incontext_eligible'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
             {pixelName: 'autofill_personal_address'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
@@ -85,7 +83,7 @@ test.describe('macos', () => {
         }
 
         const {personalAddress, privateAddress0} = constants.fields.email
-        const identity = constants.fields.identities
+        const identity = constants.fields.identity
         const identityWithDuckAddress = {
             ...identity,
             emailAddress: personalAddress
@@ -148,7 +146,6 @@ test.describe('macos', () => {
             await signup.selectFirstEmailField(identityWithDuckAddress.emailAddress)
             await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
             await signup.assertPixelsFired([
-                {pixelName: 'incontext_eligible'},
                 {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
                 {pixelName: 'autofill_personal_address'}
             ])
@@ -195,7 +192,7 @@ test.describe('macos', () => {
             .withAvailableInputTypes({email: true})
             .withPersonalEmail(stripDuckExtension(personalAddress))
             .withPrivateEmail(stripDuckExtension(privateAddress0))
-            .withIdentity(constants.fields.identities)
+            .withIdentity(constants.fields.identity)
             .applyTo(page)
 
         // Load the autofill.js script with replacements
@@ -211,7 +208,6 @@ test.describe('macos', () => {
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
         await signup.assertPixelsFired([
-            {pixelName: 'incontext_eligible'},
             {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
             {pixelName: 'autofill_personal_address'}
         ])

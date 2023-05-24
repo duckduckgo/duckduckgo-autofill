@@ -112,7 +112,15 @@ class ExtensionInterface extends InterfacePrototype {
             })
 
             if (this.activeForm?.activeInput) {
-                this.attachTooltip(this.activeForm, this.activeForm?.activeInput, null, 'postSignup')
+                this.attachTooltip({
+                    form: this.activeForm,
+                    input: this.activeForm?.activeInput,
+                    click: null,
+                    trigger: 'postSignup',
+                    triggerMetaData: {
+                        type: 'transactional'
+                    }
+                })
             }
 
             break

@@ -34,13 +34,22 @@ export const constants = {
                 credential: '[data-ddg-inputtype="credentials.password"]'
             }
         },
-        identities: {
+        identity: {
             id: '01',
             title: 'Main identity',
             emailAddress: 'user@gmail.com',
             firstName: 'First',
             lastName: 'Last',
             phone: '+1234567890'
+        },
+        creditCard: {
+            id: '01',
+            title: 'Main card',
+            cardName: 'First Last',
+            cardNumber: '4242424242424242',
+            cardSecurityCode: '123',
+            expirationMonth: '12',
+            expirationYear: '2030'
         }
     },
     /** @type {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} */
@@ -86,6 +95,7 @@ export const constants = {
     },
     iconMatchers: {
         key: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4w',
-        dax: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBo'
+        // This is the same icon as `daxBase64` in `src/Form/logo-svg.js`
+        dax: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2a'
     }
 }

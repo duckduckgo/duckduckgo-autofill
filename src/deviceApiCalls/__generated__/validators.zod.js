@@ -22,8 +22,13 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     }), z.object({
         pixelName: z.literal("incontext_close_x")
     }), z.object({
-        pixelName: z.literal("incontext_eligible")
+        pixelName: z.literal("email_incontext_eligible")
     })]);
+
+export const generatedPasswordSchema = z.object({
+    value: z.string(),
+    username: z.string()
+});
 
 export const triggerContextSchema = z.object({
     inputTop: z.number(),
@@ -37,6 +42,9 @@ export const credentialsSchema = z.object({
     id: z.string().optional(),
     username: z.string(),
     password: z.string(),
+    origin: z.object({
+        url: z.string()
+    }).optional(),
     credentialsProvider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional(),
     providerStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
 });
@@ -206,6 +214,7 @@ export const getAliasResultSchema = z.object({
 });
 
 export const getAutofillDataRequestSchema = z.object({
+    generatedPassword: generatedPasswordSchema.optional(),
     inputType: z.string(),
     mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
     subType: z.string(),
@@ -218,7 +227,7 @@ export const getAutofillDataResponseSchema = z.object({
     type: z.literal("getAutofillDataResponse").optional(),
     success: z.object({
         credentials: credentialsSchema.optional(),
-        action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none")])
+        action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
 });
@@ -231,6 +240,7 @@ export const runtimeConfigurationSchema = z.object({
 
 export const storeFormDataSchema = z.object({
     credentials: outgoingCredentialsSchema.optional(),
+    trigger: z.union([z.literal("formSubmission"), z.literal("passwordGeneration")]).optional(),
     locale: z.string().optional()
 });
 

@@ -1,19 +1,21 @@
 const FORM_INPUTS_SELECTOR = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
 [autocomplete=username],
 select`
 
 const SUBMIT_BUTTON_SELECTOR = `
 input[type=submit],
 input[type=button],
+input[type=image],
 button:not([role=switch]):not([role=link]),
 [role=button],
 a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
-const email = `
+const email = [
+    `
 input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
-input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
+input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),
 input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),
 input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),
@@ -24,13 +26,20 @@ input:not([type])[aria-label*=email i]:not([aria-label*=search i]),
 input[name=username][type=email],
 input[autocomplete=username][type=email],
 input[autocomplete=username][placeholder*=email i],
-input[autocomplete=email]`
+input[autocomplete=email]`,
+    // https://account.nicovideo.jp/login
+    `input[name="mail_tel" i]`
+]
 
 // We've seen non-standard types like 'user'. This selector should get them, too
 const GENERIC_TEXT_FIELD = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
 
-const password = `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])`
+const password = [
+    `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])`,
+    // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
+    'input.js-cloudsave-phrase'
+]
 
 const cardName = `
 input[autocomplete="cc-name" i],
@@ -134,7 +143,11 @@ const fullName = `
 [name*=your-name i], [autocomplete*=your-name i]`
 
 const phone = `
-[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]), [name*=mobile i]:not([name*=type i]), [autocomplete=tel], [placeholder*="phone number" i]`
+[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),
+[name*=mobile i]:not([name*=type i]),
+[autocomplete=tel],
+[autocomplete="tel-national"],
+[placeholder*="phone number" i]`
 
 const addressStreet1 = `
 [name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],
@@ -191,14 +204,45 @@ const username = [
     `input[name="loginId" i]`,
     // fix for https://online.mbank.pl/pl/Login
     `input[name="userid" i]`,
+    `input[id="userid" i]`,
     `input[name="user_id" i]`,
     `input[name="user-id" i]`,
     `input[id="login-id" i]`,
+    `input[name="login" i]`,
     `input[name=accountname i]`,
     `input[autocomplete=username i]`,
     `input[name*=accountid i]`,
     `input[name="j_username" i]`,
+    `input[id="j_username" i]`,
+    // https://account.uwindsor.ca/login
+    `input[name="uwinid" i]`,
+    // livedoor.com
+    `input[name="livedoor_id" i]`,
+    // https://login.oracle.com/mysso/signon.jsp?request_id=
+    `input[name="ssousername" i]`,
+    // https://secure.nsandi.com/
+    `input[name="j_userlogin_pwd" i]`,
+    // https://freelance.habr.com/users/sign_up
+    `input[name="user[login]" i]`,
+    // https://weblogin.utoronto.ca
+    `input[name="user" i]`,
+    // https://customerportal.mastercard.com/login
+    `input[name$="_username" i]`,
+    // https://accounts.hindustantimes.com/?type=plain&ref=lm
+    `input[id="lmSsoinput" i]`,
+    // bigcartel.com/login
+    `input[name="account_subdomain" i]`,
+    // https://www.mydns.jp/members/
+    `input[name="masterid" i]`,
+    // https://giris.turkiye.gov.tr
+    `input[name="tridField" i]`,
+    // https://membernetprb2c.b2clogin.com
+    `input[id="signInName" i]`,
+    // https://www.w3.org/accounts/request
+    `input[id="w3c_accountsbundle_accountrequeststep1_login" i]`,
     `input[id="username" i]`,
+    `input[name="_user" i]`,
+    `input[name="login_username" i]`,
     `input[placeholder^="username" i]`
 ]
 

@@ -6,7 +6,11 @@ interface CredentialsMock {
     username: string,
     password: string,
     id: string,
-    credentialsProvider?: 'duckduckgo' | 'bitwarden'
+    credentialsProvider?: 'duckduckgo' | 'bitwarden',
+    origin?: {
+        url: string,
+        partialMatch: boolean
+    }
 }
 
 /**
@@ -28,10 +32,15 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withPrivateEmail(email: string): MockBuilder<State, Mocks>
     // Set the personal email address
     withPersonalEmail(email: string): MockBuilder<State, Mocks>
+    // Add Email Protection emails
+    withEmailProtection(emails: {personalAddress: string, privateAddress: string}): MockBuilder<State, Mocks>
     // Add an identity
-    withIdentity(identity: IdentityObject): MockBuilder<State, Mocks>
+    withIdentity(identity: IdentityObject, inputType?: SupportedTypes): MockBuilder<State, Mocks>
+    // Add a credit card
+    withCreditCard(creditCard: CreditCardObject, inputType?: SupportedTypes): MockBuilder<State, Mocks>
     // Add a credential
-    withCredentials(credentials: CredentialsMock): MockBuilder<State, Mocks>
+    withCredentials(credentials: CredentialsMock, inputType?: SupportedTypes): MockBuilder<State, Mocks>
+    withDataType(data: any): MockBuilder<State, Mocks>
     // Add available input types
     withAvailableInputTypes(inputTypes: import("../../src/deviceApiCalls/__generated__/validators-ts").AvailableInputTypes): MockBuilder<State, Mocks>
     // Add any number of feature toggle overrides
@@ -40,6 +49,7 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withRemoteAutofillState?(handlers: 'enabled' | 'disabled'): MockBuilder<State, Mocks>
     withAskToUnlockProvider?(): MockBuilder<State, Mocks>
     withCheckCredentialsProviderStatus?(): MockBuilder<State, Mocks>
+    withPasswordDecision?(choice: "accept" | "reject" | "dismiss"): MockBuilder<State, Mocks>
     // Remove handlers to test roll-out logic
     removeHandlers?(handlers: (keyof Mocks)[]): MockBuilder<State, Mocks>
     // observe the current state

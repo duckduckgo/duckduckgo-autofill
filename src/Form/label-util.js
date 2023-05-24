@@ -12,7 +12,7 @@ const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
  *          All strings in an element.
  */
 const extractElementStrings = (element) => {
-    const strings = []
+    const strings = new Set()
     const _extractElementStrings = el => {
         if (EXCLUDED_TAGS.includes(el.tagName)) {
             return
@@ -22,7 +22,7 @@ const extractElementStrings = (element) => {
         if (el.nodeType === el.TEXT_NODE || !el.childNodes.length) {
             let trimmedText = removeExcessWhitespace(el.textContent)
             if (trimmedText) {
-                strings.push(trimmedText)
+                strings.add(trimmedText)
             }
             return
         }
@@ -36,7 +36,7 @@ const extractElementStrings = (element) => {
         }
     }
     _extractElementStrings(element)
-    return strings
+    return [...strings]
 }
 
 export {extractElementStrings}

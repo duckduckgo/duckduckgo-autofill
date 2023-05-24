@@ -1,0 +1,43 @@
+<!-- https://news.ycombinator.com/login?goto=news -->
+
+<b>Login</b><br><br>
+<form action="login" method="post"><input name="goto" type="hidden" value="news">
+    <table border="0">
+        <tbody>
+        <tr>
+            <td>username:</td>
+            <td><input autocapitalize="off" autocorrect="off" autofocus="true" data-manual-scoring="username" name="acct" size="20"
+                       spellcheck="false" type="text"></td>
+        </tr>
+        <tr>
+            <td>password:</td>
+            <td><input name="pw" size="20" type="password" data-manual-scoring="password"></td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <input type="submit" value="login" data-manual-submit>
+</form>
+<a href="forgot">Forgot your password?</a><br><br>
+
+
+<b>Create Account</b><br><br>
+<form action="login" method="post">
+    <input name="goto" type="hidden" value="news">
+    <input name="creating" type="hidden" value="t">
+    <table border="0">
+        <tbody>
+        <tr>
+            <td>username:</td>
+            <td><input autocapitalize="off" autocorrect="off" data-manual-scoring="username" name="acct" size="20" spellcheck="false"
+                       type="text"></td>
+        </tr>
+        <tr>
+            <td>password:</td>
+            <td><input name="pw" size="20" type="password" data-manual-scoring="password"></td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <input type="submit" value="create account" data-manual-submit>
+</form>

@@ -75,17 +75,23 @@ export class OverlayUIController extends UIController {
         })
         this._mutObs.observe(document.body, {childList: true, subtree: true})
 
-        let delay = 0
-        if (!click && !this.elementIsInViewport(getPosition())) {
+        const position = getPosition()
+
+        // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
+        if (!click && !this.elementIsInViewport(position)) {
             input.scrollIntoView(true)
-            delay = 500
+            this._mutObs?.disconnect()
+            setTimeout(() => {
+                this.attach(args)
+            }, 50)
+            return
         }
-        setTimeout(() => {
-            this.showTopTooltip(click, getPosition(), topContextData)
-                .catch(e => {
-                    console.error('error from showTopTooltip', e)
-                })
-        }, delay)
+        this.#state = 'parentShown'
+        this.showTopTooltip(click, position, topContextData)
+            .catch(e => {
+                console.error('error from showTopTooltip', e)
+                this.#state = 'idle'
+            })
     }
 
     /**
@@ -155,6 +161,7 @@ export class OverlayUIController extends UIController {
             this._attachListeners()
         } catch (e) {
             console.error('could not show parent', e)
+            this.#state = 'idle'
         }
     }
 
@@ -213,5 +220,9 @@ export class OverlayUIController extends UIController {
         this.#state = 'idle'
         this._removeListeners()
         this._mutObs?.disconnect()
+    }
+
+    isActive () {
+        return this.#state === 'parentShown'
     }
 }

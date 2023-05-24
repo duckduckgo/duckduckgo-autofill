@@ -22,7 +22,6 @@ const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/
  * @typedef {{taskGid: string, taskUrl: string, displayName: string}} platformData
  *
  * @typedef {{
- *   extensions: platformData,
  *   android: platformData,
  *   bsk: platformData,
  *   windows: platformData
@@ -38,11 +37,6 @@ const platforms = {
     },
     bsk: {
         displayName: 'BrowserServicesKit',
-        taskGid: '',
-        taskUrl: ''
-    },
-    extensions: {
-        displayName: 'Extensions',
         taskGid: '',
         taskUrl: ''
     },

@@ -8,8 +8,8 @@ describe('Platform replace regexes', () => {
     test('BSK can be updated successfully', () => {
         const examplePackageSwift = `
 dependencies: [
-    .package(name: "Autofill", url: "https://github.com/duckduckgo/duckduckgo-autofill.git", .exact("5.0.1")),
-    .package(name: "GRDB", url: "https://github.com/duckduckgo/GRDB.swift.git", .exact("1.2.0")),
+    .package(url: "https://github.com/duckduckgo/duckduckgo-autofill.git", exact: "6.4.3"),
+    .package(url: "https://github.com/duckduckgo/GRDB.swift.git", exact: "2.1.1"),
 ]`
         const examplePackageResolvedForBSK = `
 {
@@ -23,7 +23,7 @@ dependencies: [
 }`
 
         const updatedPackageSwift = updatePackageSwift(examplePackageSwift, version)
-        expect(updatedPackageSwift).toContain(`"https://github.com/duckduckgo/duckduckgo-autofill.git", .exact("${version}")`)
+        expect(updatedPackageSwift).toContain(`"https://github.com/duckduckgo/duckduckgo-autofill.git", exact: "${version}"`)
 
         const updatedPackageResolvedForBSK = updatePackageResolved(examplePackageResolvedForBSK, {autofill: {version, commit}})
         expect(updatedPackageResolvedForBSK).toContain(`"revision" : "${commit}"`)

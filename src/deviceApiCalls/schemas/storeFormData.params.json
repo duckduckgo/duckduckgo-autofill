@@ -20,6 +20,13 @@
         }
       }
     },
+    "trigger": {
+      "type": "string",
+      "enum": [
+        "formSubmission",
+        "passwordGeneration"
+      ]
+    },
     "locale": {
       "type": "string"
     }
