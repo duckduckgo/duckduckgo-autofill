@@ -142,7 +142,6 @@ class Form {
      */
     getRawValues () {
         const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
-        const formValues = capturedElements
             .reduce((output, inputEl) => {
                 const mainType = getInputMainType(inputEl)
                 const subtype = getInputSubtype(inputEl)
@@ -207,7 +206,8 @@ class Form {
      */
     getValuesReadyForStorage () {
         const formValues = this.getRawValues()
-        const inferredLocale = inferElementLocale(capturedElements[0]) || 'unknown'
+        const [firstInput] = this.inputs.all
+        const inferredLocale = inferElementLocale(firstInput) || 'unknown'
         return prepareFormValuesForStorage(formValues, inferredLocale)
     }
 
