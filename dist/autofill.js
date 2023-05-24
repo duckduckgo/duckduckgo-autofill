@@ -5843,6 +5843,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
       wrapperClass: 'top-autofill',
       tooltipPositionClass: () => '.wrapper { transform: none; }',
       setSize: details => this.deviceApi.notify(new _deviceApiCalls.SetSizeCall(details)),
+      remove: async () => this._closeAutofillParent(),
       testMode: this.isTestMode(),
 
       /**
@@ -5850,6 +5851,38 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
        */
       checkVisibility: false
     });
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  async _closeAutofillParent() {
+    return this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  openManagePasswords() {
+    return this.deviceApi.notify(new _deviceApiCalls.OpenManagePasswordsCall({}));
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  openManageCreditCards() {
+    return this.deviceApi.notify(new _deviceApiCalls.OpenManageCreditCardsCall({}));
+  }
+  /**
+   * @returns {Promise<any>}
+   */
+
+
+  openManageIdentities() {
+    return this.deviceApi.notify(new _deviceApiCalls.OpenManageIdentitiesCall({}));
   }
   /**
    * Since we're running inside the Overlay we can limit what happens here to
@@ -13951,7 +13984,7 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.SetSizeCall = exports.SetIncontextSignupPermanentlyDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAddressesCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
+exports.StoreFormDataCall = exports.SetSizeCall = exports.SetIncontextSignupPermanentlyDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.OpenManagePasswordsCall = exports.OpenManageIdentitiesCall = exports.OpenManageCreditCardsCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAddressesCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -14212,11 +14245,56 @@ class GetIncontextSignupDismissedAtCall extends _deviceApi.DeviceApiCall {
 
 }
 /**
- * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
+ * @extends {DeviceApiCall<any, any>} 
  */
 
 
 exports.GetIncontextSignupDismissedAtCall = GetIncontextSignupDismissedAtCall;
+
+class OpenManagePasswordsCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "openManagePasswords");
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+
+
+exports.OpenManagePasswordsCall = OpenManagePasswordsCall;
+
+class OpenManageCreditCardsCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "openManageCreditCards");
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+
+
+exports.OpenManageCreditCardsCall = OpenManageCreditCardsCall;
+
+class OpenManageIdentitiesCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "openManageIdentities");
+  }
+
+}
+/**
+ * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
+ */
+
+
+exports.OpenManageIdentitiesCall = OpenManageIdentitiesCall;
 
 class EmailProtectionStoreUserDataCall extends _deviceApi.DeviceApiCall {
   constructor() {

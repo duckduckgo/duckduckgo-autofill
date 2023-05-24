@@ -4,7 +4,11 @@ import {
     EmailProtectionGetAddressesCall,
     GetAutofillInitDataCall,
     EmailProtectionGetIsLoggedInCall,
-    SetSizeCall
+    SetSizeCall,
+    OpenManagePasswordsCall,
+    OpenManageCreditCardsCall,
+    OpenManageIdentitiesCall,
+    CloseAutofillParentCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import { overlayApi } from './overlayApi.js'
 
@@ -42,6 +46,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
             setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
+            remove: async () => this._closeAutofillParent(),
             testMode: this.isTestMode(),
             /**
              * Note: This is needed because Mutation observer didn't support visibility checks on Windows
@@ -50,6 +55,32 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
         })
     }
 
+    /**
+     * @returns {Promise<any>}
+     */
+    async _closeAutofillParent () {
+        return this.deviceApi.notify(new CloseAutofillParentCall(null))
+    }
+
+    /**
+     * @returns {Promise<any>}
+     */
+    openManagePasswords() {
+        return this.deviceApi.notify(new OpenManagePasswordsCall({}))
+    }
+    /**
+     * @returns {Promise<any>}
+     */
+    openManageCreditCards() {
+        return this.deviceApi.notify(new OpenManageCreditCardsCall({}))
+    }
+    /**
+     * @returns {Promise<any>}
+     */
+    openManageIdentities() {
+        return this.deviceApi.notify(new OpenManageIdentitiesCall({}))
+    }
+    
     /**
      * Since we're running inside the Overlay we can limit what happens here to
      * be only things that are needed to power the HTML Tooltip

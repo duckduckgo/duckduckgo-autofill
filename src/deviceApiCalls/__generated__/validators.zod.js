@@ -382,6 +382,9 @@ export const apiSchema = z.object({
         paramValidator: getAliasParamsSchema.optional(),
         resultValidator: getAliasResultSchema.optional()
     })).optional(),
+    openManagePasswords: z.record(z.unknown()).optional(),
+    openManageCreditCards: z.record(z.unknown()).optional(),
+    openManageIdentities: z.record(z.unknown()).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionStoreUserDataResponse").optional(),
         paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()

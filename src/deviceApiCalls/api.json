@@ -125,6 +125,18 @@
         "resultValidator": { "$ref": "./schemas/getAlias.result.json" }
       }
     },
+    "openManagePasswords": {
+      "type": "object",
+      "description": "Opens the native password management UI from the autofill popup"
+    },
+    "openManageCreditCards": {
+      "type": "object",
+      "description": "Opens the native credit card management UI from the autofill popup"
+    },
+    "openManageIdentities": {
+      "type": "object",
+      "description": "Opens the native identities management UI from the autofill popup"
+    },
     "emailProtectionStoreUserData": {
       "type": "object",
       "description": "Used to store Email Protection auth credentials (logging in)",

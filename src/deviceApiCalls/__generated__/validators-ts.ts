@@ -138,6 +138,24 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * Opens the native password management UI from the autofill popup
+   */
+  openManagePasswords?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Opens the native credit card management UI from the autofill popup
+   */
+  openManageCreditCards?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Opens the native identities management UI from the autofill popup
+   */
+  openManageIdentities?: {
+    [k: string]: unknown;
+  };
+  /**
    * Used to store Email Protection auth credentials (logging in)
    */
   emailProtectionStoreUserData?: {

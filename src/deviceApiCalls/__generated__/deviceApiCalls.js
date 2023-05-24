@@ -132,6 +132,24 @@ export class GetIncontextSignupDismissedAtCall extends DeviceApiCall {
   resultValidator = getIncontextSignupDismissedAtSchema
 }
 /**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class OpenManagePasswordsCall extends DeviceApiCall {
+  method = "openManagePasswords"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class OpenManageCreditCardsCall extends DeviceApiCall {
+  method = "openManageCreditCards"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class OpenManageIdentitiesCall extends DeviceApiCall {
+  method = "openManageIdentities"
+}
+/**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
  */
 export class EmailProtectionStoreUserDataCall extends DeviceApiCall {
