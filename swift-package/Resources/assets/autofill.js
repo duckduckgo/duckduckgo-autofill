@@ -7791,7 +7791,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
   }
 };
 /**
- * Tries to infer the element locale or returns 'en'
+ * Tries to infer the element locale
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @return {string}
  */
