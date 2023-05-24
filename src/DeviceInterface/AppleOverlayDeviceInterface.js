@@ -47,7 +47,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         })
     }
 
-    addDeviceListeners() {
+    addDeviceListeners () {
         /**
          * The native side will send a custom event 'mouseMove' to indicate
          * that the HTMLTooltip should fake an element being focused.

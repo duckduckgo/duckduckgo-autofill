@@ -1,15 +1,15 @@
 import InterfacePrototype from './InterfacePrototype.js'
 import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
-import { 
-    CloseAutofillParentCall, 
-    GetAutofillDataCall, 
-    EmailProtectionStoreUserDataCall, 
-    EmailProtectionRemoveUserDataCall, 
-    EmailProtectionGetUserDataCall, 
-    EmailProtectionGetCapabilitiesCall, 
-    EmailProtectionRefreshPrivateAddressCall, 
-    EmailProtectionGetAddressesCall, 
-    EmailProtectionGetIsLoggedInCall 
+import {
+    CloseAutofillParentCall,
+    GetAutofillDataCall,
+    EmailProtectionStoreUserDataCall,
+    EmailProtectionRemoveUserDataCall,
+    EmailProtectionGetUserDataCall,
+    EmailProtectionGetCapabilitiesCall,
+    EmailProtectionRefreshPrivateAddressCall,
+    EmailProtectionGetAddressesCall,
+    EmailProtectionGetIsLoggedInCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**

@@ -58,7 +58,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
         })
     }
 
-    addDeviceListeners() {
+    addDeviceListeners () {
         /**
          * On Windows (vs. MacOS) we can use the built-in `mousemove`
          * event and screen-relative positioning.
@@ -98,22 +98,22 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
     /**
      * @returns {Promise<any>}
      */
-    openManagePasswords() {
+    openManagePasswords () {
         return this.deviceApi.notify(new OpenManagePasswordsCall({}))
     }
     /**
      * @returns {Promise<any>}
      */
-    openManageCreditCards() {
+    openManageCreditCards () {
         return this.deviceApi.notify(new OpenManageCreditCardsCall({}))
     }
     /**
      * @returns {Promise<any>}
      */
-    openManageIdentities() {
+    openManageIdentities () {
         return this.deviceApi.notify(new OpenManageIdentitiesCall({}))
     }
-    
+
     /**
      * Since we're running inside the Overlay we can limit what happens here to
      * be only things that are needed to power the HTML Tooltip
