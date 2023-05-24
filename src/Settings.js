@@ -169,6 +169,11 @@ export class Settings {
             return false
         }
 
+        // If it's an email field and Email Protection is enabled, return true regardless of other options
+        if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
+            return true
+        }
+
         if (this.availableInputTypes?.[mainType] === undefined) {
             const availableInputTypesFromRemote = await this.getAvailableInputTypes()
             this.setAvailableInputTypes(availableInputTypesFromRemote)
@@ -180,10 +185,6 @@ export class Settings {
 
         if (subtype === 'expiration') {
             return Boolean(this.availableInputTypes.creditCards?.expirationMonth || this.availableInputTypes.creditCards?.expirationYear)
-        }
-
-        if (subtype === 'emailAddress' && this.featureToggles.emailProtection && this.availableInputTypes.email) {
-            return true
         }
 
         return Boolean(this.availableInputTypes[mainType]?.[subtype])
@@ -217,6 +218,7 @@ export class Settings {
             credentials_saving: false,
             password_generation: false,
             emailProtection: false,
+            emailProtection_incontext_signup: false,
             inputType_identities: false,
             inputType_credentials: false,
             inputType_creditCards: false,

@@ -1,4 +1,4 @@
-const {readdirSync, writeFileSync} = require('fs')
+const {writeFileSync} = require('fs')
 const {join, relative} = require('path')
 const z = require('zod')
 
@@ -43,9 +43,10 @@ if (runningAsScript) {
 async function generateFiles (baseDir) {
     const BASE_OUTPUT = join(baseDir, '/__generated__')
     const constants = {
+        api: join(baseDir, 'api.json'),
         dirs: { schemas: join(baseDir, 'schemas') },
         outputs: {
-            ts: join(BASE_OUTPUT, 'validators-ts.d.ts'),
+            ts: join(BASE_OUTPUT, 'validators-ts.ts'),
             validators: join(BASE_OUTPUT, 'validators.zod.js'),
             apiCalls: join(BASE_OUTPUT, 'deviceApiCalls.js')
         },
@@ -56,15 +57,10 @@ async function generateFiles (baseDir) {
     }
 
     // first, validate the input JSON
-    const deviceApiCalls = validateCalls(require(join(baseDir, 'deviceApiCalls.json')))
-
-    // next, ensure that all schemas are valid
-    const schemas = createSchemaMap(constants.dirs.schemas)
-
-    // now generate the file contents
-    const typescript = await createTypescriptOutput(schemas, constants.dirs.schemas)
+    const apiSchema = require(constants.api)
+    const typescript = await createTypescriptOutput(apiSchema, baseDir)
     const validators = createValidatorsOutput(typescript)
-    const apiCalls = createApiCalls(deviceApiCalls, constants.imports, baseDir)
+    const apiCalls = createApiCalls(validateCalls(apiSchema), constants.imports, baseDir)
 
     return [
         {
@@ -83,48 +79,19 @@ async function generateFiles (baseDir) {
 }
 
 /**
- * Takes a folder of schema files and converts it into key: value map of
- *    <absolute_path>: <json_content>
- * @param {string} schemaDir
- * @returns {SchemaMap}
- */
-function createSchemaMap (schemaDir) {
-    const schemaFiles = readdirSync(schemaDir)
-    return Object.fromEntries(schemaFiles
-        .filter(filename => filename.endsWith('.json') && !filename.startsWith('_'))
-        .map(filename => {
-            const abs = join(schemaDir, filename)
-            const json = require(abs)
-            json.$id = filename
-            return [abs, json]
-        }))
-}
-
-/**
  * Access all schemas in turn, generating types for each.
  * This uses `json-schema-to-typescript` to perform the conversion
  *
- * @param {SchemaMap} schemas
- * @param {string} schemaDir
+ * @param {any} schema
+ * @param {string} baseDir
  * @returns {Promise<string>}
  */
-async function createTypescriptOutput (schemas, schemaDir) {
+async function createTypescriptOutput (schema, baseDir) {
     const {compile} = require('json-schema-to-typescript')
-    /** @type {string[]} */
-    const blocks = []
-    for (let [id, entry] of Object.entries(schemas)) {
-        const res = await compile({
-            ...entry,
-            definitions: {
-                ...schemas
-            }
-        }, id, {
-            bannerComment: '// ' + entry.$id,
-            cwd: schemaDir
-        })
-        blocks.push(res)
-    }
-    return blocks.join('\n')
+    const typescriptSourceCode = await compile(schema, schema.title, {
+        cwd: baseDir
+    })
+    return typescriptSourceCode
 }
 
 /**
@@ -143,7 +110,7 @@ function createValidatorsOutput (typescriptDefinitions) {
 }
 
 /**
- * @param {ApiCallDefinitions} deviceApiCalls
+ * @param {import("zod").infer<typeof schema>} deviceApiCalls
  * @param {{validators: string, deviceApi: string}} importPaths
  * @param {string} baseDir
  * @returns {string}
@@ -155,28 +122,38 @@ function createApiCalls (deviceApiCalls, importPaths, baseDir) {
 
     // For every entry in 'deviceApiCalls.json', try to resolve the schema files that it uses
     for (let [methodName, entry] of Object.entries(deviceApiCalls)) {
+        if (entry.properties?.validatorsOnly?.const === true) {
+            console.log('generating validators only for ', methodName)
+            continue
+        }
         const instanceName = methodName[0].toUpperCase() + methodName.slice(1) + 'Call'
         const classDef = {
-            ...entry
+            ...entry,
+            /** @type {string|undefined} */
+            id: undefined,
+            /** @type {string|undefined} */
+            paramsValidator: undefined,
+            /** @type {string|undefined} */
+            resultValidator: undefined
         }
-        if (entry.paramsValidator) {
-            const schema = require(join(baseDir, entry.paramsValidator))
+        if (entry.properties?.paramsValidator) {
+            const schema = require(join(baseDir, entry.properties.paramsValidator.$ref))
             if (!schema.title) throw new Error('missing `title` in ' + methodName)
             classDef.paramsValidator = createValidatorRef(schema.title)
             imports.add(classDef.paramsValidator)
         } else {
             classDef.paramsValidator = `any`
         }
-        if (entry.resultValidator) {
-            const schema = require(join(baseDir, entry.resultValidator))
+        if (entry.properties?.resultValidator) {
+            const schema = require(join(baseDir, entry.properties.resultValidator.$ref))
             if (!schema.title) throw new Error('missing `title` in ' + methodName)
             classDef.resultValidator = createValidatorRef(schema.title)
             imports.add(classDef.resultValidator)
         } else {
             classDef.resultValidator = `any`
         }
-        if (entry.id) {
-            classDef.id = entry.id
+        if (entry.properties?.id) {
+            classDef.id = entry.properties.id.const
         }
         classes.push(createClassDefinition(methodName, instanceName, classDef))
     }
@@ -227,18 +204,29 @@ function createClassDefinition (methodName, instanceName, cd) {
     return lines.join('\n')
 }
 
+const schema = z.record(z.object({
+    type: z.literal('object'),
+    description: z.string().optional(),
+    properties: z.object({
+        id: z.object({
+            type: z.literal('string'),
+            const: z.string()
+        }).optional(),
+        validatorsOnly: z.object({
+            type: z.literal('boolean'),
+            const: z.boolean()
+        }).optional(),
+        paramsValidator: z.object({ '$ref': z.string() }).optional(),
+        resultValidator: z.object({ '$ref': z.string() }).optional()
+    }).optional()
+}))
+
 /**
  * The validator for the incoming JSON files
- * @param {ApiCallDefinitions} deviceApiCalls
- * @returns {ApiCallDefinitions}
+ * @param {any} deviceApiCalls
  */
 function validateCalls (deviceApiCalls) {
-    return z.record(z.object({
-        id: z.string().optional(),
-        paramsValidator: z.string().optional(),
-        resultValidator: z.string().optional(),
-        description: z.string().optional()
-    }).strict()).parse(deviceApiCalls)
+    return schema.parse(deviceApiCalls.properties)
 }
 
 module.exports.generateFiles = generateFiles

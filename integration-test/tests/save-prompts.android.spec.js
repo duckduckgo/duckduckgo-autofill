@@ -1,7 +1,7 @@
 import {
     createAutofillScript,
     forwardConsoleMessages,
-    setupServer, withAndroidContext
+    withAndroidContext
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage, loginPageWithPoorForm, signupPage} from '../helpers/pages.js'
@@ -14,13 +14,6 @@ import {constants} from '../helpers/mocks.js'
 const test = withAndroidContext(base)
 
 test.describe('Android Save prompts', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('When saving credentials is enabled ✅ (default)', () => {
         test('Prompting to save from a signup form', async ({page}) => {
             // enable in-terminal exceptions
@@ -33,7 +26,7 @@ test.describe('Android Save prompts', () => {
                 password: '123456'
             }
 
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
 
             await createAndroidMocks().applyTo(page)
@@ -51,10 +44,10 @@ test.describe('Android Save prompts', () => {
             await signup.assertWasPromptedToSave(credentials, 'android')
         })
         test.describe('Prompting to save from a login form', () => {
-            /** @param {import("playwright").Page} page */
+            /** @param {import("@playwright/test").Page} page */
             async function setup (page) {
                 await forwardConsoleMessages(page)
-                const login = loginPage(page, server)
+                const login = loginPage(page)
                 await login.navigate()
 
                 await createAndroidMocks()
@@ -99,7 +92,7 @@ test.describe('Android Save prompts', () => {
         test('should not prompt to save', async ({page}) => {
             await forwardConsoleMessages(page)
 
-            const login = loginPage(page, server)
+            const login = loginPage(page)
             await login.navigate()
 
             /** @type {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} */
@@ -127,7 +120,7 @@ test.describe('Android Save prompts', () => {
             }
 
             await login.submitLoginForm(credentials)
-            await login.shouldNotPromptToSave('android')
+            await login.shouldNotPromptToSave()
         })
     })
 
@@ -137,11 +130,11 @@ test.describe('Android Save prompts', () => {
             password: '123456'
         }
         /**
-         * @param {import("playwright").Page} page
+         * @param {import("@playwright/test").Page} page
          */
         async function setup (page) {
             await forwardConsoleMessages(page)
-            const login = loginPageWithPoorForm(page, server)
+            const login = loginPageWithPoorForm(page)
             await login.navigate()
 
             await createAndroidMocks()

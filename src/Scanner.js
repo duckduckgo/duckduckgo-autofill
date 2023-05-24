@@ -1,5 +1,4 @@
 import { Form } from './Form/Form.js'
-import { notifyWebApp } from './autofill-utils.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { createMatching } from './Form/matching.js'
 
@@ -15,6 +14,7 @@ import { createMatching } from './Form/matching.js'
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
+ *     maxInputsOnPage: number,
  * }} ScannerOptions
  */
 
@@ -27,7 +27,11 @@ const defaultScannerOptions = {
     // wait for a 500ms window of event silence before performing the scan
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
-    initialDelay: 0
+    initialDelay: 0,
+    // How many inputs is too many on the page. If we detect that there's above
+    // this maximum, then we don't scan the page. This will prevent slowdowns on
+    // large pages which are unlikely to require autofill anyway.
+    maxInputsOnPage: 100
 }
 
 /**
@@ -86,17 +90,20 @@ class DefaultScanner {
             setTimeout(() => this.scanAndObserve(), delay)
         }
         return () => {
+            const activeInput = this.device.activeForm?.activeInput
+
             // remove Dax, listeners, timers, and observers
             clearTimeout(this.debounceTimer)
             this.mutObs.disconnect()
+
             this.forms.forEach(form => {
                 form.resetAllInputs()
                 form.removeAllDecorations()
             })
             this.forms.clear()
-            if (this.device.globalConfig.isDDGDomain) {
-                notifyWebApp({ deviceSignedIn: {value: false} })
-            }
+
+            // Bring the user back to the input they were interacting with
+            activeInput?.focus()
         }
     }
 
@@ -114,10 +121,19 @@ class DefaultScanner {
      * @param context
      */
     findEligibleInputs (context) {
+        // Avoid autofill on Email Protection web app
+        if (this.device.globalConfig.isDDGDomain) {
+            return this
+        }
+
         if ('matches' in context && context.matches?.(FORM_INPUTS_SELECTOR)) {
             this.addInput(context)
         } else {
-            context.querySelectorAll(FORM_INPUTS_SELECTOR).forEach((input) => this.addInput(input))
+            const inputs = context.querySelectorAll(FORM_INPUTS_SELECTOR)
+            if (inputs.length > this.options.maxInputsOnPage) {
+                return this
+            }
+            inputs.forEach((input) => this.addInput(input))
         }
         return this
     }
@@ -133,7 +149,7 @@ class DefaultScanner {
 
         let element = input
         // traverse the DOM to search for related inputs
-        while (element.parentElement && element.parentElement !== document.body) {
+        while (element.parentElement && element.parentElement !== document.documentElement) {
             // If parent includes a form return the current element to avoid overlapping forms
             if (element.parentElement?.querySelector('form')) {
                 return element

@@ -155,6 +155,7 @@ const inferCountryCodeFromElement = (el) => {
  * @return {{expirationYear: string, expirationMonth: string}}
  */
 const getMMAndYYYYFromString = (expiration) => {
+    /** @type {string[]} */
     const values = expiration.match(/(\d+)/g) || []
     return values?.reduce((output, current) => {
         if (Number(current) > 12) {

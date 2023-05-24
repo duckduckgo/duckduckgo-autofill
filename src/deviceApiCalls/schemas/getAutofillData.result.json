@@ -17,7 +17,7 @@
         "credentials": { "$ref": "./credentials.json" },
         "action": {
           "type": "string",
-          "enum": ["fill", "focus", "none"]
+          "enum": ["fill", "focus", "none", "acceptGeneratedPassword", "rejectGeneratedPassword"]
         }
       },
       "required": ["action"]

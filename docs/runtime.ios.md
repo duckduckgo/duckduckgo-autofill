@@ -70,13 +70,41 @@ see:
 
 - [../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json](../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json)
 
-This represents which input types we can autofill for the current user.
+This represents which input types we can autofill for the current user. Values are `true` if we can autofill the
+field type with at least one item. For example, if we have two credential items and the first only has a username
+and the second only has a password, both fields will be `true`.
 
 ```json
 {
   "success": {
     "email": true,
-    "credentials": true
+    "credentials": {
+      "username": true,
+      "password": true
+    },
+    "identities": {
+      "firstName": false,
+      "middleName": false,
+      "lastName": false,
+      "birthdayDay": false,
+      "birthdayMonth": false,
+      "birthdayYear": false,
+      "addressStreet": false,
+      "addressStreet2": false,
+      "addressCity": false,
+      "addressProvince": false,
+      "addressPostalCode": false,
+      "addressCountryCode": false,
+      "phone": false,
+      "emailAddress": false
+    },
+    "creditCards": {
+      "cardName": false,
+      "cardSecurityCode": false,
+      "expirationMonth": false,
+      "expirationYear": false,
+      "cardNumber": false
+    }
   }
 }
 ```
@@ -95,16 +123,19 @@ This represents which input types we can autofill for the current user.
   "credentials": {
     "username": "dax@duck.com",
     "password": "123456"
-  }
+  },
+  "trigger": "passwordGeneration"
 }
 ```
 
 **request example 2**
+
 ```json
 {
   "credentials": {
     "password": "123456"
-  }
+  },
+  "trigger": "formSubmission"
 }
 ```
 
@@ -160,6 +191,44 @@ see:
   "success": {
     "action": "none"
   }
+}
+```
+---
+
+## Password generation
+
+**`request`** example when a password can be generated
+
+```json
+{
+  "inputType": "credentials.password",
+  "mainType": "credentials",
+  "subType": "password",
+  "trigger": "userInitiated",
+  "generatedPassword": {
+    "username": "user@name.com",
+    "value": "r3nd0mP@ssword"
+  }
+}
+```
+
+**`response`** examples
+
+```json
+{
+  "success": {
+    "action": "acceptGeneratedPassword"
+  },
+  "type": "getAutofillDataResponse"
+}
+```
+
+```json
+{
+  "success": {
+    "action": "rejectGeneratedPassword"
+  },
+  "type": "getAutofillDataResponse"
 }
 ```
 

@@ -22,7 +22,7 @@ function updateBSKRepo (version, commit) {
     console.log('Autofill reference updated in BSK\'s Package.swift')
 
     const packageResolved = readFileSync(packageResolvedPath, 'utf8')
-    const updatedPackageResolve = updatePackageResolved(packageResolved, version, commit)
+    const updatedPackageResolve = updatePackageResolved(packageResolved, {autofill: {version, commit}})
     writeFileSync(packageResolvedPath, updatedPackageResolve)
     console.log('Autofill reference updated in BSK\'s Package.resolved')
 }

@@ -13,6 +13,8 @@ import {
     askToUnlockProviderResultSchema,
     checkCredentialsProviderStatusResultSchema,
     sendJSPixelParamsSchema,
+    setIncontextSignupPermanentlyDismissedAtSchema,
+    getIncontextSignupDismissedAtSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
     emailProtectionGetUserDataResultSchema,
@@ -113,6 +115,21 @@ export class CheckCredentialsProviderStatusCall extends DeviceApiCall {
 export class SendJSPixelCall extends DeviceApiCall {
   method = "sendJSPixel"
   paramsValidator = sendJSPixelParamsSchema
+}
+/**
+ * @extends {DeviceApiCall<setIncontextSignupPermanentlyDismissedAtSchema, any>} 
+ */
+export class SetIncontextSignupPermanentlyDismissedAtCall extends DeviceApiCall {
+  method = "setIncontextSignupPermanentlyDismissedAt"
+  paramsValidator = setIncontextSignupPermanentlyDismissedAtSchema
+}
+/**
+ * @extends {DeviceApiCall<any, getIncontextSignupDismissedAtSchema>} 
+ */
+export class GetIncontextSignupDismissedAtCall extends DeviceApiCall {
+  method = "getIncontextSignupDismissedAt"
+  id = "getIncontextSignupDismissedAt"
+  resultValidator = getIncontextSignupDismissedAtSchema
 }
 /**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 

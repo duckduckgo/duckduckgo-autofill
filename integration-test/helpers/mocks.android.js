@@ -3,7 +3,7 @@
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  */
-import {createAvailableInputTypes} from './utils.js'
+import {createAvailableInputTypes, withDataType} from './utils.js'
 
 /**
  * @param {object} [overrides]
@@ -46,7 +46,7 @@ export function androidStringReplacements (overrides = {}) {
                             emailProtection: true,
                             password_generation: false,
                             credentials_saving: true,
-                            inlineIcon_credentials: false,
+                            inlineIcon_credentials: true,
                             ...overrides.featureToggles
                         }
                     }
@@ -91,10 +91,18 @@ export function createAndroidMocks () {
             mocks.isSignedIn = 'true'
             return this
         },
+        withEmailProtection (emails) {
+            return this
+                .withPrivateEmail(emails.privateAddress)
+                .withPersonalEmail(emails.personalAddress)
+        },
         withAvailableInputTypes (_inputTypes) {
             throw new Error('cannot set mock withAvailableInputTypes on Android, use string replacements instead')
         },
         withIdentity: function () {
+            throw new Error('Function not implemented.')
+        },
+        withCreditCard: function () {
             throw new Error('Function not implemented.')
         },
         withFeatureToggles (_featureToggles) {
@@ -111,6 +119,26 @@ export function createAndroidMocks () {
             }
             return this
         },
+        /**
+         * @returns {MockBuilder}
+         */
+        withPasswordDecision: function (choice) {
+            if (choice === 'accept') {
+                mocks.getAutofillData = {
+                    action: 'acceptGeneratedPassword'
+                }
+            } else if (choice === 'reject') {
+                mocks.getAutofillData = {
+                    action: 'rejectGeneratedPassword'
+                }
+            } else {
+                mocks.getAutofillData = { action: 'none' }
+            }
+            return this
+        },
+        withDataType: function (data) {
+            return withDataType(this, data)
+        },
         withCheckCredentialsProviderStatus: function () {
             return this
         },
@@ -119,7 +147,7 @@ export function createAndroidMocks () {
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
-                window.__playwright = {mocks: {calls: []}}
+                window.__playwright_autofill = {mocks: {calls: []}}
                 window.EmailInterface = {
                     showTooltip () {
                         window.postMessage({
@@ -153,7 +181,7 @@ export function createAndroidMocks () {
                  */
                 function respond (name, request, response) {
                     const call = [name, request, response]
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     window.postMessage(JSON.stringify({
                         type: name + 'Response',
                         success: response
@@ -166,8 +194,9 @@ export function createAndroidMocks () {
                     },
                     storeFormData (request) {
                         /** @type {MockCall} */
+                        // @ts-expect-error
                         const call = ['storeFormData', request, mocks.getAutofillData]
-                        window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     }
                 }
             }, mocks)

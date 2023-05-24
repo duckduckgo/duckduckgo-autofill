@@ -1,0 +1,184 @@
+<!--
+  https://home.bt.com/login/loginform
+  rank: 5802
+  testRunId: 67
+  testResultId: 243828
+-->
+<form method="post" action="https://signin1.bt.com/siteminderagent/fcc/shim.fcc" name="frm_login">
+  
+  <!-- Added display Banner condition value is No <br> bannertype is Warning <br> banner content is -->
+  <div class="loginerror generic-error">
+    Please check you entered your username and password correctly and try again.
+    If you need help remembering your username or password you can use the links
+    below.
+  </div>
+  <div class="loginerror lock-error">
+    You have had too many unsuccessful attempts to login. You have been
+    temporarily locked out. Please try after 15 minutes.
+  </div>
+  <!--Start:error Login Section-->
+  <noscript>
+    <div id="noscripterrorcontainer" class="main-amber showslot">
+      <div class="submit-error">
+        <div class="pull-left red-image"></div>
+        <div class="error-text-wrapper">
+          <div class="error-header">
+            You've disabled JavaScript on the browser. Please enable it prior to
+            continuing.
+          </div>
+        </div>
+      </div>
+    </div>
+  </noscript>
+  <div id="errorcontainer" class="main-amber hideslot">
+    <div class="submit-error">
+      <div class="pull-left red-image"></div>
+      <div class="error-text-wrapper">
+        <!-- <div id="loginpageerror0" class="error-header hideslot"> Your session has been timed out. Please try again. </div> -->
+        <div id="loginpageerror1" class="error-header hideslot">
+          You've disabled cookies on the browser. Please enable it prior to
+          continuing.
+        </div>
+        <div id="loginpageerror2" class="error-header hideslot">
+          Please check you entered your username and password correctly and try
+          again. If you need help remembering your username or password you can
+          use the links below.
+        </div>
+        <div id="loginpageerror3" class="error-header hideslot">
+          You have had too many unsuccessful attempts to login. You have been
+          temporarily locked out. Please try after 20 minutes.
+        </div>
+        <div id="loginpageerror4" class="error-header hideslot">
+          Invalid passcode. Identity verification on any device using your
+          present methods have been locked for 20 minutes.
+        </div>
+        <div id="loginpageerror5" class="error-header hideslot">
+          Invalid passcode. Please try again.
+        </div>
+        <div id="loginpageerror6" class="error-header hideslot">
+          Something went wrong. Please try again.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="clear-both"></div>
+  <!--End:error Login Section-->
+  <div class="loginpane email-signin-wrapper email-login-wrapper">
+    <input name="cookieExpp" value="30" type="hidden">
+    <input name="Switch" value="yes" type="hidden">
+    <input type="hidden" name="SMPostLoginUrl" value="/appsyouraccount/secure/postlogin">
+    <input type="hidden" name="loginforward" value="https://home.bt.com/secure/loginforwardaabe?view=default" id="loginforward">
+    <input name="smauthreason" value="0" type="hidden">
+    <div class="smtarget">
+      <input type="hidden" name="TARGET" value="https://home.bt.com/secure/loginforwardaabe?view=default&amp;redirectURL=https://my.bt.com/appsconsumeraccount/secure/enhancedMyBT.do?siteArea=con.mya?s_cid=con_fly_mybt_mybt_mybt">
+    </div>
+    <div class="loginsection">
+      <div class="login-heading">Log in</div>
+      <div id="bespoketoggle">
+        <div>
+          To manage your account, view your bill or access other BT services,
+          you need to login using your BT ID.
+        </div>
+        <br>
+      </div>
+    </div>
+    <label class="username">BT ID</label>
+    <label class="reenterusername">Please enter your BT ID</label>
+    <input tabindex="3" class="logintextbox user form-control" name="USER" type="text" maxlength="255" size="25" onfocus="if (this.value.toLowerCase() == 'this is usually your email address') {this.value=''}" onblur="if (this.value == '') {this.value='this is usually your email address'}" value="this is usually your email address" data-value="this is usually your email address" autocomplete="off" autofill-information="overall type: EMAIL_ADDRESS
+server type: EMAIL_ADDRESS
+heuristic type: UNKNOWN_TYPE
+label: Please enter your BT ID
+parseable name: USER
+section: USER_0_18
+field signature: 2656536810
+form signature: 4670889059928502530
+form signature in host form: 4670889059928502530
+field frame token: BEA7BC5CE14361F91F6D86004419BDC1
+form renderer id: 2
+field renderer id: 18
+autocomplete: off" data-ddg-testresultelementid="571284" data-manual-scoring="username OR emailAddress"><!--Dante 2999 change autocomplete added-->
+    <label class="softloguname"></label>
+    <p class="forgotUP forgotTxt"></p>
+    <p class="notyou">
+      Not you?
+      <a class="notyoulog" href="#">Log in <span class="arrowspan"></span></a>
+    </p>
+    <label class="pswd"> Password </label>
+    <!-- 2984 changes -->
+    <p class="show showLink" id="shpwdlbl">Show</p>
+    <!-- 2984 changes -->
+    <label class="reenterusername pass">Please enter your password</label>
+    <input tabindex="4" id="nafmpwd" name="NAFMPASSWORD" class="logintextbox password form-control" type="password" maxlength="100" size="25" autocomplete="off" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Please enter your password
+parseable name: NAFMPASSWORD
+section: USER_0_18
+field signature: 1318658271
+form signature: 4670889059928502530
+form signature in host form: 4670889059928502530
+field frame token: BEA7BC5CE14361F91F6D86004419BDC1
+form renderer id: 2
+field renderer id: 19
+autocomplete: off" data-ddg-testresultelementid="571285" data-manual-scoring="password"><!--Dante 2999 change autocomplete added-->
+    <input name="PASSWORD" type="hidden" maxlength="100" size="25">
+    <p class="forgotUP">
+      <a tabindex="6" class="forgotPwd" href="https://my.bt.com/s/apps/appsselfserve/index.html#/forgotlogindetails?srfd=y&amp;view=default&amp;TARGET=" data-analytics-link="Link:Forgotten your login details?">Forgotten your login details?</a>
+    </p>
+    
+    <p class="keepmeloggin">
+      <input tabindex="7" id="emailkeepmeloggedin" class="checkbox" type="checkbox" name="rememberMe" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Remember me
+parseable name: rememberMe
+section: USER_0_18
+field signature: 2146615972
+form signature: 4670889059928502530
+form signature in host form: 4670889059928502530
+field frame token: BEA7BC5CE14361F91F6D86004419BDC1
+form renderer id: 2
+field renderer id: 21" data-ddg-testresultelementid="571286">
+      <strong>Remember me</strong>
+      <a tabindex="8" href="#cxtHelp_portal-logininbox" class="cxtHelpLink hideinmob">)</a>
+    </p>
+    <input tabindex="9" type="submit" value="Log in" class="loginbtngoBT btn btn-primary email-btn-primary">
+    <p class="helplinks">
+      <a tabindex="10" href="javascript:history.back()" class="backlink" data-analytics-link="Link:Back">
+        <span class="backarrow hideArrowMob"></span><span class="hideArrowDesktop">&lt;</span> Back
+      </a>
+      <a tabindex="12" href="https://www.bt.com/btmail/securitylogin" class="emailsec" data-analytics-link="Link:Security">Security</a>
+      <a tabindex="11" href="http://www.bt.com/help" class="helplink" data-analytics-link="Link:Help">Help</a>
+    </p>
+    <div class="signupbtpane signupbtpane-custom signup-bt-txt">
+      <span class="needanacc">Don't have a BT ID?</span>
+      <a tabindex="13" href="https://www.bt.com/mybt/signup" data-analytics-link="Link:Create one">
+        Create one
+      </a>
+    </div>
+    <div class="MPUmessage">
+      <h3>Quick links</h3>
+      <p>
+        <a href="https://my.bt.com/ordertracking" data-analytics-link="Link:Track your order">Track your order &gt;</a>
+      </p>
+      <p>
+        <a href="https://my.bt.com/help/home/faults/" data-analytics-link="Link:Report or track a fault">Report or track a fault &gt;</a>
+      </p>
+      <p>
+        <a href="https://my.bt.com/s/apps/appsbills/index.html#/logoutmakepaymentindex" data-analytics-link="Link:Pay a bill">Pay a bill &gt;</a>
+      </p>
+      <p>
+        <a href="http://my.bt.com/help/home/" data-analytics-link="Link:Get help or contact us">Get help or contact us &gt;</a>
+      </p>
+      <p>
+        <a href="http://my.bt.com/mybtapp/download/" data-analytics-link="Link:Download the My BT App">Download the My BT App &gt;</a>
+      </p>
+      <h3>Looking for BT Mail?</h3>
+      <!-- Editors space to put notification message-->
+      <p>
+        <a href="https://signin1.bt.com/login/emailloginform" data-analytics-link="Link:Go to our email log in page"><strong>Go to our email log in page &gt;</strong></a>
+        to log in to your BT Mail inbox.
+      </p>
+    </div>
+  </div>
+</form>

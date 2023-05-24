@@ -22,7 +22,6 @@ const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/
  * @typedef {{taskGid: string, taskUrl: string, displayName: string}} platformData
  *
  * @typedef {{
- *   extensions: platformData,
  *   android: platformData,
  *   bsk: platformData,
  *   windows: platformData
@@ -41,11 +40,6 @@ const platforms = {
         taskGid: '',
         taskUrl: ''
     },
-    extensions: {
-        displayName: 'Extensions',
-        taskGid: '',
-        taskUrl: ''
-    },
     windows: {
         displayName: 'Windows',
         taskGid: '',
@@ -58,7 +52,7 @@ let asana
 const setupAsana = () => {
     asana = Asana.Client.create({
         'defaultHeaders': {
-            'Asana-Enable': 'new_project_templates,new_user_task_lists'
+            'Asana-Enable': 'new_project_templates,new_user_task_lists,new_goal_memberships'
         }
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }

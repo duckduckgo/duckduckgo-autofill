@@ -1,4 +1,5 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
+import {appendGeneratedId} from './InputTypes/Credentials.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -56,6 +57,28 @@ const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
     }
 
     return true
+}
+
+const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
+    const site = processedConfig.site
+    if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
+        return false
+    }
+
+    return true
+}
+
+/**
+ *
+ * @param {DataStorageObject} data
+ * @param {DataStorageObject['trigger']} trigger
+ * @param {string | undefined | null} generatedPassword
+ * @returns {DataStorageObject}
+ */
+const prepareForFormStorage = (data, trigger, generatedPassword) => {
+    const withGeneratedPassword = appendGeneratedId(data, generatedPassword)
+    withGeneratedPassword.trigger = trigger
+    return withGeneratedPassword
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
@@ -126,6 +149,8 @@ const setValueForSelect = (el, val) => {
     const isMonth = subtype.includes('Month')
     const isZeroBasedNumber = isMonth &&
         el.options[0].value === '0' && el.options.length === 12
+    const stringVal = String(val)
+    const numberVal = Number(val)
 
     // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
@@ -136,7 +161,7 @@ const setValueForSelect = (el, val) => {
         }
         // TODO: try to match localised month names
         // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
-        if (value === String(val)) {
+        if (value === stringVal || Number(value) === numberVal) {
             if (option.selected) return false
             option.selected = true
             fireEventsOnSelect(el)
@@ -145,7 +170,7 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText === String(val)) {
+        if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
             if (option.selected) return false
             option.selected = true
             fireEventsOnSelect(el)
@@ -174,8 +199,9 @@ const setValue = (el, val, config) => {
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
  */
-const safeExecute = (el, fn, opts = {}) => {
-    const {checkVisibility = true} = opts
+const safeExecute = (el, fn, _opts = {}) => {
+    // TODO: temporary fix to misterious bug in Chrome
+    // const {checkVisibility = true} = opts
     const intObs = new IntersectionObserver((changes) => {
         for (const change of changes) {
             // Feature detection
@@ -188,9 +214,11 @@ const safeExecute = (el, fn, opts = {}) => {
                  * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
                  * During testing it was found that windows does not `change.isVisible` properly.
                  */
-                if (!checkVisibility || change.isVisible) {
-                    fn()
-                }
+                // TODO: temporary fix to misterious bug in Chrome
+                // if (!checkVisibility || change.isVisible) {
+                //     fn()
+                // }
+                fn()
             }
         }
         intObs.disconnect()
@@ -203,14 +231,15 @@ const safeExecute = (el, fn, opts = {}) => {
  * @param {HTMLElement} el
  * @return {boolean}
  */
-const isVisible = (el) => {
+const isPotentiallyViewable = (el) => {
     const computedStyle = window.getComputedStyle(el)
     const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
     const visibility = computedStyle.getPropertyValue('visibility')
+    const opacityThreshold = 0.6
 
     return el.clientWidth !== 0 &&
         el.clientHeight !== 0 &&
-        opacity > 0 &&
+        opacity > opacityThreshold &&
         visibility !== 'hidden'
 }
 
@@ -337,14 +366,95 @@ const getText = (el) => {
     )
 }
 
+/**
+ * Check if hostname is a local address
+ * @param {string} [hostname]
+ * @returns {boolean}
+ */
+function isLocalNetwork (hostname = window.location.hostname) {
+    return (
+        ['localhost', '', '::1'].includes(hostname) ||
+        hostname.includes('127.0.0.1') ||
+        hostname.includes('192.168.') ||
+        hostname.startsWith('10.0.') ||
+        hostname.endsWith('.local') ||
+        hostname.endsWith('.internal')
+    )
+}
+
+// Extracted from lib/DDG/Util/Constants.pm
+const tldrs = /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i
+/**
+ * Check if hostname is a valid top-level domain
+ * @param {string} [hostname]
+ * @returns {boolean}
+ */
+function isValidTLD (hostname = window.location.hostname) {
+    return tldrs.test(hostname)
+}
+
+/**
+ * Chrome's UA adds styles using this selector when using the built-in autofill
+ * @param {HTMLInputElement} input
+ * @returns {boolean}
+ */
+const wasAutofilledByChrome = (input) => {
+    try {
+        // Other browsers throw because the selector is invalid
+        return input.matches('input:-internal-autofill-selected')
+    } catch (e) {
+        return false
+    }
+}
+
+/**
+ * Checks if we should log debug info to the console
+ * @returns {boolean}
+ */
+function shouldLog () {
+    return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+}
+
+/**
+ *
+ * @param {Function} callback
+ * @returns {Function}
+ */
+function whenIdle (callback) {
+    let timer
+    return (...args) => {
+        cancelIdleCallback(timer)
+        timer = requestIdleCallback(() => callback.apply(this, args))
+    }
+}
+
+/**
+ * Truncate string from the middle if exceeds the totalLength (default: 30)
+ * @param {string} string
+ * @param {number} totalLength
+ * @returns {string}
+ */
+function truncateFromMiddle (string, totalLength = 30) {
+    if (totalLength < 4) {
+        throw new Error('Do not use with strings shorter than 4')
+    }
+
+    if (string.length <= totalLength) return string
+
+    const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2))
+    return truncated
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,
+    isIncontextSignupEnabledFromProcessedConfig,
+    prepareForFormStorage,
     autofillEnabled,
     setValue,
     safeExecute,
-    isVisible,
+    isPotentiallyViewable,
     getDaxBoundingBox,
     isEventWithinDax,
     addInlineStyles,
@@ -355,5 +465,11 @@ export {
     escapeXML,
     isLikelyASubmitButton,
     buttonMatchesFormType,
-    getText
+    getText,
+    isLocalNetwork,
+    isValidTLD,
+    wasAutofilledByChrome,
+    shouldLog,
+    whenIdle,
+    truncateFromMiddle
 }

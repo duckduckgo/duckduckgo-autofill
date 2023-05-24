@@ -1,0 +1,805 @@
+<!--
+  https://mobile.emirates.com/english/skywardsEnrollmentLoad.xhtml
+  rank: 3739
+  testRunId: 67
+  testResultId: 242648
+-->
+
+  <div class="lock-loader"></div>
+  <div class="loader-background-image"></div>
+  <div class="emirates-interstialLoader">
+    <div class="emirates-pageloader"></div>
+  </div>
+  <div class="emirates-ajax-loader-background"></div>
+  <div class="emirates-ajaxloader"><div class="emirates-loader"></div></div>
+  <div id="orientationChangePopup" class="orientation-change-modal">
+    <!-- Modal content -->
+    <div class="orientation-change-modal-content">
+      <div class="seat-selection-cancel-modal-header">
+        <span class="bold cancel-modal-header">This page doesn't display in landscape mode</span>
+      </div>
+      <div class="seat-selection-cancel-modal-body">
+        <p class="seat-selection-inner-body">
+          Please hold your device upright to view this page
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- Implementation of Pop Up HTML ends-->
+
+
+
+  <!-- Landscape Pop Up -->
+
+
+
+
+
+
+  <!-- Start Of Google Tag Manager -->
+
+  <noscript>
+    <iframe
+      src="//www.googletagmanager.com/ns.html?id=GTM-MMBK5G"
+      height="0"
+      width="0"
+      style="display: none; visibility: hidden"
+    >
+    </iframe>
+  </noscript>
+
+
+  <!-- End Google Tag Manager -->
+  <input type="hidden" id="pageTitle" value="myAc_Register">
+  <div class="no-scroll-hack">
+    <div class="wrapper">
+      <div class="page-loader" id="pageLoader">
+        <div class="loader-content">
+          <p class="loader-text">Loading...</p>
+          <div class="loader-animation">
+            <span class="loader-arrow"></span>
+            <span class="loader-plane"></span>
+          </div>
+
+          <div class="loader-add">
+            <strong class="loader-header">Did you know?</strong>
+            <p>You can also book hotels and cars on Emirates.com</p>
+          </div>
+        </div>
+      </div>
+      <div class="navigation-head closed myAc_Register_nav_height">
+        <div class="top-menu">
+          <a id="myAc_Register_nav_logo" onclick="formSubmitResponsive('#HOME');">
+
+          </a>
+          <div class="d-table"></div>
+        </div>
+
+        <div class="navigation-body" role="navigation">
+          <div class="navigation-content">
+            <div class="scroll-content">
+              <div class="grid-nav">
+                <div class="row cf">
+                  <a id="myAc_Register_nav_bokFlt" href="/english/CAB/IBE/bookAFlightSearch.xhtml" title="Book A Flight">
+                    Book a <br>Flight</a>
+                  <a id="myAc_Register_nav_fltSts" href="/english/plan_book/flight_status/flightSearch.xhtml" title="Flight Status">
+                    Flight <br>Status</a>
+                </div>
+                <div class="row cf">
+                  <div class="pos-relative">
+                    <div>
+                      <a id="myAc_Register_nav_olci" onclick="goToOLCILoginUrl(CONFIG.get('ONLINE_CHECKIN'));" title="Flight Check-In">
+                        Check-in <br>Online</a>
+                    </div>
+                  </div>
+                  <div class="pos-relative">
+                    <div>
+                      <a id="myAc_Register_nav_" onclick="goToMYBLoginUrlRedirect(CONFIG.get('MYB_LOGIN'));" title="Manage Booking">
+                        Manage a <br>Booking</a>
+                    </div>
+                  </div>
+                </div>
+                <!-- Commenting out for phase 1 -->
+                <!-- <div class="row cf">
+						<a id="myAc_Register_nav_splOfs" onclick="javascript:;" title="Special Offers"> Special </br>Offers</a> <a id="myAc_Register_nav_DisDub" onclick="javascript:;" title="Discover Dubai"> Discover </br>Dubai</a>
+					</div> -->
+              </div>
+              <!-- <a id="myAc_Register_nav_joinSky" onclick="javascript:;" title="Join Skywards"> Join Emirates Skywards</a> <a id="myAc_Register_nav_emExp" onclick="javascript:;" title="The Emirates Experience"> The Emirates Experience -->
+              <a id="myAc_Register_nav_langSel" onclick="setWindowLocation(CONFIG.get('FROM_LANGUAGE_SELECTION'));" title="Select Language">Select Language</a>
+              <a id="myAc_Register_nav_abtEm" onclick="goToAboutEmirates()" title="About Emirates">About Emirates</a>
+              <a id="myAc_Register_nav_CntUs" onclick="formSubmitResponsive('#LOCAL_EMIRATES_OFFICE');" title="Contact Us">Contact Us</a>
+              <!--<a id="myAc_Register_nav_faq" onclick="javascript:;" title="Help &amp; FAQ">Help & FAQ</a> -->
+              <a id="myAc_Register_nav_appInfo" onclick="goToURL(CONFIG.get('APP_INFO'));" title="App Info">The Emirates App</a>
+              <a id="myAc_Register_nav_trmCond" onclick="goToTermsCondition()" title="Terms &amp; Conditions">Terms &amp; Conditions</a>
+              <a id="myAc_Register_nav_pvcyPol" onclick="goToPrivacyPolicyWithoutAjax()" title="Privacy Policy">Privacy Policy</a>
+              <a id="myAc_Register_nav_fulSite" onclick="gotoMainSite('',false);" title="View HTML Site">View Full Website</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="head-bar cf">
+        <h2 class="title-bar">
+          <label>Join Emirates Skywards</label>
+        </h2>
+      </div>
+
+      <div class="main mobile-fare-families" role="main">
+        <!-- CONTENT -->
+        <form id="SkywardsEnrollmentForm" name="SkywardsEnrollmentForm" method="post" onsubmit="submitForm(event)">
+          <!-- Creating the hidden variables -->
+          <!-- Container -->
+          <div class="container mt-24">
+            <p class="text mb-32">
+              It costs nothing to join Emirates Skywards. Just complete this
+              simple application form and you can start enjoying the benefits
+              and privileges of membership straight away. You’ll be surprised
+              how easy it is to earn Skywards Miles and how rewarding it is to
+              spend them with Emirates and our global partners.
+            </p>
+
+            <div class="cf">
+              <label for="">Do you have a membership number?</label>
+
+              <div class="switch-module buttons-2 mb-32">
+                <a data-tab="type-tab-1" id="buttonYes" data-tab-close="type-tab" href="#" title="#" onclick="validateYesNoTab(this)" class="switch-button fs-28 left-button">
+                  <span>Yes</span>
+                </a>
+
+                <a data-tab-default="true" id="buttonNo" data-tab="type-tab-2" data-tab-close="type-tab" href="#" title="#" onclick="validateYesNoTab(this)" class="switch-button fs-28 right-button active">
+                  <span>No</span>
+                </a>
+              </div>
+            </div>
+
+            <div data-switch-tab="" data-input-reset="true" class="type-tab type-tab-1 book-tab-switcher">
+              <div class="cf">
+                <label class="bold" for="memb-num">Membership number</label>
+                <div class="number-holder">
+                  <input type="tel" id="memb-num" name="membershipNumber" placeholder="Membership number" data-validation="required, regExp" data-max-length="16" data-validate-expression="[ekEK0-9 ]" data-validate-condition="containOnly" data-restrict="true" data-errors="empty:membershipNumberRequired,regExp:membershipNumberInvalid" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Membership number
+parseable name: membershipNumber
+section: membershipNumber_0_2
+field signature: 389768908
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 2" data-ddg-testresultelementid="562961">
+                </div>
+                <p class="error-message mb-24 mt-8"></p>
+              </div>
+            </div>
+
+            <div class="cf">
+              <label for="">Title</label>
+
+              <div data-custom-select="" class="ff-custom-select small-height custom-select mb-32">
+                <label class="bold" for="select-title"><span>Choose Title</span></label>
+                <span class="dropdown-arrow small"></span>
+                <!--changes for title  -->
+                <select name="title" data-validation="required, select" data-errors="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Choose Title
+parseable name: title
+section: membershipNumber_0_2
+field signature: 3155588667
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 3" data-ddg-testresultelementid="562962">
+                  <option selected="selected" value="">Choose Title</option>
+                  <option value="Mr">Mr</option>
+                  <option value="Ms">Ms</option>
+                  <option value="Mrs">Mrs</option>
+                  <option value="Miss">Miss</option>
+                </select>
+              </div>
+
+              <p class="error-message mb-24 mt-min-16">Please enter title</p>
+            </div>
+
+            <div class="cf">
+              <label for="firstName">First name as it appears on your passport</label>
+              <input type="text" id="firstName" name="firstName" placeholder="First name" data-vertical-scroll="true" data-validation="required, regExp" data-validate-expression="^[A-z ]+$" data-min-length="2" data-max-length="24" data-restrict="true" data-errors="empty:firstNameRequired,regExp:firstNameInvalid" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: First name as it appears on your passport
+parseable name: firstName
+section: membershipNumber_0_2
+field signature: 1855613035
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 4" data-ddg-testresultelementid="562963">
+              <p class="error-message mb-24 mt-min-16"></p>
+            </div>
+            <div class="cf">
+              <label for="lastName">Last name as it appears on your passport</label>
+              <input type="text" id="lastName" name="lastName" placeholder="Last name" data-vertical-scroll="true" data-validation="required, regExp" data-validate-expression="^[A-z ]+$" data-min-length="2" data-max-length="24" data-restrict="true" data-errors="empty:lastNameRequired,regExp:lastNameInvalid" value="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Last name as it appears on your passport
+parseable name: lastName
+section: membershipNumber_0_2
+field signature: 4163345999
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 5" data-ddg-testresultelementid="562964">
+              <p class="error-message mb-24 mt-min-16">
+                Please enter last name
+              </p>
+            </div>
+          </div>
+          <!-- / Container -->
+
+          <!-- Container -->
+          <div class="container pb-32 bd-bottom">
+            <label for="birth-date" class="mt-0">Date of Birth</label>
+
+            <div id="dateOfBirthDiv" data-custom-datepicker="" data-display-type="date" class="calendar book-selector-wrapper cf">
+              <input type="text" name="birthDate" id="birthDate" class="pd-16 mobiscroll-datepicker" readonly="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Date of Birth
+parseable name: birthDate
+section: membershipNumber_0_2
+field signature: 3014859931
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 6" data-ddg-testresultelementid="562965">
+              <input type="hidden" id="dayOfDob" name="dayOfDob" class="day">
+              <input type="hidden" id="monthOfDob" name="monthOfDob" class="month">
+              <input type="hidden" id="yearOfDob" name="yearOfDob" class="year">
+            </div>
+            <p id="datepickerErr" class="error-message">
+              Emirates Skywards members must be over the age of 18.
+            </p>
+
+            <label for="countryOfResidenceAuto">Country/Region of Residence</label>
+            <div data-autocomplete="CountriesData" class="autocomplete-container cf" data-search-priority="_settings">
+              <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" id="countryOfResidenceAuto" placeholder="Country/Region of Residence" data-vertical-scroll="true" data-validation="text,required" data-errors="" autocomplete="off" autocorrect="off" class="ui-autocomplete-input" autofill-information="overall type: ADDRESS_HOME_COUNTRY
+server type: NO_SERVER_DATA
+heuristic type: ADDRESS_HOME_COUNTRY
+label: Country/Region of Residence
+parseable name: countryOfResidenceAuto
+section: membershipNumber_0_2
+field signature: 554885980
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 10
+autocomplete: off" data-ddg-testresultelementid="562966" data-manual-scoring="addressCountryCode">
+              <input type="hidden" id="countryOfResidence" name="countryOfResidence" onchange="getPreferredLanguage($(this))">
+
+              <p class="error-message mb-24 mt-min-16">
+                Please select your country/region of residence.
+              </p>
+              <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-1" tabindex="0"></ul>
+            </div>
+
+            <label class="bold" for="contactNumber">Mobile Number</label>
+            <div data-autocomplete="MobileCountriesData" class="autocomplete-container cf" data-search-priority="_settings">
+              <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" id="mobileCountryCodeAuto" data-vertical-scroll="true" data-validation="text,required" placeholder="Country Code" data-errors="" autocomplete="off" autocorrect="off" class="ui-autocomplete-input" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Country Code
+parseable name: mobileCountryCodeAuto
+section: membershipNumber_0_2
+field signature: 799924937
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 12
+autocomplete: off" data-ddg-testresultelementid="562967" data-manual-scoring="addressCountryCode">
+              <input type="hidden" id="isdCode" name="isdCode">
+
+              <p class="error-message mb-24 mt-min-16">Country Code Required</p>
+              <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content ui-corner-all" id="ui-id-2" tabindex="0"></ul>
+            </div>
+            <div class="cf">
+              <div class="number-holder">
+                <input type="tel" id="contactNumber" name="contactNumber" data-validation="required, regExp" data-min-length="1" data-max-length="20" data-validate-expression="[E0-9]" data-validate-condition="containOnly" data-restrict="true" data-errors="empty:contactNumberRequired,regExp:contactNumberInvalid" placeholder="Mobile Number" value="" autofill-information="overall type: PHONE_HOME_WHOLE_NUMBER
+server type: NO_SERVER_DATA
+heuristic type: PHONE_HOME_WHOLE_NUMBER
+label: Mobile Number
+parseable name: contactNumber
+section: membershipNumber_0_2
+field signature: 1513935273
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 14" data-ddg-testresultelementid="562968" data-manual-scoring="phone">
+              </div>
+              <p class="error-message mt-16"></p>
+            </div>
+
+            <div class="cf mt-16">
+              <label for="emailAddress">Email Address</label>
+              <input type="email" class="mb-32" id="emailAddress" name="emailAddress" placeholder="Email Address" data-vertical-scroll="true" data-validation="required,email" data-restrict="true" data-errors="required:emailRequired,email:emailInvalid" value="" autofill-information="overall type: EMAIL_ADDRESS
+server type: NO_SERVER_DATA
+heuristic type: EMAIL_ADDRESS
+label: Email Address
+parseable name: emailAddress
+section: membershipNumber_0_2
+field signature: 4103469401
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 15" data-ddg-testresultelementid="562969" data-manual-scoring="emailAddress">
+              <p class="error-message mb-24 mt-min-16"></p>
+            </div>
+            <div class="cf">
+              <label for="">Language Selection</label>
+              <div data-custom-select="" class="ff-custom-select small-height custom-select mb-32">
+                <label class="bold" for="preferredLanguage"><span>Select a language</span></label>
+                <span class="dropdown-arrow small"></span>
+                <input type="hidden" id="selectedText" name="selectedText" value="Select a language">
+                <select name="preferredLanguage" id="preferredLanguage" data-validation="required, select" data-errors="" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Select a language
+parseable name: preferredLanguage
+section: membershipNumber_0_2
+field signature: 3585014319
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 17" data-ddg-testresultelementid="562970">
+                  <option selected="selected" value="-1">
+                    Select a language
+                  </option>
+                  <option value="21">English</option>
+                </select>
+              </div>
+              <p class="error-message mb-24 mt-min-16">
+                Please select your preferred language.
+              </p>
+            </div>
+            <div class="cf">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="Password" data-vertical-scroll="true" data-validation="required,regExp" data-min-length="7" data-max-length="50" data-restrict="true" data-validate-expression="((?=.*\d)(?=.*[a-z]).{7,50})" data-errors="required:passwordRequired,regExp:passwordInvalid" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: password
+section: membershipNumber_0_2
+field signature: 2051817934
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 18" data-ddg-testresultelementid="562971">
+              <p class="error-message mb-24 mt-min-16">
+                Please enter a password
+              </p>
+            </div>
+            <div class="cf">
+              <label for="confirm-password">Confirm Password</label>
+              <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Confirm Password" data-min-length="7" data-max-length="50" data-restrict="true" onblur="validateForm();" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Confirm Password
+parseable name: passwordConfirm
+section: membershipNumber_0_2
+field signature: 2273916472
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 19" data-ddg-testresultelementid="562972">
+              <p id="passwordConfirmError" class="error-message mb-24 mt-min-16">
+                Your passwords should match. Please check and try again.
+              </p>
+            </div>
+          </div>
+          <!-- / Container -->
+          <div class="container mt-48">
+            <div class="book-checkbox-row chackbox-row cf mt-24">
+              <input type="checkbox" name="termsAndConditions" data-validation="required,checkbox" id="terms-conditions-accept" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: I accept the terms &amp; conditions .
+parseable name: termsAndConditions
+section: membershipNumber_0_2
+field signature: 1562149944
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 20" data-ddg-testresultelementid="562973">
+              <label for="terms-conditions-accept" class="chekbox-label cf pt-6 pb-0">
+                <span class="d-table-cell h-76 v-middle">
+                  I accept the
+                  <a href="#" class="no-underline color-dark-red" onclick="goToTermsConditionFromSkywardsEnrollmentFlow();$('#SkywardsEnrollmentForm').submit();">
+                    terms &amp; conditions </a>.</span>
+              </label>
+            </div>
+
+            <div class="book-checkbox-row chackbox-row cf mt-24">
+              <input type="checkbox" name="newsLetters" id="offers-sign" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Sign up to receive our newsletters and special offer emails. Please see our Privacy Policy .
+parseable name: newsLetters
+section: membershipNumber_0_2
+field signature: 1796422236
+form signature: 8492539098381733103
+form signature in host form: 8492539098381733103
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 1
+field renderer id: 21" data-ddg-testresultelementid="562974">
+              <label for="offers-sign" class="chekbox-label cf pt-6 pb-0">
+                <span class="d-table-cell h-76 v-middle">Sign up to receive our newsletters and special offer emails.
+                  Please see our
+                  <a href="#" class="no-underline color-dark-red" onclick="goToPrivacyPolicyFromSkywardsEnrollmentFlow();$('#SkywardsEnrollmentForm').submit();">
+                    Privacy Policy </a>.</span>
+              </label>
+            </div>
+            <input type="hidden" id="loginPageIdentifier" name="loginPageIdentifier" value="">
+            <div class="flight-button cf">
+              <input id="myAc_enroll_Button" type="submit" onclick="skywardsAction='formSubmit';" class="red-button" value="Join">
+            </div>
+          </div>
+          <input type="hidden" id="paxserlNo" name="paxserlNo" value="">
+          <!-- / Container -->
+          <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="982"><input type="hidden" name="screenWidth" value="1512"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+        </form>
+      </div>
+      <input type="hidden" id="cashUpgUrlFromFareCondition" value="/english/MAB/MYB/upgradeReviewItinerary.xhtml?pageIdentifier=">
+      <form name="HOME" id="HOME" method="POST" action="/home.xhtml">
+        <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="982"><input type="hidden" name="screenWidth" value="1512"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+      </form>
+      <form name="LOCAL_EMIRATES_OFFICE" id="LOCAL_EMIRATES_OFFICE" method="POST" action="https://www.emirates.com/SessionHandler.aspx">
+        <input name="target" type="hidden" id="target" value="/english/help/offices/">
+        <input name="pub" type="hidden" id="pub" value="/english">
+        <input name="h" type="hidden" id="h" value="fabc3da3765a339f431174218350fb3d584c791d">
+        <input name="s" type="hidden" id="s" value="boolSignOn|false">
+        <input name="ibe" type="hidden" id="ibe" value="">
+        <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="982"><input type="hidden" name="screenWidth" value="1512"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+      </form>
+      <!-- Generic impl for responsive redirect/form-submit of country selector link in footer to EK.com url -->
+      <form name="FROM_LANGUAGE_SELECTION" id="FROM_LANGUAGE_SELECTION" method="POST" action="/english/fromLanguageSelction.xhtml">
+        <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="982"><input type="hidden" name="screenWidth" value="1512"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+      </form>
+      <!-- Generic impl for responsive redirect/form-submit of Privacy Policy link in footer to EK.com url -->
+      <form name="PRIVACY_POLICY" id="PRIVACY_POLICY" method="POST" action="https://www.emirates.com/SessionHandler.aspx">
+        <input name="target" type="hidden" id="target" value="/english/sitetools/privacy_policy.aspx">
+        <input name="pub" type="hidden" id="pub" value="/english">
+        <input name="h" type="hidden" id="h" value="f7b874c2e1fb56ea3f2e0e450ef2e79d37e1fb8">
+        <input name="s" type="hidden" id="s" value="boolSignOn|false">
+        <input name="ibe" type="hidden" id="ibe" value="">
+        <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="982"><input type="hidden" name="screenWidth" value="1512"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+      </form>
+      <!-- Generic impl for responsive redirect/form-submit of Terms and Conditions link in footer to EK.com url -->
+      <form name="MOBILE_TERMS_CONDITION" id="MOBILE_TERMS_CONDITION" method="POST" action="/english/MobileTermsConditions/">
+        <input type="hidden" name="javaEnabled" value="false"><input type="hidden" name="colorDepth" value="24"><input type="hidden" name="screenHeight" value="982"><input type="hidden" name="screenWidth" value="1512"><input type="hidden" name="timezoneOffsetUtcMinutes" value="420">
+      </form>
+      <div id="footer" class="footer">
+        <div class="footer-nav">
+          <div class="cols-ul">
+            <h3>Site Tools</h3>
+            <ul>
+              <li>
+                <a href="/english/CAB/IBE/bookAFlightSearch.xhtml">Book a flight</a>
+              </li>
+              <li>
+                <a onclick="goToOLCILoginUrl(CONFIG.get('ONLINE_CHECKIN'));">Online check-in</a>
+              </li>
+              <li>
+                <a id="myAc_Register_nav_fulSite" class="footer-links" onclick="gotoMainSite('',false);" title="View HTML Site">View Full Website</a>
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <a onclick="goToMYBLoginUrlRedirect(CONFIG.get('MYB_LOGIN'));">Manage a booking</a>
+              </li>
+              <!-- <li><a onclick="setWindowLocation(CONFIG.get('FROM_LANGUAGE_SELECTION'));">Country or territory</li> -->
+
+              <!-- Generic impl for responsive redirect/form subiit of country selector link in footer to EK.com -->
+              <li>
+                <a onclick="formSubmitResponsive('#FROM_LANGUAGE_SELECTION');">Country or territory</a>
+              </li>
+            </ul>
+          </div>
+          <div class="footer-links">
+            <ul>
+              <li>
+                <a id="myAc_Register_footer_home" onclick="formSubmitResponsive('#HOME');">Home</a>
+              </li>
+              <li>
+                <a id="myAc_Register_nav_CntUs" onclick="formSubmitResponsive('#LOCAL_EMIRATES_OFFICE');">Contact Us</a>
+              </li>
+              <li>
+                <a id="myAc_Register_footer_pvcyPol" onclick="formSubmitResponsive('#PRIVACY_POLICY');">Privacy Policy</a>
+              </li>
+              <li>
+                <a id="hom_hom_nav_trmCond" onclick="formSubmitResponsive('#MOBILE_TERMS_CONDITION');">Terms and conditions</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="copyright">
+            <p>© 2022 Emirates. All rights reserved.</p>
+          </div>
+          <span><a href="/home.xhtml" class="footer-logo-link"></a></span>
+        </div>
+      </div>
+      <div class="nav-overlay"></div>
+    </div>
+    <!-- /.no-scroll-hack -->
+  </div>
+
+  <noscript><img
+      src="https://mobile.emirates.com/akam/13/pixel_37f85789?a=dD00MTY4ZjNjY2ZkNzc4ZTkxZmFjYjVkZDBiZTFjMDQ4YWFhMGFhNzYxJmpzPW9mZg=="
+      style="visibility: hidden; position: absolute; left: -999px; top: -999px"
+  /></noscript>
+
+
+
+  <input type="hidden" id="pageIdentifierLogUIEvent" value="myAc_Register">
+
+  <!-- Clear local storage to prevent caching -->
+  <!-- <script type="text/javascript"> localStorage.clear(); sessionStorage.clear();</script>  -->
+  <!--  removing the below less and smartbanner as they are not needed any more
+<script src="https://mobile.ekstatic.net/basic/js/vendor/less-1.4.1.min.js"></script>
+<script src="https://mobile.ekstatic.net/basic/js/vendor/smartbanner.js"></script> -->
+
+
+  <!--<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCOX7-7RIAQrEkd1Dzii_9V-GK6tEYxKVQ&sensor=false"></script>-->
+  <!-- Removing below to clear console error -->
+  <!-- <script src="https://mobile.ekstatic.net/basic/js/vendor/jquery.mobile-1.3.2.min.js"></script>  -->
+
+  <!-- Get from CDN network  -->
+  <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
+  <!-- if not get from CDN, add thru the vendor folder -->
+
+
+
+  <!-- <script>var loader = '<div class="emirates-loader" style="display: block;"></div>';
+$('html').prepend(loader);
+</script> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div id="fixed-sizer"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div id="onetrust-consent-sdk">
+    <div class="onetrust-pc-dark-filter ot-fade-in"></div>
+    <div id="onetrust-banner-sdk" class="otFlat bottom ot-buttons-fw" aria-modal="true" tabindex="0">
+      <div role="alertdialog" aria-describedby="onetrust-policy-text" aria-label="We value your privacy">
+        <div class="ot-sdk-container">
+          <div class="ot-sdk-row">
+            <div id="onetrust-group-container" class="ot-sdk-eight ot-sdk-columns">
+              <div class="banner_logo"></div>
+              <div id="onetrust-policy">
+                <h2 id="onetrust-policy-title">We value your privacy</h2>
+                <p id="onetrust-policy-text">
+                  We use cookies to help our website function properly, for
+                  analytics, marketing and to personalise the content you see.
+                  By accepting, you agree to the use of all of these cookies.
+                  You can update your preferences by clicking the cookie
+                  preferences button or at any time by going to our
+                  <a href="https://www.emirates.com/english/information/cookie-policy/" data-id="pagebody_link" data-link="Cookie compliance:Banner:cookie policy">cookie policy</a>.
+                </p>
+              </div>
+            </div>
+            <div id="onetrust-button-group-parent" class="ot-sdk-three ot-sdk-columns">
+              <div id="onetrust-button-group">
+                <button id="onetrust-pc-btn-handler">Cookie preferences</button>
+                <button id="onetrust-accept-btn-handler">Accept</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Close Button -->
+        <div id="onetrust-close-btn-container"></div>
+        <!-- Close Button END-->
+      </div>
+    </div>
+  </div>
+  <div id="bx-f27462db-1af8-4309-b63e-7461c4657a4a">
+    <div id="bx-modal_overlay" class="bx-hidden_important">
+      <div class="bx-modal_content abper-112-modal">
+        <div class="bx-options" id="bx-options">
+          <div id="abper-112-feedback-content" class="abper-112-feedback-content">
+            <a class="abper-112-link abper-112-feedback abper-112-submit-feedback" id="bx-feedback_option" role="link" tabindex="0">
+              <i class="abper-112-icon abper-112-icon-feedback"></i>
+              <h2 class="abper-112-title">Leave website feedback</h2>
+              <hr class="abper-112-hr">
+              <p class="abper-112-text">
+                Your opinion is important to us. Help us improve your online
+                experience.
+              </p>
+              <span class="abper-112-button abper-112-secondary abper-112-submit-feedback">Submit feedback</span>
+            </a>
+            <a class="abper-112-link abper-112-contact" id="bx-contact_link" href="https://www.emirates.com/uk/english/help/" role="link" tabindex="0">
+              <i class="abper-112-icon abper-112-icon-contact"></i>
+              <h2 class="abper-112-title">Get in touch</h2>
+              <hr class="abper-112-hr">
+              <p class="abper-112-text">
+                Need answers? Here are the most convenient ways to contact us
+              </p>
+              <span class="abper-112-button abper-112-secondary">Contact us</span>
+            </a>
+            <a class="abper-112-link abper-112-complaint" id="bx-complaint_link" href="https://www.emirates.com/uk/english/help/complaint.aspx" role="link" tabindex="0">
+              <i class="abper-112-icon abper-112-icon-complaint"></i>
+              <h2 class="abper-112-title">Raise a concern</h2>
+              <hr class="abper-112-hr">
+              <p class="abper-112-text">
+                If you've had a less than satisfying experience, we'd like to
+                hear from you.
+              </p>
+              <span class="abper-112-button abper-112-secondary">Submit a complaint</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="bx-rating bx-hidden qubit-VisitorPulse-question" id="bx-rating">
+          <h1 class="bx-header_question" id="bx-header_question">
+            How satisfied were you with your website experience?
+          </h1>
+          <fieldset class="rating" id="bx-rating_buttons">
+            <input type="radio" id="star1" name="rating" value="1" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 1
+parseable name: rating
+section: rating_0_153
+field signature: 763486327
+form signature: 9697240861537291329
+form signature in host form: 9697240861537291329
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 0
+field renderer id: 153" data-ddg-testresultelementid="562975"><label tabindex="5" class="bx-star1 bx-star" for="star1" rating="1"></label>
+            <input type="radio" id="star2" name="rating" value="2" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 2
+parseable name: rating
+section: rating_0_153
+field signature: 763486327
+form signature: 9697240861537291329
+form signature in host form: 9697240861537291329
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 0
+field renderer id: 154" data-ddg-testresultelementid="562976"><label tabindex="4" class="bx-star2 bx-star" for="star2" rating="2"></label>
+            <input type="radio" id="star3" name="rating" value="3" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 3
+parseable name: rating
+section: rating_0_153
+field signature: 763486327
+form signature: 9697240861537291329
+form signature in host form: 9697240861537291329
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 0
+field renderer id: 155" data-ddg-testresultelementid="562977"><label tabindex="3" class="bx-star3 bx-star" for="star3" rating="3"></label>
+            <input type="radio" id="star4" name="rating" value="4" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 4
+parseable name: rating
+section: rating_0_153
+field signature: 763486327
+form signature: 9697240861537291329
+form signature in host form: 9697240861537291329
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 0
+field renderer id: 156" data-ddg-testresultelementid="562978"><label tabindex="2" class="bx-star4 bx-star" for="star4" rating="4"></label>
+            <input type="radio" id="star5" name="rating" value="5" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: 5
+parseable name: rating
+section: rating_0_153
+field signature: 763486327
+form signature: 9697240861537291329
+form signature in host form: 9697240861537291329
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 0
+field renderer id: 157" data-ddg-testresultelementid="562979"><label tabindex="1" class="bx-star5 bx-star" for="star5" rating="5"></label>
+          </fieldset>
+        </div>
+
+        <div class="bx-comment bx-hidden" id="bx-comment">
+          <h1 class="bx-header_question">
+            How satisfied were you with your website experience?
+          </h1>
+          <h4 class="bx-header_subtext">
+            You will receive no reply from this form. For questions that require
+            a response, you can visit our
+            <a href="https://www.emirates.com/uk/english/help/" target="_blank" id="bx-contact_link3">help centre.</a>
+          </h4>
+          <textarea class="bx-comment_textarea" id="bx-comment_textarea" maxlength="1500" placeholder="Tell us how we can make your experience better*" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Tell us how we can make your experience better*
+parseable name: bx-comment_textarea
+section: rating_0_153
+field signature: 1018541099
+form signature: 9697240861537291329
+form signature in host form: 9697240861537291329
+field frame token: 17108AD3A24871BD103A8FE61B072D3C
+form renderer id: 0
+field renderer id: 158" data-ddg-testresultelementid="562980"></textarea>
+          <div class="bx-comment_warning">
+            * Do not enter personal information here
+          </div>
+          <div class="bx-comment_submit qubit-VisitorPulse-submit" id="bx-submit_feedback" role="button" tabindex="0">
+            Submit your feedback
+          </div>
+        </div>
+
+        <div class="bx-thank_you bx-hidden" id="bx-thank_you">
+          <div class="qubit-VisitorPulse-thankYou" aria-hidden="false">
+            <div class="abper-112-thank-you">
+              <i class="abper-112-icon-check abper-112-hidden-desktop"></i>
+              <div class="qubit-VisitorPulse-thankYouText">
+                Thank you for your feedback
+              </div>
+              <i class="abper-112-icon-check abper-112-hidden-mobile"></i>
+              <p class="abper-112-text">
+                If you have any questions or need help please visit our
+                <a class="abper-112-faq-link" id="bx-faq_link" href="https://www.emirates.com/uk/english/help/faqs/" title="">FAQ</a>
+                or
+                <a class="abper-112-contact-us-link" id="bx-contact_link2" href="https://www.emirates.com/uk/english/help/" title="">Contact us</a>
+                section.
+              </p>
+            </div>
+            <button aria-label="Close" class="abper-112-button abper-112-primary abper-112-close-button" id="bx-close">
+              Close
+            </button>
+          </div>
+        </div>
+
+        <div class="bx-modal__btn-close-icon"></div>
+      </div>
+    </div>
+  </div>
+

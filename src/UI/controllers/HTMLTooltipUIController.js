@@ -1,12 +1,14 @@
+import { isEventWithinDax } from '../../autofill-utils.js'
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
+import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js'
 import {defaultOptions} from '../HTMLTooltip.js'
 import {UIController} from './UIController.js'
 
 /**
  * @typedef HTMLTooltipControllerOptions
- * @property {"modern" | "legacy"} tooltipKind - A choice between the newer Autofill UI vs the older one used in the extension
+ * @property {"modern" | "legacy" | "emailsignup"} tooltipKind - A choice between the newer Autofill UI vs the older ones used in the extension
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
  * regardless of whether this Controller has an open tooltip, or not
  */
@@ -28,6 +30,12 @@ export class HTMLTooltipUIController extends UIController {
     _htmlTooltipOptions;
 
     /**
+     * Overwritten when calling createTooltip
+     * @type {import('../../Form/matching').SupportedTypes}
+     */
+    _activeInputType = 'unknown';
+
+    /**
      * @param {HTMLTooltipControllerOptions} options
      * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
@@ -38,6 +46,18 @@ export class HTMLTooltipUIController extends UIController {
         window.addEventListener('pointerdown', this, true)
     }
 
+    _activeInput;
+    _activeInputOriginalAutocomplete;
+
+    /**
+     * Cleans up after this UI controller by removing the tooltip and all
+     * listeners.
+     */
+    destroy () {
+        this.removeTooltip()
+        window.removeEventListener('pointerdown', this, true)
+    }
+
     /**
      * @param {import('./UIController').AttachArgs} args
      */
@@ -45,10 +65,15 @@ export class HTMLTooltipUIController extends UIController {
         if (this.getActiveTooltip()) {
             return
         }
+
         const { topContextData, getPosition, input, form } = args
         const tooltip = this.createTooltip(getPosition, topContextData)
         this.setActiveTooltip(tooltip)
         form.showingTooltip(input)
+
+        this._activeInput = input
+        this._activeInputOriginalAutocomplete = input.getAttribute('autocomplete')
+        input.setAttribute('autocomplete', 'off')
     }
 
     /**
@@ -71,7 +96,14 @@ export class HTMLTooltipUIController extends UIController {
         }
 
         if (this._options.tooltipKind === 'legacy') {
+            this._options.device.firePixel({pixelName: 'autofill_show'})
             return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
+                .render(this._options.device)
+        }
+
+        if (this._options.tooltipKind === 'emailsignup') {
+            this._options.device.firePixel({pixelName: 'incontext_show'})
+            return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
                 .render(this._options.device)
         }
 
@@ -85,13 +117,16 @@ export class HTMLTooltipUIController extends UIController {
         return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
             .render(config, asRenderers, {
                 onSelect: (id) => {
-                    this._onSelect(config, data, id)
+                    this._onSelect(topContextData.inputType, data, id)
+                },
+                onManage: (type) => {
+                    this._onManage(type)
                 }
             })
     }
 
     updateItems (data) {
-        if (!this._activeInputType) return
+        if (this._activeInputType === 'unknown') return
 
         const config = getInputConfigFromType(this._activeInputType)
 
@@ -102,7 +137,10 @@ export class HTMLTooltipUIController extends UIController {
         if (activeTooltip instanceof DataHTMLTooltip) {
             activeTooltip?.render(config, asRenderers, {
                 onSelect: (id) => {
-                    this._onSelect(config, data, id)
+                    this._onSelect(this._activeInputType, data, id)
+                },
+                onManage: (type) => {
+                    this._onManage(type)
                 }
             })
         }
@@ -147,11 +185,16 @@ export class HTMLTooltipUIController extends UIController {
     // Global listener for event delegation
     _pointerDownListener (e) {
         if (!e.isTrusted) return
+        // Ignore events on the Dax icon, we handle those elsewhere
+        if (isEventWithinDax(e, e.target)) return
 
         // @ts-ignore
         if (e.target.nodeName === 'DDG-AUTOFILL') {
             e.preventDefault()
             e.stopImmediatePropagation()
+
+            const isMainMouseButton = e.button === 0
+            if (!isMainMouseButton) return
 
             const activeTooltip = this.getActiveTooltip()
             if (!activeTooltip) {
@@ -172,6 +215,16 @@ export class HTMLTooltipUIController extends UIController {
             this._removeListeners()
             this._activeTooltip.remove()
             this._activeTooltip = null
+        }
+
+        if (this._activeInput) {
+            if (this._activeInputOriginalAutocomplete) {
+                this._activeInput.setAttribute('autocomplete', this._activeInputOriginalAutocomplete)
+            } else {
+                this._activeInput.removeAttribute('autocomplete')
+            }
+            this._activeInput = null
+            this._activeInputOriginalAutocomplete = null
         }
     }
 
@@ -207,12 +260,33 @@ export class HTMLTooltipUIController extends UIController {
      *
      * Note: ideally we'd pass this data instead, so that we didn't have a circular dependency
      *
-     * @param {InputTypeConfigs} config
+     * @param {import('../../Form/matching').SupportedTypes} inputType
      * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
-     * @param {string | number} id
+     * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
      */
-    _onSelect (config, data, id) {
-        return this._options.device.onSelect(config, data, id)
+    _onSelect (inputType, data, id) {
+        return this._options.device.onSelect(inputType, data, id)
+    }
+
+    /**
+     * Called when clicking on the Manage… button in the html tooltip
+     *
+     * @param {SupportedMainTypes} type
+     * @returns {*}
+     * @private
+     */
+    _onManage (type) {
+        this.removeTooltip()
+        switch (type) {
+        case 'credentials':
+            return this._options.device.openManagePasswords()
+        case 'creditCards':
+            return this._options.device.openManageCreditCards()
+        case 'identities':
+            return this._options.device.openManageIdentities()
+        default:
+            // noop
+        }
     }
 
     isActive () {

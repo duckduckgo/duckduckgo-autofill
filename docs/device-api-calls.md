@@ -13,11 +13,14 @@ it just means that we write them ourselves, rather than being schema-generated.
 <details>
 <summary>📝A full <b>'tl;dr'</b> example</summary>
 
-**Create an entry in `src/deviceApiCalls/deviceApiCalls.json`**
+**Create an entry in `src/deviceApiCalls/api.json`**
 ```json
 {
   "example": {
-    "paramsValidator": "schemas/example.params.json"
+    "type": "object",
+    "properties": {
+      "paramsValidator": { "$ref":  "./schemas/example.params.json" }
+    }
   }
 }
 ```
@@ -54,29 +57,20 @@ export class ExampleCall extends DeviceApiCall {
 }
 ```
 
+You can also look at the minimal test example within `scripts/tests/fixtures`
+
 </details>
 
-### Step 1: Add an entry to `src/deviceApiCalls/deviceApiCalls.json`
+### Step 1: Add an entry to `src/deviceApiCalls/api.json`
 
 This is a single place where all auto-generated API calls are listed. 
 
 - Object key - a unique identifier for this API Call
-- `id` - an optional ID to be used when listening for responses
-- `description` - an optional short description of the purpose of this API call
-- `paramsValidator` - an optional filepath to the schema file used to validate outgoing params (see step 2)
-- `resultValidator` - an optional filepath to the schema file used to validate the incoming result (see step 3)
-
-**Minimal Example**
-
-Technically, this is all that's needed - you won't get any validation, but it's a good way to
-start developing a new API call because you can then import the class it creates.
-
-```json
-{
-  "getAutofillData": {}
-}
-
-```
+- `properties.id` 
+  - `properties.id.const` an optional ID to be used when listening for responses
+- `properties.description` - an optional short description of the purpose of this API call
+- `properties.paramsValidator` - an optional `$ref` filepath to the schema file used to validate outgoing params (see step 2)
+- `properties.resultValidator` - an optional `$ref` filepath to the schema file used to validate the incoming result (see step 3)
 
 <details>
 <summary>📝 Full example with schemas</summary>
@@ -89,10 +83,15 @@ to JSON files that live within `schema`
 ```json
 {
   "getAutofillData": {
-    "id": "getAutofillDataResponse",
-    "description": "Request autofill information from the device",
-    "paramsValidator": "./schemas/getAutofillData.params.json",
-    "resultValidator": "./schemas/getAutofillData.result.json"
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "const": "getAutofillDataResponse"
+      },
+      "paramsValidator": { "$ref":  "./schemas/getAutofillData.params.json" },
+      "resultValidator": { "$ref":  "./schemas/getAutofillData.result.json" }
+    }
   }
 }
 ```
@@ -101,7 +100,7 @@ to JSON files that live within `schema`
 ### Step 2: (optional) Add a params validator as JSON Schema
  
 - Add a `<name>.params.json` file inside `src/deviceApiCalls/schemas`
-- reference this file in your `deviceApiCalls.json` entry via `paramsValidator`
+- reference this file in your `api.json` entry via `paramsValidator`
     
 <details>
 <summary>📝<code>schemas/getAlias.<b>params</b>.json</code> example</summary>
@@ -130,7 +129,7 @@ to JSON files that live within `schema`
 ### Step 3: (optional) Add a results validator as JSON Schema
 
 - Add a `<name>.result.json` file inside `src/deviceApiCalls/schemas`
-- reference this file in your `deviceApiCalls.json` entry via `resultsValidator`
+- reference this file in your `api.json` entry via `resultsValidator`
 - For these API results (return values) ensure you conform to the [Result Properties](#Result-properties)
 
 <details>
@@ -185,7 +184,7 @@ are generated, as this can help you prevent typos and other human errors.
 
 - `src/deviceApiCalls/__generated__/deviceApiCalls.js`
   - This contains the class definitions that you'll use directly when making API calls
-- `src/deviceApiCalls/__generated__/validators-ts.d.ts`
+- `src/deviceApiCalls/__generated__/validators-ts.ts`
   - This contains the auto-generated Typescript definitions from the schema files
 - `src/deviceApiCalls/__generated__/validators.zod.js`
   - This contains the auto-generated validators that are referenced in `deviceApiCalls.js`

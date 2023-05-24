@@ -1,7 +1,6 @@
 import {constants} from '../helpers/mocks.js'
 import {
     forwardConsoleMessages,
-    setupServer,
     withIOSContext, withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {
@@ -21,15 +20,14 @@ import {createAvailableInputTypes} from '../helpers/utils.js'
 const test = withIOSContext(base)
 
 /**
- * @param {import('playwright').Page} page
- * @param {ServerWrapper} server
+ * @param {import("@playwright/test").Page} page
  * @param {object} opts
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} [opts.availableInputTypes]
  * @param {CredentialsMock} [opts.credentials]
  * @param {'standard' | 'withExtraText' | 'withModal' | 'covered' | 'multistep'} [opts.pageType]
  */
-async function testLoginPage (page, server, opts) {
+async function testLoginPage (page, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
 
@@ -48,19 +46,19 @@ async function testLoginPage (page, server, opts) {
     let login
     switch (opts.pageType) {
     case 'withExtraText':
-        login = loginPageWithText(page, server)
+        login = loginPageWithText(page)
         break
     case 'withModal':
-        login = loginPageWithFormInModal(page, server)
+        login = loginPageWithFormInModal(page)
         break
     case 'covered':
-        login = loginPageCovered(page, server)
+        login = loginPageCovered(page)
         break
     case 'multistep':
-        login = loginPageMultistep(page, server)
+        login = loginPageMultistep(page)
         break
     default:
-        login = loginPage(page, server)
+        login = loginPage(page)
         break
     }
 
@@ -76,17 +74,10 @@ test.describe('Auto-fill a login form on iOS', () => {
         username: personalAddress,
         password
     }
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('when `inputType_credentials` is true', () => {
         test.describe('and I have saved credentials', () => {
             test('I should be prompted to use my saved credentials with autoprompt', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
@@ -94,10 +85,10 @@ test.describe('Auto-fill a login form on iOS', () => {
                 })
                 await login.promptWasShown('ios')
                 await login.assertFirstCredential(personalAddress, password)
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
             })
             test('I should not be prompted automatically to use my saved credentials if the form is below the fold', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
@@ -105,20 +96,20 @@ test.describe('Auto-fill a login form on iOS', () => {
                     pageType: 'withExtraText'
                 })
                 await login.promptWasNotShown()
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
 
                 await login.clickIntoUsernameInput()
                 await login.assertFirstCredential(personalAddress, password)
             })
             test('I should not be prompted automatically to use my saved credentials if the form is covered by something else', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
                     credentials,
                     pageType: 'covered'
                 })
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
                 await login.promptWasNotShown()
                 await login.closeCookieDialog()
 
@@ -126,7 +117,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.assertFormSubmitted()
             })
             test('should work fine with multistep forms', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
@@ -136,13 +127,12 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.promptWasShown('ios')
                 await login.assertUsernameFilled(personalAddress)
                 await login.assertPasswordEmpty()
-                await login.clickContinue()
                 await login.clickIntoPasswordInput()
                 await login.assertPasswordFilled(password)
                 await login.assertFormSubmitted()
             })
             test('the form should be submitted after autofill', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
@@ -152,15 +142,41 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.promptWasNotShown()
                 await login.assertDialogClose()
                 await login.openDialog()
-                await login.fieldsDoNotContainIcons()
+                await login.fieldsContainIcons()
 
                 await login.clickIntoUsernameInput()
                 await login.assertFormSubmitted()
             })
+            test('should prompt to store and not autosubmit when the form completes a partial credential stored', async ({page}) => {
+                const {login} = await testLoginPage(page, {
+                    featureToggles: {
+                        inputType_credentials: true,
+                        inlineIcon_credentials: true,
+                        credentials_saving: true
+                    },
+                    availableInputTypes: {credentials: {password: true, username: false}},
+                    credentials: {
+                        ...credentials,
+                        username: ''
+                    },
+                    pageType: 'withExtraText'
+                })
+
+                const {username, password} = credentials
+
+                await login.onlyPasswordFieldHasIcon()
+
+                await login.typeIntoUsernameInput(username)
+
+                await login.clickIntoPasswordInput()
+                await login.assertPasswordFilled(password)
+                await login.assertFormNotSubmittedAutomatically()
+                await login.assertWasPromptedToSave({username, password}, 'ios')
+            })
         })
         test.describe('but I dont have saved credentials', () => {
             test('I should not be prompted', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
@@ -172,7 +188,7 @@ test.describe('Auto-fill a login form on iOS', () => {
 
         test.describe('check tooltip opening logic', () => {
             test('tapping into an autofilled field does not prompt', async ({page}) => {
-                const {login} = await testLoginPage(page, server, {
+                const {login} = await testLoginPage(page, {
                     featureToggles: {
                         inputType_credentials: true
                     },
@@ -187,7 +203,7 @@ test.describe('Auto-fill a login form on iOS', () => {
     })
     test.describe('when `inputType_credentials` is false', () => {
         test('I should not be prompted at all', async ({page}) => {
-            const {login} = await testLoginPage(page, server, {
+            const {login} = await testLoginPage(page, {
                 featureToggles: {
                     inputType_credentials: false
                 },

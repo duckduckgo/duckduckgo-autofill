@@ -3,15 +3,18 @@
  */
 export const constants = {
     pages: {
-        'overlay': 'overlay.html',
-        'email-autofill': 'email-autofill.html',
-        'signup': 'signup.html',
-        'login': 'login.html',
-        'loginWithPoorForm': 'login-poor-form.html',
-        'loginWithText': 'login-with-text.html',
-        'loginWithFormInModal': 'login-in-modal.html',
-        'loginCovered': 'login-covered.html',
-        'loginMultistep': 'login-multistep.html'
+        'overlay': 'pages/overlay.html',
+        'email-autofill': 'pages/email-autofill.html',
+        'emailAtBottom': 'pages/email-at-bottom.html',
+        'emailAtTopLeft': 'pages/email-at-top-left.html',
+        'iframeContainer': 'pages/iframe-container.html',
+        'signup': 'pages/signup.html',
+        'login': 'pages/login.html',
+        'loginWithPoorForm': 'pages/login-poor-form.html',
+        'loginWithText': 'pages/login-with-text.html',
+        'loginWithFormInModal': 'pages/login-in-modal.html',
+        'loginCovered': 'pages/login-covered.html',
+        'loginMultistep': 'pages/login-multistep.html'
     },
     fields: {
         email: {
@@ -30,6 +33,23 @@ export const constants = {
             selectors: {
                 credential: '[data-ddg-inputtype="credentials.password"]'
             }
+        },
+        identity: {
+            id: '01',
+            title: 'Main identity',
+            emailAddress: 'user@gmail.com',
+            firstName: 'First',
+            lastName: 'Last',
+            phone: '+1234567890'
+        },
+        creditCard: {
+            id: '01',
+            title: 'Main card',
+            cardName: 'First Last',
+            cardNumber: '4242424242424242',
+            cardSecurityCode: '123',
+            expirationMonth: '12',
+            expirationYear: '2030'
         }
     },
     /** @type {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} */
@@ -72,5 +92,10 @@ export const constants = {
             cardNumber: true
         },
         email: true
+    },
+    iconMatchers: {
+        key: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4w',
+        // This is the same icon as `daxBase64` in `src/Form/logo-svg.js`
+        dax: 'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2a'
     }
 }

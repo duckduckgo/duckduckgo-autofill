@@ -6,8 +6,13 @@ import { getInputSubtype, createMatching } from './matching.js'
 import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
-import testCases from './test-cases/index.js'
 import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
+import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js'
+
+/**
+ * @type {object[]}
+ */
+const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'test-cases/index.json')).toString('utf-8'))
 
 /**
  * @param {HTMLInputElement} el
@@ -135,7 +140,7 @@ describe('Input Classifiers', () => {
 let testResults = []
 
 describe.each(testCases)('Test $html fields', (testCase) => {
-    const { html, expectedFailures = [], expectedSubmitFalsePositives = 0, expectedSubmitFalseNegatives = 0, title = '__test__' } = testCase
+    const { html, generated, expectedFailures = [], expectedSubmitFalsePositives = 0, expectedSubmitFalseNegatives = 0, title = '__test__' } = testCase
 
     const testTextString = expectedFailures.length > 0
         ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
@@ -149,7 +154,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         const buttons = document.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
         buttons.forEach((button) => {
-            // We're doing this so that isVisible(button) === true. See jest.setup.js for more info
+            // We're doing this so that isPotentiallyViewable(button) === true. See jest.setup.js for more info
             // @ts-ignore
             button._jsdomMockClientWidth = 150
             // @ts-ignore
@@ -160,7 +165,10 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             button._jsdomMockOffsetHeight = 50
         })
 
-        const scanner = createScanner(InterfacePrototype.default())
+        const deviceInterface = InterfacePrototype.default()
+        const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
+        deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
+        const scanner = createScanner(deviceInterface)
         scanner.findEligibleInputs(document)
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
@@ -172,8 +180,10 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button)).length
         let submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button)).length
 
-        expect(submitFalsePositives).toEqual(expectedSubmitFalsePositives)
-        expect(submitFalseNegatives).toEqual(expectedSubmitFalseNegatives)
+        if (!generated) {
+            expect(submitFalsePositives).toEqual(expectedSubmitFalsePositives)
+            expect(submitFalseNegatives).toEqual(expectedSubmitFalseNegatives)
+        }
 
         /** @type {Array<HTMLInputElement>} */
         const manuallyScoredFields = Array.from(document.querySelectorAll('[data-manual-scoring]'))
@@ -232,7 +242,13 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                 )
             }
         }
-        expect(failed).toStrictEqual(expectedFailures)
+
+        if (generated) {
+            // Ignore order
+            expect(failed.sort()).toStrictEqual(expectedFailures.sort())
+        } else {
+            expect(failed).toStrictEqual(expectedFailures)
+        }
     })
 })
 
@@ -303,10 +319,10 @@ afterAll(() => {
         }).join('') + '\n'
     )
 
-    let totalDetectedButtons = testResults.map(test => test.submitButtonScores.detected).reduce((a, b) => a + b)
-    let totalIdentifiedButtons = testResults.map(test => test.submitButtonScores.identified).reduce((a, b) => a + b)
-    let totalFalsePositiveButtons = testResults.map(test => test.submitButtonScores.falsePositives).reduce((a, b) => a + b)
-    let totalFalseNegativeButtons = testResults.map(test => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b)
+    let totalDetectedButtons = testResults.map(test => test.submitButtonScores.detected).reduce((a, b) => a + b, 0)
+    let totalIdentifiedButtons = testResults.map(test => test.submitButtonScores.identified).reduce((a, b) => a + b, 0)
+    let totalFalsePositiveButtons = testResults.map(test => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0)
+    let totalFalseNegativeButtons = testResults.map(test => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0)
 
     console.log(
         'Submit button statistics:\n',

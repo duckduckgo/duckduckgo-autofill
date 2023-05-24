@@ -1,5 +1,7 @@
 import { createScanner } from './Scanner.js'
 
+sessionStorage.setItem('ddg-autofill-debug', 'true')
+
 /**
  * Scanner.debug.js
  *
@@ -41,24 +43,3 @@ const scanner = createScanner(mockInterface, {
 })
 
 scanner.init()
-
-setTimeout(() => {
-    console.group('forms')
-    for (const [formElement, formInstance] of scanner.forms) {
-        const { isLogin, isSignup, formAnalyzer, inputs, submitButtons } = formInstance
-        console.log(formElement)
-        console.log({
-            isLogin,
-            isSignup,
-            submitButtons,
-            autofillSignal: formAnalyzer.autofillSignal,
-            signals: formAnalyzer.signals
-        })
-        console.group('inputs')
-        for (let input of inputs.all) {
-            console.log(input)
-        }
-        console.groupEnd()
-    }
-    console.groupEnd()
-}, 500)

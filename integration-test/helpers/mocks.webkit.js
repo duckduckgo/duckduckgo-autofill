@@ -1,4 +1,4 @@
-import { createAvailableInputTypes } from './utils.js'
+import {createAvailableInputTypes, withDataType} from './utils.js'
 import {constants} from './mocks.js'
 
 /**
@@ -36,7 +36,7 @@ export const iosContentScopeReplacements = (overrides = {}) => {
                 autofill: {
                     settings: {
                         featureToggles: {
-                            inlineIcon_credentials: false,
+                            inlineIcon_credentials: true,
                             ...overrides.featureToggles
                         }
                     }
@@ -128,7 +128,6 @@ export const macosWithoutOverlay = () => {
             'emailHandlerGetAddresses',
             'emailHandlerCheckAppSignedInStatus',
             'pmHandlerGetAutofillInitData',
-            'pmHandlerStoreData',
             'pmHandlerGetAccounts',
             'pmHandlerGetAutofillCredentials',
             'pmHandlerGetIdentity',
@@ -197,7 +196,6 @@ export function createWebkitMocks (platform = 'macos') {
         },
         closeAutofillParent: {},
         getSelectedCredentials: [{type: 'stop'}],
-        pmHandlerStoreData: {},
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
             success: null
@@ -215,7 +213,10 @@ export function createWebkitMocks (platform = 'macos') {
         askToUnlockProvider: null,
         /** @type {CheckCredentialsProviderStatusTypes[]} */
         checkCredentialsProviderStatus: [],
-        sendJSPixel: null
+        sendJSPixel: null,
+        pmHandlerOpenManagePasswords: null,
+        pmHandlerOpenManageCreditCards: null,
+        pmHandlerOpenManageIdentities: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -238,14 +239,27 @@ export function createWebkitMocks (platform = 'macos') {
             }
             return this
         },
-        withIdentity (identity) {
+        withEmailProtection (emails) {
+            return this
+                .withPrivateEmail(emails.privateAddress)
+                .withPersonalEmail(emails.personalAddress)
+        },
+        withIdentity (identity, inputType = 'identities.firstName') {
             webkitBase.pmHandlerGetAutofillInitData.success.identities.push(identity)
+            const topContextData = {inputType}
+            webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             return this
         },
-        withCredentials: function (credentials) {
+        withCreditCard (creditCard, inputType = 'creditCards.cardNumber') {
+            webkitBase.pmHandlerGetAutofillInitData.success.creditCards.push(creditCard)
+            const topContextData = {inputType}
+            webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
+            return this
+        },
+        withCredentials: function (credentials, inputType = 'credentials.username') {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             /** @type {TopContextData} */
-            const topContextData = {inputType: 'credentials.username'}
+            const topContextData = {inputType}
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
             webkitBase.getAutofillData = { success: { credentials, action: 'fill' } }
@@ -261,6 +275,9 @@ export function createWebkitMocks (platform = 'macos') {
                 {type: 'stop'}
             ]
             return this
+        },
+        withDataType: function (data) {
+            return withDataType(this, data)
         },
         withAvailableInputTypes: function (inputTypes) {
             webkitBase.getAvailableInputTypes = {success: inputTypes}
@@ -360,28 +377,32 @@ export function createWebkitMocks (platform = 'macos') {
  * This will mock webkit handlers based on the key-values you provide
  *
  * @private
- * @param {import("playwright").Page} page
+ * @param {import("@playwright/test").Page} page
  * @param {Record<string, any>} mocks
  */
 async function withMockedWebkit (page, mocks) {
     await page.addInitScript((mocks) => {
-        window.__playwright = { mocks: { calls: [] } }
+        window.__playwright_autofill = { mocks: { calls: [] } }
         window.webkit = {
             messageHandlers: {}
         }
         for (let [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
+                /**
+                 * @param {any} data
+                 * @return {Promise<string|undefined>}
+                 */
                 postMessage: async (data) => {
                     /** @type {MockCall} */
                     const call = [msgName, data, response]
                     let thisResponse = response
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
 
                     // This allows mocks to have multiple return values.
                     // It has to be inline here since it's serialized into the page.
                     const isMulti = Array.isArray(response)
                     if (isMulti) {
-                        const prevCount = window.__playwright.mocks.calls.filter(([name]) => name === msgName).length
+                        const prevCount = window.__playwright_autofill.mocks.calls.filter(([name]) => name === msgName).length
                         const next = response[prevCount - 1]
                         if (next) {
                             thisResponse = next

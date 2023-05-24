@@ -1,0 +1,13 @@
+<!-- https://substack.com/sign-in -->
+<form action="/api/v1/email-login" class="form " method="post" novalidate=""><input name="redirect" type="hidden"
+                                                                                    value="/"><input name="for_pub"
+                                                                                                     type="hidden"
+                                                                                                     value="">
+    <div class="fancy-input"><input autofocus="true" data-manual-scoring="username" name="email" placeholder="Your Email"
+                                    type="email"></div>
+    <div id="error-container"></div>
+    <div>
+        <button class="button primary substack-login__go-button" tabindex="0" type="submit" data-manual-submit>Email sign in link</button>
+        <span class="login-option"><a class="login-option substack-login__login-option" href="javascript:void(0)">sign in with password</a></span>
+    </div>
+</form>

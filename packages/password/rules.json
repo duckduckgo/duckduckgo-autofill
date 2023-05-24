@@ -71,6 +71,9 @@
   "astonmartinf1.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
   },
+  "auth.readymag.com": {
+    "password-rules": "minlength: 8; maxlength: 128; required: lower; required: upper; allowed: special;"
+  },
   "autify.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
   },
@@ -169,6 +172,9 @@
   },
   "claro.com.br": {
     "password-rules": "minlength: 8; required: lower; allowed: upper, digit, [-!@#$%&*_+=<>];"
+  },
+  "classmates.com": {
+    "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit, [!@#$%^&*];"
   },
   "clien.net": {
     "password-rules": "minlength: 5; required: lower, upper; required: digit;"
@@ -296,6 +302,9 @@
   "fc2.com": {
     "password-rules": "minlength: 8; maxlength: 16;"
   },
+  "fccaccessonline.com": {
+    "password-rules": "minlength: 8; maxlength: 14; max-consecutive: 3; required: lower; required: upper; required: digit; required: [!#$%*^_];"
+  },
   "fedex.com": {
     "password-rules": "minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&*_+=`|(){}[:;,.?]];"
   },
@@ -389,6 +398,9 @@
   "indochino.com": {
     "password-rules": "minlength: 6; maxlength: 15; required: upper; required: digit; allowed: lower, special;"
   },
+  "inntopia.travel": {
+    "password-rules": "minlength: 7; maxlength: 19; required: digit; allowed: upper,lower,[-];"
+  },
   "internationalsos.com": {
     "password-rules": "required: lower; required: upper; required: digit; required: [@#$%^&+=_];"
   },
@@ -476,14 +488,14 @@
   "medicare.gov": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@!$%^*()];"
   },
+  "member.everbridge.net": {
+    "password-rules": "minlength: 8; required: lower, upper; required: digit; allowed: [!@#$%^&*()];"
+  },
   "metlife.com": {
     "password-rules": "minlength: 6; maxlength: 20;"
   },
   "microsoft.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
-  },
-  "minecraft.com": {
-    "password-rules": "minlength: 8; required: lower, upper; required: digit; allowed: ascii-printable;"
   },
   "mintmobile.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&()*+:;=@[^_`{}~]];"
@@ -508,6 +520,9 @@
   },
   "myhealthrecord.com": {
     "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
+  },
+  "mysedgwick.com": {
+    "password-rules": "minlength: 8; maxlength: 16; allowed: lower; required: upper; required: digit; required: [@#%^&+=!]; allowed: [-~_$.,;]"
   },
   "mysubaru.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!#$%()*+,./:;=?@\\^`~];"

@@ -58,7 +58,7 @@ interface Window {
 
     providerStatusUpdated: (data: ProviderStatusUpdated) => void;
 
-    __playwright: {
+    __playwright_autofill: {
         mocks: {
             calls: MockCall[]
         }

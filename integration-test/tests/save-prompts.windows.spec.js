@@ -1,7 +1,7 @@
 import {
     createAutofillScript,
     forwardConsoleMessages,
-    setupServer, withWindowsContext
+    withWindowsContext
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {signupPage} from '../helpers/pages.js'
@@ -11,13 +11,6 @@ import {createWindowsMocks} from '../helpers/mocks.windows.js'
 const test = withWindowsContext(base)
 
 test.describe('Save prompts on windows', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test.describe('When saving credentials is enabled ✅ (default)', () => {
         test('Prompting to save from a signup form', async ({page}) => {
             // enable in-terminal exceptions
@@ -30,7 +23,7 @@ test.describe('Save prompts on windows', () => {
                 password: '123456'
             }
 
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
 
             await createWindowsMocks().applyTo(page)
@@ -55,7 +48,7 @@ test.describe('Save prompts on windows', () => {
                 password: '123456'
             }
 
-            const signup = signupPage(page, server)
+            const signup = signupPage(page)
             await signup.navigate()
 
             await createWindowsMocks()

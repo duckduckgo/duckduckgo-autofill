@@ -6,12 +6,12 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isVisible, buttonMatchesFormType,
-    safeExecute, getText
+    isPotentiallyViewable, buttonMatchesFormType,
+    safeExecute, getText, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
-import { getIconStylesAutofilled, getIconStylesBase } from './inputStyles.js'
+import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
@@ -23,7 +23,7 @@ import {
 } from './formatters.js'
 
 import {constants} from '../constants.js'
-const {ATTR_AUTOFILL} = constants
+const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -47,6 +47,7 @@ class Form {
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.isLogin = this.formAnalyzer.isLogin
         this.isSignup = this.formAnalyzer.isSignup
+        this.isHybrid = this.formAnalyzer.isHybrid
         this.device = deviceInterface
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
@@ -65,6 +66,7 @@ class Form {
         this.isAutofilling = false
         this.handlerExecuted = false
         this.shouldPromptToStoreData = true
+        this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
 
         /**
          * @type {IntersectionObserver | null}
@@ -85,9 +87,29 @@ class Form {
 
         this.categorizeInputs()
 
+        this.logFormInfo()
+
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
+    }
+
+    logFormInfo () {
+        if (!shouldLog()) return
+
+        console.log(`Form type: %c${this.getFormType()} ${this.formAnalyzer.autofillSignal}`, 'font-weight: bold')
+        console.log('Signals: ', this.formAnalyzer.signals)
+        console.log('Wrapping element: ', this.form)
+        console.log('Inputs: ', this.inputs)
+        console.log('Submit Buttons: ', this.submitButtons)
+    }
+
+    getFormType () {
+        if (this.isHybrid) return 'hybrid'
+        if (this.isLogin) return 'login'
+        if (this.isSignup) return 'signup'
+
+        return 'something went wrong'
     }
 
     /**
@@ -99,23 +121,6 @@ class Form {
         return this.form.contains(document.activeElement) || this.form.contains(/** @type HTMLElement */(e?.target))
     }
 
-    /**
-     * Checks that the form element doesn't contain an invalid field
-     * @return {boolean}
-     */
-    isValid () {
-        if (this.form instanceof HTMLFormElement) {
-            return this.form.checkValidity()
-        }
-
-        // If the container is not a valid form, we must check fields individually
-        let validity = true
-        this.execOnInputs((input) => {
-            if (input.validity && !input.validity.valid) validity = false
-        }, 'all', false)
-        return validity
-    }
-
     submitHandler (via = 'unknown') {
         if (this.device.globalConfig.isDDGTestMode) {
             console.log('Form.submitHandler via:', via, this)
@@ -123,9 +128,7 @@ class Form {
 
         if (this.handlerExecuted) return
 
-        if (!this.isValid()) return
-
-        const values = this.getValues()
+        const values = this.getValuesReadyForStorage()
 
         this.device.postSubmit?.(values, this)
 
@@ -133,8 +136,11 @@ class Form {
         this.handlerExecuted = true
     }
 
-    /** @return {DataStorageObject} */
-    getValues () {
+    /**
+     * Reads the values from the form without preparing to store them
+     * @return {InternalDataStorageObject}
+     */
+    getRawValues () {
         const formValues = [...this.inputs.credentials, ...this.inputs.identities, ...this.inputs.creditCards]
             .reduce((output, inputEl) => {
                 const mainType = getInputMainType(inputEl)
@@ -169,8 +175,11 @@ class Form {
                 formValues.credentials.username = probableField.value
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
-                this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+                this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
                     const elText = getText(el)
+                    // Ignore long texts to avoid false positives
+                    if (elText.length > 70) return
+
                     const emailOrUsername = elText.match(
                         // https://www.emailregex.com/
                         /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
@@ -182,6 +191,15 @@ class Form {
             }
         }
 
+        return formValues
+    }
+
+    /**
+     * Return form values ready for storage
+     * @returns {DataStorageObject}
+     */
+    getValuesReadyForStorage () {
+        const formValues = this.getRawValues()
         return prepareFormValuesForStorage(formValues)
     }
 
@@ -191,7 +209,7 @@ class Form {
      * @return {boolean}
      */
     hasValues (values) {
-        const {credentials, creditCards, identities} = values || this.getValues()
+        const {credentials, creditCards, identities} = values || this.getValuesReadyForStorage()
 
         return Boolean(credentials || creditCards || identities)
     }
@@ -213,17 +231,28 @@ class Form {
     }
 
     removeInputHighlight (input) {
+        if (!input.classList.contains('ddg-autofilled')) return
+
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
+        removeInlineStyles(input, {'cursor': 'pointer'})
         input.classList.remove('ddg-autofilled')
         this.addAutofillStyles(input)
+    }
+
+    resetIconStylesToInitial () {
+        const input = this.activeInput
+        if (input) {
+            const initialStyles = getIconStylesBase(input, this)
+            addInlineStyles(input, initialStyles)
+        }
     }
 
     removeAllHighlights (e, dataType) {
         // This ensures we are not removing the highlight ourselves when autofilling more than once
         if (e && !e.isTrusted) return
 
-        // If the user has changed the value, we prompt to update the stored creds
-        this.shouldPromptToStoreCredentials = true
+        // If the user has changed the value, we prompt to update the stored data
+        this.shouldPromptToStoreData = true
 
         this.execOnInputs((input) => this.removeInputHighlight(input), dataType)
     }
@@ -234,7 +263,7 @@ class Form {
     }
     removeAllDecorations () {
         this.execOnInputs((input) => this.removeInputDecoration(input))
-        this.listeners.forEach(({el, type, fn}) => el.removeEventListener(type, fn))
+        this.listeners.forEach(({el, type, fn, opts}) => el.removeEventListener(type, fn, opts))
     }
     redecorateAllInputs () {
         this.removeAllDecorations()
@@ -243,6 +272,25 @@ class Form {
                 this.decorateInput(input)
             }
         })
+    }
+
+    /**
+     * Removes all scoring attributes from the inputs and deletes them from memory
+     */
+    forgetAllInputs () {
+        this.execOnInputs((input) => {
+            input.removeAttribute(ATTR_INPUT_TYPE)
+        })
+        Object.values(this.inputs).forEach((inputSet) => inputSet.clear())
+    }
+
+    /**
+     * Resets our input scoring and starts from scratch
+     */
+    recategorizeAllInputs () {
+        this.removeAllDecorations()
+        this.forgetAllInputs()
+        this.categorizeInputs()
     }
     resetAllInputs () {
         this.execOnInputs((input) => {
@@ -265,7 +313,11 @@ class Form {
 
     categorizeInputs () {
         const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR')
-        this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
+        if (this.form.matches(selector)) {
+            this.addInput(this.form)
+        } else {
+            this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
+        }
     }
 
     get submitButtons () {
@@ -274,28 +326,27 @@ class Form {
 
         return allButtons
             .filter((btn) =>
-                isVisible(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
             )
     }
 
     attemptSubmissionIfNeeded () {
         if (
             !this.isLogin || // Only submit login forms
-            this.submitButtons.length > 1 || // Do not submit if we're unsure about the submit button
-            !this.isValid() // Do not submit invalid forms
+            this.submitButtons.length > 1 // Do not submit if we're unsure about the submit button
         ) return
 
         // check for visible empty fields before attemtping submission
         // this is to avoid loops where a captcha keeps failing for the user
         let isThereAnEmptyVisibleField = false
         this.execOnInputs((input) => {
-            if (input.value === '' && isVisible(input)) isThereAnEmptyVisibleField = true
+            if (input.value === '' && isPotentiallyViewable(input)) isThereAnEmptyVisibleField = true
         }, 'all', false)
         if (isThereAnEmptyVisibleField) return
 
         // We're not using .submit() to minimise breakage with client-side forms
         this.submitButtons.forEach((button) => {
-            if (isVisible(button)) {
+            if (isPotentiallyViewable(button)) {
                 button.click()
             }
         })
@@ -327,24 +378,53 @@ class Form {
 
         this.inputs.all.add(input)
 
-        this.matching.setInputType(input, this.form, { isLogin: this.isLogin })
+        const opts = {
+            isLogin: this.isLogin,
+            isHybrid: this.isHybrid,
+            hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
+            supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
+        }
+        this.matching.setInputType(input, this.form, opts)
 
         const mainInputType = getInputMainType(input)
         this.inputs[mainInputType].add(input)
+
+        // TODO: temporary pixel
+        if (this.device.globalConfig.isExtension) {
+            const subtype = getInputSubtype(input)
+            if (subtype === 'emailAddress') {
+                this.addListener(input, 'pointerdown', () => {
+                    this.device.firePixel({pixelName: 'email_incontext_eligible'})
+                }, {once: true})
+            }
+        }
 
         this.decorateInput(input)
 
         return this
     }
 
-    addListener (el, type, fn) {
-        el.addEventListener(type, fn)
-        this.listeners.add({el, type, fn})
+    /**
+     * Adds event listeners and keeps track of them for subsequent removal
+     * @param {HTMLElement} el
+     * @param {Event['type']} type
+     * @param {() => void} fn
+     * @param {AddEventListenerOptions} [opts]
+     */
+    addListener (el, type, fn, opts) {
+        el.addEventListener(type, fn, opts)
+        this.listeners.add({el, type, fn, opts})
     }
 
     addAutofillStyles (input) {
-        const styles = getIconStylesBase(input, this)
-        addInlineStyles(input, styles)
+        const initialStyles = getIconStylesBase(input, this)
+        const activeStyles = getIconStylesAlternate(input, this)
+
+        addInlineStyles(input, initialStyles)
+        return {
+            onMouseMove: activeStyles,
+            onMouseLeave: initialStyles
+        }
     }
 
     /**
@@ -362,16 +442,33 @@ class Form {
 
         const hasIcon = !!config.getIconBase(input, this)
         if (hasIcon) {
-            this.addAutofillStyles(input)
+            const { onMouseMove, onMouseLeave } = this.addAutofillStyles(input)
             this.addListener(input, 'mousemove', (e) => {
+                if (wasAutofilledByChrome(input)) return
+
                 if (isEventWithinDax(e, e.target)) {
-                    e.target.style.setProperty('cursor', 'pointer', 'important')
+                    addInlineStyles(e.target, {
+                        'cursor': 'pointer',
+                        ...onMouseMove
+                    })
                 } else {
-                    e.target.style.removeProperty('cursor')
+                    removeInlineStyles(e.target, {'cursor': 'pointer'})
+                    // Only overwrite active icon styles if tooltip is closed
+                    if (!this.device.isTooltipActive()) {
+                        addInlineStyles(e.target, { ...onMouseLeave })
+                    }
+                }
+            })
+            this.addListener(input, 'mouseleave', (e) => {
+                removeInlineStyles(e.target, {'cursor': 'pointer'})
+                // Only overwrite active icon styles if tooltip is closed
+                if (!this.device.isTooltipActive()) {
+                    addInlineStyles(e.target, { ...onMouseLeave })
                 }
             })
         }
 
+        // We need click coordinates to position the tooltip when the field is in an iframe
         function getMainClickCoords (e) {
             if (!e.isTrusted) return
             const isMainMouseButton = e.button === 0
@@ -383,6 +480,7 @@ class Form {
         }
 
         // Store the click to a label so we can use the click when the field is focused
+        // Needed to handle label clicks when the form is in an iframe
         let storedClick = new WeakMap()
         let timeout = null
         const handlerLabel = (e) => {
@@ -398,16 +496,23 @@ class Form {
         }
 
         const handler = (e) => {
-            if (this.isAutofilling) {
+            // Avoid firing multiple times
+            if (this.isAutofilling || this.device.isTooltipActive()) {
                 return
             }
 
-            const input = e.target
+            // On mobile, we don't trigger on focus, so here we get the target control on label click
+            const isLabel = e.target instanceof HTMLLabelElement
+            const input = isLabel ? e.target.control : e.target
+            if (!input || !this.inputs.all.has(input)) return
+
             let click = null
+
+            if (wasAutofilledByChrome(input)) return
 
             if (!canBeInteractedWith(input)) return
 
-            // Checks for pointerdown event
+            // Checks for pointerdown event. Needed for positioning when fields are within an iframe
             if (e.type === 'pointerdown') {
                 click = getMainClickCoords(e)
                 if (!click) return
@@ -418,18 +523,35 @@ class Form {
             }
 
             if (this.shouldOpenTooltip(e, input)) {
+                const iconClicked = isEventWithinDax(e, input)
+                // On mobile and extensions we don't trigger the focus event to avoid
+                // keyboard flashing and conflicts with browsers' own tooltips
                 if (
-                    this.device.globalConfig.isMobileApp &&
+                    (this.device.globalConfig.isMobileApp || this.device.globalConfig.isExtension) &&
                     // Avoid the icon capturing clicks on small fields making it impossible to focus
                     input.offsetWidth > 50 &&
-                    isEventWithinDax(e, input)
+                    iconClicked
                 ) {
                     e.preventDefault()
                     e.stopImmediatePropagation()
+                    input.blur()
                 }
 
                 this.touched.add(input)
-                this.device.attachTooltip(this, input, click)
+                this.device.attachTooltip({
+                    form: this,
+                    input: input,
+                    click: click,
+                    trigger: 'userInitiated',
+                    triggerMetaData: {
+                        // An 'icon' click is very different to a field click or focus.
+                        // It indicates an explicit opt-in to the feature.
+                        type: iconClicked ? 'explicit-opt-in' : 'implicit-opt-in'
+                    }
+                })
+
+                const activeStyles = getIconStylesAlternate(input, this)
+                addInlineStyles(input, activeStyles)
             }
         }
 
@@ -437,7 +559,13 @@ class Form {
             const events = ['pointerdown']
             if (!this.device.globalConfig.isMobileApp) events.push('focus')
             input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', handlerLabel)
+                if (this.device.globalConfig.isMobileApp) {
+                    // On mobile devices we don't trigger on focus, so we use the click handler here
+                    this.addListener(label, 'pointerdown', handler)
+                } else {
+                    // Needed to handle label clicks when the form is in an iframe
+                    this.addListener(label, 'pointerdown', handlerLabel)
+                }
             })
             events.forEach((ev) => this.addListener(input, ev, handler))
         }
@@ -445,15 +573,18 @@ class Form {
     }
 
     shouldOpenTooltip (e, input) {
+        if (!isPotentiallyViewable(input)) return false
         if (this.device.globalConfig.isApp) return true
         if (this.device.globalConfig.isWindows) return true
+        if (isEventWithinDax(e, input)) return true
+        if (this.device.inContextSignup?.isAvailable()) return false
 
-        return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled')) || isEventWithinDax(e, input)
+        return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled'))
     }
 
     autofillInput (input, string, dataType) {
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
-        if (input instanceof HTMLInputElement && !isVisible(input)) return
+        if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return
         // Do not autofill if it's disabled or readonly to avoid potential breakage
         if (!canBeInteractedWith(input)) return
 
@@ -479,6 +610,7 @@ class Form {
 
         input.classList.add('ddg-autofilled')
         addInlineStyles(input, getIconStylesAutofilled(input, this))
+        this.touched.add(input)
 
         // If the user changes the value, remove the decoration
         input.addEventListener('input', (e) => this.removeAllHighlights(e, dataType), {once: true})
@@ -505,7 +637,6 @@ class Form {
     }
 
     autofillData (data, dataType) {
-        this.shouldPromptToStoreData = false
         this.isAutofilling = true
 
         this.execOnInputs((input) => {
@@ -524,18 +655,45 @@ class Form {
                 autofillData = getCountryName(input, data)
             }
 
-            if (autofillData) this.autofillInput(input, autofillData, dataType)
+            if (autofillData) {
+                this.autofillInput(input, autofillData, dataType)
+            }
         }, dataType)
 
         this.isAutofilling = false
+
+        // After autofill we check if form values match the data provided…
+        const formValues = this.getValuesReadyForStorage()
+        const areAllFormValuesKnown = Object.keys(formValues[dataType] || {})
+            .every((subtype) => formValues[dataType][subtype] === data[subtype])
+        if (areAllFormValuesKnown) {
+            // …if we know all the values do not prompt to store data
+            this.shouldPromptToStoreData = false
+            // reset this to its initial value
+            this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
+        } else {
+            // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
+            this.shouldAutoSubmit = false
+        }
 
         this.device.postAutofill?.(data, dataType, this)
 
         this.removeTooltip()
     }
 
+    /**
+     * Set all inputs of the data type to "touched"
+     * @param {'all' | SupportedMainTypes} dataType
+     */
+    touchAllInputs (dataType = 'all') {
+        this.execOnInputs(
+            (input) => this.touched.add(input),
+            dataType
+        )
+    }
+
     getFirstViableCredentialsInput () {
-        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isVisible(input))
+        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input))
     }
 
     async promptLoginIfNeeded () {
@@ -559,11 +717,19 @@ class Form {
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter)
                     if (this.form.contains(topMostElementFromPoint)) {
                         this.execOnInputs((input) => {
-                            if (isVisible(input)) {
+                            if (isPotentiallyViewable(input)) {
                                 this.touched.add(input)
                             }
                         }, 'credentials')
-                        this.device.attachTooltip(this, input, null, 'autoprompt')
+                        this.device.attachTooltip({
+                            form: this,
+                            input: input,
+                            click: null,
+                            trigger: 'autoprompt',
+                            triggerMetaData: {
+                                type: 'implicit-opt-in'
+                            }
+                        })
                     }
                 })
             }, 200)

@@ -5,12 +5,24 @@ import {
     sendAndWaitForAnswer,
     setValue,
     formatDuckAddress,
-    isAutofillEnabledFromProcessedConfig
+    isAutofillEnabledFromProcessedConfig,
+    notifyWebApp
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {defaultOptions} from '../UI/HTMLTooltip.js'
+import {InContextSignup} from '../InContextSignup.js'
+
+const TOOLTIP_TYPES = {
+    EmailProtection: 'EmailProtection',
+    EmailSignup: 'EmailSignup'
+}
 
 class ExtensionInterface extends InterfacePrototype {
+    /**
+     * Adding this here since only the extension currently supports this
+     */
+    inContextSignup = new InContextSignup(this)
+
     /**
      * @override
      */
@@ -19,9 +31,44 @@ class ExtensionInterface extends InterfacePrototype {
         const htmlTooltipOptions = {
             ...defaultOptions,
             css: `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossOrigin="anonymous">`,
-            testMode: this.isTestMode()
+            testMode: this.isTestMode(),
+            hasCaret: true
         }
-        return new HTMLTooltipUIController({ tooltipKind: 'legacy', device: this }, htmlTooltipOptions)
+        const tooltipKinds = {
+            [TOOLTIP_TYPES.EmailProtection]: 'legacy',
+            [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
+        }
+        const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection]
+
+        return new HTMLTooltipUIController({ tooltipKind, device: this }, htmlTooltipOptions)
+    }
+
+    getActiveTooltipType () {
+        if (this.hasLocalAddresses) {
+            return TOOLTIP_TYPES.EmailProtection
+        }
+
+        if (this.inContextSignup?.isAvailable()) {
+            return TOOLTIP_TYPES.EmailSignup
+        }
+
+        return null
+    }
+
+    removeAutofillUIFromPage () {
+        super.removeAutofillUIFromPage()
+        this.activeForm?.removeAllDecorations()
+    }
+
+    async resetAutofillUI (callback) {
+        this.removeAutofillUIFromPage()
+
+        await this.setupAutofill()
+
+        if (callback) await callback()
+
+        this.uiController = this.createUIController()
+        await this.postInit()
     }
 
     async isEnabled () {
@@ -44,14 +91,48 @@ class ExtensionInterface extends InterfacePrototype {
         return this.hasLocalAddresses
     }
 
-    setupAutofill () {
+    async setupAutofill () {
+        /**
+         * In the extension, we must resolve `inContextSignup` data as part of setup
+         */
+        await this.inContextSignup.init()
+
         return this.getAddresses()
     }
 
     postInit () {
-        if (this.hasLocalAddresses) {
-            const cleanup = this.scanner.init()
-            this.addLogoutListener(cleanup)
+        switch (this.getActiveTooltipType()) {
+        case TOOLTIP_TYPES.EmailProtection: {
+            this._scannerCleanup = this.scanner.init()
+            this.addLogoutListener(() => {
+                this.resetAutofillUI()
+                if (this.globalConfig.isDDGDomain) {
+                    notifyWebApp({ deviceSignedIn: {value: false} })
+                }
+            })
+
+            if (this.activeForm?.activeInput) {
+                this.attachTooltip({
+                    form: this.activeForm,
+                    input: this.activeForm?.activeInput,
+                    click: null,
+                    trigger: 'postSignup',
+                    triggerMetaData: {
+                        type: 'transactional'
+                    }
+                })
+            }
+
+            break
+        }
+        case TOOLTIP_TYPES.EmailSignup: {
+            this._scannerCleanup = this.scanner.init()
+            break
+        }
+        default: {
+            // Don't do anyhing if we don't have a tooltip to show
+            break
+        }
         }
     }
 
@@ -132,13 +213,7 @@ class ExtensionInterface extends InterfacePrototype {
 
             switch (message.type) {
             case 'ddgUserReady':
-                this.setupAutofill().then(() => {
-                    this.refreshSettings().then(() => {
-                        this.setupSettingsPage({shouldLog: true}).then(() => {
-                            return this.postInit()
-                        })
-                    })
-                })
+                this.resetAutofillUI(() => this.setupSettingsPage({shouldLog: true}))
                 break
             case 'contextualAutofill':
                 setValue(activeEl, formatDuckAddress(message.alias), this.globalConfig)
@@ -159,12 +234,19 @@ class ExtensionInterface extends InterfacePrototype {
     }
 
     addLogoutListener (handler) {
+        // Make sure there's only one log out listener attached by removing the
+        // previous logout listener first, if it exists.
+        if (this._logoutListenerHandler) {
+            chrome.runtime.onMessage.removeListener(this._logoutListenerHandler)
+        }
+
         // Cleanup on logout events
-        chrome.runtime.onMessage.addListener((message, sender) => {
+        this._logoutListenerHandler = (message, sender) => {
             if (sender.id === chrome.runtime.id && message.type === 'logout') {
                 handler()
             }
-        })
+        }
+        chrome.runtime.onMessage.addListener(this._logoutListenerHandler)
     }
 }
 

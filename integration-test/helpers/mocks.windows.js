@@ -1,4 +1,4 @@
-import {createAvailableInputTypes} from './utils.js'
+import {createAvailableInputTypes, withDataType} from './utils.js'
 
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
@@ -79,6 +79,11 @@ export function createWindowsMocks () {
         withPersonalEmail (_email) {
             return this
         },
+        withEmailProtection (emails) {
+            return this
+                .withPrivateEmail(emails.privateAddress)
+                .withPersonalEmail(emails.personalAddress)
+        },
         withAvailableInputTypes (inputTypes) {
             mocks.getAvailableInputTypes = inputTypes
             return this
@@ -101,6 +106,9 @@ export function createWindowsMocks () {
         withIdentity: function () {
             throw new Error('Function not implemented.')
         },
+        withCreditCard: function () {
+            throw new Error('Function not implemented.')
+        },
         withCredentials: function (credentials) {
             mocks.getAutofillInitData.credentials.push(credentials)
             mocks.getAutofillCredentials = credentials
@@ -110,17 +118,20 @@ export function createWindowsMocks () {
             mocks.getAutofillData = { credentials, action: 'fill' }
             return this
         },
+        withDataType: function (data) {
+            return withDataType(this, data)
+        },
         tap () {
             return this
         },
         async applyTo (page) {
             return page.evaluate(mocks => {
-                window.__playwright = { mocks: { calls: [] } }
+                window.__playwright_autofill = { mocks: { calls: [] } }
                 const listeners = []
 
                 function recordCall (name, request, response) {
                     const call = [name, request, response]
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                 }
                 /**
                  * @param {any} request
@@ -128,7 +139,7 @@ export function createWindowsMocks () {
                  */
                 function respond (name, request, response) {
                     const call = [name, request, response]
-                    window.__playwright.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     setTimeout(() => {
                         for (let listener of listeners) {
                             listener({

@@ -5,6 +5,23 @@
   "description": "This describes the argument given to `getAutofillData(data)`",
   "additionalProperties": false,
   "properties": {
+    "generatedPassword": {
+      "title": "GeneratedPassword",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "username"
+      ]
+    },
     "inputType": {
       "description": "This is the combined input type, such as `credentials.username`",
       "type": "string"
@@ -25,7 +42,7 @@
     "trigger": {
       "description": "Signals that the prompt was triggered automatically rather than by user action",
       "type": "string",
-      "enum": ["userInitiated", "autoprompt"]
+      "enum": ["userInitiated", "autoprompt", "postSignup"]
     },
     "serializedInputContext": {
       "description": "Serialized JSON that will be picked up once the 'parent' requests its initial data",

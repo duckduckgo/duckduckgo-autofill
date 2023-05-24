@@ -11,11 +11,7 @@ type StrategyNames = keyof MatchingConfiguration['strategies'];
 
 interface Matcher {
     type: MatcherTypeNames
-    strategies: {
-        cssSelector?: string
-        ddgMatcher?: string
-        vendorRegex?: string
-    }
+    strategies: MatchingConfiguration.strategies
 }
 
 interface MatcherLists {
@@ -85,8 +81,12 @@ type MatchableStrings =
 
 type MatchingResult = {
     matched: boolean
+    matcherType: MatcherTypeNames
     proceed?: boolean
     skip?: boolean
+    matchedString?: string
+    matchedFrom?: MatchableStrings
+    strategyName: StrategyNames
 }
 
 type SupportedMainTypes =
@@ -97,8 +97,10 @@ type SupportedMainTypes =
 
 interface InputTypeConfigBase {
     type: SupportedMainTypes,
+    displayName: 'Identities' | 'Logins' | 'Credit Cards' | '',
     getIconFilled: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
     getIconBase: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
+    getIconAlternate: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
     shouldDecorate: (input: HTMLInputElement, form: import("../Form/Form").Form) => Promise<boolean>,
     dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
     tooltipItem(data: any): TooltipItemRenderer;

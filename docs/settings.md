@@ -21,30 +21,48 @@ The platform in question will deliver feature toggles (boolean flags) based on d
 
 `settings.availableInputTypes` 
 
-Another set of boolean flags, this time indicating which data types the 
-current user can autofill. This is domain specific.
+Another set of boolean flags, this time indicating which data types the current user can autofill.
+Credentials are domain-specific. These represent which input types we can autofill for the current user.
+Values are `true` if we can autofill the field type with at least one item. For example, if we have two
+credential items and the first only has a username and the second only has a password, both fields will be `true`.
 
-- `credentials` - true if the user has credentials stored for the current domain
-- `identities` - true if the user has identities stored (not domain specific)
-- `creditCards` - true if the user has creditCards stored (not domain specific)
-- `email` - true if the user has logged into email protection (not domain specific)
-  - note: `availableInputTypes.email` is only current used on android. In the future all platforms will migrate to this.
+Note: `availableInputTypes.email` is only currently used on android. In the future all platforms will migrate to this.
+
+```json
+{
+  "email": Boolean,
+  "credentials": {
+    "username": Boolean,
+    "password": Boolean
+  },
+  "identities": {
+    "firstName": Boolean,
+    "middleName": Boolean,
+    "lastName": Boolean,
+    "birthdayDay": Boolean,
+    "birthdayMonth": Boolean,
+    "birthdayYear": Boolean,
+    "addressStreet": Boolean,
+    "addressStreet2": Boolean,
+    "addressCity": Boolean,
+    "addressProvince": Boolean,
+    "addressPostalCode": Boolean,
+    "addressCountryCode": Boolean,
+    "phone": Boolean,
+    "emailAddress": Boolean
+  },
+  "creditCards": {
+    "cardName": Boolean,
+    "cardSecurityCode": Boolean,
+    "expirationMonth": Boolean,
+    "expirationYear": Boolean,
+    "cardNumber": Boolean
+  }
+}
+```
 
 ## Methods
 
-`settings.refresh(availableInputTypesOverrides)`
+`settings.refresh()`
 
-Initially, this is called as an additional step that follows data access when the page loads, but
-the long-term goal is to remove all initial data access and do everything through this.
-
-**Note:** This method currently accepts 'availableInputTypesOverrides' as a way to support the current version of `macOS`. macOS currently determines which data types it supports by fetching user data on page load, so we use that data to derive `availableInputTypes`. In the future, once macOS supports `getAvailableInputTypes` then we can remove this override.
-
-```javascript
-// if we're executing on macOS, use old methods as overrides for `availableInputTypes`
-const macOSoverrides = isMac ? {
-    credentials: this.hasLocalCredentials(),
-    identities: this.hasLocalIdentities(),
-    ...etc
-} : {}
-await settings.refresh(overrides)
-```
+Initially, this is called as an additional step that follows data access when the page loads.

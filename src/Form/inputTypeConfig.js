@@ -1,4 +1,4 @@
-import { daxBase64 } from './logo-svg.js'
+import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
 import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType} from './matching.js'
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
@@ -16,13 +16,47 @@ const getIdentitiesIcon = (input, {device}) => {
     if (!canBeInteractedWith(input)) return ''
 
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-    const { isDDGApp, isFirefox } = device.globalConfig
+    const { isDDGApp, isFirefox, isExtension } = device.globalConfig
     const subtype = getInputSubtype(input)
+
+    if (subtype === 'emailAddress' && device.inContextSignup?.isAvailable()) {
+        if (isDDGApp || isFirefox) {
+            return daxGrayscaleBase64
+        } else if (isExtension) {
+            return chrome.runtime.getURL('img/logo-small-grayscale.svg')
+        }
+    }
 
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
         if (isDDGApp || isFirefox) {
             return daxBase64
-        } else if (typeof window.chrome?.runtime !== 'undefined') {
+        } else if (isExtension) {
+            return chrome.runtime.getURL('img/logo-small.svg')
+        }
+    }
+
+    return ''
+}
+
+/**
+ * Get the alternate icon for the identities (currently only Dax for emails)
+ * @param {HTMLInputElement} input
+ * @param {import("./Form").Form} form
+ * @return {string}
+ */
+const getIdentitiesAlternateIcon = (input, {device}) => {
+    if (!canBeInteractedWith(input)) return ''
+
+    // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
+    const { isDDGApp, isFirefox, isExtension } = device.globalConfig
+    const subtype = getInputSubtype(input)
+
+    const isIncontext = subtype === 'emailAddress' && device.inContextSignup?.isAvailable()
+    const isEmailProtection = subtype === 'emailAddress' && device.isDeviceSignedIn()
+    if (isIncontext || isEmailProtection) {
+        if (isDDGApp || isFirefox) {
+            return daxBase64
+        } else if (isExtension) {
             return chrome.runtime.getURL('img/logo-small.svg')
         }
     }
@@ -60,6 +94,7 @@ const inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
         type: 'credentials',
+        displayName: 'Logins',
         getIconBase: (input, {device}) => {
             if (!canBeInteractedWith(input)) return ''
 
@@ -74,9 +109,10 @@ const inputTypeConfig = {
             }
             return ''
         },
-        shouldDecorate: async (input, {isLogin, device}) => {
+        getIconAlternate: () => '',
+        shouldDecorate: async (input, {isLogin, isHybrid, device}) => {
             // if we are on a 'login' page, check if we have data to autofill the field
-            if (isLogin) {
+            if (isLogin || isHybrid) {
                 return canBeAutofilled(input, device)
             }
 
@@ -96,8 +132,10 @@ const inputTypeConfig = {
     /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
         type: 'creditCards',
+        displayName: 'Credit Cards',
         getIconBase: () => '',
         getIconFilled: () => '',
+        getIconAlternate: () => '',
         shouldDecorate: async (input, {device}) => {
             return canBeAutofilled(input, device)
         },
@@ -107,8 +145,10 @@ const inputTypeConfig = {
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
         type: 'identities',
+        displayName: 'Identities',
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
+        getIconAlternate: getIdentitiesAlternateIcon,
         shouldDecorate: async (input, {device}) => {
             return canBeAutofilled(input, device)
         },
@@ -118,12 +158,14 @@ const inputTypeConfig = {
     /** @type {UnknownInputTypeConfig} */
     unknown: {
         type: 'unknown',
+        displayName: '',
         getIconBase: () => '',
         getIconFilled: () => '',
+        getIconAlternate: () => '',
         shouldDecorate: async () => false,
         dataType: '',
         tooltipItem: (_data) => {
-            throw new Error('unreachable')
+            throw new Error('unreachable - setting tooltip to unknown field type')
         }
     }
 }
@@ -140,7 +182,7 @@ const getInputConfig = (input) => {
 
 /**
  * Retrieves configs from an input type
- * @param {import('./matching').SupportedTypes | string} inputType
+ * @param {import('./matching').SupportedTypes} inputType
  * @returns {InputTypeConfigs}
  */
 const getInputConfigFromType = (inputType) => {

@@ -1,0 +1,231 @@
+<!--
+  https://sso.treasury.gov/login/login.jsp
+  rank: 1589
+  testRunId: 67
+  testResultId: 241357
+-->
+
+  <!-- Start Top Banner -->
+  <div class="cas-bg-shadow-wrapper-header-repeat">
+    <div class="cas-bg-shadow-wrapper-header" id="cas-bg-shadow-wrapper-header">
+      <div class="cas-wrapper">
+        <!-- Start Top Banner -->
+        <div id="cas-header">
+          
+          
+
+          <div class="navigation-bar" id="navigation-bar">
+            <ul>
+              <li class="first">
+                <!--
+                                                                <a tabindex="1" title="Go to Treasury SSO Homepage" href="https://sso.treasury.gov/">Home</a>
+                                                                -->
+              </li>
+
+              <li>
+                <a tabindex="2" title="Forgot Password" href="https://isim.fiscal.treasury.gov/itimfp/ForgotPassword?SMPORTALURL=" target="_blank">Forgot Password</a>
+              </li>
+              <li>
+                <a tabindex="3" title="Change Fiscal Service LDAP Password" href="/forms/pwservices.fcc?SMENC=UTF-8&amp;SMAUTHREASON=34&amp;TARGET=">Change Password</a>
+              </li>
+
+              <li>
+                <a title="Forgot User ID" href="/login/login.jsp?ec=forgotuidfsprod" target="_blank">Forgot User ID</a>
+              </li>
+
+              <li class="last">
+                <a tabindex="4" title="Contact the Fiscal Service IT Service Desk for assistance with Single Sign-On (304) 480-7777" href="mailto://itservicedesk@fiscal.treasury.gov">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- End Top Banner -->
+      </div>
+    </div>
+  </div>
+  <div class="cas-bg-shadow-wrapper" id="cas-bg-shadow-wrapper">
+    <!-- Start CAS Error Area -->
+
+    <!-- End CAS Error Area -->
+
+    <div class="cas-wrapper">
+      <!-- Start CAS Login Boxes -->
+      <div class="login-area">
+        <div class="login-area-top"></div>
+
+        <div class="login-area-center" id="login_area_center">
+          <span id="login-rules-of-behavior">
+            By logging in with PIV , SecurID, or User ID/Password, you
+            acknowledge that you have read, understand, and agree to abide by
+            the <a target="_blank" href="/login/rob.html">Rules of Behavior</a>
+          </span>
+
+          <!-- Start Form area -->
+
+          <!-- Start PIV Authentication for Fiscal Service Production -->
+          <div class="login-pivcard login-areas" id="piv_login_area">
+            <div class="login-header-bar">
+              PIV Card or iKey<a tabindex="5" id="question-piv" href="#whatisthis-piv-content" title="If you have a card reader attached to your workstation, you are ready for two-factor authentication into Treasury SSO.  You may use any authorized agency-provided HSPD-12 Personal Identity Verification (PIV) Card or DoD Common Access Card (CAC).  PIV/CAC logins are more secure and faster than the single-factor User ID and Password mechanism and should be used whenever possible.">
+                <span>What is this</span>
+              </a>
+            </div>
+            <div class="login-center-area">
+              Please make sure your card/iKey is plugged into the reader
+              <form name="Login" method="GET" action="/login/redirect/x509/fsprod?SMPORTALURL=">
+                <input tabindex="6" id="button-pivcard" type="button" title="Login with PIV Card" onclick="location.href='/login/redirect/x509/fsprod?SMPORTALURL=';">
+              </form>
+            </div>
+            <div class="login-footer-bar"></div>
+          </div>
+          <!-- End PIV Authentication -->
+
+          <!-- Start RSA/SecurID Authentication -->
+          <div class="login-securid login-areas" id="securid_login_area">
+            <div class="login-header-bar">
+              SecurID
+              <a tabindex="7" id="question-securid" href="#" title="RSA SecurID authentication uses a hardware token to facilitate 2-factor authentication, when PIV authentication is not possible.  The RSA SecurID token generates an authentication code at fixed intervals using a built-in clock"><span>What is this</span>
+              </a>
+            </div>
+            <div class="login-center-area">
+              <form name="Login" method="POST" action="https://sso.treasury.gov/forms/smaceauth.fcc">
+                <input type="HIDDEN" name="SMENC" value="UTF-8">
+                <input type="HIDDEN" name="SMLOCALE" value="US-EN">
+                <label for="input-userID">User ID</label>
+                <input tabindex="8" id="input-userID" name="USERNAME" type="text" value="" autocomplete="false" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: User ID
+parseable name: USERNAME
+section: USERNAME_0_4
+field signature: 3020488086
+form signature: 4663583207748509798
+form signature in host form: 4663583207748509798
+field frame token: C9B28F8E96F701653A188CD9EDACFD41
+form renderer id: 2
+field renderer id: 4
+autocomplete: false" data-ddg-testresultelementid="553603">
+                <label for="input-password">Passcode</label>
+                <input tabindex="9" id="input-password" name="PASSWORD" type="password" value="" autocomplete="false" onkeydown="if(event.keyCode == 13) submit()" autofill-information="overall type: UNKNOWN_TYPE
+server type: NO_SERVER_DATA
+heuristic type: UNKNOWN_TYPE
+label: Passcode
+parseable name: PASSWORD
+section: USERNAME_0_4
+field signature: 3955007064
+form signature: 4663583207748509798
+form signature in host form: 4663583207748509798
+field frame token: C9B28F8E96F701653A188CD9EDACFD41
+form renderer id: 2
+field renderer id: 5
+autocomplete: false" data-ddg-testresultelementid="553604">
+                <!-- SiteMinder form variables -->
+                <input type="hidden" name="target" value="/login/redirect/sid/fsprod?SMPORTALURL=">
+                <input tabindex="10" id="button-userID" type="button" title="Login with SecurID" onclick="submit();">
+              </form>
+            </div>
+            <div class="login-footer-bar"></div>
+          </div>
+          <!-- End RSA/SecurID Authentication -->
+
+          <!-- Start UserID/Password Login Area -->
+          <div class="login-userID login-areas" id="uid_login_area">
+            <div class="login-header-bar">
+              User ID &amp; Password
+              <a tabindex="11" id="question-userID" href="#whatisthis-userID-content" title="Treasury Single Sign-On UserID and Password authentication allows a user to login using a userid (UID) and the associated password.  This is the same UID and password as used by ITIM.  .  For assistance with UserID &amp; Password authentication issues, please contact the Bureau of the Fiscal Service IT Service Desk at (304) 480-7777.">
+                <span>What is this</span>
+              </a>
+            </div>
+            <div class="login-center-area">
+              <form name="Login" method="POST" action="/forms/login.fcc">
+                <input type="HIDDEN" name="SMENC" value="ISO-8859-1">
+                <input type="HIDDEN" name="SMLOCALE" value="US-EN">
+                <label for="input-userID">User ID (ITIM) </label>
+                <input tabindex="12" id="input-userID" name="USER" type="text" value="" autocomplete="false" autofill-information="overall type: USERNAME
+server type: USERNAME
+heuristic type: UNKNOWN_TYPE
+label: User ID
+                                                                        
+                   
+parseable name: USER
+section: USER_0_10
+field signature: 2656536810
+form signature: 5183255984770802051
+form signature in host form: 5183255984770802051
+field frame token: C9B28F8E96F701653A188CD9EDACFD41
+form renderer id: 3
+field renderer id: 10
+autocomplete: false" data-ddg-testresultelementid="553605" data-manual-scoring="username OR emailAddress">
+                <label for="input-password">Password</label>
+                <input tabindex="13" id="input-password" name="PASSWORD" type="password" value="" autocomplete="false" onkeydown="if(event.keyCode == 13) submit()" autofill-information="overall type: PASSWORD
+server type: PASSWORD
+heuristic type: UNKNOWN_TYPE
+label: Password
+parseable name: PASSWORD
+section: USER_0_10
+field signature: 3955007064
+form signature: 5183255984770802051
+form signature in host form: 5183255984770802051
+field frame token: C9B28F8E96F701653A188CD9EDACFD41
+form renderer id: 3
+field renderer id: 11
+autocomplete: false" data-ddg-testresultelementid="553606" data-manual-scoring="password">
+                <br>
+                <input tabindex="14" id="button-userID" type="submit" accesskey="l" title="Login with Password" value="">
+                <!-- SiteMinder form variables -->
+                <input type="hidden" name="smagentname" value="">
+                <input type="hidden" name="smauthreason" value="0">
+                <input type="hidden" name="smquerydata" value="">
+                <input type="hidden" name="postpreservationdata" value="">
+                <input type="hidden" name="target" value="">
+              </form>
+            </div>
+            <div class="login-footer-bar"></div>
+            <!-- End Form area -->
+          </div>
+          <!-- End UserID/Password Login Area -->
+
+          <!-- Federated Login Area -->
+          <!-- End Federated Login Area -->
+        </div>
+      </div>
+      <!-- <div class="login-area-bottom"></div> -->
+    </div>
+    <!-- End CAS Login Boxes -->
+  </div>
+  <!-- End Shadow Wrapper -->
+  <div class="cas-bg-shadow-wrapper-footer" id="cas-bg-shadow-wrapper-footer">
+    <div class="cas-wrapper">
+      <!-- Federal Warning Text START -->
+      <div id="federal-warning-text">
+        <!-- DO NOT ALTER THE WARNING MESSAGE BELOW OR STUFF WILL BREAK -->
+        <strong>WARNING WARNING WARNING</strong><br>
+        You have accessed a U.S. Government information system, which includes
+        (1) this computer, (2) this network, (3) all computers connected to this
+        network, and (4) all devices and storage media attached to this network
+        or to a computer on this network. U.S. Government information systems
+        are provided for the processing of official U.S. Government information
+        only. Unauthorized or improper use of this information system is
+        prohibited and may subject you to disciplinary action, as well as civil
+        and criminal penalties. All data contained on U.S. Government
+        information systems is owned by the U.S. Government and may, for the
+        purpose of protecting the rights and property of the U.S. Government, be
+        monitored, intercepted, recorded, read, searched, copied, or captured in
+        any manner and disclosed or used for any lawful government purpose at
+        any time. THERE IS NO RIGHT TO PRIVACY IN THIS SYSTEM. System personnel
+        may give to law enforcement officials any potential evidence of crime
+        found on U.S. Government information systems. USE OF THIS SYSTEM BY ANY
+        USER, AUTHORIZED OR UNAUTHORIZED, CONSTITUTES YOUR UNDERSTANDING AND
+        CONSENT TO THIS MONITORING, INTERCEPTION, RECORDING, READING, COPYING,
+        OR CAPTURING AND DISCLOSURE.
+      </div>
+      <!-- Federal Warning Text END -->
+      <div class="max-cas-version">Treasury SSO Version 1.0</div>
+    </div>
+  </div>
+  <!-- BEGIN bottomBannerJsp -->
+  <!-- END bottomBannerJsp -->
+
+  <!-- Customize styles via javascript depending upon auth_type and auth_dir requested -->
+
+  
+

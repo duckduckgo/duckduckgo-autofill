@@ -1,7 +1,8 @@
-import {forwardConsoleMessages, setupServer, withChromeExtensionContext} from '../helpers/harness.js'
+import {forwardConsoleMessages, withChromeExtensionContext, withEmailProtectionExtensionSignedInAs} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
+import { stripDuckExtension } from '../helpers/utils.js'
 
 /**
  *  Tests for email autofill in chrome extension.
@@ -11,20 +12,14 @@ import {emailAutofillPage} from '../helpers/pages.js'
 const test = withChromeExtensionContext(base)
 
 test.describe('chrome extension', () => {
-    let server
-    test.beforeAll(async () => {
-        server = setupServer()
-    })
-    test.afterAll(async () => {
-        server.close()
-    })
     test('should autofill the selected email', async ({page}) => {
         const {personalAddress, privateAddress0} = constants.fields.email
 
         forwardConsoleMessages(page)
+        await withEmailProtectionExtensionSignedInAs(page, stripDuckExtension(personalAddress))
 
         // page abstraction
-        const emailPage = emailAutofillPage(page, server)
+        const emailPage = emailAutofillPage(page)
         await emailPage.navigate()
         await emailPage.clickIntoInput()
 
@@ -37,6 +32,9 @@ test.describe('chrome extension', () => {
 
         // ensure autofill populates the field
         await emailPage.assertEmailValue(personalAddress)
+
+        // ensure background page received pixel
+        await emailPage.assertExtensionPixelsCaptured(['email_incontext_eligible', 'autofill_show', 'autofill_personal_address'])
 
         // now ensure a second click into the input doesn't show the dropdown
         await emailPage.clickIntoInput()
@@ -52,5 +50,8 @@ test.describe('chrome extension', () => {
 
         // now ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
+
+        // assert that the background page received  pixel
+        await emailPage.assertExtensionPixelsCaptured(['email_incontext_eligible', 'autofill_show', 'autofill_personal_address', 'autofill_show', 'autofill_private_address'])
     })
 })

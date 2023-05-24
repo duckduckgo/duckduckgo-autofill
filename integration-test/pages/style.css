@@ -4,6 +4,11 @@ body {
     padding: 1em;
 }
 
+iframe {
+    width: 360px;
+    height: 600px;
+}
+
 .dialog {
     max-width: 500px;
     height: auto;
@@ -19,6 +24,30 @@ body {
     position: fixed;
     top: 1em;
     left: 1em;
+}
+
+.subscribe-newsletter-top-left {
+    padding: 1rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.subscribe-newsletter-bottom {
+    padding: 1rem;
+    position: fixed;
+    left: 0;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.subscribe-newsletter-top-left fieldset,
+.subscribe-newsletter-bottom fieldset {
+    display: flex;
+    margin: 0 auto;
 }
 
 hr {

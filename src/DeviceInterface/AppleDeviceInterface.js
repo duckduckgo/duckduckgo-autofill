@@ -7,7 +7,7 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
-import {CheckCredentialsProviderStatusCall, SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {CheckCredentialsProviderStatusCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {getInputType} from '../Form/matching.js'
 
 /**
@@ -78,14 +78,6 @@ class AppleDeviceInterface extends InterfacePrototype {
                 await this.getAddresses()
             }
         }
-    }
-
-    async postInit () {
-        if (this.isDeviceSignedIn()) {
-            this.scanner.forms.forEach(form => form.redecorateAllInputs())
-        }
-        const cleanup = this.scanner.init()
-        this.addLogoutListener(cleanup)
     }
 
     /**
@@ -183,23 +175,6 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
 
     /**
-     * Sends credentials to the native layer
-     * @param {{username: string, password: string}} credentials
-     */
-    storeCredentials (credentials) {
-        return this.deviceApi.notify(createNotification('pmHandlerStoreCredentials', credentials))
-    }
-
-    /**
-     * Sends form data to the native layer
-     * @deprecated should use the base implementation once available on Apple devices (instead of this override)
-     * @param {DataStorageObject} data
-     */
-    storeFormData (data) {
-        this.deviceApi.notify(createNotification('pmHandlerStoreData', data))
-    }
-
-    /**
      * Gets the init data from the device
      * @returns {APIResponse<PMData>}
      */
@@ -211,7 +186,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets credentials ready for autofill
-     * @param {Number} id - the credential id
+     * @param {CredentialsObject['id']} id - the credential id
      * @returns {APIResponseSingle<CredentialsObject>}
      */
     getAutofillCredentials (id) {
@@ -241,7 +216,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets a single identity obj once the user requests it
-     * @param {Number} id
+     * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     getAutofillIdentity (id) {
@@ -251,7 +226,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets a single complete credit card obj once the user requests it
-     * @param {Number} id
+     * @param {CreditCardObject['id']} id
      * @returns {APIResponse<CreditCardObject>}
      */
     getAutofillCreditCard (id) {
@@ -357,10 +332,6 @@ class AppleDeviceInterface extends InterfacePrototype {
             }
             poll()
         })
-    }
-
-    firePixel (pixelName) {
-        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
     }
 }
 

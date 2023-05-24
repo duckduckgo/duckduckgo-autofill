@@ -27,6 +27,7 @@ describe('performance', () => {
         scanner.enqueue([document])
         jest.advanceTimersByTime(1000)
         expect(spy).toHaveBeenCalledTimes(1)
+        expect(document.body).toMatchSnapshot()
     })
     it('should constrain the buffer size', () => {
         const scanner = createScanner(InterfacePrototype.default(), {
@@ -43,5 +44,40 @@ describe('performance', () => {
 
         jest.advanceTimersByTime(1000)
         expect(spy).toHaveBeenCalledTimes(1)
+        expect(document.body).toMatchSnapshot()
+    })
+    it('should not scan if above maximum inputs', () => {
+        const scanner = createScanner(InterfacePrototype.default(), {
+            maxInputsOnPage: 3
+        })
+
+        scanner.findEligibleInputs(document)
+        jest.advanceTimersByTime(1000)
+
+        // Confirm that no elements on the page are scanned
+        expect(document.body).toMatchSnapshot()
+    })
+    it('should stop scanning if page grows above maximum inputs', () => {
+        const scanner = createScanner(InterfacePrototype.default(), {
+            maxInputsOnPage: 5,
+            bufferSize: 2
+        })
+
+        scanner.findEligibleInputs(document)
+        jest.advanceTimersByTime(1000)
+
+        // Add more new inputs than the buffer size allows
+        const form = document.querySelector('form')
+        const inputs = Array.from(Array(3)).map(() => {
+            const input = document.createElement('input')
+            input.setAttribute('type', 'text')
+            return input
+        })
+        inputs.forEach(input => form?.appendChild(input))
+        inputs.forEach(input => scanner.enqueue([input]))
+        jest.advanceTimersByTime(1000)
+
+        // Confirm that newly added inputs are not scanned
+        expect(document.body).toMatchSnapshot()
     })
 })

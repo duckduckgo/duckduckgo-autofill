@@ -255,9 +255,9 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail\\b', skip: 'phone|name|reservation number', forceUnknown: 'search|filter|subject|title|\btab\b'},
-                password: {match: 'password', forceUnknown: 'captcha|mfa|2fa|two factor'},
-                username: {match: '(user|account|apple|login|net)((.)?(name|id|login).?)?(.?(or|/).+)?$|benutzername', forceUnknown: 'search|policy'},
+                email: {match: '.mail\\b|apple.?id', skip: 'phone|name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b'},
+                password: {match: 'password', skip: 'email|one-time', forceUnknown: 'captcha|mfa|2fa|two factor'},
+                username: {match: '(user|account|login|net)((.)?(name|i.?d.?|login).?)?(.?((or|/).+|\\*|:))?$|benutzername', skip: 'phone', forceUnknown: 'search|policy'},
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},

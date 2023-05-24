@@ -45,10 +45,6 @@ class AndroidInterface extends InterfacePrototype {
 
     }
 
-    postInit () {
-        const cleanup = this.scanner.init()
-        this.addLogoutListener(cleanup)
-    }
     /**
      * Used by the email web app
      * Settings page displays data of the logged in user data
@@ -113,6 +109,9 @@ class AndroidInterface extends InterfacePrototype {
             }
         })
     }
+
+    /** Noop */
+    firePixel (_pixelParam) {}
 }
 
 export {AndroidInterface}

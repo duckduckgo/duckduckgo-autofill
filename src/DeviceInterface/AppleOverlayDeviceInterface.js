@@ -2,7 +2,7 @@ import {AppleDeviceInterface} from './AppleDeviceInterface.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
 import {overlayApi} from './overlayApi.js'
 import {createNotification, validate} from '../../packages/device-api/index.js'
-import {AskToUnlockProviderCall, SendJSPixelCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {AskToUnlockProviderCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 
 /**
@@ -39,6 +39,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
             setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
+            remove: async () => this._closeAutofillParent(),
             testMode: this.isTestMode()
         })
     }
@@ -57,8 +58,12 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         if (signedIn) {
             await this.getAddresses()
         }
+    }
+
+    async postInit () {
         // setup overlay API pieces
         this.overlay.showImmediately()
+        super.postInit()
     }
 
     /**
@@ -87,11 +92,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         this.storeLocalCredentials(credentials)
 
         // rerender the tooltip
-        this.uiController.updateItems(credentials)
-    }
-
-    firePixel (pixelName) {
-        this.deviceApi.notify(new SendJSPixelCall({pixelName}))
+        this.uiController?.updateItems(credentials)
     }
 }
 
