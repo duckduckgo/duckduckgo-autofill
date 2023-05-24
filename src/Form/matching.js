@@ -4,6 +4,7 @@ import { extractElementStrings } from './label-util.js'
 import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
+import {getText} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -819,7 +820,7 @@ const getRelatedText = (el, form, cssSelector) => {
     const label = scope.querySelector('label')
     if (label) {
         // Try searching for a label first
-        trimmedText = removeExcessWhitespace(label.textContent)
+        trimmedText = removeExcessWhitespace(getText(label))
     } else {
         // If the container has a select element, remove its contents to avoid noise
         trimmedText = removeExcessWhitespace(extractElementStrings(scope).join(' '))
