@@ -361,7 +361,9 @@ const getText = (el) => {
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
     if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
-    if (el instanceof HTMLInputElement && el.type === 'image') return el.alt || el.value || el.title
+    if (el instanceof HTMLInputElement && el.type === 'image') {
+        return removeExcessWhitespace(el.alt || el.value || el.title)
+    }
 
     return removeExcessWhitespace(
         Array.from(el.childNodes).reduce((text, child) =>
