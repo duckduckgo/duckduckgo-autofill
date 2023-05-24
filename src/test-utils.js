@@ -5,14 +5,16 @@
  */
 const attachAndReturnGenericForm = (form) => {
     if (form) {
-        document.body.innerHTML = form
+        document.body.innerHTML = `<div>${form}</div>`
     } else {
         document.body.innerHTML = `
-<form>
-    <input type="text" value="testUsername" autocomplete="username" />
-    <input type="password" value="testPassword" autocomplete="new-password" />
-    <button type="submit">Sign up</button>
-</form>`
+<div>
+    <form>
+        <input type="text" value="testUsername" autocomplete="username" />
+        <input type="password" value="testPassword" autocomplete="new-password" />
+        <button type="submit">Sign up</button>
+    </form>
+</div>`
     }
     const formEl = /** @type {HTMLElement} */ (document.querySelector('form, #form'))
     if (!formEl) throw new Error('unreachable')

@@ -9,13 +9,13 @@
     <div class="flex-grow max-w-xl p-2 m-auto">
       <div class="shadow-xl">
         <div class="absolute z-0 hidden -mt-24 -ml-48 w-96 opacity-10 md:block">
-          
+
         </div>
         <div class="relative flex justify-between px-8 pt-6 pb-6 bg-white rounded-t" role="header">
           <h1 class="flex items-center h-20 text-2xl font-light text-gray-600 md:text-3xl">
             UWin Account
           </h1>
-          
+
         </div>
         <div class="relative grid grid-cols-2 bg-white">
           <a href="#" title="Sign In" @click="tab = 1" class="py-4 text-center bg-gray-100 cursor-pointer hover:underline bg-gray-200" :class="{ 'bg-gray-200' : tab == 1}">
@@ -34,7 +34,7 @@
 
             <div class="relative mb-4">
               <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
-                
+
               </div>
               <input class="block pl-16 shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-800 h-14 focus:outline-none focus:ring-2 focus:ring-uwindsor-blue focus:border-transparent" id="uwinid" name="uwinid" type="text" placeholder="UWin ID" value="" aria-label="uwinid" autofill-information="overall type: USERNAME
 server type: USERNAME
@@ -47,11 +47,11 @@ form signature: 15064258755448812294
 form signature in host form: 15064258755448812294
 field frame token: 54745878BD3627F8C2DB43A71A6B08AC
 form renderer id: 1
-field renderer id: 2" data-ddg-testresultelementid="548394" data-manual-scoring="username OR emailAddress">
+field renderer id: 2" data-ddg-testresultelementid="548394" data-manual-scoring="username">
             </div>
             <div class="relative mb-6">
               <div class="absolute inset-y-0 left-0 flex items-center pl-6 pointer-events-none">
-                
+
               </div>
               <input class="block pl-16 shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-800 h-14 focus:outline-none focus:ring-2 focus:ring-uwindsor-blue focus:border-transparen" id="password" name="password" type="password" placeholder="******************" value="" aria-label="password" autofill-information="overall type: PASSWORD
 server type: PASSWORD
@@ -67,7 +67,7 @@ form renderer id: 1
 field renderer id: 3" data-ddg-testresultelementid="548395" data-manual-scoring="password">
             </div>
             <div class="flex flex-col justify-center">
-              <button x-on:click="submitDisabled = true" x-bind:disabled="submitDisabled" class="px-8 py-3 mt-4 mb-2 font-bold text-white transition border-2 rounded shadow-lg border-uwindsor-blue bg-uwindsor-blue hover:bg-white hover:border-uwindsor-blue hover:text-uwindsor-blue focus:outline-none focus:bg-white focus:text-uwindsor-blue" type="submit">
+              <button x-on:click="submitDisabled = true" x-bind:disabled="submitDisabled" class="px-8 py-3 mt-4 mb-2 font-bold text-white transition border-2 rounded shadow-lg border-uwindsor-blue bg-uwindsor-blue hover:bg-white hover:border-uwindsor-blue hover:text-uwindsor-blue focus:outline-none focus:bg-white focus:text-uwindsor-blue" type="submit" data-manual-submit>
                 Sign In
               </button>
               <a href="/password/reset" title="Forgot your password?" class="block mt-4 text-center hover:text-uwindsor-blue hover:underline focus:outline-none focus:text-uwindsor-blue focus:underline">

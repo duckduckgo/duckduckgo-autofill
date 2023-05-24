@@ -321,11 +321,13 @@ const isLikelyASubmitButton = (el) => {
     const ariaLabel = el.getAttribute('aria-label') || ''
     const title = el.title || ''
     const value = (el instanceof HTMLInputElement ? el.value || '' : '')
+    const dataTestId = el.getAttribute('data-test-id') || ''
     const contentExcludingLabel = text + ' ' + title + ' ' + value
 
     return (
         el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
+        /submit/i.test(dataTestId) ||
         SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
         (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
     ) &&
@@ -359,6 +361,9 @@ const getText = (el) => {
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
     if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
+    if (el instanceof HTMLInputElement && el.type === 'image') {
+        return removeExcessWhitespace(el.alt || el.value || el.title)
+    }
 
     return removeExcessWhitespace(
         Array.from(el.childNodes).reduce((text, child) =>
@@ -445,6 +450,29 @@ function truncateFromMiddle (string, totalLength = 30) {
     return truncated
 }
 
+/**
+ * Determines if the form is likely to be enclosing most of the DOM
+ * @param {HTMLFormElement} form
+ * @returns {boolean}
+ */
+function isFormLikelyToBeUsedAsPageWrapper (form) {
+    if (form.parentElement !== document.body) return false
+
+    const formChildren = form.querySelectorAll('*').length
+    // If the form has few content elements, it's unlikely to cause issues anyway
+    if (formChildren < 100) return false
+
+    const bodyChildren = document.body.querySelectorAll('*').length
+
+    /**
+     * Percentage of the formChildren on the total body elements
+     * form * 100 / body = x
+     */
+    const formChildrenPercentage = formChildren * 100 / bodyChildren
+
+    return formChildrenPercentage > 50
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -471,5 +499,6 @@ export {
     wasAutofilledByChrome,
     shouldLog,
     whenIdle,
-    truncateFromMiddle
+    truncateFromMiddle,
+    isFormLikelyToBeUsedAsPageWrapper
 }

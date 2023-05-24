@@ -3,7 +3,7 @@ import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-configuration.js'
 import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
 
-const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?in|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)/i)
+const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|unlock|logged in as/i)
 const signupRegex = new RegExp(
     /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i
 )
@@ -23,26 +23,38 @@ class FormAnalyzer {
     constructor (form, input, matching) {
         this.form = form
         this.matching = matching || new Matching(matchingConfiguration)
+
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
          */
         this.autofillSignal = 0
         /**
+         * A hybrid form can be either a login or a signup, the site uses a single form for both
+         * @type {number}
+         */
+        this.hybridSignal = 0
+
+        /**
          * Collects the signals for debugging purposes
          * @type {string[]}
          */
         this.signals = []
 
-        /**
-         * A hybrid form can be either a login or a signup, the site uses a single form for both
-         * @type {boolean}
-         */
-        this.isHybrid = false
-
         this.evaluateElAttributes(input, 3, true)
         form ? this.evaluateForm() : this.evaluatePage()
         return this
+    }
+
+    /**
+     * Hybrid forms can be used for both login and signup
+     * @returns {boolean}
+     */
+    get isHybrid () {
+        // When marking for hybrid we also want to ensure other signals are weak
+        const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10
+
+        return this.hybridSignal > 0 && areOtherSignalsWeak
     }
 
     get isLogin () {
@@ -82,6 +94,18 @@ class FormAnalyzer {
     }
 
     /**
+     * Increases the probability that this is a hybrid form (can be either login or signup)
+     * @param {number} strength
+     * @param {string} signal
+     * @returns {FormAnalyzer}
+     */
+    increaseHybridSignal (strength, signal) {
+        this.hybridSignal += strength
+        this.signals.push(`${signal} (hybrid): +${strength}`)
+        return this
+    }
+
+    /**
      * Updates the Login<->Signup signal according to the provided parameters
      * @param {object} p
      * @param {string} p.string - The string to check
@@ -100,17 +124,16 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false,
         shouldBeConservative = false
     }) {
-        const matchesLogin = string === 'current-password' || loginRegex.test(string)
+        const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string)
 
-        // Check explicitly for unified login/signup forms. They should always be negative, so we increase signal
+        // Check explicitly for unified login/signup forms
         if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
-            this.signals.push(`hybrid form: ${signalType}`)
-            this.isHybrid = true
+            this.increaseHybridSignal(strength, signalType)
             return this
         }
 
         const signupRegexToUse = shouldBeConservative ? conservativeSignupRegex : signupRegex
-        const matchesSignup = string === 'new-password' || signupRegexToUse.test(string)
+        const matchesSignup = /new.?password/i.test(string) || signupRegexToUse.test(string)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -160,11 +183,7 @@ class FormAnalyzer {
         this.evaluatePageTitle()
         this.evaluatePageHeadings()
         // Check for submit buttons
-        const buttons = document.querySelectorAll(`
-                button[type=submit],
-                button:not([type]),
-                [role=button]
-            `)
+        const buttons = document.querySelectorAll(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))
         buttons.forEach(button => {
             // if the button has a form, it's not related to our input, because our input has no form here
             if (button instanceof HTMLButtonElement) {
@@ -182,8 +201,8 @@ class FormAnalyzer {
         if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
             this.updateSignal({
-                string: el.getAttribute('autocomplete') || '',
-                strength: 10,
+                string: el.getAttribute('autocomplete') || el.getAttribute('name') || '',
+                strength: 5,
                 signalType: `explicit: ${el.getAttribute('autocomplete')}`
             })
         }
@@ -213,7 +232,7 @@ class FormAnalyzer {
         ) {
             // Unless it's a forgotten password link, we don't flip those links
             let shouldFlip = true
-            if (/(forgot(ten)?|reset) (your )?password|password forgotten/i.test(string)) {
+            if (/(forgot(ten)?|reset) (your )?password|password forgotten| with /i.test(string)) {
                 shouldFlip = false
             }
             this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip})
@@ -244,7 +263,7 @@ class FormAnalyzer {
 
         // A form with many fields is unlikely to be a login form
         const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
-        if (relevantFields.length > 4) {
+        if (relevantFields.length >= 4) {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
         }
 

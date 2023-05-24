@@ -1,6 +1,7 @@
 import { Form } from './Form/Form.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { createMatching } from './Form/matching.js'
+import {isFormLikelyToBeUsedAsPageWrapper} from './autofill-utils.js'
 
 /**
  * @typedef {{
@@ -144,20 +145,24 @@ class DefaultScanner {
      */
     getParentForm (input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-            if (input.form) return input.form
+            // Use input.form unless it encloses most of the DOM
+            // In that case we proceed to identify more precise wrappers
+            if (input.form && !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
+                return input.form
+            }
         }
 
         let element = input
         // traverse the DOM to search for related inputs
         while (element.parentElement && element.parentElement !== document.documentElement) {
-            // If parent includes a form return the current element to avoid overlapping forms
-            if (element.parentElement?.querySelector('form')) {
+            // Avoid overlapping containers or forms
+            const siblingForm = element.parentElement?.querySelector('form')
+            if (siblingForm && siblingForm !== element) {
                 return element
             }
 
             element = element.parentElement
 
-            // todo: These selectors should be configurable
             const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR)
             const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
             // If we find a button or another input, we assume that's our form
