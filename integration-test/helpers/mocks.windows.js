@@ -68,8 +68,8 @@ export function createWindowsMocks () {
         /** @type {CredentialsObject | null} */
         getAutofillCredentials: null,
         /** @type {null | GetAutofillDataResponse['success']} */
-        getAutofillData: null
-
+        getAutofillData: null,
+        emailProtectionGetIsLoggedIn: false
     }
     /** @type {MockBuilder} */
     const builder = {
