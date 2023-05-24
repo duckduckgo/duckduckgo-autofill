@@ -1,6 +1,5 @@
 import {SUBMIT_BUTTON_SELECTOR} from '../Form/selectors-css.js'
-import {removeExcessWhitespace} from '../Form/matching.js'
-import {buttonMatchesFormType} from '../autofill-utils.js'
+import {buttonMatchesFormType, getText} from '../autofill-utils.js'
 
 /**
  * This is a single place to contain all functionality relating to form submission detection
@@ -50,7 +49,7 @@ export function initFormSubmissionsApi (forms) {
             const button = /** @type HTMLElement */(event.target)?.closest(selector)
             if (!button) return
 
-            const text = removeExcessWhitespace(button?.textContent)
+            const text = getText(button)
             const hasRelevantText = /(log|sign).?(in|up)|continue|next|submit/i.test(text)
             if (hasRelevantText && text.length < 25) {
                 // check if there's a form with values
@@ -58,6 +57,14 @@ export function initFormSubmissionsApi (forms) {
                 if (filledForm && buttonMatchesFormType(/** @type HTMLElement */(button), filledForm)) {
                     filledForm?.submitHandler('global pointerdown event + filled form')
                 }
+            }
+
+            // TODO: Temporary hack to support Google signin in different languages
+            // https://app.asana.com/0/1198964220583541/1201650539303898/f
+            if (/** @type HTMLElement */(event.target)?.closest('#passwordNext button, #identifierNext button')) {
+                // check if there's a form with values
+                const filledForm = [...forms.values()].find(form => form.hasValues())
+                filledForm?.submitHandler('global pointerdown event + google escape hatch')
             }
         }
     }, true)

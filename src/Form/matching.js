@@ -3,7 +3,8 @@ import { constants } from '../constants.js'
 import { extractElementStrings } from './label-util.js'
 import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
 import { matchingConfiguration } from './matching-configuration.js'
-import {logMatching} from './matching-utils.js'
+import {logMatching, logUnmatched} from './matching-utils.js'
+import {getText} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -244,6 +245,15 @@ class Matching {
                     return 'credentials.username'
                 }
 
+                // TODO: Temporary hack to support Google signin in different languages
+                // https://app.asana.com/0/1198964220583541/1201650539303898/f
+                if (
+                    window.location.href.includes('https://accounts.google.com/v3/signin/identifier') &&
+                    input.matches('[type=email][autocomplete=username]')
+                ) {
+                    return 'credentials.username'
+                }
+
                 return 'identities.emailAddress'
             }
 
@@ -258,6 +268,7 @@ class Matching {
             return `identities.${idSubtype}`
         }
 
+        logUnmatched(input, this.activeElementStrings)
         return 'unknown'
     }
 
@@ -805,10 +816,19 @@ const getRelatedText = (el, form, cssSelector) => {
     // If there is still no meaningful container return empty string
     if (scope === el || scope.nodeName === 'SELECT') return ''
 
-    // If the container has a select element, remove its contents to avoid noise
-    const text = removeExcessWhitespace(extractElementStrings(scope).join(' '))
+    let trimmedText = ''
+    const label = scope.querySelector('label')
+    if (label) {
+        // Try searching for a label first
+        trimmedText = removeExcessWhitespace(getText(label))
+    } else {
+        // If the container has a select element, remove its contents to avoid noise
+        trimmedText = removeExcessWhitespace(extractElementStrings(scope).join(' '))
+    }
+
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
-    if (text.length < TEXT_LENGTH_CUTOFF) return text
+    if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText
+
     return ''
 }
 
