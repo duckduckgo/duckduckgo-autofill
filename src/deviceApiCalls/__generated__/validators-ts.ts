@@ -137,6 +137,78 @@ export interface API {
     resultValidator?: GetAliasResult;
     [k: string]: unknown;
   };
+  /**
+   * Opens the native password management UI from the autofill popup
+   */
+  openManagePasswords?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Opens the native credit card management UI from the autofill popup
+   */
+  openManageCreditCards?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Opens the native identities management UI from the autofill popup
+   */
+  openManageIdentities?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Used to store Email Protection auth credentials (logging in)
+   */
+  emailProtectionStoreUserData?: {
+    id?: "emailProtectionStoreUserDataResponse";
+    paramsValidator?: EmailProtectionStoreUserDataParams;
+    [k: string]: unknown;
+  };
+  /**
+   * Used to remove Email Protection auth credentials (logging out)
+   */
+  emailProtectionRemoveUserData?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Used to get check if a user is logged in to Email Protection
+   */
+  emailProtectionGetIsLoggedIn?: {
+    id?: "emailProtectionGetIsLoggedInResponse";
+    resultValidator?: EmailProtectionGetIsLoggedInResult;
+    [k: string]: unknown;
+  };
+  /**
+   * Used to get Email Protection auth credentials
+   */
+  emailProtectionGetUserData?: {
+    id?: "emailProtectionGetUserDataResponse";
+    resultValidator?: EmailProtectionGetUserDataResult;
+    [k: string]: unknown;
+  };
+  /**
+   * Used by the Email Protection web app to determine which API functionality is available
+   */
+  emailProtectionGetCapabilities?: {
+    id?: "emailProtectionGetCapabilitiesResponse";
+    resultValidator?: EmailProtectionGetCapabilitiesResult;
+    [k: string]: unknown;
+  };
+  /**
+   * Used to get both Email Protection addresses (personal and private)
+   */
+  emailProtectionGetAddresses?: {
+    id?: "emailProtectionGetAddressesResponse";
+    resultValidator?: EmailProtectionGetAddressesResult;
+    [k: string]: unknown;
+  };
+  /**
+   * Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)
+   */
+  emailProtectionRefreshPrivateAddress?: {
+    id?: "emailProtectionRefreshPrivateAddressResponse";
+    resultValidator?: EmailProtectionRefreshPrivateAddressResult;
+    [k: string]: unknown;
+  };
 }
 /**
  * This describes the argument given to `getAutofillData(data)`
@@ -508,4 +580,61 @@ export interface GetAliasResult {
   success: {
     alias: string;
   };
+}
+/**
+ * Used to store Email Protection auth credentials.
+ */
+export interface EmailProtectionStoreUserDataParams {
+  token: string;
+  userName: string;
+  cohort: string;
+}
+/**
+ * Used to get check if a user is logged in to Email Protection
+ */
+export interface EmailProtectionGetIsLoggedInResult {
+  success?: boolean;
+  error?: GenericError;
+}
+/**
+ * Used to get Email Protection auth credentials
+ */
+export interface EmailProtectionGetUserDataResult {
+  success?: {
+    userName: string;
+    nextAlias: string;
+    token: string;
+  };
+  error?: GenericError;
+}
+/**
+ * Used by the Email Protection web app to determine which API functionality is available
+ */
+export interface EmailProtectionGetCapabilitiesResult {
+  success?: {
+    addUserData?: boolean;
+    getUserData?: boolean;
+    removeUserData?: boolean;
+  };
+  error?: GenericError;
+}
+/**
+ * Used to get both Email Protection addresses (personal and private)
+ */
+export interface EmailProtectionGetAddressesResult {
+  success?: {
+    personalAddress: string;
+    privateAddress: string;
+  };
+  error?: GenericError;
+}
+/**
+ * Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)
+ */
+export interface EmailProtectionRefreshPrivateAddressResult {
+  success?: {
+    personalAddress: string;
+    privateAddress: string;
+  };
+  error?: GenericError;
 }

@@ -14,7 +14,13 @@ import {
     checkCredentialsProviderStatusResultSchema,
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
-    getIncontextSignupDismissedAtSchema
+    getIncontextSignupDismissedAtSchema,
+    emailProtectionStoreUserDataParamsSchema,
+    emailProtectionGetIsLoggedInResultSchema,
+    emailProtectionGetUserDataResultSchema,
+    emailProtectionGetCapabilitiesResultSchema,
+    emailProtectionGetAddressesResultSchema,
+    emailProtectionRefreshPrivateAddressResultSchema
 } from "./validators.zod.js"
 import { DeviceApiCall } from "../../../packages/device-api";
 
@@ -124,4 +130,76 @@ export class GetIncontextSignupDismissedAtCall extends DeviceApiCall {
   method = "getIncontextSignupDismissedAt"
   id = "getIncontextSignupDismissedAt"
   resultValidator = getIncontextSignupDismissedAtSchema
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class OpenManagePasswordsCall extends DeviceApiCall {
+  method = "openManagePasswords"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class OpenManageCreditCardsCall extends DeviceApiCall {
+  method = "openManageCreditCards"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class OpenManageIdentitiesCall extends DeviceApiCall {
+  method = "openManageIdentities"
+}
+/**
+ * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
+ */
+export class EmailProtectionStoreUserDataCall extends DeviceApiCall {
+  method = "emailProtectionStoreUserData"
+  id = "emailProtectionStoreUserDataResponse"
+  paramsValidator = emailProtectionStoreUserDataParamsSchema
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class EmailProtectionRemoveUserDataCall extends DeviceApiCall {
+  method = "emailProtectionRemoveUserData"
+}
+/**
+ * @extends {DeviceApiCall<any, emailProtectionGetIsLoggedInResultSchema>} 
+ */
+export class EmailProtectionGetIsLoggedInCall extends DeviceApiCall {
+  method = "emailProtectionGetIsLoggedIn"
+  id = "emailProtectionGetIsLoggedInResponse"
+  resultValidator = emailProtectionGetIsLoggedInResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, emailProtectionGetUserDataResultSchema>} 
+ */
+export class EmailProtectionGetUserDataCall extends DeviceApiCall {
+  method = "emailProtectionGetUserData"
+  id = "emailProtectionGetUserDataResponse"
+  resultValidator = emailProtectionGetUserDataResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, emailProtectionGetCapabilitiesResultSchema>} 
+ */
+export class EmailProtectionGetCapabilitiesCall extends DeviceApiCall {
+  method = "emailProtectionGetCapabilities"
+  id = "emailProtectionGetCapabilitiesResponse"
+  resultValidator = emailProtectionGetCapabilitiesResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, emailProtectionGetAddressesResultSchema>} 
+ */
+export class EmailProtectionGetAddressesCall extends DeviceApiCall {
+  method = "emailProtectionGetAddresses"
+  id = "emailProtectionGetAddressesResponse"
+  resultValidator = emailProtectionGetAddressesResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, emailProtectionRefreshPrivateAddressResultSchema>} 
+ */
+export class EmailProtectionRefreshPrivateAddressCall extends DeviceApiCall {
+  method = "emailProtectionRefreshPrivateAddress"
+  id = "emailProtectionRefreshPrivateAddressResponse"
+  resultValidator = emailProtectionRefreshPrivateAddressResultSchema
 }

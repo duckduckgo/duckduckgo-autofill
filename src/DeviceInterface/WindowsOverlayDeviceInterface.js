@@ -1,10 +1,16 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
 import {
+    EmailProtectionGetAddressesCall,
     GetAutofillInitDataCall,
-    SetSizeCall
+    EmailProtectionGetIsLoggedInCall,
+    SetSizeCall,
+    OpenManagePasswordsCall,
+    OpenManageCreditCardsCall,
+    OpenManageIdentitiesCall,
+    CloseAutofillParentCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {overlayApi} from './overlayApi.js'
+import { overlayApi } from './overlayApi.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -25,6 +31,9 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      */
     overlay = overlayApi(this);
 
+    previousScreenX = 0;
+    previousScreenY = 0;
+
     /**
      * Because we're running inside the Overlay, we always create the HTML
      * Tooltip controller.
@@ -40,12 +49,69 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
             setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
+            remove: async () => this._closeAutofillParent(),
             testMode: this.isTestMode(),
             /**
              * Note: This is needed because Mutation observer didn't support visibility checks on Windows
              */
             checkVisibility: false
         })
+    }
+
+    addDeviceListeners () {
+        /**
+         * On Windows (vs. MacOS) we can use the built-in `mousemove`
+         * event and screen-relative positioning.
+         *
+         * Note: There's no cleanup required here since the Overlay has a fresh
+         * page load every time it's opened.
+         */
+        window.addEventListener('mousemove', (event) => {
+            // Don't set focus if the mouse hasn't moved ever
+            // This is to avoid clickjacking where an attacker puts the pulldown under the cursor
+            // and tricks the user into clicking
+            if (
+                (!this.previousScreenX && !this.previousScreenY) || // if no previous coords
+                (this.previousScreenX === event.screenX && this.previousScreenY === event.screenY) // or the mouse hasn't moved
+            ) {
+                this.previousScreenX = event.screenX
+                this.previousScreenY = event.screenY
+                return
+            }
+
+            const activeTooltip = this.uiController?.getActiveTooltip?.()
+            activeTooltip?.focus(event.x, event.y)
+            this.previousScreenX = event.screenX
+            this.previousScreenY = event.screenY
+        })
+
+        return super.addDeviceListeners()
+    }
+
+    /**
+     * @returns {Promise<any>}
+     */
+    async _closeAutofillParent () {
+        return this.deviceApi.notify(new CloseAutofillParentCall(null))
+    }
+
+    /**
+     * @returns {Promise<any>}
+     */
+    openManagePasswords () {
+        return this.deviceApi.notify(new OpenManagePasswordsCall({}))
+    }
+    /**
+     * @returns {Promise<any>}
+     */
+    openManageCreditCards () {
+        return this.deviceApi.notify(new OpenManageCreditCardsCall({}))
+    }
+    /**
+     * @returns {Promise<any>}
+     */
+    openManageIdentities () {
+        return this.deviceApi.notify(new OpenManageIdentitiesCall({}))
     }
 
     /**
@@ -56,6 +122,11 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {Promise<void>}
      */
     async setupAutofill () {
+        const loggedIn = await this._getIsLoggedIn()
+        if (loggedIn) {
+            await this.getAddresses()
+        }
+
         const response = await this.deviceApi.request(new GetAutofillInitDataCall(null))
         // @ts-ignore
         this.storeLocalData(response)
@@ -78,5 +149,33 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      */
     async selectedDetail (data, type) {
         return this.overlay.selectedDetail(data, type)
+    }
+
+    /**
+     * Email Protection calls
+     */
+
+    async _getIsLoggedIn () {
+        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
+
+        this.isDeviceSignedIn = () => isLoggedIn
+        return isLoggedIn
+    }
+
+    async getAddresses () {
+        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
+
+        this.storeLocalAddresses(addresses)
+        return addresses
+    }
+
+    /**
+     * Gets a single identity obj once the user requests it
+     * @param {Number} id
+     * @returns {Promise<{success: IdentityObject|undefined}>}
+     */
+    getAutofillIdentity (id) {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
+        return Promise.resolve({ success: identity })
     }
 }

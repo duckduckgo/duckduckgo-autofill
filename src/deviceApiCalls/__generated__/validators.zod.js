@@ -213,6 +213,51 @@ export const getAliasResultSchema = z.object({
     })
 });
 
+export const emailProtectionStoreUserDataParamsSchema = z.object({
+    token: z.string(),
+    userName: z.string(),
+    cohort: z.string()
+});
+
+export const emailProtectionGetIsLoggedInResultSchema = z.object({
+    success: z.boolean().optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionGetUserDataResultSchema = z.object({
+    success: z.object({
+        userName: z.string(),
+        nextAlias: z.string(),
+        token: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionGetCapabilitiesResultSchema = z.object({
+    success: z.object({
+        addUserData: z.boolean().optional(),
+        getUserData: z.boolean().optional(),
+        removeUserData: z.boolean().optional()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionGetAddressesResultSchema = z.object({
+    success: z.object({
+        personalAddress: z.string(),
+        privateAddress: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
+export const emailProtectionRefreshPrivateAddressResultSchema = z.object({
+    success: z.object({
+        personalAddress: z.string(),
+        privateAddress: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
 export const getAutofillDataRequestSchema = z.object({
     generatedPassword: generatedPasswordSchema.optional(),
     inputType: z.string(),
@@ -336,5 +381,33 @@ export const apiSchema = z.object({
         validatorsOnly: z.literal(true).optional(),
         paramValidator: getAliasParamsSchema.optional(),
         resultValidator: getAliasResultSchema.optional()
+    })).optional(),
+    openManagePasswords: z.record(z.unknown()).optional(),
+    openManageCreditCards: z.record(z.unknown()).optional(),
+    openManageIdentities: z.record(z.unknown()).optional(),
+    emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionStoreUserDataResponse").optional(),
+        paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()
+    })).optional(),
+    emailProtectionRemoveUserData: z.record(z.unknown()).optional(),
+    emailProtectionGetIsLoggedIn: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionGetIsLoggedInResponse").optional(),
+        resultValidator: emailProtectionGetIsLoggedInResultSchema.optional()
+    })).optional(),
+    emailProtectionGetUserData: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionGetUserDataResponse").optional(),
+        resultValidator: emailProtectionGetUserDataResultSchema.optional()
+    })).optional(),
+    emailProtectionGetCapabilities: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionGetCapabilitiesResponse").optional(),
+        resultValidator: emailProtectionGetCapabilitiesResultSchema.optional()
+    })).optional(),
+    emailProtectionGetAddresses: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionGetAddressesResponse").optional(),
+        resultValidator: emailProtectionGetAddressesResultSchema.optional()
+    })).optional(),
+    emailProtectionRefreshPrivateAddress: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
+        resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
     })).optional()
 });

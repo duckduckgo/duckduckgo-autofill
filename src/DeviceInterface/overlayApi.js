@@ -6,35 +6,6 @@ import {SelectedDetailCall} from '../deviceApiCalls/__generated__/deviceApiCalls
  * @param {import("./InterfacePrototype").default} device
  */
 export function overlayApi (device) {
-    let previousX
-    let previousY
-
-    /**
-     * The native side will send a custom event 'mouseMove' to indicate
-     * that the HTMLTooltip should fake an element being focused.
-     *
-     * Note: There's no cleanup required here since the Overlay has a fresh
-     * page load every time it's opened.
-     */
-    window.addEventListener('mouseMove', (event) => {
-        // Don't set focus if the mouse hasn't moved ever
-        // This is to avoid clickjacking where an attacker puts the pulldown under the cursor
-        // and tricks the user into clicking
-        if (
-            (!previousX && !previousY) || // if no previous coords
-            (previousX === event.detail.x && previousY === event.detail.y) // or the mouse hasn't moved
-        ) {
-            previousX = event.detail.x
-            previousY = event.detail.y
-            return
-        }
-
-        const activeTooltip = device.uiController?.getActiveTooltip?.()
-        activeTooltip?.focus(event.detail.x, event.detail.y)
-        previousX = event.detail.x
-        previousY = event.detail.y
-    })
-
     return {
         /**
          * When we are inside an 'overlay' - the HTML tooltip will be opened immediately

@@ -67,14 +67,18 @@ async function addTopAutofillMouseFocus (page, button) {
     const coords = await button.boundingBox({timeout: 1000})
     const x = coords?.x || 10
     const y = coords?.y || 10
+
     await page.evaluate(({x, y}) => {
         const event = new CustomEvent('mouseMove', {detail: {x: x + 30, y: y + 10}})
         window.dispatchEvent(event)
     }, {x, y})
+    await page.mouse.move(x + 30, y + 10)
+
     await page.evaluate(({x, y}) => {
         const moved = new CustomEvent('mouseMove', {detail: {x: x + 50, y: y + 15}})
         window.dispatchEvent(moved)
     }, {x, y})
+    await page.mouse.move(x + 50, y + 15)
 }
 
 export {createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType, addTopAutofillMouseFocus}

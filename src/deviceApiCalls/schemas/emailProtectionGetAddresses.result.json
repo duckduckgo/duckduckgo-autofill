@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "EmailProtectionGetAddressesResult",
+    "type": "object",
+    "description": "Used to get both Email Protection addresses (personal and private)",
+    "additionalProperties": false,
+    "properties": {
+      "success": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "personalAddress": {
+            "type": "string"
+          },
+          "privateAddress": {
+            "type": "string"
+          }
+        },
+        "required": ["personalAddress", "privateAddress"]
+      },
+      "error": {
+        "$ref": "./error.json"
+      }
+    }
+  }
+  

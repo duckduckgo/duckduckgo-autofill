@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "EmailProtectionGetCapabilitiesResult",
+    "type": "object",
+    "description": "Used by the Email Protection web app to determine which API functionality is available",
+    "additionalProperties": false,
+    "properties": {
+      "success": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "addUserData": {
+            "type": "boolean"
+          },
+          "getUserData": {
+            "type": "boolean"
+          },
+          "removeUserData": {
+            "type": "boolean"
+          }
+        }
+      },
+      "error": {
+        "$ref": "./error.json"
+      }
+    }
+  }
+  

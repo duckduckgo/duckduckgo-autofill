@@ -4,6 +4,7 @@ import {createAvailableInputTypes, withDataType} from './utils.js'
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} AvailableInputTypes
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").GetAutofillDataResponse} GetAutofillDataResponse
+ * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").EmailProtectionGetIsLoggedInResult} EmailProtectionGetIsLoggedInResult
  *
  * Use this to mock windows message handlers
  *
@@ -68,15 +69,18 @@ export function createWindowsMocks () {
         /** @type {CredentialsObject | null} */
         getAutofillCredentials: null,
         /** @type {null | GetAutofillDataResponse['success']} */
-        getAutofillData: null
-
+        getAutofillData: null,
+        /** @type {null | EmailProtectionGetIsLoggedInResult['success']} */
+        emailProtectionGetIsLoggedIn: null
     }
     /** @type {MockBuilder} */
     const builder = {
         withPrivateEmail (_email) {
+            mocks.emailProtectionGetIsLoggedIn = true
             return this
         },
         withPersonalEmail (_email) {
+            mocks.emailProtectionGetIsLoggedIn = true
             return this
         },
         withEmailProtection (emails) {
@@ -188,6 +192,10 @@ export function createWindowsMocks () {
                     },
                     selectedDetail (request) {
                         recordCall(request.Name, request.Data, null)
+                    },
+                    emailProtectionGetIsLoggedIn (request) {
+                        recordCall(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
+                        return respond(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
                     }
                 }
 

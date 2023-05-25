@@ -124,6 +124,70 @@
         "paramValidator": { "$ref": "./schemas/getAlias.params.json" },
         "resultValidator": { "$ref": "./schemas/getAlias.result.json" }
       }
+    },
+    "openManagePasswords": {
+      "type": "object",
+      "description": "Opens the native password management UI from the autofill popup"
+    },
+    "openManageCreditCards": {
+      "type": "object",
+      "description": "Opens the native credit card management UI from the autofill popup"
+    },
+    "openManageIdentities": {
+      "type": "object",
+      "description": "Opens the native identities management UI from the autofill popup"
+    },
+    "emailProtectionStoreUserData": {
+      "type": "object",
+      "description": "Used to store Email Protection auth credentials (logging in)",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionStoreUserDataResponse"},
+        "paramsValidator": { "$ref":  "./schemas/emailProtectionStoreUserData.params.json" }
+      }
+    },
+    "emailProtectionRemoveUserData": {
+      "type": "object",
+      "description": "Used to remove Email Protection auth credentials (logging out)"
+    },
+    "emailProtectionGetIsLoggedIn": {
+      "type": "object",
+      "description": "Used to get check if a user is logged in to Email Protection",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionGetIsLoggedInResponse"},
+        "resultValidator": { "$ref":  "./schemas/emailProtectionGetIsLoggedIn.result.json" }
+      }
+    },
+    "emailProtectionGetUserData": {
+      "type": "object",
+      "description": "Used to get Email Protection auth credentials",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionGetUserDataResponse"},
+        "resultValidator": { "$ref":  "./schemas/emailProtectionGetUserData.result.json" }
+      }
+    },
+    "emailProtectionGetCapabilities": {
+      "type": "object",
+      "description": "Used by the Email Protection web app to determine which API functionality is available",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionGetCapabilitiesResponse"},
+        "resultValidator": { "$ref":  "./schemas/emailProtectionGetCapabilities.result.json" }
+      }
+    },
+    "emailProtectionGetAddresses": {
+      "type": "object",
+      "description": "Used to get both Email Protection addresses (personal and private)",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionGetAddressesResponse"},
+        "resultValidator": { "$ref":  "./schemas/emailProtectionGetAddresses.result.json" }
+      }
+    },
+    "emailProtectionRefreshPrivateAddress": {
+      "type": "object",
+      "description": "Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionRefreshPrivateAddressResponse"},
+        "resultValidator": { "$ref":  "./schemas/emailProtectionRefreshPrivateAddress.result.json" }
+      }
     }
   }
 }
