@@ -5910,6 +5910,9 @@ function initFormSubmissionsApi(forms) {
     ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && /login|sign-in|signin/.test(entry.name));
     if (!entries.length) return;
     const filledForm = [...forms.values()].find(form => form.hasValues());
+    const focusedForm = [...forms.values()].find(form => form.hasFocus()); // If a form is still focused the user is still typing: do nothing
+
+    if (focusedForm) return;
     filledForm === null || filledForm === void 0 ? void 0 : filledForm.submitHandler('performance observer');
   });
   observer.observe({
