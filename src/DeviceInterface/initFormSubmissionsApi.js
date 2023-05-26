@@ -82,6 +82,10 @@ export function initFormSubmissionsApi (forms) {
         if (!entries.length) return
 
         const filledForm = [...forms.values()].find(form => form.hasValues())
+        const focusedForm = [...forms.values()].find((form) => form.hasFocus())
+        // If a form is still focused the user is still typing: do nothing
+        if (focusedForm) return
+
         filledForm?.submitHandler('performance observer')
     })
     observer.observe({entryTypes: ['resource']})
