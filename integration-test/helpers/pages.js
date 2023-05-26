@@ -5,10 +5,14 @@ import {addTopAutofillMouseFocus, clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
-export function incontextSignupPage (page) {
+export function incontextSignupPage (page, { platform } = { platform: 'extension' }) {
+    const isExtension = platform === 'extension'
     const {selectors} = constants.fields.email
-    const getCallToAction = () => page.locator(`text=Protect My Email`)
-    const getTooltip = () => page.locator('.tooltip--email, .tooltip__incontext')
+    const getCallToAction = () => {
+        const text = isExtension ? 'Protect My Email' : 'Hide your email and block trackers'
+        return page.locator(`text=${text}`)
+    }
+    const getTooltip = () => page.locator('.tooltip--email, .tooltip--incontext-signup')
     return {
         async assertIsShowing () {
             await expect(getCallToAction()).toBeVisible()

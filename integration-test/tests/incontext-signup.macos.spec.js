@@ -9,7 +9,7 @@ import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
 const test = base.extend({})
 
 test.describe('macos', () => {
-    test('should allow user to sign up for Email Protection', async ({page}) => {
+    test('should allow user to sign up for Email Protection and dismiss the item', async ({page}) => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
@@ -22,7 +22,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = incontextSignupPage(page, { platform: 'macos' })
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
@@ -43,40 +43,8 @@ test.describe('macos', () => {
 
         // Confirm pixels triggered
         await emailPage.assertPixelsFired([
+            {pixelName: 'incontext_dismiss_persisted'},
             {pixelName: 'incontext_primary_cta'}
-        ])
-    })
-
-    test('should allow tooltip to be dismissed', async ({page}) => {
-        forwardConsoleMessages(page)
-        await setupMockedDomain(page, 'https://example.com')
-
-        await createWebkitMocks()
-            .withAvailableInputTypes({email: true})
-            .applyTo(page)
-
-        // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
-
-        const incontextSignup = incontextSignupPage(page)
-        const emailPage = emailAutofillPage(page)
-        await emailPage.navigate('https://example.com')
-
-        // Permanently dismiss tooltip
-        await emailPage.clickDirectlyOnDax()
-        await incontextSignup.assertIsShowing()
-        await incontextSignup.dismissTooltipWith("Don't Show Again")
-
-        // Confirm message passed to native
-        const dismissedCall = await mockedCalls(page, ['setIncontextSignupPermanentlyDismissedAt'])
-        expect(dismissedCall.length).toBe(1)
-
-        // Confirm pixels triggered
-        await emailPage.assertPixelsFired([
-            {pixelName: 'incontext_dismiss_persisted'}
         ])
     })
 
@@ -95,7 +63,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = incontextSignupPage(page, { platform: 'macos' })
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
@@ -118,7 +86,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = incontextSignupPage(page, { platform: 'macos' })
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 

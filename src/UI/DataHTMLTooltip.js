@@ -4,26 +4,20 @@ import {PROVIDER_LOCKED} from '../InputTypes/Credentials.js'
 
 class DataHTMLTooltip extends HTMLTooltip {
     renderEmailProtectionIncontextSignup (isOtherItems) {
+        const dataTypeClass = `tooltip__button--data--identities`
+        const providerIconClass = 'tooltip__button--data--duckduckgo'
         return `
             ${isOtherItems ? '<hr />' : ''}
-            <div id="incontextSignup" class="tooltip__incontext tooltip__button--data">
+            <button id="incontextSignup" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-get-email-signup">
                 <span class="tooltip__button__text-container">
-                    <span class="label label--title">
+                    <span class="label label--medium">
                         Hide your email and block trackers
                     </span>
-                    <span class="label label--text">
+                    <span class="label label--small">
                         Create a unique, random address that also removes hidden trackers and forwards email to your inbox.
                     </span>
-                    <span class="tooltip__incontext__cta">
-                        <button class="secondary js-dismiss-email-signup">
-                            Don't Show Again
-                        </button>
-                        <button class="primary js-get-email-signup">
-                            Protect My Email
-                        </button>
-                    </span>
                 </span>
-            </div>
+            </button>
         `
     }
 
@@ -117,16 +111,10 @@ ${css}
             })
         }
 
-        const dismissIncontextSignup = this.shadow.querySelector('.js-dismiss-email-signup')
-        if (dismissIncontextSignup) {
-            this.registerClickableButton(dismissIncontextSignup, () => {
-                callbacks.onIncontextSignupDismissed?.({ hasOtherOptions: items.length > 0 })
-            })
-        }
-
         const getIncontextSignup = this.shadow.querySelector('.js-get-email-signup')
         if (getIncontextSignup) {
             this.registerClickableButton(getIncontextSignup, () => {
+                callbacks.onIncontextSignupDismissed?.({ hasOtherOptions: items.length > 0 })
                 callbacks.onIncontextSignup?.()
             })
         }

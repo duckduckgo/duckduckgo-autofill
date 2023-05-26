@@ -48,7 +48,7 @@
     min-height: 100vh;
 }
 .tooltip--data.tooltip--incontext-signup {
-    width: 370px;
+    width: 360px;
 }
 :not(.top-autofill) .tooltip--data {
     top: 100%;
@@ -101,11 +101,10 @@
 }
 
 /* Buttons */
-.tooltip__button,
-.tooltip__incontext {
+.tooltip__button {
     display: flex;
     width: 100%;
-    padding: 8px 0px;
+    padding: 8px 8px 8px 0px;
     font-family: inherit;
     color: inherit;
     background: transparent;
@@ -116,35 +115,6 @@
 .wrapper:not(.top-autofill) .tooltip__button:hover {
     background-color: #3969EF;
     color: #FFFFFF;
-}
-.tooltip__incontext__cta {
-    display: block;
-    margin-top: 8px;
-}
-.tooltip__incontext__cta button {
-    border-width: 0;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 500;
-    margin: 0 0 0 4px;
-    padding: 2px 14px;
-}
-.tooltip__incontext__cta button:first-of-type {
-    margin: 0;
-}
-.tooltip__incontext__cta button.primary {
-    background: linear-gradient(180deg, #1F8AFF 0%, #0173FF 100%);
-    color: #fff;
-}
-.tooltip__incontext__cta button.secondary {
-    background: #d9d8d8;
-    color: #000;
-}
-@media (prefers-color-scheme: dark) {
-    .tooltip__incontext__cta button.secondary {
-        background: #959497;
-        color: rgba(255, 255, 255, 0.85);
-    }
 }
 
 /* Data autofill tooltip specific */
@@ -216,18 +186,6 @@
 }
 .label + .label {
     margin-top: 2px;
-}
-.label.label--title {
-    color: rgba(0,0,0,.9);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.08px;
-    margin-bottom: 8px;
-}
-.label.label--text {
-    color: rgba(0,0,0,.6);
-    font-size: 13px;
-    line-height: 16px;
 }
 .label.label--medium {
     font-weight: 500;
