@@ -41,9 +41,11 @@
     font-size: 13px;
     line-height: 14px;
     width: 315px;
-    min-height: 100vh;
     max-height: 290px;
     overflow-y: auto;
+}
+.top-autofill .tooltip--data {
+    min-height: 100vh;
 }
 :not(.top-autofill) .tooltip--data {
     top: 100%;
