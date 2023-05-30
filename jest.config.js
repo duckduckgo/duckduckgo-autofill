@@ -26,5 +26,8 @@ module.exports = {
     testPathIgnorePatterns: [
         '/node_modules/',
         '<rootDir>/integration-test'
-    ]
+    ],
+    moduleNameMapper: {
+        '\\.(css|less)$': '<rootDir>/__mocks__/styleMock.js'
+    }
 }

@@ -38,7 +38,6 @@
   ],
   "exclude": [
     "jest-test-environment.js",
-    "Gruntfile.js",
     "integration-test/extension",
     "scripts/precompile-regexes.js"
   ]

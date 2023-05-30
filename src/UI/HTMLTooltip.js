@@ -1,6 +1,6 @@
 import { safeExecute, addInlineStyles, whenIdle } from '../autofill-utils.js'
 import { getSubtypeFromType, getVariantFromType } from '../Form/matching.js'
-import { CSS_STYLES } from './styles/styles.js'
+import CSS_STYLES from './styles/autofill-tooltip-styles.css'
 
 /**
  * @typedef {object} HTMLTooltipOptions
