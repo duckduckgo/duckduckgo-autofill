@@ -13,10 +13,13 @@ class DataHTMLTooltip extends HTMLTooltip {
         const isTopAutofill = wrapperClass?.includes('top-autofill')
         let hasAddedSeparator = false
         // Only show an hr above the first duck address button, but it can be either personal or private
-        const shouldShowSeparator = (dataId) => {
+        const shouldShowSeparator = (dataId, index) => {
             const shouldShow = ['personalAddress', 'privateAddress'].includes(dataId) && !hasAddedSeparator
             if (shouldShow) hasAddedSeparator = true
-            return shouldShow
+
+            // Don't show the separator if we want to show it, but it's unnecessary as the first item in the menu
+            const isFirst = index === 0
+            return shouldShow && !isFirst
         }
 
         // Only show manage Manage… when it's topAutofill, the provider is unlocked, and it's not just EmailProtection
@@ -30,7 +33,7 @@ class DataHTMLTooltip extends HTMLTooltip {
 ${css}
 <div class="wrapper wrapper--data ${topClass}" hidden>
     <div class="tooltip tooltip--data">
-        ${items.map((item) => {
+        ${items.map((item, index) => {
         const credentialsProvider = item.credentialsProvider?.()
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
         // these 2 are optional
@@ -38,7 +41,7 @@ ${css}
         const label = item.label?.(this.subtype)
 
         return `
-                ${shouldShowSeparator(item.id()) ? '<hr />' : ''}
+                ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
                 <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button" >
                     <span class="tooltip__button__text-container">
                         <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
