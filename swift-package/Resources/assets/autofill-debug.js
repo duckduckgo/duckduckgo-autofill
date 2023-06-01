@@ -10741,7 +10741,7 @@ class FormAnalyzer {
      */
 
     this.signals = [];
-    this.evaluateElAttributes(input, 3, true);
+    this.evaluateElAttributes(input, 1, true);
     form ? this.evaluateForm() : this.evaluatePage();
     return this;
   }
@@ -11578,7 +11578,7 @@ exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatFullName = exports.formatCCYear = void 0;
+exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatPhoneNumber = exports.formatFullName = exports.formatCCYear = void 0;
 
 var _matching = require("./matching.js");
 
@@ -11821,12 +11821,22 @@ const shouldStoreCreditCards = _ref5 => {
   return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
 };
 /**
+ * Removes formatting characters from phone numbers, only leaves digits and the + sign
+ * @param {String} phone
+ * @returns {String}
+ */
+
+
+const formatPhoneNumber = phone => phone.replaceAll(/[^0-9|+]/g, '');
+/**
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
  * @return {DataStorageObject}
  */
 
+
+exports.formatPhoneNumber = formatPhoneNumber;
 
 const prepareFormValuesForStorage = formValues => {
   var _identities, _identities2;
@@ -11876,6 +11886,10 @@ const prepareFormValuesForStorage = formValues => {
       }
 
       delete identities.fullName;
+    }
+
+    if (identities.phone) {
+      identities.phone = formatPhoneNumber(identities.phone);
     }
   } else {
     identities = undefined;
@@ -12623,7 +12637,7 @@ const matchingConfiguration = {
         password: {
           match: 'password',
           skip: 'email|one-time|error|hint',
-          forceUnknown: 'captcha|mfa|2fa|two factor'
+          forceUnknown: 'captcha|mfa|2fa|two factor|otp'
         },
         username: {
           match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername',
@@ -12639,7 +12653,7 @@ const matchingConfiguration = {
           forceUnknown: 'plus'
         },
         cardSecurityCode: {
-          match: 'security.?code|card.?verif|cvv|csc|cvc'
+          match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id'
         },
         expirationMonth: {
           match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
@@ -14214,7 +14228,7 @@ const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=
 const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
 const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userid\" i]", "input[id=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[name=\"login\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"j_username\" i]", // https://account.uwindsor.ca/login
+"input[name=\"userid\" i]", "input[id=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[id=\"login_id\" i]", "input[id=\"loginid\" i]", "input[name=\"login\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"j_username\" i]", // https://account.uwindsor.ca/login
 "input[name=\"uwinid\" i]", // livedoor.com
 "input[name=\"livedoor_id\" i]", // https://login.oracle.com/mysso/signon.jsp?request_id=
 "input[name=\"ssousername\" i]", // https://secure.nsandi.com/

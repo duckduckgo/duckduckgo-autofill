@@ -199,6 +199,13 @@ const shouldStoreCreditCards = ({creditCards}) => {
 }
 
 /**
+ * Removes formatting characters from phone numbers, only leaves digits and the + sign
+ * @param {String} phone
+ * @returns {String}
+ */
+const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '')
+
+/**
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
@@ -242,6 +249,9 @@ const prepareFormValuesForStorage = (formValues) => {
             }
             delete identities.fullName
         }
+        if (identities.phone) {
+            identities.phone = formatPhoneNumber(identities.phone)
+        }
     } else {
         identities = undefined
     }
@@ -274,5 +284,6 @@ export {
     getCountryName,
     inferCountryCodeFromElement,
     getMMAndYYYYFromString,
+    formatPhoneNumber,
     prepareFormValuesForStorage
 }
