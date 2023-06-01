@@ -354,7 +354,7 @@
   { "html": "cav_receita_fazenda_gov_br_login.html", "generated": true, "title": "eCAC - Centro Virtual de Atendimento", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3616" },
   { "html": "www_1gb_ru_login.html", "generated": true, "title": "1Gb.ru - Личный кабинет -", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3635" },
   { "html": "gsigninssl_gmarket_co_kr_login.html", "generated": true, "title": "Gmarket-Korean No.1 Shopping Site, Hottest, Trendy, Lowest Price, Worldwide shipping available", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3707" },
-  { "html": "gmemberssl_gmarket_co_kr_signup.html", "generated": true, "title": "Register", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3707" },
+  { "html": "gmemberssl_gmarket_co_kr_signup.html", "generated": true, "title": "Register", "comment": "rank: 3707" },
   { "html": "www_virtualbox_org_login.html", "generated": true, "title": "Oracle Login - Single Sign On", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3918" },
   { "html": "accounts_ukr_net_signup.html", "generated": true, "title": "Create Your @UKR.NET Mailbox", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 4006" },
   { "html": "pas_vseinstrumenti_ru_login.html", "generated": true, "title": "Вход в личный кабинет", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 4199" },

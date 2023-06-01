@@ -41,7 +41,7 @@ class FormAnalyzer {
          */
         this.signals = []
 
-        this.evaluateElAttributes(input, 3, true)
+        this.evaluateElAttributes(input, 1, true)
         form ? this.evaluateForm() : this.evaluatePage()
         return this
     }
