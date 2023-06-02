@@ -10384,22 +10384,7 @@ class Form {
     };
     this.matching.setInputType(input, this.form, opts);
     const mainInputType = (0, _matching.getInputMainType)(input);
-    this.inputs[mainInputType].add(input); // TODO: temporary pixel
-
-    if (this.device.globalConfig.isExtension) {
-      const subtype = (0, _matching.getInputSubtype)(input);
-
-      if (subtype === 'emailAddress') {
-        this.addListener(input, 'pointerdown', () => {
-          this.device.firePixel({
-            pixelName: 'email_incontext_eligible'
-          });
-        }, {
-          once: true
-        });
-      }
-    }
-
+    this.inputs[mainInputType].add(input);
     this.decorateInput(input);
     return this;
   }
@@ -18655,8 +18640,6 @@ const sendJSPixelParamsSchema = _zod.z.union([_zod.z.object({
   pixelName: _zod.z.literal("incontext_dismiss_persisted")
 }), _zod.z.object({
   pixelName: _zod.z.literal("incontext_close_x")
-}), _zod.z.object({
-  pixelName: _zod.z.literal("email_incontext_eligible")
 })]);
 
 exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
