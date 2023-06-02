@@ -209,6 +209,18 @@ export interface API {
     resultValidator?: EmailProtectionRefreshPrivateAddressResult;
     [k: string]: unknown;
   };
+  /**
+   * Used by macOS to open a new tab to sign up for Email Protection
+   */
+  startEmailProtectionSignup?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Used by macOS to close the Email Protection tab after successful in-context sign-up or login
+   */
+  closeEmailProtectionTab?: {
+    [k: string]: unknown;
+  };
 }
 /**
  * This describes the argument given to `getAutofillData(data)`

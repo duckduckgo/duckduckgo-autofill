@@ -83,6 +83,7 @@ export const macosContentScopeReplacements = (opts = {}) => {
                             inputType_identities: true,
                             inputType_creditCards: true,
                             emailProtection: true,
+                            emailProtection_incontext_signup: true,
                             password_generation: true,
                             credentials_saving: true,
                             inlineIcon_credentials: true,
@@ -145,7 +146,11 @@ export const macosWithoutOverlay = () => {
             'getSelectedCredentials',
             'askToUnlockProvider',
             'checkCredentialsProviderStatus',
-            'sendJSPixel'
+            'sendJSPixel',
+            'getIncontextSignupDismissedAt',
+            'setIncontextSignupPermanentlyDismissedAt',
+            'startEmailProtectionSignup',
+            'closeEmailProtectionTab'
         ]
     }
 }
@@ -216,7 +221,11 @@ export function createWebkitMocks (platform = 'macos') {
         sendJSPixel: null,
         pmHandlerOpenManagePasswords: null,
         pmHandlerOpenManageCreditCards: null,
-        pmHandlerOpenManageIdentities: null
+        pmHandlerOpenManageIdentities: null,
+        getIncontextSignupDismissedAt: { success: {} },
+        setIncontextSignupPermanentlyDismissedAt: null,
+        startEmailProtectionSignup: null,
+        closeEmailProtectionTab: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -243,6 +252,10 @@ export function createWebkitMocks (platform = 'macos') {
             return this
                 .withPrivateEmail(emails.privateAddress)
                 .withPersonalEmail(emails.personalAddress)
+        },
+        withIncontextSignipDismissed () {
+            webkitBase.getIncontextSignupDismissedAt.success.permanentlyDismissedAt = 946684800000
+            return this
         },
         withIdentity (identity, inputType = 'identities.firstName') {
             webkitBase.pmHandlerGetAutofillInitData.success.identities.push(identity)

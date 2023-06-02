@@ -297,7 +297,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.clickIntoUsernameInput()
                 await login.fieldsDoNotContainIcons()
             })
-            test('I should see Dax if Email Protection is enabled', async ({page}) => {
+            test('I should not see Dax even if Email Protection is enabled', async ({page}) => {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks()
                     .withAvailableInputTypes({
@@ -315,7 +315,8 @@ test.describe('Auto-fill a login form on macOS', () => {
 
                 const login = loginPage(page)
                 await login.navigate()
-                await login.emailHasDaxPasswordNoIcon()
+                await login.clickIntoUsernameInput()
+                await login.fieldsDoNotContainIcons()
             })
         })
     })

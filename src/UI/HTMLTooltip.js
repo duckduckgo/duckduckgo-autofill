@@ -13,6 +13,7 @@ import { CSS_STYLES } from './styles/styles.js'
  * @property {string} css
  * @property {boolean} checkVisibility
  * @property {boolean} hasCaret
+ * @property {() => boolean} isIncontextSignupAvailable
  */
 
 /**
@@ -41,7 +42,8 @@ export const defaultOptions = {
     remove: () => { /** noop */ },
     testMode: false,
     checkVisibility: true,
-    hasCaret: false
+    hasCaret: false,
+    isIncontextSignupAvailable: () => false
 }
 
 export class HTMLTooltip {

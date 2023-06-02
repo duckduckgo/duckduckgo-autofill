@@ -7,14 +7,17 @@ import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
 import { createNotification, createRequest } from '../../packages/device-api/index.js'
 import { GetAlias } from '../deviceApiCalls/additionalDeviceApiCalls.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
-import {CheckCredentialsProviderStatusCall} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {getInputType} from '../Form/matching.js'
+import { CheckCredentialsProviderStatusCall, CloseEmailProtectionTabCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import { getInputType } from '../Form/matching.js'
+import { InContextSignup } from '../InContextSignup.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
  */
 
 class AppleDeviceInterface extends InterfacePrototype {
+    inContextSignup = new InContextSignup(this)
+
     /** @override */
     initialSetupDelayMs = 300
 
@@ -72,6 +75,8 @@ class AppleDeviceInterface extends InterfacePrototype {
             await this._getAutofillInitData()
         }
 
+        await this.inContextSignup.init()
+
         const signedIn = await this._checkDeviceSignedIn()
         if (signedIn) {
             if (this.globalConfig.isApp) {
@@ -126,16 +131,31 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     async _show (details) {
         await this._showAutofillParent(details)
-        this._listenForSelectedCredential()
-            .then((response) => {
-                if (!response) {
-                    return
-                }
+        this._listenForSelectedCredential(async (response) => {
+            if (!response) return
+
+            if ('configType' in response) {
                 this.selectedDetail(response.data, response.configType)
-            })
-            .catch(e => {
-                console.error('unknown error', e)
-            })
+            } else if ('stop' in response) {
+                // Let input handlers know we've stopped autofilling
+                this.activeForm?.activeInput?.dispatchEvent(new Event('mouseleave'))
+            } else if ('stateChange' in response) {
+                // Remove decorations before refreshing data to make sure we
+                // remove the currently set icons
+                this.activeForm?.removeAllDecorations()
+
+                // Update for any state that may have changed
+                await this.refreshData()
+
+                // Add correct icons and behaviour
+                this.activeForm?.recategorizeAllInputs()
+            }
+        })
+    }
+
+    async refreshData () {
+        await super.refreshData()
+        await this._checkDeviceSignedIn()
     }
 
     async getAddresses () {
@@ -168,6 +188,14 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     removeUserData () {
         this.deviceApi.notify(createNotification('emailHandlerRemoveToken'))
+    }
+
+    /**
+     * Used by the email web app
+     * Provides functionality to close the window after in-context sign-up or sign-in
+     */
+    closeEmailProtection () {
+        this.deviceApi.request(new CloseEmailProtectionTabCall(null))
     }
 
     /**
@@ -304,34 +332,35 @@ class AppleDeviceInterface extends InterfacePrototype {
      *     - This also is triggered when the close event is called and prevents any edge case continued polling.
      * - 'ok' is when the user has selected a credential and the value can be injected into the page.
      * - 'none' is when the tooltip is open in the native window however hasn't been entered.
-     * @returns {Promise<{data:IdentityObject|CreditCardObject|CredentialsObject, configType: string} | null>}
+     * @param {(response: {data:IdentityObject|CreditCardObject|CredentialsObject, configType: string} | {stateChange: boolean} | {stop: boolean} | null) => void} callback
      */
-    async _listenForSelectedCredential () {
-        return new Promise((resolve) => {
-            // Prevent two timeouts from happening
-            // @ts-ignore
-            const poll = async () => {
-                clearTimeout(this.pollingTimeout)
-                const response = await this.getSelectedCredentials()
-                switch (response.type) {
-                case 'none':
-                    // Parent hasn't got a selected credential yet
-                    // @ts-ignore
-                    this.pollingTimeout = setTimeout(() => {
-                        poll()
-                    }, 100)
-                    return
-                case 'ok': {
-                    return resolve({data: response.data, configType: response.configType})
-                }
-                case 'stop':
-                    // Parent wants us to stop polling
-                    resolve(null)
-                    break
-                }
+    async _listenForSelectedCredential (callback) {
+        // Prevent two timeouts from happening
+        const poll = async () => {
+            clearTimeout(this.pollingTimeout)
+            const response = await this.getSelectedCredentials()
+            switch (response.type) {
+            case 'none':
+                // Parent hasn't got a selected credential yet
+                this.pollingTimeout = setTimeout(() => poll(), 100)
+                return
+            case 'ok': {
+                await callback({data: response.data, configType: response.configType})
+                return
             }
-            poll()
-        })
+            case 'state': {
+                // Inform that state has changed, but continue polling
+                // e.g. in-context signup has been dismissed
+                await callback({stateChange: true})
+                this.pollingTimeout = setTimeout(() => poll(), 100)
+                return
+            }
+            case 'stop':
+                // Parent wants us to stop polling
+                await callback({stop: true})
+            }
+        }
+        poll()
     }
 }
 

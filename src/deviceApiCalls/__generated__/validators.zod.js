@@ -409,5 +409,7 @@ export const apiSchema = z.object({
     emailProtectionRefreshPrivateAddress: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
         resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
-    })).optional()
+    })).optional(),
+    startEmailProtectionSignup: z.record(z.unknown()).optional(),
+    closeEmailProtectionTab: z.record(z.unknown()).optional()
 });

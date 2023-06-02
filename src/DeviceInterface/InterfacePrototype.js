@@ -371,7 +371,7 @@ class InterfacePrototype {
         } else {
             form.autofillData(data, type)
         }
-        this.removeTooltip()
+        await this.removeTooltip()
     }
 
     /**
@@ -552,6 +552,11 @@ class InterfacePrototype {
         return this.uiController?.removeTooltip?.('interface')
     }
 
+    async refreshData () {
+        await this.inContextSignup?.refreshData()
+        await this.settings.populateData()
+    }
+
     async setupSettingsPage ({shouldLog} = {shouldLog: false}) {
         if (!this.globalConfig.isDDGDomain) {
             return
@@ -572,11 +577,17 @@ class InterfacePrototype {
             } catch (e) {}
 
             // Set up listener for web app actions
-            window.addEventListener('message', (e) => {
-                if (this.globalConfig.isDDGDomain && e.data.removeUserData) {
-                    this.removeUserData()
-                }
-            })
+            if (this.globalConfig.isDDGDomain) {
+                window.addEventListener('message', (e) => {
+                    if (e.data.removeUserData) {
+                        this.removeUserData()
+                    }
+
+                    if (e.data.closeEmailProtection) {
+                        this.closeEmailProtection()
+                    }
+                })
+            }
 
             const hasUserData = userData && !userData.error && Object.entries(userData).length > 0
             notifyWebApp({
@@ -602,6 +613,9 @@ class InterfacePrototype {
 
     /** @returns {void} */
     removeUserData () {}
+
+    /** @returns {void} */
+    closeEmailProtection () {}
 
     /** @returns {Promise<null|Record<string,boolean>>} */
     getEmailProtectionCapabilities () { throw new Error('unimplemented') }

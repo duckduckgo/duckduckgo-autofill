@@ -12,10 +12,17 @@ const DATA_DIR_PREFIX = 'ddg-temp-'
  * @param {string} domain
  */
 export async function setupMockedDomain (page, domain) {
+    const contentType = {
+        html: 'text/html',
+        css: 'text/css',
+        default: 'text/plain'
+    }
     await page.route(`${domain}/**/*`, (route, request) => {
         const { pathname } = new URL(request.url())
+        const fileType = pathname.split('.').pop()
         return route.fulfill({
             status: 200,
+            contentType: contentType[fileType] || contentType.default,
             body: readFileSync(join('.', pathname), 'utf8')
         })
     })

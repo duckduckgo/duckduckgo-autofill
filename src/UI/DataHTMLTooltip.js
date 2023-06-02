@@ -3,10 +3,35 @@ import HTMLTooltip from './HTMLTooltip.js'
 import {PROVIDER_LOCKED} from '../InputTypes/Credentials.js'
 
 class DataHTMLTooltip extends HTMLTooltip {
+    renderEmailProtectionIncontextSignup (isOtherItems) {
+        const dataTypeClass = `tooltip__button--data--identities`
+        const providerIconClass = 'tooltip__button--data--duckduckgo'
+        return `
+            ${isOtherItems ? '<hr />' : ''}
+            <button id="incontextSignup" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-get-email-signup">
+                <span class="tooltip__button__text-container">
+                    <span class="label label--medium">
+                        Hide your email and block trackers
+                    </span>
+                    <span class="label label--small">
+                        Create a unique, random address that also removes hidden trackers and forwards email to your inbox.
+                    </span>
+                </span>
+            </button>
+        `
+    }
+
     /**
      * @param {InputTypeConfigs} config
      * @param {TooltipItemRenderer[]} items
-     * @param {{onSelect(id:string): void, onManage(type:InputTypeConfigs['type']): void}} callbacks
+     * @param {{
+     *   onSelect(id:string): void
+     *   onManage(type:InputTypeConfigs['type']): void
+     *   onIncontextSignupDismissed?(data: {
+     *      hasOtherOptions: Boolean
+     *   }): void
+     *   onIncontextSignup?(): void
+     * }} callbacks
      */
     render (config, items, callbacks) {
         const {wrapperClass, css} = this.options
@@ -32,7 +57,7 @@ class DataHTMLTooltip extends HTMLTooltip {
         this.shadow.innerHTML = `
 ${css}
 <div class="wrapper wrapper--data ${topClass}" hidden>
-    <div class="tooltip tooltip--data">
+    <div class="tooltip tooltip--data${this.options.isIncontextSignupAvailable() ? ' tooltip--incontext-signup' : ''}">
         ${items.map((item, index) => {
         const credentialsProvider = item.credentialsProvider?.()
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
@@ -41,16 +66,19 @@ ${css}
         const label = item.label?.(this.subtype)
 
         return `
-                ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
-                <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button" >
-                    <span class="tooltip__button__text-container">
-                        <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
-                        ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
-                        ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
-                    </span>
-                </button>
-            `
+            ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button">
+                <span class="tooltip__button__text-container">
+                    <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
+                    ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
+                    ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
+                </span>
+            </button>
+        `
     }).join('')}
+        ${this.options.isIncontextSignupAvailable()
+        ? this.renderEmailProtectionIncontextSignup(items.length > 0)
+        : ''}
         ${shouldShowManageButton ? `
             <hr />
             <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
@@ -80,6 +108,14 @@ ${css}
         if (this.manageButton) {
             this.registerClickableButton(this.manageButton, () => {
                 callbacks.onManage(config.type)
+            })
+        }
+
+        const getIncontextSignup = this.shadow.querySelector('.js-get-email-signup')
+        if (getIncontextSignup) {
+            this.registerClickableButton(getIncontextSignup, () => {
+                callbacks.onIncontextSignupDismissed?.({ hasOtherOptions: items.length > 0 })
+                callbacks.onIncontextSignup?.()
             })
         }
 

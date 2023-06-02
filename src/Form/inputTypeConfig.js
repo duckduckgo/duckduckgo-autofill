@@ -19,7 +19,7 @@ const getIdentitiesIcon = (input, {device}) => {
     const { isDDGApp, isFirefox, isExtension } = device.globalConfig
     const subtype = getInputSubtype(input)
 
-    if (subtype === 'emailAddress' && device.inContextSignup?.isAvailable()) {
+    if (device.inContextSignup?.isAvailable(subtype)) {
         if (isDDGApp || isFirefox) {
             return daxGrayscaleBase64
         } else if (isExtension) {
@@ -51,7 +51,7 @@ const getIdentitiesAlternateIcon = (input, {device}) => {
     const { isDDGApp, isFirefox, isExtension } = device.globalConfig
     const subtype = getInputSubtype(input)
 
-    const isIncontext = subtype === 'emailAddress' && device.inContextSignup?.isAvailable()
+    const isIncontext = device.inContextSignup?.isAvailable(subtype)
     const isEmailProtection = subtype === 'emailAddress' && device.isDeviceSignedIn()
     if (isIncontext || isEmailProtection) {
         if (isDDGApp || isFirefox) {
@@ -82,7 +82,8 @@ const canBeAutofilled = async (input, device) => {
 
     const mainType = getInputMainType(input)
     const subtype = getInputSubtype(input)
-    const canAutofill = await device.settings.canAutofillType(mainType, subtype)
+    await device.settings.populateDataIfNeeded({ mainType, subtype })
+    const canAutofill = device.settings.canAutofillType({ mainType, subtype }, device.inContextSignup)
     return Boolean(canAutofill)
 }
 

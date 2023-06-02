@@ -113,7 +113,7 @@ describe('matching', () => {
         {
             // This test has a new line between `First` and `name` -> which was previously not matching, but is now 😍
             html: `<input data-shane autocorrect="off" aria-labelledby="idms-input-labelledby-1643321390647-1" type="text" />
-                    <span aria-hidden="true" id="idms-input-labelledby-1643321390647-1">First 
+                    <span aria-hidden="true" id="idms-input-labelledby-1643321390647-1">First
                     name</span>`,
             subtype: 'identities.firstName'
         },
@@ -131,15 +131,15 @@ describe('matching', () => {
             opts: {isHybrid: true, hasCredentials: false}
         },
         {
-            // when hybrid with no credentials but we support identities, show identities
+            // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
-            subtype: 'identities.emailAddress',
+            subtype: 'credentials.username',
             opts: {isHybrid: true, hasCredentials: false, supportsIdentitiesAutofill: true}
         },
         {
-            // when login with no credentials but we support identities, show identities
+            // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
-            subtype: 'identities.emailAddress',
+            subtype: 'credentials.username',
             opts: {isLogin: true, hasCredentials: false, supportsIdentitiesAutofill: true}
         },
         {

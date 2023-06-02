@@ -63,8 +63,7 @@ const getIconStylesAlternate = (input, form) => {
     if (!icon) return {}
 
     return {
-        ...getBasicStyles(input, icon),
-        'transition': 'background 0.5s'
+        ...getBasicStyles(input, icon)
     }
 }
 

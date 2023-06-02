@@ -96,6 +96,9 @@ export function createAndroidMocks () {
                 .withPrivateEmail(emails.privateAddress)
                 .withPersonalEmail(emails.personalAddress)
         },
+        withIncontextSignipDismissed () {
+            throw new Error('Function not implemented.')
+        },
         withAvailableInputTypes (_inputTypes) {
             throw new Error('cannot set mock withAvailableInputTypes on Android, use string replacements instead')
         },

@@ -395,7 +395,7 @@ const tldrs = /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?
  * @returns {boolean}
  */
 function isValidTLD (hostname = window.location.hostname) {
-    return tldrs.test(hostname)
+    return tldrs.test(hostname) || hostname === 'fill.dev'
 }
 
 /**

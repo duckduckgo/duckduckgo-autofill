@@ -1,5 +1,6 @@
 import { isEventWithinDax } from '../../autofill-utils.js'
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
+import {getSubtypeFromType} from '../../Form/matching.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
 import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js'
@@ -92,7 +93,12 @@ export class HTMLTooltipUIController extends UIController {
          */
         const tooltipOptions = {
             ...this._htmlTooltipOptions,
-            remove: () => this.removeTooltip()
+            remove: () => this.removeTooltip(),
+            isIncontextSignupAvailable: () => {
+                const subtype = getSubtypeFromType(topContextData.inputType)
+                return !!this._options.device.inContextSignup?.isAvailable(subtype)
+            }
+
         }
 
         if (this._options.tooltipKind === 'legacy') {
@@ -121,6 +127,12 @@ export class HTMLTooltipUIController extends UIController {
                 },
                 onManage: (type) => {
                     this._onManage(type)
+                },
+                onIncontextSignupDismissed: (flags) => {
+                    this._onIncontextSignupDismissed(flags)
+                },
+                onIncontextSignup: () => {
+                    this._onIncontextSignup()
                 }
             })
     }
@@ -141,6 +153,12 @@ export class HTMLTooltipUIController extends UIController {
                 },
                 onManage: (type) => {
                     this._onManage(type)
+                },
+                onIncontextSignupDismissed: (flags) => {
+                    this._onIncontextSignupDismissed(flags)
+                },
+                onIncontextSignup: () => {
+                    this._onIncontextSignup()
                 }
             })
         }
@@ -287,6 +305,23 @@ export class HTMLTooltipUIController extends UIController {
         default:
             // noop
         }
+    }
+
+    _onIncontextSignupDismissed ({ hasOtherOptions }) {
+        this._options.device.inContextSignup?.onIncontextSignupDismissed({ shouldHideTooltip: !hasOtherOptions })
+
+        // If there are other options available, just force a re-render
+        if (hasOtherOptions) {
+            const topContextData = this._options.device.getTopContextData()
+            if (!topContextData) return
+            const config = getInputConfigFromType(topContextData.inputType)
+            const data = this._dataForAutofill(config, topContextData.inputType, topContextData)
+            this.updateItems(data)
+        }
+    }
+
+    _onIncontextSignup () {
+        this._options.device.inContextSignup?.onIncontextSignup()
     }
 
     isActive () {

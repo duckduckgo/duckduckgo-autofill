@@ -88,6 +88,9 @@ export function createWindowsMocks () {
                 .withPrivateEmail(emails.privateAddress)
                 .withPersonalEmail(emails.personalAddress)
         },
+        withIncontextSignipDismissed () {
+            throw new Error('Function not implemented.')
+        },
         withAvailableInputTypes (inputTypes) {
             mocks.getAvailableInputTypes = inputTypes
             return this
