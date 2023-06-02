@@ -1,4 +1,4 @@
-import { getMMAndYYYYFromString, prepareFormValuesForStorage } from './formatters.js'
+import {formatPhoneNumber, getMMAndYYYYFromString, prepareFormValuesForStorage} from './formatters.js'
 
 describe('Format year and month from single string', () => {
     const testCases = [
@@ -49,6 +49,13 @@ describe('Format year and month from single string', () => {
             expirationMonth: '05',
             expirationYear: '2028'
         })
+    })
+})
+
+describe('Can strip phone formatting characters', () => {
+    it('should strip all unexpected characters from phone', () => {
+        const complexPhoneNumber = '+1 (3) 345-123456.3'
+        expect(formatPhoneNumber(complexPhoneNumber)).toEqual('+133451234563')
     })
 })
 
