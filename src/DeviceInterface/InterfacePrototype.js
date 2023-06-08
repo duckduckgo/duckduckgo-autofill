@@ -70,11 +70,8 @@ class InterfacePrototype {
                 return this.globalConfig.isDDGTestMode ? 0 : 300
             }
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
-                break;
             case "extension":
                 break;
 
@@ -211,7 +208,7 @@ class InterfacePrototype {
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {
-            // initFormSubmissionsApi(this.scanner.forms)
+            initFormSubmissionsApi(this.scanner.forms)
         }
     }
 
@@ -252,9 +249,7 @@ class InterfacePrototype {
                 break;
             }
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
                 break;
             case "extension": {
@@ -514,17 +509,11 @@ class InterfacePrototype {
     getActiveTooltipType() {
         switch (this.ctx) {
             case "macos-legacy":
-                break;
             case "macos-modern":
-                break;
             case "macos-overlay":
-                break;
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -583,19 +572,12 @@ class InterfacePrototype {
     onIncontextSignup() {
         switch (this.ctx) {
             case "macos-legacy":
-                break;
             case "macos-modern":
-                break;
             case "macos-overlay":
-                break;
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
-                break;
             case "extension": {
                 return this.firePixel({pixelName: 'incontext_get_email_protection'})
             }
@@ -605,17 +587,11 @@ class InterfacePrototype {
     onIncontextSignupDismissed() {
         switch (this.ctx) {
             case "macos-legacy":
-                break;
             case "macos-modern":
-                break;
             case "macos-overlay":
-                break;
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -652,11 +628,8 @@ class InterfacePrototype {
                     : getInputType(this.activeForm?.activeInput)
             }
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
-                break;
             case "extension":
                 break;
 
@@ -769,20 +742,15 @@ class InterfacePrototype {
     isEnabledViaSettings() {
         switch (this.ctx) {
             case "macos-legacy":
-                break;
             case "macos-modern":
-                break;
             case "macos-overlay":
-                break;
             case "ios":
-                break;
             case "android":
+            case "extension":
                 break;
             case "windows":
             case "windows-overlay":
                 return Boolean(this.settings.enabled)
-            case "extension":
-                break;
 
         }
         return true;
@@ -827,23 +795,16 @@ class InterfacePrototype {
         }
 
         switch (this.ctx) {
-            case "macos-legacy":
-                return defaultPostInit();
-            case "macos-modern":
-                return defaultPostInit();
-            case "macos-overlay":
-                // setup overlay API pieces
-                showImmediately();
-                return;
             case "ios":
-                return defaultPostInit();
             case "android":
-                return defaultPostInit();
+            case "macos-legacy":
+            case "macos-modern":
             case "windows": {
                 defaultPostInit();
                 this.ready = true
                 return;
             }
+            case "macos-overlay":
             case "windows-overlay": {
                 showImmediately();
                 return;
@@ -911,7 +872,7 @@ class InterfacePrototype {
             this.removeTooltip('defaultSelectedMethod')
         }
 
-        const overlaySelected = async () => {
+        const selectedInOverlay = async () => {
             let detailsEntries = Object.entries(data).map(([key, value]) => {
                 return [key, String(value)]
             })
@@ -922,23 +883,16 @@ class InterfacePrototype {
 
         switch (this.ctx) {
             case "macos-legacy":
-                return defaultSelectedMethod()
             case "macos-modern":
-                return defaultSelectedMethod()
-            case "macos-overlay": {
-                return overlaySelected();
-            }
             case "ios":
-                return defaultSelectedMethod()
             case "android":
-                return defaultSelectedMethod()
             case "windows":
-                return defaultSelectedMethod()
-            case "windows-overlay": {
-                return overlaySelected();
-            }
             case "extension":
                 return defaultSelectedMethod()
+            case "macos-overlay":
+            case "windows-overlay": {
+                return selectedInOverlay();
+            }
             default:
                 assertUnreachable(this.ctx)
         }
@@ -1114,13 +1068,9 @@ class InterfacePrototype {
                 return;
             }
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
-                break;
             case "extension":
                 break;
             default:
@@ -1239,7 +1189,6 @@ class InterfacePrototype {
                 return Promise.resolve(userData)
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1275,7 +1224,6 @@ class InterfacePrototype {
                 break;
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1309,7 +1257,6 @@ class InterfacePrototype {
                 return Promise.resolve(deviceCapabilities)
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1344,9 +1291,7 @@ class InterfacePrototype {
                 break;
             }
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1363,17 +1308,11 @@ class InterfacePrototype {
     async trySigningIn() {
         switch (this.ctx) {
             case "macos-legacy":
-                break;
             case "macos-modern":
-                break;
             case "macos-overlay":
-                break;
             case "ios":
-                break;
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1428,7 +1367,6 @@ class InterfacePrototype {
                 return window.EmailInterface.storeCredentials(token, userName, cohort)
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1554,7 +1492,6 @@ class InterfacePrototype {
                 return;
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1604,7 +1541,6 @@ class InterfacePrototype {
                 return true
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension": {
@@ -1637,7 +1573,6 @@ class InterfacePrototype {
                 return alias
             }
             case "windows":
-                break;
             case "windows-overlay":
                 break;
             case "extension":
@@ -1661,14 +1596,10 @@ class InterfacePrototype {
                 return this.deviceApi.request(createRequest('pmHandlerGetAutofillCredentials', {id}))
             }
             case "android":
-                break;
             case "windows":
-                break;
             case "windows-overlay":
-                break;
             case "extension":
                 break;
-
         }
         return this.deviceApi.request(new GetAutofillCredentialsCall({id: String(id)}))
     }
