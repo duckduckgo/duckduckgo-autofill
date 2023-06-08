@@ -262,7 +262,7 @@ ${this.options.css}
                 })
 
                 // Get the alias from the extension
-                this.device.getAddresses().then(this.updateAddresses)
+                this.device.emailProtection.getAddresses().then(this.updateAddresses)
 
                 this.init()
                 return this
@@ -351,7 +351,7 @@ ${css}
 
                 this.autofillButtons.forEach((btn) => {
                     this.registerClickableButton(btn, () => {
-                        device.onSelect(topContextData.inputType, data, btn.id)
+                        device.formFilling.onSelect(topContextData.inputType, data, btn.id)
                     })
                 })
 
@@ -366,7 +366,7 @@ ${css}
     async fillForm (id) {
         const address = this.addresses[id]
         const formattedAddress = formatDuckAddress(address)
-        this.device?.selectedDetail({email: formattedAddress, id}, 'email')
+        this.device?.formFilling.selectedDetail({email: formattedAddress, id}, 'email')
     }
 }
 

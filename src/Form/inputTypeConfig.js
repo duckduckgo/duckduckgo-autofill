@@ -19,7 +19,7 @@ const getIdentitiesIcon = (input, {device}) => {
     const { isDDGApp, isFirefox } = device.globalConfig
     const subtype = getInputSubtype(input)
 
-    if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
+    if (subtype === 'emailAddress' && device.emailProtection.isDeviceSignedIn()) {
         if (isDDGApp || isFirefox) {
             return daxBase64
         } else if (typeof window.chrome?.runtime !== 'undefined') {

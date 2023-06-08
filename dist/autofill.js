@@ -3662,13 +3662,15 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 
 var _OverlayUIController = require("../UI/controllers/OverlayUIController");
 
-var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls");
-
 var _localData = require("../features/local-data");
 
 var _passwordGenerator = require("../features/password-generator.js");
 
 var _bitwardenIntegration = require("../features/bitwarden-integration");
+
+var _emailProtection = require("../features/email-protection");
+
+var _formFilling = require("../features/form-filling");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -3718,23 +3720,11 @@ class InterfacePrototype {
    * @param {Settings} settings
    */
   constructor(ctx, config, deviceApi, settings) {
-    _defineProperty(this, "attempts", 0);
-
     _defineProperty(this, "activeForm", null);
 
     _defineProperty(this, "autopromptFired", false);
 
-    _defineProperty(this, "globalConfig", void 0);
-
-    _defineProperty(this, "scanner", void 0);
-
-    _defineProperty(this, "uiController", void 0);
-
-    _defineProperty(this, "deviceApi", void 0);
-
     _defineProperty(this, "isInitializationStarted", void 0);
-
-    _defineProperty(this, "ctx", void 0);
 
     _defineProperty(this, "_abortController", null);
 
@@ -3742,16 +3732,18 @@ class InterfacePrototype {
 
     _defineProperty(this, "ready", false);
 
-    _defineProperty(this, "_isDeviceSignedIn", false);
-
     this.ctx = ctx;
     this.globalConfig = config;
     this.deviceApi = deviceApi;
     this.settings = settings;
+    /** @type {import("../UI/controllers/UIController.js").UIController | null} */
+
     this.uiController = null;
     this.localData = new _localData.LocalData();
     this.passwordGenerator = new _passwordGenerator.PasswordGenerator();
     this.bitwarden = new _bitwardenIntegration.BitwardenIntegration(this);
+    this.emailProtection = new _emailProtection.EmailProtection(this);
+    this.formFilling = new _formFilling.FormFilling(this);
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
@@ -3826,10 +3818,22 @@ class InterfacePrototype {
 
     this.addDeviceListeners(); // init features
 
-    this.bitwarden.init();
     this.localData.init();
-    this.passwordGenerator.init();
-    await this.setupAutofill();
+
+    if (this.settings.featureToggles.password_generation) {
+      this.passwordGenerator.init();
+    }
+
+    if (this.settings.featureToggles.third_party_credentials_provider) {
+      this.bitwarden.init();
+    }
+
+    if (this.settings.featureToggles.emailProtection) {
+      await this.emailProtection.init();
+      await this.emailProtection.setupSettingsPage();
+    }
+
+    await this.refreshData();
     this.uiController = this.createUIController(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
     // eventually all interfaces will use this
 
@@ -3837,7 +3841,6 @@ class InterfacePrototype {
       return;
     }
 
-    await this.setupSettingsPage();
     await this.postInit();
 
     if (this.settings.featureToggles.credentials_saving) {
@@ -3847,14 +3850,6 @@ class InterfacePrototype {
 
   addDeviceListeners() {
     switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-        {
-          if (this.settings.featureToggles.third_party_credentials_provider) {}
-
-          break;
-        }
-
       case "windows-overlay":
       case "macos-overlay":
         {
@@ -3874,51 +3869,20 @@ class InterfacePrototype {
           break;
         }
 
+      case "macos-legacy":
+      case "macos-modern":
       case "ios":
       case "android":
       case "windows":
-        break;
-
       case "extension":
-        {
-          // Add contextual menu listeners
-          let activeEl = null;
-          document.addEventListener('contextmenu', e => {
-            activeEl = e.target;
-          });
-          chrome.runtime.onMessage.addListener((message, sender) => {
-            if (sender.id !== chrome.runtime.id) return;
-
-            switch (message.type) {
-              case 'ddgUserReady':
-                this.resetAutofillUI(() => this.setupSettingsPage({
-                  shouldLog: true
-                }));
-                break;
-
-              case 'contextualAutofill':
-                (0, _autofillUtils.setValue)(activeEl, (0, _autofillUtils.formatDuckAddress)(message.alias), this.globalConfig);
-                activeEl.classList.add('ddg-autofilled');
-                this.refreshAlias(); // If the user changes the alias, remove the decoration
-
-                activeEl.addEventListener('input', e => e.target.classList.remove('ddg-autofilled'), {
-                  once: true
-                });
-                break;
-
-              default:
-                break;
-            }
-          });
-          break;
-        }
+        break;
 
       default:
         assertUnreachable(this.ctx);
     }
   }
 
-  async setupAutofill() {
+  async refreshData() {
     switch (this.ctx) {
       case "macos-legacy":
       case "macos-modern":
@@ -3927,15 +3891,6 @@ class InterfacePrototype {
         {
           const response = await this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillInitData'));
           this.localData.storeLocalData(response.success);
-          const {
-            isAppSignedIn
-          } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerCheckAppSignedInStatus'));
-          this._isDeviceSignedIn = Boolean(isAppSignedIn);
-
-          if (this._isDeviceSignedIn) {
-            await this.getAddresses();
-          }
-
           break;
         }
 
@@ -3952,7 +3907,7 @@ class InterfacePrototype {
         }
 
       case "extension":
-        return this.getAddresses();
+        return this.emailProtection.getAddresses();
 
       default:
         assertUnreachable(this.ctx);
@@ -4031,7 +3986,7 @@ class InterfacePrototype {
                   return;
                 }
 
-                this.selectedDetail(response.data, response.configType);
+                this.formFilling.selectedDetail(response.data, response.configType);
               }).catch(e => {
                 console.error('unknown error', e);
               });
@@ -4091,7 +4046,7 @@ class InterfacePrototype {
                   case 'fill':
                     {
                       if (mainType in resp) {
-                        this.selectedDetail(resp[mainType], mainType);
+                        this.formFilling.selectedDetail(resp[mainType], mainType);
                       } else {
                         throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
                       }
@@ -4323,7 +4278,7 @@ class InterfacePrototype {
   postInit() {
     const defaultPostInit = () => {
       const cleanup = this.scanner.init();
-      this.addLogoutListener(() => {
+      this.emailProtection.addLogoutListener(() => {
         cleanup();
 
         if (this.globalConfig.isDDGDomain) {
@@ -4388,7 +4343,7 @@ class InterfacePrototype {
                 var _this$activeForm3;
 
                 this._scannerCleanup = this.scanner.init();
-                this.addLogoutListener(() => {
+                this.emailProtection.addLogoutListener(() => {
                   this.resetAutofillUI();
 
                   if (this.globalConfig.isDDGDomain) {
@@ -4434,71 +4389,6 @@ class InterfacePrototype {
     return this.globalConfig.isDDGTestMode;
   }
   /**
-   * This indicates an item was selected, and we should try to autofill
-   *
-   * Note: When we're in a top-frame scenario, like on like macOS & Windows in the webview,
-   * this method gets overridden {@see WindowsOverlayDeviceInterface} {@see AppleOverlayDeviceInterface}
-   *
-   * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
-   * @param {string} type
-   */
-
-
-  async selectedDetail(data, type) {
-    const defaultSelectedMethod = () => {
-      const form = this.activeForm;
-
-      if (!form) {
-        return;
-      }
-
-      if (data.id === 'privateAddress') {
-        this.refreshAlias().catch(console.error);
-      }
-
-      if (type === 'email' && 'email' in data) {
-        form.autofillEmail(data.email);
-      } else {
-        form.autofillData(data, type);
-      }
-
-      this.removeTooltip('defaultSelectedMethod');
-    };
-
-    const selectedInOverlay = async () => {
-      let detailsEntries = Object.entries(data).map(_ref => {
-        let [key, value] = _ref;
-        return [key, String(value)];
-      });
-      const entries = Object.fromEntries(detailsEntries);
-      /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
-
-      await this.deviceApi.notify(new _deviceApiCalls.SelectedDetailCall({
-        data: entries,
-        configType: type
-      }));
-    };
-
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "ios":
-      case "android":
-      case "windows":
-      case "extension":
-        return defaultSelectedMethod();
-
-      case "macos-overlay":
-      case "windows-overlay":
-        {
-          return selectedInOverlay();
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-  /**
    * @param {import("../Form/Form").Form} form
    * @param {HTMLInputElement} input
    * @param {{ x: number; y: number; } | null} click
@@ -4510,8 +4400,7 @@ class InterfacePrototype {
     var _this$uiController4;
 
     let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
-    console.log('attachTooltip'); // Avoid flashing tooltip from background tabs on macOS
-
+    // Avoid flashing tooltip from background tabs on macOS
     if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return; // Only autoprompt on mobile devices
 
     if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return; // Only fire autoprompt once
@@ -4530,7 +4419,7 @@ class InterfacePrototype {
 
 
     if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
-      this.getAlias().then(alias => {
+      this.emailProtection.getAlias().then(alias => {
         var _form$activeInput;
 
         if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
@@ -4560,102 +4449,6 @@ class InterfacePrototype {
       this.autopromptFired = true;
     }
   }
-  /**
-   * When an item was selected, we then call back to the device
-   * to fetch the full suite of data needed to complete the autofill
-   *
-   * @param {import('../Form/matching').SupportedTypes} inputType
-   * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
-   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
-   */
-
-
-  onSelect(inputType, items, id) {
-    id = String(id);
-    const mainType = (0, _matching.getMainTypeFromType)(inputType);
-    const subtype = (0, _matching.getSubtypeFromType)(inputType);
-
-    if (id === _Credentials.PROVIDER_LOCKED) {
-      return this.bitwarden.askToUnlockProvider();
-    }
-
-    const matchingData = items.find(item => String(item.id) === id);
-    if (!matchingData) throw new Error('unreachable (fatal)');
-
-    const dataPromise = (() => {
-      switch (mainType) {
-        case 'creditCards':
-          return this.getAutofillCreditCard(id);
-
-        case 'identities':
-          return this.getAutofillIdentity(id);
-
-        case 'credentials':
-          {
-            if (_Credentials.AUTOGENERATED_KEY in matchingData) {
-              return Promise.resolve({
-                success: matchingData
-              });
-            }
-
-            return this.getAutofillCredentials(id);
-          }
-
-        default:
-          throw new Error('unreachable!');
-      }
-    })(); // wait for the data back from the device
-
-
-    dataPromise.then(response => {
-      if (response) {
-        const data = response.success || response;
-
-        if (mainType === 'identities') {
-          this.firePixel({
-            pixelName: 'autofill_identity',
-            params: {
-              fieldType: subtype
-            }
-          });
-
-          switch (id) {
-            case 'personalAddress':
-              this.firePixel({
-                pixelName: 'autofill_personal_address'
-              });
-              break;
-
-            case 'privateAddress':
-              this.firePixel({
-                pixelName: 'autofill_private_address'
-              });
-              break;
-
-            default:
-              // Also fire pixel when filling an identity with the personal duck address from an email field
-              const checks = [subtype === 'emailAddress', this.localData.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(this.localData.addresses.personalAddress)];
-
-              if (checks.every(Boolean)) {
-                this.firePixel({
-                  pixelName: 'autofill_personal_address'
-                });
-              }
-
-              break;
-          }
-        } // some platforms do not include a `success` object, why?
-
-
-        return this.selectedDetail(data, mainType);
-      } else {
-        return Promise.reject(new Error('none-success response'));
-      }
-    }).catch(e => {
-      console.error(e);
-      return this.removeTooltip('error caught after dataPromise');
-    });
-  }
 
   isTooltipActive() {
     var _this$uiController$is, _this$uiController5, _this$uiController5$i;
@@ -4673,96 +4466,6 @@ class InterfacePrototype {
 
     console.log('InterfacePrototype.removeTooltip', reason);
     return (_this$uiController6 = this.uiController) === null || _this$uiController6 === void 0 ? void 0 : (_this$uiController6$r = _this$uiController6.removeTooltip) === null || _this$uiController6$r === void 0 ? void 0 : _this$uiController6$r.call(_this$uiController6, 'interface');
-  }
-
-  async setupSettingsPage() {
-    let {
-      shouldLog
-    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-      shouldLog: false
-    };
-
-    if (!this.globalConfig.isDDGDomain) {
-      return;
-    }
-
-    (0, _autofillUtils.notifyWebApp)({
-      isApp: this.globalConfig.isApp
-    });
-
-    if (this.isDeviceSignedIn()) {
-      let userData;
-
-      try {
-        userData = await this.getUserData();
-      } catch (e) {}
-
-      let capabilities;
-
-      try {
-        capabilities = await this.getEmailProtectionCapabilities();
-      } catch (e) {} // Set up listener for web app actions
-
-
-      window.addEventListener('message', e => {
-        if (this.globalConfig.isDDGDomain && e.data.removeUserData) {
-          this.removeUserData();
-        }
-      });
-      const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
-      (0, _autofillUtils.notifyWebApp)({
-        deviceSignedIn: {
-          value: true,
-          shouldLog,
-          userData: hasUserData ? userData : undefined,
-          capabilities
-        }
-      });
-    } else {
-      this.trySigningIn();
-    }
-  }
-  /** @returns {Promise<EmailAddresses | null>} */
-
-
-  async getAddresses() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-        {
-          const {
-            addresses
-          } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerGetAddresses'));
-          this.localData.storeLocalAddresses(addresses);
-          return addresses;
-        }
-
-      case "ios":
-        {
-          return this.getAlias();
-        }
-
-      case "android":
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return new Promise(resolve => chrome.runtime.sendMessage({
-            getAddresses: true
-          }, data => {
-            this.localData.storeLocalAddresses(data);
-            return resolve(data);
-          }));
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-
-    return null;
   }
   /** @returns {Promise<null|Record<any,any>>} */
 
@@ -4851,136 +4554,6 @@ class InterfacePrototype {
         assertUnreachable(this.ctx);
     }
   }
-  /** @returns {Promise<null|Record<string,boolean>>} */
-
-
-  async getEmailProtectionCapabilities() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.request((0, _index.createRequest)('emailHandlerGetCapabilities'));
-        }
-
-      case "android":
-        {
-          let deviceCapabilities = null;
-
-          try {
-            deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities());
-          } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-              console.error(e);
-            }
-          }
-
-          return Promise.resolve(deviceCapabilities);
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return new Promise(resolve => chrome.runtime.sendMessage({
-            getEmailProtectionCapabilities: true
-          }, data => resolve(data)));
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-
-    return null;
-  }
-
-  async refreshAlias() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          await this.deviceApi.notify((0, _index.createNotification)('emailHandlerRefreshAlias'));
-
-          switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay":
-              {
-                this.getAddresses().catch(console.error);
-                break;
-              }
-
-            case "ios":
-              break;
-          }
-
-          break;
-        }
-
-      case "android":
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return chrome.runtime.sendMessage({
-            refreshAlias: true
-          }, addresses => this.localData.storeLocalAddresses(addresses));
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-
-  async trySigningIn() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-      case "android":
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          if (this.globalConfig.isDDGDomain) {
-            const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData');
-            this.storeUserData(data);
-          }
-
-          return;
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-
-    if (this.globalConfig.isDDGDomain) {
-      if (this.attempts < 10) {
-        this.attempts++;
-        const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
-
-        this.storeUserData(data);
-        await this.setupAutofill();
-        await this.settings.refresh();
-        await this.setupSettingsPage({
-          shouldLog: true
-        });
-        await this.postInit();
-      } else {
-        console.warn('max attempts reached, bailing');
-      }
-    }
-  }
   /**
    * @param {object} data
    * @param {object} data.addUserData
@@ -5035,7 +4608,7 @@ class InterfacePrototype {
     this.removeAutofillUIFromPage(); // Start the setup process again
 
     await this.settings.refresh();
-    await this.setupAutofill();
+    await this.refreshData();
     if (callback) await callback();
     this.uiController = this.createUIController();
     await this.postInit();
@@ -5046,150 +4619,6 @@ class InterfacePrototype {
 
     (_this$uiController7 = this.uiController) === null || _this$uiController7 === void 0 ? void 0 : _this$uiController7.destroy();
     (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
-  }
-  /** @param {() => void} handler */
-
-
-  addLogoutListener(handler) {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          // Only deal with logging out if we're in the email web app
-          if (!this.globalConfig.isDDGDomain) return;
-          window.addEventListener('message', e => {
-            if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
-              handler();
-            }
-          });
-          return;
-        }
-
-      case "android":
-        {
-          // Only deal with logging out if we're in the email web app
-          if (!this.globalConfig.isDDGDomain) return;
-          window.addEventListener('message', e => {
-            if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
-              handler();
-            }
-          });
-          return;
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          // Make sure there's only one log out listener attached by removing the
-          // previous logout listener first, if it exists.
-          if (this._logoutListenerHandler) {
-            chrome.runtime.onMessage.removeListener(this._logoutListenerHandler);
-          } // Cleanup on logout events
-
-
-          this._logoutListenerHandler = (message, sender) => {
-            if (sender.id === chrome.runtime.id && message.type === 'logout') {
-              handler();
-            }
-          };
-
-          chrome.runtime.onMessage.addListener(this._logoutListenerHandler);
-        }
-    }
-  }
-  /**
-   * Boolean
-   * @returns {Promise<boolean>}
-   */
-
-
-  isDeviceSignedIn() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this._isDeviceSignedIn;
-        }
-
-      case "android":
-        {
-          var _this$globalConfig$av;
-
-          // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
-          if (this.globalConfig.isDDGDomain) {
-            return window.EmailInterface.isSignedIn() === 'true';
-          } // on non-DDG domains, where `availableInputTypes.email` is present, use it
-
-
-          if (typeof ((_this$globalConfig$av = this.globalConfig.availableInputTypes) === null || _this$globalConfig$av === void 0 ? void 0 : _this$globalConfig$av.email) === 'boolean') {
-            return this.globalConfig.availableInputTypes.email;
-          } // ...on other domains we assume true because the script wouldn't exist otherwise
-
-
-          return true;
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return this.localData.hasLocalAddresses;
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-  /**
-   * @returns {Promise<*>}
-   */
-
-
-  async getAlias() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          const {
-            alias
-          } = await this.deviceApi.request(new _additionalDeviceApiCalls.GetAlias({
-            requiresUserPermission: !this.globalConfig.isApp,
-            shouldConsumeAliasIfProvided: !this.globalConfig.isApp
-          }));
-          return (0, _autofillUtils.formatDuckAddress)(alias);
-        }
-
-      case "android":
-        {
-          const {
-            alias
-          } = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
-            return window.EmailInterface.showTooltip();
-          }, 'getAliasResponse');
-          return alias;
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
   }
   /**
    * Gets credentials ready for autofill
@@ -5240,10 +4669,10 @@ class InterfacePrototype {
 
 
   async getAutofillIdentity(id) {
-    const identity = this.localData.getLocalIdentities().find(_ref2 => {
+    const identity = this.localData.getLocalIdentities().find(_ref => {
       let {
         id: identityId
-      } = _ref2;
+      } = _ref;
       return "".concat(identityId) === "".concat(id);
     });
     return Promise.resolve({
@@ -5397,7 +4826,7 @@ function assertUnreachable(x) {
   throw new Error("Didn't expect to get here");
 }
 
-},{"../../packages/device-api/index.js":6,"../Form/matching.js":26,"../InputTypes/Credentials.js":29,"../Scanner.js":32,"../Settings.js":33,"../UI/HTMLTooltip":34,"../UI/controllers/HTMLTooltipUIController":35,"../UI/controllers/NativeUIController":36,"../UI/controllers/OverlayUIController":37,"../autofill-utils.js":41,"../config.js":43,"../deviceApiCalls/__generated__/deviceApiCalls.js":45,"../deviceApiCalls/additionalDeviceApiCalls":47,"../deviceApiCalls/transports/transports.js":51,"../features/bitwarden-integration":53,"../features/local-data":54,"../features/password-generator.js":55,"./initFormSubmissionsApi.js":16,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../Form/matching.js":26,"../InputTypes/Credentials.js":29,"../Scanner.js":32,"../Settings.js":33,"../UI/HTMLTooltip":34,"../UI/controllers/HTMLTooltipUIController":35,"../UI/controllers/NativeUIController":36,"../UI/controllers/OverlayUIController":37,"../autofill-utils.js":41,"../config.js":43,"../deviceApiCalls/__generated__/deviceApiCalls.js":45,"../deviceApiCalls/transports/transports.js":51,"../features/bitwarden-integration":53,"../features/email-protection":54,"../features/form-filling":55,"../features/local-data":56,"../features/password-generator.js":57,"./initFormSubmissionsApi.js":16,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7459,7 +6888,7 @@ const getIdentitiesIcon = (input, _ref) => {
   } = device.globalConfig;
   const subtype = (0, _matching.getInputSubtype)(input);
 
-  if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
+  if (subtype === 'emailAddress' && device.emailProtection.isDeviceSignedIn()) {
     var _window$chrome;
 
     if (isDDGApp || isFirefox) {
@@ -10837,7 +10266,7 @@ class HTMLTooltip {
           });
         }); // Get the alias from the extension
 
-        this.device.getAddresses().then(this.updateAddresses);
+        this.device.emailProtection.getAddresses().then(this.updateAddresses);
         this.init();
         return this;
 
@@ -10893,7 +10322,7 @@ class HTMLTooltip {
         this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
         this.autofillButtons.forEach(btn => {
           this.registerClickableButton(btn, () => {
-            device.onSelect(topContextData.inputType, data, btn.id);
+            device.formFilling.onSelect(topContextData.inputType, data, btn.id);
           });
         });
         this.init();
@@ -10913,7 +10342,7 @@ class HTMLTooltip {
 
     const address = this.addresses[id];
     const formattedAddress = (0, _autofillUtils.formatDuckAddress)(address);
-    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.selectedDetail({
+    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.formFilling.selectedDetail({
       email: formattedAddress,
       id
     }, 'email');
@@ -12195,7 +11624,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":14,"./requestIdleCallback.js":56}],43:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./requestIdleCallback.js":58}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13432,6 +12861,665 @@ function assertUnreachable(x) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.EmailProtection = void 0;
+
+var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls");
+
+var _autofillUtils = require("../autofill-utils");
+
+var _deviceApi = require("../../packages/device-api");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+class EmailProtection {
+  /**
+   * Boolean
+   * @returns {Promise<boolean>}
+   */
+
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   */
+  constructor(device) {
+    _defineProperty(this, "attempts", 0);
+
+    _defineProperty(this, "_isDeviceSignedIn", false);
+
+    this.device = device;
+  }
+
+  async init() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          const {
+            isAppSignedIn
+          } = await this.device.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerCheckAppSignedInStatus'));
+          this._isDeviceSignedIn = Boolean(isAppSignedIn);
+
+          if (this._isDeviceSignedIn) {
+            await this.getAddresses();
+          }
+
+          break;
+        }
+
+      case "extension":
+        {
+          // Add contextual menu listeners
+          let activeEl = null;
+          document.addEventListener('contextmenu', e => {
+            activeEl = e.target;
+          });
+          chrome.runtime.onMessage.addListener((message, sender) => {
+            if (sender.id !== chrome.runtime.id) return;
+
+            switch (message.type) {
+              case 'ddgUserReady':
+                this.device.resetAutofillUI(() => this.setupSettingsPage({
+                  shouldLog: true
+                }));
+                break;
+
+              case 'contextualAutofill':
+                (0, _autofillUtils.setValue)(activeEl, (0, _autofillUtils.formatDuckAddress)(message.alias), this.device.globalConfig);
+                activeEl.classList.add('ddg-autofilled');
+                this.refreshAlias(); // If the user changes the alias, remove the decoration
+
+                activeEl.addEventListener('input', e => e.target.classList.remove('ddg-autofilled'), {
+                  once: true
+                });
+                break;
+
+              default:
+                break;
+            }
+          });
+        }
+    }
+  }
+
+  isDeviceSignedIn() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this._isDeviceSignedIn;
+        }
+
+      case "android":
+        {
+          var _this$device$globalCo;
+
+          // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
+          if (this.device.globalConfig.isDDGDomain) {
+            return window.EmailInterface.isSignedIn() === 'true';
+          } // on non-DDG domains, where `availableInputTypes.email` is present, use it
+
+
+          if (typeof ((_this$device$globalCo = this.device.globalConfig.availableInputTypes) === null || _this$device$globalCo === void 0 ? void 0 : _this$device$globalCo.email) === 'boolean') {
+            return this.device.globalConfig.availableInputTypes.email;
+          } // ...on other domains we assume true because the script wouldn't exist otherwise
+
+
+          return true;
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return this.device.localData.hasLocalAddresses;
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /**
+   * @returns {Promise<*>}
+   */
+
+
+  async getAlias() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          const {
+            alias
+          } = await this.device.deviceApi.request(new _additionalDeviceApiCalls.GetAlias({
+            requiresUserPermission: !this.device.globalConfig.isApp,
+            shouldConsumeAliasIfProvided: !this.device.globalConfig.isApp
+          }));
+          return (0, _autofillUtils.formatDuckAddress)(alias);
+        }
+
+      case "android":
+        {
+          const {
+            alias
+          } = await (0, _autofillUtils.sendAndWaitForAnswer)(() => {
+            return window.EmailInterface.showTooltip();
+          }, 'getAliasResponse');
+          return alias;
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        break;
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /** @param {() => void} handler */
+
+
+  addLogoutListener(handler) {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          // Only deal with logging out if we're in the email web app
+          if (!this.device.globalConfig.isDDGDomain) return;
+          window.addEventListener('message', e => {
+            if (this.device.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
+              handler();
+            }
+          });
+          return;
+        }
+
+      case "android":
+        {
+          // Only deal with logging out if we're in the email web app
+          if (!this.device.globalConfig.isDDGDomain) return;
+          window.addEventListener('message', e => {
+            if (this.device.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
+              handler();
+            }
+          });
+          return;
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          // Make sure there's only one log out listener attached by removing the
+          // previous logout listener first, if it exists.
+          if (this._logoutListenerHandler) {
+            chrome.runtime.onMessage.removeListener(this._logoutListenerHandler);
+          } // Cleanup on logout events
+
+
+          this._logoutListenerHandler = (message, sender) => {
+            if (sender.id === chrome.runtime.id && message.type === 'logout') {
+              handler();
+            }
+          };
+
+          chrome.runtime.onMessage.addListener(this._logoutListenerHandler);
+        }
+    }
+  }
+  /** @returns {Promise<EmailAddresses | null>} */
+
+
+  async getAddresses() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+        {
+          const {
+            addresses
+          } = await this.device.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetAddresses'));
+          this.device.localData.storeLocalAddresses(addresses);
+          return addresses;
+        }
+
+      case "ios":
+        {
+          return this.getAlias();
+        }
+
+      case "android":
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return new Promise(resolve => chrome.runtime.sendMessage({
+            getAddresses: true
+          }, data => {
+            this.device.localData.storeLocalAddresses(data);
+            return resolve(data);
+          }));
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+
+    return null;
+  }
+
+  async setupSettingsPage() {
+    let {
+      shouldLog
+    } = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+      shouldLog: false
+    };
+
+    if (!this.device.globalConfig.isDDGDomain) {
+      return;
+    }
+
+    (0, _autofillUtils.notifyWebApp)({
+      isApp: this.device.globalConfig.isApp
+    });
+
+    if (this.isDeviceSignedIn()) {
+      let userData;
+
+      try {
+        userData = await this.device.getUserData();
+      } catch (e) {}
+
+      let capabilities;
+
+      try {
+        capabilities = await this.getEmailProtectionCapabilities();
+      } catch (e) {} // Set up listener for web app actions
+
+
+      window.addEventListener('message', e => {
+        if (this.device.globalConfig.isDDGDomain && e.data.removeUserData) {
+          this.device.removeUserData();
+        }
+      });
+      const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
+      (0, _autofillUtils.notifyWebApp)({
+        deviceSignedIn: {
+          value: true,
+          shouldLog,
+          userData: hasUserData ? userData : undefined,
+          capabilities
+        }
+      });
+    } else {
+      this.trySigningIn();
+    }
+  }
+  /** @returns {Promise<null|Record<string,boolean>>} */
+
+
+  async getEmailProtectionCapabilities() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this.device.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetCapabilities'));
+        }
+
+      case "android":
+        {
+          let deviceCapabilities = null;
+
+          try {
+            deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities());
+          } catch (e) {
+            if (this.device.globalConfig.isDDGTestMode) {
+              console.error(e);
+            }
+          }
+
+          return Promise.resolve(deviceCapabilities);
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return new Promise(resolve => chrome.runtime.sendMessage({
+            getEmailProtectionCapabilities: true
+          }, data => resolve(data)));
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+
+    return null;
+  }
+
+  async refreshAlias() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          await this.device.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerRefreshAlias'));
+
+          switch (this.device.ctx) {
+            case "macos-legacy":
+            case "macos-modern":
+            case "macos-overlay":
+              {
+                this.getAddresses().catch(console.error);
+                break;
+              }
+
+            case "ios":
+              break;
+          }
+
+          break;
+        }
+
+      case "android":
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return chrome.runtime.sendMessage({
+            refreshAlias: true
+          }, addresses => this.device.localData.storeLocalAddresses(addresses));
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+
+  async trySigningIn() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+      case "android":
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          if (this.device.globalConfig.isDDGDomain) {
+            const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData');
+            this.device.storeUserData(data);
+          }
+
+          return;
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+
+    if (this.device.globalConfig.isDDGDomain) {
+      if (this.attempts < 10) {
+        this.attempts++;
+        const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
+
+        this.device.storeUserData(data);
+        await this.device.refreshData();
+        await this.device.settings.refresh();
+        await this.setupSettingsPage({
+          shouldLog: true
+        });
+        await this.device.postInit();
+      } else {
+        console.warn('max attempts reached, bailing');
+      }
+    }
+  }
+
+}
+/**
+ * @param {never} x
+ * @returns {never}
+ */
+
+
+exports.EmailProtection = EmailProtection;
+
+function assertUnreachable(x) {
+  console.log(x);
+  throw new Error("Didn't expect to get here");
+}
+
+},{"../../packages/device-api":6,"../autofill-utils":41,"../deviceApiCalls/additionalDeviceApiCalls":47}],55:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FormFilling = void 0;
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+var _autofillUtils = require("../autofill-utils");
+
+var _matching = require("../Form/matching");
+
+var _Credentials = require("../InputTypes/Credentials");
+
+class FormFilling {
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   */
+  constructor(device) {
+    this.device = device;
+  }
+  /**
+   * This indicates an item was selected, and we should try to autofill
+   *
+   * Note: When we're in a top-frame scenario, like on like macOS & Windows in the webview,
+   * this method gets overridden {@see WindowsOverlayDeviceInterface} {@see AppleOverlayDeviceInterface}
+   *
+   * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
+   * @param {string} type
+   */
+
+
+  async selectedDetail(data, type) {
+    const defaultSelectedMethod = () => {
+      const form = this.device.activeForm;
+
+      if (!form) {
+        return;
+      }
+
+      if (data.id === 'privateAddress') {
+        this.device.emailProtection.refreshAlias().catch(console.error);
+      }
+
+      if (type === 'email' && 'email' in data) {
+        form.autofillEmail(data.email);
+      } else {
+        form.autofillData(data, type);
+      }
+
+      this.device.removeTooltip('defaultSelectedMethod');
+    };
+
+    const selectedInOverlay = async () => {
+      let detailsEntries = Object.entries(data).map(_ref => {
+        let [key, value] = _ref;
+        return [key, String(value)];
+      });
+      const entries = Object.fromEntries(detailsEntries);
+      /** @link {import("../deviceApiCalls/schemas/getAutofillData.result.json")} */
+
+      await this.device.deviceApi.notify(new _deviceApiCalls.SelectedDetailCall({
+        data: entries,
+        configType: type
+      }));
+    };
+
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "ios":
+      case "android":
+      case "windows":
+      case "extension":
+        return defaultSelectedMethod();
+
+      case "macos-overlay":
+      case "windows-overlay":
+        {
+          return selectedInOverlay();
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /**
+   * When an item was selected, we then call back to the device
+   * to fetch the full suite of data needed to complete the autofill
+   *
+   * @param {import('../Form/matching').SupportedTypes} inputType
+   * @param {(CreditCardObject|IdentityObject|CredentialsObject)[]} items
+   * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
+   */
+
+
+  onSelect(inputType, items, id) {
+    id = String(id);
+    const mainType = (0, _matching.getMainTypeFromType)(inputType);
+    const subtype = (0, _matching.getSubtypeFromType)(inputType);
+
+    if (id === _Credentials.PROVIDER_LOCKED) {
+      return this.device.bitwarden.askToUnlockProvider();
+    }
+
+    const matchingData = items.find(item => String(item.id) === id);
+    if (!matchingData) throw new Error('unreachable (fatal)');
+
+    const dataPromise = (() => {
+      switch (mainType) {
+        case 'creditCards':
+          return this.device.getAutofillCreditCard(id);
+
+        case 'identities':
+          return this.device.getAutofillIdentity(id);
+
+        case 'credentials':
+          {
+            if (_Credentials.AUTOGENERATED_KEY in matchingData) {
+              return Promise.resolve({
+                success: matchingData
+              });
+            }
+
+            return this.device.getAutofillCredentials(id);
+          }
+
+        default:
+          throw new Error('unreachable!');
+      }
+    })(); // wait for the data back from the device
+
+
+    dataPromise.then(response => {
+      if (response) {
+        const data = response.success || response;
+
+        if (mainType === 'identities') {
+          this.device.firePixel({
+            pixelName: 'autofill_identity',
+            params: {
+              fieldType: subtype
+            }
+          });
+
+          switch (id) {
+            case 'personalAddress':
+              this.device.firePixel({
+                pixelName: 'autofill_personal_address'
+              });
+              break;
+
+            case 'privateAddress':
+              this.device.firePixel({
+                pixelName: 'autofill_private_address'
+              });
+              break;
+
+            default:
+              // Also fire pixel when filling an identity with the personal duck address from an email field
+              const checks = [subtype === 'emailAddress', this.device.localData.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(this.device.localData.addresses.personalAddress)];
+
+              if (checks.every(Boolean)) {
+                this.device.firePixel({
+                  pixelName: 'autofill_personal_address'
+                });
+              }
+
+              break;
+          }
+        } // some platforms do not include a `success` object, why?
+
+
+        return this.device.formFilling.selectedDetail(data, mainType);
+      } else {
+        return Promise.reject(new Error('none-success response'));
+      }
+    }).catch(e => {
+      console.error(e);
+      return this.device.removeTooltip('error caught after dataPromise');
+    });
+  }
+
+}
+/**
+ * @param {never} x
+ * @returns {never}
+ */
+
+
+exports.FormFilling = FormFilling;
+
+function assertUnreachable(x) {
+  console.log(x);
+  throw new Error("Didn't expect to get here");
+}
+
+},{"../Form/matching":26,"../InputTypes/Credentials":29,"../autofill-utils":41,"../deviceApiCalls/__generated__/deviceApiCalls":45}],56:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.LocalData = void 0;
 
 var _autofillUtils = require("../autofill-utils");
@@ -13634,7 +13722,7 @@ class LocalData {
 
 exports.LocalData = LocalData;
 
-},{"../Form/formatters":20,"../Form/matching":26,"../autofill-utils":41}],55:[function(require,module,exports){
+},{"../Form/formatters":20,"../Form/matching":26,"../autofill-utils":41}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13710,7 +13798,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../../packages/password/index.js":9,"../../packages/password/rules.json":13}],56:[function(require,module,exports){
+},{"../../packages/password/index.js":9,"../../packages/password/rules.json":13}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
