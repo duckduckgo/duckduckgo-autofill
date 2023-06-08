@@ -1,16 +1,6 @@
 import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
-import DataHTMLTooltip from '../DataHTMLTooltip.js'
-import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
-import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltop.js'
-import {defaultOptions} from '../HTMLTooltip.js'
+import {defaultOptions, HTMLTooltip} from '../HTMLTooltip.js'
 import {UIController} from './UIController.js'
-
-/**
- * @typedef HTMLTooltipControllerOptions
- * @property {"modern" | "legacy" | "emailsignup"} tooltipKind - A choice between the newer Autofill UI vs the older ones used in the extension
- * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
- * regardless of whether this Controller has an open tooltip, or not
- */
 
 /**
  * This encapsulates all the logic relating to showing/hiding the HTML Tooltip
@@ -23,8 +13,8 @@ export class HTMLTooltipUIController {
     /** @type {import("../HTMLTooltip.js").HTMLTooltip | null} */
     _activeTooltip = null
 
-    /** @type {HTMLTooltipControllerOptions} */
-    _options;
+    /** @type {import("../../DeviceInterface/InterfacePrototype").default} */
+    device;
 
     /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
     _htmlTooltipOptions;
@@ -36,11 +26,13 @@ export class HTMLTooltipUIController {
     _activeInputType = 'unknown';
 
     /**
-     * @param {HTMLTooltipControllerOptions} options
+     * @param {import("../../DeviceInterface/InterfacePrototype").default} device
+     * @param {"modern" | "legacy" | "emailsignup"} kind
      * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
-    constructor (options, htmlTooltipOptions = defaultOptions) {
-        this._options = options
+    constructor (device, kind, htmlTooltipOptions = defaultOptions) {
+        this.device = device
+        this.kind = kind
         this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
         window.addEventListener('pointerdown', this, true)
     }
@@ -93,47 +85,24 @@ export class HTMLTooltipUIController {
             remove: () => this.removeTooltip()
         }
 
-        if (this._options.tooltipKind === 'legacy') {
-            return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-                .render(this._options.device)
-        }
+        const tt = new HTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions);
+        tt.kind = this.kind;
 
-        if (this._options.tooltipKind === 'emailsignup') {
-            this._options.device.firePixel({pixelName: 'incontext_show'})
-            return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-                .render(this._options.device)
-        }
-
-        // collect the data for each item to display
-        const data = this._options.device.dataForAutofill(config, topContextData.inputType, topContextData)
-
-        // convert the data into tool tip item renderers
-        const asRenderers = data.map(d => config.tooltipItem(d))
-
-        // construct the autofill
-        return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-            .render(config, asRenderers, {
-                onSelect: (id) => {
-                    this._options.device.onSelect(topContextData.inputType, data, id)
-                }
-            })
+        return tt.render(this.device, topContextData);
     }
 
+    /**
+     * @param {TopContextData} data
+     */
     updateItems (data) {
         if (this._activeInputType === 'unknown') return
 
         const config = getInputConfigFromType(this._activeInputType)
 
-        // convert the data into tool tip item renderers
-        const asRenderers = data.map(d => config.tooltipItem(d))
-
         const activeTooltip = this.getActiveTooltip()
-        if (activeTooltip instanceof DataHTMLTooltip) {
-            activeTooltip?.render(config, asRenderers, {
-                onSelect: (id) => {
-                    this._options.device.onSelect(this._activeInputType, data, id)
-                }
-            })
+        if (activeTooltip && activeTooltip.kind === 'modern') {
+            activeTooltip.config = config;
+            activeTooltip.render(this.device, data)
         }
         // TODO: can we remove this timeout once implemented with real APIs?
         // The timeout is needed because clientHeight and clientWidth were returning 0

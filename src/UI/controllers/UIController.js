@@ -74,7 +74,7 @@ export class UIController {
 
     /**
      * Updates the items in the tooltip based on new data. Currently only supporting credentials.
-     * @param {CredentialsObject[]} _data
+     * @param {TopContextData} _data
      */
     updateItems (_data) {}
 

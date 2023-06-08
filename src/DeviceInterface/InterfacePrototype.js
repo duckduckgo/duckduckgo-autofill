@@ -305,7 +305,6 @@ class InterfacePrototype {
                 break;
             }
             case "android":
-                break;
             case "windows":
                 break;
             case "windows-overlay": {
@@ -334,10 +333,7 @@ class InterfacePrototype {
                     ...defaultOptions,
                     testMode: this.isTestMode()
                 }
-                return new HTMLTooltipUIController({
-                    device: this,
-                    tooltipKind: 'modern'
-                }, options)
+                return new HTMLTooltipUIController(this, 'modern', options)
             }
             case "macos-modern": {
                 /**
@@ -394,10 +390,7 @@ class InterfacePrototype {
                 })
             }
             case "macos-overlay": {
-                return new HTMLTooltipUIController({
-                    tooltipKind: /** @type {const} */ ('modern'),
-                    device: this
-                }, {
+                return new HTMLTooltipUIController(this, 'modern', {
                     wrapperClass: 'top-autofill',
                     tooltipPositionClass: () => '.wrapper { transform: none; }',
                     setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
@@ -472,10 +465,7 @@ class InterfacePrototype {
                 })
             }
             case "windows-overlay": {
-                return new HTMLTooltipUIController({
-                    tooltipKind: /** @type {const} */ ('modern'),
-                    device: this
-                }, {
+                return new HTMLTooltipUIController(this, 'modern', {
                     wrapperClass: 'top-autofill',
                     tooltipPositionClass: () => '.wrapper { transform: none; }',
                     setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
@@ -499,7 +489,7 @@ class InterfacePrototype {
                 }
                 const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection]
 
-                return new HTMLTooltipUIController({tooltipKind, device: this}, htmlTooltipOptions)
+                return new HTMLTooltipUIController(this, tooltipKind, htmlTooltipOptions)
             }
             default:
                 assertUnreachable(this.ctx)
@@ -1424,9 +1414,10 @@ class InterfacePrototype {
                     // Update local settings and data
                     this.settings.setAvailableInputTypes(availableInputTypes)
                     this.storeLocalCredentials(credentials)
+                    const inputType = this.getCurrentInputType()
 
                     // rerender the tooltip
-                    this.uiController?.updateItems(credentials)
+                    this.uiController?.updateItems({credentials, inputType: inputType })
                     // If the tooltip is open on an autofill type that's not available, close it
                     const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
                     if (!availableInputTypes.credentials?.[currentInputSubtype]) {
@@ -1447,9 +1438,10 @@ class InterfacePrototype {
                 // Update local settings and data
                 this.settings.setAvailableInputTypes(availableInputTypes)
                 this.storeLocalCredentials(credentials)
+                const inputType = this.getCurrentInputType()
 
                 // rerender the tooltip
-                this.uiController?.updateItems(credentials)
+                this.uiController?.updateItems({ credentials, inputType })
                 break;
             }
             case "ios":

@@ -7300,7 +7300,7 @@ function createDevice() {
   return impl;
 }
 
-},{"../packages/device-api/index.js":14,"./DeviceInterface/InterfacePrototype":23,"./Settings.js":42,"./config.js":55,"./deviceApiCalls/transports/transports.js":63}],23:[function(require,module,exports){
+},{"../packages/device-api/index.js":14,"./DeviceInterface/InterfacePrototype":23,"./Settings.js":42,"./config.js":52,"./deviceApiCalls/transports/transports.js":60}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7661,8 +7661,6 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
         break;
 
@@ -7696,10 +7694,7 @@ class InterfacePrototype {
           const options = { ..._HTMLTooltip.defaultOptions,
             testMode: this.isTestMode()
           };
-          return new _HTMLTooltipUIController.HTMLTooltipUIController({
-            device: this,
-            tooltipKind: 'modern'
-          }, options);
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, 'modern', options);
         }
 
       case "macos-modern":
@@ -7767,12 +7762,7 @@ class InterfacePrototype {
 
       case "macos-overlay":
         {
-          return new _HTMLTooltipUIController.HTMLTooltipUIController({
-            tooltipKind:
-            /** @type {const} */
-            'modern',
-            device: this
-          }, {
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, 'modern', {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
             setSize: details => this.deviceApi.notify((0, _index.createNotification)('setSize', details)),
@@ -7867,12 +7857,7 @@ class InterfacePrototype {
 
       case "windows-overlay":
         {
-          return new _HTMLTooltipUIController.HTMLTooltipUIController({
-            tooltipKind:
-            /** @type {const} */
-            'modern',
-            device: this
-          }, {
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, 'modern', {
             wrapperClass: 'top-autofill',
             tooltipPositionClass: () => '.wrapper { transform: none; }',
             setSize: details => this.deviceApi.notify(new _deviceApiCalls.SetSizeCall(details)),
@@ -7897,10 +7882,7 @@ class InterfacePrototype {
             [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
           };
           const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection];
-          return new _HTMLTooltipUIController.HTMLTooltipUIController({
-            tooltipKind,
-            device: this
-          }, htmlTooltipOptions);
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, tooltipKind, htmlTooltipOptions);
         }
 
       default:
@@ -9007,9 +8989,13 @@ class InterfacePrototype {
             } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
 
             this.settings.setAvailableInputTypes(availableInputTypes);
-            this.storeLocalCredentials(credentials); // rerender the tooltip
+            this.storeLocalCredentials(credentials);
+            const inputType = this.getCurrentInputType(); // rerender the tooltip
 
-            (_this$uiController8 = this.uiController) === null || _this$uiController8 === void 0 ? void 0 : _this$uiController8.updateItems(credentials); // If the tooltip is open on an autofill type that's not available, close it
+            (_this$uiController8 = this.uiController) === null || _this$uiController8 === void 0 ? void 0 : _this$uiController8.updateItems({
+              credentials,
+              inputType: inputType
+            }); // If the tooltip is open on an autofill type that's not available, close it
 
             const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
 
@@ -9038,9 +9024,13 @@ class InterfacePrototype {
           } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
 
           this.settings.setAvailableInputTypes(availableInputTypes);
-          this.storeLocalCredentials(credentials); // rerender the tooltip
+          this.storeLocalCredentials(credentials);
+          const inputType = this.getCurrentInputType(); // rerender the tooltip
 
-          (_this$uiController9 = this.uiController) === null || _this$uiController9 === void 0 ? void 0 : _this$uiController9.updateItems(credentials);
+          (_this$uiController9 = this.uiController) === null || _this$uiController9 === void 0 ? void 0 : _this$uiController9.updateItems({
+            credentials,
+            inputType
+          });
           break;
         }
 
@@ -9405,7 +9395,7 @@ function assertUnreachable(x) {
   throw new Error("Didn't expect to get here");
 }
 
-},{"../../packages/device-api/index.js":14,"../Form/formatters.js":28,"../Form/matching.js":34,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/HTMLTooltip":46,"../UI/controllers/HTMLTooltipUIController":47,"../UI/controllers/NativeUIController":48,"../UI/controllers/OverlayUIController":49,"../autofill-utils.js":53,"../config.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/__generated__/validators.zod.js":58,"../deviceApiCalls/additionalDeviceApiCalls":59,"../deviceApiCalls/transports/transports.js":63,"./initFormSubmissionsApi.js":24,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
+},{"../../packages/device-api/index.js":14,"../Form/formatters.js":28,"../Form/matching.js":34,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/HTMLTooltip":43,"../UI/controllers/HTMLTooltipUIController":44,"../UI/controllers/NativeUIController":45,"../UI/controllers/OverlayUIController":46,"../autofill-utils.js":50,"../config.js":52,"../deviceApiCalls/__generated__/deviceApiCalls.js":54,"../deviceApiCalls/__generated__/validators.zod.js":55,"../deviceApiCalls/additionalDeviceApiCalls":56,"../deviceApiCalls/transports/transports.js":60,"./initFormSubmissionsApi.js":24,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9499,7 +9489,7 @@ function initFormSubmissionsApi(forms) {
   });
 }
 
-},{"../Form/matching.js":34,"../Form/selectors-css.js":35,"../autofill-utils.js":53}],25:[function(require,module,exports){
+},{"../Form/matching.js":34,"../Form/selectors-css.js":35,"../autofill-utils.js":50}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10132,7 +10122,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":34}],26:[function(require,module,exports){
+},{"../autofill-utils.js":50,"../constants.js":53,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":34}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10430,7 +10420,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./matching-configuration.js":33,"./matching.js":34}],27:[function(require,module,exports){
+},{"../autofill-utils.js":50,"../constants.js":53,"./matching-configuration.js":33,"./matching.js":34}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11647,7 +11637,7 @@ const isFieldDecorated = input => {
 
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":51,"../constants.js":56,"./logo-svg.js":32,"./matching.js":34}],31:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":48,"../constants.js":53,"./logo-svg.js":32,"./matching.js":34}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13380,7 +13370,7 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../constants.js":56,"./label-util.js":31,"./matching-configuration.js":33,"./selectors-css.js":35,"./vendor-regex.js":36}],35:[function(require,module,exports){
+},{"../constants.js":53,"./label-util.js":31,"./matching-configuration.js":33,"./selectors-css.js":35,"./vendor-regex.js":36}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14594,185 +14584,7 @@ _defineProperty(Settings, "defaults", {
   enabled: null
 });
 
-},{"../packages/device-api/index.js":14,"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57,"./deviceApiCalls/__generated__/validators.zod.js":58,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],43:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _autofillUtils = require("../autofill-utils.js");
-
-var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class DataHTMLTooltip extends _HTMLTooltip.default {
-  /**
-   * @param {InputTypeConfigs} config
-   * @param {TooltipItemRenderer[]} items
-   * @param {{onSelect(id:string): void}} callbacks
-   */
-  render(config, items, callbacks) {
-    const {
-      wrapperClass,
-      css
-    } = this.options;
-    let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
-
-    const shouldShowSeparator = dataId => {
-      const shouldShow = ['personalAddress', 'privateAddress'].includes(dataId) && !hasAddedSeparator;
-      if (shouldShow) hasAddedSeparator = true;
-      return shouldShow;
-    };
-
-    const topClass = wrapperClass || '';
-    const dataTypeClass = "tooltip__button--data--".concat(config.type);
-    this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
-      var _item$credentialsProv, _item$labelSmall, _item$label;
-
-      const credentialsProvider = (_item$credentialsProv = item.credentialsProvider) === null || _item$credentialsProv === void 0 ? void 0 : _item$credentialsProv.call(item);
-      const providerIconClass = credentialsProvider ? "tooltip__button--data--".concat(credentialsProvider) : ''; // these 2 are optional
-
-      const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
-      const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
-      return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data ").concat(dataTypeClass, " ").concat(providerIconClass, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
-    }).join(''), "\n    </div>\n</div>");
-    this.wrapper = this.shadow.querySelector('.wrapper');
-    this.tooltip = this.shadow.querySelector('.tooltip');
-    this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button'); // setTimeout(() => {
-    //     console.log('autoclick ', this.autofillButtons[0].id);
-    //     callbacks.onSelect(this.autofillButtons[0].id)
-    // }, 2000);
-    //
-
-    this.autofillButtons.forEach(btn => {
-      this.registerClickableButton(btn, () => {
-        callbacks.onSelect(btn.id);
-      });
-    });
-    this.init();
-    return this;
-  }
-
-}
-
-var _default = DataHTMLTooltip;
-exports.default = _default;
-
-},{"../autofill-utils.js":53,"./HTMLTooltip.js":46}],44:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _autofillUtils = require("../autofill-utils.js");
-
-var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class EmailHTMLTooltip extends _HTMLTooltip.default {
-  /**
-   * @param {import("../DeviceInterface/InterfacePrototype").default} device
-   */
-  render(device) {
-    this.device = device;
-    this.addresses = device.getLocalAddresses();
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Generate a Private Duck Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
-    this.wrapper = this.shadow.querySelector('.wrapper');
-    this.tooltip = this.shadow.querySelector('.tooltip');
-    this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
-    this.usePrivateButton = this.shadow.querySelector('.js-use-private');
-    this.addressEl = this.shadow.querySelector('.js-address');
-
-    this.updateAddresses = addresses => {
-      if (addresses && this.addressEl) {
-        this.addresses = addresses;
-        this.addressEl.textContent = (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress);
-      }
-    };
-
-    const firePixel = this.device.firePixel.bind(this.device);
-    this.registerClickableButton(this.usePersonalButton, () => {
-      this.fillForm('personalAddress');
-      firePixel({
-        pixelName: 'autofill_personal_address'
-      });
-    });
-    this.registerClickableButton(this.usePrivateButton, () => {
-      this.fillForm('privateAddress');
-      firePixel({
-        pixelName: 'autofill_private_address'
-      });
-    }); // Get the alias from the extension
-
-    this.device.getAddresses().then(this.updateAddresses);
-    this.init();
-    return this;
-  }
-  /**
-   * @param {'personalAddress' | 'privateAddress'} id
-   */
-
-
-  async fillForm(id) {
-    var _this$device;
-
-    const address = this.addresses[id];
-    const formattedAddress = (0, _autofillUtils.formatDuckAddress)(address);
-    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.selectedDetail({
-      email: formattedAddress,
-      id
-    }, 'email');
-  }
-
-}
-
-var _default = EmailHTMLTooltip;
-exports.default = _default;
-
-},{"../autofill-utils.js":53,"./HTMLTooltip.js":46}],45:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
-  /**
-   * @param {import("../DeviceInterface/InterfacePrototype").default} device
-   */
-  render(device) {
-    this.device = device;
-    this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <h1>\n            Protect your inbox \uD83D\uDCAA I've caught trackers hiding in 85% of emails.\n        </h1>\n        <p>\n            Want me to hide your email address and remove hidden trackers before\n            forwarding messages to your inbox?\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Get Email Protection\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                ").concat(device.settings.incontextSignupInitiallyDismissed ? "Don't Ask Again" : 'Maybe Later', "\n            </button>\n        </div>\n    </div>\n</div>");
-    this.tooltip = this.shadow.querySelector('.tooltip');
-    this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup');
-    this.registerClickableButton(this.dismissEmailSignup, () => {
-      device.onIncontextSignupDismissed();
-    });
-    this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup');
-    this.registerClickableButton(this.getEmailSignup, () => {
-      device.onIncontextSignup();
-    });
-    this.init();
-    return this;
-  }
-
-}
-
-var _default = EmailSignupHTMLTooltip;
-exports.default = _default;
-
-},{"./HTMLTooltip.js":46}],46:[function(require,module,exports){
+},{"../packages/device-api/index.js":14,"./autofill-utils.js":50,"./deviceApiCalls/__generated__/deviceApiCalls.js":54,"./deviceApiCalls/__generated__/validators.zod.js":55,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14842,6 +14654,8 @@ class HTMLTooltip {
     }));
 
     _defineProperty(this, "clickableButtons", new Map());
+
+    _defineProperty(this, "kind", 'legacy');
 
     this.options = options;
     this.shadow = document.createElement('ddg-autofill').attachShadow({
@@ -15032,7 +14846,11 @@ class HTMLTooltip {
     this.transformRuleIndex = null;
     this.stylesheet = this.shadow.querySelector('link, style'); // Un-hide once the style is loaded, to avoid flashing unstyled content
 
-    (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => this.tooltip.removeAttribute('hidden'));
+    (_this$stylesheet2 = this.stylesheet) === null || _this$stylesheet2 === void 0 ? void 0 : _this$stylesheet2.addEventListener('load', () => {
+      var _this$tooltip;
+
+      return (_this$tooltip = this.tooltip) === null || _this$tooltip === void 0 ? void 0 : _this$tooltip.removeAttribute('hidden');
+    });
     this.append();
     this.resObs.observe(document.body);
     this.mutObs.observe(document.body, {
@@ -15049,6 +14867,127 @@ class HTMLTooltip {
       this.setupSizeListener();
     }
   }
+  /** @type {"modern" | "legacy" | "emailsignup"} */
+
+
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   * @param {TopContextData} [topContextData]
+   */
+  render(device, topContextData) {
+    switch (this.kind) {
+      case "legacy":
+        this.device = device;
+        this.addresses = device.getLocalAddresses();
+        this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Generate a Private Duck Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
+        this.wrapper = this.shadow.querySelector('.wrapper');
+        this.tooltip = this.shadow.querySelector('.tooltip');
+        this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
+        this.usePrivateButton = this.shadow.querySelector('.js-use-private');
+        this.addressEl = this.shadow.querySelector('.js-address');
+
+        this.updateAddresses = addresses => {
+          if (addresses && this.addressEl) {
+            this.addresses = addresses;
+            this.addressEl.textContent = (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress);
+          }
+        };
+
+        const firePixel = this.device.firePixel.bind(this.device);
+        this.registerClickableButton(this.usePersonalButton, () => {
+          this.fillForm('personalAddress');
+          firePixel({
+            pixelName: 'autofill_personal_address'
+          });
+        });
+        this.registerClickableButton(this.usePrivateButton, () => {
+          this.fillForm('privateAddress');
+          firePixel({
+            pixelName: 'autofill_private_address'
+          });
+        }); // Get the alias from the extension
+
+        this.device.getAddresses().then(this.updateAddresses);
+        this.init();
+        return this;
+
+      case "emailsignup":
+        device.firePixel({
+          pixelName: 'incontext_show'
+        });
+        this.device = device;
+        this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email tooltip--email-signup\" hidden>\n        <h1>\n            Protect your inbox \uD83D\uDCAA I've caught trackers hiding in 85% of emails.\n        </h1>\n        <p>\n            Want me to hide your email address and remove hidden trackers before\n            forwarding messages to your inbox?\n        </p>\n        <div class=\"notice-controls\">\n            <a href=\"https://duckduckgo.com/email/start-incontext\" target=\"_blank\" class=\"primary js-get-email-signup\">\n                Get Email Protection\n            </a>\n            <button class=\"ghost js-dismiss-email-signup\">\n                ").concat(device.settings.incontextSignupInitiallyDismissed ? "Don't Ask Again" : 'Maybe Later', "\n            </button>\n        </div>\n    </div>\n</div>");
+        this.tooltip = this.shadow.querySelector('.tooltip');
+        this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup');
+        this.registerClickableButton(this.dismissEmailSignup, () => {
+          device.onIncontextSignupDismissed();
+        });
+        this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup');
+        this.registerClickableButton(this.getEmailSignup, () => {
+          device.onIncontextSignup();
+        });
+        this.init();
+        return this;
+
+      case "modern":
+        if (!topContextData) throw new Error('unreachable');
+        const data = device.dataForAutofill(this.config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
+
+        const items = data.map(d => this.config.tooltipItem(d));
+        const {
+          wrapperClass,
+          css
+        } = this.options;
+        let hasAddedSeparator = false; // Only show an hr above the first duck address button, but it can be either personal or private
+
+        const shouldShowSeparator = dataId => {
+          const shouldShow = ['personalAddress', 'privateAddress'].includes(dataId) && !hasAddedSeparator;
+          if (shouldShow) hasAddedSeparator = true;
+          return shouldShow;
+        };
+
+        const topClass = wrapperClass || '';
+        const dataTypeClass = "tooltip__button--data--".concat(this.config.type);
+        this.shadow.innerHTML = "\n".concat(css, "\n<div class=\"wrapper wrapper--data ").concat(topClass, "\">\n    <div class=\"tooltip tooltip--data\" hidden>\n        ").concat(items.map(item => {
+          var _item$credentialsProv, _item$labelSmall, _item$label;
+
+          const credentialsProvider = (_item$credentialsProv = item.credentialsProvider) === null || _item$credentialsProv === void 0 ? void 0 : _item$credentialsProv.call(item);
+          const providerIconClass = credentialsProvider ? "tooltip__button--data--".concat(credentialsProvider) : ''; // these 2 are optional
+
+          const labelSmall = (_item$labelSmall = item.labelSmall) === null || _item$labelSmall === void 0 ? void 0 : _item$labelSmall.call(item, this.subtype);
+          const label = (_item$label = item.label) === null || _item$label === void 0 ? void 0 : _item$label.call(item, this.subtype);
+          return "\n            ".concat(shouldShowSeparator(item.id()) ? '<hr />' : '', "\n            <button id=\"").concat(item.id(), "\" class=\"tooltip__button tooltip__button--data ").concat(dataTypeClass, " ").concat(providerIconClass, " js-autofill-button\" >\n                <span class=\"tooltip__button__text-container\">\n                    <span class=\"label label--medium\">").concat((0, _autofillUtils.escapeXML)(item.labelMedium(this.subtype)), "</span>\n                    ").concat(label ? "<span class=\"label\">".concat((0, _autofillUtils.escapeXML)(label), "</span>") : '', "\n                    ").concat(labelSmall ? "<span class=\"label label--small\">".concat((0, _autofillUtils.escapeXML)(labelSmall), "</span>") : '', "\n                </span>\n            </button>\n        ");
+        }).join(''), "\n    </div>\n</div>");
+        this.wrapper = this.shadow.querySelector('.wrapper');
+        this.tooltip = this.shadow.querySelector('.tooltip');
+        this.autofillButtons = this.shadow.querySelectorAll('.js-autofill-button');
+        this.autofillButtons.forEach(btn => {
+          this.registerClickableButton(btn, () => {
+            device.onSelect(topContextData.inputType, data, btn.id);
+          });
+        });
+        this.init();
+        return this;
+
+      default:
+        throw new Error('unreachable');
+    }
+  }
+  /**
+   * @param {'personalAddress' | 'privateAddress'} id
+   */
+
+
+  async fillForm(id) {
+    var _this$device;
+
+    const address = this.addresses[id];
+    const formattedAddress = (0, _autofillUtils.formatDuckAddress)(address);
+    (_this$device = this.device) === null || _this$device === void 0 ? void 0 : _this$device.selectedDetail({
+      email: formattedAddress,
+      id
+    }, 'email');
+  }
 
 }
 
@@ -15056,7 +14995,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching.js":34,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
+},{"../Form/matching.js":34,"../autofill-utils.js":50,"./styles/styles.js":49}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15066,26 +15005,11 @@ exports.HTMLTooltipUIController = void 0;
 
 var _inputTypeConfig = require("../../Form/inputTypeConfig.js");
 
-var _DataHTMLTooltip = _interopRequireDefault(require("../DataHTMLTooltip.js"));
-
-var _EmailHTMLTooltip = _interopRequireDefault(require("../EmailHTMLTooltip.js"));
-
-var _EmailSignupHTMLTooltop = _interopRequireDefault(require("../EmailSignupHTMLTooltop.js"));
-
 var _HTMLTooltip = require("../HTMLTooltip.js");
 
 var _UIController = require("./UIController.js");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * @typedef HTMLTooltipControllerOptions
- * @property {"modern" | "legacy" | "emailsignup"} tooltipKind - A choice between the newer Autofill UI vs the older ones used in the extension
- * @property {import("../../DeviceInterface/InterfacePrototype").default} device - The device interface that's currently running
- * regardless of whether this Controller has an open tooltip, or not
- */
 
 /**
  * This encapsulates all the logic relating to showing/hiding the HTML Tooltip
@@ -15097,7 +15021,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 class HTMLTooltipUIController {
   /** @type {import("../HTMLTooltip.js").HTMLTooltip | null} */
 
-  /** @type {HTMLTooltipControllerOptions} */
+  /** @type {import("../../DeviceInterface/InterfacePrototype").default} */
 
   /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
 
@@ -15107,15 +15031,16 @@ class HTMLTooltipUIController {
    */
 
   /**
-   * @param {HTMLTooltipControllerOptions} options
+   * @param {import("../../DeviceInterface/InterfacePrototype").default} device
+   * @param {"modern" | "legacy" | "emailsignup"} kind
    * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
    */
-  constructor(options) {
-    let htmlTooltipOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _HTMLTooltip.defaultOptions;
+  constructor(device, kind) {
+    let htmlTooltipOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _HTMLTooltip.defaultOptions;
 
     _defineProperty(this, "_activeTooltip", null);
 
-    _defineProperty(this, "_options", void 0);
+    _defineProperty(this, "device", void 0);
 
     _defineProperty(this, "_htmlTooltipOptions", void 0);
 
@@ -15125,7 +15050,8 @@ class HTMLTooltipUIController {
 
     _defineProperty(this, "_activeInputOriginalAutocomplete", void 0);
 
-    this._options = options;
+    this.device = device;
+    this.kind = kind;
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
     window.addEventListener('pointerdown', this, true);
   }
@@ -15181,45 +15107,23 @@ class HTMLTooltipUIController {
     const tooltipOptions = { ...this._htmlTooltipOptions,
       remove: () => this.removeTooltip()
     };
-
-    if (this._options.tooltipKind === 'legacy') {
-      return new _EmailHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
-    }
-
-    if (this._options.tooltipKind === 'emailsignup') {
-      this._options.device.firePixel({
-        pixelName: 'incontext_show'
-      });
-
-      return new _EmailSignupHTMLTooltop.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
-    } // collect the data for each item to display
-
-
-    const data = this._options.device.dataForAutofill(config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
-
-
-    const asRenderers = data.map(d => config.tooltipItem(d)); // construct the autofill
-
-    return new _DataHTMLTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(config, asRenderers, {
-      onSelect: id => {
-        this._options.device.onSelect(topContextData.inputType, data, id);
-      }
-    });
+    const tt = new _HTMLTooltip.HTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions);
+    tt.kind = this.kind;
+    return tt.render(this.device, topContextData);
   }
+  /**
+   * @param {TopContextData} data
+   */
+
 
   updateItems(data) {
     if (this._activeInputType === 'unknown') return;
-    const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType); // convert the data into tool tip item renderers
-
-    const asRenderers = data.map(d => config.tooltipItem(d));
+    const config = (0, _inputTypeConfig.getInputConfigFromType)(this._activeInputType);
     const activeTooltip = this.getActiveTooltip();
 
-    if (activeTooltip instanceof _DataHTMLTooltip.default) {
-      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.render(config, asRenderers, {
-        onSelect: id => {
-          this._options.device.onSelect(this._activeInputType, data, id);
-        }
-      });
+    if (activeTooltip && activeTooltip.kind === 'modern') {
+      activeTooltip.config = config;
+      activeTooltip.render(this.device, data);
     } // TODO: can we remove this timeout once implemented with real APIs?
     // The timeout is needed because clientHeight and clientWidth were returning 0
 
@@ -15336,7 +15240,7 @@ class HTMLTooltipUIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":30,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltop.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":30,"../HTMLTooltip.js":43,"./UIController.js":47}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15457,7 +15361,7 @@ class NativeUIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":34,"../../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./UIController.js":50}],49:[function(require,module,exports){
+},{"../../Form/matching.js":34,"../../deviceApiCalls/__generated__/deviceApiCalls.js":54,"./UIController.js":47}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15762,7 +15666,7 @@ class OverlayUIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":34,"./UIController.js":50}],50:[function(require,module,exports){
+},{"../../Form/matching.js":34,"./UIController.js":47}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15846,7 +15750,7 @@ class UIController {
   }
   /**
    * Updates the items in the tooltip based on new data. Currently only supporting credentials.
-   * @param {CredentialsObject[]} _data
+   * @param {TopContextData} _data
    */
 
 
@@ -15858,7 +15762,7 @@ class UIController {
 
 exports.UIController = UIController;
 
-},{}],51:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15880,7 +15784,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],52:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15890,7 +15794,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    /* move it offscreen to avoid flashing */\n    transform: translate(-1000px);\n    z-index: 2147483647;\n}\n:not(.top-autofill).wrapper--data {\n    font-family: 'SF Pro Text', -apple-system,\n    BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    :not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 46px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email::before,\n.tooltip--email::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: 20px;\n}\n.tooltip--email::before {\n    border-bottom-color: #D0D0D0;\n    top: -9px;\n}\n.tooltip--email::after {\n    border-bottom-color: #FFFFFF;\n    top: -8px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.tooltip__button:hover {\n    background-color: rgba(0, 121, 242, 0.9);\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 24px 24px;\n    background-repeat: no-repeat;\n    background-position: center 4px;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    line-height: 13px;\n}\n.label + .label {\n    margin-top: 5px;\n}\n.label.label--medium {\n    letter-spacing: -0.08px;\n    color: rgba(0,0,0,.9)\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label,\n.tooltip__button.currentFocus .label,\n.tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    /* TODO: use dynamically from src/UI/img/ddgPasswordIcon.js */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 10px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgNDQgNDQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGxpbmVhckdyYWRpZW50IGlkPSJhIj48c3RvcCBvZmZzZXQ9Ii4wMSIgc3RvcC1jb2xvcj0iIzYxNzZiOSIvPjxzdG9wIG9mZnNldD0iLjY5IiBzdG9wLWNvbG9yPSIjMzk0YTlmIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTMuOTI5NyIgeDI9IjE3LjA3MiIgeGxpbms6aHJlZj0iI2EiIHkxPSIxNi4zOTgiIHkyPSIxNi4zOTgiLz48bGluZWFyR3JhZGllbnQgaWQ9ImMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMjMuODExNSIgeDI9IjI2LjY3NTIiIHhsaW5rOmhyZWY9IiNhIiB5MT0iMTQuOTY3OSIgeTI9IjE0Ljk2NzkiLz48bWFzayBpZD0iZCIgaGVpZ2h0PSI0MCIgbWFza1VuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjQwIiB4PSIyIiB5PSIyIj48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im0yMi4wMDAzIDQxLjA2NjljMTAuNTMwMiAwIDE5LjA2NjYtOC41MzY0IDE5LjA2NjYtMTkuMDY2NiAwLTEwLjUzMDMtOC41MzY0LTE5LjA2NjcxLTE5LjA2NjYtMTkuMDY2NzEtMTAuNTMwMyAwLTE5LjA2NjcxIDguNTM2NDEtMTkuMDY2NzEgMTkuMDY2NzEgMCAxMC41MzAyIDguNTM2NDEgMTkuMDY2NiAxOS4wNjY3MSAxOS4wNjY2eiIgZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9tYXNrPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTIyIDQ0YzEyLjE1MDMgMCAyMi05Ljg0OTcgMjItMjIgMC0xMi4xNTAyNi05Ljg0OTctMjItMjItMjItMTIuMTUwMjYgMC0yMiA5Ljg0OTc0LTIyIDIyIDAgMTIuMTUwMyA5Ljg0OTc0IDIyIDIyIDIyeiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+PGcgbWFzaz0idXJsKCNkKSI+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMjYuMDgxMyA0MS42Mzg2Yy0uOTIwMy0xLjc4OTMtMS44MDAzLTMuNDM1Ni0yLjM0NjYtNC41MjQ2LTEuNDUyLTIuOTA3Ny0yLjkxMTQtNy4wMDctMi4yNDc3LTkuNjUwNy4xMjEtLjQ4MDMtMS4zNjc3LTE3Ljc4Njk5LTIuNDItMTguMzQ0MzItMS4xNjk3LS42MjMzMy0zLjcxMDctMS40NDQ2Ny01LjAyNy0xLjY2NDY3LS45MTY3LS4xNDY2Ni0xLjEyNTcuMTEtMS41MTA3LjE2ODY3LjM2My4wMzY2NyAyLjA5Ljg4NzMzIDIuNDIzNy45MzUtLjMzMzcuMjI3MzMtMS4zMi0uMDA3MzMtMS45NTA3LjI3MTMzLS4zMTkuMTQ2NjctLjU1NzMuNjg5MzQtLjU1Ljk0NiAxLjc5NjctLjE4MzMzIDQuNjA1NC0uMDAzNjYgNi4yNy43MzMyOS0xLjMyMzYuMTUwNC0zLjMzMy4zMTktNC4xOTgzLjc3MzctMi41MDggMS4zMi0zLjYxNTMgNC40MTEtMi45NTUzIDguMTE0My42NTYzIDMuNjk2IDMuNTY0IDE3LjE3ODQgNC40OTE2IDIxLjY4MS45MjQgNC40OTkgMTEuNTUzNyAzLjU1NjcgMTAuMDE3NC41NjF6IiBmaWxsPSIjZDVkN2Q4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjIuMjg2NSAyNi44NDM5Yy0uNjYgMi42NDM2Ljc5MiA2LjczOTMgMi4yNDc2IDkuNjUwNi40ODkxLjk3MjcgMS4yNDM4IDIuMzkyMSAyLjA1NTggMy45NjM3LTEuODk0LjQ2OTMtNi40ODk1IDEuMTI2NC05LjcxOTEgMC0uOTI0LTQuNDkxNy0zLjgzMTctMTcuOTc3Ny00LjQ5NTMtMjEuNjgxLS42Ni0zLjcwMzMgMC02LjM0NyAyLjUxNTMtNy42NjcuODYxNy0uNDU0NyAyLjA5MzctLjc4NDcgMy40MTM3LS45MzEzLTEuNjY0Ny0uNzQwNy0zLjYzNzQtMS4wMjY3LTUuNDQxNC0uODQzMzYtLjAwNzMtLjc2MjY3IDEuMzM4NC0uNzE4NjcgMS44NDQ0LTEuMDYzMzQtLjMzMzctLjA0NzY2LTEuMTYyNC0uNzk1NjYtMS41MjktLjgzMjMzIDIuMjg4My0uMzkyNDQgNC42NDIzLS4wMjEzOCA2LjY5OSAxLjA1NiAxLjA0ODYuNTYxIDEuNzg5MyAxLjE2MjMzIDIuMjQ3NiAxLjc5MzAzIDEuMTk1NC4yMjczIDIuMjUxNC42NiAyLjk0MDcgMS4zNDkzIDIuMTE5MyAyLjExNTcgNC4wMTEzIDYuOTUyIDMuMjE5MyA5LjczMTMtLjIyMzYuNzctLjczMzMgMS4zMzEtMS4zNzEzIDEuNzk2Ny0xLjIzOTMuOTAyLTEuMDE5My0xLjA0NS00LjEwMy45NzE3LS4zOTk3LjI2MDMtLjM5OTcgMi4yMjU2LS41MjQzIDIuNzA2eiIgZmlsbD0iI2ZmZiIvPjwvZz48ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTE2LjY3MjQgMjAuMzU0Yy43Njc1IDAgMS4zODk2LS42MjIxIDEuMzg5Ni0xLjM4OTZzLS42MjIxLTEuMzg5Ny0xLjM4OTYtMS4zODk3LTEuMzg5Ny42MjIyLTEuMzg5NyAxLjM4OTcuNjIyMiAxLjM4OTYgMS4zODk3IDEuMzg5NnoiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMTcuMjkyNCAxOC44NjE3Yy4xOTg1IDAgLjM1OTQtLjE2MDguMzU5NC0uMzU5M3MtLjE2MDktLjM1OTMtLjM1OTQtLjM1OTNjLS4xOTg0IDAtLjM1OTMuMTYwOC0uMzU5My4zNTkzcy4xNjA5LjM1OTMuMzU5My4zNTkzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Im0yNS45NTY4IDE5LjMzMTFjLjY1ODEgMCAxLjE5MTctLjUzMzUgMS4xOTE3LTEuMTkxNyAwLS42NTgxLS41MzM2LTEuMTkxNi0xLjE5MTctMS4xOTE2cy0xLjE5MTcuNTMzNS0xLjE5MTcgMS4xOTE2YzAgLjY1ODIuNTMzNiAxLjE5MTcgMS4xOTE3IDEuMTkxN3oiIGZpbGw9IiMyZDRmOGUiLz48cGF0aCBkPSJtMjYuNDg4MiAxOC4wNTExYy4xNzAxIDAgLjMwOC0uMTM3OS4zMDgtLjMwOHMtLjEzNzktLjMwOC0uMzA4LS4zMDgtLjMwOC4xMzc5LS4zMDguMzA4LjEzNzkuMzA4LjMwOC4zMDh6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTE3LjA3MiAxNC45NDJzLTEuMDQ4Ni0uNDc2Ni0yLjA2NDMuMTY1Yy0xLjAxNTcuNjM4LS45NzkgMS4yOTA3LS45NzkgMS4yOTA3cy0uNTM5LTEuMjAyNy44OTgzLTEuNzkzYzEuNDQxLS41ODY3IDIuMTQ1LjMzNzMgMi4xNDUuMzM3M3oiIGZpbGw9InVybCgjYikiLz48cGF0aCBkPSJtMjYuNjc1MiAxNC44NDY3cy0uNzUxNy0uNDI5LTEuMzM4My0uNDIxN2MtMS4xOTkuMDE0Ny0xLjUyNTQuNTQyNy0xLjUyNTQuNTQyN3MuMjAxNy0xLjI2MTQgMS43MzQ0LTEuMDA4NGMuNDk5Ny4wOTE0LjkyMjMuNDIzNCAxLjEyOTMuODg3NHoiIGZpbGw9InVybCgjYykiLz48cGF0aCBkPSJtMjAuOTI1OCAyNC4zMjFjLjEzOTMtLjg0MzMgMi4zMS0yLjQzMSAzLjg1LTIuNTMgMS41NC0uMDk1MyAyLjAxNjctLjA3MzMgMy4zLS4zODEzIDEuMjg3LS4zMDQzIDQuNTk4LTEuMTI5MyA1LjUxMS0xLjU1NDcuOTE2Ny0uNDIxNiA0LjgwMzMuMjA5IDIuMDY0MyAxLjczOC0xLjE4NDMuNjYzNy00LjM3OCAxLjg4MS02LjY2MjMgMi41NjMtMi4yODA3LjY4Mi0zLjY2My0uNjUyNi00LjQyMi40Njk0LS42MDEzLjg5MS0uMTIxIDIuMTEyIDIuNjAzMyAyLjM2NSAzLjY4MTQuMzQxIDcuMjA4Ny0xLjY1NzQgNy41OTc0LS41OTQuMzg4NiAxLjA2MzMtMy4xNjA3IDIuMzgzMy01LjMyNCAyLjQyNzMtMi4xNjM0LjA0MDMtNi41MTk0LTEuNDMtNy4xNzItMS44ODQ3LS42NTY0LS40NTEtMS41MjU0LTEuNTE0My0xLjM0NTctMi42MTh6IiBmaWxsPSIjZmRkMjBhIi8+PHBhdGggZD0ibTI4Ljg4MjUgMzEuODM4NmMtLjc3NzMtLjE3MjQtNC4zMTIgMi41MDA2LTQuMzEyIDIuNTAwNmguMDAzN2wtLjE2NSAyLjA1MzRzNC4wNDA2IDEuNjUzNiA0LjczIDEuMzk3Yy42ODkzLS4yNjQuNTE3LTUuNzc1LS4yNTY3LTUuOTUxem0tMTEuNTQ2MyAxLjAzNGMuMDg0My0xLjExODQgNS4yNTQzIDEuNjQyNiA1LjI1NDMgMS42NDI2bC4wMDM3LS4wMDM2LjI1NjYgMi4xNTZzLTQuMzA4MyAyLjU4MTMtNC45MTMzIDIuMjM2NmMtLjYwMTMtLjM0NDYtLjY4OTMtNC45MDk2LS42MDEzLTYuMDMxNnoiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjEuMzQgMzQuODA0OWMwIDEuODA3Ny0uMjYwNCAyLjU4NS41MTMzIDIuNzU3NC43NzczLjE3MjMgMi4yNDAzIDAgMi43NjEtLjM0NDcuNTEzMy0uMzQ0Ny4wODQzLTIuNjY5My0uMDg4LTMuMTAycy0zLjE5LS4wODgtMy4xOS42ODkzeiIgZmlsbD0iIzQzYTI0NCIvPjxwYXRoIGQ9Im0yMS42NzAxIDM0LjQwNTFjMCAxLjgwNzYtLjI2MDQgMi41ODEzLjUxMzMgMi43NTM2Ljc3MzcuMTc2IDIuMjM2NyAwIDIuNzU3My0uMzQ0Ni41MTctLjM0NDcuMDg4LTIuNjY5NC0uMDg0My0zLjEwMi0uMTcyMy0uNDMyNy0zLjE5LS4wODQ0LTMuMTkuNjg5M3oiIGZpbGw9IiM2NWJjNDYiLz48cGF0aCBkPSJtMjIuMDAwMiA0MC40NDgxYzEwLjE4ODUgMCAxOC40NDc5LTguMjU5NCAxOC40NDc5LTE4LjQ0NzlzLTguMjU5NC0xOC40NDc5NS0xOC40NDc5LTE4LjQ0Nzk1LTE4LjQ0Nzk1IDguMjU5NDUtMTguNDQ3OTUgMTguNDQ3OTUgOC4yNTk0NSAxOC40NDc5IDE4LjQ0Nzk1IDE4LjQ0Nzl6bTAgMS43MTg3YzExLjEzNzcgMCAyMC4xNjY2LTkuMDI4OSAyMC4xNjY2LTIwLjE2NjYgMC0xMS4xMzc4LTkuMDI4OS0yMC4xNjY3LTIwLjE2NjYtMjAuMTY2Ny0xMS4xMzc4IDAtMjAuMTY2NyA5LjAyODktMjAuMTY2NyAyMC4xNjY3IDAgMTEuMTM3NyA5LjAyODkgMjAuMTY2NiAyMC4xNjY3IDIwLjE2NjZ6IiBmaWxsPSIjZmZmIi8+PC9nPjwvc3ZnPg==');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n\n/* Email Protection signup notice */\n:not(.top-autofill) .tooltip--email-signup {\n    color: #222222;\n    padding: 20px;\n    width: 380px;\n}\n\n.tooltip--email-signup h1 {\n    font-weight: 700;\n    font-size: 16px;\n    line-height: 1.5;\n    margin: 0;\n}\n\n.tooltip--email-signup p {\n    font-weight: 400;\n    font-size: 14px;\n    line-height: 1.4;\n}\n\n.notice-controls {\n    display: flex;\n}\n\n.tooltip--email-signup .notice-controls > * {\n    border-radius: 8px;\n    border: 0;\n    cursor: pointer;\n    display: inline-block;\n    font-style: normal;\n    font-weight: bold;\n    padding: 8px 12px;\n    text-decoration: none;\n}\n\n.notice-controls .ghost {\n    margin-left: 1rem;\n}\n\n.tooltip--email-signup a.primary {\n    background: #3969EF;\n    color: #fff;\n}\n\n.tooltip--email-signup a.primary:hover,\n.tooltip--email-signup a.primary:focus {\n    background: #2b55ca;\n}\n\n.tooltip--email-signup a.primary:active {\n    background: #1e42a4;\n}\n\n.tooltip--email-signup button.ghost {\n    background: transparent;\n    color: #3969EF;\n}\n\n.tooltip--email-signup button.ghost:hover,\n.tooltip--email-signup button.ghost:focus {\n    background-color: rgba(0, 0, 0, 0.06);\n    color: #2b55ca;\n}\n\n.tooltip--email-signup button.ghost:active {\n    background-color: rgba(0, 0, 0, 0.12);\n    color: #1e42a4;\n}";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],53:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16332,7 +16236,7 @@ const getText = el => {
 
 exports.getText = getText;
 
-},{"./Form/matching.js":34}],54:[function(require,module,exports){
+},{"./Form/matching.js":34}],51:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -16361,7 +16265,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":22,"./requestIdleCallback.js":65}],55:[function(require,module,exports){
+},{"./DeviceInterface.js":22,"./requestIdleCallback.js":62}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16447,7 +16351,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],56:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16461,7 +16365,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],57:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16747,7 +16651,7 @@ class GetIncontextSignupDismissedAtCall extends _deviceApi.DeviceApiCall {
 
 exports.GetIncontextSignupDismissedAtCall = GetIncontextSignupDismissedAtCall;
 
-},{"../../../packages/device-api":14,"./validators.zod.js":58}],58:[function(require,module,exports){
+},{"../../../packages/device-api":14,"./validators.zod.js":55}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17057,7 +16961,7 @@ const storeFormDataSchema = _zod.z.object({
 
 exports.storeFormDataSchema = storeFormDataSchema;
 
-},{"zod":12}],59:[function(require,module,exports){
+},{"zod":12}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17098,7 +17002,7 @@ class GetAlias extends _index.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":14,"./__generated__/validators.zod.js":58}],60:[function(require,module,exports){
+},{"../../packages/device-api/index.js":14,"./__generated__/validators.zod.js":55}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17257,7 +17161,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":14,"../__generated__/deviceApiCalls.js":57}],61:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":14,"../__generated__/deviceApiCalls.js":54}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17335,7 +17239,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":14,"../__generated__/deviceApiCalls.js":57,"@duckduckgo/content-scope-utils":2}],62:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":14,"../__generated__/deviceApiCalls.js":54,"@duckduckgo/content-scope-utils":2}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17512,7 +17416,7 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
   });
 }
 
-},{"../../../packages/device-api/index.js":14,"../../Settings.js":42,"../../autofill-utils.js":53,"../__generated__/deviceApiCalls.js":57}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":14,"../../Settings.js":42,"../../autofill-utils.js":50,"../__generated__/deviceApiCalls.js":54}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17564,7 +17468,7 @@ function createTransport(ctx, globalConfig) {
   }
 }
 
-},{"./android.transport.js":60,"./apple.transport.js":61,"./extension.transport.js":62,"./windows.transport.js":64}],64:[function(require,module,exports){
+},{"./android.transport.js":57,"./apple.transport.js":58,"./extension.transport.js":59,"./windows.transport.js":61}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17665,7 +17569,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":14}],65:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":14}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17713,4 +17617,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[54]);
+},{}]},{},[51]);
