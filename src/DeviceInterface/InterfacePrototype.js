@@ -18,8 +18,6 @@ import {
     SetSizeCall,
     GetAutofillDataCall,
     CloseAutofillParentCall,
-    SetIncontextSignupPermanentlyDismissedAtCall,
-    SetIncontextSignupInitiallyDismissedAtCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {processConfig} from "@duckduckgo/content-scope-scripts/src/apple-utils";
@@ -32,6 +30,7 @@ import {PasswordGenerator} from "../features/password-generator.js";
 import {BitwardenIntegration} from "../features/bitwarden-integration";
 import {EmailProtection} from "../features/email-protection";
 import {FormFilling} from "../features/form-filling";
+import {IncontextSignup} from "../features/incontext-signup";
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -97,6 +96,7 @@ class InterfacePrototype {
         this.bitwarden = new BitwardenIntegration(this);
         this.emailProtection = new EmailProtection(this);
         this.formFilling = new FormFilling(this);
+        this.incontextSignup = new IncontextSignup(this);
 
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
@@ -468,50 +468,6 @@ class InterfacePrototype {
 
     /** @type {any} */
     pollingTimeout = null;
-
-    onIncontextSignup() {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay":
-            case "ios":
-            case "android":
-            case "windows":
-            case "windows-overlay":
-            case "extension": {
-                return this.firePixel({pixelName: 'incontext_get_email_protection'})
-            }
-        }
-    }
-
-    onIncontextSignupDismissed() {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay":
-            case "ios":
-            case "android":
-            case "windows":
-            case "windows-overlay":
-                break;
-            case "extension": {
-                // Check if the email signup tooltip has previously been dismissed.
-                // If it has, make the dismissal persist and remove it from the page.
-                // If it hasn't, set a flag for next time and just hide the tooltip.
-                if (this.settings.incontextSignupInitiallyDismissed) {
-                    this.settings.setIncontextSignupPermanentlyDismissed(true)
-                    this.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({value: new Date().getTime()}))
-                    this.removeAutofillUIFromPage()
-                    this.firePixel({pixelName: 'incontext_dismiss_persisted'})
-                } else {
-                    this.settings.setIncontextSignupInitiallyDismissed(true)
-                    this.deviceApi.notify(new SetIncontextSignupInitiallyDismissedAtCall({value: new Date().getTime()}))
-                    this.removeTooltip('onIncontextSignupDismissed')
-                    this.firePixel({pixelName: 'incontext_dismiss_initial'})
-                }
-            }
-        }
-    }
 
     /**
      * @returns {import('../Form/matching').SupportedTypes}

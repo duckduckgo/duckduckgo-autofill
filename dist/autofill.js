@@ -3672,6 +3672,8 @@ var _emailProtection = require("../features/email-protection");
 
 var _formFilling = require("../features/form-filling");
 
+var _incontextSignup = require("../features/incontext-signup");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
@@ -3744,6 +3746,7 @@ class InterfacePrototype {
     this.bitwarden = new _bitwardenIntegration.BitwardenIntegration(this);
     this.emailProtection = new _emailProtection.EmailProtection(this);
     this.formFilling = new _formFilling.FormFilling(this);
+    this.incontextSignup = new _incontextSignup.IncontextSignup(this);
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
@@ -4157,67 +4160,9 @@ class InterfacePrototype {
   /** @type {AbortController|null} */
 
 
-  onIncontextSignup() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-      case "android":
-      case "windows":
-      case "windows-overlay":
-      case "extension":
-        {
-          return this.firePixel({
-            pixelName: 'incontext_get_email_protection'
-          });
-        }
-    }
-  }
-
-  onIncontextSignupDismissed() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-      case "android":
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          // Check if the email signup tooltip has previously been dismissed.
-          // If it has, make the dismissal persist and remove it from the page.
-          // If it hasn't, set a flag for next time and just hide the tooltip.
-          if (this.settings.incontextSignupInitiallyDismissed) {
-            this.settings.setIncontextSignupPermanentlyDismissed(true);
-            this.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall({
-              value: new Date().getTime()
-            }));
-            this.removeAutofillUIFromPage();
-            this.firePixel({
-              pixelName: 'incontext_dismiss_persisted'
-            });
-          } else {
-            this.settings.setIncontextSignupInitiallyDismissed(true);
-            this.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupInitiallyDismissedAtCall({
-              value: new Date().getTime()
-            }));
-            this.removeTooltip('onIncontextSignupDismissed');
-            this.firePixel({
-              pixelName: 'incontext_dismiss_initial'
-            });
-          }
-        }
-    }
-  }
   /**
    * @returns {import('../Form/matching').SupportedTypes}
    */
-
-
   getCurrentInputType() {
     switch (this.ctx) {
       case "macos-legacy":
@@ -4826,7 +4771,7 @@ function assertUnreachable(x) {
   throw new Error("Didn't expect to get here");
 }
 
-},{"../../packages/device-api/index.js":6,"../Form/matching.js":26,"../InputTypes/Credentials.js":29,"../Scanner.js":32,"../Settings.js":33,"../UI/HTMLTooltip":34,"../UI/controllers/HTMLTooltipUIController":35,"../UI/controllers/NativeUIController":36,"../UI/controllers/OverlayUIController":37,"../autofill-utils.js":41,"../config.js":43,"../deviceApiCalls/__generated__/deviceApiCalls.js":45,"../deviceApiCalls/transports/transports.js":51,"../features/bitwarden-integration":53,"../features/email-protection":54,"../features/form-filling":55,"../features/local-data":56,"../features/password-generator.js":57,"./initFormSubmissionsApi.js":16,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../Form/matching.js":26,"../InputTypes/Credentials.js":29,"../Scanner.js":32,"../Settings.js":33,"../UI/HTMLTooltip":34,"../UI/controllers/HTMLTooltipUIController":35,"../UI/controllers/NativeUIController":36,"../UI/controllers/OverlayUIController":37,"../autofill-utils.js":41,"../config.js":43,"../deviceApiCalls/__generated__/deviceApiCalls.js":45,"../deviceApiCalls/transports/transports.js":51,"../features/bitwarden-integration":53,"../features/email-protection":54,"../features/form-filling":55,"../features/incontext-signup":56,"../features/local-data":57,"../features/password-generator.js":58,"./initFormSubmissionsApi.js":16,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10279,11 +10224,11 @@ class HTMLTooltip {
         this.tooltip = this.shadow.querySelector('.tooltip');
         this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup');
         this.registerClickableButton(this.dismissEmailSignup, () => {
-          device.onIncontextSignupDismissed();
+          device.incontextSignup.onIncontextSignupDismissed();
         });
         this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup');
         this.registerClickableButton(this.getEmailSignup, () => {
-          device.onIncontextSignup();
+          device.incontextSignup.onIncontextSignup();
         });
         this.init();
         return this;
@@ -11624,7 +11569,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":14,"./requestIdleCallback.js":58}],43:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./requestIdleCallback.js":59}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13520,6 +13465,85 @@ function assertUnreachable(x) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.IncontextSignup = void 0;
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+class IncontextSignup {
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   */
+  constructor(device) {
+    this.device = device;
+  }
+
+  onIncontextSignup() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+      case "android":
+      case "windows":
+      case "windows-overlay":
+      case "extension":
+        {
+          return this.device.firePixel({
+            pixelName: 'incontext_get_email_protection'
+          });
+        }
+    }
+  }
+
+  onIncontextSignupDismissed() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+      case "android":
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          // Check if the email signup tooltip has previously been dismissed.
+          // If it has, make the dismissal persist and remove it from the page.
+          // If it hasn't, set a flag for next time and just hide the tooltip.
+          if (this.device.settings.incontextSignupInitiallyDismissed) {
+            this.device.settings.setIncontextSignupPermanentlyDismissed(true);
+            this.device.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall({
+              value: new Date().getTime()
+            }));
+            this.device.removeAutofillUIFromPage();
+            this.device.firePixel({
+              pixelName: 'incontext_dismiss_persisted'
+            });
+          } else {
+            this.device.settings.setIncontextSignupInitiallyDismissed(true);
+            this.device.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupInitiallyDismissedAtCall({
+              value: new Date().getTime()
+            }));
+            this.device.removeTooltip('onIncontextSignupDismissed');
+            this.device.firePixel({
+              pixelName: 'incontext_dismiss_initial'
+            });
+          }
+        }
+    }
+  }
+
+}
+
+exports.IncontextSignup = IncontextSignup;
+
+},{"../deviceApiCalls/__generated__/deviceApiCalls":45}],57:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.LocalData = void 0;
 
 var _autofillUtils = require("../autofill-utils");
@@ -13722,7 +13746,7 @@ class LocalData {
 
 exports.LocalData = LocalData;
 
-},{"../Form/formatters":20,"../Form/matching":26,"../autofill-utils":41}],57:[function(require,module,exports){
+},{"../Form/formatters":20,"../Form/matching":26,"../autofill-utils":41}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13798,7 +13822,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../../packages/password/index.js":9,"../../packages/password/rules.json":13}],58:[function(require,module,exports){
+},{"../../packages/password/index.js":9,"../../packages/password/rules.json":13}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

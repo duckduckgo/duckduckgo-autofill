@@ -295,12 +295,12 @@ ${this.options.css}
 
                 this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
                 this.registerClickableButton(this.dismissEmailSignup, () => {
-                    device.onIncontextSignupDismissed()
+                    device.incontextSignup.onIncontextSignupDismissed()
                 })
 
                 this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup')
                 this.registerClickableButton(this.getEmailSignup, () => {
-                    device.onIncontextSignup()
+                    device.incontextSignup.onIncontextSignup()
                 })
 
                 this.init()
