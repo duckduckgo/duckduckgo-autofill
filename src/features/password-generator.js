@@ -5,6 +5,9 @@ import rules from '../../packages/password/rules.json'
  * Create a password once and reuse it.
  */
 class PasswordGenerator {
+    init() {
+
+    }
     /** @type {string|null} */
     #previous = null;
 

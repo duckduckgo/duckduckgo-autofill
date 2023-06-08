@@ -7328,8 +7328,6 @@ var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js
 
 var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
 
-var _validatorsZod = require("../deviceApiCalls/__generated__/validators.zod.js");
-
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 
 var _NativeUIController = require("../UI/controllers/NativeUIController");
@@ -7345,6 +7343,8 @@ var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCa
 var _localData = require("../features/local-data");
 
 var _passwordGenerator = require("../features/password-generator.js");
+
+var _bitwardenIntegration = require("../features/bitwarden-integration");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -7398,10 +7398,6 @@ class InterfacePrototype {
 
     _defineProperty(this, "activeForm", null);
 
-    _defineProperty(this, "localData", new _localData.LocalData());
-
-    _defineProperty(this, "passwordGenerator", new _passwordGenerator.PasswordGenerator());
-
     _defineProperty(this, "autopromptFired", false);
 
     _defineProperty(this, "globalConfig", void 0);
@@ -7429,6 +7425,9 @@ class InterfacePrototype {
     this.deviceApi = deviceApi;
     this.settings = settings;
     this.uiController = null;
+    this.localData = new _localData.LocalData();
+    this.passwordGenerator = new _passwordGenerator.PasswordGenerator();
+    this.bitwarden = new _bitwardenIntegration.BitwardenIntegration(this);
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
@@ -7501,7 +7500,11 @@ class InterfacePrototype {
 
     await this.settings.refresh(); // done
 
-    this.addDeviceListeners();
+    this.addDeviceListeners(); // init features
+
+    this.bitwarden.init();
+    this.localData.init();
+    this.passwordGenerator.init();
     await this.setupAutofill();
     this.uiController = this.createUIController(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
     // eventually all interfaces will use this
@@ -7523,21 +7526,7 @@ class InterfacePrototype {
       case "macos-legacy":
       case "macos-modern":
         {
-          if (this.settings.featureToggles.third_party_credentials_provider) {
-            if (this.globalConfig.hasModernWebkitAPI) {
-              Object.defineProperty(window, 'providerStatusUpdated', {
-                enumerable: false,
-                configurable: false,
-                writable: false,
-                value: data => {
-                  this.providerStatusUpdated(data);
-                }
-              });
-            } else {
-              // On Catalina we poll the native layer
-              setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
-            }
-          }
+          if (this.settings.featureToggles.third_party_credentials_provider) {}
 
           break;
         }
@@ -8263,7 +8252,7 @@ class InterfacePrototype {
     const subtype = (0, _matching.getSubtypeFromType)(inputType);
 
     if (id === _Credentials.PROVIDER_LOCKED) {
-      return this.askToUnlockProvider();
+      return this.bitwarden.askToUnlockProvider();
     }
 
     const matchingData = items.find(item => String(item.id) === id);
@@ -8342,29 +8331,6 @@ class InterfacePrototype {
       console.error(e);
       return this.removeTooltip('error caught after dataPromise');
     });
-  }
-
-  async askToUnlockProvider() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-        {
-          const response = await this.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null));
-          this.providerStatusUpdated(response);
-          return;
-        }
-
-      case "ios":
-      case "android":
-      case "windows":
-      case "windows-overlay":
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
   }
 
   isTooltipActive() {
@@ -8741,22 +8707,6 @@ class InterfacePrototype {
     }
   }
 
-  async _pollForUpdatesToCredentialsProvider() {
-    try {
-      const response = await this.deviceApi.request(new _deviceApiCalls.CheckCredentialsProviderStatusCall(null));
-
-      if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
-        this.providerStatusUpdated(response);
-      }
-
-      setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
-    } catch (e) {
-      if (this.globalConfig.isDDGTestMode) {
-        console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e);
-      }
-    }
-  }
-
   async resetAutofillUI(callback) {
     this.removeAutofillUIFromPage(); // Start the setup process again
 
@@ -8772,82 +8722,6 @@ class InterfacePrototype {
 
     (_this$uiController7 = this.uiController) === null || _this$uiController7 === void 0 ? void 0 : _this$uiController7.destroy();
     (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
-  }
-  /**
-   * Called by the native layer on all tabs when the provider status is updated
-   * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
-   */
-
-
-  providerStatusUpdated(data) {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-        {
-          try {
-            var _this$uiController8, _availableInputTypes$;
-
-            const {
-              credentials,
-              availableInputTypes
-            } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
-
-            this.settings.setAvailableInputTypes(availableInputTypes);
-            this.localData.storeLocalCredentials(credentials);
-            const inputType = this.getCurrentInputType(); // rerender the tooltip
-
-            (_this$uiController8 = this.uiController) === null || _this$uiController8 === void 0 ? void 0 : _this$uiController8.updateItems({
-              credentials,
-              inputType: inputType
-            }); // If the tooltip is open on an autofill type that's not available, close it
-
-            const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
-
-            if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
-              this.removeTooltip('providerStatusUpdated');
-            } // Redecorate fields according to the new types
-
-
-            this.scanner.forms.forEach(form => form.recategorizeAllInputs());
-          } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-              console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
-            }
-          }
-
-          break;
-        }
-
-      case "macos-overlay":
-        {
-          var _this$uiController9;
-
-          const {
-            credentials,
-            availableInputTypes
-          } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
-
-          this.settings.setAvailableInputTypes(availableInputTypes);
-          this.localData.storeLocalCredentials(credentials);
-          const inputType = this.getCurrentInputType(); // rerender the tooltip
-
-          (_this$uiController9 = this.uiController) === null || _this$uiController9 === void 0 ? void 0 : _this$uiController9.updateItems({
-            credentials,
-            inputType
-          });
-          break;
-        }
-
-      case "ios":
-      case "android":
-      case "windows":
-      case "windows-overlay":
-      case "extension":
-      default:
-        {
-          throw new Error('unreachable');
-        }
-    }
   }
   /** @param {() => void} handler */
 
@@ -9199,7 +9073,7 @@ function assertUnreachable(x) {
   throw new Error("Didn't expect to get here");
 }
 
-},{"../../packages/device-api/index.js":14,"../Form/matching.js":34,"../InputTypes/Credentials.js":37,"../Scanner.js":40,"../Settings.js":41,"../UI/HTMLTooltip":42,"../UI/controllers/HTMLTooltipUIController":43,"../UI/controllers/NativeUIController":44,"../UI/controllers/OverlayUIController":45,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/__generated__/validators.zod.js":54,"../deviceApiCalls/additionalDeviceApiCalls":55,"../deviceApiCalls/transports/transports.js":59,"../features/local-data":61,"../features/password-generator.js":62,"./initFormSubmissionsApi.js":24,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
+},{"../../packages/device-api/index.js":14,"../Form/matching.js":34,"../InputTypes/Credentials.js":37,"../Scanner.js":40,"../Settings.js":41,"../UI/HTMLTooltip":42,"../UI/controllers/HTMLTooltipUIController":43,"../UI/controllers/NativeUIController":44,"../UI/controllers/OverlayUIController":45,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/additionalDeviceApiCalls":55,"../deviceApiCalls/transports/transports.js":59,"../features/bitwarden-integration":61,"../features/local-data":62,"../features/password-generator.js":63,"./initFormSubmissionsApi.js":24,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15997,7 +15871,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":22,"./requestIdleCallback.js":63}],51:[function(require,module,exports){
+},{"./DeviceInterface.js":22,"./requestIdleCallback.js":64}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17307,6 +17181,175 @@ function waitForWindowsResponse(responseId, options) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.BitwardenIntegration = void 0;
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+var _matching = require("../Form/matching");
+
+var _deviceApi = require("../../packages/device-api");
+
+var _validators = require("../deviceApiCalls/__generated__/validators.zod");
+
+class BitwardenIntegration {
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   */
+  constructor(device) {
+    this.device = device;
+  }
+
+  init() {
+    if (this.device.globalConfig.hasModernWebkitAPI) {
+      Object.defineProperty(window, 'providerStatusUpdated', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: data => {
+          this.providerStatusUpdated(data);
+        }
+      });
+    } else {
+      // On Catalina we poll the native layer
+      setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
+    }
+  }
+
+  async askToUnlockProvider() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+        {
+          const response = await this.device.deviceApi.request(new _deviceApiCalls.AskToUnlockProviderCall(null));
+          this.providerStatusUpdated(response);
+          return;
+        }
+
+      case "ios":
+      case "android":
+      case "windows":
+      case "windows-overlay":
+      case "extension":
+        break;
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /**
+   * Called by the native layer on all tabs when the provider status is updated
+   * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
+   */
+
+
+  providerStatusUpdated(data) {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+        {
+          try {
+            var _this$device$uiContro, _availableInputTypes$;
+
+            const {
+              credentials,
+              availableInputTypes
+            } = (0, _deviceApi.validate)(data, _validators.providerStatusUpdatedSchema); // Update local settings and data
+
+            this.device.settings.setAvailableInputTypes(availableInputTypes);
+            this.device.localData.storeLocalCredentials(credentials);
+            const inputType = this.device.getCurrentInputType(); // rerender the tooltip
+
+            (_this$device$uiContro = this.device.uiController) === null || _this$device$uiContro === void 0 ? void 0 : _this$device$uiContro.updateItems({
+              credentials,
+              inputType: inputType
+            }); // If the tooltip is open on an autofill type that's not available, close it
+
+            const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.device.getCurrentInputType());
+
+            if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
+              this.device.removeTooltip('providerStatusUpdated');
+            } // Redecorate fields according to the new types
+
+
+            this.device.scanner.forms.forEach(form => form.recategorizeAllInputs());
+          } catch (e) {
+            if (this.device.globalConfig.isDDGTestMode) {
+              console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
+            }
+          }
+
+          break;
+        }
+
+      case "macos-overlay":
+        {
+          var _this$device$uiContro2;
+
+          const {
+            credentials,
+            availableInputTypes
+          } = (0, _deviceApi.validate)(data, _validators.providerStatusUpdatedSchema); // Update local settings and data
+
+          this.device.settings.setAvailableInputTypes(availableInputTypes);
+          this.device.localData.storeLocalCredentials(credentials);
+          const inputType = this.device.getCurrentInputType(); // rerender the tooltip
+
+          (_this$device$uiContro2 = this.device.uiController) === null || _this$device$uiContro2 === void 0 ? void 0 : _this$device$uiContro2.updateItems({
+            credentials,
+            inputType
+          });
+          break;
+        }
+
+      case "ios":
+      case "android":
+      case "windows":
+      case "windows-overlay":
+      case "extension":
+      default:
+        {
+          throw new Error('unreachable');
+        }
+    }
+  }
+
+  async _pollForUpdatesToCredentialsProvider() {
+    try {
+      const response = await this.device.deviceApi.request(new _deviceApiCalls.CheckCredentialsProviderStatusCall(null));
+
+      if (response.availableInputTypes.credentialsProviderStatus !== this.device.settings.availableInputTypes.credentialsProviderStatus) {
+        this.providerStatusUpdated(response);
+      }
+
+      setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
+    } catch (e) {
+      if (this.device.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e);
+      }
+    }
+  }
+
+}
+/**
+ * @param {never} x
+ * @returns {never}
+ */
+
+
+exports.BitwardenIntegration = BitwardenIntegration;
+
+function assertUnreachable(x) {
+  console.log(x);
+  throw new Error("Didn't expect to get here");
+}
+
+},{"../../packages/device-api":14,"../Form/matching":34,"../deviceApiCalls/__generated__/deviceApiCalls":53,"../deviceApiCalls/__generated__/validators.zod":54}],62:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.LocalData = void 0;
 
 var _autofillUtils = require("../autofill-utils");
@@ -17346,6 +17389,10 @@ class LocalData {
       personalAddress: ''
     });
   }
+
+  init() {}
+  /** @type { PMData } */
+
 
   get hasLocalAddresses() {
     var _this$addresses, _this$addresses2;
@@ -17505,7 +17552,7 @@ class LocalData {
 
 exports.LocalData = LocalData;
 
-},{"../Form/formatters":28,"../Form/matching":34,"../autofill-utils":49}],62:[function(require,module,exports){
+},{"../Form/formatters":28,"../Form/matching":34,"../autofill-utils":49}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17546,6 +17593,10 @@ class PasswordGenerator {
     });
   }
 
+  init() {}
+  /** @type {string|null} */
+
+
   /** @returns {boolean} */
   get generated() {
     return _classPrivateFieldGet(this, _previous) !== null;
@@ -17577,7 +17628,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../../packages/password/index.js":17,"../../packages/password/rules.json":21}],63:[function(require,module,exports){
+},{"../../packages/password/index.js":17,"../../packages/password/rules.json":21}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

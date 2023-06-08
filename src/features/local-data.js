@@ -3,6 +3,9 @@ import {formatFullName} from "../Form/formatters";
 import {getSubtypeFromType} from "../Form/matching";
 
 export class LocalData {
+    init() {
+
+    }
     /** @type { PMData } */
     #data = {
         credentials: [],

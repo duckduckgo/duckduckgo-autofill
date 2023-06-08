@@ -12,13 +12,11 @@ import {createScanner} from '../Scanner.js'
 import {createGlobalConfig} from '../config.js'
 import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
-import {createNotification, createRequest, DeviceApi, validate} from '../../packages/device-api/index.js'
+import {createNotification, createRequest, DeviceApi} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall,
-    AskToUnlockProviderCall,
     SendJSPixelCall,
-    CheckCredentialsProviderStatusCall,
     GetAutofillInitDataCall,
     SetSizeCall,
     GetAutofillDataCall,
@@ -27,7 +25,6 @@ import {
     SetIncontextSignupInitiallyDismissedAtCall, SelectedDetailCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
-import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 import {processConfig} from "@duckduckgo/content-scope-scripts/src/apple-utils";
 import {NativeUIController} from "../UI/controllers/NativeUIController";
 import {defaultOptions} from "../UI/HTMLTooltip";
@@ -36,6 +33,7 @@ import {OverlayUIController} from "../UI/controllers/OverlayUIController";
 import {GetAlias} from "../deviceApiCalls/additionalDeviceApiCalls";
 import {LocalData} from "../features/local-data";
 import {PasswordGenerator} from "../features/password-generator.js";
+import {BitwardenIntegration} from "../features/bitwarden-integration";
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -57,9 +55,6 @@ class InterfacePrototype {
     attempts = 0
     /** @type {import("../Form/Form").Form | null} */
     activeForm = null
-
-    localData = new LocalData();
-    passwordGenerator = new PasswordGenerator();
 
     /** @type {number} */
     get initialSetupDelayMs() {
@@ -113,6 +108,11 @@ class InterfacePrototype {
         this.deviceApi = deviceApi
         this.settings = settings
         this.uiController = null
+
+        this.localData = new LocalData();
+        this.passwordGenerator = new PasswordGenerator();
+        this.bitwarden = new BitwardenIntegration(this);
+
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
         })
@@ -187,6 +187,11 @@ class InterfacePrototype {
         // done
         this.addDeviceListeners()
 
+        // init features
+        this.bitwarden.init();
+        this.localData.init();
+        this.passwordGenerator.init();
+
         await this.setupAutofill()
 
         this.uiController = this.createUIController()
@@ -210,19 +215,7 @@ class InterfacePrototype {
             case "macos-legacy":
             case "macos-modern": {
                 if (this.settings.featureToggles.third_party_credentials_provider) {
-                    if (this.globalConfig.hasModernWebkitAPI) {
-                        Object.defineProperty(window, 'providerStatusUpdated', {
-                            enumerable: false,
-                            configurable: false,
-                            writable: false,
-                            value: (data) => {
-                                this.providerStatusUpdated(data)
-                            }
-                        })
-                    } else {
-                        // On Catalina we poll the native layer
-                        setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
-                    }
+
                 }
                 break;
             }
@@ -835,7 +828,7 @@ class InterfacePrototype {
         const subtype = getSubtypeFromType(inputType)
 
         if (id === PROVIDER_LOCKED) {
-            return this.askToUnlockProvider()
+            return this.bitwarden.askToUnlockProvider()
         }
 
         const matchingData = items.find(item => String(item.id) === id)
@@ -893,26 +886,6 @@ class InterfacePrototype {
             console.error(e)
             return this.removeTooltip('error caught after dataPromise')
         })
-    }
-
-    async askToUnlockProvider() {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern":
-            case "macos-overlay": {
-                const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
-                this.providerStatusUpdated(response)
-                return;
-            }
-            case "ios":
-            case "android":
-            case "windows":
-            case "windows-overlay":
-            case "extension":
-                break;
-            default:
-                assertUnreachable(this.ctx)
-        }
     }
 
     isTooltipActive() {
@@ -1212,20 +1185,6 @@ class InterfacePrototype {
         }
     }
 
-    async _pollForUpdatesToCredentialsProvider() {
-        try {
-            const response = await this.deviceApi.request(new CheckCredentialsProviderStatusCall(null))
-            if (response.availableInputTypes.credentialsProviderStatus !== this.settings.availableInputTypes.credentialsProviderStatus) {
-                this.providerStatusUpdated(response)
-            }
-            setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
-        } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
-            }
-        }
-    }
-
     async resetAutofillUI(callback) {
         this.removeAutofillUIFromPage()
 
@@ -1243,61 +1202,6 @@ class InterfacePrototype {
     removeAutofillUIFromPage() {
         this.uiController?.destroy()
         this._scannerCleanup?.()
-    }
-
-    /**
-     * Called by the native layer on all tabs when the provider status is updated
-     * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
-     */
-    providerStatusUpdated(data) {
-        switch (this.ctx) {
-            case "macos-legacy":
-            case "macos-modern": {
-                try {
-                    const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-                    // Update local settings and data
-                    this.settings.setAvailableInputTypes(availableInputTypes)
-                    this.localData.storeLocalCredentials(credentials)
-                    const inputType = this.getCurrentInputType()
-
-                    // rerender the tooltip
-                    this.uiController?.updateItems({credentials, inputType: inputType })
-                    // If the tooltip is open on an autofill type that's not available, close it
-                    const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
-                    if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                        this.removeTooltip('providerStatusUpdated')
-                    }
-                    // Redecorate fields according to the new types
-                    this.scanner.forms.forEach(form => form.recategorizeAllInputs())
-                } catch (e) {
-                    if (this.globalConfig.isDDGTestMode) {
-                        console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
-                    }
-                }
-                break;
-            }
-            case "macos-overlay": {
-                const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-                // Update local settings and data
-                this.settings.setAvailableInputTypes(availableInputTypes)
-                this.localData.storeLocalCredentials(credentials)
-                const inputType = this.getCurrentInputType()
-
-                // rerender the tooltip
-                this.uiController?.updateItems({ credentials, inputType })
-                break;
-            }
-            case "ios":
-            case "android":
-            case "windows":
-            case "windows-overlay":
-            case "extension":
-            default: {
-                throw new Error('unreachable')
-            }
-        }
     }
 
     /** @param {() => void} handler */
