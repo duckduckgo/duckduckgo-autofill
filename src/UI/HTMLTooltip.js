@@ -220,7 +220,7 @@ export class HTMLTooltip {
         switch (this.kind) {
             case "legacy":
                 this.device = device
-                this.addresses = device.data.getLocalAddresses()
+                this.addresses = device.localData.getLocalAddresses()
                 this.shadow.innerHTML = `
 ${this.options.css}
 <div class="wrapper wrapper--email">
@@ -307,7 +307,7 @@ ${this.options.css}
                 return this
             case "modern":
                 if (!topContextData) throw new Error('unreachable')
-                const data = device.data.dataForAutofill(this.config, topContextData.inputType, topContextData)
+                const data = device.localData.dataForAutofill(this.config, topContextData.inputType, topContextData)
                 // convert the data into tool tip item renderers
                 const items = data.map(d => this.config.tooltipItem(d))
                 const {wrapperClass, css} = this.options

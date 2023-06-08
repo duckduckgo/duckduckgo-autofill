@@ -1,4 +1,4 @@
-import { PasswordGenerator } from './PasswordGenerator.js'
+import { PasswordGenerator } from './password-generator.js'
 
 describe('PasswordGenerator', () => {
     it('generates a password once', () => {

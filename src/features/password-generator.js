@@ -1,5 +1,5 @@
-import { generate } from '../packages/password/index.js'
-import rules from '../packages/password/rules.json'
+import { generate } from '../../packages/password/index.js'
+import rules from '../../packages/password/rules.json'
 
 /**
  * Create a password once and reuse it.
@@ -18,7 +18,7 @@ class PasswordGenerator {
         return this.#previous
     }
 
-    /** @param {import('../packages/password').GenerateOptions} [params] */
+    /** @param {import('../../packages/password').GenerateOptions} [params] */
     generate (params = {}) {
         if (this.#previous) {
             return this.#previous
