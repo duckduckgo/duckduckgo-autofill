@@ -3636,8 +3636,6 @@ var _autofillUtils = require("../autofill-utils.js");
 
 var _matching = require("../Form/matching.js");
 
-var _formatters = require("../Form/formatters.js");
-
 var _Credentials = require("../InputTypes/Credentials.js");
 
 var _PasswordGenerator = require("../PasswordGenerator.js");
@@ -3670,21 +3668,9 @@ var _OverlayUIController = require("../UI/controllers/OverlayUIController");
 
 var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls");
 
-function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
-
-function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+var _localData = require("../features/local-data");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
-
-function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
-
-function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
-
-function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
-
-function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -3700,10 +3686,6 @@ const TOOLTIP_TYPES = {
  * @implements {FormExtensionPoints}
  * @implements {DeviceExtensionPoints}
  */
-
-var _addresses = /*#__PURE__*/new WeakMap();
-
-var _data = /*#__PURE__*/new WeakMap();
 
 class InterfacePrototype {
   /** @type {import("../Form/Form").Form | null} */
@@ -3740,17 +3722,11 @@ class InterfacePrototype {
 
     _defineProperty(this, "activeForm", null);
 
+    _defineProperty(this, "data", new _localData.LocalData());
+
     _defineProperty(this, "autopromptFired", false);
 
     _defineProperty(this, "passwordGenerator", new _PasswordGenerator.PasswordGenerator());
-
-    _classPrivateFieldInitSpec(this, _addresses, {
-      writable: true,
-      value: {
-        privateAddress: '',
-        personalAddress: ''
-      }
-    });
 
     _defineProperty(this, "globalConfig", void 0);
 
@@ -3767,16 +3743,6 @@ class InterfacePrototype {
     _defineProperty(this, "_abortController", null);
 
     _defineProperty(this, "pollingTimeout", null);
-
-    _classPrivateFieldInitSpec(this, _data, {
-      writable: true,
-      value: {
-        credentials: [],
-        creditCards: [],
-        identities: [],
-        topContextData: undefined
-      }
-    });
 
     _defineProperty(this, "ready", false);
 
@@ -3971,7 +3937,7 @@ class InterfacePrototype {
       case "ios":
         {
           const response = await this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillInitData'));
-          this.storeLocalData(response.success);
+          this.data.storeLocalData(response.success);
           const {
             isAppSignedIn
           } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerCheckAppSignedInStatus'));
@@ -3990,9 +3956,9 @@ class InterfacePrototype {
 
       case "windows-overlay":
         {
-          const response = await this.deviceApi.request(new _deviceApiCalls.GetAutofillInitDataCall(null)); // @ts-ignore
+          const response = await this.deviceApi.request(new _deviceApiCalls.GetAutofillInitDataCall(null)); // @ts-expect-error - the full response is not typed yet
 
-          this.storeLocalData(response);
+          this.data.storeLocalData(response);
           break;
         }
 
@@ -4227,7 +4193,7 @@ class InterfacePrototype {
 
       case "extension":
         {
-          if (this.hasLocalAddresses) {
+          if (this.data.hasLocalAddresses) {
             return TOOLTIP_TYPES.EmailProtection;
           }
 
@@ -4245,38 +4211,6 @@ class InterfacePrototype {
     return null;
   }
   /** @type {AbortController|null} */
-
-
-  get hasLocalAddresses() {
-    var _classPrivateFieldGet2, _classPrivateFieldGet3;
-
-    return !!((_classPrivateFieldGet2 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet2 !== void 0 && _classPrivateFieldGet2.privateAddress && (_classPrivateFieldGet3 = _classPrivateFieldGet(this, _addresses)) !== null && _classPrivateFieldGet3 !== void 0 && _classPrivateFieldGet3.personalAddress);
-  }
-
-  getLocalAddresses() {
-    return _classPrivateFieldGet(this, _addresses);
-  }
-
-  storeLocalAddresses(addresses) {
-    _classPrivateFieldSet(this, _addresses, addresses); // When we get new duck addresses, add them to the identities list
-
-
-    const identities = this.getLocalIdentities();
-    const privateAddressIdentity = identities.find(_ref => {
-      let {
-        id
-      } = _ref;
-      return id === 'privateAddress';
-    }); // If we had previously stored them, just update the private address
-
-    if (privateAddressIdentity) {
-      privateAddressIdentity.emailAddress = (0, _autofillUtils.formatDuckAddress)(addresses.privateAddress);
-    } else {
-      // Otherwise, add both addresses
-      _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(identities);
-    }
-  }
-  /** @type { PMData } */
 
 
   onIncontextSignup() {
@@ -4349,7 +4283,7 @@ class InterfacePrototype {
         {
           var _this$activeForm2;
 
-          const topContextData = this.getTopContextData();
+          const topContextData = this.data.getTopContextData();
           return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.activeInput);
         }
 
@@ -4361,100 +4295,6 @@ class InterfacePrototype {
     }
 
     throw new Error('unreachable');
-  }
-
-  addDuckAddressesToIdentities(identities) {
-    if (!this.hasLocalAddresses) return identities;
-    const newIdentities = [];
-    let {
-      privateAddress,
-      personalAddress
-    } = this.getLocalAddresses();
-    privateAddress = (0, _autofillUtils.formatDuckAddress)(privateAddress);
-    personalAddress = (0, _autofillUtils.formatDuckAddress)(personalAddress); // Get the duck addresses in identities
-
-    const duckEmailsInIdentities = identities.reduce((duckEmails, _ref2) => {
-      let {
-        emailAddress: email
-      } = _ref2;
-      return email !== null && email !== void 0 && email.includes(_autofillUtils.ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
-    }, []); // Only add the personal duck address to identities if the user hasn't
-    // already manually added it
-
-    if (!duckEmailsInIdentities.includes(personalAddress)) {
-      newIdentities.push({
-        id: 'personalAddress',
-        emailAddress: personalAddress,
-        title: 'Blocks email trackers'
-      });
-    }
-
-    newIdentities.push({
-      id: 'privateAddress',
-      emailAddress: privateAddress,
-      title: 'Blocks email trackers and hides your address'
-    });
-    return [...identities, ...newIdentities];
-  }
-  /**
-   * Stores init data coming from the tooltipHandler
-   * @param { InboundPMData } data
-   */
-
-
-  storeLocalData(data) {
-    this.storeLocalCredentials(data.credentials);
-    data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode); // Store the full name as a separate field to simplify autocomplete
-
-    const updatedIdentities = data.identities.map(identity => ({ ...identity,
-      fullName: (0, _formatters.formatFullName)(identity)
-    })); // Add addresses
-
-    _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(updatedIdentities);
-    _classPrivateFieldGet(this, _data).creditCards = data.creditCards; // Top autofill only
-
-    if (data.serializedInputContext) {
-      try {
-        _classPrivateFieldGet(this, _data).topContextData = JSON.parse(data.serializedInputContext);
-      } catch (e) {
-        console.error(e);
-        this.removeTooltip('error caught triyng to deserialize json from serializedInputContext');
-      }
-    }
-  }
-  /**
-   * Stores credentials locally
-   * @param {CredentialsObject[]} credentials
-   */
-
-
-  storeLocalCredentials(credentials) {
-    credentials.forEach(cred => delete cred.password);
-    _classPrivateFieldGet(this, _data).credentials = credentials;
-  }
-
-  getTopContextData() {
-    return _classPrivateFieldGet(this, _data).topContextData;
-  }
-
-  getLocalCredentials() {
-    return _classPrivateFieldGet(this, _data).credentials.map(cred => {
-      const {
-        password,
-        ...rest
-      } = cred;
-      return rest;
-    });
-  }
-
-  getLocalIdentities() {
-    return _classPrivateFieldGet(this, _data).identities;
-  }
-  /** @return {CreditCardObject[]} */
-
-
-  getLocalCreditCards() {
-    return _classPrivateFieldGet(this, _data).creditCards;
   }
   /**
    * This is to aid the migration to all platforms using Settings.enabled.
@@ -4510,7 +4350,7 @@ class InterfacePrototype {
     const showImmediately = () => {
       var _this$uiController2, _this$uiController2$c;
 
-      const topContextData = this.getTopContextData();
+      const topContextData = this.data.getTopContextData();
       if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values
 
       const getPosition = () => {
@@ -4637,8 +4477,8 @@ class InterfacePrototype {
     };
 
     const selectedInOverlay = async () => {
-      let detailsEntries = Object.entries(data).map(_ref3 => {
-        let [key, value] = _ref3;
+      let detailsEntries = Object.entries(data).map(_ref => {
+        let [key, value] = _ref;
         return [key, String(value)];
       });
       const entries = Object.fromEntries(detailsEntries);
@@ -4668,38 +4508,6 @@ class InterfacePrototype {
       default:
         assertUnreachable(this.ctx);
     }
-  }
-  /**
-   * Before the DataWebTooltip opens, we collect the data based on the config.type
-   * @param {InputTypeConfigs} config
-   * @param {import('../Form/matching').SupportedTypes} inputType
-   * @param {TopContextData} [data]
-   * @returns {(CredentialsObject|CreditCardObject|IdentityObject)[]}
-   */
-
-
-  dataForAutofill(config, inputType, data) {
-    const subtype = (0, _matching.getSubtypeFromType)(inputType);
-
-    if (config.type === 'identities') {
-      return this.getLocalIdentities().filter(identity => !!identity[subtype]);
-    }
-
-    if (config.type === 'creditCards') {
-      return this.getLocalCreditCards();
-    }
-
-    if (config.type === 'credentials') {
-      if (data) {
-        if (Array.isArray(data.credentials) && data.credentials.length > 0) {
-          return data.credentials;
-        } else {
-          return this.getLocalCredentials();
-        }
-      }
-    }
-
-    return [];
   }
   /**
    * @param {import("../Form/Form").Form} form
@@ -4837,7 +4645,7 @@ class InterfacePrototype {
 
             default:
               // Also fire pixel when filling an identity with the personal duck address from an email field
-              const checks = [subtype === 'emailAddress', this.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(_classPrivateFieldGet(this, _addresses).personalAddress)];
+              const checks = [subtype === 'emailAddress', this.data.hasLocalAddresses, (data === null || data === void 0 ? void 0 : data.emailAddress) === (0, _autofillUtils.formatDuckAddress)(this.data.addresses.personalAddress)];
 
               if (checks.every(Boolean)) {
                 this.firePixel({
@@ -4960,7 +4768,7 @@ class InterfacePrototype {
           const {
             addresses
           } = await this.deviceApi.request((0, _index.createRequest)('emailHandlerGetAddresses'));
-          this.storeLocalAddresses(addresses);
+          this.data.storeLocalAddresses(addresses);
           return addresses;
         }
 
@@ -4970,11 +4778,7 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -4983,7 +4787,7 @@ class InterfacePrototype {
           return new Promise(resolve => chrome.runtime.sendMessage({
             getAddresses: true
           }, data => {
-            this.storeLocalAddresses(data);
+            this.data.storeLocalAddresses(data);
             return resolve(data);
           }));
         }
@@ -5161,7 +4965,7 @@ class InterfacePrototype {
         {
           return chrome.runtime.sendMessage({
             refreshAlias: true
-          }, addresses => this.storeLocalAddresses(addresses));
+          }, addresses => this.data.storeLocalAddresses(addresses));
         }
 
       default:
@@ -5313,7 +5117,7 @@ class InterfacePrototype {
             } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
 
             this.settings.setAvailableInputTypes(availableInputTypes);
-            this.storeLocalCredentials(credentials);
+            this.data.storeLocalCredentials(credentials);
             const inputType = this.getCurrentInputType(); // rerender the tooltip
 
             (_this$uiController8 = this.uiController) === null || _this$uiController8 === void 0 ? void 0 : _this$uiController8.updateItems({
@@ -5348,7 +5152,7 @@ class InterfacePrototype {
           } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema); // Update local settings and data
 
           this.settings.setAvailableInputTypes(availableInputTypes);
-          this.storeLocalCredentials(credentials);
+          this.data.storeLocalCredentials(credentials);
           const inputType = this.getCurrentInputType(); // rerender the tooltip
 
           (_this$uiController9 = this.uiController) === null || _this$uiController9 === void 0 ? void 0 : _this$uiController9.updateItems({
@@ -5464,7 +5268,7 @@ class InterfacePrototype {
 
       case "extension":
         {
-          return this.hasLocalAddresses;
+          return this.data.hasLocalAddresses;
         }
 
       default:
@@ -5562,10 +5366,10 @@ class InterfacePrototype {
 
 
   async getAutofillIdentity(id) {
-    const identity = this.getLocalIdentities().find(_ref4 => {
+    const identity = this.data.getLocalIdentities().find(_ref2 => {
       let {
         id: identityId
-      } = _ref4;
+      } = _ref2;
       return "".concat(identityId) === "".concat(id);
     });
     return Promise.resolve({
@@ -5719,7 +5523,7 @@ function assertUnreachable(x) {
   throw new Error("Didn't expect to get here");
 }
 
-},{"../../packages/device-api/index.js":6,"../Form/formatters.js":20,"../Form/matching.js":26,"../InputTypes/Credentials.js":29,"../PasswordGenerator.js":32,"../Scanner.js":33,"../Settings.js":34,"../UI/HTMLTooltip":35,"../UI/controllers/HTMLTooltipUIController":36,"../UI/controllers/NativeUIController":37,"../UI/controllers/OverlayUIController":38,"../autofill-utils.js":42,"../config.js":44,"../deviceApiCalls/__generated__/deviceApiCalls.js":46,"../deviceApiCalls/__generated__/validators.zod.js":47,"../deviceApiCalls/additionalDeviceApiCalls":48,"../deviceApiCalls/transports/transports.js":52,"./initFormSubmissionsApi.js":16,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../Form/matching.js":26,"../InputTypes/Credentials.js":29,"../PasswordGenerator.js":32,"../Scanner.js":33,"../Settings.js":34,"../UI/HTMLTooltip":35,"../UI/controllers/HTMLTooltipUIController":36,"../UI/controllers/NativeUIController":37,"../UI/controllers/OverlayUIController":38,"../autofill-utils.js":42,"../config.js":44,"../deviceApiCalls/__generated__/deviceApiCalls.js":46,"../deviceApiCalls/__generated__/validators.zod.js":47,"../deviceApiCalls/additionalDeviceApiCalls":48,"../deviceApiCalls/transports/transports.js":52,"../features/local-data":54,"./initFormSubmissionsApi.js":16,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11202,7 +11006,7 @@ class HTMLTooltip {
     switch (this.kind) {
       case "legacy":
         this.device = device;
-        this.addresses = device.getLocalAddresses();
+        this.addresses = device.data.getLocalAddresses();
         this.shadow.innerHTML = "\n".concat(this.options.css, "\n<div class=\"wrapper wrapper--email\">\n    <div class=\"tooltip tooltip--email\" hidden>\n        <button class=\"tooltip__button tooltip__button--email js-use-personal\">\n            <span class=\"tooltip__button--email__primary-text\">\n                Use <span class=\"js-address\">").concat((0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress)), "</span>\n            </span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers</span>\n        </button>\n        <button class=\"tooltip__button tooltip__button--email js-use-private\">\n            <span class=\"tooltip__button--email__primary-text\">Generate a Private Duck Address</span>\n            <span class=\"tooltip__button--email__secondary-text\">Blocks email trackers and hides your address</span>\n        </button>\n    </div>\n</div>");
         this.wrapper = this.shadow.querySelector('.wrapper');
         this.tooltip = this.shadow.querySelector('.tooltip');
@@ -11255,7 +11059,7 @@ class HTMLTooltip {
 
       case "modern":
         if (!topContextData) throw new Error('unreachable');
-        const data = device.dataForAutofill(this.config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
+        const data = device.data.dataForAutofill(this.config, topContextData.inputType, topContextData); // convert the data into tool tip item renderers
 
         const items = data.map(d => this.config.tooltipItem(d));
         const {
@@ -12589,7 +12393,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":14,"./requestIdleCallback.js":54}],44:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./requestIdleCallback.js":55}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13652,6 +13456,210 @@ function waitForWindowsResponse(responseId, options) {
 }
 
 },{"../../../packages/device-api/index.js":6}],54:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LocalData = void 0;
+
+var _autofillUtils = require("../autofill-utils");
+
+var _formatters = require("../Form/formatters");
+
+var _matching = require("../Form/matching");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+var _data = /*#__PURE__*/new WeakMap();
+
+class LocalData {
+  constructor() {
+    _classPrivateFieldInitSpec(this, _data, {
+      writable: true,
+      value: {
+        credentials: [],
+        creditCards: [],
+        identities: [],
+        topContextData: undefined
+      }
+    });
+
+    _defineProperty(this, "addresses", {
+      privateAddress: '',
+      personalAddress: ''
+    });
+  }
+
+  get hasLocalAddresses() {
+    var _this$addresses, _this$addresses2;
+
+    return !!((_this$addresses = this.addresses) !== null && _this$addresses !== void 0 && _this$addresses.privateAddress && (_this$addresses2 = this.addresses) !== null && _this$addresses2 !== void 0 && _this$addresses2.personalAddress);
+  }
+
+  getLocalAddresses() {
+    return this.addresses;
+  }
+
+  storeLocalAddresses(addresses) {
+    this.addresses = addresses; // When we get new duck addresses, add them to the identities list
+
+    const identities = this.getLocalIdentities();
+    const privateAddressIdentity = identities.find(_ref => {
+      let {
+        id
+      } = _ref;
+      return id === 'privateAddress';
+    }); // If we had previously stored them, just update the private address
+
+    if (privateAddressIdentity) {
+      privateAddressIdentity.emailAddress = (0, _autofillUtils.formatDuckAddress)(addresses.privateAddress);
+    } else {
+      // Otherwise, add both addresses
+      _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(identities);
+    }
+  }
+
+  addDuckAddressesToIdentities(identities) {
+    if (!this.hasLocalAddresses) return identities;
+    const newIdentities = [];
+    let {
+      privateAddress,
+      personalAddress
+    } = this.getLocalAddresses();
+    privateAddress = (0, _autofillUtils.formatDuckAddress)(privateAddress);
+    personalAddress = (0, _autofillUtils.formatDuckAddress)(personalAddress); // Get the duck addresses in identities
+
+    const duckEmailsInIdentities = identities.reduce((duckEmails, _ref2) => {
+      let {
+        emailAddress: email
+      } = _ref2;
+      return email !== null && email !== void 0 && email.includes(_autofillUtils.ADDRESS_DOMAIN) ? duckEmails.concat(email) : duckEmails;
+    }, []); // Only add the personal duck address to identities if the user hasn't
+    // already manually added it
+
+    if (!duckEmailsInIdentities.includes(personalAddress)) {
+      newIdentities.push({
+        id: 'personalAddress',
+        emailAddress: personalAddress,
+        title: 'Blocks email trackers'
+      });
+    }
+
+    newIdentities.push({
+      id: 'privateAddress',
+      emailAddress: privateAddress,
+      title: 'Blocks email trackers and hides your address'
+    });
+    return [...identities, ...newIdentities];
+  }
+  /**
+   * Stores init data coming from the tooltipHandler
+   * @param { InboundPMData } data
+   */
+
+
+  storeLocalData(data) {
+    this.storeLocalCredentials(data.credentials);
+    data.creditCards.forEach(cc => delete cc.cardNumber && delete cc.cardSecurityCode); // Store the full name as a separate field to simplify autocomplete
+
+    const updatedIdentities = data.identities.map(identity => ({ ...identity,
+      fullName: (0, _formatters.formatFullName)(identity)
+    })); // Add addresses
+
+    _classPrivateFieldGet(this, _data).identities = this.addDuckAddressesToIdentities(updatedIdentities);
+    _classPrivateFieldGet(this, _data).creditCards = data.creditCards; // Top autofill only
+
+    if (data.serializedInputContext) {
+      try {
+        _classPrivateFieldGet(this, _data).topContextData = JSON.parse(data.serializedInputContext);
+      } catch (e) {
+        console.error(e); // this.removeTooltip('error caught triyng to deserialize json from serializedInputContext')
+      }
+    }
+  }
+  /**
+   * Stores credentials locally
+   * @param {CredentialsObject[]} credentials
+   */
+
+
+  storeLocalCredentials(credentials) {
+    credentials.forEach(cred => delete cred.password);
+    _classPrivateFieldGet(this, _data).credentials = credentials;
+  }
+
+  getTopContextData() {
+    return _classPrivateFieldGet(this, _data).topContextData;
+  }
+
+  getLocalCredentials() {
+    return _classPrivateFieldGet(this, _data).credentials.map(cred => {
+      const {
+        password,
+        ...rest
+      } = cred;
+      return rest;
+    });
+  }
+
+  getLocalIdentities() {
+    return _classPrivateFieldGet(this, _data).identities;
+  }
+  /** @return {CreditCardObject[]} */
+
+
+  getLocalCreditCards() {
+    return _classPrivateFieldGet(this, _data).creditCards;
+  }
+  /**
+   * Before the DataWebTooltip opens, we collect the data based on the config.type
+   * @param {InputTypeConfigs} config
+   * @param {import('../Form/matching').SupportedTypes} inputType
+   * @param {TopContextData} [data]
+   * @returns {(CredentialsObject|CreditCardObject|IdentityObject)[]}
+   */
+
+
+  dataForAutofill(config, inputType, data) {
+    const subtype = (0, _matching.getSubtypeFromType)(inputType);
+
+    if (config.type === 'identities') {
+      return this.getLocalIdentities().filter(identity => !!identity[subtype]);
+    }
+
+    if (config.type === 'creditCards') {
+      return this.getLocalCreditCards();
+    }
+
+    if (config.type === 'credentials') {
+      if (data) {
+        if (Array.isArray(data.credentials) && data.credentials.length > 0) {
+          return data.credentials;
+        } else {
+          return this.getLocalCredentials();
+        }
+      }
+    }
+
+    return [];
+  }
+
+}
+
+exports.LocalData = LocalData;
+
+},{"../Form/formatters":20,"../Form/matching":26,"../autofill-utils":42}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
