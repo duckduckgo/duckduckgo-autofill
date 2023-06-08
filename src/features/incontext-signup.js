@@ -10,6 +10,9 @@ export class IncontextSignup {
     constructor(device) {
         this.device = device;
     }
+    init() {
+
+    }
     onIncontextSignup() {
         switch (this.device.ctx) {
             case "macos-legacy":

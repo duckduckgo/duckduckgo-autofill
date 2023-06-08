@@ -7310,8 +7310,6 @@ exports.default = void 0;
 
 var _autofillUtils = require("../autofill-utils.js");
 
-var _matching = require("../Form/matching.js");
-
 var _Credentials = require("../InputTypes/Credentials.js");
 
 var _Scanner = require("../Scanner.js");
@@ -7330,14 +7328,6 @@ var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
 
 var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 
-var _NativeUIController = require("../UI/controllers/NativeUIController");
-
-var _HTMLTooltip = require("../UI/HTMLTooltip");
-
-var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
-
-var _OverlayUIController = require("../UI/controllers/OverlayUIController");
-
 var _localData = require("../features/local-data");
 
 var _passwordGenerator = require("../features/password-generator.js");
@@ -7349,6 +7339,10 @@ var _emailProtection = require("../features/email-protection");
 var _formFilling = require("../features/form-filling");
 
 var _incontextSignup = require("../features/incontext-signup");
+
+var _remoteData = require("../features/remote-data");
+
+var _uiController = require("../features/ui-controller");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -7368,8 +7362,6 @@ const TOOLTIP_TYPES = {
  */
 
 class InterfacePrototype {
-  /** @type {import("../Form/Form").Form | null} */
-
   /** @type {number} */
   get initialSetupDelayMs() {
     switch (this.ctx) {
@@ -7390,6 +7382,8 @@ class InterfacePrototype {
 
     return 0;
   }
+  /** @type {boolean} */
+
 
   /**
    * @param {Ctx} ctx
@@ -7398,10 +7392,6 @@ class InterfacePrototype {
    * @param {Settings} settings
    */
   constructor(ctx, config, deviceApi, settings) {
-    _defineProperty(this, "activeForm", null);
-
-    _defineProperty(this, "autopromptFired", false);
-
     _defineProperty(this, "isInitializationStarted", void 0);
 
     _defineProperty(this, "_abortController", null);
@@ -7414,15 +7404,14 @@ class InterfacePrototype {
     this.globalConfig = config;
     this.deviceApi = deviceApi;
     this.settings = settings;
-    /** @type {import("../UI/controllers/UIController.js").UIController | null} */
-
-    this.uiController = null;
     this.localData = new _localData.LocalData();
+    this.remoteData = new _remoteData.RemoteData(this);
     this.passwordGenerator = new _passwordGenerator.PasswordGenerator();
     this.bitwarden = new _bitwardenIntegration.BitwardenIntegration(this);
     this.emailProtection = new _emailProtection.EmailProtection(this);
     this.formFilling = new _formFilling.FormFilling(this);
     this.incontextSignup = new _incontextSignup.IncontextSignup(this);
+    this.uiController = new _uiController.UIController(this);
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
     });
@@ -7498,6 +7487,7 @@ class InterfacePrototype {
     this.addDeviceListeners(); // init features
 
     this.localData.init();
+    this.remoteData.init();
 
     if (this.settings.featureToggles.password_generation) {
       this.passwordGenerator.init();
@@ -7512,8 +7502,12 @@ class InterfacePrototype {
       await this.emailProtection.setupSettingsPage();
     }
 
-    await this.refreshData();
-    this.uiController = this.createUIController(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
+    if (this.settings.featureToggles.emailProtection_incontext_signup) {
+      this.incontextSignup.init();
+    }
+
+    await this.remoteData.refresh();
+    this.uiController.init(); // this is the temporary measure to support windows whilst we still have 'setupAutofill'
     // eventually all interfaces will use this
 
     if (!this.isEnabledViaSettings()) {
@@ -7540,9 +7534,9 @@ class InterfacePrototype {
            * page load every time it's opened.
            */
           window.addEventListener('mouseMove', event => {
-            var _this$uiController, _this$uiController$ge;
+            var _this$uiController, _this$uiController$co, _this$uiController$co2;
 
-            const activeTooltip = (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : (_this$uiController$ge = _this$uiController.getActiveTooltip) === null || _this$uiController$ge === void 0 ? void 0 : _this$uiController$ge.call(_this$uiController);
+            const activeTooltip = (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : (_this$uiController$co = _this$uiController.controller) === null || _this$uiController$co === void 0 ? void 0 : (_this$uiController$co2 = _this$uiController$co.getActiveTooltip) === null || _this$uiController$co2 === void 0 ? void 0 : _this$uiController$co2.call(_this$uiController$co);
             activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.focus(event.detail.x, event.detail.y);
           });
           break;
@@ -7555,248 +7549,6 @@ class InterfacePrototype {
       case "windows":
       case "extension":
         break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-
-  async refreshData() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          const response = await this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillInitData'));
-          this.localData.storeLocalData(response.success);
-          break;
-        }
-
-      case "android":
-      case "windows":
-        break;
-
-      case "windows-overlay":
-        {
-          const response = await this.deviceApi.request(new _deviceApiCalls.GetAutofillInitDataCall(null)); // @ts-expect-error - the full response is not typed yet
-
-          this.localData.storeLocalData(response);
-          break;
-        }
-
-      case "extension":
-        return this.emailProtection.getAddresses();
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-  /**
-   * Implementors should override this with a UI controller that suits
-   * their platform.
-   *
-   * @returns {import("../UI/controllers/UIController.js").UIController}
-   */
-
-
-  createUIController() {
-    switch (this.ctx) {
-      case "macos-legacy":
-        {
-          const options = { ..._HTMLTooltip.defaultOptions,
-            testMode: this.isTestMode()
-          };
-          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, 'modern', options);
-        }
-
-      case "macos-modern":
-        {
-          /**
-           * If we get here, we're just a controller for an overlay
-           */
-          return new _OverlayUIController.OverlayUIController({
-            remove: async () => {
-              this.deviceApi.notify((0, _index.createNotification)('closeAutofillParent', {}));
-              this._waiting = false;
-            },
-            show: async details => {
-              this._waiting = true;
-              const applePayload = { ...details.triggerContext,
-                serializedInputContext: details.serializedInputContext
-              };
-              this.deviceApi.notify((0, _index.createNotification)('showAutofillParent', applePayload)); // start listening for a result
-
-              const listener = new Promise(resolve => {
-                // Prevent two timeouts from happening
-                // @ts-ignore
-                const poll = async () => {
-                  clearTimeout(this.pollingTimeout);
-                  const response = await this.deviceApi.request((0, _index.createRequest)('getSelectedCredentials'));
-
-                  switch (response.type) {
-                    case 'none':
-                      // Parent hasn't got a selected credential yet
-                      // @ts-ignore
-                      this.pollingTimeout = setTimeout(() => {
-                        poll();
-                      }, 100);
-                      return;
-
-                    case 'ok':
-                      {
-                        return resolve({
-                          data: response.data,
-                          configType: response.configType
-                        });
-                      }
-
-                    case 'stop':
-                      // Parent wants us to stop polling
-                      resolve(null);
-                      break;
-                  }
-                };
-
-                poll();
-              });
-              listener.then(response => {
-                if (!response) {
-                  return;
-                }
-
-                this.formFilling.selectedDetail(response.data, response.configType);
-              }).catch(e => {
-                console.error('unknown error', e);
-              });
-            }
-          });
-        }
-
-      case "macos-overlay":
-        {
-          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, 'modern', {
-            wrapperClass: 'top-autofill',
-            tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: details => this.deviceApi.notify((0, _index.createNotification)('setSize', details)),
-            testMode: this.isTestMode()
-          });
-        }
-
-      case "ios":
-      case "android":
-        {
-          return new _NativeUIController.NativeUIController();
-        }
-
-      case "windows":
-        {
-          /**
-           * If we get here, we're just a controller for an overlay
-           */
-          return new _OverlayUIController.OverlayUIController({
-            remove: async () => {
-              if (this._abortController && !this._abortController.signal.aborted) {
-                this._abortController.abort();
-              }
-
-              this.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
-            },
-            show: async details => {
-              const {
-                mainType
-              } = details; // prevent overlapping listeners
-
-              if (this._abortController && !this._abortController.signal.aborted) {
-                this._abortController.abort();
-              }
-
-              this._abortController = new AbortController();
-              this._waiting = true;
-              this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
-                signal: this._abortController.signal
-              }).then(resp => {
-                // console.log('got resp', resp.action);
-                if (!this.activeForm) {
-                  throw new Error('this.currentAttached was absent');
-                }
-
-                switch (resp.action) {
-                  case 'fill':
-                    {
-                      if (mainType in resp) {
-                        this.formFilling.selectedDetail(resp[mainType], mainType);
-                      } else {
-                        throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
-                      }
-
-                      break;
-                    }
-
-                  case 'focus':
-                    {
-                      var _this$activeForm, _this$activeForm$acti;
-
-                      (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : (_this$activeForm$acti = _this$activeForm.activeInput) === null || _this$activeForm$acti === void 0 ? void 0 : _this$activeForm$acti.focus();
-                      break;
-                    }
-
-                  case 'none':
-                    {
-                      // do nothing
-                      break;
-                    }
-
-                  default:
-                    {
-                      if (this.globalConfig.isDDGTestMode) {
-                        console.warn('unhandled response', resp);
-                      }
-                    }
-                } // this.removeTooltip('windows test')
-
-              }).catch(e => {
-                if (this.globalConfig.isDDGTestMode) {
-                  if (e.name === 'AbortError') {
-                    console.log('Promise Aborted');
-                  } else {
-                    console.error('Promise Rejected', e);
-                  }
-                }
-              });
-            }
-          });
-        }
-
-      case "windows-overlay":
-        {
-          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, 'modern', {
-            wrapperClass: 'top-autofill',
-            tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: details => this.deviceApi.notify(new _deviceApiCalls.SetSizeCall(details)),
-            testMode: this.isTestMode(),
-
-            /**
-             * Note: This is needed because Mutation observer didn't support visibility checks on Windows
-             */
-            checkVisibility: false
-          });
-        }
-
-      case "extension":
-        {
-          /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
-          const htmlTooltipOptions = { ..._HTMLTooltip.defaultOptions,
-            css: "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossOrigin=\"anonymous\">"),
-            testMode: this.isTestMode()
-          };
-          const tooltipKinds = {
-            [TOOLTIP_TYPES.EmailProtection]: 'legacy',
-            [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
-          };
-          const tooltipKind = tooltipKinds[this.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection];
-          return new _HTMLTooltipUIController.HTMLTooltipUIController(this, tooltipKind, htmlTooltipOptions);
-        }
 
       default:
         assertUnreachable(this.ctx);
@@ -7837,31 +7589,6 @@ class InterfacePrototype {
 
 
   /**
-   * @returns {import('../Form/matching').SupportedTypes}
-   */
-  getCurrentInputType() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          var _this$activeForm2;
-
-          const topContextData = this.localData.getTopContextData();
-          return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.activeInput);
-        }
-
-      case "android":
-      case "windows":
-      case "windows-overlay":
-      case "extension":
-        break;
-    }
-
-    throw new Error('unreachable');
-  }
-  /**
    * This is to aid the migration to all platforms using Settings.enabled.
    *
    * For now, Windows is the only platform that can be 'enabled' or 'disabled' via
@@ -7872,8 +7599,6 @@ class InterfacePrototype {
    *
    * @returns {boolean}
    */
-
-
   isEnabledViaSettings() {
     switch (this.ctx) {
       case "macos-legacy":
@@ -7897,46 +7622,6 @@ class InterfacePrototype {
 
 
   postInit() {
-    const defaultPostInit = () => {
-      const cleanup = this.scanner.init();
-      this.emailProtection.addLogoutListener(() => {
-        cleanup();
-
-        if (this.globalConfig.isDDGDomain) {
-          (0, _autofillUtils.notifyWebApp)({
-            deviceSignedIn: {
-              value: false
-            }
-          });
-        }
-      });
-    };
-
-    const showImmediately = () => {
-      var _this$uiController2, _this$uiController2$c;
-
-      const topContextData = this.localData.getTopContextData();
-      if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values
-
-      const getPosition = () => {
-        return {
-          x: 0,
-          y: 0,
-          height: 50,
-          width: 50
-        };
-      }; // Create the tooltip, and set it as active
-
-
-      const tooltip = (_this$uiController2 = this.uiController) === null || _this$uiController2 === void 0 ? void 0 : (_this$uiController2$c = _this$uiController2.createTooltip) === null || _this$uiController2$c === void 0 ? void 0 : _this$uiController2$c.call(_this$uiController2, getPosition, topContextData);
-
-      if (tooltip) {
-        var _this$uiController3, _this$uiController3$s;
-
-        (_this$uiController3 = this.uiController) === null || _this$uiController3 === void 0 ? void 0 : (_this$uiController3$s = _this$uiController3.setActiveTooltip) === null || _this$uiController3$s === void 0 ? void 0 : _this$uiController3$s.call(_this$uiController3, tooltip);
-      }
-    };
-
     switch (this.ctx) {
       case "ios":
       case "android":
@@ -7944,15 +7629,39 @@ class InterfacePrototype {
       case "macos-modern":
       case "windows":
         {
-          defaultPostInit();
+          this._scannerCleanup = this.scanner.init();
+          this.emailProtection.postInit();
           this.ready = true;
           return;
         }
+      // show immediately inside overlays
 
       case "macos-overlay":
       case "windows-overlay":
         {
-          showImmediately();
+          var _this$uiController2, _this$uiController2$c, _this$uiController2$c2;
+
+          const topContextData = this.localData.getTopContextData();
+          if (!topContextData) throw new Error('unreachable, topContextData should be available'); // Provide dummy values
+
+          const getPosition = () => {
+            return {
+              x: 0,
+              y: 0,
+              height: 50,
+              width: 50
+            };
+          }; // Create the tooltip, and set it as active
+
+
+          const tooltip = (_this$uiController2 = this.uiController) === null || _this$uiController2 === void 0 ? void 0 : (_this$uiController2$c = _this$uiController2.controller) === null || _this$uiController2$c === void 0 ? void 0 : (_this$uiController2$c2 = _this$uiController2$c.createTooltip) === null || _this$uiController2$c2 === void 0 ? void 0 : _this$uiController2$c2.call(_this$uiController2$c, getPosition, topContextData);
+
+          if (tooltip) {
+            var _this$uiController3, _this$uiController3$c, _this$uiController3$c2;
+
+            (_this$uiController3 = this.uiController) === null || _this$uiController3 === void 0 ? void 0 : (_this$uiController3$c = _this$uiController3.controller) === null || _this$uiController3$c === void 0 ? void 0 : (_this$uiController3$c2 = _this$uiController3$c.setActiveTooltip) === null || _this$uiController3$c2 === void 0 ? void 0 : _this$uiController3$c2.call(_this$uiController3$c, tooltip);
+          }
+
           return;
         }
 
@@ -7961,25 +7670,14 @@ class InterfacePrototype {
           switch (this.getActiveTooltipType()) {
             case TOOLTIP_TYPES.EmailProtection:
               {
-                var _this$activeForm3;
+                var _this$uiController$ac;
 
                 this._scannerCleanup = this.scanner.init();
-                this.emailProtection.addLogoutListener(() => {
-                  this.resetAutofillUI();
 
-                  if (this.globalConfig.isDDGDomain) {
-                    (0, _autofillUtils.notifyWebApp)({
-                      deviceSignedIn: {
-                        value: false
-                      }
-                    });
-                  }
-                });
+                if ((_this$uiController$ac = this.uiController.activeForm) !== null && _this$uiController$ac !== void 0 && _this$uiController$ac.activeInput) {
+                  var _this$uiController$ac2;
 
-                if ((_this$activeForm3 = this.activeForm) !== null && _this$activeForm3 !== void 0 && _this$activeForm3.activeInput) {
-                  var _this$activeForm4;
-
-                  this.attachTooltip(this.activeForm, (_this$activeForm4 = this.activeForm) === null || _this$activeForm4 === void 0 ? void 0 : _this$activeForm4.activeInput, null, 'postSignup');
+                  this.uiController.attachTooltip(this.uiController.activeForm, (_this$uiController$ac2 = this.uiController.activeForm) === null || _this$uiController$ac2 === void 0 ? void 0 : _this$uiController$ac2.activeInput, null, 'postSignup');
                 }
 
                 break;
@@ -8009,72 +7707,11 @@ class InterfacePrototype {
   isTestMode() {
     return this.globalConfig.isDDGTestMode;
   }
-  /**
-   * @param {import("../Form/Form").Form} form
-   * @param {HTMLInputElement} input
-   * @param {{ x: number; y: number; } | null} click
-   * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
-   */
-
-
-  attachTooltip(form, input, click) {
-    var _this$uiController4;
-
-    let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
-    // Avoid flashing tooltip from background tabs on macOS
-    if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return; // Only autoprompt on mobile devices
-
-    if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return; // Only fire autoprompt once
-
-    if (trigger === 'autoprompt' && this.autopromptFired) return;
-    form.activeInput = input;
-    this.activeForm = form;
-    const inputType = (0, _matching.getInputType)(input);
-    /** @type {PosFn} */
-
-    const getPosition = () => {
-      // In extensions, the tooltip is centered on the Dax icon
-      const alignLeft = this.globalConfig.isApp || this.globalConfig.isWindows;
-      return alignLeft ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
-    }; // todo: this will be migrated to use NativeUIController soon
-
-
-    if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
-      this.emailProtection.getAlias().then(alias => {
-        var _form$activeInput;
-
-        if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
-      });
-      return;
-    }
-    /** @type {TopContextData} */
-
-
-    const topContextData = {
-      inputType
-    }; // Allow features to append/change top context data
-    // for example, generated passwords may get appended here
-
-    const processedTopContext = this.preAttachTooltip(topContextData, input, form);
-    (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : _this$uiController4.attach({
-      input,
-      form,
-      click,
-      getPosition,
-      topContextData: processedTopContext,
-      device: this,
-      trigger
-    });
-
-    if (trigger === 'autoprompt') {
-      this.autopromptFired = true;
-    }
-  }
 
   isTooltipActive() {
-    var _this$uiController$is, _this$uiController5, _this$uiController5$i;
+    var _this$uiController$co3, _this$uiController4, _this$uiController4$c, _this$uiController4$c2;
 
-    return (_this$uiController$is = (_this$uiController5 = this.uiController) === null || _this$uiController5 === void 0 ? void 0 : (_this$uiController5$i = _this$uiController5.isActive) === null || _this$uiController5$i === void 0 ? void 0 : _this$uiController5$i.call(_this$uiController5)) !== null && _this$uiController$is !== void 0 ? _this$uiController$is : false;
+    return (_this$uiController$co3 = (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : (_this$uiController4$c = _this$uiController4.controller) === null || _this$uiController4$c === void 0 ? void 0 : (_this$uiController4$c2 = _this$uiController4$c.isActive) === null || _this$uiController4$c2 === void 0 ? void 0 : _this$uiController4$c2.call(_this$uiController4$c)) !== null && _this$uiController$co3 !== void 0 ? _this$uiController$co3 : false;
   }
   /**
    * @param {string} reason
@@ -8083,249 +7720,29 @@ class InterfacePrototype {
 
 
   removeTooltip(reason) {
-    var _this$uiController6, _this$uiController6$r;
+    var _this$uiController5, _this$uiController5$c, _this$uiController5$c2;
 
     console.log('InterfacePrototype.removeTooltip', reason);
-    return (_this$uiController6 = this.uiController) === null || _this$uiController6 === void 0 ? void 0 : (_this$uiController6$r = _this$uiController6.removeTooltip) === null || _this$uiController6$r === void 0 ? void 0 : _this$uiController6$r.call(_this$uiController6, 'interface');
-  }
-  /** @returns {Promise<null|Record<any,any>>} */
-
-
-  async getUserData() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.request((0, _index.createRequest)('emailHandlerGetUserData'));
-        }
-
-      case "android":
-        {
-          let userData = null;
-
-          try {
-            userData = JSON.parse(window.EmailInterface.getUserData());
-          } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-              console.error(e);
-            }
-          }
-
-          return Promise.resolve(userData);
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return new Promise(resolve => chrome.runtime.sendMessage({
-            getUserData: true
-          }, data => resolve(data)));
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-
-    return null;
-  }
-  /**
-   */
-
-
-  removeUserData() {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.notify((0, _index.createNotification)('emailHandlerRemoveToken'));
-        }
-
-      case "android":
-        {
-          try {
-            window.EmailInterface.removeCredentials();
-          } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-              console.error(e);
-            }
-          }
-
-          break;
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return chrome.runtime.sendMessage({
-            removeUserData: true
-          });
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
-  }
-  /**
-   * @param {object} data
-   * @param {object} data.addUserData
-   * @param {string} data.addUserData.token
-   * @param {string} data.addUserData.userName
-   * @param {string} data.addUserData.cohort
-   */
-
-
-  storeUserData(data) {
-    const {
-      addUserData: {
-        token,
-        userName,
-        cohort
-      }
-    } = data;
-
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.notify((0, _index.createNotification)('emailHandlerStoreToken', {
-            token,
-            username: userName,
-            cohort
-          }));
-        }
-
-      case "android":
-        {
-          return window.EmailInterface.storeCredentials(token, userName, cohort);
-        }
-
-      case "windows":
-      case "windows-overlay":
-        break;
-
-      case "extension":
-        {
-          return chrome.runtime.sendMessage(data);
-        }
-
-      default:
-        assertUnreachable(this.ctx);
-    }
+    return (_this$uiController5 = this.uiController) === null || _this$uiController5 === void 0 ? void 0 : (_this$uiController5$c = _this$uiController5.controller) === null || _this$uiController5$c === void 0 ? void 0 : (_this$uiController5$c2 = _this$uiController5$c.removeTooltip) === null || _this$uiController5$c2 === void 0 ? void 0 : _this$uiController5$c2.call(_this$uiController5$c, 'interface');
   }
 
   async resetAutofillUI(callback) {
+    var _this$uiController6;
+
     this.removeAutofillUIFromPage(); // Start the setup process again
 
     await this.settings.refresh();
-    await this.refreshData();
+    await this.remoteData.refresh();
     if (callback) await callback();
-    this.uiController = this.createUIController();
+    (_this$uiController6 = this.uiController) === null || _this$uiController6 === void 0 ? void 0 : _this$uiController6.init();
     await this.postInit();
   }
 
   removeAutofillUIFromPage() {
-    var _this$uiController7, _this$_scannerCleanup;
+    var _this$uiController7, _this$uiController7$c, _this$_scannerCleanup;
 
-    (_this$uiController7 = this.uiController) === null || _this$uiController7 === void 0 ? void 0 : _this$uiController7.destroy();
+    (_this$uiController7 = this.uiController) === null || _this$uiController7 === void 0 ? void 0 : (_this$uiController7$c = _this$uiController7.controller) === null || _this$uiController7$c === void 0 ? void 0 : _this$uiController7$c.destroy();
     (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
-  }
-  /**
-   * Gets credentials ready for autofill
-   * @param {CredentialsObject['id']} id - the credential id
-   * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
-   */
-
-
-  async getAutofillCredentials(id) {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.request((0, _index.createRequest)('pmHandlerGetAutofillCredentials', {
-            id
-          }));
-        }
-
-      case "android":
-      case "windows":
-      case "windows-overlay":
-      case "extension":
-        break;
-    }
-
-    return this.deviceApi.request(new _deviceApiCalls.GetAutofillCredentialsCall({
-      id: String(id)
-    }));
-  }
-  /**
-   * Gets a single complete credit card obj once the user requests it
-   * @param {CreditCardObject['id']} id
-   * @returns {APIResponse<CreditCardObject>}
-   */
-
-
-  async getAutofillCreditCard(id) {
-    return this.deviceApi.request((0, _index.createRequest)('pmHandlerGetCreditCard', {
-      id
-    }));
-  }
-  /**
-   * @param {IdentityObject['id']} id
-   * @returns {Promise<{success: IdentityObject|undefined}>}
-   */
-
-
-  async getAutofillIdentity(id) {
-    const identity = this.localData.getLocalIdentities().find(_ref => {
-      let {
-        id: identityId
-      } = _ref;
-      return "".concat(identityId) === "".concat(id);
-    });
-    return Promise.resolve({
-      success: identity
-    });
-  }
-  /** @param {StoreFormData} values */
-
-
-  storeFormData(values) {
-    switch (this.ctx) {
-      case "macos-legacy":
-      case "macos-modern":
-      case "macos-overlay":
-      case "ios":
-        {
-          return this.deviceApi.notify((0, _index.createNotification)('pmHandlerStoreData', values));
-        }
-
-      case "android":
-      case "windows":
-      case "windows-overlay":
-        {
-          return this.deviceApi.notify(new _deviceApiCalls.StoreFormDataCall(values));
-        }
-
-      case "extension":
-        break;
-
-      default:
-        assertUnreachable(this.ctx);
-    }
   }
   /**
    * `preAttachTooltip` happens just before a tooltip is show - features may want to append some data
@@ -8375,7 +7792,7 @@ class InterfacePrototype {
 
       if (((_formValues$credentia = formValues.credentials) === null || _formValues$credentia === void 0 ? void 0 : _formValues$credentia.password) === data.password) {
         const withAutoGeneratedFlag = (0, _Credentials.appendGeneratedId)(formValues, data.password);
-        this.storeFormData(withAutoGeneratedFlag);
+        this.remoteData.storeFormData(withAutoGeneratedFlag);
       }
     }
 
@@ -8403,7 +7820,7 @@ class InterfacePrototype {
 
     if (checks.some(Boolean)) {
       const withAutoGeneratedFlag = (0, _Credentials.appendGeneratedId)(values, this.passwordGenerator.password);
-      this.storeFormData(withAutoGeneratedFlag);
+      this.remoteData.storeFormData(withAutoGeneratedFlag);
     }
   }
   /**
@@ -8447,7 +7864,7 @@ function assertUnreachable(x) {
   throw new Error("Didn't expect to get here");
 }
 
-},{"../../packages/device-api/index.js":14,"../Form/matching.js":34,"../InputTypes/Credentials.js":37,"../Scanner.js":40,"../Settings.js":41,"../UI/HTMLTooltip":42,"../UI/controllers/HTMLTooltipUIController":43,"../UI/controllers/NativeUIController":44,"../UI/controllers/OverlayUIController":45,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/transports/transports.js":59,"../features/bitwarden-integration":61,"../features/email-protection":62,"../features/form-filling":63,"../features/incontext-signup":64,"../features/local-data":65,"../features/password-generator.js":66,"./initFormSubmissionsApi.js":24,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
+},{"../../packages/device-api/index.js":14,"../InputTypes/Credentials.js":37,"../Scanner.js":40,"../Settings.js":41,"../autofill-utils.js":49,"../config.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":53,"../deviceApiCalls/transports/transports.js":59,"../features/bitwarden-integration":61,"../features/email-protection":62,"../features/form-filling":63,"../features/incontext-signup":64,"../features/local-data":65,"../features/password-generator.js":66,"../features/remote-data":67,"../features/ui-controller":68,"./initFormSubmissionsApi.js":24,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9029,7 +8446,7 @@ class Form {
         }
 
         this.touched.add(input);
-        this.device.attachTooltip(this, input, click);
+        this.device.uiController.attachTooltip(this, input, click);
       }
     };
 
@@ -9163,7 +8580,7 @@ class Form {
                 this.touched.add(input);
               }
             }, 'credentials');
-            this.device.attachTooltip(this, input, null, 'autoprompt');
+            this.device.uiController.attachTooltip(this, input, null, 'autoprompt');
           }
         });
       }, 200);
@@ -12995,9 +12412,9 @@ class DefaultScanner {
     }
 
     return () => {
-      var _this$device$activeFo;
+      var _this$device$uiContro;
 
-      const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
+      const activeInput = (_this$device$uiContro = this.device.uiController.activeForm) === null || _this$device$uiContro === void 0 ? void 0 : _this$device$uiContro.activeInput; // remove Dax, listeners, timers, and observers
 
       clearTimeout(this.debounceTimer);
       this.mutObs.disconnect();
@@ -14780,31 +14197,18 @@ exports.CSS_STYLES = CSS_STYLES;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
+exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = exports.isVisible = exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.isVisible = exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 
 var _matching = require("./Form/matching.js");
 
-const SIGN_IN_MSG = {
-  signMeIn: true
-}; // Send a message to the web app (only on DDG domains)
-
-exports.SIGN_IN_MSG = SIGN_IN_MSG;
-
-const notifyWebApp = message => {
-  window.postMessage(message, window.origin);
-};
 /**
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
  * @param {String} expectedResponse - the name of the response
  * @returns {Promise<*>}
  */
-
-
-exports.notifyWebApp = notifyWebApp;
-
 const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
   if (typeof msgOrFn === 'function') {
     msgOrFn();
@@ -15245,7 +14649,7 @@ var _DeviceInterface = require("./DeviceInterface.js");
   }
 })();
 
-},{"./DeviceInterface.js":22,"./requestIdleCallback.js":67}],51:[function(require,module,exports){
+},{"./DeviceInterface.js":22,"./requestIdleCallback.js":69}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16623,7 +16027,7 @@ class BitwardenIntegration {
       case "macos-modern":
         {
           try {
-            var _this$device$uiContro, _availableInputTypes$;
+            var _this$device$uiContro, _this$device$uiContro2, _availableInputTypes$;
 
             const {
               credentials,
@@ -16632,14 +16036,14 @@ class BitwardenIntegration {
 
             this.device.settings.setAvailableInputTypes(availableInputTypes);
             this.device.localData.storeLocalCredentials(credentials);
-            const inputType = this.device.getCurrentInputType(); // rerender the tooltip
+            const inputType = this.getCurrentInputType(); // rerender the tooltip
 
-            (_this$device$uiContro = this.device.uiController) === null || _this$device$uiContro === void 0 ? void 0 : _this$device$uiContro.updateItems({
+            (_this$device$uiContro = this.device.uiController) === null || _this$device$uiContro === void 0 ? void 0 : (_this$device$uiContro2 = _this$device$uiContro.controller) === null || _this$device$uiContro2 === void 0 ? void 0 : _this$device$uiContro2.updateItems({
               credentials,
               inputType: inputType
             }); // If the tooltip is open on an autofill type that's not available, close it
 
-            const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.device.getCurrentInputType());
+            const currentInputSubtype = (0, _matching.getSubtypeFromType)(inputType);
 
             if (!((_availableInputTypes$ = availableInputTypes.credentials) !== null && _availableInputTypes$ !== void 0 && _availableInputTypes$[currentInputSubtype])) {
               this.device.removeTooltip('providerStatusUpdated');
@@ -16658,7 +16062,7 @@ class BitwardenIntegration {
 
       case "macos-overlay":
         {
-          var _this$device$uiContro2;
+          var _this$device$uiContro3, _this$device$uiContro4;
 
           const {
             credentials,
@@ -16667,9 +16071,9 @@ class BitwardenIntegration {
 
           this.device.settings.setAvailableInputTypes(availableInputTypes);
           this.device.localData.storeLocalCredentials(credentials);
-          const inputType = this.device.getCurrentInputType(); // rerender the tooltip
+          const inputType = this.getCurrentInputType(); // rerender the tooltip
 
-          (_this$device$uiContro2 = this.device.uiController) === null || _this$device$uiContro2 === void 0 ? void 0 : _this$device$uiContro2.updateItems({
+          (_this$device$uiContro3 = this.device.uiController) === null || _this$device$uiContro3 === void 0 ? void 0 : (_this$device$uiContro4 = _this$device$uiContro3.controller) === null || _this$device$uiContro4 === void 0 ? void 0 : _this$device$uiContro4.updateItems({
             credentials,
             inputType
           });
@@ -16703,6 +16107,33 @@ class BitwardenIntegration {
       }
     }
   }
+  /**
+   * @returns {import('../Form/matching').SupportedTypes}
+   */
+
+
+  getCurrentInputType() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          var _this$device$uiContro5;
+
+          const topContextData = this.device.localData.getTopContextData();
+          return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$device$uiContro5 = this.device.uiController.activeForm) === null || _this$device$uiContro5 === void 0 ? void 0 : _this$device$uiContro5.activeInput);
+        }
+
+      case "android":
+      case "windows":
+      case "windows-overlay":
+      case "extension":
+        break;
+    }
+
+    throw new Error('unreachable');
+  }
 
 }
 /**
@@ -16734,6 +16165,14 @@ var _deviceApi = require("../../packages/device-api");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+const SIGN_IN_MSG = {
+  signMeIn: true
+}; // Send a message to the web app (only on DDG domains)
+
+const notifyWebApp = message => {
+  window.postMessage(message, window.origin);
+};
+
 class EmailProtection {
   /**
    * Boolean
@@ -16749,6 +16188,59 @@ class EmailProtection {
     _defineProperty(this, "_isDeviceSignedIn", false);
 
     this.device = device;
+  }
+
+  postInit() {
+    switch (this.device.ctx) {
+      case "ios":
+      case "android":
+      case "macos-legacy":
+      case "macos-modern":
+      case "windows":
+        {
+          this.addLogoutListener(() => {
+            var _this$device$_scanner, _this$device;
+
+            (_this$device$_scanner = (_this$device = this.device)._scannerCleanup) === null || _this$device$_scanner === void 0 ? void 0 : _this$device$_scanner.call(_this$device);
+
+            if (this.device.globalConfig.isDDGDomain) {
+              notifyWebApp({
+                deviceSignedIn: {
+                  value: false
+                }
+              });
+            }
+          });
+          this.ready = true;
+          return;
+        }
+
+      case "macos-overlay":
+      case "windows-overlay":
+        {
+          // do nothing inside overlays
+          return;
+        }
+
+      case "extension":
+        {
+          this.addLogoutListener(() => {
+            this.device.resetAutofillUI();
+
+            if (this.device.globalConfig.isDDGDomain) {
+              notifyWebApp({
+                deviceSignedIn: {
+                  value: false
+                }
+              });
+            }
+          });
+          break;
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
   }
 
   async init() {
@@ -16997,7 +16489,7 @@ class EmailProtection {
       return;
     }
 
-    (0, _autofillUtils.notifyWebApp)({
+    notifyWebApp({
       isApp: this.device.globalConfig.isApp
     });
 
@@ -17005,7 +16497,7 @@ class EmailProtection {
       let userData;
 
       try {
-        userData = await this.device.getUserData();
+        userData = await this.getUserData();
       } catch (e) {}
 
       let capabilities;
@@ -17017,11 +16509,11 @@ class EmailProtection {
 
       window.addEventListener('message', e => {
         if (this.device.globalConfig.isDDGDomain && e.data.removeUserData) {
-          this.device.removeUserData();
+          this.removeUserData();
         }
       });
       const hasUserData = userData && !userData.error && Object.entries(userData).length > 0;
-      (0, _autofillUtils.notifyWebApp)({
+      notifyWebApp({
         deviceSignedIn: {
           value: true,
           shouldLog,
@@ -17135,8 +16627,8 @@ class EmailProtection {
       case "extension":
         {
           if (this.device.globalConfig.isDDGDomain) {
-            const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData');
-            this.device.storeUserData(data);
+            const data = await (0, _autofillUtils.sendAndWaitForAnswer)(SIGN_IN_MSG, 'addUserData');
+            this.storeUserData(data);
           }
 
           return;
@@ -17149,10 +16641,10 @@ class EmailProtection {
     if (this.device.globalConfig.isDDGDomain) {
       if (this.attempts < 10) {
         this.attempts++;
-        const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
+        const data = await (0, _autofillUtils.sendAndWaitForAnswer)(SIGN_IN_MSG, 'addUserData'); // This call doesn't send a response, so we can't know if it succeeded
 
-        this.device.storeUserData(data);
-        await this.device.refreshData();
+        this.storeUserData(data);
+        await this.device.remoteData.refresh();
         await this.device.settings.refresh();
         await this.setupSettingsPage({
           shouldLog: true
@@ -17161,6 +16653,142 @@ class EmailProtection {
       } else {
         console.warn('max attempts reached, bailing');
       }
+    }
+  }
+  /** @returns {Promise<null|Record<any,any>>} */
+
+
+  async getUserData() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this.device.deviceApi.request((0, _deviceApi.createRequest)('emailHandlerGetUserData'));
+        }
+
+      case "android":
+        {
+          let userData = null;
+
+          try {
+            userData = JSON.parse(window.EmailInterface.getUserData());
+          } catch (e) {
+            if (this.device.globalConfig.isDDGTestMode) {
+              console.error(e);
+            }
+          }
+
+          return Promise.resolve(userData);
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return new Promise(resolve => chrome.runtime.sendMessage({
+            getUserData: true
+          }, data => resolve(data)));
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+
+    return null;
+  }
+  /**
+   */
+
+
+  removeUserData() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this.device.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerRemoveToken'));
+        }
+
+      case "android":
+        {
+          try {
+            window.EmailInterface.removeCredentials();
+          } catch (e) {
+            if (this.device.globalConfig.isDDGTestMode) {
+              console.error(e);
+            }
+          }
+
+          break;
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return chrome.runtime.sendMessage({
+            removeUserData: true
+          });
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /**
+   * @param {object} data
+   * @param {object} data.addUserData
+   * @param {string} data.addUserData.token
+   * @param {string} data.addUserData.userName
+   * @param {string} data.addUserData.cohort
+   */
+
+
+  storeUserData(data) {
+    const {
+      addUserData: {
+        token,
+        userName,
+        cohort
+      }
+    } = data;
+
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this.device.deviceApi.notify((0, _deviceApi.createNotification)('emailHandlerStoreToken', {
+            token,
+            username: userName,
+            cohort
+          }));
+        }
+
+      case "android":
+        {
+          return window.EmailInterface.storeCredentials(token, userName, cohort);
+        }
+
+      case "windows":
+      case "windows-overlay":
+        break;
+
+      case "extension":
+        {
+          return chrome.runtime.sendMessage(data);
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
     }
   }
 
@@ -17214,9 +16842,10 @@ class FormFilling {
 
   async selectedDetail(data, type) {
     const defaultSelectedMethod = () => {
-      const form = this.device.activeForm;
+      const form = this.device.uiController.activeForm;
 
       if (!form) {
+        console.warn('form is no longer present');
         return;
       }
 
@@ -17291,10 +16920,10 @@ class FormFilling {
     const dataPromise = (() => {
       switch (mainType) {
         case 'creditCards':
-          return this.device.getAutofillCreditCard(id);
+          return this.device.remoteData.getAutofillCreditCard(id);
 
         case 'identities':
-          return this.device.getAutofillIdentity(id);
+          return this.device.remoteData.getAutofillIdentity(id);
 
         case 'credentials':
           {
@@ -17304,7 +16933,7 @@ class FormFilling {
               });
             }
 
-            return this.device.getAutofillCredentials(id);
+            return this.device.remoteData.getAutofillCredentials(id);
           }
 
         default:
@@ -17394,6 +17023,8 @@ class IncontextSignup {
   constructor(device) {
     this.device = device;
   }
+
+  init() {}
 
   onIncontextSignup() {
     switch (this.device.ctx) {
@@ -17741,6 +17372,500 @@ class PasswordGenerator {
 exports.PasswordGenerator = PasswordGenerator;
 
 },{"../../packages/password/index.js":17,"../../packages/password/rules.json":21}],67:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.RemoteData = void 0;
+
+var _deviceApi = require("../../packages/device-api");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+/**
+ * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
+ * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
+ */
+class RemoteData {
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   */
+  constructor(device) {
+    this.device = device;
+  }
+
+  init() {}
+
+  async refresh() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          const response = await this.device.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetAutofillInitData'));
+          this.device.localData.storeLocalData(response.success);
+          break;
+        }
+
+      case "android":
+      case "windows":
+        break;
+
+      case "windows-overlay":
+        {
+          const response = await this.device.deviceApi.request(new _deviceApiCalls.GetAutofillInitDataCall(null)); // @ts-expect-error - the full response is not typed yet
+
+          this.device.localData.storeLocalData(response);
+          break;
+        }
+
+      case "extension":
+        return this.device.emailProtection.getAddresses();
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /**
+   * Gets credentials ready for autofill
+   * @param {CredentialsObject['id']} id - the credential id
+   * @returns {Promise<CredentialsObject|{success:CredentialsObject}>}
+   */
+
+
+  async getAutofillCredentials(id) {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this.device.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetAutofillCredentials', {
+            id
+          }));
+        }
+
+      case "android":
+      case "windows":
+      case "windows-overlay":
+      case "extension":
+        break;
+    }
+
+    return this.device.deviceApi.request(new _deviceApiCalls.GetAutofillCredentialsCall({
+      id: String(id)
+    }));
+  }
+  /**
+   * Gets a single complete credit card obj once the user requests it
+   * @param {CreditCardObject['id']} id
+   * @returns {APIResponse<CreditCardObject>}
+   */
+
+
+  async getAutofillCreditCard(id) {
+    return this.device.deviceApi.request((0, _deviceApi.createRequest)('pmHandlerGetCreditCard', {
+      id
+    }));
+  }
+  /**
+   * @param {IdentityObject['id']} id
+   * @returns {Promise<{success: IdentityObject|undefined}>}
+   */
+
+
+  async getAutofillIdentity(id) {
+    const identity = this.device.localData.getLocalIdentities().find(_ref => {
+      let {
+        id: identityId
+      } = _ref;
+      return "".concat(identityId) === "".concat(id);
+    });
+    return Promise.resolve({
+      success: identity
+    });
+  }
+  /** @param {import("../DeviceInterface/InterfacePrototype").StoreFormData} values */
+
+
+  storeFormData(values) {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+      case "macos-modern":
+      case "macos-overlay":
+      case "ios":
+        {
+          return this.device.deviceApi.notify((0, _deviceApi.createNotification)('pmHandlerStoreData', values));
+        }
+
+      case "android":
+      case "windows":
+      case "windows-overlay":
+        {
+          return this.device.deviceApi.notify(new _deviceApiCalls.StoreFormDataCall(values));
+        }
+
+      case "extension":
+        break;
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+
+}
+/**
+ * @param {never} x
+ * @returns {never}
+ */
+
+
+exports.RemoteData = RemoteData;
+
+function assertUnreachable(x) {
+  console.log(x);
+  throw new Error("Didn't expect to get here");
+}
+
+},{"../../packages/device-api":14,"../deviceApiCalls/__generated__/deviceApiCalls":53}],68:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UIController = void 0;
+
+var _HTMLTooltip = require("../UI/HTMLTooltip");
+
+var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController");
+
+var _OverlayUIController = require("../UI/controllers/OverlayUIController");
+
+var _deviceApi = require("../../packages/device-api");
+
+var _NativeUIController = require("../UI/controllers/NativeUIController");
+
+var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls");
+
+var _matching = require("../Form/matching");
+
+var _autofillUtils = require("../autofill-utils");
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+const TOOLTIP_TYPES = {
+  EmailProtection: 'EmailProtection',
+  EmailSignup: 'EmailSignup'
+};
+
+class UIController {
+  /** @type {import("../Form/Form").Form | null} */
+
+  /**
+   * @param {import("../DeviceInterface/InterfacePrototype").default} device
+   */
+  constructor(device) {
+    _defineProperty(this, "_waiting", false);
+
+    _defineProperty(this, "activeForm", null);
+
+    _defineProperty(this, "autopromptFired", false);
+
+    this.device = device;
+  }
+
+  init() {
+    this.controller = this.select();
+  }
+  /**
+   * Implementors should override this with a UI controller that suits
+   * their platform.
+   *
+   * @returns {import("../UI/controllers/UIController.js").UIController}
+   */
+
+
+  select() {
+    switch (this.device.ctx) {
+      case "macos-legacy":
+        {
+          const options = { ..._HTMLTooltip.defaultOptions,
+            testMode: this.device.isTestMode()
+          };
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this.device, 'modern', options);
+        }
+
+      case "macos-modern":
+        {
+          /**
+           * If we get here, we're just a controller for an overlay
+           */
+          return new _OverlayUIController.OverlayUIController({
+            remove: async () => {
+              this.device.deviceApi.notify((0, _deviceApi.createNotification)('closeAutofillParent', {}));
+              this._waiting = false;
+            },
+            show: async details => {
+              this._waiting = true;
+              const applePayload = { ...details.triggerContext,
+                serializedInputContext: details.serializedInputContext
+              };
+              this.device.deviceApi.notify((0, _deviceApi.createNotification)('showAutofillParent', applePayload)); // start listening for a result
+
+              const listener = new Promise(resolve => {
+                // Prevent two timeouts from happening
+                // @ts-ignore
+                const poll = async () => {
+                  clearTimeout(this.pollingTimeout);
+                  const response = await this.device.deviceApi.request((0, _deviceApi.createRequest)('getSelectedCredentials'));
+
+                  switch (response.type) {
+                    case 'none':
+                      // Parent hasn't got a selected credential yet
+                      // @ts-ignore
+                      this.pollingTimeout = setTimeout(() => {
+                        poll();
+                      }, 100);
+                      return;
+
+                    case 'ok':
+                      {
+                        return resolve({
+                          data: response.data,
+                          configType: response.configType
+                        });
+                      }
+
+                    case 'stop':
+                      // Parent wants us to stop polling
+                      resolve(null);
+                      break;
+                  }
+                };
+
+                poll();
+              });
+              listener.then(response => {
+                if (!response) {
+                  return;
+                }
+
+                this.device.formFilling.selectedDetail(response.data, response.configType);
+              }).catch(e => {
+                console.error('unknown error', e);
+              });
+            }
+          });
+        }
+
+      case "macos-overlay":
+        {
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this.device, 'modern', {
+            wrapperClass: 'top-autofill',
+            tooltipPositionClass: () => '.wrapper { transform: none; }',
+            setSize: details => this.device.deviceApi.notify((0, _deviceApi.createNotification)('setSize', details)),
+            testMode: this.device.isTestMode()
+          });
+        }
+
+      case "ios":
+      case "android":
+        {
+          return new _NativeUIController.NativeUIController();
+        }
+
+      case "windows":
+        {
+          /**
+           * If we get here, we're just a controller for an overlay
+           */
+          return new _OverlayUIController.OverlayUIController({
+            remove: async () => {
+              if (this._abortController && !this._abortController.signal.aborted) {
+                this._abortController.abort();
+              }
+
+              this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+            },
+            show: async details => {
+              const {
+                mainType
+              } = details; // prevent overlapping listeners
+
+              if (this._abortController && !this._abortController.signal.aborted) {
+                this._abortController.abort();
+              }
+
+              this._abortController = new AbortController();
+              this._waiting = true;
+              this.device.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
+                signal: this._abortController.signal
+              }).then(resp => {
+                // console.log('got resp', resp.action);
+                if (!this.device.uiController.activeForm) {
+                  throw new Error('this.currentAttached was absent');
+                }
+
+                switch (resp.action) {
+                  case 'fill':
+                    {
+                      if (mainType in resp) {
+                        this.device.formFilling.selectedDetail(resp[mainType], mainType);
+                      } else {
+                        throw new Error("action: \"fill\" cannot occur because \"".concat(mainType, "\" was missing"));
+                      }
+
+                      break;
+                    }
+
+                  case 'focus':
+                    {
+                      var _this$device$uiContro, _this$device$uiContro2;
+
+                      (_this$device$uiContro = this.device.uiController.activeForm) === null || _this$device$uiContro === void 0 ? void 0 : (_this$device$uiContro2 = _this$device$uiContro.activeInput) === null || _this$device$uiContro2 === void 0 ? void 0 : _this$device$uiContro2.focus();
+                      break;
+                    }
+
+                  case 'none':
+                    {
+                      // do nothing
+                      break;
+                    }
+
+                  default:
+                    {
+                      if (this.device.globalConfig.isDDGTestMode) {
+                        console.warn('unhandled response', resp);
+                      }
+                    }
+                } // this.removeTooltip('windows test')
+
+              }).catch(e => {
+                if (this.device.globalConfig.isDDGTestMode) {
+                  if (e.name === 'AbortError') {
+                    console.log('Promise Aborted');
+                  } else {
+                    console.error('Promise Rejected', e);
+                  }
+                }
+              });
+            }
+          });
+        }
+
+      case "windows-overlay":
+        {
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this.device, 'modern', {
+            wrapperClass: 'top-autofill',
+            tooltipPositionClass: () => '.wrapper { transform: none; }',
+            setSize: details => this.device.deviceApi.notify(new _deviceApiCalls.SetSizeCall(details)),
+            testMode: this.device.isTestMode(),
+
+            /**
+             * Note: This is needed because Mutation observer didn't support visibility checks on Windows
+             */
+            checkVisibility: false
+          });
+        }
+
+      case "extension":
+        {
+          /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
+          const htmlTooltipOptions = { ..._HTMLTooltip.defaultOptions,
+            css: "<link rel=\"stylesheet\" href=\"".concat(chrome.runtime.getURL('public/css/autofill.css'), "\" crossOrigin=\"anonymous\">"),
+            testMode: this.device.isTestMode()
+          };
+          const tooltipKinds = {
+            [TOOLTIP_TYPES.EmailProtection]: 'legacy',
+            [TOOLTIP_TYPES.EmailSignup]: 'emailsignup'
+          };
+          const tooltipKind = tooltipKinds[this.device.getActiveTooltipType()] || tooltipKinds[TOOLTIP_TYPES.EmailProtection];
+          return new _HTMLTooltipUIController.HTMLTooltipUIController(this.device, tooltipKind, htmlTooltipOptions);
+        }
+
+      default:
+        assertUnreachable(this.device.ctx);
+    }
+  }
+  /**
+   * @param {import("../Form/Form").Form} form
+   * @param {HTMLInputElement} input
+   * @param {{ x: number; y: number; } | null} click
+   * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} trigger
+   */
+
+
+  attachTooltip(form, input, click) {
+    var _this$controller;
+
+    let trigger = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'userInitiated';
+    // Avoid flashing tooltip from background tabs on macOS
+    if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return; // Only autoprompt on mobile devices
+
+    if (trigger === 'autoprompt' && !this.device.globalConfig.isMobileApp) return; // Only fire autoprompt once
+
+    if (trigger === 'autoprompt' && this.autopromptFired) return;
+    form.activeInput = input;
+    this.activeForm = form;
+    const inputType = (0, _matching.getInputType)(input);
+    /** @type {PosFn} */
+
+    const getPosition = () => {
+      // In extensions, the tooltip is centered on the Dax icon
+      const alignLeft = this.device.globalConfig.isApp || this.device.globalConfig.isWindows;
+      return alignLeft ? input.getBoundingClientRect() : (0, _autofillUtils.getDaxBoundingBox)(input);
+    }; // todo: this will be migrated to use NativeUIController soon
+
+
+    if (this.device.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
+      this.device.emailProtection.getAlias().then(alias => {
+        var _form$activeInput;
+
+        if (alias) form.autofillEmail(alias);else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+      });
+      return;
+    }
+    /** @type {TopContextData} */
+
+
+    const topContextData = {
+      inputType
+    }; // Allow features to append/change top context data
+    // for example, generated passwords may get appended here
+
+    const processedTopContext = this.device.preAttachTooltip(topContextData, input, form);
+    (_this$controller = this.controller) === null || _this$controller === void 0 ? void 0 : _this$controller.attach({
+      input,
+      form,
+      click,
+      getPosition,
+      topContextData: processedTopContext,
+      device: this.device,
+      trigger
+    });
+
+    if (trigger === 'autoprompt') {
+      this.autopromptFired = true;
+    }
+  }
+
+}
+/**
+ * @param {never} x
+ * @returns {never}
+ */
+
+
+exports.UIController = UIController;
+
+function assertUnreachable(x) {
+  console.log(x);
+  throw new Error("Didn't expect to get here");
+}
+
+},{"../../packages/device-api":14,"../Form/matching":34,"../UI/HTMLTooltip":42,"../UI/controllers/HTMLTooltipUIController":43,"../UI/controllers/NativeUIController":44,"../UI/controllers/OverlayUIController":45,"../autofill-utils":49,"../deviceApiCalls/__generated__/deviceApiCalls":53}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

@@ -1,6 +1,13 @@
 import {GetAlias} from "../deviceApiCalls/additionalDeviceApiCalls";
-import {formatDuckAddress, notifyWebApp, sendAndWaitForAnswer, setValue, SIGN_IN_MSG} from "../autofill-utils";
+import {formatDuckAddress, sendAndWaitForAnswer, setValue} from "../autofill-utils";
 import {createNotification, createRequest} from "../../packages/device-api";
+
+const SIGN_IN_MSG = { signMeIn: true }
+
+// Send a message to the web app (only on DDG domains)
+const notifyWebApp = (message) => {
+    window.postMessage(message, window.origin)
+}
 
 export class EmailProtection {
     attempts = 0
@@ -15,6 +22,41 @@ export class EmailProtection {
      */
     constructor(device) {
         this.device = device;
+    }
+
+    postInit() {
+        switch (this.device.ctx) {
+            case "ios":
+            case "android":
+            case "macos-legacy":
+            case "macos-modern":
+            case "windows": {
+                this.addLogoutListener(() => {
+                    this.device._scannerCleanup?.();
+                    if (this.device.globalConfig.isDDGDomain) {
+                        notifyWebApp({deviceSignedIn: {value: false}})
+                    }
+                })
+                this.ready = true
+                return;
+            }
+            case "macos-overlay":
+            case "windows-overlay": {
+                // do nothing inside overlays
+                return;
+            }
+            case "extension": {
+                this.addLogoutListener(() => {
+                    this.device.resetAutofillUI()
+                    if (this.device.globalConfig.isDDGDomain) {
+                        notifyWebApp({deviceSignedIn: {value: false}})
+                    }
+                })
+                break;
+            }
+            default:
+                assertUnreachable(this.device.ctx)
+        }
     }
 
     async init() {
@@ -215,7 +257,7 @@ export class EmailProtection {
         if (this.isDeviceSignedIn()) {
             let userData
             try {
-                userData = await this.device.getUserData()
+                userData = await this.getUserData()
             } catch (e) {
             }
 
@@ -228,7 +270,7 @@ export class EmailProtection {
             // Set up listener for web app actions
             window.addEventListener('message', (e) => {
                 if (this.device.globalConfig.isDDGDomain && e.data.removeUserData) {
-                    this.device.removeUserData()
+                    this.removeUserData()
                 }
             })
 
@@ -329,7 +371,7 @@ export class EmailProtection {
             case "extension": {
                 if (this.device.globalConfig.isDDGDomain) {
                     const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
-                    this.device.storeUserData(data)
+                    this.storeUserData(data)
                 }
                 return
             }
@@ -342,15 +384,118 @@ export class EmailProtection {
                 this.attempts++
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
-                this.device.storeUserData(data)
+                this.storeUserData(data)
 
-                await this.device.refreshData()
+                await this.device.remoteData.refresh()
                 await this.device.settings.refresh()
                 await this.setupSettingsPage({shouldLog: true})
                 await this.device.postInit()
             } else {
                 console.warn('max attempts reached, bailing')
             }
+        }
+    }
+    /** @returns {Promise<null|Record<any,any>>} */
+    async getUserData() {
+        switch (this.device.ctx) {
+            case "macos-legacy":
+            case "macos-modern":
+            case "macos-overlay":
+            case "ios": {
+                return this.device.deviceApi.request(createRequest('emailHandlerGetUserData'))
+            }
+            case "android": {
+                let userData = null
+
+                try {
+                    userData = JSON.parse(window.EmailInterface.getUserData())
+                } catch (e) {
+                    if (this.device.globalConfig.isDDGTestMode) {
+                        console.error(e)
+                    }
+                }
+
+                return Promise.resolve(userData)
+            }
+            case "windows":
+            case "windows-overlay":
+                break;
+            case "extension": {
+                return new Promise(resolve => chrome.runtime.sendMessage(
+                    {getUserData: true},
+                    (data) => resolve(data)
+                ))
+            }
+            default:
+                assertUnreachable(this.device.ctx)
+        }
+        return null;
+    }
+
+    /**
+     */
+    removeUserData() {
+        switch (this.device.ctx) {
+            case "macos-legacy":
+            case "macos-modern":
+            case "macos-overlay":
+            case "ios": {
+                return this.device.deviceApi.notify(createNotification('emailHandlerRemoveToken'))
+            }
+            case "android": {
+                try {
+                    window.EmailInterface.removeCredentials()
+                } catch (e) {
+                    if (this.device.globalConfig.isDDGTestMode) {
+                        console.error(e)
+                    }
+                }
+                break;
+            }
+            case "windows":
+            case "windows-overlay":
+                break;
+            case "extension": {
+                return chrome.runtime.sendMessage({removeUserData: true})
+            }
+            default:
+                assertUnreachable(this.device.ctx)
+        }
+    }
+
+
+
+    /**
+     * @param {object} data
+     * @param {object} data.addUserData
+     * @param {string} data.addUserData.token
+     * @param {string} data.addUserData.userName
+     * @param {string} data.addUserData.cohort
+     */
+    storeUserData(data) {
+        const {addUserData: {token, userName, cohort}} = data;
+        switch (this.device.ctx) {
+            case "macos-legacy":
+            case "macos-modern":
+            case "macos-overlay":
+            case "ios": {
+                return this.device.deviceApi.notify(createNotification('emailHandlerStoreToken', {
+                    token,
+                    username: userName,
+                    cohort
+                }))
+            }
+            case "android": {
+                return window.EmailInterface.storeCredentials(token, userName, cohort)
+            }
+            case "windows":
+            case "windows-overlay":
+                break;
+            case "extension": {
+                return chrome.runtime.sendMessage(data)
+            }
+            default:
+                assertUnreachable(this.device.ctx)
         }
     }
 }

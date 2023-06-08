@@ -1,11 +1,5 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
 
-const SIGN_IN_MSG = { signMeIn: true }
-
-// Send a message to the web app (only on DDG domains)
-const notifyWebApp = (message) => {
-    window.postMessage(message, window.origin)
-}
 /**
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
@@ -352,7 +346,6 @@ const getText = (el) => {
 }
 
 export {
-    notifyWebApp,
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,
     isIncontextSignupEnabledFromProcessedConfig,
@@ -364,7 +357,6 @@ export {
     isEventWithinDax,
     addInlineStyles,
     removeInlineStyles,
-    SIGN_IN_MSG,
     ADDRESS_DOMAIN,
     formatDuckAddress,
     escapeXML,

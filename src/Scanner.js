@@ -85,7 +85,7 @@ class DefaultScanner {
             setTimeout(() => this.scanAndObserve(), delay)
         }
         return () => {
-            const activeInput = this.device.activeForm?.activeInput
+            const activeInput = this.device.uiController.activeForm?.activeInput
 
             // remove Dax, listeners, timers, and observers
             clearTimeout(this.debounceTimer)

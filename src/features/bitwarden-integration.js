@@ -2,7 +2,7 @@ import {
     AskToUnlockProviderCall,
     CheckCredentialsProviderStatusCall
 } from "../deviceApiCalls/__generated__/deviceApiCalls";
-import {getSubtypeFromType} from "../Form/matching";
+import {getInputType, getSubtypeFromType} from "../Form/matching";
 import {validate} from "../../packages/device-api";
 import {providerStatusUpdatedSchema} from "../deviceApiCalls/__generated__/validators.zod";
 
@@ -61,12 +61,12 @@ export class BitwardenIntegration {
                     // Update local settings and data
                     this.device.settings.setAvailableInputTypes(availableInputTypes)
                     this.device.localData.storeLocalCredentials(credentials)
-                    const inputType = this.device.getCurrentInputType()
+                    const inputType = this.getCurrentInputType()
 
                     // rerender the tooltip
-                    this.device.uiController?.updateItems({credentials, inputType: inputType })
+                    this.device.uiController?.controller?.updateItems({credentials, inputType: inputType })
                     // If the tooltip is open on an autofill type that's not available, close it
-                    const currentInputSubtype = getSubtypeFromType(this.device.getCurrentInputType())
+                    const currentInputSubtype = getSubtypeFromType(inputType)
                     if (!availableInputTypes.credentials?.[currentInputSubtype]) {
                         this.device.removeTooltip('providerStatusUpdated')
                     }
@@ -85,10 +85,10 @@ export class BitwardenIntegration {
                 // Update local settings and data
                 this.device.settings.setAvailableInputTypes(availableInputTypes)
                 this.device.localData.storeLocalCredentials(credentials)
-                const inputType = this.device.getCurrentInputType()
+                const inputType = this.getCurrentInputType()
 
                 // rerender the tooltip
-                this.device.uiController?.updateItems({ credentials, inputType })
+                this.device.uiController?.controller?.updateItems({ credentials, inputType })
                 break;
             }
             case "ios":
@@ -113,6 +113,28 @@ export class BitwardenIntegration {
                 console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
             }
         }
+    }
+    /**
+     * @returns {import('../Form/matching').SupportedTypes}
+     */
+    getCurrentInputType() {
+        switch (this.device.ctx) {
+            case "macos-legacy":
+            case "macos-modern":
+            case "macos-overlay":
+            case "ios": {
+                const topContextData = this.device.localData.getTopContextData()
+                return topContextData?.inputType
+                    ? topContextData.inputType
+                    : getInputType(this.device.uiController.activeForm?.activeInput)
+            }
+            case "android":
+            case "windows":
+            case "windows-overlay":
+            case "extension":
+                break;
+        }
+        throw new Error('unreachable');
     }
 }
 

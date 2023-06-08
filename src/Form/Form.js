@@ -442,7 +442,7 @@ class Form {
                 }
 
                 this.touched.add(input)
-                this.device.attachTooltip(this, input, click)
+                this.device.uiController.attachTooltip(this, input, click)
             }
         }
 
@@ -576,7 +576,7 @@ class Form {
                                 this.touched.add(input)
                             }
                         }, 'credentials')
-                        this.device.attachTooltip(this, input, null, 'autoprompt')
+                        this.device.uiController.attachTooltip(this, input, null, 'autoprompt')
                     }
                 })
             }, 200)

@@ -20,14 +20,14 @@ describe('InterfacePrototype', function () {
         jest.spyOn(device.settings, 'refresh').mockReturnValue(Promise.resolve())
         await device.init()
 
-        const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController)
+        const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController.controller)
         jest.spyOn(uiController, 'attach')
         //
         const formEl = attachAndReturnGenericForm()
         const input = /** @type {HTMLInputElement} */ (formEl.querySelector('input'))
         const formInstance = new Form(formEl, input, device)
 
-        device.attachTooltip(formInstance, input, null)
+        device.uiController.attachTooltip(formInstance, input, null)
         expect(uiController.attach).not.toHaveBeenCalled()
 
         mockedDoc.mockRestore()
