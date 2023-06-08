@@ -3,8 +3,9 @@ import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 /**
  * @typedef {import('../../../packages/device-api/lib/device-api').CallOptions} CallOptions
  * @typedef {import("../../../packages/device-api").DeviceApiCall} DeviceApiCall
+ * @implements DeviceApiTransport
  */
-export class WindowsTransport extends DeviceApiTransport {
+export class WindowsTransport {
     async send (deviceApiCall, options) {
         if (deviceApiCall.id) {
             return windowsTransport(deviceApiCall, options)

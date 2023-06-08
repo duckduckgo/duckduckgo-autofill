@@ -10,10 +10,12 @@ import {
 import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
 
-export class ExtensionTransport extends DeviceApiTransport {
+/**
+ * @implements DeviceApiTransport
+ */
+export class ExtensionTransport {
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
-        super()
         this.config = globalConfig
     }
 

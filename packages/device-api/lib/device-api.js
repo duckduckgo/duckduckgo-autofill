@@ -1,5 +1,6 @@
 /**
  * Platforms should only need to implement this `send` method
+ * @interface
  */
 export class DeviceApiTransport {
     /**

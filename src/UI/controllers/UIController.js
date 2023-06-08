@@ -11,6 +11,7 @@
 
 /**
  * This is the base interface that `UIControllers` should extend/implement
+ * @interface
  */
 export class UIController {
     /**

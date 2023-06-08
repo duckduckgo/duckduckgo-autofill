@@ -1146,6 +1146,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /**
  * Platforms should only need to implement this `send` method
+ * @interface
  */
 class DeviceApiTransport {
   /**
@@ -3719,14 +3720,8 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
-
       case "extension":
         break;
     }
@@ -3876,7 +3871,8 @@ class InterfacePrototype {
     await this.setupSettingsPage();
     await this.postInit();
 
-    if (this.settings.featureToggles.credentials_saving) {// initFormSubmissionsApi(this.scanner.forms)
+    if (this.settings.featureToggles.credentials_saving) {
+      (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms);
     }
   }
 
@@ -3924,11 +3920,7 @@ class InterfacePrototype {
         }
 
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
         break;
 
@@ -4243,23 +4235,11 @@ class InterfacePrototype {
   getActiveTooltipType() {
     switch (this.ctx) {
       case "macos-legacy":
-        break;
-
       case "macos-modern":
-        break;
-
       case "macos-overlay":
-        break;
-
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -4320,26 +4300,12 @@ class InterfacePrototype {
   onIncontextSignup() {
     switch (this.ctx) {
       case "macos-legacy":
-        break;
-
       case "macos-modern":
-        break;
-
       case "macos-overlay":
-        break;
-
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
-
       case "extension":
         {
           return this.firePixel({
@@ -4352,23 +4318,11 @@ class InterfacePrototype {
   onIncontextSignupDismissed() {
     switch (this.ctx) {
       case "macos-legacy":
-        break;
-
       case "macos-modern":
-        break;
-
       case "macos-overlay":
-        break;
-
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -4418,14 +4372,8 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
-
       case "extension":
         break;
     }
@@ -4542,26 +4490,16 @@ class InterfacePrototype {
   isEnabledViaSettings() {
     switch (this.ctx) {
       case "macos-legacy":
-        break;
-
       case "macos-modern":
-        break;
-
       case "macos-overlay":
-        break;
-
       case "ios":
-        break;
-
       case "android":
+      case "extension":
         break;
 
       case "windows":
       case "windows-overlay":
         return Boolean(this.settings.enabled);
-
-      case "extension":
-        break;
     }
 
     return true;
@@ -4613,23 +4551,10 @@ class InterfacePrototype {
     };
 
     switch (this.ctx) {
-      case "macos-legacy":
-        return defaultPostInit();
-
-      case "macos-modern":
-        return defaultPostInit();
-
-      case "macos-overlay":
-        // setup overlay API pieces
-        showImmediately();
-        return;
-
       case "ios":
-        return defaultPostInit();
-
       case "android":
-        return defaultPostInit();
-
+      case "macos-legacy":
+      case "macos-modern":
       case "windows":
         {
           defaultPostInit();
@@ -4637,6 +4562,7 @@ class InterfacePrototype {
           return;
         }
 
+      case "macos-overlay":
       case "windows-overlay":
         {
           showImmediately();
@@ -4728,7 +4654,7 @@ class InterfacePrototype {
       this.removeTooltip('defaultSelectedMethod');
     };
 
-    const overlaySelected = async () => {
+    const selectedInOverlay = async () => {
       let detailsEntries = Object.entries(data).map(_ref3 => {
         let [key, value] = _ref3;
         return [key, String(value)];
@@ -4744,32 +4670,18 @@ class InterfacePrototype {
 
     switch (this.ctx) {
       case "macos-legacy":
-        return defaultSelectedMethod();
-
       case "macos-modern":
+      case "ios":
+      case "android":
+      case "windows":
+      case "extension":
         return defaultSelectedMethod();
 
       case "macos-overlay":
-        {
-          return overlaySelected();
-        }
-
-      case "ios":
-        return defaultSelectedMethod();
-
-      case "android":
-        return defaultSelectedMethod();
-
-      case "windows":
-        return defaultSelectedMethod();
-
       case "windows-overlay":
         {
-          return overlaySelected();
+          return selectedInOverlay();
         }
-
-      case "extension":
-        return defaultSelectedMethod();
 
       default:
         assertUnreachable(this.ctx);
@@ -4978,17 +4890,9 @@ class InterfacePrototype {
         }
 
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
-
       case "extension":
         break;
 
@@ -5137,8 +5041,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5183,8 +5085,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5228,8 +5128,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5273,11 +5171,7 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5296,23 +5190,11 @@ class InterfacePrototype {
   async trySigningIn() {
     switch (this.ctx) {
       case "macos-legacy":
-        break;
-
       case "macos-modern":
-        break;
-
       case "macos-overlay":
-        break;
-
       case "ios":
-        break;
-
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5384,8 +5266,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5532,8 +5412,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5591,8 +5469,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5637,8 +5513,6 @@ class InterfacePrototype {
         }
 
       case "windows":
-        break;
-
       case "windows-overlay":
         break;
 
@@ -5669,14 +5543,8 @@ class InterfacePrototype {
         }
 
       case "android":
-        break;
-
       case "windows":
-        break;
-
       case "windows-overlay":
-        break;
-
       case "extension":
         break;
     }
@@ -11548,8 +11416,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *
  * Note: This could be displayed in the current webpage (for example, in the extension)
  * or within a webview overlay (like on macOS & upcoming in windows)
+ * @implements UIController
  */
-class HTMLTooltipUIController extends _UIController.UIController {
+class HTMLTooltipUIController {
   /** @type {import("../HTMLTooltip.js").HTMLTooltip | null} */
 
   /** @type {HTMLTooltipControllerOptions} */
@@ -11567,7 +11436,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
    */
   constructor(options) {
     let htmlTooltipOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _HTMLTooltip.defaultOptions;
-    super();
 
     _defineProperty(this, "_activeTooltip", null);
 
@@ -11616,7 +11484,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._activeInput = input;
     this._activeInputOriginalAutocomplete = input.getAttribute('autocomplete');
     input.setAttribute('autocomplete', 'off');
-    setTimeout();
   }
   /**
    * Actually create the HTML Tooltip
@@ -11820,8 +11687,9 @@ var _deviceApiCalls = require("../../deviceApiCalls/__generated__/deviceApiCalls
  * const controller = new NativeController();
  * controller.attach(...);
  * ```
+ * @implements UIController
  */
-class NativeUIController extends _UIController.UIController {
+class NativeUIController {
   /**
    * @param {import('./UIController').AttachArgs} args
    */
@@ -11889,6 +11757,26 @@ class NativeUIController extends _UIController.UIController {
     });
   }
 
+  createTooltip(_pos, _topContextData) {
+    return undefined;
+  }
+
+  destroy() {}
+
+  getActiveTooltip() {
+    return null;
+  }
+
+  isActive() {
+    return false;
+  }
+
+  removeTooltip(_via) {}
+
+  setActiveTooltip(_tooltip) {}
+
+  updateItems(_data) {}
+
 }
 
 exports.NativeUIController = NativeUIController;
@@ -11950,8 +11838,9 @@ var _state = /*#__PURE__*/new WeakMap();
  *
  * controller.attach(...)
  * ```
+ * @implements UIController
  */
-class OverlayUIController extends _UIController.UIController {
+class OverlayUIController {
   /** @type {"idle" | "parentShown"} */
 
   /**
@@ -11962,8 +11851,6 @@ class OverlayUIController extends _UIController.UIController {
    * @param {OverlayControllerOptions} options
    */
   constructor(options) {
-    super();
-
     _classPrivateFieldInitSpec(this, _state, {
       writable: true,
       value: 'idle'
@@ -12177,6 +12064,24 @@ class OverlayUIController extends _UIController.UIController {
     (_this$_mutObs = this._mutObs) === null || _this$_mutObs === void 0 ? void 0 : _this$_mutObs.disconnect();
   }
 
+  createTooltip(_pos, _topContextData) {
+    return undefined;
+  }
+
+  destroy() {}
+
+  getActiveTooltip() {
+    return null;
+  }
+
+  isActive() {
+    return false;
+  }
+
+  setActiveTooltip(_tooltip) {}
+
+  updateItems(_data) {}
+
 }
 
 exports.OverlayUIController = OverlayUIController;
@@ -12202,6 +12107,7 @@ exports.UIController = void 0;
 
 /**
  * This is the base interface that `UIControllers` should extend/implement
+ * @interface
  */
 class UIController {
   /**
@@ -13288,13 +13194,14 @@ var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-class AndroidTransport extends _index.DeviceApiTransport {
+/**
+ * @implements DeviceApiTransport
+ */
+class AndroidTransport {
   /** @type {GlobalConfig} */
 
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
-    super();
-
     _defineProperty(this, "config", void 0);
 
     this.config = globalConfig;
@@ -13446,10 +13353,12 @@ var _index = require("../../../packages/device-api/index.js");
 
 var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 
-class AppleTransport extends _index.DeviceApiTransport {
+/**
+ * @implements DeviceApiTransport
+ */
+class AppleTransport {
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
-    super();
     this.config = globalConfig;
     const webkitConfig = new _contentScopeUtils.WebkitMessagingConfig({
       hasModernWebkitAPI: this.config.hasModernWebkitAPI,
@@ -13524,10 +13433,12 @@ var _autofillUtils = require("../../autofill-utils.js");
 
 var _Settings = require("../../Settings.js");
 
-class ExtensionTransport extends _index.DeviceApiTransport {
+/**
+ * @implements DeviceApiTransport
+ */
+class ExtensionTransport {
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
-    super();
     this.config = globalConfig;
   }
 
@@ -13748,8 +13659,9 @@ var _index = require("../../../packages/device-api/index.js");
 /**
  * @typedef {import('../../../packages/device-api/lib/device-api').CallOptions} CallOptions
  * @typedef {import("../../../packages/device-api").DeviceApiCall} DeviceApiCall
+ * @implements DeviceApiTransport
  */
-class WindowsTransport extends _index.DeviceApiTransport {
+class WindowsTransport {
   async send(deviceApiCall, options) {
     if (deviceApiCall.id) {
       return windowsTransport(deviceApiCall, options).withResponse(deviceApiCall.id);

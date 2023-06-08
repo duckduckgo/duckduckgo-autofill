@@ -15,8 +15,9 @@ import {GetAutofillDataCall} from '../../deviceApiCalls/__generated__/deviceApiC
  * const controller = new NativeController();
  * controller.attach(...);
  * ```
+ * @implements UIController
  */
-export class NativeUIController extends UIController {
+export class NativeUIController {
     /**
      * @param {import('./UIController').AttachArgs} args
      */
@@ -71,5 +72,29 @@ export class NativeUIController extends UIController {
                 console.error('NativeTooltip::device.getAutofillData(payload)')
                 console.error(e)
             })
+    }
+
+    createTooltip(_pos, _topContextData) {
+        return undefined;
+    }
+
+    destroy() {
+    }
+
+    getActiveTooltip() {
+        return null;
+    }
+
+    isActive() {
+        return false;
+    }
+
+    removeTooltip(_via) {
+    }
+
+    setActiveTooltip(_tooltip) {
+    }
+
+    updateItems(_data) {
     }
 }

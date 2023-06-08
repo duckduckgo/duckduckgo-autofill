@@ -6,13 +6,15 @@ import {
     StoreFormDataCall
 } from '../__generated__/deviceApiCalls.js'
 
-export class AndroidTransport extends DeviceApiTransport {
+/**
+ * @implements DeviceApiTransport
+ */
+export class AndroidTransport {
     /** @type {GlobalConfig} */
     config
 
     /** @param {GlobalConfig} globalConfig */
     constructor (globalConfig) {
-        super()
         this.config = globalConfig
 
         if (this.config.isDDGTestMode) {

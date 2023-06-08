@@ -17,8 +17,9 @@ import {UIController} from './UIController.js'
  *
  * Note: This could be displayed in the current webpage (for example, in the extension)
  * or within a webview overlay (like on macOS & upcoming in windows)
+ * @implements UIController
  */
-export class HTMLTooltipUIController extends UIController {
+export class HTMLTooltipUIController {
     /** @type {import("../HTMLTooltip.js").HTMLTooltip | null} */
     _activeTooltip = null
 
@@ -39,7 +40,6 @@ export class HTMLTooltipUIController extends UIController {
      * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
     constructor (options, htmlTooltipOptions = defaultOptions) {
-        super()
         this._options = options
         this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
         window.addEventListener('pointerdown', this, true)

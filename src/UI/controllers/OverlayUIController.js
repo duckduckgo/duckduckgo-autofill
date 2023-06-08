@@ -28,8 +28,9 @@ import {getMainTypeFromType, getSubtypeFromType} from '../../Form/matching.js'
  *
  * controller.attach(...)
  * ```
+ * @implements UIController
  */
-export class OverlayUIController extends UIController {
+export class OverlayUIController {
     /** @type {"idle" | "parentShown"} */
     #state = 'idle';
 
@@ -42,7 +43,6 @@ export class OverlayUIController extends UIController {
      * @param {OverlayControllerOptions} options
      */
     constructor (options) {
-        super()
         this._options = options
 
         // We always register this 'pointerdown' event, regardless of
@@ -218,5 +218,26 @@ export class OverlayUIController extends UIController {
         this.#state = 'idle'
         this._removeListeners()
         this._mutObs?.disconnect()
+    }
+
+    createTooltip(_pos, _topContextData) {
+        return undefined;
+    }
+
+    destroy() {
+    }
+
+    getActiveTooltip() {
+        return null;
+    }
+
+    isActive() {
+        return false;
+    }
+
+    setActiveTooltip(_tooltip) {
+    }
+
+    updateItems(_data) {
     }
 }
