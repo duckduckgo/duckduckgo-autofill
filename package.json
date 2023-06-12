@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.17.8",
-    "@babel/eslint-parser": "^7.18.2",
+    "@babel/eslint-parser": "^7.22.5",
     "@babel/preset-env": "^7.16.11",
     "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.3.0",
     "@duckduckgo/content-scope-utils": "github:duckduckgo/content-scope-utils#1.0.1",
