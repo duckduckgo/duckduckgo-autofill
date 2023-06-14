@@ -21,8 +21,6 @@ export const sendJSPixelParamsSchema = z.union([z.object({
         pixelName: z.literal("incontext_dismiss_persisted")
     }), z.object({
         pixelName: z.literal("incontext_close_x")
-    }), z.object({
-        pixelName: z.literal("email_incontext_eligible")
     })]);
 
 export const generatedPasswordSchema = z.object({

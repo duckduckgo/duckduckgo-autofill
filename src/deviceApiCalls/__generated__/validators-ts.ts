@@ -36,9 +36,6 @@ export type SendJSPixelParams =
     }
   | {
       pixelName: "incontext_close_x";
-    }
-  | {
-      pixelName: "email_incontext_eligible";
     };
 
 /**

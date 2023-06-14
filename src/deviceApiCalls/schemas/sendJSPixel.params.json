@@ -108,18 +108,6 @@
         "pixelName"
       ],
       "additionalProperties": false
-    },
-    {
-      "properties": {
-        "pixelName": {
-          "type": "string",
-          "const": "email_incontext_eligible"
-        }
-      },
-      "required": [
-        "pixelName"
-      ],
-      "additionalProperties": false
     }
   ]
 }
