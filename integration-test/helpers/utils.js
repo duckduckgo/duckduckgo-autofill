@@ -81,4 +81,17 @@ async function addTopAutofillMouseFocus (page, button) {
     await page.mouse.move(x + 50, y + 15)
 }
 
+/**
+ * @param {any} stringInput
+ * @returns {Platform}
+ */
+export function validPlatform (stringInput) {
+    /** @type {Platform[]} */
+    const valid = ['extension', 'windows', 'ios', 'macos', 'android']
+    if (!valid.includes(stringInput)) {
+        throw new Error(`invalid platform: ${stringInput}`)
+    }
+    return stringInput
+}
+
 export {createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType, addTopAutofillMouseFocus}

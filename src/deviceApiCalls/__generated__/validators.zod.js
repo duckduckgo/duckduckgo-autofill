@@ -283,7 +283,7 @@ export const runtimeConfigurationSchema = z.object({
 
 export const storeFormDataSchema = z.object({
     credentials: outgoingCredentialsSchema.optional(),
-    trigger: z.union([z.literal("formSubmission"), z.literal("passwordGeneration")]).optional()
+    trigger: z.union([z.literal("formSubmission"), z.literal("passwordGeneration"), z.literal("emailProtection")]).optional()
 });
 
 export const getAvailableInputTypesResultSchema = z.object({

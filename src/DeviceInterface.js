@@ -13,21 +13,9 @@ function createDevice () {
     const globalConfig = createGlobalConfig()
     const transport = createTransport(globalConfig)
 
-    /**
-     * A wrapper around transports to assist in debugging/integrations
-     * @type {import("../packages/device-api").DeviceApiTransport}
-     */
-    const loggingTransport = {
-        async send (deviceApiCall) {
-            console.log('[->outgoing]', 'id:', deviceApiCall.method, deviceApiCall.params || null)
-            const result = await transport.send(deviceApiCall)
-            console.log('[<-incoming]', 'id:', deviceApiCall.method, result || null)
-            return result
-        }
-    }
 
     // Create the DeviceAPI + Setting
-    let deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport)
+    let deviceApi = new DeviceApi(transport)
     const settings = new Settings(globalConfig, deviceApi)
 
     if (globalConfig.isWindows) {

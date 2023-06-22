@@ -1,16 +1,17 @@
 import {
     forwardConsoleMessages,
-    withIOSContext, withIOSFeatureToggles
+    withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage, loginPageWithPoorForm, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 import {constants} from '../helpers/mocks.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for email autofill on ios tooltipHandler
  */
-const test = withIOSContext(base)
+const test = testContext(base)
 
 test.describe('iOS Save prompts', () => {
     test.describe('and saving credentials disabled ❌', () => {
@@ -72,7 +73,7 @@ test.describe('iOS Save prompts', () => {
             const signup = signupPage(page)
             await signup.navigate()
             await signup.enterCredentials(credentials)
-            await signup.assertWasPromptedToSave(credentials, 'ios')
+            await signup.assertWasPromptedToSave(credentials)
         })
         test.describe('Prompting to save from a login form', () => {
             /**

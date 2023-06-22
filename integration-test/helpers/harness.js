@@ -1,11 +1,6 @@
-import {mkdtempSync, readFileSync} from 'fs'
+import {readFileSync} from 'fs'
 import {join} from 'path'
-import {tmpdir} from 'os'
-import {devices} from 'playwright'
-import {chromium, firefox} from '@playwright/test'
 import {macosContentScopeReplacements, iosContentScopeReplacements} from './mocks.webkit.js'
-
-const DATA_DIR_PREFIX = 'ddg-temp-'
 
 /**
  * @param {import("@playwright/test").Page} page
@@ -25,42 +20,6 @@ export async function setupMockedDomain (page, domain) {
             contentType: contentType[fileType] || contentType.default,
             body: readFileSync(join('.', pathname), 'utf8')
         })
-    })
-}
-
-/**
- * Launch a chromium browser with the test extension pre-loaded.
- *
- * @param {typeof import("@playwright/test").test} test
- */
-export function withChromeExtensionContext (test) {
-    return test.extend({
-        context: async ({ browserName }, use, testInfo) => {
-            // ensure this test setup cannot be used by anything other than chrome
-            testInfo.skip(testInfo.project.name !== 'extension')
-
-            const tmpDirPrefix = join(tmpdir(), DATA_DIR_PREFIX)
-            const dataDir = mkdtempSync(tmpDirPrefix)
-            const browserTypes = { chromium, firefox }
-            const launchOptions = {
-                devtools: true,
-                headless: false,
-                viewport: {
-                    width: 1920,
-                    height: 1080
-                },
-                args: [
-                    '--disable-extensions-except=integration-test/extension',
-                    '--load-extension=integration-test/extension'
-                ]
-            }
-            const context = await browserTypes[browserName].launchPersistentContext(
-                dataDir,
-                launchOptions
-            )
-            await use(context)
-            await context.close()
-        }
     })
 }
 
@@ -225,73 +184,6 @@ export function forwardConsoleMessages (page, _opts = {}) {
 }
 
 /**
- * Launch a webkit browser with a user-agent that simulates our iOS application
- * @param {typeof import("@playwright/test").test} test
- */
-export function withIOSContext (test) {
-    return test.extend({
-        context: async ({ browser }, use, testInfo) => {
-            // ensure this test setup cannot be used by anything other than webkit browsers
-            testInfo.skip(testInfo.project.name !== 'webkit')
-
-            const context = await browser.newContext({
-                ...devices['iPhone 13'],
-                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 DuckDuckGo/7 Safari/605.1.15'
-            })
-
-            await use(context)
-            await context.close()
-        }
-    })
-}
-
-/**
- * Launch a webkit browser with a user-agent that simulates our iOS application
- * @param {typeof import("@playwright/test").test} test
- */
-export function withAndroidContext (test) {
-    return test.extend({
-        context: async ({ browser }, use, testInfo) => {
-            // ensure this test setup cannot be used by anything other than webkit browsers
-            testInfo.skip(testInfo.project.name !== 'android')
-
-            const context = await browser.newContext({
-                ...devices.iPhone,
-                userAgent: 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
-            })
-
-            await use(context)
-            await context.close()
-        }
-    })
-}
-
-/**
- * Launch a chromium browser to simulates our Windows application
- *
- * Note: Autofill knows this is Windows via the isWindows string replacement
- * @param {typeof import("@playwright/test").test} test
- */
-export function withWindowsContext (test) {
-    return test.extend({
-        context: async ({ browser }, use, testInfo) => {
-            // ensure this test setup cannot be used by anything other than the Windows browser
-            testInfo.skip(testInfo.project.name !== 'windows')
-
-            const context = await browser.newContext({
-                ...devices['Desktop Chrome']
-            })
-
-            await use(context)
-            for (let page of context.pages()) {
-                await addMocksAsAttachments(page, test)
-            }
-            await context.close()
-        }
-    })
-}
-
-/**
  * @param {import("@playwright/test").Page} page
  * @param {string} measureName
  * @return {Promise<PerformanceEntryList>}
@@ -314,18 +206,26 @@ export async function printPerformanceSummary (name, times) {
 
 /**
  * @param {import("@playwright/test").Page} page
- * @param {string[]} [names]
+ * @param {object} [params]
+ * @param {string[]} [params.names]
+ * @param {number} [params.minCount]
  * @returns {Promise<MockCall[]>}
  */
-export async function mockedCalls (page, names = [], mustExist = true) {
-    if (names.length > 0 && mustExist) {
-        await page.waitForFunction(({names}) => {
+export async function mockedCalls (page, params = {}) {
+    const { minCount = 1, names = [] } = params
+    if (minCount > 0) {
+        await page.waitForFunction(({names, minCount}) => {
             const calls = window.__playwright_autofill.mocks.calls
-            return calls.some(([name]) => names.includes(name))
-        }, {names})
+            if (names.length > 0) {
+                const matching = calls.filter(([name]) => names.includes(name))
+                return matching.length >= minCount
+            } else {
+                return calls.length >= minCount
+            }
+        }, {names, minCount})
     }
 
-    if (!mustExist) {
+    if (minCount === 0) {
         await page.waitForTimeout(500)
     }
 
@@ -346,6 +246,20 @@ export async function mockedCalls (page, names = [], mustExist = true) {
 }
 
 /**
+ * @param {MockCall[]} mockCalls
+ * @return {Record<string, unknown>[]}
+ */
+export function payloadsOnly (mockCalls) {
+    return mockCalls.map(call => {
+        let [, sent] = call
+        if (typeof sent === 'string') {
+            sent = JSON.parse(sent)
+        }
+        return sent
+    })
+}
+
+/**
  * This gathers all mocked API calls and adds them as an attachment to the
  * test run.
  *
@@ -356,8 +270,8 @@ export async function mockedCalls (page, names = [], mustExist = true) {
  * @param {typeof import("@playwright/test").test} test
  * @returns {Promise<void>}
  */
-async function addMocksAsAttachments (page, test) {
-    const calls = await mockedCalls(page)
+export async function addMocksAsAttachments (page, test) {
+    const calls = await mockedCalls(page, {minCount: 0})
     let index = 0
     for (let call of calls) {
         index += 1

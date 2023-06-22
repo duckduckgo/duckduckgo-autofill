@@ -1,14 +1,14 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages,
-    withWindowsContext
+    forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {signupPage} from '../helpers/pages.js'
 import {constants} from '../helpers/mocks.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
+import {testContext} from '../helpers/test-context.js'
 
-const test = withWindowsContext(base)
+const test = testContext(base)
 
 test.describe('Save prompts on windows', () => {
     test.describe('When saving credentials is enabled ✅ (default)', () => {

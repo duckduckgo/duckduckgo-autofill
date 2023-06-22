@@ -1,6 +1,6 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
-import {mockedCalls} from './harness.js'
+import {mockedCalls, payloadsOnly} from './harness.js'
 import {addTopAutofillMouseFocus, clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
@@ -92,6 +92,9 @@ export function signupPage (page) {
         async navigate () {
             await page.goto(constants.pages['signup'])
         },
+        async clickIntoEmailField () {
+            await page.getByLabel('Email').click()
+        },
         async clickIntoPasswordField () {
             const input = page.locator('#password')
             await input.click()
@@ -101,12 +104,19 @@ export function signupPage (page) {
             await input.click()
         },
         /**
+         * @param {string} address
+         */
+        async selectPrivateAddress(address) {
+            await page.getByRole('button', { name: `Generate Private Duck Address ${address} Blocks email trackers and hides your address` })
+                .click({force: true})
+        },
+        /**
          * @param {number} times
          * @param {Platform} platform
          * @return {Promise<void>}
          */
         async assertPasswordWasSuggestedTimes (times = 1, platform) {
-            const calls = await mockedCalls(page, ['getAutofillData'])
+            const calls = await mockedCalls(page, {names: ['getAutofillData']})
             const suggested = calls.filter(call => {
                 let json
                 if (platform === 'android') {
@@ -189,7 +199,7 @@ export function signupPage (page) {
          * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
         async assertPixelsFired (pixels) {
-            const calls = await mockedCalls(page, ['sendJSPixel'])
+            const calls = await mockedCalls(page, {names: ['sendJSPixel']})
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
             expect(firedPixels).toEqual(pixels)
@@ -219,29 +229,50 @@ export function signupPage (page) {
             await page.waitForTimeout(200)
             await page.keyboard.press('Tab')
 
-            await page.locator(`button:has-text("Sign up")`).click()
+            await page.getByRole('button', { name: 'Sign up' }).click()
+        },
+        /**
+         * @param {string} password
+         * @return {Promise<void>}
+         */
+        async enterPassword (password) {
+            await page.getByLabel('Password', { exact: true }).fill(password)
+            await page.getByLabel('Password Confirmation').fill(password)
+        },
+        /**
+         * @param {string} email
+         */
+        async changeEmailFieldTo(email) {
+            await page.getByLabel('Email').fill(email)
+        },
+        async submit () {
+            await page.getByRole('button', { name: 'Sign up' }).click()
         },
         /**
          * @param {Omit<CredentialsObject, "id">} credentials
-         * @param {Platform} platform
          * @returns {Promise<void>}
          */
-        async assertWasPromptedToSave (credentials, platform) {
-            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
-            const mockCalls = calls.find(([name]) => name === 'storeFormData')
-            let [, sent] = mockCalls
-            if (platform === 'android') {
-                expect(typeof sent).toBe('string')
-                sent = JSON.parse(sent)
-            }
-            expect(sent.credentials).toEqual(credentials)
+        async assertWasPromptedToSave (credentials) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'] })
+            const payloads = payloadsOnly(calls)
+            expect(payloads[0].credentials).toEqual(credentials)
+        },
+        /**
+         * Capture a second instance of `storeFormData`
+         * @param {Omit<CredentialsObject, "id">} credentials
+         * @returns {Promise<void>}
+         */
+        async assertWasPromptedToSaveAgain (credentials) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'], minCount: 2 })
+            const payloads = payloadsOnly(calls)
+            expect(payloads[1].credentials).toEqual(credentials)
         },
         /**
          * @param {Omit<CredentialsObject, "id">} credentials
          * @returns {Promise<void>}
          */
         async assertWasPromptedToSaveWindows (credentials) {
-            const calls = await mockedCalls(page, ['storeFormData'])
+            const calls = await mockedCalls(page, { names: ['storeFormData'] })
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const [, sent] = calls[0]
             // @ts-expect-error
@@ -251,7 +282,7 @@ export function signupPage (page) {
          * @returns {Promise<void>}
          */
         async assertWasNotPromptedToSaveWindows () {
-            const calls = await mockedCalls(page, ['storeFormData'], false)
+            const calls = await mockedCalls(page, { names: ['storeFormData'], minCount: 0 })
 
             expect(calls.length).toBe(0)
         },
@@ -373,7 +404,7 @@ export function loginPage (page, opts = {}) {
             const updatedButton = await page.waitForSelector(`button:has-text("${constants.fields.email.personalAddress}")`)
             expect(updatedButton).toBeDefined()
             await updatedButton.click()
-            const autofillCalls = await mockedCalls(page, ['pmHandlerGetAutofillCredentials'], true)
+            const autofillCalls = await mockedCalls(page, {names: ['pmHandlerGetAutofillCredentials']})
             expect(autofillCalls).toHaveLength(1)
         },
         /**
@@ -410,7 +441,7 @@ export function loginPage (page, opts = {}) {
          * @returns {Promise<void>}
          */
         async promptWasShown (platform = 'android') {
-            const calls = await mockedCalls(page, ['getAutofillData'])
+            const calls = await mockedCalls(page, {names: ['getAutofillData']})
             expect(calls.length).toBeGreaterThan(0)
             const [, sent] = calls[0]
             let params
@@ -435,7 +466,7 @@ export function loginPage (page, opts = {}) {
          * @returns {Promise<void>}
          */
         async assertParentOpened () {
-            const credsCalls = await mockedCalls(page, ['getSelectedCredentials'], true)
+            const credsCalls = await mockedCalls(page, { names: ['getSelectedCredentials'] })
             // @ts-expect-error
             const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
             expect(hasSucceeded).toBe(true)
@@ -461,7 +492,7 @@ export function loginPage (page, opts = {}) {
         },
         async shouldNotPromptToSave () {
             let mockCalls = []
-            mockCalls = await mockedCalls(page, ['storeFormData'], false)
+            mockCalls = await mockedCalls(page, { names: ['storeFormData'], minCount: 0 })
 
             expect(mockCalls.length).toBe(0)
         },
@@ -526,7 +557,7 @@ export function loginPage (page, opts = {}) {
          * @returns {Promise<void>}
          */
         async assertClickMessage () {
-            const calls = await mockedCalls(page, ['showAutofillParent'])
+            const calls = await mockedCalls(page, { names: ['showAutofillParent'] })
             expect(calls.length).toBe(1)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
@@ -535,7 +566,7 @@ export function loginPage (page, opts = {}) {
             expect(call1[1].wasFromClick).toBe(true)
         },
         async assertFocusMessage () {
-            const calls = await mockedCalls(page, ['showAutofillParent'])
+            const calls = await mockedCalls(page, { names: ['showAutofillParent'] })
             expect(calls.length).toBe(1)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
@@ -559,7 +590,7 @@ export function loginPage (page, opts = {}) {
             expect(count).toBe(0)
         },
         async assertNoPixelFired () {
-            const mockCalls = await mockedCalls(page, ['sendJSPixel'], false)
+            const mockCalls = await mockedCalls(page, { names: ['sendJSPixel'], minCount: 0 })
             expect(mockCalls).toHaveLength(0)
         }
     }
@@ -716,13 +747,13 @@ export function emailAutofillPage (page) {
          * @param {import('../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
         async assertPixelsFired (pixels) {
-            const calls = await mockedCalls(page, ['sendJSPixel'])
+            const calls = await mockedCalls(page, { names: ['sendJSPixel'] })
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
             expect(firedPixels).toEqual(pixels)
         },
         async assertNoPixelsFired () {
-            const calls = await mockedCalls(page, ['sendJSPixel'], false)
+            const calls = await mockedCalls(page, { names: ['sendJSPixel'], minCount: 0 })
             expect(calls.length).toBe(0)
         },
         async assertExtensionPixelsCaptured (expectedPixels) {
@@ -773,13 +804,13 @@ export function overlayPage (page) {
          * @params {string} callName
          */
         async doesNotCloseParentAfterCall (callName) {
-            const callNameCalls = await mockedCalls(page, [callName], true)
+            const callNameCalls = await mockedCalls(page, {names: [callName]})
             expect(callNameCalls.length).toBeGreaterThanOrEqual(1)
-            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], false)
+            const closeAutofillParentCalls = await mockedCalls(page, {names: ['closeAutofillParent'], minCount: 0})
             expect(closeAutofillParentCalls.length).toBe(0)
         },
         async assertCloseAutofillParent () {
-            const closeAutofillParentCalls = await mockedCalls(page, ['closeAutofillParent'], true)
+            const closeAutofillParentCalls = await mockedCalls(page, {names: ['closeAutofillParent']})
             expect(closeAutofillParentCalls.length).toBe(1)
         },
         /**
