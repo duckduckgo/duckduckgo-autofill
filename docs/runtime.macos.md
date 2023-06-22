@@ -13,7 +13,7 @@ Please follow the [iOS Runtime Docs]('./runtime.ios.md) for
 
 **request example 1: email protection**
 
-This occurs when a personal or private email was selected. (Not a form submission)...
+This occurs when a private email was selected. (Not a form submission)...
 
 ```json
 {
