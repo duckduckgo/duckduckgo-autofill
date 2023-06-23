@@ -20,7 +20,7 @@
     "test:passwords": "PASSWORD_STRESS_TEST=true jest generate.test.js",
     "test:unit": "jest",
     "test:integration": "npm run build && npm run copy-assets && playwright test",
-    "test:integration:showui": "npm run test:integration -- --headed",
+    "test:integration:showui": "npm run test:integration -- --ui",
     "test:integration:ci": "xvfb-run --auto-servernum npm run test:integration",
     "test:report": "jest --testResultsProcessor='./node_modules/jest-html-reporter' --no-colors --verbose=false",
     "test:watch": "jest --watch --verbose=false",

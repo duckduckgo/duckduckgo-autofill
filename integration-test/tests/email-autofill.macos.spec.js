@@ -149,7 +149,7 @@ test.describe('macos', () => {
              */
             await signup.assertWasPromptedToSaveAgain({
                 password: 'abcd',
-                username: "dax@example.com"
+                username: 'dax@example.com'
             })
         })
         test('with an identity only - filling firstName + generated password', async ({page}) => {

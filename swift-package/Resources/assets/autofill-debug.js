@@ -9242,13 +9242,14 @@ class InterfacePrototype {
     const checks = [topContextData.inputType === 'credentials.password', this.settings.featureToggles.password_generation, form.isSignup]; // if all checks pass, generate and save a password
 
     if (checks.every(Boolean)) {
-      var _form$getRawValues$cr;
+      var _rawValues$credential, _rawValues$identities;
 
       const password = this.passwordGenerator.generate({
         input: input.getAttribute('passwordrules'),
         domain: window.location.hostname
       });
-      const username = ((_form$getRawValues$cr = form.getRawValues().credentials) === null || _form$getRawValues$cr === void 0 ? void 0 : _form$getRawValues$cr.username) || ''; // append the new credential to the topContextData so that the top autofill can display it
+      const rawValues = form.getRawValues();
+      const username = ((_rawValues$credential = rawValues.credentials) === null || _rawValues$credential === void 0 ? void 0 : _rawValues$credential.username) || ((_rawValues$identities = rawValues.identities) === null || _rawValues$identities === void 0 ? void 0 : _rawValues$identities.emailAddress) || ''; // append the new credential to the topContextData so that the top autofill can display it
 
       topContextData.credentials = [(0, _Credentials.fromPassword)(password, username)];
     }
@@ -10659,7 +10660,7 @@ class Form {
     }, dataType);
     this.isAutofilling = false;
 
-    if (dataType !== "all") {
+    if (dataType !== 'all') {
       const dataForPostAutofillCall = {
         id: 'emailProtectionAddress',
         emailAddress: alias,

@@ -13,7 +13,6 @@ function createDevice () {
     const globalConfig = createGlobalConfig()
     const transport = createTransport(globalConfig)
 
-
     // Create the DeviceAPI + Setting
     let deviceApi = new DeviceApi(transport)
     const settings = new Settings(globalConfig, deviceApi)

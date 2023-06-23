@@ -651,8 +651,8 @@ class Form {
         )
         this.isAutofilling = false
 
-        if (dataType !== "all") {
-            const dataForPostAutofillCall = { id: 'emailProtectionAddress', emailAddress: alias, title: '' };
+        if (dataType !== 'all') {
+            const dataForPostAutofillCall = { id: 'emailProtectionAddress', emailAddress: alias, title: '' }
             this.device.postAutofill(dataForPostAutofillCall, dataType, this)
         }
 

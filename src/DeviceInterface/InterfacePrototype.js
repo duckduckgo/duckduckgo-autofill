@@ -732,7 +732,8 @@ class InterfacePrototype {
                 domain: window.location.hostname
             })
 
-            const username = form.getRawValues().credentials?.username || ''
+            const rawValues = form.getRawValues()
+            const username = rawValues.credentials?.username || rawValues.identities?.emailAddress || ''
 
             // append the new credential to the topContextData so that the top autofill can display it
             topContextData.credentials = [fromPassword(password, username)]
@@ -766,9 +767,9 @@ class InterfacePrototype {
         }
 
         // things to do following an autofill for personal or private addresses
-        if ((data?.id === 'privateAddress' || data?.id === 'personalAddress' || data?.id === 'emailProtectionAddress')
-            && 'emailAddress' in data
-            && typeof data.emailAddress === 'string'
+        if ((data?.id === 'privateAddress' || data?.id === 'personalAddress' || data?.id === 'emailProtectionAddress') &&
+            'emailAddress' in data &&
+            typeof data.emailAddress === 'string'
         ) {
             /**
              * Desktop only, notify the native side if a private address was selected

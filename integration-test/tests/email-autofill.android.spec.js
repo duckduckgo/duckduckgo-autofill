@@ -54,7 +54,7 @@ test.describe('android', () => {
             await createAutofillScript()
                 .replaceAll(androidStringReplacements({
                     featureToggles: {
-                        credentials_saving: true,
+                        credentials_saving: true
                     }
                 }))
                 .platform('android')
@@ -134,21 +134,31 @@ test.describe('android', () => {
             }))
             .platform('android')
 
-        test('should autofill with generated password', async ({page}) => {
+        test('should autofill with generated password + private email', async ({page}) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
             await signup.navigate()
 
-            // android specific mocks
+            const {personalAddress, privateAddress0} = constants.fields.email
             await createAndroidMocks()
+                .withPersonalEmail(personalAddress)
+                .withPrivateEmail(privateAddress0)
                 .withPasswordDecision?.('accept')
                 .applyTo(page)
 
-            // create + inject the script
             await script.applyTo(page)
 
+            // simulate the email modal
+            await signup.clickIntoEmailField()
+
+            // simulate the password generation modal
             await signup.clickIntoPasswordField()
+
+            // asserting that the modal was opened with correct data
+            await signup.assertUsernameFieldSent(privateAddress0)
+
+            // make sure the password was filled
             await signup.assertPasswordWasAutofilled()
         })
 
@@ -171,11 +181,11 @@ test.describe('android', () => {
 
             // should not prompt again on second password field (which will be untouched)
             await signup.clickIntoPasswordConfirmationField()
-            await signup.assertPasswordWasSuggestedTimes(1, 'android')
+            await signup.assertPasswordWasSuggestedTimes(1)
 
             // SHOULD prompt again if icon clicked though, since that's explicit opt-in
             await signup.clickDirectlyOnPasswordIcon()
-            await signup.assertPasswordWasSuggestedTimes(2, 'android')
+            await signup.assertPasswordWasSuggestedTimes(2)
         })
     })
 })

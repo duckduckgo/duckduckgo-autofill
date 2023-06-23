@@ -89,8 +89,8 @@ export function signupPage (page) {
     const emailStyleAttr = () => page.locator('#email').first().getAttribute('style')
     const passwordStyleAttr = () => page.locator('#password' + constants.fields.password.selectors.credential).getAttribute('style')
     return {
-        async navigate () {
-            await page.goto(constants.pages['signup'])
+        async navigate (url = constants.pages['signup']) {
+            await page.goto(url)
         },
         async clickIntoEmailField () {
             await page.getByLabel('Email').click()
@@ -106,25 +106,18 @@ export function signupPage (page) {
         /**
          * @param {string} address
          */
-        async selectPrivateAddress(address) {
+        async selectPrivateAddress (address) {
             await page.getByRole('button', { name: `Generate Private Duck Address ${address} Blocks email trackers and hides your address` })
                 .click({force: true})
         },
         /**
          * @param {number} times
-         * @param {Platform} platform
          * @return {Promise<void>}
          */
-        async assertPasswordWasSuggestedTimes (times = 1, platform) {
+        async assertPasswordWasSuggestedTimes (times = 1) {
             const calls = await mockedCalls(page, {names: ['getAutofillData']})
-            const suggested = calls.filter(call => {
-                let json
-                if (platform === 'android') {
-                    // @ts-expect-error - on Android this is a string
-                    json = JSON.parse(call[1])
-                } else {
-                    json = call[1]
-                }
+            const payloads = payloadsOnly(calls)
+            const suggested = payloads.filter(json => {
                 return Boolean(json.generatedPassword)
             })
             expect(suggested.length).toBe(times)
@@ -146,6 +139,15 @@ export function signupPage (page) {
             const input2 = await page.locator('#password-2').inputValue()
             expect(input).toEqual('')
             expect(input2).toEqual('')
+        },
+        /**
+         * @param {string} address
+         */
+        async assertUsernameFieldSent (address) {
+            const calls = payloadsOnly(await mockedCalls(page, { names: ['getAutofillData'] }))
+
+            expect(/** @type {any} */(calls[0]).generatedPassword.username).toEqual(address)
+            expect(calls.length).toEqual(1)
         },
         async clickDirectlyOnPasswordIcon () {
             const input = page.locator('#password')
@@ -242,7 +244,7 @@ export function signupPage (page) {
         /**
          * @param {string} email
          */
-        async changeEmailFieldTo(email) {
+        async changeEmailFieldTo (email) {
             await page.getByLabel('Email').fill(email)
         },
         async submit () {

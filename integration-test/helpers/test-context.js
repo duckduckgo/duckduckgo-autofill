@@ -19,40 +19,40 @@ export function testContext (test) {
 
             // first, create the context
             switch (platform) {
-                case 'ios':
-                case 'android':
-                case 'macos':
-                case 'windows': {
-                    context = await browser.newContext()
-                    break
+            case 'ios':
+            case 'android':
+            case 'macos':
+            case 'windows': {
+                context = await browser.newContext()
+                break
+            }
+            case 'extension': {
+                const tmpDirPrefix = join(tmpdir(), DATA_DIR_PREFIX)
+                const dataDir = mkdtempSync(tmpDirPrefix)
+                const browserTypes = { chromium, firefox }
+                const launchOptions = {
+                    devtools: true,
+                    headless: false,
+                    viewport: {
+                        width: 1920,
+                        height: 1080
+                    },
+                    args: [
+                        '--disable-extensions-except=integration-test/extension',
+                        '--load-extension=integration-test/extension'
+                    ]
                 }
-                case 'extension': {
-                    const tmpDirPrefix = join(tmpdir(), DATA_DIR_PREFIX)
-                    const dataDir = mkdtempSync(tmpDirPrefix)
-                    const browserTypes = { chromium, firefox }
-                    const launchOptions = {
-                        devtools: true,
-                        headless: false,
-                        viewport: {
-                            width: 1920,
-                            height: 1080
-                        },
-                        args: [
-                            '--disable-extensions-except=integration-test/extension',
-                            '--load-extension=integration-test/extension'
-                        ]
-                    }
-                    context = await browserTypes[browserName].launchPersistentContext(
-                        dataDir,
-                        launchOptions
-                    )
-                }
+                context = await browserTypes[browserName].launchPersistentContext(
+                    dataDir,
+                    launchOptions
+                )
+            }
             }
 
             await use(context)
 
             // skipping extension for a min, since it's testing setup has fallen behind
-            if (platform !== "extension") {
+            if (platform !== 'extension') {
                 for (let page of context.pages()) {
                     await addMocksAsAttachments(page, test, testInfo)
                 }
