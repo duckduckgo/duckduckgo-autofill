@@ -6847,6 +6847,9 @@ module.exports={
   "klm.com": {
     "password-rules": "minlength: 8; maxlength: 12;"
   },
+  "kundenportal.edeka-smart.de": {
+    "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper, lower; required: [!\"§$%&#];"
+  },
   "la-z-boy.com": {
     "password-rules": "minlength: 6; maxlength: 15; required: lower, upper; required: digit;"
   },
@@ -6917,7 +6920,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&()*+:;=@[^_`{}~]];"
   },
   "mlb.com": {
-    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; allowed: [!\"#$%&'()*+,./:;<=>?[\\^_`{|}~]];"
+    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
   },
   "mpv.tickets.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
@@ -7143,6 +7146,9 @@ module.exports={
   },
   "training.confluent.io": {
     "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: [!#$%*@^_~];"
+  },
+  "treasurer.mo.gov": {
+    "password-rules": "minlength: 8; maxlength: 26; required: lower; required: upper; required: digit; required: [!#$&];"
   },
   "twitch.tv": {
     "password-rules": "minlength: 8; maxlength: 71;"
