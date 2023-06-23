@@ -89,7 +89,7 @@ test.describe('macos', () => {
             ...identity,
             emailAddress: personalAddress
         }
-        test.only('using a private address (generated)', async ({page}) => {
+        test('using a private address (generated)', async ({page}) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 

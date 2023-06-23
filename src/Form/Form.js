@@ -650,6 +650,12 @@ class Form {
             dataType
         )
         this.isAutofilling = false
+
+        if (dataType !== "all") {
+            const dataForPostAutofillCall = { id: 'emailProtectionAddress', emailAddress: alias, title: '' };
+            this.device.postAutofill(dataForPostAutofillCall, dataType, this)
+        }
+
         this.removeTooltip()
     }
 

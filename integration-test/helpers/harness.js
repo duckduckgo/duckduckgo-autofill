@@ -1,6 +1,7 @@
 import {readFileSync} from 'fs'
 import {join} from 'path'
 import {macosContentScopeReplacements, iosContentScopeReplacements} from './mocks.webkit.js'
+import {validPlatform} from "./utils.js";
 
 /**
  * @param {import("@playwright/test").Page} page
@@ -268,21 +269,32 @@ export function payloadsOnly (mockCalls) {
  *
  * @param {import("@playwright/test").Page} page
  * @param {typeof import("@playwright/test").test} test
+ * @param {import("@playwright/test").TestInfo} testInfo
  * @returns {Promise<void>}
  */
-export async function addMocksAsAttachments (page, test) {
+export async function addMocksAsAttachments (page, test, testInfo) {
     const calls = await mockedCalls(page, {minCount: 0})
+    const platform = validPlatform(testInfo.project.name);
     let index = 0
     for (let call of calls) {
         index += 1
-        const [name, params, response] = call
+        let [name, params, response] = call
         const lines = [`name: ${name}`]
-        lines.push(`params: \n\n` + JSON.stringify(params, null, 2))
-        lines.push(`response: \n\n` + JSON.stringify(response, null, 2))
+        if (platform === 'android') {
+            lines.push('sent as json string: \n\n' + JSON.stringify(params))
+            params = JSON.parse(/** @type {any} */(params));
+        }
+        lines.push(`\n\nparams: \n\n` + JSON.stringify(params, null, 2))
+        lines.push(`\n\nresponse: \n\n` + JSON.stringify(response, null, 2))
         test.info().attachments.push({
-            name: `mock ${index} ${name} params`,
+            name: `mock ${index} ${name} info`,
             contentType: 'text/plain',
             body: Buffer.from(lines.join('\n'))
+        })
+        test.info().attachments.push({
+            name: `mock ${index} params as JSON`,
+            contentType: 'text/json',
+            body: Buffer.from(JSON.stringify(params, null, 2))
         })
     }
 }

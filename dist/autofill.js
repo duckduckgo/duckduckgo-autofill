@@ -5606,7 +5606,7 @@ class InterfacePrototype {
     } // things to do following an autofill for personal or private addresses
 
 
-    if (((data === null || data === void 0 ? void 0 : data.id) === 'privateAddress' || (data === null || data === void 0 ? void 0 : data.id) === 'personalAddress') && 'emailAddress' in data && typeof data.emailAddress === 'string') {
+    if (((data === null || data === void 0 ? void 0 : data.id) === 'privateAddress' || (data === null || data === void 0 ? void 0 : data.id) === 'personalAddress' || (data === null || data === void 0 ? void 0 : data.id) === 'emailProtectionAddress') && 'emailAddress' in data && typeof data.emailAddress === 'string') {
       /**
        * Desktop only, notify the native side if a private address was selected
        */
@@ -6982,6 +6982,16 @@ class Form {
       }
     }, dataType);
     this.isAutofilling = false;
+
+    if (dataType !== "all") {
+      const dataForPostAutofillCall = {
+        id: 'emailProtectionAddress',
+        emailAddress: alias,
+        title: ''
+      };
+      this.device.postAutofill(dataForPostAutofillCall, dataType, this);
+    }
+
     this.removeTooltip();
   }
 

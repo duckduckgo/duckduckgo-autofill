@@ -50,8 +50,12 @@ export function testContext (test) {
             }
 
             await use(context)
-            for (let page of context.pages()) {
-                await addMocksAsAttachments(page, test)
+
+            // skipping extension for a min, since it's testing setup has fallen behind
+            if (platform !== "extension") {
+                for (let page of context.pages()) {
+                    await addMocksAsAttachments(page, test, testInfo)
+                }
             }
             await context.close()
         }

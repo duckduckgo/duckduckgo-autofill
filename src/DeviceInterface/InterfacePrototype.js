@@ -766,9 +766,9 @@ class InterfacePrototype {
         }
 
         // things to do following an autofill for personal or private addresses
-        if ((data?.id === 'privateAddress' || data?.id === 'personalAddress') &&
-            'emailAddress' in data &&
-            typeof data.emailAddress === 'string'
+        if ((data?.id === 'privateAddress' || data?.id === 'personalAddress' || data?.id === 'emailProtectionAddress')
+            && 'emailAddress' in data
+            && typeof data.emailAddress === 'string'
         ) {
             /**
              * Desktop only, notify the native side if a private address was selected
