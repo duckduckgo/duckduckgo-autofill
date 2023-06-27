@@ -6461,7 +6461,7 @@ module.exports={
     "password-rules": "minlength: 6; maxlength: 15; allowed: lower, upper, digit;"
   },
   "ancestry.com": {
-    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [-!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
+    "password-rules": "minlength: 8; required: lower, upper; required: digit;"
   },
   "angieslist.com": {
     "password-rules": "minlength: 6; maxlength: 15;"
