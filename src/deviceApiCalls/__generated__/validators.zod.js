@@ -202,7 +202,8 @@ export const autofillFeatureTogglesSchema = z.object({
 
 export const getAliasParamsSchema = z.object({
     requiresUserPermission: z.boolean(),
-    shouldConsumeAliasIfProvided: z.boolean()
+    shouldConsumeAliasIfProvided: z.boolean(),
+    isIncontextSignupAvailable: z.boolean().optional()
 });
 
 export const getAliasResultSchema = z.object({

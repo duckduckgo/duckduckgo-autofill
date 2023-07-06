@@ -510,7 +510,8 @@ class Form {
             if (!canBeInteractedWith(input)) return
 
             // Checks for pointerdown event. Needed for positioning when fields are within an iframe
-            if (e.type === 'pointerdown') {
+            // TODO: Confirm this is an ok change -- by not calling `getMainClickCoords` we're no longer checking if the event is trusted
+            if (e.type === 'pointerdown' && window.parent !== window) {
                 click = getMainClickCoords(e)
                 if (!click) return
             } else if (storedClick) {

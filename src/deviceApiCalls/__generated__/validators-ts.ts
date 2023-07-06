@@ -584,6 +584,7 @@ export interface AutofillFeatureToggles {
 export interface GetAliasParams {
   requiresUserPermission: boolean;
   shouldConsumeAliasIfProvided: boolean;
+  isIncontextSignupAvailable?: boolean;
 }
 export interface GetAliasResult {
   success: {

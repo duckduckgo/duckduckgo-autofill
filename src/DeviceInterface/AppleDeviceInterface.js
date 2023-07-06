@@ -274,7 +274,8 @@ class AppleDeviceInterface extends InterfacePrototype {
     async getAlias () {
         const {alias} = await this.deviceApi.request(new GetAlias({
             requiresUserPermission: !this.globalConfig.isApp,
-            shouldConsumeAliasIfProvided: !this.globalConfig.isApp
+            shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
+            isIncontextSignupAvailable: this.inContextSignup.isAvailable()
         }))
         return formatDuckAddress(alias)
     }

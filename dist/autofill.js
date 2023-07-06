@@ -4141,7 +4141,8 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       alias
     } = await this.deviceApi.request(new _additionalDeviceApiCalls.GetAlias({
       requiresUserPermission: !this.globalConfig.isApp,
-      shouldConsumeAliasIfProvided: !this.globalConfig.isApp
+      shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
+      isIncontextSignupAvailable: this.inContextSignup.isAvailable()
     }));
     return (0, _autofillUtils.formatDuckAddress)(alias);
   }
@@ -6939,8 +6940,9 @@ class Form {
       let click = null;
       if ((0, _autofillUtils.wasAutofilledByChrome)(input)) return;
       if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // Checks for pointerdown event. Needed for positioning when fields are within an iframe
+      // TODO: Confirm this is an ok change -- by not calling `getMainClickCoords` we're no longer checking if the event is trusted
 
-      if (e.type === 'pointerdown') {
+      if (e.type === 'pointerdown' && window.parent !== window) {
         click = getMainClickCoords(e);
         if (!click) return;
       } else if (storedClick) {
@@ -10908,15 +10910,42 @@ class InContextSignup {
     await ((_this$device$uiContro = this.device.uiController) === null || _this$device$uiContro === void 0 ? void 0 : _this$device$uiContro.removeTooltip('stateChange')); // Make sure the input doesn't have focus so we can focus on it again
 
     const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput;
-    activeInput === null || activeInput === void 0 ? void 0 : activeInput.blur(); // Focus on the active input to open the tooltip
+    activeInput === null || activeInput === void 0 ? void 0 : activeInput.blur(); // Select the active input to open the tooltip
 
-    const focusActiveInput = () => {
-      activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
+    const selectActiveInpout = () => {
+      // On mobile, trigger a pointer down event on the input
+      if (this.device.globalConfig.isMobileApp) {
+        // Pretend we've never seen this input before and click on it
+        if (this.device.activeForm) this.device.activeForm.touched.delete(activeInput);
+        const pointerDownEvent = new Event('pointerdown', {
+          bubbles: true
+        });
+        activeInput === null || activeInput === void 0 ? void 0 : activeInput.dispatchEvent(pointerDownEvent); // On everything else, just focus the input
+      } else {
+        activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
+      }
     };
 
-    document.hasFocus() ? focusActiveInput() : document.addEventListener('visibilitychange', focusActiveInput, {
-      once: true
-    });
+    if (document.hasFocus()) {
+      selectActiveInpout();
+    } else {
+      // On mobile we're not changing tabs, we're rendering an overlay on
+      // top of the current tab. Therefore if the document isn't initially
+      // in focus, the visibility change handler will never fire when it
+      // is. So, let's try again 1 second later once the overlay has been
+      // hidden.
+      if (this.device.globalConfig.isMobileApp) {
+        setTimeout(() => {
+          selectActiveInpout();
+        }, 1000);
+      } else {
+        document.addEventListener('visibilitychange', () => {
+          selectActiveInpout();
+        }, {
+          once: true
+        });
+      }
+    }
   }
 
   isPermanentlyDismissed() {
