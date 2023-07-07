@@ -10501,7 +10501,7 @@ class Form {
    * Adds event listeners and keeps track of them for subsequent removal
    * @param {HTMLElement} el
    * @param {Event['type']} type
-   * @param {() => void} fn
+   * @param {(Event) => void} fn
    * @param {AddEventListenerOptions} [opts]
    */
 
@@ -10573,7 +10573,11 @@ class Form {
           });
         }
       });
-    } // We need click coordinates to position the tooltip when the field is in an iframe
+    }
+    /**
+     * @param {PointerEvent} e
+     * @returns {{ x: number; y: number; } | undefined}
+     */
 
 
     function getMainClickCoords(e) {
@@ -10584,22 +10588,54 @@ class Form {
         x: e.clientX,
         y: e.clientY
       };
+    }
+    /**
+     * @param {Event} e
+     * @param {WeakMap} storedClickCoords
+     * @returns {{ x: number; y: number; } | null}
+     */
+
+
+    function getClickCoords(e, storedClickCoords) {
+      // Get click co-ordinates for pointer events
+      // We need click coordinates to position the tooltip when the field is in an iframe
+      if (e.type === 'pointerdown') {
+        return getMainClickCoords(
+        /** @type {PointerEvent} */
+        e) || null;
+      } // Reuse a previous click co-ordinates if they exist for this element
+
+
+      const click = storedClickCoords.get(input);
+      storedClickCoords.delete(input);
+      return click || null;
     } // Store the click to a label so we can use the click when the field is focused
     // Needed to handle label clicks when the form is in an iframe
 
 
-    let storedClick = new WeakMap();
+    let storedClickCoords = new WeakMap();
     let timeout = null;
+    /**
+     * @param {PointerEvent} e
+     */
 
     const handlerLabel = e => {
+      var _e$target, _e$target$closest;
+
       // Look for e.target OR it's closest parent to be a HTMLLabelElement
-      const control = e.target.closest('label').control;
+      const control =
+      /** @type HTMLElement */
+      (_e$target = e.target) === null || _e$target === void 0 ? void 0 : (_e$target$closest = _e$target.closest('label')) === null || _e$target$closest === void 0 ? void 0 : _e$target$closest.control;
       if (!control) return;
-      storedClick.set(control, getMainClickCoords(e));
+
+      if (e.isTrusted) {
+        storedClickCoords.set(control, getMainClickCoords(e));
+      }
+
       clearTimeout(timeout); // Remove the stored click if the timer expires
 
       timeout = setTimeout(() => {
-        storedClick = new WeakMap();
+        storedClickCoords = new WeakMap();
       }, 1000);
     };
 
@@ -10613,18 +10649,13 @@ class Form {
       const isLabel = e.target instanceof HTMLLabelElement;
       const input = isLabel ? e.target.control : e.target;
       if (!input || !this.inputs.all.has(input)) return;
-      let click = null;
       if ((0, _autofillUtils.wasAutofilledByChrome)(input)) return;
-      if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return; // Checks for pointerdown event. Needed for positioning when fields are within an iframe
-      // TODO: Confirm this is an ok change -- by not calling `getMainClickCoords` we're no longer checking if the event is trusted
+      if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return;
+      const clickCoords = getClickCoords(e, storedClickCoords);
 
-      if (e.type === 'pointerdown' && window.parent !== window) {
-        click = getMainClickCoords(e);
-        if (!click) return;
-      } else if (storedClick) {
-        // Reuse a previous click if one exists for this element
-        click = storedClick.get(input);
-        storedClick.delete(input);
+      if (e.type === 'pointerdown') {
+        // Only allow real user clicks with co-ordinates through
+        if (!e.isTrusted || !clickCoords) return;
       }
 
       if (this.shouldOpenTooltip(e, input)) {
@@ -10642,7 +10673,7 @@ class Form {
         this.device.attachTooltip({
           form: this,
           input: input,
-          click: click,
+          click: clickCoords,
           trigger: 'userInitiated',
           triggerMetaData: {
             // An 'icon' click is very different to a field click or focus.
@@ -14589,38 +14620,17 @@ class InContextSignup {
     activeInput === null || activeInput === void 0 ? void 0 : activeInput.blur(); // Select the active input to open the tooltip
 
     const selectActiveInpout = () => {
-      // On mobile, trigger a pointer down event on the input
-      if (this.device.globalConfig.isMobileApp) {
-        // Pretend we've never seen this input before and click on it
-        if (this.device.activeForm) this.device.activeForm.touched.delete(activeInput);
-        const pointerDownEvent = new Event('pointerdown', {
-          bubbles: true
-        });
-        activeInput === null || activeInput === void 0 ? void 0 : activeInput.dispatchEvent(pointerDownEvent); // On everything else, just focus the input
-      } else {
-        activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
-      }
+      activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
     };
 
     if (document.hasFocus()) {
       selectActiveInpout();
     } else {
-      // On mobile we're not changing tabs, we're rendering an overlay on
-      // top of the current tab. Therefore if the document isn't initially
-      // in focus, the visibility change handler will never fire when it
-      // is. So, let's try again 1 second later once the overlay has been
-      // hidden.
-      if (this.device.globalConfig.isMobileApp) {
-        setTimeout(() => {
-          selectActiveInpout();
-        }, 1000);
-      } else {
-        document.addEventListener('visibilitychange', () => {
-          selectActiveInpout();
-        }, {
-          once: true
-        });
-      }
+      document.addEventListener('visibilitychange', () => {
+        selectActiveInpout();
+      }, {
+        once: true
+      });
     }
   }
 

@@ -56,36 +56,15 @@ export class InContextSignup {
 
         // Select the active input to open the tooltip
         const selectActiveInpout = () => {
-            // On mobile, trigger a pointer down event on the input
-            if (this.device.globalConfig.isMobileApp) {
-                // Pretend we've never seen this input before and click on it
-                if (this.device.activeForm) this.device.activeForm.touched.delete(activeInput)
-                const pointerDownEvent = new Event('pointerdown', {bubbles: true})
-                activeInput?.dispatchEvent(pointerDownEvent)
-
-            // On everything else, just focus the input
-            } else {
-                activeInput?.focus()
-            }
+            activeInput?.focus()
         }
 
         if (document.hasFocus()) {
             selectActiveInpout()
         } else {
-            // On mobile we're not changing tabs, we're rendering an overlay on
-            // top of the current tab. Therefore if the document isn't initially
-            // in focus, the visibility change handler will never fire when it
-            // is. So, let's try again 1 second later once the overlay has been
-            // hidden.
-            if (this.device.globalConfig.isMobileApp) {
-                setTimeout(() => {
-                    selectActiveInpout()
-                }, 1000)
-            } else {
-                document.addEventListener('visibilitychange', () => {
-                    selectActiveInpout()
-                }, {once: true})
-            }
+            document.addEventListener('visibilitychange', () => {
+                selectActiveInpout()
+            }, {once: true})
         }
     }
 

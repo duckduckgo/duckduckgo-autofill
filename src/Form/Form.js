@@ -405,7 +405,7 @@ class Form {
      * Adds event listeners and keeps track of them for subsequent removal
      * @param {HTMLElement} el
      * @param {Event['type']} type
-     * @param {() => void} fn
+     * @param {(Event) => void} fn
      * @param {AddEventListenerOptions} [opts]
      */
     addListener (el, type, fn, opts) {
@@ -465,7 +465,10 @@ class Form {
             })
         }
 
-        // We need click coordinates to position the tooltip when the field is in an iframe
+        /**
+         * @param {PointerEvent} e
+         * @returns {{ x: number; y: number; } | undefined}
+         */
         function getMainClickCoords (e) {
             if (!e.isTrusted) return
             const isMainMouseButton = e.button === 0
@@ -476,19 +479,45 @@ class Form {
             }
         }
 
+        /**
+         * @param {Event} e
+         * @param {WeakMap} storedClickCoords
+         * @returns {{ x: number; y: number; } | null}
+         */
+        function getClickCoords (e, storedClickCoords) {
+            // Get click co-ordinates for pointer events
+            // We need click coordinates to position the tooltip when the field is in an iframe
+            if (e.type === 'pointerdown') {
+                return getMainClickCoords(/** @type {PointerEvent} */ (e)) || null
+            }
+
+            // Reuse a previous click co-ordinates if they exist for this element
+            const click = storedClickCoords.get(input)
+            storedClickCoords.delete(input)
+            return click || null
+        }
+
         // Store the click to a label so we can use the click when the field is focused
         // Needed to handle label clicks when the form is in an iframe
-        let storedClick = new WeakMap()
+        let storedClickCoords = new WeakMap()
         let timeout = null
+
+        /**
+         * @param {PointerEvent} e
+         */
         const handlerLabel = (e) => {
             // Look for e.target OR it's closest parent to be a HTMLLabelElement
-            const control = e.target.closest('label').control
+            const control = /** @type HTMLElement */(e.target)?.closest('label')?.control
             if (!control) return
-            storedClick.set(control, getMainClickCoords(e))
+
+            if (e.isTrusted) {
+                storedClickCoords.set(control, getMainClickCoords(e))
+            }
+
             clearTimeout(timeout)
             // Remove the stored click if the timer expires
             timeout = setTimeout(() => {
-                storedClick = new WeakMap()
+                storedClickCoords = new WeakMap()
             }, 1000)
         }
 
@@ -503,21 +532,15 @@ class Form {
             const input = isLabel ? e.target.control : e.target
             if (!input || !this.inputs.all.has(input)) return
 
-            let click = null
-
             if (wasAutofilledByChrome(input)) return
 
             if (!canBeInteractedWith(input)) return
 
-            // Checks for pointerdown event. Needed for positioning when fields are within an iframe
-            // TODO: Confirm this is an ok change -- by not calling `getMainClickCoords` we're no longer checking if the event is trusted
-            if (e.type === 'pointerdown' && window.parent !== window) {
-                click = getMainClickCoords(e)
-                if (!click) return
-            } else if (storedClick) {
-                // Reuse a previous click if one exists for this element
-                click = storedClick.get(input)
-                storedClick.delete(input)
+            const clickCoords = getClickCoords(e, storedClickCoords)
+
+            if (e.type === 'pointerdown') {
+                // Only allow real user clicks with co-ordinates through
+                if (!e.isTrusted || !clickCoords) return
             }
 
             if (this.shouldOpenTooltip(e, input)) {
@@ -539,7 +562,7 @@ class Form {
                 this.device.attachTooltip({
                     form: this,
                     input: input,
-                    click: click,
+                    click: clickCoords,
                     trigger: 'userInitiated',
                     triggerMetaData: {
                         // An 'icon' click is very different to a field click or focus.
