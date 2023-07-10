@@ -5239,8 +5239,6 @@ class InterfacePrototype {
 
     if (this.globalConfig.isMobileApp && inputType === 'identities.emailAddress') {
       this.getAlias().then(alias => {
-        var _form$activeInput;
-
         if (alias) {
           form.autofillEmail(alias);
           /**
@@ -5249,7 +5247,15 @@ class InterfacePrototype {
            */
 
           this.emailProtection.storeReceived(alias);
-        } else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+        } else {
+          var _form$activeInput;
+
+          (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
+        } // Update data from native-side in case the `getAlias` call
+        // has included a successful in-context signup
+
+
+        this.refreshData();
       });
       return;
     }

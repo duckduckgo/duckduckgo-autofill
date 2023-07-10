@@ -466,7 +466,12 @@ class InterfacePrototype {
                      * Then later in the form submission we can compare the values
                      */
                     this.emailProtection.storeReceived(alias)
-                } else form.activeInput?.focus()
+                } else {
+                    form.activeInput?.focus()
+                }
+                // Update data from native-side in case the `getAlias` call
+                // has included a successful in-context signup
+                this.refreshData()
             })
             return
         }
