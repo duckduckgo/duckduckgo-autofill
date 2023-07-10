@@ -281,8 +281,12 @@ export function signupPage (page) {
 export function loginPage (page, opts = {}) {
     const { overlay = false, clickLabel = false } = opts
     return {
-        async navigate () {
-            await page.goto(constants.pages['login'])
+        /**
+         * @param {keyof typeof constants.pages} [to] - any key matching in `constants.pages`
+         * @return {Promise<void>}
+         */
+        async navigate (to = 'login') {
+            await page.goto(constants.pages[to])
         },
         async clickIntoUsernameInput () {
             const usernameField = page.locator('#email').first()
@@ -561,54 +565,6 @@ export function loginPage (page, opts = {}) {
         async assertNoPixelFired () {
             const mockCalls = await mockedCalls(page, ['sendJSPixel'], false)
             expect(mockCalls).toHaveLength(0)
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/login.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
- */
-export function loginPageWithText (page, opts) {
-    const originalLoginPage = loginPage(page, opts)
-    return {
-        ...originalLoginPage,
-        async navigate () {
-            await page.goto(constants.pages['loginWithText'])
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/login-poor-form.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
- */
-export function loginPageWithPoorForm (page, opts) {
-    const originalLoginPage = loginPage(page, opts)
-    return {
-        ...originalLoginPage,
-        async navigate () {
-            await page.goto(constants.pages['loginWithPoorForm'])
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/login-in-modal.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
- */
-export function loginPageWithFormInModal (page, opts) {
-    const originalLoginPage = loginPage(page, opts)
-    return {
-        ...originalLoginPage,
-        async navigate () {
-            await page.goto(constants.pages['loginWithFormInModal'])
         },
         async openDialog () {
             const button = await page.waitForSelector(`button:has-text("Click here to Login")`)
@@ -628,44 +584,9 @@ export function loginPageWithFormInModal (page, opts) {
         },
         async clickOutsideTheDialog () {
             await page.click('#random-text')
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/login-covered.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
- */
-export function loginPageCovered (page, opts) {
-    const originalLoginPage = loginPage(page, opts)
-    return {
-        ...originalLoginPage,
-        async navigate () {
-            await page.goto(constants.pages['loginCovered'])
         },
         async closeCookieDialog () {
             await page.click('button:has-text("Accept all cookies")')
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/login-multistep.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
- */
-export function loginPageMultistep (page, opts) {
-    const originalLoginPage = loginPage(page, opts)
-    return {
-        ...originalLoginPage,
-        async navigate () {
-            await page.goto(constants.pages['loginMultistep'])
-        },
-        async clickContinue () {
-            await page.click('button:has-text("Continue")')
         }
     }
 }
@@ -794,39 +715,6 @@ export function overlayPage (page) {
         async assertTextNotPresent (text) {
             const button = await page.locator(`button:has-text("${text}")`)
             await expect(button).toHaveCount(0)
-        }
-    }
-}
-
-/**
- * A wrapper around interactions for `integration-test/pages/signup.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {ServerWrapper} server
- */
-export function loginAndSignup (page, server) {
-    // style lookup helpers
-    const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
-    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
-    const firstPasswordStyleAttr = () => page.locator('#login-password' + constants.fields.password.selectors.credential).getAttribute('style')
-
-    return {
-        async navigate () {
-            await page.goto(server.urlForPath(constants.pages['login+setup']))
-        },
-        async assertIdentitiesWereNotDecorated () {
-            const style = await emailStyleAttr()
-            expect(style).toBeNull()
-        },
-        async assertUsernameAndPasswordWereDecoratedWithIcon () {
-            expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
-            expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
-        },
-        async assertNoDecorations () {
-            const usernameAttr = await usernameStyleAttr()
-            expect(usernameAttr).toBeNull()
-
-            expect(await firstPasswordStyleAttr()).toBeNull()
         }
     }
 }

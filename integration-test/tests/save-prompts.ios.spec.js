@@ -3,7 +3,7 @@ import {
     withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
-import {loginPage, loginPageWithPoorForm, signupPage} from '../helpers/pages.js'
+import {loginPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 import {constants} from '../helpers/mocks.js'
 import {testContext} from '../helpers/test-context.js'
@@ -131,8 +131,8 @@ test.describe('iOS Save prompts', () => {
                 await withIOSFeatureToggles(page, {
                     credentials_saving: true
                 })
-                const login = loginPageWithPoorForm(page)
-                await login.navigate()
+                const login = loginPage(page)
+                await login.navigate('loginWithPoorForm')
 
                 await page.type('#password', credentials.password)
                 await page.type('#email', credentials.username)

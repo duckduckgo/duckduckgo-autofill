@@ -3,7 +3,7 @@ import {
     forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
-import {loginPage, loginPageWithPoorForm, signupPage} from '../helpers/pages.js'
+import {loginPage, signupPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {constants} from '../helpers/mocks.js'
 import {testContext} from '../helpers/test-context.js'
@@ -134,8 +134,8 @@ test.describe('Android Save prompts', () => {
          */
         async function setup (page) {
             await forwardConsoleMessages(page)
-            const login = loginPageWithPoorForm(page)
-            await login.navigate()
+            const login = loginPage(page)
+            await login.navigate('loginWithPoorForm')
 
             await createAndroidMocks()
                 .applyTo(page)
