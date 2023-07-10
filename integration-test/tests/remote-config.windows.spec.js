@@ -1,13 +1,13 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages,
-    withWindowsContext
+    forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage} from '../helpers/pages.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
+import {testContext} from '../helpers/test-context.js'
 
-const test = withWindowsContext(base)
+const test = testContext(base)
 
 test.describe('Remote config on windows', () => {
     test.describe('when autofill is disabled remotely', () => {

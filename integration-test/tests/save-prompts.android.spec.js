@@ -1,17 +1,17 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages,
-    withAndroidContext
+    forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage, loginPageWithPoorForm, signupPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {constants} from '../helpers/mocks.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for email autofill on ios tooltipHandler
  */
-const test = withAndroidContext(base)
+const test = testContext(base)
 
 test.describe('Android Save prompts', () => {
     test.describe('When saving credentials is enabled ✅ (default)', () => {

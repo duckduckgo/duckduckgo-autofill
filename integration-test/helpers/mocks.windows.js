@@ -141,12 +141,10 @@ export function createWindowsMocks () {
                     window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                 }
                 /**
-                 * @param {any} request
+                 * @param {any} _request
                  * @param {any} response
                  */
-                function respond (name, request, response) {
-                    const call = [name, request, response]
-                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                function respond (name, _request, response) {
                     setTimeout(() => {
                         for (let listener of listeners) {
                             listener({

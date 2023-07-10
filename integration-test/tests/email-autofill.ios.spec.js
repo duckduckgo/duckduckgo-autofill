@@ -1,17 +1,17 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages,
-    withIOSContext
+    forwardConsoleMessages
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage} from '../helpers/pages.js'
 import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.webkit.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for email autofill on ios tooltipHandler
  */
-const test = withIOSContext(base)
+const test = testContext(base)
 
 test.describe('ios', () => {
     test('should autofill the selected email when email protection is enabled', async ({page}) => {

@@ -67,9 +67,12 @@ const config = {
         },
         {
             name: 'android',
-            testMatch: /.*android.spec.js/,
+            testMatch: [
+                /.*android.spec.js/
+            ],
             use: {
-                ...devices['Pixel 5']
+                ...devices['Pixel 5'],
+                userAgent: 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.88 DuckDuckGo/7 Mobile Safari/537.36'
             }
         },
         // {
@@ -79,8 +82,20 @@ const config = {
         //   },
         // },
         {
-            name: 'webkit',
-            testMatch: /.*(ios|macos).spec.js/,
+            name: 'ios',
+            testMatch: [
+                /.*ios.spec.js/
+            ],
+            use: {
+                ...devices['iPhone 12'],
+                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 DuckDuckGo/7 Safari/605.1.15'
+            }
+        },
+        {
+            name: 'macos',
+            testMatch: [
+                /.*macos.spec.js/
+            ],
             use: {
                 ...devices['Desktop Safari']
             }

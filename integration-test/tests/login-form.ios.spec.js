@@ -1,7 +1,7 @@
 import {constants} from '../helpers/mocks.js'
 import {
     forwardConsoleMessages,
-    withIOSContext, withIOSFeatureToggles
+    withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {
     loginPage,
@@ -13,11 +13,12 @@ import {
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 import {createAvailableInputTypes} from '../helpers/utils.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for email autofill on android tooltipHandler
  */
-const test = withIOSContext(base)
+const test = testContext(base)
 
 /**
  * @param {import("@playwright/test").Page} page

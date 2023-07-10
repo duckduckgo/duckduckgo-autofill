@@ -1,13 +1,14 @@
-import {forwardConsoleMessages, withChromeExtensionContext, setupMockedDomain} from '../helpers/harness.js'
+import {forwardConsoleMessages, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe, incontextSignupPageEmailBottomPage, incontextSignupPageEmailTopLeftPage} from '../helpers/pages.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for email autofill in chrome extension.
  *
- *  Special setup is needed to load the extension, see withChromeExtensionContext();
+ *  Special setup is needed to load the extension, see testContext();
  */
-const test = withChromeExtensionContext(base)
+const test = testContext(base)
 
 test.describe('chrome extension', () => {
     test('should allow user to sign up for Email Protection', async ({page, context}) => {
