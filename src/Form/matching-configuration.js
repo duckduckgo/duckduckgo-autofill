@@ -255,7 +255,7 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b'},
+                email: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b|otp'},
                 password: {match: 'password', skip: 'email|one-time|error|hint', forceUnknown: 'captcha|mfa|2fa|two factor|otp'},
                 username: {match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername', skip: 'phone', forceUnknown: 'search|policy'},
 
@@ -278,7 +278,7 @@ const matchingConfiguration = {
                 middleName: {match: '(middle|additional).?name'},
                 lastName: {match: '(last|family|sur)[^i]?name', skip: 'first'},
                 fullName: {match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b', forceUnknown: 'company|org|item'},
-                phone: {match: 'phone', skip: 'code|pass|country', forceUnknown: 'ext|type'},
+                phone: {match: 'phone', skip: 'code|pass|country', forceUnknown: 'ext|type|otp'},
                 addressStreet: {
                     match: 'address',
                     forceUnknown: '\\bip\\b|duck|web|url',
