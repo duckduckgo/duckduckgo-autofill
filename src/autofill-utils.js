@@ -417,7 +417,12 @@ const wasAutofilledByChrome = (input) => {
  * @returns {boolean}
  */
 function shouldLog () {
-    return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+    // sessionStorage throws in invalid schemes like data: and file:
+    try {
+        return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+    } catch (e) {
+        return false
+    }
 }
 
 /**

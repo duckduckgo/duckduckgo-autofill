@@ -12720,7 +12720,7 @@ const matchingConfiguration = {
         email: {
           match: '.mail\\b|apple.?id',
           skip: 'phone|(first.?|last.?)name|number|code',
-          forceUnknown: 'search|filter|subject|title|\btab\b'
+          forceUnknown: 'search|filter|subject|title|\btab\b|otp'
         },
         password: {
           match: 'password',
@@ -12774,7 +12774,7 @@ const matchingConfiguration = {
         phone: {
           match: 'phone',
           skip: 'code|pass|country',
-          forceUnknown: 'ext|type'
+          forceUnknown: 'ext|type|otp'
         },
         addressStreet: {
           match: 'address',
@@ -17940,9 +17940,14 @@ const wasAutofilledByChrome = input => {
 exports.wasAutofilledByChrome = wasAutofilledByChrome;
 
 function shouldLog() {
-  var _window$sessionStorag;
+  // sessionStorage throws in invalid schemes like data: and file:
+  try {
+    var _window$sessionStorag;
 
-  return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem('ddg-autofill-debug')) === 'true';
+    return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem('ddg-autofill-debug')) === 'true';
+  } catch (e) {
+    return false;
+  }
 }
 /**
  *
