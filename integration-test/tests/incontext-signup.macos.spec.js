@@ -38,7 +38,7 @@ test.describe('macos', () => {
         await incontextSignup.getEmailProtection()
 
         // Confirm message passed to native
-        const startCall = await mockedCalls(page, ['startEmailProtectionSignup'])
+        const startCall = await mockedCalls(page, {names: ['startEmailProtectionSignup']})
         expect(startCall.length).toBe(1)
 
         // Confirm pixels triggered

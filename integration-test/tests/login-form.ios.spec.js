@@ -172,7 +172,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.clickIntoPasswordInput()
                 await login.assertPasswordFilled(password)
                 await login.assertFormNotSubmittedAutomatically()
-                await login.assertWasPromptedToSave({username, password}, 'ios')
+                await login.assertWasPromptedToSave({username, password})
             })
         })
         test.describe('but I dont have saved credentials', () => {
