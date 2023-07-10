@@ -1,6 +1,6 @@
 import {forwardConsoleMessages, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {emailAutofillPage, incontextSignupPage, incontextSignupPageWithinIframe, incontextSignupPageEmailBottomPage, incontextSignupPageEmailTopLeftPage} from '../helpers/pages.js'
+import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
 import {testContext} from '../helpers/test-context.js'
 
 /**
@@ -86,11 +86,11 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const pageWithIframe = incontextSignupPageWithinIframe(page)
-        await pageWithIframe.navigate('https://example.com')
+        const incontextSignup = incontextSignupPage(page)
+        await incontextSignup.navigate('https://example.com', 'iframeContainer')
 
-        await pageWithIframe.clickDirectlyOnDax()
-        await pageWithIframe.assertTooltipWithinFrame()
+        await incontextSignup.clickDirectlyOnDaxInIframe()
+        await incontextSignup.assertTooltipWithinFrame()
     })
 
     test('should display properly above when email at bottom of page', async ({page}) => {
@@ -98,8 +98,7 @@ test.describe('chrome extension', () => {
         await setupMockedDomain(page, 'https://example.com')
 
         const incontextSignup = incontextSignupPage(page)
-        const pageWidthEmailBottomPage = incontextSignupPageEmailBottomPage(page)
-        await pageWidthEmailBottomPage.navigate('https://example.com')
+        await incontextSignup.navigate('https://example.com', 'emailAtBottom')
 
         await incontextSignup.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
@@ -111,8 +110,7 @@ test.describe('chrome extension', () => {
         await setupMockedDomain(page, 'https://example.com')
 
         const incontextSignup = incontextSignupPage(page)
-        const pageWidthEmailTopLeftPage = incontextSignupPageEmailTopLeftPage(page)
-        await pageWidthEmailTopLeftPage.navigate('https://example.com')
+        await incontextSignup.navigate('https://example.com', 'emailAtTopLeft')
 
         await incontextSignup.clickDirectlyOnDax()
         await incontextSignup.assertIsShowing()
