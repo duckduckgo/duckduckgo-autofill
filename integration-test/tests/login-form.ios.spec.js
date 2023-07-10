@@ -4,7 +4,7 @@ import {
     withIOSFeatureToggles
 } from '../helpers/harness.js'
 import {
-    loginPage,
+    loginPage
 } from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'

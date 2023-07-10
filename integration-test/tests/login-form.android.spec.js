@@ -28,7 +28,7 @@ async function testLoginPage (page, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
 
-    const login = loginPage(page);
+    const login = loginPage(page)
     await login.navigate(opts.pageType)
 
     // android specific mocks

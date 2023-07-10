@@ -47,7 +47,7 @@ async function testLoginPage (page, opts = {}) {
         .platform('macos')
         .applyTo(page)
 
-    const login = loginPage(page, {overlay, clickLabel});
+    const login = loginPage(page, {overlay, clickLabel})
     await login.navigate(pageType)
     await page.waitForTimeout(200)
 
