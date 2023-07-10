@@ -718,36 +718,3 @@ export function overlayPage (page) {
         }
     }
 }
-
-/**
- * A wrapper around interactions for `integration-test/pages/signup.html`
- *
- * @param {import("@playwright/test").Page} page
- * @param {ServerWrapper} server
- */
-export function loginAndSignup (page, server) {
-    // style lookup helpers
-    const usernameStyleAttr = () => page.locator(constants.fields.username.selectors.credential).getAttribute('style')
-    const emailStyleAttr = () => page.locator(constants.fields.email.selectors.identity).getAttribute('style')
-    const firstPasswordStyleAttr = () => page.locator('#login-password' + constants.fields.password.selectors.credential).getAttribute('style')
-
-    return {
-        async navigate () {
-            await page.goto(server.urlForPath(constants.pages['login+setup']))
-        },
-        async assertIdentitiesWereNotDecorated () {
-            const style = await emailStyleAttr()
-            expect(style).toBeNull()
-        },
-        async assertUsernameAndPasswordWereDecoratedWithIcon () {
-            expect(await usernameStyleAttr()).toContain('data:image/svg+xml;base64,')
-            expect(await firstPasswordStyleAttr()).toContain('data:image/svg+xml;base64,')
-        },
-        async assertNoDecorations () {
-            const usernameAttr = await usernameStyleAttr()
-            expect(usernameAttr).toBeNull()
-
-            expect(await firstPasswordStyleAttr()).toBeNull()
-        }
-    }
-}
