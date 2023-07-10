@@ -1,16 +1,16 @@
 import {
     createAutofillScript,
-    forwardConsoleMessages,
-    withWindowsContext
+    forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {signupPage} from '../helpers/pages.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for autofill scenarios on Windows
  */
-const test = withWindowsContext(base)
+const test = testContext(base)
 
 test.describe('Windows secure messaging', () => {
     test.describe('When autofill script runs', () => {

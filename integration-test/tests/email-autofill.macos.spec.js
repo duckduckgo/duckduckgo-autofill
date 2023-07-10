@@ -7,11 +7,12 @@ import {constants} from '../helpers/mocks.js'
 import {emailAutofillPage, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAvailableInputTypes, stripDuckExtension} from '../helpers/utils.js'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
  */
-const test = base.extend({})
+const test = testContext(base)
 
 test.describe('macos', () => {
     test('should autofill the selected email', async ({page}) => {

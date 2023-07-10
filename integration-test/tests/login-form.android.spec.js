@@ -1,8 +1,9 @@
 import {constants} from '../helpers/mocks.js'
-import {createAutofillScript, forwardConsoleMessages, withAndroidContext} from '../helpers/harness.js'
+import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.js'
 import {loginPage, loginPageWithFormInModal, loginPageWithText} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {test as base} from '@playwright/test'
+import {testContext} from '../helpers/test-context.js'
 
 /**
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
@@ -13,7 +14,7 @@ import {test as base} from '@playwright/test'
 /**
  *  Tests for email autofill on android tooltipHandler
  */
-const test = withAndroidContext(base)
+const test = testContext(base)
 
 /**
  * @param {import("@playwright/test").Page} page

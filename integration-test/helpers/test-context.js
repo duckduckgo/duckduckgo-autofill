@@ -8,12 +8,13 @@ import {addMocksAsAttachments} from './harness.js'
 const DATA_DIR_PREFIX = 'ddg-temp-'
 
 /**
+ * A single place
  * @param {typeof import("@playwright/test").test} test
  */
 export function testContext (test) {
     return test.extend({
         context: async ({ browser, browserName }, use, testInfo) => {
-            // ensure this test setup cannot be used by anything other than webkit browsers
+            // use `testInfo.project.name` is something we support.
             const platform = validPlatform(testInfo.project.name)
             let context
 
@@ -49,9 +50,11 @@ export function testContext (test) {
             }
             }
 
+            // actually run the tests
             await use(context)
 
-            // skipping extension for a min, since it's testing setup has fallen behind
+            // collect attachments (like mock calls) and append as attachments
+            // note: skipping the extension for now, since it's testing setup has fallen behind
             if (platform !== 'extension') {
                 for (let page of context.pages()) {
                     await addMocksAsAttachments(page, test, testInfo)
