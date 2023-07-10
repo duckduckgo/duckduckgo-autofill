@@ -1,7 +1,7 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAutofillScript, forwardConsoleMessages, mockedCalls} from '../helpers/harness.js'
-import {loginPage, loginPageWithFormInModal, loginPageWithText, overlayPage} from '../helpers/pages.js'
+import {loginPage, overlayPage} from '../helpers/pages.js'
 import {expect, test as base} from '@playwright/test'
 import {createAvailableInputTypes} from '../helpers/utils.js'
 
@@ -31,10 +31,10 @@ async function mocks (page) {
 
 /**
  * @param {import("@playwright/test").Page} page
- * @param {{overlay?: boolean, clickLabel?: boolean, pageType?: 'standard' | 'withExtraText' | 'withModal'}} opts
+ * @param {{overlay?: boolean, clickLabel?: boolean, pageType?: keyof typeof constants.pages}} [opts]
  */
 async function testLoginPage (page, opts = {}) {
-    const {overlay = false, clickLabel = false, pageType = 'standard'} = opts
+    const {overlay = false, clickLabel = false, pageType = 'login'} = opts
 
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
@@ -47,20 +47,8 @@ async function testLoginPage (page, opts = {}) {
         .platform('macos')
         .applyTo(page)
 
-    let login
-    switch (pageType) {
-    case 'withExtraText':
-        login = loginPageWithText(page, {overlay, clickLabel})
-        break
-    case 'withModal':
-        login = loginPageWithFormInModal(page, {overlay, clickLabel})
-        break
-    default:
-        login = loginPage(page, {overlay, clickLabel})
-        break
-    }
-
-    await login.navigate()
+    const login = loginPage(page, {overlay, clickLabel});
+    await login.navigate(pageType)
     await page.waitForTimeout(200)
 
     await login.selectFirstCredential(personalAddress)
@@ -81,8 +69,8 @@ async function createLoginFormInModalPage (page) {
         .platform('macos')
         .applyTo(page)
 
-    const login = loginPageWithFormInModal(page)
-    await login.navigate()
+    const login = loginPage(page)
+    await login.navigate('loginWithFormInModal')
     await login.assertDialogClose()
     await login.openDialog()
     await login.hitEscapeKey()
@@ -97,7 +85,7 @@ test.describe('Auto-fill a login form on macOS', () => {
         })
         test.describe('with overlay', () => {
             test('with click', async ({page}) => {
-                const login = await testLoginPage(page, {overlay: true, pageType: 'withExtraText'})
+                const login = await testLoginPage(page, { overlay: true, pageType: 'loginWithText' })
                 // this is not ideal as it's checking an implementation detail.
                 // But it's done to ensure we're not getting a false positive
                 // and definitely loading the overlay code paths
@@ -149,7 +137,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             })
         })
         test('by clicking a label', async ({page}) => {
-            await testLoginPage(page, {clickLabel: true, pageType: 'withExtraText'})
+            await testLoginPage(page, {clickLabel: true, pageType: 'loginWithText'})
         })
         test('selecting an item inside an overlay', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -255,8 +243,8 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .platform('macos')
                     .applyTo(page)
 
-                const login = loginPageWithText(page)
-                await login.navigate()
+                const login = loginPage(page)
+                await login.navigate('loginWithText')
                 await login.fieldsContainIcons()
 
                 await login.assertTooltipNotOpen(personalAddress)

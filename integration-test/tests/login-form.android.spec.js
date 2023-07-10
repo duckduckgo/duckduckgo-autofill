@@ -1,6 +1,6 @@
 import {constants} from '../helpers/mocks.js'
 import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.js'
-import {loginPage, loginPageWithFormInModal, loginPageWithText} from '../helpers/pages.js'
+import {loginPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {test as base} from '@playwright/test'
 import {testContext} from '../helpers/test-context.js'
@@ -22,25 +22,14 @@ const test = testContext(base)
  * @param {Partial<AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<AvailableInputTypes>} [opts.availableInputTypes]
  * @param {CredentialsMock} [opts.credentials]
- * @param {'standard' | 'withExtraText' | 'withModal'} [opts.pageType]
+ * @param {keyof typeof constants.pages} [opts.pageType]
  */
 async function testLoginPage (page, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page)
 
-    let login
-    switch (opts.pageType) {
-    case 'withExtraText':
-        login = loginPageWithText(page)
-        break
-    case 'withModal':
-        login = loginPageWithFormInModal(page)
-        break
-    default:
-        login = loginPage(page)
-        break
-    }
-    await login.navigate()
+    const login = loginPage(page);
+    await login.navigate(opts.pageType)
 
     // android specific mocks
     const mocks = createAndroidMocks()
@@ -90,7 +79,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'withExtraText'
+                    pageType: 'loginWithText'
                 })
                 await login.fieldsContainIcons()
                 await login.clickIntoUsernameInput()
@@ -103,7 +92,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'withExtraText'
+                    pageType: 'loginWithText'
                 })
                 await login.fieldsContainIcons()
                 await login.promptWasNotShown()
@@ -116,7 +105,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'withModal'
+                    pageType: 'loginWithFormInModal'
                 })
                 await login.promptWasNotShown()
                 await login.assertDialogClose()
@@ -138,7 +127,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                         ...credentials,
                         username: ''
                     },
-                    pageType: 'withExtraText'
+                    pageType: 'loginWithText'
                 })
 
                 const {username, password} = credentials

@@ -5,10 +5,6 @@ import {
 } from '../helpers/harness.js'
 import {
     loginPage,
-    loginPageCovered,
-    loginPageMultistep,
-    loginPageWithFormInModal,
-    loginPageWithText
 } from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWebkitMocks} from '../helpers/mocks.webkit.js'
@@ -26,7 +22,7 @@ const test = testContext(base)
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} opts.featureToggles
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} [opts.availableInputTypes]
  * @param {CredentialsMock} [opts.credentials]
- * @param {'standard' | 'withExtraText' | 'withModal' | 'covered' | 'multistep'} [opts.pageType]
+ * @param {keyof typeof constants.pages} [opts.pageType]
  */
 async function testLoginPage (page, opts) {
     // enable in-terminal exceptions
@@ -44,26 +40,9 @@ async function testLoginPage (page, opts) {
 
     await withIOSFeatureToggles(page, opts.featureToggles)
 
-    let login
-    switch (opts.pageType) {
-    case 'withExtraText':
-        login = loginPageWithText(page)
-        break
-    case 'withModal':
-        login = loginPageWithFormInModal(page)
-        break
-    case 'covered':
-        login = loginPageCovered(page)
-        break
-    case 'multistep':
-        login = loginPageMultistep(page)
-        break
-    default:
-        login = loginPage(page)
-        break
-    }
+    const login = loginPage(page)
+    await login.navigate(opts.pageType)
 
-    await login.navigate()
     return {login}
 }
 
@@ -94,7 +73,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'withExtraText'
+                    pageType: 'loginWithText'
                 })
                 await login.promptWasNotShown()
                 await login.fieldsContainIcons()
@@ -108,7 +87,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'covered'
+                    pageType: 'loginCovered'
                 })
                 await login.fieldsContainIcons()
                 await login.promptWasNotShown()
@@ -123,7 +102,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'multistep'
+                    pageType: 'loginMultistep'
                 })
                 await login.promptWasShown('ios')
                 await login.assertUsernameFilled(personalAddress)
@@ -138,7 +117,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         inputType_credentials: true
                     },
                     credentials,
-                    pageType: 'withModal'
+                    pageType: 'loginWithFormInModal'
                 })
                 await login.promptWasNotShown()
                 await login.assertDialogClose()
@@ -160,7 +139,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                         ...credentials,
                         username: ''
                     },
-                    pageType: 'withExtraText'
+                    pageType: 'loginWithText'
                 })
 
                 const {username, password} = credentials
