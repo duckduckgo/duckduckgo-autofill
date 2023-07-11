@@ -140,15 +140,7 @@ class AppleDeviceInterface extends InterfacePrototype {
                 // Let input handlers know we've stopped autofilling
                 this.activeForm?.activeInput?.dispatchEvent(new Event('mouseleave'))
             } else if ('stateChange' in response) {
-                // Remove decorations before refreshing data to make sure we
-                // remove the currently set icons
-                this.activeForm?.removeAllDecorations()
-
-                // Update for any state that may have changed
-                await this.refreshData()
-
-                // Add correct icons and behaviour
-                this.activeForm?.recategorizeAllInputs()
+                await this.updateForStateChange()
             }
         })
     }

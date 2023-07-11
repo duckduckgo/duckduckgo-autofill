@@ -471,7 +471,7 @@ class InterfacePrototype {
                 }
                 // Update data from native-side in case the `getAlias` call
                 // has included a successful in-context signup
-                this.refreshData()
+                this.updateForStateChange()
             })
             return
         }
@@ -583,6 +583,18 @@ class InterfacePrototype {
 
     removeTooltip () {
         return this.uiController?.removeTooltip?.('interface')
+    }
+
+    async updateForStateChange () {
+        // Remove decorations before refreshing data to make sure we
+        // remove the currently set icons
+        this.activeForm?.removeAllDecorations()
+
+        // Update for any state that may have changed
+        await this.refreshData()
+
+        // Add correct icons and behaviour
+        this.activeForm?.recategorizeAllInputs()
     }
 
     async refreshData () {

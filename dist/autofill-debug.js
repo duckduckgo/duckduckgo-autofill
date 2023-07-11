@@ -7644,15 +7644,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
         // Let input handlers know we've stopped autofilling
         (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : (_this$activeForm$acti = _this$activeForm.activeInput) === null || _this$activeForm$acti === void 0 ? void 0 : _this$activeForm$acti.dispatchEvent(new Event('mouseleave'));
       } else if ('stateChange' in response) {
-        var _this$activeForm2, _this$activeForm3;
-
-        // Remove decorations before refreshing data to make sure we
-        // remove the currently set icons
-        (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.removeAllDecorations(); // Update for any state that may have changed
-
-        await this.refreshData(); // Add correct icons and behaviour
-
-        (_this$activeForm3 = this.activeForm) === null || _this$activeForm3 === void 0 ? void 0 : _this$activeForm3.recategorizeAllInputs();
+        await this.updateForStateChange();
       }
     });
   }
@@ -7802,10 +7794,10 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   getCurrentInputType() {
-    var _this$activeForm4;
+    var _this$activeForm2;
 
     const topContextData = this.getTopContextData();
-    return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm4 = this.activeForm) === null || _this$activeForm4 === void 0 ? void 0 : _this$activeForm4.activeInput);
+    return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.activeInput);
   }
   /**
    * @returns {Promise<string>}
@@ -8931,7 +8923,7 @@ class InterfacePrototype {
         // has included a successful in-context signup
 
 
-        this.refreshData();
+        this.updateForStateChange();
       });
       return;
     }
@@ -9071,6 +9063,18 @@ class InterfacePrototype {
     var _this$uiController4, _this$uiController4$r;
 
     return (_this$uiController4 = this.uiController) === null || _this$uiController4 === void 0 ? void 0 : (_this$uiController4$r = _this$uiController4.removeTooltip) === null || _this$uiController4$r === void 0 ? void 0 : _this$uiController4$r.call(_this$uiController4, 'interface');
+  }
+
+  async updateForStateChange() {
+    var _this$activeForm, _this$activeForm2;
+
+    // Remove decorations before refreshing data to make sure we
+    // remove the currently set icons
+    (_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.removeAllDecorations(); // Update for any state that may have changed
+
+    await this.refreshData(); // Add correct icons and behaviour
+
+    (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.recategorizeAllInputs();
   }
 
   async refreshData() {
