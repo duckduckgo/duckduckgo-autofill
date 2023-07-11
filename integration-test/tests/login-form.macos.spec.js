@@ -392,7 +392,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await overlay.clickButtonWithText('Bitwarden is locked')
                 await overlay.doesNotCloseParentAfterCall('askToUnlockProvider')
 
-                const autofillCalls = await mockedCalls(page, ['setSize'], true)
+                const autofillCalls = await mockedCalls(page, {names: ['setSize'], minCount: 1})
                 expect(autofillCalls.length).toBeGreaterThanOrEqual(1)
             })
 

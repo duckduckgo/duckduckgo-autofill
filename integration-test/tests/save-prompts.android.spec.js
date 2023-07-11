@@ -41,7 +41,7 @@ test.describe('Android Save prompts', () => {
                 .applyTo(page)
 
             await signup.enterCredentials(credentials)
-            await signup.assertWasPromptedToSave(credentials, 'android')
+            await signup.assertWasPromptedToSave(credentials)
         })
         test.describe('Prompting to save from a login form', () => {
             /** @param {import("@playwright/test").Page} page */
@@ -72,13 +72,13 @@ test.describe('Android Save prompts', () => {
                     password: '123456'
                 }
                 await login.submitLoginForm(credentials)
-                await login.assertWasPromptedToSave(credentials, 'android')
+                await login.assertWasPromptedToSave(credentials)
             })
             test('with password only (should prompt)', async ({page}) => {
                 const { login } = await setup(page)
                 const credentials = { password: '123456' }
                 await login.submitPasswordOnlyForm(credentials)
-                await login.assertWasPromptedToSave(credentials, 'android')
+                await login.assertWasPromptedToSave(credentials)
             })
             test('with username only (should NOT prompt)', async ({page}) => {
                 const { login } = await setup(page)
@@ -164,7 +164,7 @@ test.describe('Android Save prompts', () => {
             const login = await setup(page)
 
             await page.click('"Log in"')
-            await login.assertWasPromptedToSave(credentials, 'android')
+            await login.assertWasPromptedToSave(credentials)
         })
         test('should not prompt if the out-of-form button does not match the form type', async ({page}) => {
             const login = await setup(page)
@@ -179,7 +179,7 @@ test.describe('Android Save prompts', () => {
             await login.shouldNotPromptToSave()
 
             await page.press('#password', 'Enter')
-            await login.assertWasPromptedToSave(credentials, 'android')
+            await login.assertWasPromptedToSave(credentials)
         })
     })
 })
