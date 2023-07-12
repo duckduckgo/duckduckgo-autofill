@@ -1,26 +1,9 @@
-## macOS email alias creation
+## Email Protection on Mobile
 
-```mermaid
-sequenceDiagram
-    Form->>+InterfacePrototype: device.attachTooltip()
-    InterfacePrototype->>OverlayController: attach()
-    OverlayController->>AppleDevice: options._show()
-    AppleDevice->>AppleDevice: deviceApi.notify('showAutofillParent')
-    loop polling for click
-        AppleDevice-->Overlay: 👆 selected
-    end
-    AppleDevice->>AppleDevice: Received
-    AppleDevice->>InterfacePrototype: selectedDetail()
-    InterfacePrototype->>Form: form.autofillData()
-    
-    InterfacePrototype->>EmailProtection: received('dax@example.com')
-    Form-->Form: Fill form fields
-    InterfacePrototype-->InterfacePrototype: this.storeFormData()
-    InterfacePrototype->>AppleDevice: .notify(new StoreFormDataCall())
-```
+### Using (and saving) a Private Address
 
-
-## iOS email alias
+For Private Addresses only, we send a `storeFormData` message to the native side to ensure the addresses
+are saved.
 
 ```mermaid
 sequenceDiagram
@@ -29,11 +12,13 @@ sequenceDiagram
     InterfacePrototype->>AppleDevice: this.getAlias()
     loop showing sheet
         AppleDevice-->Native Sheet: 👆 selected private address
+        AppleDevice-->Native Sheet: 💾 private address stored
     end
-    AppleDevice->>InterfacePrototype: 'abc123'
-    InterfacePrototype->>Form: form.autofillEmail('abc123')
+    AppleDevice->>InterfacePrototype: 'abc123@duck.com'
+    InterfacePrototype->>Form: form.autofillEmail('abc123@duck.com')
     Form-->Form: Fill form fields
-    Form->>InterfacePrototype: device.postAutofill()
-    InterfacePrototype-->InterfacePrototype: this.storeFormData()
+    InterfacePrototype->>InterfacePrototype: emailProtection.received('abc123@duck.com')
+    Note right of InterfacePrototype: ^ remembered for future form submissions
+    InterfacePrototype->>InterfacePrototype: this.storeFormData()
     InterfacePrototype->>AppleDevice: .notify(new StoreFormDataCall())
 ```
