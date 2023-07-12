@@ -32,8 +32,6 @@ class Form {
     form;
     /** @type {HTMLInputElement | null} */
     activeInput;
-    /** @type {boolean | null} */
-    isSignup;
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
@@ -45,9 +43,6 @@ class Form {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
-        this.isLogin = this.formAnalyzer.isLogin
-        this.isSignup = this.formAnalyzer.isSignup
-        this.isHybrid = this.formAnalyzer.isHybrid
         this.device = deviceInterface
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
@@ -92,6 +87,16 @@ class Form {
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
+    }
+
+    get isLogin () {
+        return this.formAnalyzer.isLogin
+    }
+    get isSignup () {
+        return this.formAnalyzer.isSignup
+    }
+    get isHybrid () {
+        return this.formAnalyzer.isHybrid
     }
 
     logFormInfo () {
