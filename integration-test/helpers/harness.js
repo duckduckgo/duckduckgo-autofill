@@ -207,21 +207,37 @@ export async function printPerformanceSummary (name, times) {
 
 /**
  * @param {import("@playwright/test").Page} page
- * @param {string[]} [names]
+ * @param {object} [params]
+ * @param {string[]} [params.names] - A list of method names to wait for
+ * @param {number} [params.minCount=1] - default is 1, meaning we wait for at least 1 call. Set to 0 if you don't require waiting
  * @returns {Promise<MockCall[]>}
  */
-export async function mockedCalls (page, names = [], mustExist = true) {
-    if (names.length > 0 && mustExist) {
-        await page.waitForFunction(({names}) => {
+export async function mockedCalls (page, params = {}) {
+    const { minCount = 1, names = [] } = params
+
+    // if `minCount` is none-zero, it means we have a requirement to wait for a specific
+    // number of mock calls.
+    if (minCount > 0) {
+        await page.waitForFunction(({names, minCount}) => {
             const calls = window.__playwright_autofill.mocks.calls
-            return calls.some(([name]) => names.includes(name))
-        }, {names})
+
+            // if a list of names were provided, match against them
+            if (names.length > 0) {
+                const matching = calls.filter(([name]) => names.includes(name))
+                return matching.length >= minCount
+            } else {
+                // otherwise, just compare the total count
+                return calls.length >= minCount
+            }
+        }, {names, minCount})
     }
 
-    if (!mustExist) {
+    // even if minCount was zero, we still want to allow a short window of time to capture mocks
+    if (minCount === 0) {
         await page.waitForTimeout(500)
     }
 
+    // finally, we can return the mocks
     return page.evaluate(({names}) => {
         if (!Array.isArray(window.__playwright_autofill?.mocks?.calls)) {
             throw new Error('unreachable, window.__playwright_autofill.mocks.calls must be defined')
@@ -239,6 +255,20 @@ export async function mockedCalls (page, names = [], mustExist = true) {
 }
 
 /**
+ * @param {MockCall[]} mockCalls
+ * @return {Record<string, unknown>[]}
+ */
+export function payloadsOnly (mockCalls) {
+    return mockCalls.map(call => {
+        let [, sent] = call
+        if (typeof sent === 'string') {
+            sent = JSON.parse(sent)
+        }
+        return sent
+    })
+}
+
+/**
  * This gathers all mocked API calls and adds them as an attachment to the
  * test run.
  *
@@ -251,7 +281,7 @@ export async function mockedCalls (page, names = [], mustExist = true) {
  * @returns {Promise<void>}
  */
 export async function addMocksAsAttachments (page, test, testInfo) {
-    const calls = await mockedCalls(page)
+    const calls = await mockedCalls(page, {minCount: 0})
     const platform = validPlatform(testInfo.project.name)
     let index = 0
     for (let call of calls) {

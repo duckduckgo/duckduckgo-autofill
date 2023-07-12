@@ -142,11 +142,11 @@ test.describe('android', () => {
 
             // should not prompt again on second password field (which will be untouched)
             await signup.clickIntoPasswordConfirmationField()
-            await signup.assertPasswordWasSuggestedTimes(1, 'android')
+            await signup.assertPasswordWasSuggestedTimes(1)
 
             // SHOULD prompt again if icon clicked though, since that's explicit opt-in
             await signup.clickDirectlyOnPasswordIcon()
-            await signup.assertPasswordWasSuggestedTimes(2, 'android')
+            await signup.assertPasswordWasSuggestedTimes(2)
         })
     })
 })

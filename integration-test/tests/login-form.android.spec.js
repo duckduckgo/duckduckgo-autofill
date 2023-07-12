@@ -139,7 +139,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                 await login.clickIntoPasswordInput()
                 await login.assertPasswordFilled(password)
                 await login.assertFormNotSubmittedAutomatically()
-                await login.assertWasPromptedToSave({username, password}, 'android')
+                await login.assertWasPromptedToSave({username, password})
             })
         })
         test.describe('but I dont have saved credentials', () => {
