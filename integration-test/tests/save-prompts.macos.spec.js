@@ -34,7 +34,7 @@ test.describe('macos', () => {
             const signup = signupPage(page)
             await signup.navigate()
             await signup.enterCredentials(credentials)
-            await signup.assertWasPromptedToSave(credentials, 'macos')
+            await signup.assertWasPromptedToSave(credentials)
         })
         test.describe('Prompting to save from a login form', () => {
             test('username+password (should prompt)', async ({page}) => {
