@@ -70,8 +70,15 @@ export function signupPage (page) {
     const emailStyleAttr = () => page.locator('#email').first().getAttribute('style')
 
     class SignupPage {
-        async navigate () {
-            await page.goto(constants.pages['signup'])
+        /**
+         * @param {keyof typeof constants.pages} [to]
+         * @return {Promise<void>}
+         */
+        async navigate (to = 'signup') {
+            await page.goto(constants.pages[to])
+        }
+        async clickIntoEmailField () {
+            await page.getByLabel('Email').click()
         }
         async clickIntoPasswordField () {
             const input = page.locator('#password')
@@ -80,6 +87,13 @@ export function signupPage (page) {
         async clickIntoPasswordConfirmationField () {
             const input = page.locator('#password-2')
             await input.click()
+        }
+        /**
+         * @param {string} address
+         */
+        async selectPrivateAddress (address) {
+            await page.getByRole('button', { name: `Generate Private Duck Address ${address} Blocks email trackers and hides your address` })
+                .click({force: true})
         }
         /**
          * @param {number} times
@@ -110,6 +124,15 @@ export function signupPage (page) {
             const input2 = await page.locator('#password-2').inputValue()
             expect(input).toEqual('')
             expect(input2).toEqual('')
+        }
+        /**
+         * @param {string} address
+         */
+        async assertUsernameFieldSent (address) {
+            const calls = payloadsOnly(await mockedCalls(page, { names: ['getAutofillData'] }))
+
+            expect(/** @type {any} */(calls[0]).generatedPassword.username).toEqual(address)
+            expect(calls.length).toEqual(1)
         }
         async clickDirectlyOnPasswordIcon () {
             const input = page.locator('#password')
@@ -193,7 +216,24 @@ export function signupPage (page) {
             await page.waitForTimeout(200)
             await page.keyboard.press('Tab')
 
-            await page.locator(`button:has-text("Sign up")`).click()
+            await page.getByRole('button', { name: 'Sign up' }).click()
+        }
+        /**
+         * @param {string} password
+         * @return {Promise<void>}
+         */
+        async enterPassword (password) {
+            await page.getByLabel('Password', { exact: true }).fill(password)
+            await page.getByLabel('Password Confirmation').fill(password)
+        }
+        /**
+         * @param {string} email
+         */
+        async changeEmailFieldTo (email) {
+            await page.getByLabel('Email').fill(email)
+        }
+        async submit () {
+            await page.getByRole('button', { name: 'Sign up' }).click()
         }
         /**
          * @param {Omit<CredentialsObject, "id">} credentials
@@ -203,6 +243,16 @@ export function signupPage (page) {
             const calls = await mockedCalls(page, { names: ['storeFormData'] })
             const payloads = payloadsOnly(calls)
             expect(payloads[0].credentials).toEqual(credentials)
+        }
+        /**
+         * Capture a second instance of `storeFormData`
+         * @param {Omit<CredentialsObject, "id">} credentials
+         * @returns {Promise<void>}
+         */
+        async assertWasPromptedToSaveAgain (credentials) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'], minCount: 2 })
+            const payloads = payloadsOnly(calls)
+            expect(payloads[1].credentials).toEqual(credentials)
         }
         /**
          * @param {Omit<CredentialsObject, "id">} credentials

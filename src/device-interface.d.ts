@@ -70,7 +70,7 @@ interface DataStorageObject {
      credentials?: CredentialsObject,
      creditCards?: CreditCardObject,
      identities?: IdentityObject,
-     trigger?: 'formSubmission' | 'passwordGeneration',
+     trigger?: 'formSubmission' | 'passwordGeneration' | 'emailProtection',
 }
 
 interface InternalDataStorageObject {

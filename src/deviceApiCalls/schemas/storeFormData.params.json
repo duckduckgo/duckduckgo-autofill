@@ -24,7 +24,8 @@
       "type": "string",
       "enum": [
         "formSubmission",
-        "passwordGeneration"
+        "passwordGeneration",
+        "emailProtection"
       ]
     }
   }
