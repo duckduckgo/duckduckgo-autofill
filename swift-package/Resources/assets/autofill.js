@@ -3202,7 +3202,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: digit; allowed: upper;"
   },
   "lowes.com": {
-    "password-rules": "minlength: 8; maxlength: 12; required: lower, upper; required: digit;"
+    "password-rules": "minlength: 8; maxlength: 128; max-consecutive: 3; required: lower, upper; required: digit;"
   },
   "loyalty.accor.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&=@];"
@@ -3402,9 +3402,6 @@ module.exports={
   "secure.snnow.ca": {
     "password-rules": "minlength: 7; maxlength: 16; required: digit; allowed: lower, upper;"
   },
-  "secure.wa.aaa.com": {
-    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: ascii-printable;"
-  },
   "sephora.com": {
     "password-rules": "minlength: 6; maxlength: 12;"
   },
@@ -3518,6 +3515,9 @@ module.exports={
   },
   "vivo.com.br": {
     "password-rules": "maxlength: 6; max-consecutive: 3; allowed: digit;"
+  },
+  "wa.aaa.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: ascii-printable;"
   },
   "walkhighlands.co.uk": {
     "password-rules": "minlength: 9; maxlength: 15; required: lower; required: upper; required: digit; allowed: special;"
