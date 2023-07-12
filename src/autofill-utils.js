@@ -326,6 +326,7 @@ const isLikelyASubmitButton = (el) => {
 
     return (
         el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+        el.getAttribute('name') === 'submit' || // is called "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
         /submit/i.test(dataTestId) ||
         SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
