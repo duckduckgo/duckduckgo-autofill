@@ -6,8 +6,8 @@ class EmailProtection {
     #previous = null;
 
     /** @param {import("./DeviceInterface/InterfacePrototype").default} device */
-    constructor(device) {
-        this.device = device;
+    constructor (device) {
+        this.device = device
     }
 
     /** @returns {boolean} */
@@ -24,9 +24,9 @@ class EmailProtection {
      * Store the last received email address
      * @param {string} emailAddress
      */
-    received(emailAddress) {
-        this.#previous = emailAddress;
-        return emailAddress;
+    received (emailAddress) {
+        this.#previous = emailAddress
+        return emailAddress
     }
 }
 

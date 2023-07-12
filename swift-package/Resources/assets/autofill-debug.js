@@ -8399,7 +8399,7 @@ var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
 
 var _validatorsZod = require("../deviceApiCalls/__generated__/validators.zod.js");
 
-var _EmailProtection = require("../EmailProtection");
+var _EmailProtection = require("../EmailProtection.js");
 
 function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
 
@@ -9396,7 +9396,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":14,"../EmailProtection":32,"../Form/formatters.js":36,"../Form/matching.js":43,"../InputTypes/Credentials.js":47,"../PasswordGenerator.js":50,"../Scanner.js":51,"../Settings.js":52,"../UI/controllers/NativeUIController.js":58,"../autofill-utils.js":63,"../config.js":65,"../deviceApiCalls/__generated__/deviceApiCalls.js":67,"../deviceApiCalls/__generated__/validators.zod.js":68,"../deviceApiCalls/transports/transports.js":73,"./initFormSubmissionsApi.js":30}],28:[function(require,module,exports){
+},{"../../packages/device-api/index.js":14,"../EmailProtection.js":32,"../Form/formatters.js":36,"../Form/matching.js":43,"../InputTypes/Credentials.js":47,"../PasswordGenerator.js":50,"../Scanner.js":51,"../Settings.js":52,"../UI/controllers/NativeUIController.js":58,"../autofill-utils.js":63,"../config.js":65,"../deviceApiCalls/__generated__/deviceApiCalls.js":67,"../deviceApiCalls/__generated__/validators.zod.js":68,"../deviceApiCalls/transports/transports.js":73,"./initFormSubmissionsApi.js":30}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
