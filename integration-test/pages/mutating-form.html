@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Mutating form</title>
+<!--    <link rel="stylesheet" href="./style.css" />-->
+    <style>
+        body {
+            font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+            padding: 1em;
+        }
+
+        .dialog {
+            max-width: 500px;
+            height: auto;
+            padding: 30px;
+            background-color: #fefefe;
+            border-radius: 4px;
+            border: 0.5px solid #999;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        hr {
+            margin: 2em auto;
+        }
+
+        fieldset {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            grid-gap: 1em;
+            max-width: 410px;
+            padding: 0;
+            border: none;
+            margin: auto;
+        }
+
+        label {
+            align-self: center;
+            text-align: right;
+        }
+
+        input,
+        button,
+        .button {
+            font-family: inherit;
+            font-size: 16px;
+            line-height: 24px;
+        }
+
+        input {
+            grid-column: span 2;
+            margin: auto;
+        }
+
+        button,
+        .button {
+            grid-column: span 2;
+            display: block;
+            margin: auto;
+            padding: 5px 20px;
+            background-color: black;
+            color: white;
+            font-weight: bold;
+            border-radius: 3px;
+            border: none;
+            appearance: none;
+            box-shadow: none;
+        }
+
+        .button-with-child {
+            position: relative;
+            width: 250px;
+            height: 40px;
+        }
+
+        .button-with-child i {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        button[type="button"] {
+            display: inline-block;
+            padding: 0;
+            background: none;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+<main>
+
+<p><a href="../index.html">[Home]</a></p>
+
+<p id="demo"></p>
+
+<div class="dialog">
+    <form action="/signup" id="signup-login">
+        <h2>Sign up for our services</h2>
+        <fieldset>
+            <input id="email" type="email" placeholder="Email">
+            <input id="firstname" type="text" placeholder="First name">
+            <input id="lastname" type="text" placeholder="Last name">
+            <input id="password" type="password" passwordrules="minlength: 5; maxlength: 10" placeholder="Password">
+            <input id="password-2" type="password" passwordrules="minlength: 5; maxlength: 10" placeholder="Repeat password">
+            <button type="submit">Sign up</button>
+        </fieldset>
+        <p><button id="toggle-login-signup" type="button">Login instead</button></p>
+    </form>
+</div>
+</main>
+<script type="module">
+    const form = document.forms['signup-login'];
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+    })
+</script>
+<script>
+    const form = document.forms['signup-login'];
+    const toggle = document.getElementById('toggle-login-signup')
+    const submit = document.querySelector('button[type=submit]')
+    const title = document.querySelector('h2')
+    toggle.addEventListener('click', () => {
+        if (form.action.includes('signup')) {
+            setLogin()
+        } else {
+            setSignup()
+        }
+    })
+    let elsToRemove
+    function setLogin () {
+        title.textContent = 'Login now!'
+        submit.textContent = 'Login'
+        toggle.textContent = 'Signup here'
+        elsToRemove = document.querySelectorAll('#firstname, #lastname, #password-2')
+        elsToRemove.forEach(el => el.remove())
+
+        form.action = '/login'
+    }
+    function setSignup () {
+        title.textContent = 'Sign up for our services'
+        submit.textContent = 'Signup'
+        toggle.textContent = 'Login instead'
+        form.append(...elsToRemove)
+        form.action = '/signup'
+    }
+</script>
+</body>
+
+</html>

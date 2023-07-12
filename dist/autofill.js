@@ -6314,8 +6314,6 @@ class Form {
 
   /** @type {HTMLInputElement | null} */
 
-  /** @type {boolean | null} */
-
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
@@ -6332,14 +6330,9 @@ class Form {
 
     _defineProperty(this, "activeInput", void 0);
 
-    _defineProperty(this, "isSignup", void 0);
-
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
-    this.isLogin = this.formAnalyzer.isLogin;
-    this.isSignup = this.formAnalyzer.isSignup;
-    this.isHybrid = this.formAnalyzer.isHybrid;
     this.device = deviceInterface;
     /** @type Record<'all' | SupportedMainTypes, Set> */
 
@@ -6366,6 +6359,24 @@ class Form {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
       }
+    });
+    this.mutObsConfig = {
+      childList: true,
+      subtree: true
+    };
+    this.mutObs = new MutationObserver(records => {
+      const anythingRemoved = records.some(record => record.removedNodes.length > 0);
+
+      if (anythingRemoved) {
+        // Must check for inputs because a parent may be removed and not show up in record.removedNodes
+        if ([...this.inputs.all].some(input => !input.isConnected)) {
+          // If any known input has been removed from the DOM, reanalyze the whole form
+          window.requestIdleCallback(() => {
+            this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+            this.recategorizeAllInputs();
+          });
+        }
+      }
     }); // This ensures we fire the handler again if the form is changed
 
     this.addListener(form, 'input', () => {
@@ -6375,11 +6386,24 @@ class Form {
       }
     });
     this.categorizeInputs();
+    this.mutObs.observe(this.form, this.mutObsConfig);
     this.logFormInfo();
 
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
     }
+  }
+
+  get isLogin() {
+    return this.formAnalyzer.isLogin;
+  }
+
+  get isSignup() {
+    return this.formAnalyzer.isSignup;
+  }
+
+  get isHybrid() {
+    return this.formAnalyzer.isHybrid;
   }
 
   logFormInfo() {
@@ -6613,6 +6637,7 @@ class Form {
 
 
   recategorizeAllInputs() {
+    this.initialScanComplete = false;
     this.removeAllDecorations();
     this.forgetAllInputs();
     this.categorizeInputs();
@@ -6635,6 +6660,7 @@ class Form {
   destroy() {
     this.removeAllDecorations();
     this.removeTooltip();
+    this.mutObs.disconnect();
     this.matching.clear();
     this.intObs = null;
   }
@@ -6647,6 +6673,8 @@ class Form {
     } else {
       this.form.querySelectorAll(selector).forEach(input => this.addInput(input));
     }
+
+    this.initialScanComplete = true;
   }
 
   get submitButtons() {
@@ -6702,9 +6730,16 @@ class Form {
   addInput(input) {
     var _this$device$settings;
 
-    // Nothing to do with 1-character fields
+    if (this.inputs.all.has(input)) return this; // When new inputs are added after the initial scan, reanalyze the whole form
+
+    if (this.initialScanComplete) {
+      this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+      this.recategorizeAllInputs();
+      return this;
+    } // Nothing to do with 1-character fields
+
+
     if (input.maxLength === 1) return this;
-    if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
     const opts = {
       isLogin: this.isLogin,
@@ -7111,6 +7146,8 @@ const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscr
 const signupRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i);
 const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
 const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i);
+const resetPasswordLink = new RegExp(/(forgot(ten)?|reset|don't remember) (your )?password|password forgotten/i);
+const loginProvidersRegex = new RegExp(/ with /i);
 
 class FormAnalyzer {
   /** @type HTMLElement */
@@ -7233,7 +7270,7 @@ class FormAnalyzer {
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     } = _ref;
-    const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string); // Check explicitly for unified login/signup forms
+    const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string) || resetPasswordLink.test(string); // Check explicitly for unified login/signup forms
 
     if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
       this.increaseHybridSignal(strength, signalType);
@@ -7348,10 +7385,11 @@ class FormAnalyzer {
 
 
     if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
-      // Unless it's a forgotten password link, we don't flip those links
       let shouldFlip = true;
 
-      if (/(forgot(ten)?|reset) (your )?password|password forgotten| with /i.test(string)) {
+      if (resetPasswordLink.test(string) || // Don't flip forgotten password links
+      loginProvidersRegex.test(string) // Don't flip login providers links
+      ) {
         shouldFlip = false;
       }
 
@@ -14169,6 +14207,7 @@ const isLikelyASubmitButton = el => {
   const dataTestId = el.getAttribute('data-test-id') || '';
   const contentExcludingLabel = text + ' ' + title + ' ' + value;
   return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+  el.getAttribute('name') === 'submit' || // is called "submit"
   /primary|submit/i.test(el.className) || // has high-signal submit classes
   /submit/i.test(dataTestId) || SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
   el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px

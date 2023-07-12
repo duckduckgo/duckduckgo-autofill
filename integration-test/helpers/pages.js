@@ -59,6 +59,26 @@ export function incontextSignupPage (page, { platform } = { platform: 'extension
     return new IncontextSignupPage()
 }
 
+export function mutatingFormPage (page) {
+    class MutatingFormPage {
+        async navigate () {
+            await page.goto(constants.pages['mutatingForm'])
+        }
+        async toggleLoginOrSignup () {
+            const toggleBtn = page.locator('#toggle-login-signup')
+            await toggleBtn.click()
+        }
+        passwordFieldShowsKey () {
+            return loginPage(page).passwordFieldShowsKey()
+        }
+        assertPasswordHasNoIcon () {
+            return signupPage(page).assertPasswordHasNoIcon()
+        }
+    }
+
+    return new MutatingFormPage()
+}
+
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
  *
@@ -68,6 +88,7 @@ export function signupPage (page) {
     const decoratedFirstInputSelector = '#email' + constants.fields.email.selectors.identity
     const decoratedSecondInputSelector = '#email-2' + constants.fields.email.selectors.identity
     const emailStyleAttr = () => page.locator('#email').first().getAttribute('style')
+    const passwordStyleAttr = () => page.locator('#password' + constants.fields.password.selectors.credential).getAttribute('style')
 
     class SignupPage {
         async navigate () {
@@ -232,7 +253,10 @@ export function signupPage (page) {
             await expect(input).toHaveValue('')
         }
         async assertEmailHasNoDaxIcon () {
-            expect(await emailStyleAttr()).toBeNull()
+            expect(await emailStyleAttr()).toBeFalsy()
+        }
+        async assertPasswordHasNoIcon () {
+            expect(await passwordStyleAttr()).toBeFalsy()
         }
     }
 
@@ -293,16 +317,24 @@ export function loginPage (page, opts = {}) {
             const emailStyle = await page.locator('#email').getAttribute('style')
             expect(emailStyle).toContain(constants.iconMatchers.dax)
         }
-        async emailHasDaxPasswordNoIcon () {
-            await this.emailFieldShowsDax()
+        async passwordFieldShowsKey () {
+            // don't make assertions until the element is both found + has a none-empty 'style' attribute
+            await page.waitForFunction(() => Boolean(document.querySelector('#password')?.getAttribute('style')))
+            const emailStyle = await page.locator('#password').getAttribute('style')
+            expect(emailStyle).toContain(constants.iconMatchers.key)
+        }
+        async passwordHasNoIcon () {
             const passwordStyle = await page.locator('#password').getAttribute('style')
             expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
         }
+        async emailHasDaxPasswordNoIcon () {
+            await this.emailFieldShowsDax()
+            await this.passwordHasNoIcon()
+        }
         async onlyPasswordFieldHasIcon () {
             const styles1 = await page.locator('#email').getAttribute('style')
-            const styles2 = await page.locator('#password').getAttribute('style')
             expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
-            expect(styles2 || '').toContain(constants.iconMatchers.key)
+            await this.passwordFieldShowsKey()
         }
         /**
          * @param {string} username

@@ -72,6 +72,23 @@ class Form {
             }
         })
 
+        this.mutObsConfig = { childList: true, subtree: true }
+        this.mutObs = new MutationObserver(
+            (records) => {
+                const anythingRemoved = records.some(record => record.removedNodes.length > 0)
+                if (anythingRemoved) {
+                    // Must check for inputs because a parent may be removed and not show up in record.removedNodes
+                    if ([...this.inputs.all].some(input => !input.isConnected)) {
+                        // If any known input has been removed from the DOM, reanalyze the whole form
+                        window.requestIdleCallback(() => {
+                            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
+                            this.recategorizeAllInputs()
+                        })
+                    }
+                }
+            }
+        )
+
         // This ensures we fire the handler again if the form is changed
         this.addListener(form, 'input', () => {
             if (!this.isAutofilling) {
@@ -81,6 +98,7 @@ class Form {
         })
 
         this.categorizeInputs()
+        this.mutObs.observe(this.form, this.mutObsConfig)
 
         this.logFormInfo()
 
@@ -300,6 +318,7 @@ class Form {
      * Resets our input scoring and starts from scratch
      */
     recategorizeAllInputs () {
+        this.initialScanComplete = false
         this.removeAllDecorations()
         this.forgetAllInputs()
         this.categorizeInputs()
@@ -319,6 +338,7 @@ class Form {
     destroy () {
         this.removeAllDecorations()
         this.removeTooltip()
+        this.mutObs.disconnect()
         this.matching.clear()
         this.intObs = null
     }
@@ -330,6 +350,7 @@ class Form {
         } else {
             this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
         }
+        this.initialScanComplete = true
     }
 
     get submitButtons () {
@@ -383,10 +404,17 @@ class Form {
     }
 
     addInput (input) {
+        if (this.inputs.all.has(input)) return this
+
+        // When new inputs are added after the initial scan, reanalyze the whole form
+        if (this.initialScanComplete) {
+            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
+            this.recategorizeAllInputs()
+            return this
+        }
+
         // Nothing to do with 1-character fields
         if (input.maxLength === 1) return this
-
-        if (this.inputs.all.has(input)) return this
 
         this.inputs.all.add(input)
 
