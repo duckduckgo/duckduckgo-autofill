@@ -10,11 +10,6 @@ class EmailProtection {
         this.device = device
     }
 
-    /** @returns {boolean} */
-    get generated () {
-        return this.#previous !== null
-    }
-
     /** @returns {string|null} */
     get lastGenerated () {
         return this.#previous
@@ -24,7 +19,7 @@ class EmailProtection {
      * Store the last received email address
      * @param {string} emailAddress
      */
-    received (emailAddress) {
+    storeReceived (emailAddress) {
         this.#previous = emailAddress
         return emailAddress
     }

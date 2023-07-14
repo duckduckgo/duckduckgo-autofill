@@ -381,7 +381,7 @@ class InterfacePrototype {
          */
         if (isPrivateAddress && 'emailAddress' in data && data.emailAddress) {
             this.refreshAlias()
-            this.emailProtection.received(data.emailAddress)
+            this.emailProtection.storeReceived(data.emailAddress)
 
             /** @type {DataStorageObject} */
             const formValues = {
@@ -465,7 +465,7 @@ class InterfacePrototype {
                      * We're on mobile here, so we just record the email received.
                      * Then later in the form submission we can compare the values
                      */
-                    this.emailProtection.received(alias)
+                    this.emailProtection.storeReceived(alias)
                 } else form.activeInput?.focus()
             })
             return

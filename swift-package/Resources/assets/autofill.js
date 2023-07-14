@@ -5153,7 +5153,7 @@ class InterfacePrototype {
 
     if (isPrivateAddress && 'emailAddress' in data && data.emailAddress) {
       this.refreshAlias();
-      this.emailProtection.received(data.emailAddress);
+      this.emailProtection.storeReceived(data.emailAddress);
       /** @type {DataStorageObject} */
 
       const formValues = {
@@ -5247,7 +5247,7 @@ class InterfacePrototype {
            * Then later in the form submission we can compare the values
            */
 
-          this.emailProtection.received(alias);
+          this.emailProtection.storeReceived(alias);
         } else (_form$activeInput = form.activeInput) === null || _form$activeInput === void 0 ? void 0 : _form$activeInput.focus();
       });
       return;
@@ -6356,12 +6356,6 @@ class EmailProtection {
 
     this.device = device;
   }
-  /** @returns {boolean} */
-
-
-  get generated() {
-    return _classPrivateFieldGet(this, _previous) !== null;
-  }
   /** @returns {string|null} */
 
 
@@ -6374,7 +6368,7 @@ class EmailProtection {
    */
 
 
-  received(emailAddress) {
+  storeReceived(emailAddress) {
     _classPrivateFieldSet(this, _previous, emailAddress);
 
     return emailAddress;
