@@ -346,7 +346,7 @@ export interface UserPreferences {
  */
 export interface StoreFormData {
   credentials?: OutgoingCredentials;
-  trigger?: "formSubmission" | "passwordGeneration";
+  trigger?: "formSubmission" | "passwordGeneration" | "emailProtection";
 }
 export interface OutgoingCredentials {
   /**
