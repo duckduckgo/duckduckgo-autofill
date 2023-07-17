@@ -31,7 +31,7 @@ function firePixel ({pixelName}) {
     globalThis.pixels.push(pixelName)
 }
 
-function registeredTempAutofillContentScript () {
+function registeredAutofillContentScript () {
     return {
         debug: false,
         site: {
@@ -44,8 +44,8 @@ function registeredTempAutofillContentScript () {
 
 function init () {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.registeredTempAutofillContentScript) {
-            return sendResponse(registeredTempAutofillContentScript())
+        if (message.messageType === 'registeredAutofillContentScript') {
+            return sendResponse(registeredAutofillContentScript())
         } else if (message.getAddresses) {
             return sendResponse(getAddresses())
         } else if (message.refreshAlias) {
