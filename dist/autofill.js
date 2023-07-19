@@ -4494,7 +4494,9 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
   async isEnabled() {
     return new Promise(resolve => {
-      chrome.runtime.sendMessage({
+      var _chrome, _chrome$runtime;
+
+      (_chrome = chrome) === null || _chrome === void 0 ? void 0 : (_chrome$runtime = _chrome.runtime) === null || _chrome$runtime === void 0 ? void 0 : _chrome$runtime.sendMessage({
         registeredTempAutofillContentScript: true,
         documentUrl: window.location.href
       }, response => {
@@ -6672,6 +6674,7 @@ class Form {
   }
 
   removeInputDecoration(input) {
+    (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getBasicStyles)(input, ''));
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesBase)(input, this));
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAlternate)(input, this));
     input.removeAttribute(ATTR_AUTOFILL);
@@ -8443,7 +8446,7 @@ exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getIconStylesBase = exports.getIconStylesAutofilled = exports.getIconStylesAlternate = void 0;
+exports.getIconStylesBase = exports.getIconStylesAutofilled = exports.getIconStylesAlternate = exports.getBasicStyles = void 0;
 
 var _inputTypeConfig = require("./inputTypeConfig.js");
 
@@ -8496,6 +8499,8 @@ const getBasicStyles = (input, icon) => ({
  * @return {Object<string, string>}
  */
 
+
+exports.getBasicStyles = getBasicStyles;
 
 const getIconStylesBase = (input, form) => {
   const icon = getIcon(input, form);
@@ -15446,7 +15451,11 @@ class ExtensionTransport extends _index.DeviceApiTransport {
       return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params));
     }
 
-    throw new Error('not implemented yet for ' + deviceApiCall.method);
+    if (deviceApiCall instanceof _deviceApiCalls.CloseAutofillParentCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
+      return; // noop
+    }
+
+    console.error('Send not implemented for ' + deviceApiCall.method);
   }
 
 }

@@ -85,4 +85,4 @@ const getIconStylesAutofilled = (input, form) => {
     }
 }
 
-export {getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate}
+export {getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate, getBasicStyles}
