@@ -469,9 +469,11 @@ class InterfacePrototype {
                 } else {
                     form.activeInput?.focus()
                 }
+
                 // Update data from native-side in case the `getAlias` call
                 // has included a successful in-context signup
                 this.updateForStateChange()
+                this.onFinishedAutofill()
             })
             return
         }
@@ -583,6 +585,11 @@ class InterfacePrototype {
 
     removeTooltip () {
         return this.uiController?.removeTooltip?.('interface')
+    }
+
+    onFinishedAutofill () {
+        // Let input handlers know we've stopped autofilling
+        this.activeForm?.activeInput?.dispatchEvent(new Event('mouseleave'))
     }
 
     async updateForStateChange () {

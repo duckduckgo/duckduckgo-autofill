@@ -137,8 +137,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             if ('configType' in response) {
                 this.selectedDetail(response.data, response.configType)
             } else if ('stop' in response) {
-                // Let input handlers know we've stopped autofilling
-                this.activeForm?.activeInput?.dispatchEvent(new Event('mouseleave'))
+                await this.onFinishedAutofill()
             } else if ('stateChange' in response) {
                 await this.updateForStateChange()
             }
