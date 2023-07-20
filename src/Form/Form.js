@@ -264,7 +264,6 @@ class Form {
     }
 
     removeInputDecoration (input) {
-        removeInlineStyles(input, getBasicStyles(input, ''))
         removeInlineStyles(input, getIconStylesBase(input, this))
         removeInlineStyles(input, getIconStylesAlternate(input, this))
         input.removeAttribute(ATTR_AUTOFILL)

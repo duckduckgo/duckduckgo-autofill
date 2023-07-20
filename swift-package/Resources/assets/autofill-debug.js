@@ -10350,7 +10350,6 @@ class Form {
   }
 
   removeInputDecoration(input) {
-    (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getBasicStyles)(input, ''));
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesBase)(input, this));
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAlternate)(input, this));
     input.removeAttribute(ATTR_AUTOFILL);
@@ -14650,6 +14649,12 @@ class InContextSignup {
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
       shouldHideTooltip: true
     };
+
+    if (options.shouldHideTooltip) {
+      this.device.removeAutofillUIFromPage();
+      this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+    }
+
     this.permanentlyDismissedAt = new Date().getTime();
     this.device.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall({
       value: this.permanentlyDismissedAt
@@ -14657,11 +14662,6 @@ class InContextSignup {
     this.device.firePixel({
       pixelName: 'incontext_dismiss_persisted'
     });
-
-    if (options.shouldHideTooltip) {
-      this.device.removeAutofillUIFromPage();
-      this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
-    }
   } // In-context signup can be closed when displayed as a stand-alone tooltip, e.g. extension
 
 
