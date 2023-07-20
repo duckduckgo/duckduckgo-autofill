@@ -8170,7 +8170,9 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
   async isEnabled() {
     return new Promise(resolve => {
-      chrome.runtime.sendMessage({
+      var _chrome, _chrome$runtime;
+
+      (_chrome = chrome) === null || _chrome === void 0 ? void 0 : (_chrome$runtime = _chrome.runtime) === null || _chrome$runtime === void 0 ? void 0 : _chrome$runtime.sendMessage({
         registeredTempAutofillContentScript: true,
         documentUrl: window.location.href
       }, response => {
@@ -14645,6 +14647,12 @@ class InContextSignup {
     let options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
       shouldHideTooltip: true
     };
+
+    if (options.shouldHideTooltip) {
+      this.device.removeAutofillUIFromPage();
+      this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
+    }
+
     this.permanentlyDismissedAt = new Date().getTime();
     this.device.deviceApi.notify(new _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall({
       value: this.permanentlyDismissedAt
@@ -14652,11 +14660,6 @@ class InContextSignup {
     this.device.firePixel({
       pixelName: 'incontext_dismiss_persisted'
     });
-
-    if (options.shouldHideTooltip) {
-      this.device.removeAutofillUIFromPage();
-      this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
-    }
   } // In-context signup can be closed when displayed as a stand-alone tooltip, e.g. extension
 
 
@@ -19536,7 +19539,11 @@ class ExtensionTransport extends _index.DeviceApiTransport {
       return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params));
     }
 
-    throw new Error('not implemented yet for ' + deviceApiCall.method);
+    if (deviceApiCall instanceof _deviceApiCalls.CloseAutofillParentCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
+      return; // noop
+    }
+
+    console.error('Send not implemented for ' + deviceApiCall.method);
   }
 
 }

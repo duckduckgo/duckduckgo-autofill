@@ -649,7 +649,7 @@ export function emailAutofillPage (page) {
             const input = await page.locator(selectors.identity)
             if (checking === 'style') {
                 const style = await input.getAttribute('style')
-                expect(style).toBeNull()
+                expect(style).toBeFalsy()
             } else {
                 expect(input).not.toHaveAttribute(ATTR_AUTOFILL, 'true')
             }

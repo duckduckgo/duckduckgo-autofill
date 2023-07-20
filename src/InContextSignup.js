@@ -104,13 +104,13 @@ export class InContextSignup {
     }
 
     onIncontextSignupDismissed (options = { shouldHideTooltip: true }) {
-        this.permanentlyDismissedAt = new Date().getTime()
-        this.device.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: this.permanentlyDismissedAt }))
-        this.device.firePixel({pixelName: 'incontext_dismiss_persisted'})
         if (options.shouldHideTooltip) {
             this.device.removeAutofillUIFromPage()
             this.device.deviceApi.notify(new CloseAutofillParentCall(null))
         }
+        this.permanentlyDismissedAt = new Date().getTime()
+        this.device.deviceApi.notify(new SetIncontextSignupPermanentlyDismissedAtCall({ value: this.permanentlyDismissedAt }))
+        this.device.firePixel({pixelName: 'incontext_dismiss_persisted'})
     }
 
     // In-context signup can be closed when displayed as a stand-alone tooltip, e.g. extension
