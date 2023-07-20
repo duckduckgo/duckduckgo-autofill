@@ -208,7 +208,7 @@ export const getAliasParamsSchema = z.object({
 
 export const getAliasResultSchema = z.object({
     success: z.object({
-        alias: z.string()
+        alias: z.string().optional()
     })
 });
 

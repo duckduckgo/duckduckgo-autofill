@@ -260,7 +260,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @returns {Promise<string>}
+     * @returns {Promise<string|undefined>}
      */
     async getAlias () {
         const {alias} = await this.deviceApi.request(new GetAlias({
@@ -268,7 +268,7 @@ class AppleDeviceInterface extends InterfacePrototype {
             shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
             isIncontextSignupAvailable: this.inContextSignup.isAvailable()
         }))
-        return formatDuckAddress(alias)
+        return alias ? formatDuckAddress(alias) : alias
     }
 
     addLogoutListener (handler) {

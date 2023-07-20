@@ -726,10 +726,10 @@ class InterfacePrototype {
     addLogoutListener (_fn) {}
     isDeviceSignedIn () { return false }
     /**
-     * @returns {Promise<null|string>}
+     * @returns {Promise<string|undefined>}
      */
     async getAlias () {
-        return null
+        return undefined
     }
     // PM endpoints
     getAccounts () {}

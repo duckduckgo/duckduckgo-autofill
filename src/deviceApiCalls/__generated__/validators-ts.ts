@@ -588,7 +588,7 @@ export interface GetAliasParams {
 }
 export interface GetAliasResult {
   success: {
-    alias: string;
+    alias?: string;
   };
 }
 /**

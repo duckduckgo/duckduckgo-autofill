@@ -3663,6 +3663,10 @@ class AndroidInterface extends _InterfacePrototype.default {
   async isEnabled() {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
+  /**
+   * @returns {Promise<string|undefined>}
+   */
+
 
   async getAlias() {
     const {
@@ -4121,7 +4125,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
     return topContextData !== null && topContextData !== void 0 && topContextData.inputType ? topContextData.inputType : (0, _matching.getInputType)((_this$activeForm = this.activeForm) === null || _this$activeForm === void 0 ? void 0 : _this$activeForm.activeInput);
   }
   /**
-   * @returns {Promise<string>}
+   * @returns {Promise<string|undefined>}
    */
 
 
@@ -4133,7 +4137,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
       shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
       isIncontextSignupAvailable: this.inContextSignup.isAvailable()
     }));
-    return (0, _autofillUtils.formatDuckAddress)(alias);
+    return alias ? (0, _autofillUtils.formatDuckAddress)(alias) : alias;
   }
 
   addLogoutListener(handler) {
@@ -5563,12 +5567,12 @@ class InterfacePrototype {
     return false;
   }
   /**
-   * @returns {Promise<null|string>}
+   * @returns {Promise<string|undefined>}
    */
 
 
   async getAlias() {
-    return null;
+    return undefined;
   } // PM endpoints
 
 
