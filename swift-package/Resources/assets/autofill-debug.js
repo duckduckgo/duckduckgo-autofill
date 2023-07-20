@@ -12121,7 +12121,7 @@ exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getIconStylesBase = exports.getIconStylesAutofilled = exports.getIconStylesAlternate = exports.getBasicStyles = void 0;
+exports.getIconStylesBase = exports.getIconStylesAutofilled = exports.getIconStylesAlternate = void 0;
 
 var _inputTypeConfig = require("./inputTypeConfig.js");
 
@@ -12174,8 +12174,6 @@ const getBasicStyles = (input, icon) => ({
  * @return {Object<string, string>}
  */
 
-
-exports.getBasicStyles = getBasicStyles;
 
 const getIconStylesBase = (input, form) => {
   const icon = getIcon(input, form);

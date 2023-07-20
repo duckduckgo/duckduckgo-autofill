@@ -11,7 +11,7 @@ import {
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
-import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate, getBasicStyles } from './inputStyles.js'
+import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
 import {
