@@ -19,6 +19,9 @@ sequenceDiagram
     Form-->Form: Fill form fields
     InterfacePrototype->>InterfacePrototype: emailProtection.received('abc123@duck.com')
     Note right of InterfacePrototype: ^ remembered for future form submissions
-    InterfacePrototype->>InterfacePrototype: this.storeFormData()
-    InterfacePrototype->>AppleDevice: .notify(new StoreFormDataCall())
+    Note over Form: Some time passes
+    Form-->Form: 👆 Form is submitted
+    Form->>InterfacePrototype: device.postSubmit()
+    InterfacePrototype->>InterfacePrototype: this.storeFormData(formValues, 'formSubmission'))
+    InterfacePrototype->>AppleDevice: .notify(new StoreFormDataCall(...))
 ```
