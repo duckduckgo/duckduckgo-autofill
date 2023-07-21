@@ -23,7 +23,12 @@ import {
 } from './formatters.js'
 
 import {constants} from '../constants.js'
-const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = constants
+const {
+    ATTR_AUTOFILL,
+    ATTR_INPUT_TYPE,
+    MAX_FORM_MUT_OBS_COUNT,
+    MAX_INPUTS_PER_FORM
+} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -72,6 +77,7 @@ class Form {
             }
         })
 
+        this.mutObsCount = 0
         this.mutObsConfig = { childList: true, subtree: true }
         this.mutObs = new MutationObserver(
             (records) => {
@@ -84,6 +90,12 @@ class Form {
                             this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
                             this.recategorizeAllInputs()
                         })
+
+                        this.mutObsCount++
+                        // If the form mutates too much, disconnect to avoid performance issues
+                        if (this.mutObsCount >= MAX_FORM_MUT_OBS_COUNT) {
+                            this.mutObs.disconnect()
+                        }
                     }
                 }
             }
@@ -290,6 +302,7 @@ class Form {
         removeInlineStyles(input, getIconStylesBase(input, this))
         removeInlineStyles(input, getIconStylesAlternate(input, this))
         input.removeAttribute(ATTR_AUTOFILL)
+        input.removeAttribute(ATTR_INPUT_TYPE)
     }
     removeAllDecorations () {
         this.execOnInputs((input) => this.removeInputDecoration(input))
@@ -309,6 +322,7 @@ class Form {
      */
     forgetAllInputs () {
         this.execOnInputs((input) => {
+            input.removeAttribute(ATTR_AUTOFILL)
             input.removeAttribute(ATTR_INPUT_TYPE)
         })
         Object.values(this.inputs).forEach((inputSet) => inputSet.clear())
@@ -348,7 +362,12 @@ class Form {
         if (this.form.matches(selector)) {
             this.addInput(this.form)
         } else {
-            this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
+            const foundInputs = this.form.querySelectorAll(selector)
+            if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+                foundInputs.forEach(input => this.addInput(input))
+            } else {
+                console.log('The form has too many inputs, bailing.')
+            }
         }
         this.initialScanComplete = true
     }
@@ -405,6 +424,13 @@ class Form {
 
     addInput (input) {
         if (this.inputs.all.has(input)) return this
+
+        // If the form has too many inputs, destroy everything to avoid performance issues
+        if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+            console.log('The form has too many inputs, destroying.')
+            this.destroy()
+            return this
+        }
 
         // When new inputs are added after the initial scan, reanalyze the whole form
         if (this.initialScanComplete) {

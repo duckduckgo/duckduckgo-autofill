@@ -1,7 +1,14 @@
 import { Form } from './Form/Form.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
+import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
 import {isFormLikelyToBeUsedAsPageWrapper} from './autofill-utils.js'
+
+const {
+    MAX_INPUTS_PER_PAGE,
+    MAX_FORMS_PER_PAGE,
+    MAX_INPUTS_PER_FORM
+} = constants
 
 /**
  * @typedef {{
@@ -9,13 +16,16 @@ import {isFormLikelyToBeUsedAsPageWrapper} from './autofill-utils.js'
  *     init(): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
+ *     options: ScannerOptions;
  * }} Scanner
  *
  * @typedef {{
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
- *     maxInputsOnPage: number,
+ *     maxInputsPerPage: number,
+ *     maxFormsPerPage: number,
+ *     maxInputsPerForm: number
  * }} ScannerOptions
  */
 
@@ -32,7 +42,9 @@ const defaultScannerOptions = {
     // How many inputs is too many on the page. If we detect that there's above
     // this maximum, then we don't scan the page. This will prevent slowdowns on
     // large pages which are unlikely to require autofill anyway.
-    maxInputsOnPage: 100
+    maxInputsPerPage: MAX_INPUTS_PER_PAGE,
+    maxFormsPerPage: MAX_FORMS_PER_PAGE,
+    maxInputsPerForm: MAX_INPUTS_PER_FORM
 }
 
 /**
@@ -131,7 +143,7 @@ class DefaultScanner {
             this.addInput(context)
         } else {
             const inputs = context.querySelectorAll(FORM_INPUTS_SELECTOR)
-            if (inputs.length > this.options.maxInputsOnPage) {
+            if (inputs.length > this.options.maxInputsPerPage) {
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
@@ -200,7 +212,12 @@ class DefaultScanner {
                 this.forms.delete(childForm)
             }
 
-            this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
+            // Only add the form if below the limit of forms per page
+            if (this.forms.size < this.options.maxFormsPerPage) {
+                this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
+            } else {
+                console.log('The page has too many forms, stop adding them.')
+            }
         }
     }
 

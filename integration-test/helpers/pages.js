@@ -678,7 +678,7 @@ export function emailAutofillPage (page) {
             expect(input).toHaveAttribute(ATTR_AUTOFILL, 'true')
         }
         async assertDaxIconIsHidden ({ checking = 'autofill' } = {}) {
-            const input = await page.locator(selectors.identity)
+            const input = await page.getByLabel('Email')
             if (checking === 'style') {
                 const style = await input.getAttribute('style')
                 expect(style).toBeFalsy()

@@ -6408,7 +6408,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 const {
   ATTR_AUTOFILL,
-  ATTR_INPUT_TYPE
+  ATTR_INPUT_TYPE,
+  MAX_FORM_MUT_OBS_COUNT,
+  MAX_INPUTS_PER_FORM
 } = _constants.constants;
 
 class Form {
@@ -6417,8 +6419,6 @@ class Form {
   /** @type {HTMLElement} */
 
   /** @type {HTMLInputElement | null} */
-
-  /** @type {boolean | null} */
 
   /**
    * @param {HTMLElement} form
@@ -6436,14 +6436,9 @@ class Form {
 
     _defineProperty(this, "activeInput", void 0);
 
-    _defineProperty(this, "isSignup", void 0);
-
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
-    this.isLogin = this.formAnalyzer.isLogin;
-    this.isSignup = this.formAnalyzer.isSignup;
-    this.isHybrid = this.formAnalyzer.isHybrid;
     this.device = deviceInterface;
     /** @type Record<'all' | SupportedMainTypes, Set> */
 
@@ -6470,6 +6465,30 @@ class Form {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
       }
+    });
+    this.mutObsCount = 0;
+    this.mutObsConfig = {
+      childList: true,
+      subtree: true
+    };
+    this.mutObs = new MutationObserver(records => {
+      const anythingRemoved = records.some(record => record.removedNodes.length > 0);
+
+      if (anythingRemoved) {
+        // Must check for inputs because a parent may be removed and not show up in record.removedNodes
+        if ([...this.inputs.all].some(input => !input.isConnected)) {
+          // If any known input has been removed from the DOM, reanalyze the whole form
+          window.requestIdleCallback(() => {
+            this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+            this.recategorizeAllInputs();
+          });
+          this.mutObsCount++; // If the form mutates too much, disconnect to avoid performance issues
+
+          if (this.mutObsCount >= MAX_FORM_MUT_OBS_COUNT) {
+            this.mutObs.disconnect();
+          }
+        }
+      }
     }); // This ensures we fire the handler again if the form is changed
 
     this.addListener(form, 'input', () => {
@@ -6479,11 +6498,24 @@ class Form {
       }
     });
     this.categorizeInputs();
+    this.mutObs.observe(this.form, this.mutObsConfig);
     this.logFormInfo();
 
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
     }
+  }
+
+  get isLogin() {
+    return this.formAnalyzer.isLogin;
+  }
+
+  get isSignup() {
+    return this.formAnalyzer.isSignup;
+  }
+
+  get isHybrid() {
+    return this.formAnalyzer.isHybrid;
   }
 
   logFormInfo() {
@@ -6677,6 +6709,7 @@ class Form {
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesBase)(input, this));
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAlternate)(input, this));
     input.removeAttribute(ATTR_AUTOFILL);
+    input.removeAttribute(ATTR_INPUT_TYPE);
   }
 
   removeAllDecorations() {
@@ -6707,6 +6740,7 @@ class Form {
 
   forgetAllInputs() {
     this.execOnInputs(input => {
+      input.removeAttribute(ATTR_AUTOFILL);
       input.removeAttribute(ATTR_INPUT_TYPE);
     });
     Object.values(this.inputs).forEach(inputSet => inputSet.clear());
@@ -6717,6 +6751,7 @@ class Form {
 
 
   recategorizeAllInputs() {
+    this.initialScanComplete = false;
     this.removeAllDecorations();
     this.forgetAllInputs();
     this.categorizeInputs();
@@ -6739,6 +6774,7 @@ class Form {
   destroy() {
     this.removeAllDecorations();
     this.removeTooltip();
+    this.mutObs.disconnect();
     this.matching.clear();
     this.intObs = null;
   }
@@ -6749,8 +6785,16 @@ class Form {
     if (this.form.matches(selector)) {
       this.addInput(this.form);
     } else {
-      this.form.querySelectorAll(selector).forEach(input => this.addInput(input));
+      const foundInputs = this.form.querySelectorAll(selector);
+
+      if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+        foundInputs.forEach(input => this.addInput(input));
+      } else {
+        console.log('The form has too many inputs, bailing.');
+      }
     }
+
+    this.initialScanComplete = true;
   }
 
   get submitButtons() {
@@ -6806,9 +6850,23 @@ class Form {
   addInput(input) {
     var _this$device$settings;
 
-    // Nothing to do with 1-character fields
+    if (this.inputs.all.has(input)) return this; // If the form has too many inputs, destroy everything to avoid performance issues
+
+    if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+      console.log('The form has too many inputs, destroying.');
+      this.destroy();
+      return this;
+    } // When new inputs are added after the initial scan, reanalyze the whole form
+
+
+    if (this.initialScanComplete) {
+      this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+      this.recategorizeAllInputs();
+      return this;
+    } // Nothing to do with 1-character fields
+
+
     if (input.maxLength === 1) return this;
-    if (this.inputs.all.has(input)) return this;
     this.inputs.all.add(input);
     const opts = {
       isLogin: this.isLogin,
@@ -7215,6 +7273,8 @@ const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscr
 const signupRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i);
 const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
 const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i);
+const resetPasswordLink = new RegExp(/(forgot(ten)?|reset|don't remember) (your )?password|password forgotten/i);
+const loginProvidersRegex = new RegExp(/ with /i);
 
 class FormAnalyzer {
   /** @type HTMLElement */
@@ -7337,7 +7397,7 @@ class FormAnalyzer {
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     } = _ref;
-    const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string); // Check explicitly for unified login/signup forms
+    const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string) || resetPasswordLink.test(string); // Check explicitly for unified login/signup forms
 
     if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
       this.increaseHybridSignal(strength, signalType);
@@ -7452,10 +7512,11 @@ class FormAnalyzer {
 
 
     if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
-      // Unless it's a forgotten password link, we don't flip those links
       let shouldFlip = true;
 
-      if (/(forgot(ten)?|reset) (your )?password|password forgotten| with /i.test(string)) {
+      if (resetPasswordLink.test(string) || // Don't flip forgotten password links
+      loginProvidersRegex.test(string) // Don't flip login providers links
+      ) {
         shouldFlip = false;
       }
 
@@ -11426,29 +11487,40 @@ var _Form = require("./Form/Form.js");
 
 var _selectorsCss = require("./Form/selectors-css.js");
 
+var _constants = require("./constants.js");
+
 var _matching = require("./Form/matching.js");
 
 var _autofillUtils = require("./autofill-utils.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+const {
+  MAX_INPUTS_PER_PAGE,
+  MAX_FORMS_PER_PAGE,
+  MAX_INPUTS_PER_FORM
+} = _constants.constants;
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
  *     init(): ()=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
+ *     options: ScannerOptions;
  * }} Scanner
  *
  * @typedef {{
  *     initialDelay: number,
  *     bufferSize: number,
  *     debounceTimePeriod: number,
- *     maxInputsOnPage: number,
+ *     maxInputsPerPage: number,
+ *     maxFormsPerPage: number,
+ *     maxInputsPerForm: number
  * }} ScannerOptions
  */
 
 /** @type {ScannerOptions} */
+
 const defaultScannerOptions = {
   // This buffer size is very large because it's an unexpected edge-case that
   // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
@@ -11461,7 +11533,9 @@ const defaultScannerOptions = {
   // How many inputs is too many on the page. If we detect that there's above
   // this maximum, then we don't scan the page. This will prevent slowdowns on
   // large pages which are unlikely to require autofill anyway.
-  maxInputsOnPage: 100
+  maxInputsPerPage: MAX_INPUTS_PER_PAGE,
+  maxFormsPerPage: MAX_FORMS_PER_PAGE,
+  maxInputsPerForm: MAX_INPUTS_PER_FORM
 };
 /**
  * This allows:
@@ -11607,7 +11681,7 @@ class DefaultScanner {
     } else {
       const inputs = context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
 
-      if (inputs.length > this.options.maxInputsOnPage) {
+      if (inputs.length > this.options.maxInputsPerPage) {
         return this;
       }
 
@@ -11684,9 +11758,14 @@ class DefaultScanner {
 
         (_this$forms$get2 = this.forms.get(childForm)) === null || _this$forms$get2 === void 0 ? void 0 : _this$forms$get2.destroy();
         this.forms.delete(childForm);
-      }
+      } // Only add the form if below the limit of forms per page
 
-      this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
+
+      if (this.forms.size < this.options.maxFormsPerPage) {
+        this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
+      } else {
+        console.log('The page has too many forms, stop adding them.');
+      }
     }
   }
   /**
@@ -11754,7 +11833,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":25,"./Form/matching.js":35,"./Form/selectors-css.js":36,"./autofill-utils.js":55}],44:[function(require,module,exports){
+},{"./Form/Form.js":25,"./Form/matching.js":35,"./Form/selectors-css.js":36,"./autofill-utils.js":55,"./constants.js":58}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14272,6 +14351,7 @@ const isLikelyASubmitButton = el => {
   const dataTestId = el.getAttribute('data-test-id') || '';
   const contentExcludingLabel = text + ' ' + title + ' ' + value;
   return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+  el.getAttribute('name') === 'submit' || // is called "submit"
   /primary|submit/i.test(el.className) || // has high-signal submit classes
   /submit/i.test(dataTestId) || SUBMIT_BUTTON_REGEX.test(contentExcludingLabel) || // has high-signal text
   el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px
@@ -14570,7 +14650,11 @@ exports.constants = void 0;
 const constants = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
   ATTR_AUTOFILL: 'data-ddg-autofill',
-  TEXT_LENGTH_CUTOFF: 50
+  TEXT_LENGTH_CUTOFF: 50,
+  MAX_INPUTS_PER_PAGE: 100,
+  MAX_FORMS_PER_PAGE: 30,
+  MAX_INPUTS_PER_FORM: 80,
+  MAX_FORM_MUT_OBS_COUNT: 50
 };
 exports.constants = constants;
 
