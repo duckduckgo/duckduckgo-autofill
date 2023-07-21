@@ -1,5 +1,4 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
-import {appendGeneratedId} from './InputTypes/Credentials.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -66,19 +65,6 @@ const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
     }
 
     return true
-}
-
-/**
- *
- * @param {DataStorageObject} data
- * @param {DataStorageObject['trigger']} trigger
- * @param {string | undefined | null} generatedPassword
- * @returns {DataStorageObject}
- */
-const prepareForFormStorage = (data, trigger, generatedPassword) => {
-    const withGeneratedPassword = appendGeneratedId(data, generatedPassword)
-    withGeneratedPassword.trigger = trigger
-    return withGeneratedPassword
 }
 
 // Access the original setter (needed to bypass React's implementation on mobile)
@@ -484,7 +470,6 @@ export {
     sendAndWaitForAnswer,
     isAutofillEnabledFromProcessedConfig,
     isIncontextSignupEnabledFromProcessedConfig,
-    prepareForFormStorage,
     autofillEnabled,
     setValue,
     safeExecute,
