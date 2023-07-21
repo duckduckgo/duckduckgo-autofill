@@ -7073,7 +7073,7 @@ class Form {
       return true;
     }
 
-    if (this.device.globalConfig.isExtension) {
+    if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
       // Don't open the tooltip on input focus whenever it's showing in-context signup
       if (isIncontextSignupAvailable) return false;
     }
