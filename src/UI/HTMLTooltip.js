@@ -27,14 +27,14 @@ export const defaultOptions = {
     wrapperClass: '',
     tooltipPositionClass: (top, left) => `
         .tooltip {
-            transform: translate(${left}px, ${top}px) !important;
+            transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;
         }
     `,
     caretPositionClass: (top, left, isAboveInput) => `
         .tooltip--email__caret {
             ${isAboveInput
-        ? `transform: translate(${left}px, ${top}px) rotate(180deg); transform-origin: 16px !important;`
-        : `transform: translate(${left}px, ${top}px) !important;`
+        ? `transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) rotate(180deg); transform-origin: 18px !important;`
+        : `transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;`
 }
         }`,
     css: `<style>${CSS_STYLES}</style>`,

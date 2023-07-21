@@ -23,7 +23,12 @@ import {
 } from './formatters.js'
 
 import {constants} from '../constants.js'
-const {ATTR_AUTOFILL, ATTR_INPUT_TYPE} = constants
+const {
+    ATTR_AUTOFILL,
+    ATTR_INPUT_TYPE,
+    MAX_FORM_MUT_OBS_COUNT,
+    MAX_INPUTS_PER_FORM
+} = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
@@ -32,8 +37,6 @@ class Form {
     form;
     /** @type {HTMLInputElement | null} */
     activeInput;
-    /** @type {boolean | null} */
-    isSignup;
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
@@ -45,9 +48,6 @@ class Form {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
-        this.isLogin = this.formAnalyzer.isLogin
-        this.isSignup = this.formAnalyzer.isSignup
-        this.isHybrid = this.formAnalyzer.isHybrid
         this.device = deviceInterface
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
@@ -77,6 +77,30 @@ class Form {
             }
         })
 
+        this.mutObsCount = 0
+        this.mutObsConfig = { childList: true, subtree: true }
+        this.mutObs = new MutationObserver(
+            (records) => {
+                const anythingRemoved = records.some(record => record.removedNodes.length > 0)
+                if (anythingRemoved) {
+                    // Must check for inputs because a parent may be removed and not show up in record.removedNodes
+                    if ([...this.inputs.all].some(input => !input.isConnected)) {
+                        // If any known input has been removed from the DOM, reanalyze the whole form
+                        window.requestIdleCallback(() => {
+                            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
+                            this.recategorizeAllInputs()
+                        })
+
+                        this.mutObsCount++
+                        // If the form mutates too much, disconnect to avoid performance issues
+                        if (this.mutObsCount >= MAX_FORM_MUT_OBS_COUNT) {
+                            this.mutObs.disconnect()
+                        }
+                    }
+                }
+            }
+        )
+
         // This ensures we fire the handler again if the form is changed
         this.addListener(form, 'input', () => {
             if (!this.isAutofilling) {
@@ -86,12 +110,23 @@ class Form {
         })
 
         this.categorizeInputs()
+        this.mutObs.observe(this.form, this.mutObsConfig)
 
         this.logFormInfo()
 
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
+    }
+
+    get isLogin () {
+        return this.formAnalyzer.isLogin
+    }
+    get isSignup () {
+        return this.formAnalyzer.isSignup
+    }
+    get isHybrid () {
+        return this.formAnalyzer.isHybrid
     }
 
     logFormInfo () {
@@ -267,6 +302,7 @@ class Form {
         removeInlineStyles(input, getIconStylesBase(input, this))
         removeInlineStyles(input, getIconStylesAlternate(input, this))
         input.removeAttribute(ATTR_AUTOFILL)
+        input.removeAttribute(ATTR_INPUT_TYPE)
     }
     removeAllDecorations () {
         this.execOnInputs((input) => this.removeInputDecoration(input))
@@ -286,6 +322,7 @@ class Form {
      */
     forgetAllInputs () {
         this.execOnInputs((input) => {
+            input.removeAttribute(ATTR_AUTOFILL)
             input.removeAttribute(ATTR_INPUT_TYPE)
         })
         Object.values(this.inputs).forEach((inputSet) => inputSet.clear())
@@ -295,6 +332,7 @@ class Form {
      * Resets our input scoring and starts from scratch
      */
     recategorizeAllInputs () {
+        this.initialScanComplete = false
         this.removeAllDecorations()
         this.forgetAllInputs()
         this.categorizeInputs()
@@ -314,6 +352,7 @@ class Form {
     destroy () {
         this.removeAllDecorations()
         this.removeTooltip()
+        this.mutObs.disconnect()
         this.matching.clear()
         this.intObs = null
     }
@@ -323,8 +362,16 @@ class Form {
         if (this.form.matches(selector)) {
             this.addInput(this.form)
         } else {
-            this.form.querySelectorAll(selector).forEach(input => this.addInput(input))
+            const foundInputs = this.form.querySelectorAll(selector)
+            if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+                foundInputs.forEach(input => this.addInput(input))
+            } else {
+                if (shouldLog()) {
+                    console.log('The form has too many inputs, bailing.')
+                }
+            }
         }
+        this.initialScanComplete = true
     }
 
     get submitButtons () {
@@ -378,10 +425,26 @@ class Form {
     }
 
     addInput (input) {
+        if (this.inputs.all.has(input)) return this
+
+        // If the form has too many inputs, destroy everything to avoid performance issues
+        if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+            if (shouldLog()) {
+                console.log('The form has too many inputs, destroying.')
+            }
+            this.destroy()
+            return this
+        }
+
+        // When new inputs are added after the initial scan, reanalyze the whole form
+        if (this.initialScanComplete) {
+            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
+            this.recategorizeAllInputs()
+            return this
+        }
+
         // Nothing to do with 1-character fields
         if (input.maxLength === 1) return this
-
-        if (this.inputs.all.has(input)) return this
 
         this.inputs.all.add(input)
 
