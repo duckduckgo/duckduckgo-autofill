@@ -6790,7 +6790,9 @@ class Form {
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
       } else {
-        console.log('The form has too many inputs, bailing.');
+        if ((0, _autofillUtils.shouldLog)()) {
+          console.log('The form has too many inputs, bailing.');
+        }
       }
     }
 
@@ -6853,7 +6855,10 @@ class Form {
     if (this.inputs.all.has(input)) return this; // If the form has too many inputs, destroy everything to avoid performance issues
 
     if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-      console.log('The form has too many inputs, destroying.');
+      if ((0, _autofillUtils.shouldLog)()) {
+        console.log('The form has too many inputs, destroying.');
+      }
+
       this.destroy();
       return this;
     } // When new inputs are added after the initial scan, reanalyze the whole form
@@ -11764,7 +11769,9 @@ class DefaultScanner {
       if (this.forms.size < this.options.maxFormsPerPage) {
         this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
       } else {
-        console.log('The page has too many forms, stop adding them.');
+        if ((0, _autofillUtils.shouldLog)()) {
+          console.log('The page has too many forms, stop adding them.');
+        }
       }
     }
   }

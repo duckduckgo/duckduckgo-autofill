@@ -2,7 +2,7 @@ import { Form } from './Form/Form.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {isFormLikelyToBeUsedAsPageWrapper} from './autofill-utils.js'
+import {isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
 
 const {
     MAX_INPUTS_PER_PAGE,
@@ -216,7 +216,9 @@ class DefaultScanner {
             if (this.forms.size < this.options.maxFormsPerPage) {
                 this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
             } else {
-                console.log('The page has too many forms, stop adding them.')
+                if (shouldLog()) {
+                    console.log('The page has too many forms, stop adding them.')
+                }
             }
         }
     }

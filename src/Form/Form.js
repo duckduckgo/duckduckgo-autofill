@@ -366,7 +366,9 @@ class Form {
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
-                console.log('The form has too many inputs, bailing.')
+                if (shouldLog()) {
+                    console.log('The form has too many inputs, bailing.')
+                }
             }
         }
         this.initialScanComplete = true
@@ -427,7 +429,9 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            console.log('The form has too many inputs, destroying.')
+            if (shouldLog()) {
+                console.log('The form has too many inputs, destroying.')
+            }
             this.destroy()
             return this
         }
