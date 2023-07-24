@@ -10962,15 +10962,15 @@ class InContextSignup {
     const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput;
     activeInput === null || activeInput === void 0 ? void 0 : activeInput.blur(); // Select the active input to open the tooltip
 
-    const selectActiveInpout = () => {
+    const selectActiveInput = () => {
       activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
     };
 
     if (document.hasFocus()) {
-      selectActiveInpout();
+      selectActiveInput();
     } else {
       document.addEventListener('visibilitychange', () => {
-        selectActiveInpout();
+        selectActiveInput();
       }, {
         once: true
       });

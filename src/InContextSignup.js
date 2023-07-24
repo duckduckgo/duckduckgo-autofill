@@ -55,15 +55,15 @@ export class InContextSignup {
         activeInput?.blur()
 
         // Select the active input to open the tooltip
-        const selectActiveInpout = () => {
+        const selectActiveInput = () => {
             activeInput?.focus()
         }
 
         if (document.hasFocus()) {
-            selectActiveInpout()
+            selectActiveInput()
         } else {
             document.addEventListener('visibilitychange', () => {
-                selectActiveInpout()
+                selectActiveInput()
             }, {once: true})
         }
     }
