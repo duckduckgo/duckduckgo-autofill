@@ -20,7 +20,7 @@ It's in the following file:
 - `.github/workflows/password-rules.yml`
  
 It uses scripts from 
-- `packages/password/scripts/rules.js`
+- `packages/password/scripts/update-files-from-remote.js`
 
 The script itself does not update anything, it's just there as a notice to prompt
 anyone watching the repo that an update may be required.
