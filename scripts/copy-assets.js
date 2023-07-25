@@ -9,6 +9,7 @@ const appleDistPath = join('swift-package', 'Resources', 'assets')
 copyAutofillCSS()
 copyAutofillScript()
 copyAutofillHTML()
+copySharedCredentials()
 
 function copyAutofillCSS () {
     const stylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-tooltip-styles.css')
@@ -26,6 +27,12 @@ function copyAutofillHTML () {
     const htmlFileName = 'TopAutofill.html'
     copyFileSync(filepath(srcPath, htmlFileName), filepath(appleDistPath, htmlFileName))
     copyFileSync(filepath(srcPath, htmlFileName), filepath(distPath, htmlFileName))
+}
+
+function copySharedCredentials () {
+    const sharedCredsFilePath = filepath('packages', 'password', 'shared-credentials.json')
+    copyFileSync(sharedCredsFilePath, filepath(appleDistPath, 'shared-credentials.json'))
+    copyFileSync(sharedCredsFilePath, filepath(distPath, 'shared-credentials.json'))
 }
 
 function copyFirefoxCSSFile (pathIn, pathOut) {
