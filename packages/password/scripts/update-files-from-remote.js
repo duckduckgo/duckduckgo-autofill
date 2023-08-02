@@ -1,44 +1,32 @@
 const {join} = require('path')
 const {writeFileSync} = require('fs')
 const { createHash } = require('node:crypto')
-const outputPathRules = join(__dirname, '..', 'rules.json')
-const outputPathSharedCreds = join(__dirname, '..', 'shared-credentials.json')
 const BASE_URL = 'https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/'
-const SHARED_CREDENTIALS_URL = BASE_URL + 'shared-credentials.json'
-const PASSWORD_RULES_URL = BASE_URL + 'password-rules.json'
 
 /**
- * This file contains utilities for keeping our password rules in sync.
+ * This file contains utilities for keeping our password-related files in sync.
  */
 
 /**
- * @param {typeof import("../rules.json")} prev
- * @param {typeof import("../rules.json")} next
- * @returns {string[]}
+ * @typedef {{
+ *     displayName: string,
+ *     localPath: string,
+ *     remoteUrl: string
+ *   }} PathObj
  */
-function summary (prev, next) {
-    const lines = []
 
-    for (let [domain, value] of Object.entries(prev)) {
-        if (domain in next) {
-            if (value['password-rules'] !== next[domain]['password-rules']) {
-                lines.push(`${domain} rules differ`)
-                lines.push(`\tcurrent: ${value['password-rules']}`)
-                lines.push(`\tremote:  ${next[domain]['password-rules']}`)
-            }
-        } else {
-            lines.push(`${domain} no longer in remote`)
-        }
+/** @type {{[key: string]: PathObj}} */
+const paths = {
+    rules: {
+        localPath: join(__dirname, '..', 'rules.json'),
+        remoteUrl: BASE_URL + 'password-rules.json',
+        displayName: 'Password rules'
+    },
+    sharedCreds: {
+        localPath: join(__dirname, '..', 'shared-credentials.json'),
+        remoteUrl: BASE_URL + 'shared-credentials.json',
+        displayName: 'Shared credentials'
     }
-
-    for (let [domain, value] of Object.entries(next)) {
-        if (!(domain in prev)) {
-            lines.push(`${domain} not present in current`)
-            lines.push(`\trules: ${value['password-rules']}`)
-        }
-    }
-
-    return lines
 }
 
 /**
@@ -53,34 +41,13 @@ function update (outputPath, contents) {
  * @param {string} url
  * @returns {Promise<any>}
  */
-function download (url) {
-    const https = require('https')
-    return new Promise((resolve, reject) => {
-        const chunks = []
-        https.get(url, (res) => {
-            res.on('data', (d) => {
-                chunks.push(d.toString())
-            })
-        }).on('error', (e) => {
-            reject(e)
-        }).on('close', () => {
-            resolve(JSON.parse(chunks.join('')))
-        })
-    })
-}
-
-/**
- * @returns {Promise<typeof import("../rules.json")>}
- */
-function downloadRules () {
-    return download(PASSWORD_RULES_URL)
-}
-
-/**
- * @returns {Promise<typeof import("../shared-credentials.json")>}
- */
-function downloadSharedCreds () {
-    return download(SHARED_CREDENTIALS_URL)
+async function download (url) {
+    const res = await fetch(url)
+    if (res.ok) {
+        return res.json()
+    } else {
+        throw new Error(`fetch for ${url} failed with ${res.status}`)
+    }
 }
 
 /**
@@ -96,35 +63,40 @@ function hashText (content, algo = 'sha256') {
     return hashFunc.digest('hex')
 }
 
-if (process.argv.includes('--write-json-files')) {
-    downloadRules()
-        .then((remoteRules) => {
-            const current = require('../rules.json')
-            const lines = summary(current, remoteRules)
-            if (lines.length) {
-                update(outputPathRules, remoteRules)
-                console.log('rules updated')
-            } else {
-                console.log('rules already up to date')
-            }
-        }).catch(e => {
-            console.error(e)
-            process.exit(1)
-        })
+/**
+ * Compares the sha256 of two given strings
+ * @param {string} local
+ * @param {string} remote
+ * @returns {boolean}
+ */
+function areFilesDifferent (local, remote) {
+    const localSha256 = hashText(JSON.stringify(local))
+    const remoteSha256 = hashText(JSON.stringify(remote))
+    return localSha256 !== remoteSha256
+}
 
-    downloadSharedCreds()
-        .then((remoteSharedCreds) => {
-            const localSharedCreds = require('../shared-credentials.json')
-            const localSha256 = hashText(JSON.stringify(localSharedCreds))
-            const remoteSha256 = hashText(JSON.stringify(remoteSharedCreds))
-            if (localSha256 !== remoteSha256) {
-                update(outputPathSharedCreds, remoteSharedCreds)
-                console.log('shared credentials updated')
+/**
+ * Downloads the remote file, checks the SHA diff and updates local if different
+ * @param {PathObj} pathObj
+ */
+function updateFileIfNeeded (pathObj) {
+    download(pathObj.remoteUrl)
+        .then((remoteFile) => {
+            const localFile = require(pathObj.localPath)
+            if (areFilesDifferent(localFile, remoteFile)) {
+                update(pathObj.localPath, remoteFile)
+                console.log(`${pathObj.displayName} updated`)
             } else {
-                console.log('shared credentials already up to date')
+                console.log(`${pathObj.displayName} already up to date`)
             }
-        }).catch(e => {
+        })
+        .catch((e) => {
             console.error(e)
             process.exit(1)
         })
+}
+
+if (process.argv.includes('--write-json-files')) {
+    updateFileIfNeeded(paths.rules)
+    updateFileIfNeeded(paths.sharedCreds)
 }
