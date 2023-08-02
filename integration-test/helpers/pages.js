@@ -113,7 +113,7 @@ export function signupPage (page) {
          * @param {string} address
          */
         async selectPrivateAddress (address) {
-            await page.getByRole('button', { name: `Generate Private Duck Address ${address} Blocks email trackers and hides your address` })
+            await page.getByRole('button', { name: `Generate Private Duck Address ${address} Block email trackers & hide address` })
                 .click({force: true})
         }
         /**
