@@ -11498,6 +11498,8 @@ var _matching = require("./Form/matching.js");
 
 var _autofillUtils = require("./autofill-utils.js");
 
+var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js");
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 const {
@@ -11627,6 +11629,10 @@ class DefaultScanner {
 
 
   init() {
+    console.log('Autofill is enabled for this site');
+    this.device.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
+      flag: 'autofill'
+    }));
     const delay = this.options.initialDelay; // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
 
     if (delay === 0) {
@@ -11840,7 +11846,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":25,"./Form/matching.js":35,"./Form/selectors-css.js":36,"./autofill-utils.js":55,"./constants.js":58}],44:[function(require,module,exports){
+},{"./Form/Form.js":25,"./Form/matching.js":35,"./Form/selectors-css.js":36,"./autofill-utils.js":55,"./constants.js":58,"./deviceApiCalls/__generated__/deviceApiCalls.js":59}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14671,7 +14677,7 @@ exports.constants = constants;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.StartEmailProtectionSignupCall = exports.SetSizeCall = exports.SetIncontextSignupPermanentlyDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.OpenManagePasswordsCall = exports.OpenManageIdentitiesCall = exports.OpenManageCreditCardsCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAddressesCall = exports.CloseEmailProtectionTabCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = void 0;
+exports.StoreFormDataCall = exports.StartEmailProtectionSignupCall = exports.SetSizeCall = exports.SetIncontextSignupPermanentlyDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.OpenManagePasswordsCall = exports.OpenManageIdentitiesCall = exports.OpenManageCreditCardsCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAddressesCall = exports.CloseEmailProtectionTabCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = exports.AddDebugFlagCall = void 0;
 
 var _validatorsZod = require("./validators.zod.js");
 
@@ -14680,8 +14686,25 @@ var _deviceApi = require("../../../packages/device-api");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
+ * @extends {DeviceApiCall<addDebugFlagParamsSchema, any>} 
+ */
+class AddDebugFlagCall extends _deviceApi.DeviceApiCall {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "method", "addDebugFlag");
+
+    _defineProperty(this, "paramsValidator", _validatorsZod.addDebugFlagParamsSchema);
+  }
+
+}
+/**
  * @extends {DeviceApiCall<getAutofillDataRequestSchema, getAutofillDataResponseSchema>} 
  */
+
+
+exports.AddDebugFlagCall = AddDebugFlagCall;
+
 class GetAutofillDataCall extends _deviceApi.DeviceApiCall {
   constructor() {
     super(...arguments);
@@ -15144,9 +15167,11 @@ exports.CloseEmailProtectionTabCall = CloseEmailProtectionTabCall;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.generatedPasswordSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.generatedPasswordSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = exports.addDebugFlagParamsSchema = void 0;
 const sendJSPixelParamsSchema = null;
 exports.sendJSPixelParamsSchema = sendJSPixelParamsSchema;
+const addDebugFlagParamsSchema = null;
+exports.addDebugFlagParamsSchema = addDebugFlagParamsSchema;
 const generatedPasswordSchema = null;
 exports.generatedPasswordSchema = generatedPasswordSchema;
 const triggerContextSchema = null;
@@ -15540,6 +15565,10 @@ class ExtensionTransport extends _index.DeviceApiTransport {
       return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params));
     }
 
+    if (deviceApiCall instanceof _deviceApiCalls.AddDebugFlagCall) {
+      return deviceApiCall.result(await extensionSpecificAddDebugFlag(deviceApiCall.params));
+    }
+
     if (deviceApiCall instanceof _deviceApiCalls.CloseAutofillParentCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
       return; // noop
     }
@@ -15616,6 +15645,21 @@ async function extensionSpecificSendPixel(params) {
   return new Promise(resolve => {
     chrome.runtime.sendMessage({
       messageType: 'sendJSPixel',
+      options: params
+    }, () => {
+      resolve(true);
+    });
+  });
+}
+/**
+ * @param {import('../__generated__/validators-ts').AddDebugFlagParams} params
+ */
+
+
+async function extensionSpecificAddDebugFlag(params) {
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage({
+      messageType: 'addDebugFlag',
       options: params
     }, () => {
       resolve(true);

@@ -5,6 +5,13 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "addDebugFlag": {
+      "type": "object",
+      "description": "Register a new debug flag that will be included in breakage reports",
+      "properties": {
+        "paramsValidator": { "$ref":  "./schemas/addDebugFlag.params.json" }
+      }
+    },
     "getAutofillData": {
       "type": "object",
       "properties": {

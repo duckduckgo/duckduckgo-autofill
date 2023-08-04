@@ -3,6 +3,7 @@ import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-c
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
 import {isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
+import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
     MAX_INPUTS_PER_PAGE,
@@ -94,6 +95,7 @@ class DefaultScanner {
      * @returns {() => void}
      */
     init () {
+        this.device.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }))
         const delay = this.options.initialDelay
         // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
         if (delay === 0) {
