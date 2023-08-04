@@ -11629,10 +11629,12 @@ class DefaultScanner {
 
 
   init() {
-    console.log('Autofill is enabled for this site');
-    this.device.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
-      flag: 'autofill'
-    }));
+    if (this.device.globalConfig.isExtension) {
+      this.device.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
+        flag: 'autofill'
+      }));
+    }
+
     const delay = this.options.initialDelay; // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
 
     if (delay === 0) {
