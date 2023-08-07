@@ -163,14 +163,14 @@ class InterfacePrototype {
             newIdentities.push({
                 id: 'personalAddress',
                 emailAddress: personalAddress,
-                title: 'Blocks email trackers'
+                title: 'Block email trackers'
             })
         }
 
         newIdentities.push({
             id: 'privateAddress',
             emailAddress: privateAddress,
-            title: 'Blocks email trackers and hides your address'
+            title: 'Block email trackers & hide address'
         })
 
         return [...identities, ...newIdentities]
