@@ -55,7 +55,7 @@ test.describe('chrome extension', () => {
 
         // Confirm in-context signup has been completely dismissed
         await incontextSignup.assertIsHidden()
-        await emailPage.assertDaxIconIsHidden()
+        await emailPage.assertDaxIconIsHidden({checking: 'style'})
 
         // Confirm pixels triggered
         await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_persisted'])

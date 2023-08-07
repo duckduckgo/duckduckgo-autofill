@@ -1,6 +1,7 @@
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 import { createScanner } from '../Scanner.js'
 import {attachAndReturnGenericForm} from '../test-utils.js'
+import {constants} from '../constants.js'
 
 afterEach(() => {
     document.body.innerHTML = ''
@@ -372,5 +373,45 @@ describe('Attempt form submission when needed', () => {
             formClass?.attemptSubmissionIfNeeded()
             expect(submitHandler).toHaveBeenCalled()
         })
+    })
+})
+
+describe('Form bails', () => {
+    beforeEach(() => {
+        document.body.innerHTML = ''
+    })
+    test('when it has too many fields', async () => {
+        const formEl = attachAndReturnGenericForm()
+        for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
+            const input = document.createElement('input')
+            input.type = 'email'
+            input.placeholder = 'Email address'
+            formEl.appendChild(input)
+        }
+
+        createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
+        expect(decoratedInputs).toHaveLength(0)
+    })
+    test('when too many fields are added after the initial scan', async () => {
+        const formEl = attachAndReturnGenericForm()
+
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        let decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
+        expect(decoratedInputs).toHaveLength(2)
+
+        const newInputs = []
+        for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
+            const input = document.createElement('input')
+            input.type = 'email'
+            input.placeholder = 'Email address'
+            newInputs.push(input)
+        }
+        formEl.append(...newInputs)
+        // Scan right away without waiting for the queue
+        scanner.findEligibleInputs(formEl)
+
+        decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
+        expect(decoratedInputs).toHaveLength(0)
     })
 })

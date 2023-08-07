@@ -9,6 +9,7 @@ export const constants = {
         'emailAtTopLeft': 'pages/email-at-top-left.html',
         'iframeContainer': 'pages/iframe-container.html',
         'signup': 'pages/signup.html',
+        'mutatingForm': 'pages/mutating-form.html',
         'login': 'pages/login.html',
         'loginWithPoorForm': 'pages/login-poor-form.html',
         'loginWithText': 'pages/login-with-text.html',

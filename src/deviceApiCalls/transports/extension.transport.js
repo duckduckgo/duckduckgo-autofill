@@ -4,7 +4,9 @@ import {
     GetRuntimeConfigurationCall,
     SendJSPixelCall,
     SetIncontextSignupPermanentlyDismissedAtCall,
-    GetIncontextSignupDismissedAtCall
+    GetIncontextSignupDismissedAtCall,
+    CloseAutofillParentCall,
+    StartEmailProtectionSignupCall
 } from '../__generated__/deviceApiCalls.js'
 import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
@@ -38,7 +40,12 @@ export class ExtensionTransport extends DeviceApiTransport {
             return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params))
         }
 
-        throw new Error('not implemented yet for ' + deviceApiCall.method)
+        if (deviceApiCall instanceof CloseAutofillParentCall ||
+            deviceApiCall instanceof StartEmailProtectionSignupCall) {
+            return // noop
+        }
+
+        console.error('Send not implemented for ' + deviceApiCall.method)
     }
 }
 

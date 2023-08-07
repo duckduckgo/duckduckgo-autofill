@@ -9,6 +9,8 @@ const signupRegex = new RegExp(
 )
 const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
 const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i)
+const resetPasswordLink = new RegExp(/(forgot(ten)?|reset|don't remember) (your )?password|password forgotten/i)
+const loginProvidersRegex = new RegExp(/ with /i)
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -124,7 +126,7 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false,
         shouldBeConservative = false
     }) {
-        const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string)
+        const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string) || resetPasswordLink.test(string)
 
         // Check explicitly for unified login/signup forms
         if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
@@ -230,9 +232,11 @@ class FormAnalyzer {
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
             el.matches('button[class*=secondary]')
         ) {
-            // Unless it's a forgotten password link, we don't flip those links
             let shouldFlip = true
-            if (/(forgot(ten)?|reset) (your )?password|password forgotten| with /i.test(string)) {
+            if (
+                resetPasswordLink.test(string) || // Don't flip forgotten password links
+                loginProvidersRegex.test(string) // Don't flip login providers links
+            ) {
                 shouldFlip = false
             }
             this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip})
