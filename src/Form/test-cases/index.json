@@ -250,7 +250,7 @@
   { "html": "netid_login.html", "expectedSubmitFalsePositives": 2 },
   { "html": "evite_checkout-login.html" },
   { "html": "evite_checkout-signup.html" },
-  { "html": "boardgamearena_signup.html", "expectedFailures": ["birthday"], "expectedSubmitFalsePositives": 2, "expectedSubmitFalseNegatives": 5, "comment": "Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX" },
+  { "html": "boardgamearena_signup.html", "expectedFailures": ["birthday"], "expectedSubmitFalsePositives": 1, "expectedSubmitFalseNegatives": 5, "comment": "Issues with buttons here is due to lots of hidden forms and weird markup, they don't affect the actual UX" },
   { "html": "eventbrite_checkout-signup.html" },
   { "html": "eventbrite_fake-signup.html" },
   { "html": "ryanair_cc-card-name.html" },
@@ -494,5 +494,8 @@
   { "html": "namecheap_com-signup.html", "hasExtraWrappers": false },
   { "html": "ua_ctcorpmpc_com-signup.html" },
   { "html": "joybird_com.html" },
-  { "html": "ikea_signup-verification.html", "expectedSubmitFalsePositives": 2 }
+  { "html": "ikea_signup-verification.html", "expectedSubmitFalsePositives": 2 },
+  { "html": "chase_2fa-verification-step.html",
+    "expectedFailures": ["unknown"]
+  }
 ]
