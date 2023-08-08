@@ -495,7 +495,5 @@
   { "html": "ua_ctcorpmpc_com-signup.html" },
   { "html": "joybird_com.html" },
   { "html": "ikea_signup-verification.html", "expectedSubmitFalsePositives": 2 },
-  { "html": "chase_2fa-verification-step.html",
-    "expectedFailures": ["unknown"]
-  }
+  { "html": "chase_2fa-verification-step.html", "expectedFailures": ["unknown"] }
 ]
