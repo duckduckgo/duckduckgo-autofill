@@ -6,7 +6,8 @@ import {
     SetIncontextSignupPermanentlyDismissedAtCall,
     GetIncontextSignupDismissedAtCall,
     CloseAutofillParentCall,
-    StartEmailProtectionSignupCall
+    StartEmailProtectionSignupCall,
+    AddDebugFlagCall
 } from '../__generated__/deviceApiCalls.js'
 import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
 import {Settings} from '../../Settings.js'
@@ -38,6 +39,10 @@ export class ExtensionTransport extends DeviceApiTransport {
         // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
         if (deviceApiCall instanceof SendJSPixelCall) {
             return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof AddDebugFlagCall) {
+            return deviceApiCall.result(await extensionSpecificAddDebugFlag(deviceApiCall.params))
         }
 
         if (deviceApiCall instanceof CloseAutofillParentCall ||
@@ -118,6 +123,23 @@ async function extensionSpecificSendPixel (params) {
         chrome.runtime.sendMessage(
             {
                 messageType: 'sendJSPixel',
+                options: params
+            },
+            () => {
+                resolve(true)
+            }
+        )
+    })
+}
+
+/**
+ * @param {import('../__generated__/validators-ts').AddDebugFlagParams} params
+ */
+async function extensionSpecificAddDebugFlag (params) {
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(
+            {
+                messageType: 'addDebugFlag',
                 options: params
             },
             () => {

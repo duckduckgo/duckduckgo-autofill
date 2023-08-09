@@ -23,6 +23,10 @@ export const sendJSPixelParamsSchema = z.union([z.object({
         pixelName: z.literal("incontext_close_x")
     })]);
 
+export const addDebugFlagParamsSchema = z.object({
+    flag: z.string()
+});
+
 export const generatedPasswordSchema = z.object({
     value: z.string(),
     username: z.string()
@@ -321,6 +325,9 @@ export const askToUnlockProviderResultSchema = z.object({
 });
 
 export const apiSchema = z.object({
+    addDebugFlag: z.record(z.unknown()).and(z.object({
+        paramsValidator: addDebugFlagParamsSchema.optional()
+    })).optional(),
     getAutofillData: z.record(z.unknown()).and(z.object({
         id: z.literal("getAutofillDataResponse").optional(),
         paramsValidator: getAutofillDataRequestSchema.optional(),
