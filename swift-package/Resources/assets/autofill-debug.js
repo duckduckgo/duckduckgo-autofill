@@ -16536,7 +16536,7 @@ class HTMLTooltip {
     const handler = this.clickableButtons.get(this.activeButton);
 
     if (handler) {
-      if (this.activeButton.matches('.wrapper:not(.top-autofill) button:hover, .currentFocus')) {
+      if (this.activeButton.matches('.wrapper:not(.top-autofill) button:hover, .wrapper:not(.top-autofill) a:hover, .currentFocus')) {
         (0, _autofillUtils.safeExecute)(this.activeButton, handler, {
           checkVisibility: this.options.checkVisibility
         });
