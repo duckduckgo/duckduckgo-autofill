@@ -245,6 +245,8 @@ const username = [
     `input[id="username" i]`,
     `input[name="_user" i]`,
     `input[name="login_username" i]`,
+    // https://www.flytap.com/
+    `input[name^="login-user-account" i]`,
     `input[placeholder^="username" i]`
 ]
 
