@@ -21,6 +21,7 @@ export const constants = {
         email: {
             personalAddress: `shane-123@duck.com`,
             privateAddress0: '0@duck.com',
+            privateAddress1: '1@duck.com',
             selectors: {
                 identity: '[data-ddg-inputtype="identities.emailAddress"]'
             }
