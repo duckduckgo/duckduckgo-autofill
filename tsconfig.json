@@ -27,6 +27,7 @@
     "maxNodeModuleJsDepth": 1
   },
   "include": [
+    "node_modules/@duckduckgo/content-scope-utils",
     "src",
     "scripts",
     "packages/password",
