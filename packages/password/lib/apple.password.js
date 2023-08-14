@@ -61,13 +61,12 @@ if (typeof window !== 'undefined') {
 
 class Password {
     /**
-     * @type {typeof defaults}
-     */
-    options;
-    /**
      * @param {Partial<typeof defaults>} [options]
      */
     constructor (options = {}) {
+        /**
+         * @type {typeof defaults}
+         */
         this.options = {
             ...defaults,
             ...options
@@ -75,12 +74,9 @@ class Password {
         return this
     }
 
-    /**
-     * This is here to provide external access to un-modified defaults
-     * in case they are needed for tests/verifications
-     * @type {typeof defaults}
-     */
-    static defaults = defaults;
+    static get defaults () {
+        return defaults
+    }
 
     /**
      * Generates a password from the given input.
