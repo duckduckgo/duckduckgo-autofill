@@ -22,7 +22,7 @@ export class DeviceApiTransport {
  */
 export class DeviceApi {
     /** @type {DeviceApiTransport} */
-    transport;
+    transport
     /** @param {DeviceApiTransport} transport */
     constructor (transport) {
         this.transport = transport

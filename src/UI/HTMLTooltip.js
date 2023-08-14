@@ -47,9 +47,9 @@ export const defaultOptions = {
 }
 
 export class HTMLTooltip {
-    isAboveInput = false;
+    isAboveInput = false
     /** @type {HTMLTooltipOptions} */
-    options;
+    options
     /**
      * @param config
      * @param inputType

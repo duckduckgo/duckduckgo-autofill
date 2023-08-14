@@ -19,9 +19,9 @@ import {
 const EMAIL_PROTECTION_LOGOUT_MESSAGE = 'EMAIL_PROTECTION_LOGOUT'
 
 export class WindowsInterface extends InterfacePrototype {
-    ready = false;
+    ready = false
     /** @type {AbortController|null} */
-    _abortController = null;
+    _abortController = null
     /**
      * @deprecated This runs too early, and will be removed eventually.
      * @returns {Promise<boolean>}

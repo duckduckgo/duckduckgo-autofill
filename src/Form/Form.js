@@ -32,11 +32,11 @@ const {
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
-    matching;
+    matching
     /** @type {HTMLElement} */
-    form;
+    form
     /** @type {HTMLInputElement | null} */
-    activeInput;
+    activeInput
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
