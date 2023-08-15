@@ -225,6 +225,14 @@ export interface API {
   closeEmailProtectionTab?: {
     [k: string]: unknown;
   };
+  /**
+   * Used by Android to open the in-context signup prompt and report back when completed
+   */
+  ShowInContextEmailProtectionSignupPrompt?: {
+    id?: "ShowInContextEmailProtectionSignupPromptResponse";
+    resultValidator?: ShowInContextEmailProtectionSignupPrompt;
+    [k: string]: unknown;
+  };
 }
 /**
  * Parameters for the addDebugFlag method
@@ -660,4 +668,12 @@ export interface EmailProtectionRefreshPrivateAddressResult {
     privateAddress: string;
   };
   error?: GenericError;
+}
+/**
+ * Gets the result of the in-context signup flow
+ */
+export interface ShowInContextEmailProtectionSignupPrompt {
+  success: {
+    isSignedIn: boolean;
+  };
 }

@@ -75,6 +75,8 @@ export function createAndroidMocks () {
     const mocks = {
         /** @type {GetAutofillDataResponse['success']|null} */
         getAutofillData: null,
+        showInContextEmailProtectionSignupPrompt: { isSignedIn: true },
+        incontextSignupDismissedAt: {},
         /** @type {string|null} */
         address: null,
         isSignedIn: ''
@@ -199,7 +201,19 @@ export function createAndroidMocks () {
                         /** @type {MockCall} */
                         const call = ['storeFormData', request, mocks.getAutofillData]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    }
+                    },
+                    showInContextEmailProtectionSignupPrompt (request) {
+                        return respond('showInContextEmailProtectionSignupPrompt', request, mocks.showInContextEmailProtectionSignupPrompt)
+                    },
+                    getIncontextSignupDismissedAt () {
+                        window.postMessage(JSON.stringify({
+                            type: 'getIncontextSignupDismissedAt',
+                            success: mocks.incontextSignupDismissedAt
+                        }), window.origin)
+                    },
+                    setIncontextSignupPermanentlyDismissedAt () {},
+                    startEmailProtectionSignup () {},
+                    closeEmailProtectionTab () {}
                 }
             }, mocks)
         },

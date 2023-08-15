@@ -1,8 +1,13 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
+    CloseEmailProtectionTabCall,
     GetAutofillDataCall,
     GetAvailableInputTypesCall,
+    GetIncontextSignupDismissedAtCall,
     GetRuntimeConfigurationCall,
+    SetIncontextSignupPermanentlyDismissedAtCall,
+    ShowInContextEmailProtectionSignupPromptCall,
+    StartEmailProtectionSignupCall,
     StoreFormDataCall
 } from '../__generated__/deviceApiCalls.js'
 
@@ -37,13 +42,37 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config)
         }
 
+        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
+            window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params))
+            return waitForResponse(deviceApiCall.id, this.config)
+        }
+
+        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
+            return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof StartEmailProtectionSignupCall) {
+            return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof CloseEmailProtectionTabCall) {
+            return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall) {
+            window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params))
+            return waitForResponse(deviceApiCall.id, this.config)
+        }
+
         if (deviceApiCall instanceof GetAutofillDataCall) {
             window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params))
             return waitForResponse(deviceApiCall.id, this.config)
         }
+
         if (deviceApiCall instanceof StoreFormDataCall) {
             return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
         }
+
         throw new Error('android: not implemented: ' + deviceApiCall.method)
     }
 }
