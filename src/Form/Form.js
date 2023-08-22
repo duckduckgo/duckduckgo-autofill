@@ -216,7 +216,7 @@ class Form {
                 formValues.credentials.username = formValues.identities.phone
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
-                this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
+                this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach((el) => {
                     const elText = getTextShallow(el)
                     // Ignore long texts to avoid false positives
                     if (elText.length > 70) return

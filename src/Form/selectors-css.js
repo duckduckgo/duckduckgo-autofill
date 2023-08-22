@@ -12,6 +12,8 @@ button:not([role=switch]):not([role=link]),
 a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
+const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style)'
+
 const email = [
     `
 input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
@@ -253,6 +255,7 @@ export const selectors = {
     genericTextField,
     submitButtonSelector,
     formInputsSelector,
+    safeUniversalSelector,
 
     // Credentials
     email,

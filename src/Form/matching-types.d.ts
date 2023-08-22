@@ -166,6 +166,7 @@ type RequiredCssSelectors = {
     formInputsSelector: string
     submitButtonSelector: string
     genericTextField: string
+    safeUniversalSelector: string
 }
 
 /**
