@@ -1,10 +1,9 @@
-import { createCacheableVendorRegexes } from './vendor-regex.js'
-import { constants } from '../constants.js'
-import { extractElementStrings } from './label-util.js'
-import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
-import { matchingConfiguration } from './matching-configuration.js'
+import {createCacheableVendorRegexes} from './vendor-regex.js'
+import {constants} from '../constants.js'
+import {extractElementStrings} from './label-util.js'
+import {matchingConfiguration} from './matching-configuration.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
-import {getText} from '../autofill-utils.js'
+import {getTextShallow} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -834,10 +833,10 @@ const getRelatedText = (el, form, cssSelector) => {
     const label = scope.querySelector('label')
     if (label) {
         // Try searching for a label first
-        trimmedText = removeExcessWhitespace(getText(label))
+        trimmedText = getTextShallow(label)
     } else {
         // If the container has a select element, remove its contents to avoid noise
-        trimmedText = removeExcessWhitespace(extractElementStrings(scope).join(' '))
+        trimmedText = extractElementStrings(scope).join(' ')
     }
 
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''

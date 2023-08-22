@@ -189,7 +189,7 @@ class FormAnalyzer {
     }
 
     evaluateElement (el) {
-        const string = getText(el)
+        const string = getTextShallow(el)
 
         if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily

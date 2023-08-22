@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isPotentiallyViewable, buttonMatchesFormType,
-    safeExecute, getText, wasAutofilledByChrome, shouldLog
+    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -217,7 +217,7 @@ class Form {
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
                 this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
-                    const elText = getText(el)
+                    const elText = getTextShallow(el)
                     // Ignore long texts to avoid false positives
                     if (elText.length > 70) return
 

@@ -301,8 +301,8 @@ function escapeXML (str) {
  * @param {import("./Form/matching").Matching} matching
  * @return {boolean}
  */
-    const text = getText(el)
 const isLikelyASubmitButton = (el, matching) => {
+    const text = getTextShallow(el)
     const ariaLabel = el.getAttribute('aria-label') || ''
     const dataTestId = el.getAttribute('data-test-id') || ''
 
@@ -334,16 +334,16 @@ const buttonMatchesFormType = (el, formObj) => {
 }
 
 /**
- * Get the text of an element
- * @param {Element} el
+ * Get the text of an element, one level deep max
+ * @param {Node} el
  * @returns {string}
  */
-const getText = (el) => {
+const getTextShallow = (el) => {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
-    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
+    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return removeExcessWhitespace(el.value)
     if (el instanceof HTMLInputElement && el.type === 'image') {
         return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
     }
@@ -480,7 +480,7 @@ export {
     escapeXML,
     isLikelyASubmitButton,
     buttonMatchesFormType,
-    getText,
+    getTextShallow,
     isLocalNetwork,
     isValidTLD,
     wasAutofilledByChrome,
