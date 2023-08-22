@@ -6,7 +6,7 @@ const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
  * "element.textContent" is a string which is merged of all children nodes,
  * which can cause issues with things like script tags etc.
  *
- * @param  {HTMLElement} element
+ * @param  {Element} element
  *         A DOM element to be extracted.
  * @returns {string[]}
  *          All strings in an element.
@@ -39,4 +39,4 @@ const extractElementStrings = (element) => {
     return [...strings]
 }
 
-export {extractElementStrings}
+export {extractElementStrings, EXCLUDED_TAGS}
