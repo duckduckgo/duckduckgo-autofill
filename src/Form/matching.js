@@ -428,7 +428,6 @@ class Matching {
         for (let stringName of matchableStrings) {
             let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
-            elementString = elementString.toLowerCase()
 
             // Scoring to ensure all DDG tests are valid
             let score = 0
@@ -893,15 +892,14 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
 }
 
 /**
- * Creating Regex instances can throw, so we add this to be
+ * Returns a RegExp from a string
  * @param {string} string
  * @returns {RegExp | undefined} string
  */
 const safeRegex = (string) => {
     try {
-        // This is lower-cased here because giving a `i` on a regex flag is a performance problem in some cases
-        const input = String(string).toLowerCase().normalize('NFKC')
-        return new RegExp(input, 'u')
+        const input = String(string).normalize('NFKC')
+        return new RegExp(input, 'ui')
     } catch (e) {
         console.warn('Could not generate regex from string input', string)
         return undefined
