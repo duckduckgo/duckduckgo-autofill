@@ -362,7 +362,11 @@ class Form {
         if (this.form.matches(selector)) {
             this.addInput(this.form)
         } else {
-            const foundInputs = this.form.querySelectorAll(selector)
+            let foundInputs = this.form.querySelectorAll(selector)
+            // If the markup is broken form.querySelectorAll may not return the fields, so we select from the parent
+            if (foundInputs.length === 0 && this.form instanceof HTMLFormElement && this.form.length > 0) {
+                foundInputs = this.form.parentElement?.querySelectorAll(selector) || foundInputs
+            }
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
