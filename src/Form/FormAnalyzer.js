@@ -153,6 +153,24 @@ class FormAnalyzer {
         })
     }
 
+    evaluateUrl () {
+        const path = window.location.pathname
+
+        const matchesLogin = this.matching.getDDGMatcherRegex('loginRegex')?.test(path)
+        const matchesSignup = this.matching.getDDGMatcherRegex('strictSignupRegex')?.test(path)
+
+        // If the url matches both, do nothing: the signal is probably confounding
+        if (matchesLogin && matchesSignup) return
+
+        if (matchesLogin) {
+            this.decreaseSignalBy(1, 'url matches login')
+        }
+
+        if (matchesSignup) {
+            this.increaseSignalBy(1, 'url matches signup')
+        }
+    }
+
     evaluatePageTitle () {
         const pageTitle = document.title
         this.updateSignal({string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true})
@@ -243,6 +261,9 @@ class FormAnalyzer {
     }
 
     evaluateForm () {
+        // Check page url
+        this.evaluateUrl()
+
         // Check page title
         this.evaluatePageTitle()
 
