@@ -14,7 +14,7 @@ a[href="#"][id*=btn i]`
 
 const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style)'
 
-const email = [
+const emailAddress = [
     `
 input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),
 input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),
@@ -258,7 +258,7 @@ export const selectors = {
     safeUniversalSelector,
 
     // Credentials
-    email,
+    emailAddress,
     password,
     username,
 

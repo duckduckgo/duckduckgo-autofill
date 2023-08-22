@@ -15,7 +15,7 @@ interface Matcher {
 }
 
 interface MatcherLists {
-    email: Matcher[]
+    emailAddress: Matcher[]
     password: Matcher[]
     username: Matcher[]
     cc: Matcher[]
@@ -28,7 +28,7 @@ interface MatcherConfiguration {
 }
 
 type MatcherTypeNames =
-  | 'email'
+  | 'emailAddress'
   | 'password'
   | 'username'
   | 'cardName'

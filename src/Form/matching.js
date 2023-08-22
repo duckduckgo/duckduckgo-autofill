@@ -9,7 +9,7 @@ const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
 /** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
 const dimensionBounds = {
-    email: { minWidth: 40 }
+    emailAddress: { minWidth: 40 }
 }
 
 /**
@@ -64,7 +64,7 @@ class Matching {
             id: [],
             password: [],
             username: [],
-            email: []
+            emailAddress: []
         }
 
         /**
@@ -104,6 +104,16 @@ class Matching {
             return undefined
         }
         return match
+    }
+
+    /**
+     *
+     * @param {MatcherTypeNames} matcherName
+     * @param {StrategyNames} vendorRegex
+     * @returns {MatcherTypeNames}
+     */
+    getStrategyLookupByType (matcherName, vendorRegex) {
+        return this.#config.matchers.fields[matcherName]?.strategies[vendorRegex]
     }
 
     /**
@@ -248,7 +258,7 @@ class Matching {
                 return 'credentials.password'
             }
 
-            if (this.subtypeFromMatchers('email', input) && this.isInputLargeEnough('email', input)) {
+            if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
                 if (opts.isLogin || opts.isHybrid) {
                     // TODO: Being this support back in the future
                     // https://app.asana.com/0/1198964220583541/1204686960531034/f

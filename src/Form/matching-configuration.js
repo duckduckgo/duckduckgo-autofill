@@ -10,11 +10,11 @@ const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
     matchers: {
         fields: {
-            email: {
-                type: 'email',
+            emailAddress: {
+                type: 'emailAddress',
                 strategies: {
-                    cssSelector: 'email',
-                    ddgMatcher: 'email',
+                    cssSelector: 'emailAddress',
+                    ddgMatcher: 'emailAddress',
                     vendorRegex: 'email'
                 }
             },
@@ -190,7 +190,7 @@ const matchingConfiguration = {
             }
         },
         lists: {
-            email: ['email'],
+            emailAddress: ['emailAddress'],
             password: ['password'],
             username: ['username'],
             cc: ['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'],
@@ -218,9 +218,9 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b|otp'},
                 password: {match: 'password', skip: 'email|one-time|error|hint', forceUnknown: 'captcha|mfa|2fa|two factor|otp'},
                 username: {match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername', skip: 'phone', forceUnknown: 'search|policy'},
+                emailAddress: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b|otp'},
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
