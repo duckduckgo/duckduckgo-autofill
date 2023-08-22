@@ -198,6 +198,7 @@ class FormAnalyzer {
                 strength: 5,
                 signalType: `explicit: ${el.getAttribute('autocomplete')}`
             })
+            return
         }
 
         // check button contents
@@ -216,6 +217,7 @@ class FormAnalyzer {
             }
             const strength = likelyASubmit ? 20 : 2
             this.updateSignal({string, strength, signalType: `submit: ${string}`})
+            return
         }
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
         if (
