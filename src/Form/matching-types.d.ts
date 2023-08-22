@@ -149,9 +149,9 @@ interface DDGMatcher {
 }
 
 type RequiredCssSelectors = {
-    FORM_INPUTS_SELECTOR: string
-    SUBMIT_BUTTON_SELECTOR: string
-    GENERIC_TEXT_FIELD: string
+    formInputsSelector: string
+    submitButtonSelector: string
+    genericTextField: string
 }
 
 /**

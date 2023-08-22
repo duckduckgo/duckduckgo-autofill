@@ -44,7 +44,7 @@ export function initFormSubmissionsApi (forms) {
         matchingForm?.submitHandler('global pointerdown event + matching form')
 
         if (!matchingForm) {
-            const selector = SUBMIT_BUTTON_SELECTOR + ', a[href="#"], a[href^=javascript], *[onclick]'
+            const selector = matching.cssSelector('submitButtonSelector') + ', a[href="#"], a[href^=javascript], *[onclick], [class*=button i]'
             // check if the click happened on a button
             const button = /** @type HTMLElement */(event.target)?.closest(selector)
             if (!button) return

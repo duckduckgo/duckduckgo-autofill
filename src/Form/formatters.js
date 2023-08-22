@@ -14,7 +14,7 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
  * @returns {string}
  */
 const formatCCYear = (input, year, form) => {
-    const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR')
+    const selector = form.matching.cssSelector('formInputsSelector')
     if (
         input.maxLength === 4 ||
         checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)
@@ -34,7 +34,7 @@ const formatCCYear = (input, year, form) => {
 const getUnifiedExpiryDate = (input, month, year, form) => {
     const formattedYear = formatCCYear(input, year, form)
     const paddedMonth = `${month}`.padStart(2, '0')
-    const cssSelector = form.matching.cssSelector('FORM_INPUTS_SELECTOR')
+    const cssSelector = form.matching.cssSelector('formInputsSelector')
     const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)?.groups?.separator || '/'
 
     return `${paddedMonth}${separator}${formattedYear}`

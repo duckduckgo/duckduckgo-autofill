@@ -1,9 +1,9 @@
-const FORM_INPUTS_SELECTOR = `
+const formInputsSelector = `
 input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
 [autocomplete=username],
 select`
 
-const SUBMIT_BUTTON_SELECTOR = `
+const submitButtonSelector = `
 input[type=submit],
 input[type=button],
 input[type=image],
@@ -32,11 +32,11 @@ input[autocomplete=email]`,
 ]
 
 // We've seen non-standard types like 'user'. This selector should get them, too
-const GENERIC_TEXT_FIELD = `
+const genericTextField = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
 
 const password = [
-    `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])`,
+    `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])`,
     // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
     'input.js-cloudsave-phrase'
 ]
@@ -136,7 +136,7 @@ const lastName = `
 [name*=surname i], [autocomplete*=surname i]`
 
 const fullName = `
-[name=name], [autocomplete=name],
+[autocomplete=name],
 [name*=fullname i], [autocomplete*=fullname i],
 [name*=full-name i], [autocomplete*=full-name i],
 [name*=full_name i], [autocomplete*=full_name i],
@@ -149,7 +149,7 @@ const phone = `
 [autocomplete="tel-national"],
 [placeholder*="phone number" i]`
 
-const addressStreet1 = `
+const addressStreet = `
 [name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],
 [name=street i],
 [name=ppw-line1 i], [name*=addressLine1 i]`
@@ -198,7 +198,7 @@ const birthdayYear = `
 [aria-label="birthday" i][placeholder="year" i]`
 
 const username = [
-    `${GENERIC_TEXT_FIELD}[autocomplete^=user i]`,
+    `${genericTextField}[autocomplete^=user i]`,
     `input[name=username i]`,
     // fix for `aa.com`
     `input[name="loginId" i]`,
@@ -248,19 +248,18 @@ const username = [
     `input[placeholder^="username" i]`
 ]
 
-// todo: these are still used directly right now, mostly in scanForInputs
-// todo: ensure these can be set via configuration
-export { FORM_INPUTS_SELECTOR, SUBMIT_BUTTON_SELECTOR }
+export const selectors = {
+    // Generic
+    genericTextField,
+    submitButtonSelector,
+    formInputsSelector,
 
-// Exported here for now, to be moved to configuration later
-// eslint-disable-next-line camelcase
-export const __secret_do_not_use = {
-    GENERIC_TEXT_FIELD,
-    SUBMIT_BUTTON_SELECTOR,
-    FORM_INPUTS_SELECTOR,
-    email: email,
+    // Credentials
+    email,
     password,
     username,
+
+    // Credit Card
     cardName,
     cardNumber,
     cardSecurityCode,
@@ -268,12 +267,13 @@ export const __secret_do_not_use = {
     expirationYear,
     expiration,
 
+    // Identities
     firstName,
     middleName,
     lastName,
     fullName,
     phone,
-    addressStreet1,
+    addressStreet,
     addressStreet2,
     addressCity,
     addressProvince,

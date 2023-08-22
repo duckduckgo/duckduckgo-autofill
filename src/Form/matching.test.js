@@ -173,7 +173,7 @@ describe('matching', () => {
                     email: {
                         type: 'email',
                         strategies: {
-                            ddgMatcher: 'email-ddg',
+                            ddgMatcher: 'email',
                             vendorRegex: 'email'
                         }
                     }
@@ -192,12 +192,12 @@ describe('matching', () => {
                 },
                 'ddgMatcher': {
                     matchers: {
-                        'email-ddg': { match: 'email', forceUnknown: 'search' }
+                        'email': { match: 'email', forceUnknown: 'search' }
                     }
                 },
                 'cssSelector': {
                     selectors: {
-                        'FORM_INPUTS_SELECTOR': 'input'
+                        'formInputsSelector': 'input'
                     }
                 }
             }

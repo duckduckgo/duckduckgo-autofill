@@ -358,7 +358,7 @@ class Form {
     }
 
     categorizeInputs () {
-        const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR')
+        const selector = this.matching.cssSelector('formInputsSelector')
         if (this.form.matches(selector)) {
             this.addInput(this.form)
         } else {
@@ -375,7 +375,7 @@ class Form {
     }
 
     get submitButtons () {
-        const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
+        const selector = this.matching.cssSelector('submitButtonSelector')
         const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
         return allButtons

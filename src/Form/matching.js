@@ -541,7 +541,7 @@ class Matching {
             labelText: explicitLabelsText,
             placeholderAttr: el.placeholder || '',
             id: el.id,
-            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector'))
         }
         this._elementStringCache.set(el, next)
         return next
@@ -603,9 +603,7 @@ class Matching {
                 matchers: {}
             },
             'cssSelector': {
-                selectors: {
-                    FORM_INPUTS_SELECTOR
-                }
+                selectors: {}
             }
         }
     }
@@ -845,7 +843,7 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
     /* TODO: there could be more than one select el for the same label, in that case we should
         change how we compute the container */
     const parentElement = el.parentElement
-    if (!parentElement || el === form) return el
+    if (!parentElement || el === form || !cssSelector) return el
 
     const inputsInParentsScope = parentElement.querySelectorAll(cssSelector)
     // To avoid noise, ensure that our input is the only in scope

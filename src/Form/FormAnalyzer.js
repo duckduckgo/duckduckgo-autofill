@@ -185,7 +185,7 @@ class FormAnalyzer {
         this.evaluatePageTitle()
         this.evaluatePageHeadings()
         // Check for submit buttons
-        const buttons = document.querySelectorAll(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))
+        const buttons = document.querySelectorAll(this.matching.cssSelector('submitButtonSelector'))
         buttons.forEach(button => {
             // if the button has a form, it's not related to our input, because our input has no form here
             if (button instanceof HTMLButtonElement) {
@@ -210,7 +210,7 @@ class FormAnalyzer {
         }
 
         // check button contents
-        if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
+        if (el.matches(this.matching.cssSelector('submitButtonSelector') + ', *[class*=button]')) {
             // If we're confident this is the submit button, it's a stronger signal
             let likelyASubmit = isLikelyASubmitButton(el)
             if (likelyASubmit) {
@@ -266,7 +266,7 @@ class FormAnalyzer {
         })
 
         // A form with many fields is unlikely to be a login form
-        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
+        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'))
         if (relevantFields.length >= 4) {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
         }

@@ -1,4 +1,4 @@
-import * as css from './selectors-css.js'
+import {selectors} from './selectors-css.js'
 
 /**
  * This is here to mimic what Remote Configuration might look like
@@ -214,44 +214,7 @@ const matchingConfiguration = {
     },
     strategies: {
         /** @type {CssSelectorConfiguration} */
-        cssSelector: {
-            selectors: {
-
-                // Generic
-                FORM_INPUTS_SELECTOR: css.__secret_do_not_use.FORM_INPUTS_SELECTOR,
-                SUBMIT_BUTTON_SELECTOR: css.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
-                GENERIC_TEXT_FIELD: css.__secret_do_not_use.GENERIC_TEXT_FIELD,
-
-                // user
-                email: css.__secret_do_not_use.email,
-                password: css.__secret_do_not_use.password,
-                username: css.__secret_do_not_use.username,
-
-                // CC
-                cardName: css.__secret_do_not_use.cardName,
-                cardNumber: css.__secret_do_not_use.cardNumber,
-                cardSecurityCode: css.__secret_do_not_use.cardSecurityCode,
-                expirationMonth: css.__secret_do_not_use.expirationMonth,
-                expirationYear: css.__secret_do_not_use.expirationYear,
-                expiration: css.__secret_do_not_use.expiration,
-
-                // Identities
-                firstName: css.__secret_do_not_use.firstName,
-                middleName: css.__secret_do_not_use.middleName,
-                lastName: css.__secret_do_not_use.lastName,
-                fullName: css.__secret_do_not_use.fullName,
-                phone: css.__secret_do_not_use.phone,
-                addressStreet: css.__secret_do_not_use.addressStreet1,
-                addressStreet2: css.__secret_do_not_use.addressStreet2,
-                addressCity: css.__secret_do_not_use.addressCity,
-                addressProvince: css.__secret_do_not_use.addressProvince,
-                addressPostalCode: css.__secret_do_not_use.addressPostalCode,
-                addressCountryCode: css.__secret_do_not_use.addressCountryCode,
-                birthdayDay: css.__secret_do_not_use.birthdayDay,
-                birthdayMonth: css.__secret_do_not_use.birthdayMonth,
-                birthdayYear: css.__secret_do_not_use.birthdayYear
-            }
-        },
+        cssSelector: {selectors},
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
