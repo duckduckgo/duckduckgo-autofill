@@ -52,6 +52,20 @@ type MatcherTypeNames =
   | 'birthdayMonth'
   | 'birthdayYear'
 
+type FormMatcherNames =
+    | 'loginRegex'
+    | 'signupRegex'
+    | 'conservativeSignupRegex'
+    | 'strictSignupRegex'
+    | 'resetPasswordLink'
+    | 'loginProvidersRegex'
+
+type ButtonMatcherNames =
+    | 'submitButtonRegex'
+    | 'submitButtonUnlikelyRegex'
+
+type AllDDGMatcherNames = MatcherTypeNames | FormMatcherNames | ButtonMatcherNames
+
 type Strategy =
   | CSSSelectorStrategy
   | VendorRegexStrategy
@@ -136,7 +150,7 @@ interface VendorRegexConfiguration {
 }
 
 interface DDGMatcherConfiguration {
-    matchers: Record<MatcherTypeNames | string, DDGMatcher>
+    matchers: Record<AllDDGMatcherNames | string, DDGMatcher>
 }
 
 interface DDGMatcher {

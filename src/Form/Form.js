@@ -380,7 +380,7 @@ class Form {
 
         return allButtons
             .filter((btn) =>
-                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this)
             )
     }
 

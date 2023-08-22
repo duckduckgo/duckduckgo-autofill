@@ -139,6 +139,20 @@ class Matching {
     }
 
     /**
+     * Returns the RegExp for the given matcherName, with proper flags
+     * @param {AllDDGMatcherNames} matcherName
+     * @returns {RegExp|undefined}
+     */
+    getDDGMatcherRegex (matcherName) {
+        const matcher = this.ddgMatcher(matcherName)
+        if (!matcher || !matcher.match) {
+            console.warn('DDG matcher has unexpected format')
+            return undefined
+        }
+        return safeRegex(matcher.match)
+    }
+
+    /**
      * Try to access a list of matchers by name - these are the ones collected in the constructor
      * @param {keyof MatcherLists} listName
      * @return {Matcher[]}

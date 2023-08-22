@@ -295,15 +295,14 @@ function escapeXML (str) {
     return String(str).replace(/[&"'<>/]/g, m => replacements[m])
 }
 
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
+ * @param {import("./Form/matching").Matching} matching
  * @return {boolean}
  */
-const isLikelyASubmitButton = (el) => {
     const text = getText(el)
+const isLikelyASubmitButton = (el, matching) => {
     const ariaLabel = el.getAttribute('aria-label') || ''
     const dataTestId = el.getAttribute('data-test-id') || ''
 
@@ -312,11 +311,11 @@ const isLikelyASubmitButton = (el) => {
         el.getAttribute('name') === 'submit' || // is called "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
         /submit/i.test(dataTestId) ||
-        SUBMIT_BUTTON_REGEX.test(text) || // has high-signal text
+        matching.getDDGMatcherRegex('submitButtonRegex')?.test(text) || // has high-signal text
         (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
     ) &&
     el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !SUBMIT_BUTTON_UNLIKELY_REGEX.test(text + ' ' + ariaLabel)
+    !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)
 }
 
 /**

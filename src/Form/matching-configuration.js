@@ -258,7 +258,48 @@ const matchingConfiguration = {
                 addressCountryCode: {match: 'country'},
                 birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
                 birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},
-                birthdayYear: {match: '(birth.*year|year.*birth)'}
+                birthdayYear: {match: '(birth.*year|year.*birth)'},
+                loginRegex: {
+                    match:
+                        'sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' +
+                        '|mfa-submit-form' + // fix chase.com
+                        '|unlock|logged in as' + // fix bitwarden
+                        // Italian
+                        '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password'
+                },
+                signupRegex: {
+                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm\\?' +
+                        // Italian
+                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga'
+                },
+                conservativeSignupRegex: {
+                    match: 'sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                        // Italian
+                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna'
+                },
+                strictSignupRegex: {
+                    match: 'sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update' +
+                        // Italian
+                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna'
+                },
+                resetPasswordLink: {
+                    match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' +
+                        // Italian
+                        '|password dimenticata|reset(?:ta) password|recuper[ao] password'
+                },
+                loginProvidersRegex: {
+                    match: ' with '
+                },
+                submitButtonRegex: {
+                    match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' +
+                        // Italian
+                        '|invia|conferma|salva|continua|entra|accedi|accesso|compra|paga|sottoscrivi|registra|dona'
+                },
+                submitButtonUnlikelyRegex: {
+                    match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' +
+                        // Italian
+                        '|annulla|mostra|nascondi|stampa|indietro'
+                }
             }
         },
         /**

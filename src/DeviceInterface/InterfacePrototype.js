@@ -275,7 +275,7 @@ class InterfacePrototype {
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {
-            initFormSubmissionsApi(this.scanner.forms)
+            initFormSubmissionsApi(this.scanner.forms, this.scanner.matching)
         }
     }
 
