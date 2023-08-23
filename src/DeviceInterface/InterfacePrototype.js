@@ -468,7 +468,14 @@ class InterfacePrototype {
                      * Then later in the form submission we can compare the values
                      */
                     this.emailProtection.storeReceived(alias)
-                } else form.activeInput?.focus()
+                } else {
+                    form.activeInput?.focus()
+                }
+
+                // Update data from native-side in case the `getAlias` call
+                // has included a successful in-context signup
+                this.updateForStateChange()
+                this.onFinishedAutofill()
             })
             return
         }
@@ -581,6 +588,23 @@ class InterfacePrototype {
 
     removeTooltip () {
         return this.uiController?.removeTooltip?.('interface')
+    }
+
+    onFinishedAutofill () {
+        // Let input handlers know we've stopped autofilling
+        this.activeForm?.activeInput?.dispatchEvent(new Event('mouseleave'))
+    }
+
+    async updateForStateChange () {
+        // Remove decorations before refreshing data to make sure we
+        // remove the currently set icons
+        this.activeForm?.removeAllDecorations()
+
+        // Update for any state that may have changed
+        await this.refreshData()
+
+        // Add correct icons and behaviour
+        this.activeForm?.recategorizeAllInputs()
     }
 
     async refreshData () {
@@ -705,10 +729,10 @@ class InterfacePrototype {
     addLogoutListener (_fn) {}
     isDeviceSignedIn () { return false }
     /**
-     * @returns {Promise<null|string>}
+     * @returns {Promise<string|undefined>}
      */
     async getAlias () {
-        return null
+        return undefined
     }
     // PM endpoints
     getAccounts () {}

@@ -54,13 +54,18 @@ export class InContextSignup {
         const activeInput = this.device.activeForm?.activeInput
         activeInput?.blur()
 
-        // Focus on the active input to open the tooltip
-        const focusActiveInput = () => {
+        // Select the active input to open the tooltip
+        const selectActiveInput = () => {
             activeInput?.focus()
         }
-        document.hasFocus()
-            ? focusActiveInput()
-            : document.addEventListener('visibilitychange', focusActiveInput, {once: true})
+
+        if (document.hasFocus()) {
+            selectActiveInput()
+        } else {
+            document.addEventListener('visibilitychange', () => {
+                selectActiveInput()
+            }, {once: true})
+        }
     }
 
     isPermanentlyDismissed () {

@@ -8,6 +8,9 @@ class AndroidInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
+    /**
+     * @returns {Promise<string|undefined>}
+     */
     async getAlias () {
         const { alias } = await sendAndWaitForAnswer(() => {
             return window.EmailInterface.showTooltip()
