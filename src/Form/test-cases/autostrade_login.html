@@ -1,0 +1,24 @@
+<!-- https://www2.autostrade.it/AGE/ -->
+<!-- The markup on the actual site is totally broken, unfortunately we can't capture it in the test -->
+<script text/javascript></script>
+<div id="loginform">
+    <table id="table" width="100%">
+        <FORM name="intranet" METHOD=POST ACTION="/pkmslogin.form">
+            <tr>
+                <td width="30%" align="right"> User-id</td>
+                <td width="70%"><INPUT id="username" NAME="username" autocomplete="off" MAXLENGTH="32" autofocus onClick="showKeyboard('username','campo username','donothing','Numeric')" data-manual-scoring="username"></td>
+            </tr>
+            <tr>
+                <td width="30%" align="right">Password</td>
+                <td width="70%" ><INPUT id="password" TYPE="PASSWORD" autocomplete="off" NAME="password" onClick="showKeyboard('password','campo password','donothing','Normal')" data-manual-scoring="password"></td>
+            </tr>
+            <tr>
+                <td><INPUT TYPE="HIDDEN" NAME="login-form-type" VALUE="pwd"></td>
+            </tr>
+            <tr>
+                <td align="left"><input id="passwd-button" type="button" value="Change Password" class='login' onClick="window.location='/pkmspasswd';"></td>
+                <td align="right"><input id="login-button" type="submit" value="Login" onclick="setTimeout(disableButton, 1);" data-manual-submit></td>
+            </tr>
+        </form>
+    </table>
+</div>

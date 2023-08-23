@@ -338,7 +338,7 @@
   { "html": "www_colamanhua_com_login.html", "generated": true, "title": "个人中心 COLAMANHUA", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2670" },
   { "html": "registration_lycos_com_signup.html", "generated": true, "title": "LYCOS Mail: Registration Sign Up", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2693" },
   { "html": "itcdguzman_mindbox_app_login.html", "generated": true, "title": "MindBox®", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2774" },
-  { "html": "www_indiapost_gov_in_login.html", "generated": true, "title": "Welcome to Indiapost", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2814" },
+  { "html": "www_indiapost_gov_in_login.html", "generated": true, "title": "Welcome to Indiapost", "comment": "rank: 2814" },
   { "html": "ssl_tabelog_com_login.html", "generated": true, "title": "食べログ 店舗管理画面ログイン[食べログ]", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2819" },
   { "html": "freelance_habr_com_signup.html", "generated": true, "title": "Регистрация — Хабр Фриланс", "comment": "rank: 2857" },
   { "html": "agile_appian_com_login.html", "generated": true, "title": "Log in - Appian", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2936" },
@@ -495,5 +495,7 @@
   { "html": "ua_ctcorpmpc_com-signup.html" },
   { "html": "joybird_com.html" },
   { "html": "ikea_signup-verification.html", "expectedSubmitFalsePositives": 2 },
-  { "html": "chase_2fa-verification-step.html", "expectedFailures": ["unknown"] }
+  { "html": "chase_2fa-verification-step.html", "expectedFailures": ["unknown"] },
+  { "html": "alaskaair_checkout.html", "expectedFailures": ["phone"], "expectedSubmitFalsePositives": 4 },
+  { "html": "autostrade_login.html" }
 ]
