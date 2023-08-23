@@ -13066,6 +13066,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     this._options = options;
     this._htmlTooltipOptions = Object.assign({}, _HTMLTooltip.defaultOptions, htmlTooltipOptions);
     window.addEventListener('pointerdown', this, true);
+    window.addEventListener('pointerup', this, true);
   }
 
   /**
@@ -13075,6 +13076,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
   destroy() {
     this.removeTooltip();
     window.removeEventListener('pointerdown', this, true);
+    window.removeEventListener('pointerup', this, true);
   }
   /**
    * @param {import('./UIController').AttachArgs} args
@@ -13231,6 +13233,13 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
           break;
         }
+
+      case 'pointerup':
+        {
+          this._pointerUpListener(event);
+
+          break;
+        }
     }
   } // Global listener for event delegation
 
@@ -13242,20 +13251,27 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
     if (e.target.nodeName === 'DDG-AUTOFILL') {
       e.preventDefault();
-      e.stopImmediatePropagation();
-      const isMainMouseButton = e.button === 0;
-      if (!isMainMouseButton) return;
-      const activeTooltip = this.getActiveTooltip();
-
-      if (!activeTooltip) {
-        console.warn('Could not get activeTooltip');
-      } else {
-        activeTooltip.dispatchClick();
-      }
+      e.stopImmediatePropagation(); // Ignore pointer down events, we'll handle them on pointer up
     } else {
       this.removeTooltip().catch(e => {
         console.error('error removing tooltip', e);
       });
+    }
+  } // Global listener for event delegation
+
+
+  _pointerUpListener(e) {
+    if (!e.isTrusted) return; // Ignore events on the Dax icon, we handle those elsewhere
+
+    if ((0, _autofillUtils.isEventWithinDax)(e, e.target)) return; // @ts-ignore
+
+    if (e.target.nodeName === 'DDG-AUTOFILL') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const isMainMouseButton = e.button === 0;
+      if (!isMainMouseButton) return;
+      const activeTooltip = this.getActiveTooltip();
+      activeTooltip === null || activeTooltip === void 0 ? void 0 : activeTooltip.dispatchClick();
     }
   }
 
