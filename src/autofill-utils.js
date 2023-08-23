@@ -396,13 +396,30 @@ const wasAutofilledByChrome = (input) => {
 }
 
 /**
- * Checks if we should log debug info to the console
+ * Checks if we should log form analysis debug info to the console
  * @returns {boolean}
  */
 function shouldLog () {
+    return readDebugSetting('ddg-autofill-debug')
+}
+
+/**
+ * Checks if we should log performance info to the console
+ * @returns {boolean}
+ */
+function shouldLogPerformance () {
+    return readDebugSetting('ddg-autofill-perf')
+}
+
+/**
+ * Check if a sessionStorage item is set to 'true'
+ * @param setting
+ * @returns {boolean}
+ */
+function readDebugSetting (setting) {
     // sessionStorage throws in invalid schemes like data: and file:
     try {
-        return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+        return window.sessionStorage?.getItem(setting) === 'true'
     } catch (e) {
         return false
     }
@@ -485,6 +502,7 @@ export {
     isValidTLD,
     wasAutofilledByChrome,
     shouldLog,
+    shouldLogPerformance,
     whenIdle,
     truncateFromMiddle,
     isFormLikelyToBeUsedAsPageWrapper

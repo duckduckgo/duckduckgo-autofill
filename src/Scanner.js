@@ -1,7 +1,7 @@
 import { Form } from './Form/Form.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
+import {isFormLikelyToBeUsedAsPageWrapper, shouldLog, shouldLogPerformance} from './autofill-utils.js'
 
 const {
     MAX_INPUTS_PER_PAGE,
@@ -129,6 +129,10 @@ class DefaultScanner {
         window.performance?.mark?.('scanner:init:start')
         this.findEligibleInputs(document)
         window.performance?.mark?.('scanner:init:end')
+        if (shouldLogPerformance()) {
+            const measurement = window.performance?.measure('scanner:init', 'scanner:init:start', 'scanner:init:end')
+            console.log(`Initial scan took ${Math.round(measurement?.duration)}ms`)
+        }
         this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
