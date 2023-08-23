@@ -2,7 +2,7 @@ import { Form } from './Form/Form.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
+import {isFormLikelyToBeUsedAsPageWrapper, shouldLog, shouldLogPerformance} from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
@@ -118,6 +118,10 @@ class DefaultScanner {
         window.performance?.mark?.('scanner:init:start')
         this.findEligibleInputs(document)
         window.performance?.mark?.('scanner:init:end')
+        if (shouldLogPerformance()) {
+            const measurement = window.performance?.measure('scanner:init', 'scanner:init:start', 'scanner:init:end')
+            console.log(`Initial scan took ${Math.round(measurement?.duration)}ms`)
+        }
         this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
