@@ -56,7 +56,6 @@ type FormMatcherNames =
     | 'loginRegex'
     | 'signupRegex'
     | 'conservativeSignupRegex'
-    | 'strictSignupRegex'
     | 'resetPasswordLink'
     | 'loginProvidersRegex'
 

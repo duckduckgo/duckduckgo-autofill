@@ -273,14 +273,9 @@ const matchingConfiguration = {
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga'
                 },
                 conservativeSignupRegex: {
-                    match: 'sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                    match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
                         // Italian
-                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna'
-                },
-                strictSignupRegex: {
-                    match: 'sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update' +
-                        // Italian
-                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna'
+                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna'
                 },
                 resetPasswordLink: {
                     match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' +

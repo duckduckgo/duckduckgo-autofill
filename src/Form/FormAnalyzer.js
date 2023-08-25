@@ -120,7 +120,7 @@ class FormAnalyzer {
         const matchesLogin = /current.?password/i.test(string) || this.matching.getDDGMatcherRegex('loginRegex')?.test(string) || this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string)
 
         // Check explicitly for unified login/signup forms
-        if (shouldCheckUnifiedForm && matchesLogin && this.matching.getDDGMatcherRegex('strictSignupRegex')?.test(string)) {
+        if (shouldCheckUnifiedForm && matchesLogin && this.matching.getDDGMatcherRegex('conservativeSignupRegex')?.test(string)) {
             this.increaseHybridSignal(strength, signalType)
             return this
         }
@@ -157,7 +157,7 @@ class FormAnalyzer {
         const path = window.location.pathname
 
         const matchesLogin = this.matching.getDDGMatcherRegex('loginRegex')?.test(path)
-        const matchesSignup = this.matching.getDDGMatcherRegex('strictSignupRegex')?.test(path)
+        const matchesSignup = this.matching.getDDGMatcherRegex('conservativeSignupRegex')?.test(path)
 
         // If the url matches both, do nothing: the signal is probably confounding
         if (matchesLogin && matchesSignup) return
