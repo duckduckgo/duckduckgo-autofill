@@ -60,6 +60,7 @@ class Matching {
         this.#ddgMatchers = this.#config.strategies.ddgMatcher.matchers
 
         this.#matcherLists = {
+            unknown: [],
             cc: [],
             id: [],
             password: [],
@@ -243,6 +244,8 @@ class Matching {
         }
 
         this.setActiveElementStrings(input, formEl)
+
+        if (this.subtypeFromMatchers('unknown', input)) return 'unknown'
 
         // // For CC forms we run aggressive matches, so we want to make sure we only
         // // run them on actual CC forms to avoid false positives and expensive loops

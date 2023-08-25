@@ -10,6 +10,12 @@ const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
     matchers: {
         fields: {
+            unknown: {
+                type: 'unknown',
+                strategies: {
+                    ddgMatcher: 'unknown'
+                }
+            },
             emailAddress: {
                 type: 'emailAddress',
                 strategies: {
@@ -190,6 +196,7 @@ const matchingConfiguration = {
             }
         },
         lists: {
+            unknown: ['unknown'],
             emailAddress: ['emailAddress'],
             password: ['password'],
             username: ['username'],
@@ -218,9 +225,33 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfiguration} */
         ddgMatcher: {
             matchers: {
-                password: {match: 'password', skip: 'email|one-time|error|hint', forceUnknown: 'captcha|mfa|2fa|two factor|otp'},
-                username: {match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername', skip: 'phone', forceUnknown: 'search|policy'},
-                emailAddress: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b|otp'},
+                unknown: {
+                    match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' +
+                        // Italian
+                        '|cerca|filtr|oggetto|titolo|(due|più) fattori',
+                    skip: 'phone|mobile|email'
+                },
+                emailAddress: {
+                    match: '.mail\\b|apple.?id' +
+                        // Italian
+                        'posta elettronica',
+                    skip: 'phone|(first.?|last.?)name|number|code',
+                    forceUnknown: 'search|filter|subject|title|\btab\b|otp'
+                },
+                password: {
+                    match: 'password',
+                    skip: 'email|one-time|error|hint',
+                    forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
+                },
+                username: {
+                    match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$' +
+                        // Italian
+                        '|(nome|id|login).?utente|(nome|id) (dell\')?account' +
+                        // German
+                        '|benutzername',
+                    skip: 'phone',
+                    forceUnknown: 'search|policy'
+                },
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
@@ -237,11 +268,34 @@ const matchingConfiguration = {
                 },
 
                 // Identities
-                firstName: {match: '(first|given|fore).?name', skip: 'last'},
-                middleName: {match: '(middle|additional).?name'},
-                lastName: {match: '(last|family|sur)[^i]?name', skip: 'first'},
-                fullName: {match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b', forceUnknown: 'company|org|item'},
-                phone: {match: 'phone', skip: 'code|pass|country', forceUnknown: 'ext|type|otp'},
+                firstName: {
+                    match: '(first|given|fore).?name' +
+                        // Italian
+                        '|\\bnome',
+                    skip: 'last'
+                },
+                middleName: {
+                    match: '(middle|additional).?name'
+                },
+                lastName: {
+                    match: '(last|family|sur)[^i]?name' +
+                        // Italian
+                        '|cognome',
+                    skip: 'first'
+                },
+                fullName: {
+                    match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' +
+                        // Italian
+                        '|\\bnome',
+                    forceUnknown: 'company|org|item'
+                },
+                phone: {
+                    match: 'phone|mobile' +
+                        // Italian
+                        '|telefono|cellulare',
+                    skip: 'code|pass|country',
+                    forceUnknown: 'ext|type|otp'
+                },
                 addressStreet: {
                     match: 'address',
                     forceUnknown: '\\bip\\b|duck|web|url',
@@ -255,7 +309,7 @@ const matchingConfiguration = {
                 addressCity: {match: 'city|town', forceUnknown: 'vatican'},
                 addressProvince: {match: 'state|province|region|county', forceUnknown: 'united', skip: 'country'},
                 addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code'},
-                addressCountryCode: {match: 'country'},
+                addressCountryCode: {match: 'country|nazione'},
                 birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
                 birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},
                 birthdayYear: {match: '(birth.*year|year.*birth)'},
@@ -268,7 +322,7 @@ const matchingConfiguration = {
                         '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password'
                 },
                 signupRegex: {
-                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm\\?' +
+                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga'
                 },
@@ -293,7 +347,7 @@ const matchingConfiguration = {
                 submitButtonUnlikelyRegex: {
                     match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' +
                         // Italian
-                        '|annulla|mostra|nascondi|stampa|indietro'
+                        '|annulla|mostra|nascondi|stampa|indietro|già'
                 }
             }
         },

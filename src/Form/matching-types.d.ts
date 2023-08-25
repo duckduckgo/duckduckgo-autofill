@@ -15,6 +15,7 @@ interface Matcher {
 }
 
 interface MatcherLists {
+    unknown: Matcher[]
     emailAddress: Matcher[]
     password: Matcher[]
     username: Matcher[]
@@ -28,6 +29,7 @@ interface MatcherConfiguration {
 }
 
 type MatcherTypeNames =
+  | 'unknown'
   | 'emailAddress'
   | 'password'
   | 'username'
