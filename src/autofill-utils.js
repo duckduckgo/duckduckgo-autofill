@@ -52,6 +52,9 @@ const autofillEnabled = (globalConfig, processConfig) => {
 const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
     const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
+        if (shouldLog()) {
+            console.log('⚠️ Autofill disabled by remote config')
+        }
         return false
     }
 
@@ -61,6 +64,9 @@ const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
 const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
     const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
+        if (shouldLog()) {
+            console.log('⚠️ In-context signup disabled by remote config')
+        }
         return false
     }
 
