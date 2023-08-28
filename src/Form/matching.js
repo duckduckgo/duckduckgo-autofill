@@ -108,7 +108,7 @@ class Matching {
     }
 
     /**
-     *
+     * Strategies can have different lookup names. This returns the correct one
      * @param {MatcherTypeNames} matcherName
      * @param {StrategyNames} vendorRegex
      * @returns {MatcherTypeNames}

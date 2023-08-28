@@ -39,4 +39,4 @@ const extractElementStrings = (element) => {
     return [...strings]
 }
 
-export {extractElementStrings, EXCLUDED_TAGS}
+export {extractElementStrings}
