@@ -12945,7 +12945,10 @@ const matchingConfiguration = {
       matchers: {
         unknown: {
           match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' + // Italian
-          '|cerca|filtr|oggetto|titolo|(due|più) fattori',
+          '|cerca|filtr|oggetto|titolo|(due|più) fattori' + // German
+          '|suche|filtern|betreff' + // Dutch
+          '|zoeken|filter|onderwerp|titel' + // French
+          '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique',
           skip: 'phone|mobile|email|password'
         },
         emailAddress: {
@@ -12955,14 +12958,19 @@ const matchingConfiguration = {
           forceUnknown: 'search|filter|subject|title|\btab\b|otp'
         },
         password: {
-          match: 'password',
+          match: 'password' + // German
+          '|passwort|kennwort' + // Dutch
+          '|wachtwoord' + // French
+          '|mot de passe',
           skip: 'email|one-time|error|hint',
           forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
         },
         username: {
           match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$' + // Italian
           '|(nome|id|login).?utente|(nome|id) (dell\')?account' + // German
-          '|benutzername',
+          '|nutzername|anmeldename' + // Dutch
+          '|gebruikersnaam' + // French
+          '|nom d\'utilisateur',
           skip: 'phone',
           forceUnknown: 'search|policy'
         },
@@ -13055,30 +13063,52 @@ const matchingConfiguration = {
           match: 'sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' + '|mfa-submit-form' + // fix chase.com
           '|unlock|logged in as' + // fix bitwarden
           // Italian
-          '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password'
+          '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password' + // German
+          '|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl' + // Dutch
+          '|inloggen|aanmelden' + // French
+          '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)'
         },
         signupRegex: {
           match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' + // Italian
-          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga'
+          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' + // German
+          '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|nutzername|passwort wiederholen|anmeldeseite' + // Dutch
+          '|aanmelden|nieuwsbrief|aanmaken|profiel' + // French
+          '|s\'inscrire|inscription|s\'abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe'
         },
         conservativeSignupRegex: {
           match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' + // Italian
-          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna'
+          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' + // German
+          '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' + // Dutch
+          '|registreren|aanmelden|eigenschappen|profiel|bijwerken' + // French
+          '|s\'inscrire|inscription|s\'abonner|abonnement|préférences|profil'
         },
         resetPasswordLink: {
           match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' + // Italian
-          '|password dimenticata|reset(?:ta) password|recuper[ao] password'
+          '|password dimenticata|reset(?:ta) password|recuper[ao] password' + // German
+          '|(vergessen|verloren|verlegt|wiederherstellen) passwort' + // Dutch
+          '|wachtwoord (vergeten|reset)' + // French
+          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe oublié'
         },
         loginProvidersRegex: {
-          match: ' with '
+          match: ' with ' + // Italian
+          '| con ' + // German
+          '| mit ' + // Dutch
+          '| met ' + // French
+          '| avec '
         },
         submitButtonRegex: {
           match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' + // Italian
-          '|invia|conferma|salva|continua|entra|accedi|accesso|compra|paga|sottoscrivi|registra|dona'
+          '|invia|conferma|salva|continua|entra|accedi|accesso|compra|paga|sottoscrivi|registra|dona' + // German
+          '|senden|\\bja\\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden' + // Dutch
+          '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' + // French
+          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s\'abonner|donner'
         },
         submitButtonUnlikelyRegex: {
           match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' + // Italian
-          '|annulla|mostra|nascondi|stampa|indietro|già'
+          '|annulla|mostra|nascondi|stampa|indietro|già' + // German
+          '|abbrechen|passwort|zeigen|verbergen|drucken|zurück' + // Dutch
+          '|annuleer|wachtwoord|toon|vorige' + // French
+          '|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà'
         }
       }
     },
