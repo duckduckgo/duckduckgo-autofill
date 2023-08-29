@@ -9270,11 +9270,11 @@ const matchingConfiguration = {
         unknown: {
           match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' + // Italian
           '|cerca|filtr|oggetto|titolo|(due|più) fattori',
-          skip: 'phone|mobile|email'
+          skip: 'phone|mobile|email|password'
         },
         emailAddress: {
           match: '.mail\\b|apple.?id' + // Italian
-          'posta elettronica',
+          '|posta elettronica',
           skip: 'phone|(first.?|last.?)name|number|code',
           forceUnknown: 'search|filter|subject|title|\btab\b|otp'
         },
