@@ -9,6 +9,9 @@
     },
     "shouldConsumeAliasIfProvided": {
       "type": "boolean"
+    },
+    "isIncontextSignupAvailable": {
+      "type": "boolean"
     }
   },
   "required": [

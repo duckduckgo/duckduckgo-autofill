@@ -43,6 +43,13 @@ export type SendJSPixelParams =
  * @internal
  */
 export interface API {
+  /**
+   * Register a new debug flag that will be included in breakage reports
+   */
+  addDebugFlag?: {
+    paramsValidator?: AddDebugFlagParams;
+    [k: string]: unknown;
+  };
   getAutofillData?: {
     id?: "getAutofillDataResponse";
     paramsValidator?: GetAutofillDataRequest;
@@ -218,6 +225,12 @@ export interface API {
   closeEmailProtectionTab?: {
     [k: string]: unknown;
   };
+}
+/**
+ * Parameters for the addDebugFlag method
+ */
+export interface AddDebugFlagParams {
+  flag: string;
 }
 /**
  * This describes the argument given to `getAutofillData(data)`
@@ -584,10 +597,11 @@ export interface AutofillFeatureToggles {
 export interface GetAliasParams {
   requiresUserPermission: boolean;
   shouldConsumeAliasIfProvided: boolean;
+  isIncontextSignupAvailable?: boolean;
 }
 export interface GetAliasResult {
   success: {
-    alias: string;
+    alias?: string;
   };
 }
 /**

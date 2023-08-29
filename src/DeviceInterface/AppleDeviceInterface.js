@@ -137,18 +137,9 @@ class AppleDeviceInterface extends InterfacePrototype {
             if ('configType' in response) {
                 this.selectedDetail(response.data, response.configType)
             } else if ('stop' in response) {
-                // Let input handlers know we've stopped autofilling
-                this.activeForm?.activeInput?.dispatchEvent(new Event('mouseleave'))
+                await this.onFinishedAutofill()
             } else if ('stateChange' in response) {
-                // Remove decorations before refreshing data to make sure we
-                // remove the currently set icons
-                this.activeForm?.removeAllDecorations()
-
-                // Update for any state that may have changed
-                await this.refreshData()
-
-                // Add correct icons and behaviour
-                this.activeForm?.recategorizeAllInputs()
+                await this.updateForStateChange()
             }
         })
     }
@@ -269,14 +260,15 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /**
-     * @returns {Promise<string>}
+     * @returns {Promise<string|undefined>}
      */
     async getAlias () {
         const {alias} = await this.deviceApi.request(new GetAlias({
             requiresUserPermission: !this.globalConfig.isApp,
-            shouldConsumeAliasIfProvided: !this.globalConfig.isApp
+            shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
+            isIncontextSignupAvailable: this.inContextSignup.isAvailable()
         }))
-        return formatDuckAddress(alias)
+        return alias ? formatDuckAddress(alias) : alias
     }
 
     addLogoutListener (handler) {

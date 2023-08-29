@@ -14,7 +14,7 @@ const test = testContext(base)
 
 test.describe('chrome extension', () => {
     test('should autofill the selected email', async ({page}) => {
-        const {personalAddress, privateAddress0} = constants.fields.email
+        const {personalAddress, privateAddress0, privateAddress1} = constants.fields.email
 
         forwardConsoleMessages(page)
         await withEmailProtectionExtensionSignedInAs(page, stripDuckExtension(personalAddress))
@@ -52,7 +52,18 @@ test.describe('chrome extension', () => {
         // now ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
 
+        // autofill a private address again
+        await emailPage.clickDirectlyOnDax()
+        await privateAddressBtn.click()
+
+        // now check that the field has the new private address
+        await emailPage.assertEmailValue(privateAddress1)
+
         // assert that the background page received  pixel
-        await emailPage.assertExtensionPixelsCaptured(['autofill_show', 'autofill_personal_address', 'autofill_show', 'autofill_private_address'])
+        await emailPage.assertExtensionPixelsCaptured([
+            'autofill_show', 'autofill_personal_address', // personal autofill
+            'autofill_show', 'autofill_private_address', // first private autofill
+            'autofill_show', 'autofill_private_address' // second private autofill
+        ])
     })
 })
