@@ -15706,7 +15706,7 @@ class Settings {
     } catch (e) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
       if (this.globalConfig.isDDGTestMode) {
-        console.log('isDDGTestMode: getFeatureToggles: ❌', e);
+        console.log('isDDGTestMode: getEnabled: ❌', e);
       }
 
       return null;
@@ -19661,11 +19661,10 @@ class AppleTransport extends _index.DeviceApiTransport {
       if (e instanceof _contentScopeUtils.MissingHandler) {
         if (this.config.isDDGTestMode) {
           console.log('MissingWebkitHandler error for:', deviceApiCall.method);
-        }
+        } // if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
+        //     return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config))
+        // }
 
-        if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
-          return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config));
-        }
 
         throw new Error('unimplemented handler: ' + deviceApiCall.method);
       } else {

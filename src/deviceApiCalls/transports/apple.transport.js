@@ -28,9 +28,9 @@ export class AppleTransport extends DeviceApiTransport {
                 if (this.config.isDDGTestMode) {
                     console.log('MissingWebkitHandler error for:', deviceApiCall.method)
                 }
-                if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
-                    return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config))
-                }
+                // if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
+                //     return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config))
+                // }
                 throw new Error('unimplemented handler: ' + deviceApiCall.method)
             } else {
                 throw e
