@@ -12948,12 +12948,16 @@ const matchingConfiguration = {
           '|cerca|filtr|oggetto|titolo|(due|più) fattori' + // German
           '|suche|filtern|betreff' + // Dutch
           '|zoeken|filter|onderwerp|titel' + // French
-          '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique',
+          '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique' + // Spanish
+          '|busca|filtra|dos pasos|un solo uso' + // Swedish
+          '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
           skip: 'phone|mobile|email|password'
         },
         emailAddress: {
           match: '.mail\\b|apple.?id' + // Italian
-          '|posta elettronica',
+          '|posta elettronica' + // Spanish
+          '|correo electr' + // Swedish
+          '|e.?post|e.?postadress',
           skip: 'phone|(first.?|last.?)name|number|code',
           forceUnknown: 'search|filter|subject|title|\btab\b|otp'
         },
@@ -12961,7 +12965,9 @@ const matchingConfiguration = {
           match: 'password' + // German
           '|passwort|kennwort' + // Dutch
           '|wachtwoord' + // French
-          '|mot de passe',
+          '|mot de passe' + // Spanish
+          '|clave|contraseña' + // Swedish
+          '|lösenord',
           skip: 'email|one-time|error|hint',
           forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
         },
@@ -12970,7 +12976,9 @@ const matchingConfiguration = {
           '|(nome|id|login).?utente|(nome|id) (dell\')?account' + // German
           '|nutzername|anmeldename' + // Dutch
           '|gebruikersnaam' + // French
-          '|nom d\'utilisateur',
+          '|nom d\'utilisateur' + // Spanish
+          '|usuario|cuenta' + // Swedish
+          '|användarnamn|kontonamn|användar-id',
           skip: 'phone',
           forceUnknown: 'search|policy'
         },
@@ -13065,32 +13073,40 @@ const matchingConfiguration = {
           // Italian
           '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password' + // German
           '|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl' + // Dutch
-          '|inloggen|aanmelden' + // French
-          '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)'
+          '|inloggen' + // French
+          '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
+          '|usuario|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)' + // Swedish
+          '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
         },
         signupRegex: {
           match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' + // Italian
           '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' + // German
           '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|nutzername|passwort wiederholen|anmeldeseite' + // Dutch
-          '|aanmelden|nieuwsbrief|aanmaken|profiel' + // French
-          '|s\'inscrire|inscription|s\'abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe'
+          '|nieuwsbrief|aanmaken|profiel' + // French
+          '|s\'inscrire|inscription|s\'abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' + // Spanish
+          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
+          '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
         },
         conservativeSignupRegex: {
           match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' + // Italian
           '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' + // German
           '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' + // Dutch
-          '|registreren|aanmelden|eigenschappen|profiel|bijwerken' + // French
-          '|s\'inscrire|inscription|s\'abonner|abonnement|préférences|profil'
+          '|registreren|eigenschappen|profiel|bijwerken' + // French
+          '|s\'inscrire|inscription|s\'abonner|abonnement|préférences|profil' + // Spanish
+          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
+          '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera'
         },
         resetPasswordLink: {
           match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' + // Italian
           '|password dimenticata|reset(?:ta) password|recuper[ao] password' + // German
           '|(vergessen|verloren|verlegt|wiederherstellen) passwort' + // Dutch
           '|wachtwoord (vergeten|reset)' + // French
-          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe oublié'
+          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe oublié' + // Spanish
+          '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' + // Swedish
+          '|glömt lösenord|återställ lösenord'
         },
         loginProvidersRegex: {
-          match: ' with ' + // Italian
+          match: ' with ' + // Italian and Spanish
           '| con ' + // German
           '| mit ' + // Dutch
           '| met ' + // French
@@ -13098,17 +13114,21 @@ const matchingConfiguration = {
         },
         submitButtonRegex: {
           match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' + // Italian
-          '|invia|conferma|salva|continua|entra|accedi|accesso|compra|paga|sottoscrivi|registra|dona' + // German
+          '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' + // German
           '|senden|\\bja\\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden' + // Dutch
           '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' + // French
-          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s\'abonner|donner'
+          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s\'abonner|donner' + // Spanish
+          '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' + // Swedish
+          '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
         },
         submitButtonUnlikelyRegex: {
           match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' + // Italian
           '|annulla|mostra|nascondi|stampa|indietro|già' + // German
           '|abbrechen|passwort|zeigen|verbergen|drucken|zurück' + // Dutch
           '|annuleer|wachtwoord|toon|vorige' + // French
-          '|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà'
+          '|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà' + // Spanish
+          '|anular|cancelar|imprimir|cerrar' + // Swedish
+          '|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan'
         }
       }
     },
