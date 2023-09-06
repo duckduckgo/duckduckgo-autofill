@@ -246,9 +246,9 @@ const matchingConfiguration = {
                         // Italian
                         '|posta elettronica' +
                         // Spanish
-                        '|correo electr' +
+                        '|correo electr|correo-e|^correo$' +
                         // Swedish
-                        '|e.?post|e.?postadress',
+                        '|\\be.?post|e.?postadress',
                     skip: 'phone|(first.?|last.?)name|number|code',
                     forceUnknown: 'search|filter|subject|title|\btab\b|otp'
                 },
@@ -270,7 +270,7 @@ const matchingConfiguration = {
                 username: {
                     match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$' +
                         // Italian
-                        '|(nome|id|login).?utente|(nome|id) (dell\')?account' +
+                        '|(nome|id|login).?utente|(nome|id) (dell\')?account|codice cliente' +
                         // German
                         '|nutzername|anmeldename' +
                         // Dutch
@@ -278,7 +278,9 @@ const matchingConfiguration = {
                         // French
                         '|nom d\'utilisateur' +
                         // Spanish
-                        '|usuario|cuenta' +
+                        '|usuario|cuenta|identificador|apodo' +
+                            // in Spanish dni and nie stand for id number, often used as username
+                            '|\\bdni\\b|\\bnie\\b| del? documento' +
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
                     skip: 'phone',
@@ -296,7 +298,7 @@ const matchingConfiguration = {
                 expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]'},
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    skip: 'invalid'
+                    skip: 'invalid|^dd/'
                 },
 
                 // Identities
@@ -304,7 +306,7 @@ const matchingConfiguration = {
                     match: '(first|given|fore).?name' +
                         // Italian
                         '|\\bnome',
-                    skip: 'last'
+                    skip: 'last|cognome|completo'
                 },
                 middleName: {
                     match: '(middle|additional).?name'
@@ -313,7 +315,7 @@ const matchingConfiguration = {
                     match: '(last|family|sur)[^i]?name' +
                         // Italian
                         '|cognome',
-                    skip: 'first'
+                    skip: 'first|\\bnome'
                 },
                 fullName: {
                     match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' +
@@ -331,17 +333,17 @@ const matchingConfiguration = {
                 addressStreet: {
                     match: 'address',
                     forceUnknown: '\\bip\\b|duck|web|url',
-                    skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in'
+                    skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico'
                 },
                 addressStreet2: {
                     match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
                     forceUnknown: '\\bip\\b|duck',
                     skip: 'email|log.?in|sign.?in'
                 },
-                addressCity: {match: 'city|town', forceUnknown: 'vatican'},
-                addressProvince: {match: 'state|province|region|county', forceUnknown: 'united', skip: 'country'},
-                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code'},
-                addressCountryCode: {match: 'country|nazione'},
+                addressCity: {match: 'city|town|città|comune', skip: '\\bzip\\b|\\bcap\\b', forceUnknown: 'vatican'},
+                addressProvince: {match: 'state|province|region|county|provincia|regione', forceUnknown: 'united', skip: 'country'},
+                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'},
+                addressCountryCode: {match: 'country|nazione|paese'},
                 birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
                 birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},
                 birthdayYear: {match: '(birth.*year|year.*birth)'},
@@ -359,7 +361,7 @@ const matchingConfiguration = {
                         // French
                         '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' +
                         // Spanish
-                        '|usuario|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)' +
+                        '|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar' +
                         // Swedish
                         '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
                 },
@@ -866,7 +868,7 @@ const matchingConfiguration = {
                         '|സംസ്ഥാനം' + // ml
                         '|استان' + // fa
                         '|राज्य' + // hi
-                        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))' + // tr
+                        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]limiz|kent)(\\b|_|\\*))' + // tr
                         '|^시[·・]?도', // ko-KR
 
                     'postal-code':
@@ -913,7 +915,7 @@ const matchingConfiguration = {
                         '^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name' +
                         '|name.*first.*last|firstandlastname' +
                         '|nombre.*y.*apellidos' + // es
-                        '|^nom(?!bre)' + // fr-FR
+                        '|^nom(?!bre)\\b' + // fr-FR
                         '|お名前|氏名' + // ja-JP
                         '|^nome' + // pt-BR, pt-PT
                         '|نام.*نام.*خانوادگی' + // fa
@@ -927,7 +929,7 @@ const matchingConfiguration = {
                         '|nombre' + // es
                         '|forename|prénom|prenom' + // fr-FR
                         '|名' + // ja-JP
-                        '|nome' + // pt-BR, pt-PT
+                        '|\\bnome' + // pt-BR, pt-PT
                         '|Имя' + // ru
                         '|نام' + // fa
                         '|이름' + // ko-KR
