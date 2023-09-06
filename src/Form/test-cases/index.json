@@ -498,5 +498,6 @@
   { "html": "chase_2fa-verification-step.html" },
   { "html": "alaskaair_checkout.html", "expectedFailures": ["phone"], "expectedSubmitFalsePositives": 4 },
   { "html": "autostrade_login.html" },
+  { "html": "morningstar_login.html" },
   { "html": "flytap_login.html" }
 ]
