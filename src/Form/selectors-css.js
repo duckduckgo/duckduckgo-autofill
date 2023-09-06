@@ -1,5 +1,5 @@
 const formInputsSelector = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),
+input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]),
 [autocomplete=username],
 select`
 
@@ -13,6 +13,10 @@ a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
 const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style)'
+
+// We've seen non-standard types like 'user'. This selector should get them, too
+const genericTextField = `
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
 
 const emailAddress = [
     `
@@ -30,12 +34,65 @@ input[autocomplete=username][type=email],
 input[autocomplete=username][placeholder*=email i],
 input[autocomplete=email]`,
     // https://account.nicovideo.jp/login
-    `input[name="mail_tel" i]`
+    `input[name="mail_tel" i]`,
+    // https://www.morningstar.it/it/membership/LoginPopup.aspx
+    `input[value=email i]`
 ]
 
-// We've seen non-standard types like 'user'. This selector should get them, too
-const genericTextField = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
+const username = [
+    `${genericTextField}[autocomplete^=user i]`,
+    `input[name=username i]`,
+    // fix for `aa.com`
+    `input[name="loginId" i]`,
+    // fix for https://online.mbank.pl/pl/Login
+    `input[name="userid" i]`,
+    `input[id="userid" i]`,
+    `input[name="user_id" i]`,
+    `input[name="user-id" i]`,
+    `input[id="login-id" i]`,
+    `input[id="login_id" i]`,
+    `input[id="loginid" i]`,
+    `input[name="login" i]`,
+    `input[name=accountname i]`,
+    `input[autocomplete=username i]`,
+    `input[name*=accountid i]`,
+    `input[name="j_username" i]`,
+    `input[id="j_username" i]`,
+    // https://account.uwindsor.ca/login
+    `input[name="uwinid" i]`,
+    // livedoor.com
+    `input[name="livedoor_id" i]`,
+    // https://login.oracle.com/mysso/signon.jsp?request_id=
+    `input[name="ssousername" i]`,
+    // https://secure.nsandi.com/
+    `input[name="j_userlogin_pwd" i]`,
+    // https://freelance.habr.com/users/sign_up
+    `input[name="user[login]" i]`,
+    // https://weblogin.utoronto.ca
+    `input[name="user" i]`,
+    // https://customerportal.mastercard.com/login
+    `input[name$="_username" i]`,
+    // https://accounts.hindustantimes.com/?type=plain&ref=lm
+    `input[id="lmSsoinput" i]`,
+    // bigcartel.com/login
+    `input[name="account_subdomain" i]`,
+    // https://www.mydns.jp/members/
+    `input[name="masterid" i]`,
+    // https://giris.turkiye.gov.tr
+    `input[name="tridField" i]`,
+    // https://membernetprb2c.b2clogin.com
+    `input[id="signInName" i]`,
+    // https://www.w3.org/accounts/request
+    `input[id="w3c_accountsbundle_accountrequeststep1_login" i]`,
+    `input[id="username" i]`,
+    `input[name="_user" i]`,
+    `input[name="login_username" i]`,
+    // https://www.flytap.com/
+    `input[name^="login-user-account" i]`,
+    // https://www.sanitas.es
+    `input[id="loginusuario" i]`,
+    `input[placeholder^="username" i]`
+]
 
 const password = [
     `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])`,
@@ -87,6 +144,7 @@ const expirationMonth = `
 [name*=expiration i][name*=month i],
 [id*=expiration i][id*=month i],
 [name*=cc-exp-month i],
+[name*="card_exp-month" i],
 [name*=cc_exp_month i]`
 
 const expirationYear = `
@@ -98,7 +156,8 @@ const expirationYear = `
 [name*=ExpDate_Year i],
 [name*=expiration i][name*=year i],
 [id*=expiration i][id*=year i],
-[name*=cc-exp-year i],
+[name*="cc-exp-year" i],
+[name*="card_exp-year" i],
 [name*=cc_exp_year i]`
 
 const expiration = `
@@ -199,59 +258,6 @@ const birthdayYear = `
 [name^=birthdate_y i], [name^=birthdate-y i],
 [aria-label="birthday" i][placeholder="year" i]`
 
-const username = [
-    `${genericTextField}[autocomplete^=user i]`,
-    `input[name=username i]`,
-    // fix for `aa.com`
-    `input[name="loginId" i]`,
-    // fix for https://online.mbank.pl/pl/Login
-    `input[name="userid" i]`,
-    `input[id="userid" i]`,
-    `input[name="user_id" i]`,
-    `input[name="user-id" i]`,
-    `input[id="login-id" i]`,
-    `input[id="login_id" i]`,
-    `input[id="loginid" i]`,
-    `input[name="login" i]`,
-    `input[name=accountname i]`,
-    `input[autocomplete=username i]`,
-    `input[name*=accountid i]`,
-    `input[name="j_username" i]`,
-    `input[id="j_username" i]`,
-    // https://account.uwindsor.ca/login
-    `input[name="uwinid" i]`,
-    // livedoor.com
-    `input[name="livedoor_id" i]`,
-    // https://login.oracle.com/mysso/signon.jsp?request_id=
-    `input[name="ssousername" i]`,
-    // https://secure.nsandi.com/
-    `input[name="j_userlogin_pwd" i]`,
-    // https://freelance.habr.com/users/sign_up
-    `input[name="user[login]" i]`,
-    // https://weblogin.utoronto.ca
-    `input[name="user" i]`,
-    // https://customerportal.mastercard.com/login
-    `input[name$="_username" i]`,
-    // https://accounts.hindustantimes.com/?type=plain&ref=lm
-    `input[id="lmSsoinput" i]`,
-    // bigcartel.com/login
-    `input[name="account_subdomain" i]`,
-    // https://www.mydns.jp/members/
-    `input[name="masterid" i]`,
-    // https://giris.turkiye.gov.tr
-    `input[name="tridField" i]`,
-    // https://membernetprb2c.b2clogin.com
-    `input[id="signInName" i]`,
-    // https://www.w3.org/accounts/request
-    `input[id="w3c_accountsbundle_accountrequeststep1_login" i]`,
-    `input[id="username" i]`,
-    `input[name="_user" i]`,
-    `input[name="login_username" i]`,
-    // https://www.flytap.com/
-    `input[name^="login-user-account" i]`,
-    `input[placeholder^="username" i]`
-]
-
 export const selectors = {
     // Generic
     genericTextField,
@@ -261,8 +267,8 @@ export const selectors = {
 
     // Credentials
     emailAddress,
-    password,
     username,
+    password,
 
     // Credit Card
     cardName,
