@@ -312,9 +312,13 @@ const isLikelyASubmitButton = (el, matching) => {
     const ariaLabel = el.getAttribute('aria-label') || ''
     const dataTestId = el.getAttribute('data-test-id') || ''
 
+    if (
+        (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+        el.getAttribute('name') === 'submit') && // is called "submit"
+        !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)
+    ) return true
+
     return (
-        el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-        el.getAttribute('name') === 'submit' || // is called "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
         /submit/i.test(dataTestId) ||
         matching.getDDGMatcherRegex('submitButtonRegex')?.test(text) || // has high-signal text
