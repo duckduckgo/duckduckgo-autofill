@@ -258,7 +258,11 @@ class Matching {
 
         if (input instanceof HTMLInputElement) {
             if (this.subtypeFromMatchers('password', input)) {
-                return 'credentials.password'
+                // Any other input type is likely a false match
+                // Arguably "text" should be as well, but it can be used for password reveal fields
+                if (['password', 'text'].includes(input.type)) {
+                    return 'credentials.password'
+                }
             }
 
             if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
