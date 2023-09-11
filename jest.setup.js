@@ -111,3 +111,18 @@ Object.defineProperty(window.HTMLElement.prototype, 'offsetHeight', {
         return this._jsdomMockOffsetHeight || 0
     }
 })
+
+// getComputedStyle is super slow on jsdom, by providing this mock we speed tests up significantly
+const defaultStyle = {
+    display: 'block',
+    visibility: 'visible',
+    opacity: '1',
+    paddingRight: '10'
+}
+const mockGetComputedStyle = (el) => {
+    return {
+        getPropertyValue: (prop) => el.style?.[prop] || defaultStyle[prop]
+    }
+}
+// @ts-ignore
+jest.spyOn(window, 'getComputedStyle').mockImplementation(mockGetComputedStyle)
