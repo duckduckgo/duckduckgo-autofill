@@ -161,7 +161,7 @@ class Messaging {
   }
   /**
    * Send a 'fire-and-forget' message.
-   * @throws
+   * @throws {Error}
    * {@link MissingHandler}
    *
    * @example
@@ -181,7 +181,7 @@ class Messaging {
   }
   /**
    * Send a request, and wait for a response
-   * @throws
+   * @throws {Error}
    * {@link MissingHandler}
    *
    * @example
@@ -4471,15 +4471,8 @@ class ExtensionInterface extends _InterfacePrototype.default {
     return null;
   }
 
-  removeAutofillUIFromPage() {
-    var _this$activeForm2;
-
-    super.removeAutofillUIFromPage();
-    (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.removeAllDecorations();
-  }
-
   async resetAutofillUI(callback) {
-    this.removeAutofillUIFromPage();
+    this.removeAutofillUIFromPage('Resetting autofill.');
     await this.setupAutofill();
     if (callback) await callback();
     this.uiController = this.createUIController();
@@ -4517,7 +4510,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
     switch (this.getActiveTooltipType()) {
       case TOOLTIP_TYPES.EmailProtection:
         {
-          var _this$activeForm3;
+          var _this$activeForm2;
 
           this._scannerCleanup = this.scanner.init();
           this.addLogoutListener(() => {
@@ -4532,12 +4525,12 @@ class ExtensionInterface extends _InterfacePrototype.default {
             }
           });
 
-          if ((_this$activeForm3 = this.activeForm) !== null && _this$activeForm3 !== void 0 && _this$activeForm3.activeInput) {
-            var _this$activeForm4;
+          if ((_this$activeForm2 = this.activeForm) !== null && _this$activeForm2 !== void 0 && _this$activeForm2.activeInput) {
+            var _this$activeForm3;
 
             this.attachTooltip({
               form: this.activeForm,
-              input: (_this$activeForm4 = this.activeForm) === null || _this$activeForm4 === void 0 ? void 0 : _this$activeForm4.activeInput,
+              input: (_this$activeForm3 = this.activeForm) === null || _this$activeForm3 === void 0 ? void 0 : _this$activeForm3.activeInput,
               click: null,
               trigger: 'postSignup',
               triggerMetaData: {
@@ -4773,7 +4766,7 @@ class InterfacePrototype {
 
   /** @type {boolean} */
 
-  /** @type {(()=>void) | null} */
+  /** @type {((reason, ...rest) => void) | null} */
 
   /**
    * @param {GlobalConfig} config
@@ -4847,12 +4840,16 @@ class InterfacePrototype {
   createUIController() {
     return new _NativeUIController.NativeUIController();
   }
+  /**
+   * @param {string} reason
+   */
 
-  removeAutofillUIFromPage() {
+
+  removeAutofillUIFromPage(reason) {
     var _this$uiController, _this$_scannerCleanup;
 
     (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : _this$uiController.destroy();
-    (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
+    (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this, reason);
   }
 
   get hasLocalAddresses() {
@@ -5092,7 +5089,7 @@ class InterfacePrototype {
   postInit() {
     const cleanup = this.scanner.init();
     this.addLogoutListener(() => {
-      cleanup();
+      cleanup('Logged out');
 
       if (this.globalConfig.isDDGDomain) {
         (0, _autofillUtils.notifyWebApp)({
@@ -6544,6 +6541,10 @@ class Form {
     return this.formAnalyzer.isHybrid;
   }
 
+  get isCCForm() {
+    return this.formAnalyzer.isCCForm();
+  }
+
   logFormInfo() {
     if (!(0, _autofillUtils.shouldLog)()) return;
     console.log("Form type: %c".concat(this.getFormType()), 'font-weight: bold');
@@ -6800,6 +6801,7 @@ class Form {
   destroy() {
     this.removeAllDecorations();
     this.removeTooltip();
+    this.forgetAllInputs();
     this.mutObs.disconnect();
     this.matching.clear();
     this.intObs = null;
@@ -6902,6 +6904,7 @@ class Form {
     const opts = {
       isLogin: this.isLogin,
       isHybrid: this.isHybrid,
+      isCCForm: this.isCCForm,
       hasCredentials: Boolean((_this$device$settings = this.device.settings.availableInputTypes.credentials) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.username),
       supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
     };
@@ -7354,6 +7357,8 @@ class FormAnalyzer {
 
     _defineProperty(this, "matching", void 0);
 
+    _defineProperty(this, "_isCCForm", undefined);
+
     this.form = form;
     this.matching = matching || new _matching.Matching(_matchingConfiguration.matchingConfiguration);
     /**
@@ -7631,6 +7636,52 @@ class FormAnalyzer {
     }
 
     return this;
+  }
+  /** @type {undefined|boolean} */
+
+
+  /**
+   * Tries to infer if it's a credit card form
+   * @returns {boolean}
+   */
+  isCCForm() {
+    var _formEl$textContent;
+
+    const formEl = this.form;
+    if (this._isCCForm !== undefined) return this._isCCForm;
+    const ccFieldSelector = this.matching.joinCssSelectors('cc');
+
+    if (!ccFieldSelector) {
+      this._isCCForm = false;
+      return this._isCCForm;
+    }
+
+    const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector); // If the form contains one of the specific selectors, we have high confidence
+
+    if (hasCCSelectorChild) {
+      this._isCCForm = true;
+      return this._isCCForm;
+    } // Read form attributes to find a signal
+
+
+    const hasCCAttribute = [...formEl.attributes].some(_ref3 => {
+      let {
+        name,
+        value
+      } = _ref3;
+      return /(credit|payment).?card/i.test("".concat(name, "=").concat(value));
+    });
+
+    if (hasCCAttribute) {
+      this._isCCForm = true;
+      return this._isCCForm;
+    } // Match form textContent against common cc fields (includes hidden labels)
+
+
+    const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
+
+    this._isCCForm = Boolean(textMatches && textMatches.length > 1);
+    return this._isCCForm;
   }
 
 }
@@ -10079,7 +10130,7 @@ class Matching {
     this.setActiveElementStrings(input, formEl); // // For CC forms we run aggressive matches, so we want to make sure we only
     // // run them on actual CC forms to avoid false positives and expensive loops
 
-    if (this.isCCForm(formEl)) {
+    if (opts.isCCForm) {
       const subtype = this.subtypeFromMatchers('cc', input);
 
       if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -10130,6 +10181,7 @@ class Matching {
    * @typedef {{
    *   isLogin?: boolean,
    *   isHybrid?: boolean,
+   *   isCCForm?: boolean,
    *   hasCredentials?: boolean,
    *   supportsIdentitiesAutofill?: boolean
    * }} SetInputTypeOpts
@@ -10462,39 +10514,6 @@ class Matching {
   forInput(input, form) {
     this.setActiveElementStrings(input, form);
     return this;
-  }
-  /**
-   * Tries to infer if it's a credit card form
-   * @param {HTMLElement} formEl
-   * @returns {boolean}
-   */
-
-
-  isCCForm(formEl) {
-    var _formEl$textContent;
-
-    const ccFieldSelector = this.joinCssSelectors('cc');
-
-    if (!ccFieldSelector) {
-      return false;
-    }
-
-    const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector); // If the form contains one of the specific selectors, we have high confidence
-
-    if (hasCCSelectorChild) return true; // Read form attributes to find a signal
-
-    const hasCCAttribute = [...formEl.attributes].some(_ref => {
-      let {
-        name,
-        value
-      } = _ref;
-      return /(credit|payment).?card/i.test("".concat(name, "=").concat(value));
-    });
-    if (hasCCAttribute) return true; // Match form textContent against common cc fields (includes hidden labels)
-
-    const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
-
-    return Boolean(textMatches && textMatches.length > 1);
   }
   /**
    * @type {MatchingConfiguration}
@@ -11104,7 +11123,7 @@ class InContextSignup {
     };
 
     if (options.shouldHideTooltip) {
-      this.device.removeAutofillUIFromPage();
+      this.device.removeAutofillUIFromPage('Email Protection in-context signup dismissed.');
       this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
     }
 
@@ -11575,7 +11594,7 @@ const {
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
- *     init(): ()=> void;
+ *     init(): (reason, ...rest)=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
  *     options: ScannerOptions;
@@ -11689,11 +11708,13 @@ class DefaultScanner {
    * Call this to scan once and then watch for changes.
    *
    * Call the returned function to remove listeners.
-   * @returns {() => void}
+   * @returns {(reason: string, ...rest) => void}
    */
 
 
   init() {
+    var _this = this;
+
     if (this.device.globalConfig.isExtension) {
       this.device.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
         flag: 'autofill'
@@ -11709,20 +11730,12 @@ class DefaultScanner {
       setTimeout(() => this.scanAndObserve(), delay);
     }
 
-    return () => {
-      var _this$device$activeFo;
+    return function (reason) {
+      for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        rest[_key - 1] = arguments[_key];
+      }
 
-      const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
-
-      clearTimeout(this.debounceTimer);
-      this.mutObs.disconnect();
-      this.forms.forEach(form => {
-        form.resetAllInputs();
-        form.removeAllDecorations();
-      });
-      this.forms.clear(); // Bring the user back to the input they were interacting with
-
-      activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
+      _this.stopScanner(reason, ...rest);
     };
   }
   /**
@@ -11760,6 +11773,7 @@ class DefaultScanner {
       const inputs = context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
 
       if (inputs.length > this.options.maxInputsPerPage) {
+        this.stopScanner('Too many input fields in the given context, stop scanning', context);
         return this;
       }
 
@@ -11767,6 +11781,35 @@ class DefaultScanner {
     }
 
     return this;
+  }
+  /**
+   * Stops scanning, switches off the mutation observer and clears all forms
+   * @param {string} reason
+   * @param {...any} rest
+   */
+
+
+  stopScanner(reason) {
+    var _this$device$activeFo;
+
+    if ((0, _autofillUtils.shouldLog)()) {
+      for (var _len2 = arguments.length, rest = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        rest[_key2 - 1] = arguments[_key2];
+      }
+
+      console.log(reason, ...rest);
+    }
+
+    const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
+
+    clearTimeout(this.debounceTimer);
+    this.mutObs.disconnect();
+    this.forms.forEach(form => {
+      form.destroy();
+    });
+    this.forms.clear(); // Bring the user back to the input they were interacting with
+
+    activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
   }
   /**
    * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
@@ -11813,9 +11856,10 @@ class DefaultScanner {
 
 
   addInput(input) {
-    const parentForm = this.getParentForm(input); // Note that el.contains returns true for el itself
+    const parentForm = this.getParentForm(input);
+    const seenFormElements = [...this.forms.keys()]; // Note that el.contains returns true for el itself
 
-    const previouslyFoundParent = [...this.forms.keys()].find(form => form.contains(parentForm));
+    const previouslyFoundParent = seenFormElements.find(form => form.contains(parentForm));
 
     if (previouslyFoundParent) {
       if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
@@ -11829,7 +11873,7 @@ class DefaultScanner {
       }
     } else {
       // if this form is an ancestor of an existing form, remove that before adding this
-      const childForm = [...this.forms.keys()].find(form => parentForm.contains(form));
+      const childForm = seenFormElements.find(form => parentForm.contains(form));
 
       if (childForm) {
         var _this$forms$get2;
@@ -11842,9 +11886,7 @@ class DefaultScanner {
       if (this.forms.size < this.options.maxFormsPerPage) {
         this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
       } else {
-        if ((0, _autofillUtils.shouldLog)()) {
-          console.log('The page has too many forms, stop adding them.');
-        }
+        this.stopScanner('The page has too many forms, stop adding them.');
       }
     }
   }
@@ -14488,7 +14530,15 @@ const getText = el => {
     return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title || el.name);
   }
 
-  return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
+  let text = '';
+
+  for (const childNode of el.childNodes) {
+    if (childNode instanceof Text) {
+      text += ' ' + childNode.textContent;
+    }
+  }
+
+  return (0, _matching.removeExcessWhitespace)(text);
 };
 /**
  * Check if hostname is a local address
@@ -14623,9 +14673,8 @@ var _autofillUtils = require("./autofill-utils.js");
 (() => {
   if ((0, _autofillUtils.shouldLog)()) {
     console.log('DuckDuckGo Autofill Active');
-  }
+  } // if (!window.isSecureContext) return false
 
-  if (!window.isSecureContext) return false;
 
   try {
     const startupAutofill = () => {
