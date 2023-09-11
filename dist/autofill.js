@@ -11749,6 +11749,14 @@ class DefaultScanner {
     (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
     this.findEligibleInputs(document);
     (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
+
+    if ((0, _autofillUtils.shouldLogPerformance)()) {
+      var _window$performance3;
+
+      const measurement = (_window$performance3 = window.performance) === null || _window$performance3 === void 0 ? void 0 : _window$performance3.measure('scanner:init', 'scanner:init:start', 'scanner:init:end');
+      console.log("Initial scan took ".concat(Math.round(measurement === null || measurement === void 0 ? void 0 : measurement.duration), "ms"));
+    }
+
     this.mutObs.observe(document.documentElement, {
       childList: true,
       subtree: true
@@ -14094,6 +14102,7 @@ exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
 exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
 exports.shouldLog = shouldLog;
+exports.shouldLogPerformance = shouldLogPerformance;
 exports.truncateFromMiddle = truncateFromMiddle;
 exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
@@ -14582,7 +14591,7 @@ const wasAutofilledByChrome = input => {
   }
 };
 /**
- * Checks if we should log debug info to the console
+ * Checks if we should log form analysis debug info to the console
  * @returns {boolean}
  */
 
@@ -14590,11 +14599,30 @@ const wasAutofilledByChrome = input => {
 exports.wasAutofilledByChrome = wasAutofilledByChrome;
 
 function shouldLog() {
+  return readDebugSetting('ddg-autofill-debug');
+}
+/**
+ * Checks if we should log performance info to the console
+ * @returns {boolean}
+ */
+
+
+function shouldLogPerformance() {
+  return readDebugSetting('ddg-autofill-perf');
+}
+/**
+ * Check if a sessionStorage item is set to 'true'
+ * @param setting
+ * @returns {boolean}
+ */
+
+
+function readDebugSetting(setting) {
   // sessionStorage throws in invalid schemes like data: and file:
   try {
     var _window$sessionStorag;
 
-    return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem('ddg-autofill-debug')) === 'true';
+    return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem(setting)) === 'true';
   } catch (e) {
     return false;
   }
