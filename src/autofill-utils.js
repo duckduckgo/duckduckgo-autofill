@@ -349,10 +349,14 @@ const getText = (el) => {
         return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
     }
 
-    return removeExcessWhitespace(
-        Array.from(el.childNodes).reduce((text, child) =>
-            child instanceof Text ? text + ' ' + child.textContent : text, '')
-    )
+    let text = ''
+    for (const childNode of el.childNodes) {
+        if (childNode instanceof Text) {
+            text += ' ' + childNode.textContent
+        }
+    }
+
+    return removeExcessWhitespace(text)
 }
 
 /**

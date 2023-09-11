@@ -196,9 +196,10 @@ class DefaultScanner {
      */
     addInput (input) {
         const parentForm = this.getParentForm(input)
+        const seenFormElements = [...this.forms.keys()]
 
         // Note that el.contains returns true for el itself
-        const previouslyFoundParent = [...this.forms.keys()].find((form) => form.contains(parentForm))
+        const previouslyFoundParent = seenFormElements.find((form) => form.contains(parentForm))
 
         if (previouslyFoundParent) {
             if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
@@ -210,7 +211,7 @@ class DefaultScanner {
             }
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
-            const childForm = [...this.forms.keys()].find((form) => parentForm.contains(form))
+            const childForm = seenFormElements.find((form) => parentForm.contains(form))
             if (childForm) {
                 this.forms.get(childForm)?.destroy()
                 this.forms.delete(childForm)
