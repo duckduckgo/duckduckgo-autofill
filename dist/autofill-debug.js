@@ -161,7 +161,7 @@ class Messaging {
   }
   /**
    * Send a 'fire-and-forget' message.
-   * @throws {Error}
+   * @throws
    * {@link MissingHandler}
    *
    * @example
@@ -181,7 +181,7 @@ class Messaging {
   }
   /**
    * Send a request, and wait for a response
-   * @throws {Error}
+   * @throws
    * {@link MissingHandler}
    *
    * @example
@@ -18349,8 +18349,9 @@ var _autofillUtils = require("./autofill-utils.js");
 (() => {
   if ((0, _autofillUtils.shouldLog)()) {
     console.log('DuckDuckGo Autofill Active');
-  } // if (!window.isSecureContext) return false
+  }
 
+  if (!window.isSecureContext) return false;
 
   try {
     const startupAutofill = () => {
