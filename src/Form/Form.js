@@ -355,6 +355,7 @@ class Form {
     destroy () {
         this.removeAllDecorations()
         this.removeTooltip()
+        this.forgetAllInputs()
         this.mutObs.disconnect()
         this.matching.clear()
         this.intObs = null

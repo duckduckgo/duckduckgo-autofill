@@ -57,13 +57,8 @@ class ExtensionInterface extends InterfacePrototype {
         return null
     }
 
-    removeAutofillUIFromPage () {
-        super.removeAutofillUIFromPage()
-        this.activeForm?.removeAllDecorations()
-    }
-
     async resetAutofillUI (callback) {
-        this.removeAutofillUIFromPage()
+        this.removeAutofillUIFromPage('Resetting autofill.')
 
         await this.setupAutofill()
 
