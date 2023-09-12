@@ -121,6 +121,7 @@ const defaultStyle = {
 }
 const mockGetComputedStyle = (el) => {
     return {
+        // since we don't load stylesheets in the tests, the style prop is all the css applied, so it's a safe fallback
         getPropertyValue: (prop) => el.style?.[prop] || defaultStyle[prop]
     }
 }
