@@ -285,9 +285,9 @@ class FormAnalyzer {
      * @returns {boolean}
      */
     isCCForm () {
-        const formEl = this.form
         if (this._isCCForm !== undefined) return this._isCCForm
 
+        const formEl = this.form
         const ccFieldSelector = this.matching.joinCssSelectors('cc')
         if (!ccFieldSelector) {
             this._isCCForm = false
