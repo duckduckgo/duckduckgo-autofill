@@ -249,7 +249,7 @@ class Matching {
 
         // // For CC forms we run aggressive matches, so we want to make sure we only
         // // run them on actual CC forms to avoid false positives and expensive loops
-        if (this.isCCForm(formEl)) {
+        if (opts.isCCForm) {
             const subtype = this.subtypeFromMatchers('cc', input)
             if (subtype && isValidCreditCardSubtype(subtype)) {
                 return `creditCards.${subtype}`
@@ -308,6 +308,7 @@ class Matching {
      * @typedef {{
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
+     *   isCCForm?: boolean,
      *   hasCredentials?: boolean,
      *   supportsIdentitiesAutofill?: boolean
      * }} SetInputTypeOpts
@@ -587,32 +588,6 @@ class Matching {
     forInput (input, form) {
         this.setActiveElementStrings(input, form)
         return this
-    }
-    /**
-     * Tries to infer if it's a credit card form
-     * @param {HTMLElement} formEl
-     * @returns {boolean}
-     */
-    isCCForm (formEl) {
-        const ccFieldSelector = this.joinCssSelectors('cc')
-        if (!ccFieldSelector) {
-            return false
-        }
-        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector)
-        // If the form contains one of the specific selectors, we have high confidence
-        if (hasCCSelectorChild) return true
-
-        // Read form attributes to find a signal
-        const hasCCAttribute = [...formEl.attributes].some(({name, value}) =>
-            /(credit|payment).?card/i.test(`${name}=${value}`)
-        )
-        if (hasCCAttribute) return true
-
-        // Match form textContent against common cc fields (includes hidden labels)
-        const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
-
-        // We check for more than one to minimise false positives
-        return Boolean(textMatches && textMatches.length > 1)
     }
 
     /**

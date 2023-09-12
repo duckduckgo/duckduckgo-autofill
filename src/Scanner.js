@@ -13,7 +13,7 @@ const {
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
- *     init(): ()=> void;
+ *     init(): (reason, ...rest)=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
@@ -66,6 +66,8 @@ class DefaultScanner {
     activeInput = null;
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false;
+    /** @type {boolean} Indicates whether we called stopScanning */
+    stopped = false
     /** @type {import("./Form/matching").Matching} matching */
     matching
 
@@ -94,7 +96,7 @@ class DefaultScanner {
      * Call this to scan once and then watch for changes.
      *
      * Call the returned function to remove listeners.
-     * @returns {() => void}
+     * @returns {(reason: string, ...rest) => void}
      */
     init () {
         if (this.device.globalConfig.isExtension) {
@@ -108,21 +110,8 @@ class DefaultScanner {
             // otherwise, use the delay time to defer the initial scan
             setTimeout(() => this.scanAndObserve(), delay)
         }
-        return () => {
-            const activeInput = this.device.activeForm?.activeInput
-
-            // remove Dax, listeners, timers, and observers
-            clearTimeout(this.debounceTimer)
-            this.mutObs.disconnect()
-
-            this.forms.forEach(form => {
-                form.resetAllInputs()
-                form.removeAllDecorations()
-            })
-            this.forms.clear()
-
-            // Bring the user back to the input they were interacting with
-            activeInput?.focus()
+        return (reason, ...rest) => {
+            this.stopScanner(reason, ...rest)
         }
     }
 
@@ -154,11 +143,40 @@ class DefaultScanner {
         } else {
             const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'))
             if (inputs.length > this.options.maxInputsPerPage) {
+                this.stopScanner('Too many input fields in the given context, stop scanning', context)
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
         }
         return this
+    }
+
+    /**
+     * Stops scanning, switches off the mutation observer and clears all forms
+     * @param {string} reason
+     * @param {...any} rest
+     */
+    stopScanner (reason, ...rest) {
+        this.stopped = true
+
+        if (shouldLog()) {
+            console.log(reason, ...rest)
+        }
+
+        const activeInput = this.device.activeForm?.activeInput
+
+        // remove Dax, listeners, timers, and observers
+        clearTimeout(this.debounceTimer)
+        this.changedElements.clear()
+        this.mutObs.disconnect()
+
+        this.forms.forEach(form => {
+            form.destroy()
+        })
+        this.forms.clear()
+
+        // Bring the user back to the input they were interacting with
+        activeInput?.focus()
     }
 
     /**
@@ -201,10 +219,13 @@ class DefaultScanner {
      * @param {HTMLInputElement|HTMLSelectElement} input
      */
     addInput (input) {
+        if (this.stopped) return
+
         const parentForm = this.getParentForm(input)
+        const seenFormElements = [...this.forms.keys()]
 
         // Note that el.contains returns true for el itself
-        const previouslyFoundParent = [...this.forms.keys()].find((form) => form.contains(parentForm))
+        const previouslyFoundParent = seenFormElements.find((form) => form.contains(parentForm))
 
         if (previouslyFoundParent) {
             if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
@@ -216,7 +237,7 @@ class DefaultScanner {
             }
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
-            const childForm = [...this.forms.keys()].find((form) => parentForm.contains(form))
+            const childForm = seenFormElements.find((form) => parentForm.contains(form))
             if (childForm) {
                 this.forms.get(childForm)?.destroy()
                 this.forms.delete(childForm)
@@ -226,9 +247,7 @@ class DefaultScanner {
             if (this.forms.size < this.options.maxFormsPerPage) {
                 this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
             } else {
-                if (shouldLog()) {
-                    console.log('The page has too many forms, stop adding them.')
-                }
+                this.stopScanner('The page has too many forms, stop adding them.')
             }
         }
     }

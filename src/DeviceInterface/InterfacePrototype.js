@@ -73,7 +73,7 @@ class InterfacePrototype {
     /** @type {boolean} */
     isInitializationStarted;
 
-    /** @type {(()=>void) | null} */
+    /** @type {((reason, ...rest) => void) | null} */
     _scannerCleanup = null
 
     /**
@@ -102,9 +102,12 @@ class InterfacePrototype {
         return new NativeUIController()
     }
 
-    removeAutofillUIFromPage () {
+    /**
+     * @param {string} reason
+     */
+    removeAutofillUIFromPage (reason) {
         this.uiController?.destroy()
-        this._scannerCleanup?.()
+        this._scannerCleanup?.(reason)
     }
 
     get hasLocalAddresses () {
@@ -332,7 +335,7 @@ class InterfacePrototype {
     postInit () {
         const cleanup = this.scanner.init()
         this.addLogoutListener(() => {
-            cleanup()
+            cleanup('Logged out')
             if (this.globalConfig.isDDGDomain) {
                 notifyWebApp({ deviceSignedIn: {value: false} })
             }

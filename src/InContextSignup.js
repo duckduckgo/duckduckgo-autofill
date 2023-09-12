@@ -110,7 +110,7 @@ export class InContextSignup {
 
     onIncontextSignupDismissed (options = { shouldHideTooltip: true }) {
         if (options.shouldHideTooltip) {
-            this.device.removeAutofillUIFromPage()
+            this.device.removeAutofillUIFromPage('Email Protection in-context signup dismissed.')
             this.device.deviceApi.notify(new CloseAutofillParentCall(null))
         }
         this.permanentlyDismissedAt = new Date().getTime()

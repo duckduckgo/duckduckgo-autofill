@@ -128,6 +128,9 @@ class Form {
     get isHybrid () {
         return this.formAnalyzer.isHybrid
     }
+    get isCCForm () {
+        return this.formAnalyzer.isCCForm()
+    }
 
     logFormInfo () {
         if (!shouldLog()) return
@@ -352,6 +355,7 @@ class Form {
     destroy () {
         this.removeAllDecorations()
         this.removeTooltip()
+        this.forgetAllInputs()
         this.mutObs.disconnect()
         this.matching.clear()
         this.intObs = null
@@ -455,6 +459,7 @@ class Form {
         const opts = {
             isLogin: this.isLogin,
             isHybrid: this.isHybrid,
+            isCCForm: this.isCCForm,
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
             supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
         }
