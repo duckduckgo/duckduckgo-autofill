@@ -66,6 +66,8 @@ class DefaultScanner {
     activeInput = null;
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false;
+    /** @type {boolean} Indicates whether we called stopScanning */
+    stopped = false
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -153,6 +155,8 @@ class DefaultScanner {
      * @param {...any} rest
      */
     stopScanner (reason, ...rest) {
+        this.stopped = true
+
         if (shouldLog()) {
             console.log(reason, ...rest)
         }
@@ -161,6 +165,7 @@ class DefaultScanner {
 
         // remove Dax, listeners, timers, and observers
         clearTimeout(this.debounceTimer)
+        this.changedElements.clear()
         this.mutObs.disconnect()
 
         this.forms.forEach(form => {
@@ -212,6 +217,8 @@ class DefaultScanner {
      * @param {HTMLInputElement|HTMLSelectElement} input
      */
     addInput (input) {
+        if (this.stopped) return
+
         const parentForm = this.getParentForm(input)
         const seenFormElements = [...this.forms.keys()]
 

@@ -15323,6 +15323,8 @@ class DefaultScanner {
 
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
 
+  /** @type {boolean} Indicates whether we called stopScanning */
+
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
    * @param {ScannerOptions} options
@@ -15339,6 +15341,8 @@ class DefaultScanner {
     _defineProperty(this, "activeInput", null);
 
     _defineProperty(this, "rescanAll", false);
+
+    _defineProperty(this, "stopped", false);
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       /** @type {HTMLElement[]} */
@@ -15476,6 +15480,8 @@ class DefaultScanner {
   stopScanner(reason) {
     var _this$device$activeFo;
 
+    this.stopped = true;
+
     if ((0, _autofillUtils.shouldLog)()) {
       for (var _len2 = arguments.length, rest = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
         rest[_key2 - 1] = arguments[_key2];
@@ -15487,6 +15493,7 @@ class DefaultScanner {
     const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
 
     clearTimeout(this.debounceTimer);
+    this.changedElements.clear();
     this.mutObs.disconnect();
     this.forms.forEach(form => {
       form.destroy();
@@ -15540,6 +15547,7 @@ class DefaultScanner {
 
 
   addInput(input) {
+    if (this.stopped) return;
     const parentForm = this.getParentForm(input);
     const seenFormElements = [...this.forms.keys()]; // Note that el.contains returns true for el itself
 
