@@ -222,10 +222,31 @@ class DefaultScanner {
         if (this.stopped) return
 
         const parentForm = this.getParentForm(input)
-        const seenFormElements = [...this.forms.keys()]
 
-        // Note that el.contains returns true for el itself
-        const previouslyFoundParent = seenFormElements.find((form) => form.contains(parentForm))
+        if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+            // We've met the form, add the input
+            this.forms.get(parentForm)?.addInput(input)
+            return
+        }
+
+        // Check if the forms we've seen are either disconnected,
+        // or are parent/child of the currently-found form
+        let previouslyFoundParent, childForm
+        for (const [formEl] of this.forms) {
+            // Remove disconnected forms to avoid leaks
+            if (!formEl.isConnected) {
+                this.forms.delete(formEl)
+                continue
+            }
+            if (formEl.contains(parentForm)) {
+                previouslyFoundParent = formEl
+                break
+            }
+            if (parentForm.contains(formEl)) {
+                childForm = formEl
+                break
+            }
+        }
 
         if (previouslyFoundParent) {
             if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
@@ -237,7 +258,6 @@ class DefaultScanner {
             }
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
-            const childForm = seenFormElements.find((form) => parentForm.contains(form))
             if (childForm) {
                 this.forms.get(childForm)?.destroy()
                 this.forms.delete(childForm)
