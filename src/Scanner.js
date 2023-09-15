@@ -2,7 +2,7 @@ import { Form } from './Form/Form.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {isFormLikelyToBeUsedAsPageWrapper, shouldLog, shouldLogPerformance} from './autofill-utils.js'
+import {logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
@@ -117,13 +117,10 @@ class DefaultScanner {
      * Scan the page and begin observing changes
      */
     scanAndObserve () {
-        window.performance?.mark?.('scanner:init:start')
+        window.performance?.mark?.('initial_scanner:init:start')
         this.findEligibleInputs(document)
-        window.performance?.mark?.('scanner:init:end')
-        if (shouldLogPerformance()) {
-            const measurement = window.performance?.measure('scanner:init', 'scanner:init:start', 'scanner:init:end')
-            console.log(`Initial scan took ${Math.round(measurement?.duration)}ms`)
-        }
+        window.performance?.mark?.('initial_scanner:init:end')
+        logPerformance('initial_scanner')
         this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
@@ -270,9 +267,12 @@ class DefaultScanner {
 
         clearTimeout(this.debounceTimer)
         this.debounceTimer = setTimeout(() => {
+            window.performance?.mark?.('scanner:init:start')
             this.processChangedElements()
             this.changedElements.clear()
             this.rescanAll = false
+            window.performance?.mark?.('scanner:init:end')
+            logPerformance('scanner')
         }, this.options.debounceTimePeriod)
     }
 

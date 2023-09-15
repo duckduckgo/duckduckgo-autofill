@@ -430,6 +430,14 @@ function readDebugSetting (setting) {
     }
 }
 
+function logPerformance (markName) {
+    if (shouldLogPerformance()) {
+        const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`)
+        console.log(`${markName} took ${Math.round(measurement?.duration)}ms`)
+        window.performance?.clearMarks()
+    }
+}
+
 /**
  *
  * @param {Function} callback
@@ -508,6 +516,7 @@ export {
     wasAutofilledByChrome,
     shouldLog,
     shouldLogPerformance,
+    logPerformance,
     whenIdle,
     truncateFromMiddle,
     isFormLikelyToBeUsedAsPageWrapper
