@@ -244,13 +244,16 @@ class FormAnalyzer {
             el.matches('button[class*=secondary]')
         ) {
             let shouldFlip = true
-            if (
-                this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string) || // Don't flip forgotten password links
-                this.matching.getDDGMatcherRegex('loginProvidersRegex')?.test(string) // Don't flip login providers links
-            ) {
+            let strength = 1
+            // Don't flip forgotten password links
+            if (this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string)) {
+                shouldFlip = false
+                strength = 3
+            } else if (this.matching.getDDGMatcherRegex('loginProvidersRegex')?.test(string)) {
+                // Don't flip login providers links
                 shouldFlip = false
             }
-            this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip})
+            this.updateSignal({string, strength, signalType: `external link: ${string}`, shouldFlip})
         } else {
             // any other case
             // only consider the el if it's a small text to avoid noisy disclaimers

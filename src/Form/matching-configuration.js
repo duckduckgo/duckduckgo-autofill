@@ -236,7 +236,7 @@ const matchingConfiguration = {
                         // French
                         '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique' +
                         // Spanish
-                        '|busca|filtra|dos pasos|un solo uso' +
+                        '|busca|busqueda|filtra|dos pasos|un solo uso' +
                         // Swedish
                         '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
                     skip: 'phone|mobile|email|password'
@@ -268,19 +268,19 @@ const matchingConfiguration = {
                     forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
                 },
                 username: {
-                    match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$' +
+                    match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
                         // Italian
-                        '|(nome|id|login).?utente|(nome|id) (dell\')?account|codice cliente' +
+                        '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente' +
                         // German
                         '|nutzername|anmeldename' +
                         // Dutch
                         '|gebruikersnaam' +
                         // French
-                        '|nom d\'utilisateur' +
+                        '|nom d.utilisateur|identifiant|pseudo' +
                         // Spanish
-                        '|usuario|cuenta|identificador|apodo' +
+                        '|usuari|cuenta|identificador|apodo' +
                             // in Spanish dni and nie stand for id number, often used as username
-                            '|\\bdni\\b|\\bnie\\b| del? documento' +
+                            '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
                     skip: 'phone',
@@ -343,7 +343,7 @@ const matchingConfiguration = {
                 addressCity: {match: 'city|town|città|comune', skip: '\\bzip\\b|\\bcap\\b', forceUnknown: 'vatican'},
                 addressProvince: {match: 'state|province|region|county|provincia|regione', forceUnknown: 'united', skip: 'country'},
                 addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'},
-                addressCountryCode: {match: 'country|nazione|paese'},
+                addressCountryCode: {match: 'country|\\bnation\\b|nazione|paese'},
                 birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
                 birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},
                 birthdayYear: {match: '(birth.*year|year.*birth)'},
@@ -370,13 +370,13 @@ const matchingConfiguration = {
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' +
                         // German
-                        '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|nutzername|passwort wiederholen|anmeldeseite' +
+                        '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite' +
                         // Dutch
                         '|nieuwsbrief|aanmaken|profiel' +
                         // French
-                        '|s\'inscrire|inscription|s\'abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' +
+                        '|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' +
                         // Spanish
-                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
+                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
                         // Swedish
                         '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
                 },
@@ -389,7 +389,7 @@ const matchingConfiguration = {
                         // Dutch
                         '|registreren|eigenschappen|profiel|bijwerken' +
                         // French
-                        '|s\'inscrire|inscription|s\'abonner|abonnement|préférences|profil' +
+                        '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' +
                         // Spanish
                         '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
                         // Swedish
@@ -404,7 +404,7 @@ const matchingConfiguration = {
                         // Dutch
                         '|wachtwoord (vergeten|reset)' +
                         // French
-                        '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe oublié' +
+                        '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' +
                         // Spanish
                         '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' +
                         // Swedish
@@ -430,7 +430,7 @@ const matchingConfiguration = {
                         // Dutch
                         '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' +
                         // French
-                        '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s\'abonner|donner' +
+                        '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner' +
                         // Spanish
                         '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' +
                         // Swedish

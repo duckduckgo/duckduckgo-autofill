@@ -1,6 +1,6 @@
 import {createCacheableVendorRegexes} from './vendor-regex.js'
 import {constants} from '../constants.js'
-import {extractElementStrings} from './label-util.js'
+import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
 import {matchingConfiguration} from './matching-configuration.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
 import {getTextShallow} from '../autofill-utils.js'
@@ -9,7 +9,7 @@ const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
 /** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
 const dimensionBounds = {
-    emailAddress: { minWidth: 40 }
+    emailAddress: { minWidth: 35 }
 }
 
 /**
@@ -260,7 +260,11 @@ class Matching {
             if (this.subtypeFromMatchers('password', input)) {
                 // Any other input type is likely a false match
                 // Arguably "text" should be as well, but it can be used for password reveal fields
-                if (['password', 'text'].includes(input.type)) {
+                if (
+                    ['password', 'text'].includes(input.type) &&
+                    input.name !== 'email' &&
+                    input.placeholder !== 'Username'
+                ) {
                     return 'credentials.password'
                 }
             }
@@ -801,6 +805,22 @@ const getExplicitLabelsText = (el) => {
 }
 
 /**
+ * Tries to get a relevant previous Element sibling, excluding certain tags
+ * @param {Element} el
+ * @returns {Element|null}
+ */
+const recursiveGetPreviousElSibling = (el) => {
+    const previousEl = el.previousElementSibling
+    if (!previousEl) return null
+
+    // Skip elements with no childNodes
+    if (EXCLUDED_TAGS.includes(previousEl.tagName)) {
+        return recursiveGetPreviousElSibling(previousEl)
+    }
+    return previousEl
+}
+
+/**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {HTMLElement} form
@@ -812,13 +832,26 @@ const getRelatedText = (el, form, cssSelector) => {
 
     // If we didn't find a container, try looking for an adjacent label
     if (scope === el) {
-        if (el.previousElementSibling instanceof HTMLLabelElement) {
-            scope = el.previousElementSibling
+        let previousEl = recursiveGetPreviousElSibling(el)
+        if (previousEl instanceof HTMLElement) {
+            scope = previousEl
+        }
+        // If there is still no meaningful container return empty string
+        if (scope === el || scope instanceof HTMLSelectElement) {
+            if (el.previousSibling instanceof Text) {
+                return removeExcessWhitespace(el.previousSibling.textContent)
+            }
+            return ''
         }
     }
 
     // If there is still no meaningful container return empty string
-    if (scope === el || scope.nodeName === 'SELECT') return ''
+    if (scope === el || scope instanceof HTMLSelectElement) {
+        if (el.previousSibling instanceof Text) {
+            return removeExcessWhitespace(el.previousSibling.textContent)
+        }
+        return ''
+    }
 
     let trimmedText = ''
     const label = scope.querySelector('label')

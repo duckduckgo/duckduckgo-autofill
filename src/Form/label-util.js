@@ -1,5 +1,5 @@
 import {removeExcessWhitespace} from './matching.js'
-const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
+const EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
 
 /**
  * Extract all strings of an element's children to an array.
@@ -39,4 +39,4 @@ const extractElementStrings = (element) => {
     return [...strings]
 }
 
-export {extractElementStrings}
+export {extractElementStrings, EXCLUDED_TAGS}

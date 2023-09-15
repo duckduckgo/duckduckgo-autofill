@@ -12,7 +12,7 @@ button:not([role=switch]):not([role=link]),
 a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
-const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style)'
+const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)'
 
 // We've seen non-standard types like 'user'. This selector should get them, too
 const genericTextField = `
@@ -91,6 +91,12 @@ const username = [
     `input[name^="login-user-account" i]`,
     // https://www.sanitas.es
     `input[id="loginusuario" i]`,
+    // https://www.guardiacivil.es/administracion/login.html
+    `input[name="usuario" i]`,
+    // https://m.bintercanarias.com/
+    `input[id="UserLoginFormUsername" i]`,
+    // https://id.docker.com/login
+    `input[id="nw_username" i]`,
     `input[placeholder^="username" i]`
 ]
 

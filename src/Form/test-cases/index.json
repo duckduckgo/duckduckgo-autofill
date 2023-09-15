@@ -297,7 +297,7 @@
   { "html": "www_bmj_com_login.html", "generated": true, "title": "User account | The BMJ", "comment": "rank: 813" },
   { "html": "myanimelist_net_signup.html", "generated": true, "title": "Sign Up - MyAnimeList.net", "expectedFailures": ["birthdayMonth", "birthdayDay", "birthdayYear"], "comment": "rank: 907" },
   { "html": "www_gamespot_com_signup.html", "generated": true, "title": "Login or Signup", "comment": "rank: 921" },
-  { "html": "accweb_mouv_desjardins_com_login.html", "generated": true, "title": "Log in to your account", "expectedFailures": ["username"], "comment": "rank: 929" },
+  { "html": "accweb_mouv_desjardins_com_login.html", "generated": true, "title": "Log in to your account", "comment": "rank: 929" },
   { "html": "admissions_utexas_edu_login.html", "generated": true, "title": "Log in | Undergraduate Admissions | The University of Texas at Austin", "comment": "rank: 944" },
   { "html": "web_beget_email_login.html", "generated": true, "title": "BeGet Webmail :: Добро пожаловать в BeGet Webmail!", "comment": "rank: 984" },
   { "html": "account_my_com_signup.html", "generated": true, "title": "Sign Up — myGames", "comment": "rank: 1022" },
@@ -499,5 +499,7 @@
   { "html": "alaskaair_checkout.html", "expectedFailures": ["phone"], "expectedSubmitFalsePositives": 4 },
   { "html": "autostrade_login.html" },
   { "html": "morningstar_login.html" },
+  { "html": "alrincon_login.html" },
+  { "html": "metalarchives_login.html" },
   { "html": "flytap_login.html" }
 ]
