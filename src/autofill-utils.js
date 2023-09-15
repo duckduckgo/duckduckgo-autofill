@@ -334,6 +334,7 @@ const buttonMatchesFormType = (el, formObj) => {
     }
 }
 
+const buttonInputTypes = ['submit', 'button']
 /**
  * Get the text of an element
  * @param {Element} el
@@ -344,9 +345,14 @@ const getText = (el) => {
     // this is important in order to give proper attribution of the text to the button
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
-    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
-    if (el instanceof HTMLInputElement && el.type === 'image') {
-        return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+    if (el instanceof HTMLInputElement) {
+        if (buttonInputTypes.includes(el.type)) {
+            return el.value
+        }
+
+        if (el.type === 'image') {
+            return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+        }
     }
 
     let text = ''
