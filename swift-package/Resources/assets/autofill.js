@@ -10683,7 +10683,8 @@ function getInputSubtype(input) {
 
 const removeExcessWhitespace = function () {
   let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  if (!string) return '';
+  return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
 };
 /**
  * Get text from all explicit labels
@@ -11750,17 +11751,10 @@ class DefaultScanner {
   scanAndObserve() {
     var _window$performance, _window$performance$m, _window$performance2, _window$performance2$;
 
-    (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
+    (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'initial_scanner:init:start');
     this.findEligibleInputs(document);
-    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
-
-    if ((0, _autofillUtils.shouldLogPerformance)()) {
-      var _window$performance3;
-
-      const measurement = (_window$performance3 = window.performance) === null || _window$performance3 === void 0 ? void 0 : _window$performance3.measure('scanner:init', 'scanner:init:start', 'scanner:init:end');
-      console.log("Initial scan took ".concat(Math.round(measurement === null || measurement === void 0 ? void 0 : measurement.duration), "ms"));
-    }
-
+    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'initial_scanner:init:end');
+    (0, _autofillUtils.logPerformance)('initial_scanner');
     this.mutObs.observe(document.documentElement, {
       childList: true,
       subtree: true
@@ -11834,10 +11828,13 @@ class DefaultScanner {
 
   getParentForm(input) {
     if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-      // Use input.form unless it encloses most of the DOM
-      // In that case we proceed to identify more precise wrappers
-      if (input.form && !(0, _autofillUtils.isFormLikelyToBeUsedAsPageWrapper)(input.form)) {
-        return input.form;
+      if (input.form) {
+        // Use input.form unless it encloses most of the DOM
+        // In that case we proceed to identify more precise wrappers
+        if (this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
+        !(0, _autofillUtils.isFormLikelyToBeUsedAsPageWrapper)(input.form)) {
+          return input.form;
+        }
       }
     }
 
@@ -11873,28 +11870,53 @@ class DefaultScanner {
   addInput(input) {
     if (this.stopped) return;
     const parentForm = this.getParentForm(input);
-    const seenFormElements = [...this.forms.keys()]; // Note that el.contains returns true for el itself
 
-    const previouslyFoundParent = seenFormElements.find(form => form.contains(parentForm));
+    if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+      var _this$forms$get;
+
+      // We've met the form, add the input
+      (_this$forms$get = this.forms.get(parentForm)) === null || _this$forms$get === void 0 ? void 0 : _this$forms$get.addInput(input);
+      return;
+    } // Check if the forms we've seen are either disconnected,
+    // or are parent/child of the currently-found form
+
+
+    let previouslyFoundParent, childForm;
+
+    for (const [formEl] of this.forms) {
+      // Remove disconnected forms to avoid leaks
+      if (!formEl.isConnected) {
+        this.forms.delete(formEl);
+        continue;
+      }
+
+      if (formEl.contains(parentForm)) {
+        previouslyFoundParent = formEl;
+        break;
+      }
+
+      if (parentForm.contains(formEl)) {
+        childForm = formEl;
+        break;
+      }
+    }
 
     if (previouslyFoundParent) {
       if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
         // If we had a prior parent but this is an explicit form, the previous was a false positive
         this.forms.delete(previouslyFoundParent);
       } else {
-        var _this$forms$get;
+        var _this$forms$get2;
 
         // If we've already met the form or a descendant, add the input
-        (_this$forms$get = this.forms.get(previouslyFoundParent)) === null || _this$forms$get === void 0 ? void 0 : _this$forms$get.addInput(input);
+        (_this$forms$get2 = this.forms.get(previouslyFoundParent)) === null || _this$forms$get2 === void 0 ? void 0 : _this$forms$get2.addInput(input);
       }
     } else {
       // if this form is an ancestor of an existing form, remove that before adding this
-      const childForm = seenFormElements.find(form => parentForm.contains(form));
-
       if (childForm) {
-        var _this$forms$get2;
+        var _this$forms$get3;
 
-        (_this$forms$get2 = this.forms.get(childForm)) === null || _this$forms$get2 === void 0 ? void 0 : _this$forms$get2.destroy();
+        (_this$forms$get3 = this.forms.get(childForm)) === null || _this$forms$get3 === void 0 ? void 0 : _this$forms$get3.destroy();
         this.forms.delete(childForm);
       } // Only add the form if below the limit of forms per page
 
@@ -11928,9 +11950,14 @@ class DefaultScanner {
 
     clearTimeout(this.debounceTimer);
     this.debounceTimer = setTimeout(() => {
+      var _window$performance3, _window$performance3$, _window$performance4, _window$performance4$;
+
+      (_window$performance3 = window.performance) === null || _window$performance3 === void 0 ? void 0 : (_window$performance3$ = _window$performance3.mark) === null || _window$performance3$ === void 0 ? void 0 : _window$performance3$.call(_window$performance3, 'scanner:init:start');
       this.processChangedElements();
       this.changedElements.clear();
       this.rescanAll = false;
+      (_window$performance4 = window.performance) === null || _window$performance4 === void 0 ? void 0 : (_window$performance4$ = _window$performance4.mark) === null || _window$performance4$ === void 0 ? void 0 : _window$performance4$.call(_window$performance4, 'scanner:init:end');
+      (0, _autofillUtils.logPerformance)('scanner');
     }, this.options.debounceTimePeriod);
   }
   /**
@@ -14108,6 +14135,7 @@ exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedCon
 exports.isLocalNetwork = isLocalNetwork;
 exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
+exports.logPerformance = logPerformance;
 exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
 exports.shouldLog = shouldLog;
 exports.shouldLogPerformance = shouldLogPerformance;
@@ -14528,23 +14556,28 @@ const buttonMatchesFormType = (el, formObj) => {
     return true;
   }
 };
+
+exports.buttonMatchesFormType = buttonMatchesFormType;
+const buttonInputTypes = ['submit', 'button'];
 /**
  * Get the text of an element
  * @param {Element} el
  * @returns {string}
  */
 
-
-exports.buttonMatchesFormType = buttonMatchesFormType;
-
 const getText = el => {
   // for buttons, we don't care about descendants, just get the whole text as is
   // this is important in order to give proper attribution of the text to the button
   if (el instanceof HTMLButtonElement) return (0, _matching.removeExcessWhitespace)(el.textContent);
-  if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value;
 
-  if (el instanceof HTMLInputElement && el.type === 'image') {
-    return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title || el.name);
+  if (el instanceof HTMLInputElement) {
+    if (buttonInputTypes.includes(el.type)) {
+      return el.value;
+    }
+
+    if (el.type === 'image') {
+      return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title || el.name);
+    }
   }
 
   let text = '';
@@ -14633,6 +14666,16 @@ function readDebugSetting(setting) {
     return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem(setting)) === 'true';
   } catch (e) {
     return false;
+  }
+}
+
+function logPerformance(markName) {
+  if (shouldLogPerformance()) {
+    var _window$performance, _window$performance2;
+
+    const measurement = (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : _window$performance.measure("".concat(markName, ":init"), "".concat(markName, ":init:start"), "".concat(markName, ":init:end"));
+    console.log("".concat(markName, " took ").concat(Math.round(measurement === null || measurement === void 0 ? void 0 : measurement.duration), "ms"));
+    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : _window$performance2.clearMarks();
   }
 }
 /**
