@@ -180,10 +180,15 @@ class DefaultScanner {
      */
     getParentForm (input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-            // Use input.form unless it encloses most of the DOM
-            // In that case we proceed to identify more precise wrappers
-            if (input.form && !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
-                return input.form
+            if (input.form) {
+                // Use input.form unless it encloses most of the DOM
+                // In that case we proceed to identify more precise wrappers
+                if (
+                    this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
+                    !isFormLikelyToBeUsedAsPageWrapper(input.form)
+                ) {
+                    return input.form
+                }
             }
         }
 
