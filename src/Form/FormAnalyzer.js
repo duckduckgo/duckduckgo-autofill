@@ -277,6 +277,45 @@ class FormAnalyzer {
         }
         return this
     }
+
+    /** @type {undefined|boolean} */
+    _isCCForm = undefined
+    /**
+     * Tries to infer if it's a credit card form
+     * @returns {boolean}
+     */
+    isCCForm () {
+        if (this._isCCForm !== undefined) return this._isCCForm
+
+        const formEl = this.form
+        const ccFieldSelector = this.matching.joinCssSelectors('cc')
+        if (!ccFieldSelector) {
+            this._isCCForm = false
+            return this._isCCForm
+        }
+        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector)
+        // If the form contains one of the specific selectors, we have high confidence
+        if (hasCCSelectorChild) {
+            this._isCCForm = true
+            return this._isCCForm
+        }
+
+        // Read form attributes to find a signal
+        const hasCCAttribute = [...formEl.attributes].some(({name, value}) =>
+            /(credit|payment).?card/i.test(`${name}=${value}`)
+        )
+        if (hasCCAttribute) {
+            this._isCCForm = true
+            return this._isCCForm
+        }
+
+        // Match form textContent against common cc fields (includes hidden labels)
+        const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
+
+        // We check for more than one to minimise false positives
+        this._isCCForm = Boolean(textMatches && textMatches.length > 1)
+        return this._isCCForm
+    }
 }
 
 export default FormAnalyzer

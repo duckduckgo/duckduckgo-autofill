@@ -334,6 +334,7 @@ const buttonMatchesFormType = (el, formObj) => {
     }
 }
 
+const buttonInputTypes = ['submit', 'button']
 /**
  * Get the text of an element
  * @param {Element} el
@@ -344,15 +345,24 @@ const getText = (el) => {
     // this is important in order to give proper attribution of the text to the button
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
-    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
-    if (el instanceof HTMLInputElement && el.type === 'image') {
-        return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+    if (el instanceof HTMLInputElement) {
+        if (buttonInputTypes.includes(el.type)) {
+            return el.value
+        }
+
+        if (el.type === 'image') {
+            return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+        }
     }
 
-    return removeExcessWhitespace(
-        Array.from(el.childNodes).reduce((text, child) =>
-            child instanceof Text ? text + ' ' + child.textContent : text, '')
-    )
+    let text = ''
+    for (const childNode of el.childNodes) {
+        if (childNode instanceof Text) {
+            text += ' ' + childNode.textContent
+        }
+    }
+
+    return removeExcessWhitespace(text)
 }
 
 /**
@@ -397,15 +407,40 @@ const wasAutofilledByChrome = (input) => {
 }
 
 /**
- * Checks if we should log debug info to the console
+ * Checks if we should log form analysis debug info to the console
  * @returns {boolean}
  */
 function shouldLog () {
+    return readDebugSetting('ddg-autofill-debug')
+}
+
+/**
+ * Checks if we should log performance info to the console
+ * @returns {boolean}
+ */
+function shouldLogPerformance () {
+    return readDebugSetting('ddg-autofill-perf')
+}
+
+/**
+ * Check if a sessionStorage item is set to 'true'
+ * @param setting
+ * @returns {boolean}
+ */
+function readDebugSetting (setting) {
     // sessionStorage throws in invalid schemes like data: and file:
     try {
-        return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+        return window.sessionStorage?.getItem(setting) === 'true'
     } catch (e) {
         return false
+    }
+}
+
+function logPerformance (markName) {
+    if (shouldLogPerformance()) {
+        const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`)
+        console.log(`${markName} took ${Math.round(measurement?.duration)}ms`)
+        window.performance?.clearMarks()
     }
 }
 
@@ -486,6 +521,8 @@ export {
     isValidTLD,
     wasAutofilledByChrome,
     shouldLog,
+    shouldLogPerformance,
+    logPerformance,
     whenIdle,
     truncateFromMiddle,
     isFormLikelyToBeUsedAsPageWrapper

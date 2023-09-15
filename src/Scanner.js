@@ -2,7 +2,7 @@ import { Form } from './Form/Form.js'
 import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
+import {logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
@@ -14,7 +14,7 @@ const {
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
- *     init(): ()=> void;
+ *     init(): (reason, ...rest)=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
  *     options: ScannerOptions;
@@ -66,6 +66,8 @@ class DefaultScanner {
     activeInput = null;
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false;
+    /** @type {boolean} Indicates whether we called stopScanning */
+    stopped = false
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -92,7 +94,7 @@ class DefaultScanner {
      * Call this to scan once and then watch for changes.
      *
      * Call the returned function to remove listeners.
-     * @returns {() => void}
+     * @returns {(reason: string, ...rest) => void}
      */
     init () {
         if (this.device.globalConfig.isExtension) {
@@ -106,21 +108,8 @@ class DefaultScanner {
             // otherwise, use the delay time to defer the initial scan
             setTimeout(() => this.scanAndObserve(), delay)
         }
-        return () => {
-            const activeInput = this.device.activeForm?.activeInput
-
-            // remove Dax, listeners, timers, and observers
-            clearTimeout(this.debounceTimer)
-            this.mutObs.disconnect()
-
-            this.forms.forEach(form => {
-                form.resetAllInputs()
-                form.removeAllDecorations()
-            })
-            this.forms.clear()
-
-            // Bring the user back to the input they were interacting with
-            activeInput?.focus()
+        return (reason, ...rest) => {
+            this.stopScanner(reason, ...rest)
         }
     }
 
@@ -128,9 +117,10 @@ class DefaultScanner {
      * Scan the page and begin observing changes
      */
     scanAndObserve () {
-        window.performance?.mark?.('scanner:init:start')
+        window.performance?.mark?.('initial_scanner:init:start')
         this.findEligibleInputs(document)
-        window.performance?.mark?.('scanner:init:end')
+        window.performance?.mark?.('initial_scanner:init:end')
+        logPerformance('initial_scanner')
         this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
@@ -148,6 +138,7 @@ class DefaultScanner {
         } else {
             const inputs = context.querySelectorAll(FORM_INPUTS_SELECTOR)
             if (inputs.length > this.options.maxInputsPerPage) {
+                this.stopScanner('Too many input fields in the given context, stop scanning', context)
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
@@ -156,15 +147,48 @@ class DefaultScanner {
     }
 
     /**
+     * Stops scanning, switches off the mutation observer and clears all forms
+     * @param {string} reason
+     * @param {...any} rest
+     */
+    stopScanner (reason, ...rest) {
+        this.stopped = true
+
+        if (shouldLog()) {
+            console.log(reason, ...rest)
+        }
+
+        const activeInput = this.device.activeForm?.activeInput
+
+        // remove Dax, listeners, timers, and observers
+        clearTimeout(this.debounceTimer)
+        this.changedElements.clear()
+        this.mutObs.disconnect()
+
+        this.forms.forEach(form => {
+            form.destroy()
+        })
+        this.forms.clear()
+
+        // Bring the user back to the input they were interacting with
+        activeInput?.focus()
+    }
+
+    /**
      * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
      * @returns {HTMLFormElement|HTMLElement}
      */
     getParentForm (input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-            // Use input.form unless it encloses most of the DOM
-            // In that case we proceed to identify more precise wrappers
-            if (input.form && !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
-                return input.form
+            if (input.form) {
+                // Use input.form unless it encloses most of the DOM
+                // In that case we proceed to identify more precise wrappers
+                if (
+                    this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
+                    !isFormLikelyToBeUsedAsPageWrapper(input.form)
+                ) {
+                    return input.form
+                }
             }
         }
 
@@ -195,10 +219,34 @@ class DefaultScanner {
      * @param {HTMLInputElement|HTMLSelectElement} input
      */
     addInput (input) {
+        if (this.stopped) return
+
         const parentForm = this.getParentForm(input)
 
-        // Note that el.contains returns true for el itself
-        const previouslyFoundParent = [...this.forms.keys()].find((form) => form.contains(parentForm))
+        if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+            // We've met the form, add the input
+            this.forms.get(parentForm)?.addInput(input)
+            return
+        }
+
+        // Check if the forms we've seen are either disconnected,
+        // or are parent/child of the currently-found form
+        let previouslyFoundParent, childForm
+        for (const [formEl] of this.forms) {
+            // Remove disconnected forms to avoid leaks
+            if (!formEl.isConnected) {
+                this.forms.delete(formEl)
+                continue
+            }
+            if (formEl.contains(parentForm)) {
+                previouslyFoundParent = formEl
+                break
+            }
+            if (parentForm.contains(formEl)) {
+                childForm = formEl
+                break
+            }
+        }
 
         if (previouslyFoundParent) {
             if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
@@ -210,7 +258,6 @@ class DefaultScanner {
             }
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
-            const childForm = [...this.forms.keys()].find((form) => parentForm.contains(form))
             if (childForm) {
                 this.forms.get(childForm)?.destroy()
                 this.forms.delete(childForm)
@@ -220,9 +267,7 @@ class DefaultScanner {
             if (this.forms.size < this.options.maxFormsPerPage) {
                 this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
             } else {
-                if (shouldLog()) {
-                    console.log('The page has too many forms, stop adding them.')
-                }
+                this.stopScanner('The page has too many forms, stop adding them.')
             }
         }
     }
@@ -247,9 +292,12 @@ class DefaultScanner {
 
         clearTimeout(this.debounceTimer)
         this.debounceTimer = setTimeout(() => {
+            window.performance?.mark?.('scanner:init:start')
             this.processChangedElements()
             this.changedElements.clear()
             this.rescanAll = false
+            window.performance?.mark?.('scanner:init:end')
+            logPerformance('scanner')
         }, this.options.debounceTimePeriod)
     }
 

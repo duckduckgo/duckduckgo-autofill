@@ -14,7 +14,7 @@ module.exports = {
     testEnvironment: './jest-test-environment.js',
 
     // Indicates whether each individual test should be reported during the run
-    verbose: true,
+    verbose: false,
 
     // ensure snapshots are in a JSON format
     snapshotFormat: {
