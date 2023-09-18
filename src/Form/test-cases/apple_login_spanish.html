@@ -1,0 +1,117 @@
+<!-- https://appleid.apple.com/es/sign-in -->
+<div class="signin fade-in" id="signin">
+    <app-title signin-label="true" title-class="">
+
+
+        <h1 tabindex="-1" class="si-container-title tk-callout  ">
+            ID&nbsp;de&nbsp;Apple
+
+        </h1>
+    </app-title>
+
+    <p class="si-container-description">Gestiona tu cuenta de Apple</p>
+
+    <div class="  swp-enable  container si-field-container  password-second-step  password-on     ">
+
+
+
+        <div id="sign_in_form" class="signin-form
+
+
+  swp
+   eyebrow
+
+
+   account-name-entered
+   fed-auth
+
+
+     show-password
+
+
+  ">
+            <div class="">
+                <div class="">
+                    <div class="account-name form-row      show-password ">
+                        <label class="sr-only form-cell form-label" for="account_name_text_field">Inicia sesión con tu ID&nbsp;de&nbsp;Apple</label>
+                        <div class="form-cell">
+
+                            <div class=" form-cell-wrapper form-textbox   ">
+                                <input type="text" id="account_name_text_field" can-field="accountName" autocorrect="off" autocapitalize="off" aria-required="true" required="required" spellcheck="false" ($focus)="appleIdFocusHandler()" ($blur)="appleIdBlurHandler()" class="force-ltr form-textbox-input form-textbox-entered" autocomplete="off" aria-invalid="false" data-manual-scoring="username">
+                                <span aria-hidden="true" id="apple_id_field_label" class=" form-textbox-label  form-label-flyout">
+              ID&nbsp;de&nbsp;Apple
+            </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="password form-row    show-password show-placeholder   ">
+                        <label class="sr-only form-cell form-label" for="password_text_field">Contraseña</label>
+                        <div class="form-cell">
+                            <div class="form-cell-wrapper form-textbox  ">
+                                <input type="password" id="password_text_field" ($focus)="pwdFocusHandler()" ($blur)="pwdBlurHandler()" aria-required="true" required="required" can-field="password" autocomplete="off" class="form-textbox-input " aria-invalid="false" data-manual-scoring="password">
+                                <span id="password_field_label" aria-hidden="true" class=" form-textbox-label  form-label-flyout">              Contraseña
+            </span>
+                                <span class="sr-only form-label-flyout" id="invalid_user_name_pwd_err_msg" aria-hidden="true">
+            </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+        <div class="si-remember-password">
+            <div class="form-checkbox">
+                <input type="checkbox" id="remember-me" {($checked)}="isRememberMeChecked" class="form-checkbox-input">
+                <label id="remember-me-label" class="form-label" for="remember-me">
+                    <span class="form-checkbox-indicator" aria-hidden="true"></span>                          Recordarme
+                </label>
+            </div>
+
+        </div>
+
+        <div class="spinner-container auth  hide "></div>
+        <button id="sign-in" ($click)="_verify($element)" tabindex="0" class="si-button btn  fed-ui  moved   fed-ui-animation-show   disable   remember-me  " aria-label="Inicia sesión" aria-disabled="true" disabled="" data-manual-submit>
+            <i class="shared-icon icon_sign_in"></i>
+            <span class="text feat-split">
+                                                      Inicia sesión
+
+                      </span>
+        </button>
+        <button id="sign-in-cancel" ($click)="_signInCancel($element)" aria-disabled="false" tabindex="0" class="si-button btn secondary feat-split  remember-me   link " aria-label="Cerrar">
+                    <span class="text">                      Cerrar
+
+                    </span>
+        </button>
+
+    </div>
+    <div class="si-container-footer has-remember-me">
+
+
+        <div class="links tk-subbody">
+            <div class="si-forgot-password">
+                <a id="iforgot-link" class="si-link ax-outline lite-theme-override" ($click)="iforgotLinkClickHandler($element)" href="https://iforgot.apple.com/password/verify/appleid" target="_blank">
+
+                    ¿Has olvidado tu ID&nbsp;de&nbsp;Apple o la <span class="no-wrap sk-icon sk-icon-after sk-icon-external">contraseña?</span>
+
+                    <span class="sr-only">Se abre en una ventana nueva.</span>
+
+                </a>
+
+            </div>
+
+
+
+
+        </div>
+
+
+    </div>
+</div>

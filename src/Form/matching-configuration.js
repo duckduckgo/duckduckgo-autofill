@@ -245,6 +245,8 @@ const matchingConfiguration = {
                     match: '.mail\\b|apple.?id' +
                         // Italian
                         '|posta elettronica' +
+                        // Dutch
+                        '|e.?mailadres' +
                         // Spanish
                         '|correo electr|correo-e|^correo$' +
                         // Swedish

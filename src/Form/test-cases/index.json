@@ -38,6 +38,7 @@
   { "html": "netflix_login.html" },
   { "html": "netflix_signup.html" },
   { "html": "apple_login.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "apple_login_spanish.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "apple_signup.html", "expectedFailures": ["birthday", "unknown"], "expectedSubmitFalseNegatives": 1 },
   { "html": "apple_checkout.html", "expectedSubmitFalseNegatives": 2 },
   { "html": "homedepot_login.html" },

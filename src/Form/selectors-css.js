@@ -97,6 +97,8 @@ const username = [
     `input[id="UserLoginFormUsername" i]`,
     // https://id.docker.com/login
     `input[id="nw_username" i]`,
+    // https://appleid.apple.com/es/sign-in (needed for all languages)
+    `input[can-field="accountName"]`,
     `input[placeholder^="username" i]`
 ]
 

@@ -4471,15 +4471,8 @@ class ExtensionInterface extends _InterfacePrototype.default {
     return null;
   }
 
-  removeAutofillUIFromPage() {
-    var _this$activeForm2;
-
-    super.removeAutofillUIFromPage();
-    (_this$activeForm2 = this.activeForm) === null || _this$activeForm2 === void 0 ? void 0 : _this$activeForm2.removeAllDecorations();
-  }
-
   async resetAutofillUI(callback) {
-    this.removeAutofillUIFromPage();
+    this.removeAutofillUIFromPage('Resetting autofill.');
     await this.setupAutofill();
     if (callback) await callback();
     this.uiController = this.createUIController();
@@ -4517,7 +4510,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
     switch (this.getActiveTooltipType()) {
       case TOOLTIP_TYPES.EmailProtection:
         {
-          var _this$activeForm3;
+          var _this$activeForm2;
 
           this._scannerCleanup = this.scanner.init();
           this.addLogoutListener(() => {
@@ -4532,12 +4525,12 @@ class ExtensionInterface extends _InterfacePrototype.default {
             }
           });
 
-          if ((_this$activeForm3 = this.activeForm) !== null && _this$activeForm3 !== void 0 && _this$activeForm3.activeInput) {
-            var _this$activeForm4;
+          if ((_this$activeForm2 = this.activeForm) !== null && _this$activeForm2 !== void 0 && _this$activeForm2.activeInput) {
+            var _this$activeForm3;
 
             this.attachTooltip({
               form: this.activeForm,
-              input: (_this$activeForm4 = this.activeForm) === null || _this$activeForm4 === void 0 ? void 0 : _this$activeForm4.activeInput,
+              input: (_this$activeForm3 = this.activeForm) === null || _this$activeForm3 === void 0 ? void 0 : _this$activeForm3.activeInput,
               click: null,
               trigger: 'postSignup',
               triggerMetaData: {
@@ -4773,7 +4766,7 @@ class InterfacePrototype {
 
   /** @type {boolean} */
 
-  /** @type {(()=>void) | null} */
+  /** @type {((reason, ...rest) => void) | null} */
 
   /**
    * @param {GlobalConfig} config
@@ -4847,12 +4840,16 @@ class InterfacePrototype {
   createUIController() {
     return new _NativeUIController.NativeUIController();
   }
+  /**
+   * @param {string} reason
+   */
 
-  removeAutofillUIFromPage() {
+
+  removeAutofillUIFromPage(reason) {
     var _this$uiController, _this$_scannerCleanup;
 
     (_this$uiController = this.uiController) === null || _this$uiController === void 0 ? void 0 : _this$uiController.destroy();
-    (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this);
+    (_this$_scannerCleanup = this._scannerCleanup) === null || _this$_scannerCleanup === void 0 ? void 0 : _this$_scannerCleanup.call(this, reason);
   }
 
   get hasLocalAddresses() {
@@ -5092,7 +5089,7 @@ class InterfacePrototype {
   postInit() {
     const cleanup = this.scanner.init();
     this.addLogoutListener(() => {
-      cleanup();
+      cleanup('Logged out');
 
       if (this.globalConfig.isDDGDomain) {
         (0, _autofillUtils.notifyWebApp)({
@@ -6545,6 +6542,10 @@ class Form {
     return this.formAnalyzer.isHybrid;
   }
 
+  get isCCForm() {
+    return this.formAnalyzer.isCCForm();
+  }
+
   logFormInfo() {
     if (!(0, _autofillUtils.shouldLog)()) return;
     console.log("Form type: %c".concat(this.getFormType()), 'font-weight: bold');
@@ -6801,6 +6802,7 @@ class Form {
   destroy() {
     this.removeAllDecorations();
     this.removeTooltip();
+    this.forgetAllInputs();
     this.mutObs.disconnect();
     this.matching.clear();
     this.intObs = null;
@@ -6909,6 +6911,7 @@ class Form {
     const opts = {
       isLogin: this.isLogin,
       isHybrid: this.isHybrid,
+      isCCForm: this.isCCForm,
       hasCredentials: Boolean((_this$device$settings = this.device.settings.availableInputTypes.credentials) === null || _this$device$settings === void 0 ? void 0 : _this$device$settings.username),
       supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
     };
@@ -7354,6 +7357,8 @@ class FormAnalyzer {
 
     _defineProperty(this, "matching", void 0);
 
+    _defineProperty(this, "_isCCForm", undefined);
+
     this.form = form;
     this.matching = matching || new _matching.Matching(_matchingConfiguration.matchingConfiguration);
     /**
@@ -7600,16 +7605,19 @@ class FormAnalyzer {
       var _this$matching$getDDG6, _this$matching$getDDG7;
 
       let shouldFlip = true;
+      let strength = 1; // Don't flip forgotten password links
 
-      if ((_this$matching$getDDG6 = this.matching.getDDGMatcherRegex('resetPasswordLink')) !== null && _this$matching$getDDG6 !== void 0 && _this$matching$getDDG6.test(string) || // Don't flip forgotten password links
-      (_this$matching$getDDG7 = this.matching.getDDGMatcherRegex('loginProvidersRegex')) !== null && _this$matching$getDDG7 !== void 0 && _this$matching$getDDG7.test(string) // Don't flip login providers links
-      ) {
+      if ((_this$matching$getDDG6 = this.matching.getDDGMatcherRegex('resetPasswordLink')) !== null && _this$matching$getDDG6 !== void 0 && _this$matching$getDDG6.test(string)) {
+        shouldFlip = false;
+        strength = 3;
+      } else if ((_this$matching$getDDG7 = this.matching.getDDGMatcherRegex('loginProvidersRegex')) !== null && _this$matching$getDDG7 !== void 0 && _this$matching$getDDG7.test(string)) {
+        // Don't flip login providers links
         shouldFlip = false;
       }
 
       this.updateSignal({
         string,
-        strength: 1,
+        strength,
         signalType: "external link: ".concat(string),
         shouldFlip
       });
@@ -7657,6 +7665,52 @@ class FormAnalyzer {
     }
 
     return this;
+  }
+  /** @type {undefined|boolean} */
+
+
+  /**
+   * Tries to infer if it's a credit card form
+   * @returns {boolean}
+   */
+  isCCForm() {
+    var _formEl$textContent;
+
+    if (this._isCCForm !== undefined) return this._isCCForm;
+    const formEl = this.form;
+    const ccFieldSelector = this.matching.joinCssSelectors('cc');
+
+    if (!ccFieldSelector) {
+      this._isCCForm = false;
+      return this._isCCForm;
+    }
+
+    const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector); // If the form contains one of the specific selectors, we have high confidence
+
+    if (hasCCSelectorChild) {
+      this._isCCForm = true;
+      return this._isCCForm;
+    } // Read form attributes to find a signal
+
+
+    const hasCCAttribute = [...formEl.attributes].some(_ref3 => {
+      let {
+        name,
+        value
+      } = _ref3;
+      return /(credit|payment).?card/i.test("".concat(name, "=").concat(value));
+    });
+
+    if (hasCCAttribute) {
+      this._isCCForm = true;
+      return this._isCCForm;
+    } // Match form textContent against common cc fields (includes hidden labels)
+
+
+    const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
+
+    this._isCCForm = Boolean(textMatches && textMatches.length > 1);
+    return this._isCCForm;
   }
 
 }
@@ -8977,11 +9031,11 @@ exports.isFieldDecorated = isFieldDecorated;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.extractElementStrings = void 0;
+exports.extractElementStrings = exports.EXCLUDED_TAGS = void 0;
 
 var _matching = require("./matching.js");
 
-const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
+const EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
 /**
  * Extract all strings of an element's children to an array.
  * "element.textContent" is a string which is merged of all children nodes,
@@ -8992,6 +9046,8 @@ const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
  * @returns {string[]}
  *          All strings in an element.
  */
+
+exports.EXCLUDED_TAGS = EXCLUDED_TAGS;
 
 const extractElementStrings = element => {
   const strings = new Set();
@@ -9273,15 +9329,16 @@ const matchingConfiguration = {
           '|suche|filtern|betreff' + // Dutch
           '|zoeken|filter|onderwerp|titel' + // French
           '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique' + // Spanish
-          '|busca|filtra|dos pasos|un solo uso' + // Swedish
+          '|busca|busqueda|filtra|dos pasos|un solo uso' + // Swedish
           '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
           skip: 'phone|mobile|email|password'
         },
         emailAddress: {
           match: '.mail\\b|apple.?id' + // Italian
-          '|posta elettronica' + // Spanish
-          '|correo electr' + // Swedish
-          '|e.?post|e.?postadress',
+          '|posta elettronica' + // Dutch
+          '|e.?mailadres' + // Spanish
+          '|correo electr|correo-e|^correo$' + // Swedish
+          '|\\be.?post|e.?postadress',
           skip: 'phone|(first.?|last.?)name|number|code',
           forceUnknown: 'search|filter|subject|title|\btab\b|otp'
         },
@@ -9296,12 +9353,13 @@ const matchingConfiguration = {
           forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
         },
         username: {
-          match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$' + // Italian
-          '|(nome|id|login).?utente|(nome|id) (dell\')?account' + // German
+          match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' + // Italian
+          '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente' + // German
           '|nutzername|anmeldename' + // Dutch
           '|gebruikersnaam' + // French
-          '|nom d\'utilisateur' + // Spanish
-          '|usuario|cuenta' + // Swedish
+          '|nom d.utilisateur|identifiant|pseudo' + // Spanish
+          '|usuari|cuenta|identificador|apodo' + // in Spanish dni and nie stand for id number, often used as username
+          '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' + // Swedish
           '|användarnamn|kontonamn|användar-id',
           skip: 'phone',
           forceUnknown: 'search|policy'
@@ -9328,13 +9386,13 @@ const matchingConfiguration = {
         },
         expiration: {
           match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-          skip: 'invalid'
+          skip: 'invalid|^dd/'
         },
         // Identities
         firstName: {
           match: '(first|given|fore).?name' + // Italian
           '|\\bnome',
-          skip: 'last'
+          skip: 'last|cognome|completo'
         },
         middleName: {
           match: '(middle|additional).?name'
@@ -9342,7 +9400,7 @@ const matchingConfiguration = {
         lastName: {
           match: '(last|family|sur)[^i]?name' + // Italian
           '|cognome',
-          skip: 'first'
+          skip: 'first|\\bnome'
         },
         fullName: {
           match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' + // Italian
@@ -9358,7 +9416,7 @@ const matchingConfiguration = {
         addressStreet: {
           match: 'address',
           forceUnknown: '\\bip\\b|duck|web|url',
-          skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in'
+          skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico'
         },
         addressStreet2: {
           match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
@@ -9366,19 +9424,20 @@ const matchingConfiguration = {
           skip: 'email|log.?in|sign.?in'
         },
         addressCity: {
-          match: 'city|town',
+          match: 'city|town|città|comune',
+          skip: '\\bzip\\b|\\bcap\\b',
           forceUnknown: 'vatican'
         },
         addressProvince: {
-          match: 'state|province|region|county',
+          match: 'state|province|region|county|provincia|regione',
           forceUnknown: 'united',
           skip: 'country'
         },
         addressPostalCode: {
-          match: '\\bzip\\b|postal\b|post.?code'
+          match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'
         },
         addressCountryCode: {
-          match: 'country|nazione'
+          match: 'country|\\bnation\\b|nazione|paese'
         },
         birthdayDay: {
           match: '(birth.*day|day.*birth)',
@@ -9399,16 +9458,16 @@ const matchingConfiguration = {
           '|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl' + // Dutch
           '|inloggen' + // French
           '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
-          '|usuario|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)' + // Swedish
+          '|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar' + // Swedish
           '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
         },
         signupRegex: {
           match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' + // Italian
           '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' + // German
-          '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|nutzername|passwort wiederholen|anmeldeseite' + // Dutch
+          '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite' + // Dutch
           '|nieuwsbrief|aanmaken|profiel' + // French
-          '|s\'inscrire|inscription|s\'abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' + // Spanish
-          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
+          '|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' + // Spanish
+          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
           '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
         },
         conservativeSignupRegex: {
@@ -9416,7 +9475,7 @@ const matchingConfiguration = {
           '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' + // German
           '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' + // Dutch
           '|registreren|eigenschappen|profiel|bijwerken' + // French
-          '|s\'inscrire|inscription|s\'abonner|abonnement|préférences|profil' + // Spanish
+          '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' + // Spanish
           '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
           '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera'
         },
@@ -9425,7 +9484,7 @@ const matchingConfiguration = {
           '|password dimenticata|reset(?:ta) password|recuper[ao] password' + // German
           '|(vergessen|verloren|verlegt|wiederherstellen) passwort' + // Dutch
           '|wachtwoord (vergeten|reset)' + // French
-          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe oublié' + // Spanish
+          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
           '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' + // Swedish
           '|glömt lösenord|återställ lösenord'
         },
@@ -9441,7 +9500,7 @@ const matchingConfiguration = {
           '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' + // German
           '|senden|\\bja\\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden' + // Dutch
           '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' + // French
-          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s\'abonner|donner' + // Spanish
+          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner' + // Spanish
           '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' + // Swedish
           '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
         },
@@ -9638,7 +9697,7 @@ const matchingConfiguration = {
         '|സംസ്ഥാനം' + // ml
         '|استان' + // fa
         '|राज्य' + // hi
-        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))' + // tr
+        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]limiz|kent)(\\b|_|\\*))' + // tr
         '|^시[·・]?도',
         // ko-KR
         'postal-code': 'zip|postal|post.*code|pcode' + '|pin.?code' + // en-IN
@@ -9675,7 +9734,7 @@ const matchingConfiguration = {
         '|持卡人姓名',
         // zh-TW
         name: '^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name' + '|name.*first.*last|firstandlastname' + '|nombre.*y.*apellidos' + // es
-        '|^nom(?!bre)' + // fr-FR
+        '|^nom(?!bre)\\b' + // fr-FR
         '|お名前|氏名' + // ja-JP
         '|^nome' + // pt-BR, pt-PT
         '|نام.*نام.*خانوادگی' + // fa
@@ -9687,7 +9746,7 @@ const matchingConfiguration = {
         '|nombre' + // es
         '|forename|prénom|prenom' + // fr-FR
         '|名' + // ja-JP
-        '|nome' + // pt-BR, pt-PT
+        '|\\bnome' + // pt-BR, pt-PT
         '|Имя' + // ru
         '|نام' + // fa
         '|이름' + // ko-KR
@@ -9888,7 +9947,7 @@ const {
 
 const dimensionBounds = {
   emailAddress: {
-    minWidth: 40
+    minWidth: 35
   }
 };
 /**
@@ -10199,7 +10258,7 @@ class Matching {
     if (this.subtypeFromMatchers('unknown', input)) return 'unknown'; // // For CC forms we run aggressive matches, so we want to make sure we only
     // // run them on actual CC forms to avoid false positives and expensive loops
 
-    if (this.isCCForm(formEl)) {
+    if (opts.isCCForm) {
       const subtype = this.subtypeFromMatchers('cc', input);
 
       if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -10209,7 +10268,11 @@ class Matching {
 
     if (input instanceof HTMLInputElement) {
       if (this.subtypeFromMatchers('password', input)) {
-        return 'credentials.password';
+        // Any other input type is likely a false match
+        // Arguably "text" should be as well, but it can be used for password reveal fields
+        if (['password', 'text'].includes(input.type) && input.name !== 'email' && input.placeholder !== 'Username') {
+          return 'credentials.password';
+        }
       }
 
       if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
@@ -10250,6 +10313,7 @@ class Matching {
    * @typedef {{
    *   isLogin?: boolean,
    *   isHybrid?: boolean,
+   *   isCCForm?: boolean,
    *   hasCredentials?: boolean,
    *   supportsIdentitiesAutofill?: boolean
    * }} SetInputTypeOpts
@@ -10583,39 +10647,6 @@ class Matching {
     return this;
   }
   /**
-   * Tries to infer if it's a credit card form
-   * @param {HTMLElement} formEl
-   * @returns {boolean}
-   */
-
-
-  isCCForm(formEl) {
-    var _formEl$textContent;
-
-    const ccFieldSelector = this.joinCssSelectors('cc');
-
-    if (!ccFieldSelector) {
-      return false;
-    }
-
-    const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector); // If the form contains one of the specific selectors, we have high confidence
-
-    if (hasCCSelectorChild) return true; // Read form attributes to find a signal
-
-    const hasCCAttribute = [...formEl.attributes].some(_ref => {
-      let {
-        name,
-        value
-      } = _ref;
-      return /(credit|payment).?card/i.test("".concat(name, "=").concat(value));
-    });
-    if (hasCCAttribute) return true; // Match form textContent against common cc fields (includes hidden labels)
-
-    const textMatches = (_formEl$textContent = formEl.textContent) === null || _formEl$textContent === void 0 ? void 0 : _formEl$textContent.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig); // We check for more than one to minimise false positives
-
-    return Boolean(textMatches && textMatches.length > 1);
-  }
-  /**
    * @type {MatchingConfiguration}
    */
 
@@ -10781,7 +10812,8 @@ function getInputSubtype(input) {
 
 const removeExcessWhitespace = function () {
   let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  return (string || '').replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  if (!string) return '';
+  return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
 };
 /**
  * Get text from all explicit labels
@@ -10824,6 +10856,25 @@ const getExplicitLabelsText = el => {
   return '';
 };
 /**
+ * Tries to get a relevant previous Element sibling, excluding certain tags
+ * @param {Element} el
+ * @returns {Element|null}
+ */
+
+
+exports.getExplicitLabelsText = getExplicitLabelsText;
+
+const recursiveGetPreviousElSibling = el => {
+  const previousEl = el.previousElementSibling;
+  if (!previousEl) return null; // Skip elements with no childNodes
+
+  if (_labelUtil.EXCLUDED_TAGS.includes(previousEl.tagName)) {
+    return recursiveGetPreviousElSibling(previousEl);
+  }
+
+  return previousEl;
+};
+/**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {HTMLElement} form
@@ -10832,19 +10883,35 @@ const getExplicitLabelsText = el => {
  */
 
 
-exports.getExplicitLabelsText = getExplicitLabelsText;
-
 const getRelatedText = (el, form, cssSelector) => {
   let scope = getLargestMeaningfulContainer(el, form, cssSelector); // If we didn't find a container, try looking for an adjacent label
 
   if (scope === el) {
-    if (el.previousElementSibling instanceof HTMLLabelElement) {
-      scope = el.previousElementSibling;
+    let previousEl = recursiveGetPreviousElSibling(el);
+
+    if (previousEl instanceof HTMLElement) {
+      scope = previousEl;
+    } // If there is still no meaningful container return empty string
+
+
+    if (scope === el || scope instanceof HTMLSelectElement) {
+      if (el.previousSibling instanceof Text) {
+        return removeExcessWhitespace(el.previousSibling.textContent);
+      }
+
+      return '';
     }
   } // If there is still no meaningful container return empty string
 
 
-  if (scope === el || scope.nodeName === 'SELECT') return '';
+  if (scope === el || scope instanceof HTMLSelectElement) {
+    if (el.previousSibling instanceof Text) {
+      return removeExcessWhitespace(el.previousSibling.textContent);
+    }
+
+    return '';
+  }
+
   let trimmedText = '';
   const label = scope.querySelector('label');
 
@@ -10952,36 +11019,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.selectors = void 0;
-const formInputsSelector = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\n[autocomplete=username],\nselect";
+const formInputsSelector = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete=\"fake\"]),\n[autocomplete=username],\nselect";
 const submitButtonSelector = "\ninput[type=submit],\ninput[type=button],\ninput[type=image],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
-const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style)';
-const emailAddress = ["\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]", // https://account.nicovideo.jp/login
-"input[name=\"mail_tel\" i]"]; // We've seen non-standard types like 'user'. This selector should get them, too
+const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)'; // We've seen non-standard types like 'user'. This selector should get them, too
 
 const genericTextField = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
-const password = ["input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])", // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
-'input.js-cloudsave-phrase'];
-const cardName = "\ninput[autocomplete=\"cc-name\" i],\ninput[autocomplete=\"ccname\" i],\ninput[name=\"ccname\" i],\ninput[name=\"cc-name\" i],\ninput[name=\"ppw-accountHolderName\" i],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
-const cardNumber = "\ninput[autocomplete=\"cc-number\" i],\ninput[autocomplete=\"ccnumber\" i],\ninput[autocomplete=\"cardnumber\" i],\ninput[autocomplete=\"card-number\" i],\ninput[name=\"ccnumber\" i],\ninput[name=\"cc-number\" i],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
-const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\" i],\ninput[autocomplete=\"csc\" i],\ninput[autocomplete=\"cc-cvc\" i],\ninput[autocomplete=\"cvc\" i],\ninput[name=\"cvc\" i],\ninput[name=\"cc-cvc\" i],\ninput[name=\"cc-csc\" i],\ninput[name=\"csc\" i],\ninput[name*=security i][name*=code i]";
-const expirationMonth = "\n[autocomplete=\"cc-exp-month\" i],\n[autocomplete=\"cc_exp_month\" i],\n[name=\"ccmonth\" i],\n[name=\"ppw-expirationDate_month\" i],\n[name=cardExpiryMonth i],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=cc_exp_month i]";
-const expirationYear = "\n[autocomplete=\"cc-exp-year\" i],\n[autocomplete=\"cc_exp_year\" i],\n[name=\"ccyear\" i],\n[name=\"ppw-expirationDate_year\" i],\n[name=cardExpiryYear i],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=cc-exp-year i],\n[name*=cc_exp_year i]";
-const expiration = "\n[autocomplete=\"cc-exp\" i],\n[name=\"cc-exp\" i],\n[name=\"exp-date\" i],\n[name=\"expirationDate\" i],\ninput[id*=expiration i]";
-const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
-const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
-const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
-const fullName = "\n[autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
-const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),\n[name*=mobile i]:not([name*=type i]),\n[autocomplete=tel],\n[autocomplete=\"tel-national\"],\n[placeholder*=\"phone number\" i]";
-const addressStreet = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
-const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
-const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
-const addressProvince = "\n[name=province i], [name=state i], [autocomplete=address-level1 i]";
-const addressPostalCode = "\n[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],\n[name*=postalCode i], [name*=zipcode i]";
-const addressCountryCode = ["[name=country i], [autocomplete=country i],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
-];
-const birthdayDay = "\n[name=bday-day i],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day i], [name=date-of-birth-day i],\n[name^=birthdate_d i], [name^=birthdate-d i],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
-const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month i], [name=date-of-birth-month i],\n[name^=birthdate_m i], [name^=birthdate-m i],\nselect[name=\"mm\" i]";
-const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
+const emailAddress = ["\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]", // https://account.nicovideo.jp/login
+"input[name=\"mail_tel\" i]", // https://www.morningstar.it/it/membership/LoginPopup.aspx
+"input[value=email i]"];
 const username = ["".concat(genericTextField, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
 "input[name=\"userid\" i]", "input[id=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[id=\"login_id\" i]", "input[id=\"loginid\" i]", "input[name=\"login\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"j_username\" i]", // https://account.uwindsor.ca/login
@@ -10998,7 +11043,35 @@ const username = ["".concat(genericTextField, "[autocomplete^=user i]"), "input[
 "input[name=\"tridField\" i]", // https://membernetprb2c.b2clogin.com
 "input[id=\"signInName\" i]", // https://www.w3.org/accounts/request
 "input[id=\"w3c_accountsbundle_accountrequeststep1_login\" i]", "input[id=\"username\" i]", "input[name=\"_user\" i]", "input[name=\"login_username\" i]", // https://www.flytap.com/
-"input[name^=\"login-user-account\" i]", "input[placeholder^=\"username\" i]"];
+"input[name^=\"login-user-account\" i]", // https://www.sanitas.es
+"input[id=\"loginusuario\" i]", // https://www.guardiacivil.es/administracion/login.html
+"input[name=\"usuario\" i]", // https://m.bintercanarias.com/
+"input[id=\"UserLoginFormUsername\" i]", // https://id.docker.com/login
+"input[id=\"nw_username\" i]", // https://appleid.apple.com/es/sign-in (needed for all languages)
+"input[can-field=\"accountName\"]", "input[placeholder^=\"username\" i]"];
+const password = ["input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])", // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
+'input.js-cloudsave-phrase'];
+const cardName = "\ninput[autocomplete=\"cc-name\" i],\ninput[autocomplete=\"ccname\" i],\ninput[name=\"ccname\" i],\ninput[name=\"cc-name\" i],\ninput[name=\"ppw-accountHolderName\" i],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
+const cardNumber = "\ninput[autocomplete=\"cc-number\" i],\ninput[autocomplete=\"ccnumber\" i],\ninput[autocomplete=\"cardnumber\" i],\ninput[autocomplete=\"card-number\" i],\ninput[name=\"ccnumber\" i],\ninput[name=\"cc-number\" i],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
+const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\" i],\ninput[autocomplete=\"csc\" i],\ninput[autocomplete=\"cc-cvc\" i],\ninput[autocomplete=\"cvc\" i],\ninput[name=\"cvc\" i],\ninput[name=\"cc-cvc\" i],\ninput[name=\"cc-csc\" i],\ninput[name=\"csc\" i],\ninput[name*=security i][name*=code i]";
+const expirationMonth = "\n[autocomplete=\"cc-exp-month\" i],\n[autocomplete=\"cc_exp_month\" i],\n[name=\"ccmonth\" i],\n[name=\"ppw-expirationDate_month\" i],\n[name=cardExpiryMonth i],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=\"card_exp-month\" i],\n[name*=cc_exp_month i]";
+const expirationYear = "\n[autocomplete=\"cc-exp-year\" i],\n[autocomplete=\"cc_exp_year\" i],\n[name=\"ccyear\" i],\n[name=\"ppw-expirationDate_year\" i],\n[name=cardExpiryYear i],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=\"cc-exp-year\" i],\n[name*=\"card_exp-year\" i],\n[name*=cc_exp_year i]";
+const expiration = "\n[autocomplete=\"cc-exp\" i],\n[name=\"cc-exp\" i],\n[name=\"exp-date\" i],\n[name=\"expirationDate\" i],\ninput[id*=expiration i]";
+const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
+const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
+const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
+const fullName = "\n[autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
+const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),\n[name*=mobile i]:not([name*=type i]),\n[autocomplete=tel],\n[autocomplete=\"tel-national\"],\n[placeholder*=\"phone number\" i]";
+const addressStreet = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
+const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
+const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
+const addressProvince = "\n[name=province i], [name=state i], [autocomplete=address-level1 i]";
+const addressPostalCode = "\n[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],\n[name*=postalCode i], [name*=zipcode i]";
+const addressCountryCode = ["[name=country i], [autocomplete=country i],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
+];
+const birthdayDay = "\n[name=bday-day i],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day i], [name=date-of-birth-day i],\n[name^=birthdate_d i], [name^=birthdate-d i],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
+const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month i], [name=date-of-birth-month i],\n[name^=birthdate_m i], [name^=birthdate-m i],\nselect[name=\"mm\" i]";
+const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
 const selectors = {
   // Generic
   genericTextField,
@@ -11007,8 +11080,8 @@ const selectors = {
   safeUniversalSelector,
   // Credentials
   emailAddress,
-  password,
   username,
+  password,
   // Credit Card
   cardName,
   cardNumber,
@@ -11220,7 +11293,7 @@ class InContextSignup {
     };
 
     if (options.shouldHideTooltip) {
-      this.device.removeAutofillUIFromPage();
+      this.device.removeAutofillUIFromPage('Email Protection in-context signup dismissed.');
       this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
     }
 
@@ -11689,7 +11762,7 @@ const {
 /**
  * @typedef {{
  *     forms: Map<HTMLElement, import("./Form/Form").Form>;
- *     init(): ()=> void;
+ *     init(): (reason, ...rest)=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
@@ -11743,6 +11816,8 @@ class DefaultScanner {
 
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
 
+  /** @type {boolean} Indicates whether we called stopScanning */
+
   /** @type {import("./Form/matching").Matching} matching */
 
   /**
@@ -11761,6 +11836,8 @@ class DefaultScanner {
     _defineProperty(this, "activeInput", null);
 
     _defineProperty(this, "rescanAll", false);
+
+    _defineProperty(this, "stopped", false);
 
     _defineProperty(this, "matching", void 0);
 
@@ -11808,11 +11885,13 @@ class DefaultScanner {
    * Call this to scan once and then watch for changes.
    *
    * Call the returned function to remove listeners.
-   * @returns {() => void}
+   * @returns {(reason: string, ...rest) => void}
    */
 
 
   init() {
+    var _this = this;
+
     if (this.device.globalConfig.isExtension) {
       this.device.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
         flag: 'autofill'
@@ -11828,20 +11907,12 @@ class DefaultScanner {
       setTimeout(() => this.scanAndObserve(), delay);
     }
 
-    return () => {
-      var _this$device$activeFo;
+    return function (reason) {
+      for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        rest[_key - 1] = arguments[_key];
+      }
 
-      const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
-
-      clearTimeout(this.debounceTimer);
-      this.mutObs.disconnect();
-      this.forms.forEach(form => {
-        form.resetAllInputs();
-        form.removeAllDecorations();
-      });
-      this.forms.clear(); // Bring the user back to the input they were interacting with
-
-      activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
+      _this.stopScanner(reason, ...rest);
     };
   }
   /**
@@ -11852,17 +11923,10 @@ class DefaultScanner {
   scanAndObserve() {
     var _window$performance, _window$performance$m, _window$performance2, _window$performance2$;
 
-    (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'scanner:init:start');
+    (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : (_window$performance$m = _window$performance.mark) === null || _window$performance$m === void 0 ? void 0 : _window$performance$m.call(_window$performance, 'initial_scanner:init:start');
     this.findEligibleInputs(document);
-    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'scanner:init:end');
-
-    if ((0, _autofillUtils.shouldLogPerformance)()) {
-      var _window$performance3;
-
-      const measurement = (_window$performance3 = window.performance) === null || _window$performance3 === void 0 ? void 0 : _window$performance3.measure('scanner:init', 'scanner:init:start', 'scanner:init:end');
-      console.log("Initial scan took ".concat(Math.round(measurement === null || measurement === void 0 ? void 0 : measurement.duration), "ms"));
-    }
-
+    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : (_window$performance2$ = _window$performance2.mark) === null || _window$performance2$ === void 0 ? void 0 : _window$performance2$.call(_window$performance2, 'initial_scanner:init:end');
+    (0, _autofillUtils.logPerformance)('initial_scanner');
     this.mutObs.observe(document.documentElement, {
       childList: true,
       subtree: true
@@ -11887,6 +11951,7 @@ class DefaultScanner {
       const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
 
       if (inputs.length > this.options.maxInputsPerPage) {
+        this.stopScanner('Too many input fields in the given context, stop scanning', context);
         return this;
       }
 
@@ -11896,6 +11961,38 @@ class DefaultScanner {
     return this;
   }
   /**
+   * Stops scanning, switches off the mutation observer and clears all forms
+   * @param {string} reason
+   * @param {...any} rest
+   */
+
+
+  stopScanner(reason) {
+    var _this$device$activeFo;
+
+    this.stopped = true;
+
+    if ((0, _autofillUtils.shouldLog)()) {
+      for (var _len2 = arguments.length, rest = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        rest[_key2 - 1] = arguments[_key2];
+      }
+
+      console.log(reason, ...rest);
+    }
+
+    const activeInput = (_this$device$activeFo = this.device.activeForm) === null || _this$device$activeFo === void 0 ? void 0 : _this$device$activeFo.activeInput; // remove Dax, listeners, timers, and observers
+
+    clearTimeout(this.debounceTimer);
+    this.changedElements.clear();
+    this.mutObs.disconnect();
+    this.forms.forEach(form => {
+      form.destroy();
+    });
+    this.forms.clear(); // Bring the user back to the input they were interacting with
+
+    activeInput === null || activeInput === void 0 ? void 0 : activeInput.focus();
+  }
+  /**
    * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
    * @returns {HTMLFormElement|HTMLElement}
    */
@@ -11903,10 +12000,13 @@ class DefaultScanner {
 
   getParentForm(input) {
     if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-      // Use input.form unless it encloses most of the DOM
-      // In that case we proceed to identify more precise wrappers
-      if (input.form && !(0, _autofillUtils.isFormLikelyToBeUsedAsPageWrapper)(input.form)) {
-        return input.form;
+      if (input.form) {
+        // Use input.form unless it encloses most of the DOM
+        // In that case we proceed to identify more precise wrappers
+        if (this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
+        !(0, _autofillUtils.isFormLikelyToBeUsedAsPageWrapper)(input.form)) {
+          return input.form;
+        }
       }
     }
 
@@ -11940,28 +12040,55 @@ class DefaultScanner {
 
 
   addInput(input) {
-    const parentForm = this.getParentForm(input); // Note that el.contains returns true for el itself
+    if (this.stopped) return;
+    const parentForm = this.getParentForm(input);
 
-    const previouslyFoundParent = [...this.forms.keys()].find(form => form.contains(parentForm));
+    if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+      var _this$forms$get;
+
+      // We've met the form, add the input
+      (_this$forms$get = this.forms.get(parentForm)) === null || _this$forms$get === void 0 ? void 0 : _this$forms$get.addInput(input);
+      return;
+    } // Check if the forms we've seen are either disconnected,
+    // or are parent/child of the currently-found form
+
+
+    let previouslyFoundParent, childForm;
+
+    for (const [formEl] of this.forms) {
+      // Remove disconnected forms to avoid leaks
+      if (!formEl.isConnected) {
+        this.forms.delete(formEl);
+        continue;
+      }
+
+      if (formEl.contains(parentForm)) {
+        previouslyFoundParent = formEl;
+        break;
+      }
+
+      if (parentForm.contains(formEl)) {
+        childForm = formEl;
+        break;
+      }
+    }
 
     if (previouslyFoundParent) {
       if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
         // If we had a prior parent but this is an explicit form, the previous was a false positive
         this.forms.delete(previouslyFoundParent);
       } else {
-        var _this$forms$get;
+        var _this$forms$get2;
 
         // If we've already met the form or a descendant, add the input
-        (_this$forms$get = this.forms.get(previouslyFoundParent)) === null || _this$forms$get === void 0 ? void 0 : _this$forms$get.addInput(input);
+        (_this$forms$get2 = this.forms.get(previouslyFoundParent)) === null || _this$forms$get2 === void 0 ? void 0 : _this$forms$get2.addInput(input);
       }
     } else {
       // if this form is an ancestor of an existing form, remove that before adding this
-      const childForm = [...this.forms.keys()].find(form => parentForm.contains(form));
-
       if (childForm) {
-        var _this$forms$get2;
+        var _this$forms$get3;
 
-        (_this$forms$get2 = this.forms.get(childForm)) === null || _this$forms$get2 === void 0 ? void 0 : _this$forms$get2.destroy();
+        (_this$forms$get3 = this.forms.get(childForm)) === null || _this$forms$get3 === void 0 ? void 0 : _this$forms$get3.destroy();
         this.forms.delete(childForm);
       } // Only add the form if below the limit of forms per page
 
@@ -11969,9 +12096,7 @@ class DefaultScanner {
       if (this.forms.size < this.options.maxFormsPerPage) {
         this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
       } else {
-        if ((0, _autofillUtils.shouldLog)()) {
-          console.log('The page has too many forms, stop adding them.');
-        }
+        this.stopScanner('The page has too many forms, stop adding them.');
       }
     }
   }
@@ -11997,9 +12122,14 @@ class DefaultScanner {
 
     clearTimeout(this.debounceTimer);
     this.debounceTimer = setTimeout(() => {
+      var _window$performance3, _window$performance3$, _window$performance4, _window$performance4$;
+
+      (_window$performance3 = window.performance) === null || _window$performance3 === void 0 ? void 0 : (_window$performance3$ = _window$performance3.mark) === null || _window$performance3$ === void 0 ? void 0 : _window$performance3$.call(_window$performance3, 'scanner:init:start');
       this.processChangedElements();
       this.changedElements.clear();
       this.rescanAll = false;
+      (_window$performance4 = window.performance) === null || _window$performance4 === void 0 ? void 0 : (_window$performance4$ = _window$performance4.mark) === null || _window$performance4$ === void 0 ? void 0 : _window$performance4$.call(_window$performance4, 'scanner:init:end');
+      (0, _autofillUtils.logPerformance)('scanner');
     }, this.options.debounceTimePeriod);
   }
   /**
@@ -14177,6 +14307,7 @@ exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedCon
 exports.isLocalNetwork = isLocalNetwork;
 exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
+exports.logPerformance = logPerformance;
 exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
 exports.shouldLog = shouldLog;
 exports.shouldLogPerformance = shouldLogPerformance;
@@ -14575,18 +14706,19 @@ function escapeXML(str) {
 
 
 const isLikelyASubmitButton = (el, matching) => {
-  var _matching$getDDGMatch, _matching$getDDGMatch2;
+  var _matching$getDDGMatch, _matching$getDDGMatch2, _matching$getDDGMatch3;
 
   const text = getTextShallow(el);
   const ariaLabel = el.getAttribute('aria-label') || '';
   const dataTestId = el.getAttribute('data-test-id') || '';
-  return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-  el.getAttribute('name') === 'submit' || // is called "submit"
-  /primary|submit/i.test(el.className) || // has high-signal submit classes
-  /submit/i.test(dataTestId) || ((_matching$getDDGMatch = matching.getDDGMatcherRegex('submitButtonRegex')) === null || _matching$getDDGMatch === void 0 ? void 0 : _matching$getDDGMatch.test(text)) || // has high-signal text
+  if ((el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+  el.getAttribute('name') === 'submit') && // is called "submit"
+  !((_matching$getDDGMatch = matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')) !== null && _matching$getDDGMatch !== void 0 && _matching$getDDGMatch.test(text + ' ' + ariaLabel))) return true;
+  return (/primary|submit/i.test(el.className) || // has high-signal submit classes
+  /submit/i.test(dataTestId) || ((_matching$getDDGMatch2 = matching.getDDGMatcherRegex('submitButtonRegex')) === null || _matching$getDDGMatch2 === void 0 ? void 0 : _matching$getDDGMatch2.test(text)) || // has high-signal text
   el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px
   ) && el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-  !((_matching$getDDGMatch2 = matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')) !== null && _matching$getDDGMatch2 !== void 0 && _matching$getDDGMatch2.test(text + ' ' + ariaLabel));
+  !((_matching$getDDGMatch3 = matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')) !== null && _matching$getDDGMatch3 !== void 0 && _matching$getDDGMatch3.test(text + ' ' + ariaLabel));
 };
 /**
  * Check that a button matches the form type - login buttons on a login form, signup buttons on a signup form
@@ -14606,26 +14738,39 @@ const buttonMatchesFormType = (el, formObj) => {
     return true;
   }
 };
+
+exports.buttonMatchesFormType = buttonMatchesFormType;
+const buttonInputTypes = ['submit', 'button'];
 /**
  * Get the text of an element, one level deep max
  * @param {Node} el
  * @returns {string}
  */
 
-
-exports.buttonMatchesFormType = buttonMatchesFormType;
-
 const getTextShallow = el => {
   // for buttons, we don't care about descendants, just get the whole text as is
   // this is important in order to give proper attribution of the text to the button
   if (el instanceof HTMLButtonElement) return (0, _matching.removeExcessWhitespace)(el.textContent);
-  if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return (0, _matching.removeExcessWhitespace)(el.value);
 
-  if (el instanceof HTMLInputElement && el.type === 'image') {
-    return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title || el.name);
+  if (el instanceof HTMLInputElement) {
+    if (buttonInputTypes.includes(el.type)) {
+      return el.value;
+    }
+
+    if (el.type === 'image') {
+      return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title || el.name);
+    }
   }
 
-  return (0, _matching.removeExcessWhitespace)(Array.from(el.childNodes).reduce((text, child) => child instanceof Text ? text + ' ' + child.textContent : text, ''));
+  let text = '';
+
+  for (const childNode of el.childNodes) {
+    if (childNode instanceof Text) {
+      text += ' ' + childNode.textContent;
+    }
+  }
+
+  return (0, _matching.removeExcessWhitespace)(text);
 };
 /**
  * Check if hostname is a local address
@@ -14703,6 +14848,16 @@ function readDebugSetting(setting) {
     return ((_window$sessionStorag = window.sessionStorage) === null || _window$sessionStorag === void 0 ? void 0 : _window$sessionStorag.getItem(setting)) === 'true';
   } catch (e) {
     return false;
+  }
+}
+
+function logPerformance(markName) {
+  if (shouldLogPerformance()) {
+    var _window$performance, _window$performance2;
+
+    const measurement = (_window$performance = window.performance) === null || _window$performance === void 0 ? void 0 : _window$performance.measure("".concat(markName, ":init"), "".concat(markName, ":init:start"), "".concat(markName, ":init:end"));
+    console.log("".concat(markName, " took ").concat(Math.round(measurement === null || measurement === void 0 ? void 0 : measurement.duration), "ms"));
+    (_window$performance2 = window.performance) === null || _window$performance2 === void 0 ? void 0 : _window$performance2.clearMarks();
   }
 }
 /**
@@ -14899,7 +15054,7 @@ exports.constants = void 0;
 const constants = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
   ATTR_AUTOFILL: 'data-ddg-autofill',
-  TEXT_LENGTH_CUTOFF: 50,
+  TEXT_LENGTH_CUTOFF: 100,
   MAX_INPUTS_PER_PAGE: 100,
   MAX_FORMS_PER_PAGE: 30,
   MAX_INPUTS_PER_FORM: 80,
