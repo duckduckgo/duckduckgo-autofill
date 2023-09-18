@@ -1,7 +1,7 @@
 import { Form } from './Form/Form.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {isFormLikelyToBeUsedAsPageWrapper, shouldLog, shouldLogPerformance} from './autofill-utils.js'
+import {logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
@@ -119,13 +119,10 @@ class DefaultScanner {
      * Scan the page and begin observing changes
      */
     scanAndObserve () {
-        window.performance?.mark?.('scanner:init:start')
+        window.performance?.mark?.('initial_scanner:init:start')
         this.findEligibleInputs(document)
-        window.performance?.mark?.('scanner:init:end')
-        if (shouldLogPerformance()) {
-            const measurement = window.performance?.measure('scanner:init', 'scanner:init:start', 'scanner:init:end')
-            console.log(`Initial scan took ${Math.round(measurement?.duration)}ms`)
-        }
+        window.performance?.mark?.('initial_scanner:init:end')
+        logPerformance('initial_scanner')
         this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
 
@@ -185,10 +182,15 @@ class DefaultScanner {
      */
     getParentForm (input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-            // Use input.form unless it encloses most of the DOM
-            // In that case we proceed to identify more precise wrappers
-            if (input.form && !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
-                return input.form
+            if (input.form) {
+                // Use input.form unless it encloses most of the DOM
+                // In that case we proceed to identify more precise wrappers
+                if (
+                    this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
+                    !isFormLikelyToBeUsedAsPageWrapper(input.form)
+                ) {
+                    return input.form
+                }
             }
         }
 
@@ -222,10 +224,31 @@ class DefaultScanner {
         if (this.stopped) return
 
         const parentForm = this.getParentForm(input)
-        const seenFormElements = [...this.forms.keys()]
 
-        // Note that el.contains returns true for el itself
-        const previouslyFoundParent = seenFormElements.find((form) => form.contains(parentForm))
+        if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+            // We've met the form, add the input
+            this.forms.get(parentForm)?.addInput(input)
+            return
+        }
+
+        // Check if the forms we've seen are either disconnected,
+        // or are parent/child of the currently-found form
+        let previouslyFoundParent, childForm
+        for (const [formEl] of this.forms) {
+            // Remove disconnected forms to avoid leaks
+            if (!formEl.isConnected) {
+                this.forms.delete(formEl)
+                continue
+            }
+            if (formEl.contains(parentForm)) {
+                previouslyFoundParent = formEl
+                break
+            }
+            if (parentForm.contains(formEl)) {
+                childForm = formEl
+                break
+            }
+        }
 
         if (previouslyFoundParent) {
             if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
@@ -237,7 +260,6 @@ class DefaultScanner {
             }
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
-            const childForm = seenFormElements.find((form) => parentForm.contains(form))
             if (childForm) {
                 this.forms.get(childForm)?.destroy()
                 this.forms.delete(childForm)
@@ -272,9 +294,12 @@ class DefaultScanner {
 
         clearTimeout(this.debounceTimer)
         this.debounceTimer = setTimeout(() => {
+            window.performance?.mark?.('scanner:init:start')
             this.processChangedElements()
             this.changedElements.clear()
             this.rescanAll = false
+            window.performance?.mark?.('scanner:init:end')
+            logPerformance('scanner')
         }, this.options.debounceTimePeriod)
     }
 

@@ -343,6 +343,7 @@ const buttonMatchesFormType = (el, formObj) => {
     }
 }
 
+const buttonInputTypes = ['submit', 'button']
 /**
  * Get the text of an element, one level deep max
  * @param {Node} el
@@ -353,9 +354,14 @@ const getTextShallow = (el) => {
     // this is important in order to give proper attribution of the text to the button
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
-    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return removeExcessWhitespace(el.value)
-    if (el instanceof HTMLInputElement && el.type === 'image') {
-        return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+    if (el instanceof HTMLInputElement) {
+        if (buttonInputTypes.includes(el.type)) {
+            return el.value
+        }
+
+        if (el.type === 'image') {
+            return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+        }
     }
 
     let text = ''
@@ -439,6 +445,14 @@ function readDebugSetting (setting) {
     }
 }
 
+function logPerformance (markName) {
+    if (shouldLogPerformance()) {
+        const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`)
+        console.log(`${markName} took ${Math.round(measurement?.duration)}ms`)
+        window.performance?.clearMarks()
+    }
+}
+
 /**
  *
  * @param {Function} callback
@@ -517,6 +531,7 @@ export {
     wasAutofilledByChrome,
     shouldLog,
     shouldLogPerformance,
+    logPerformance,
     whenIdle,
     truncateFromMiddle,
     isFormLikelyToBeUsedAsPageWrapper
