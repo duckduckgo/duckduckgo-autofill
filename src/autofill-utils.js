@@ -52,6 +52,9 @@ const autofillEnabled = (globalConfig, processConfig) => {
 const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
     const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
+        if (shouldLog()) {
+            console.log('⚠️ Autofill disabled by remote config')
+        }
         return false
     }
 
@@ -61,6 +64,9 @@ const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
 const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
     const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
+        if (shouldLog()) {
+            console.log('⚠️ In-context signup disabled by remote config')
+        }
         return false
     }
 
@@ -295,28 +301,31 @@ function escapeXML (str) {
     return String(str).replace(/[&"'<>/]/g, m => replacements[m])
 }
 
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
+ * @param {import("./Form/matching").Matching} matching
  * @return {boolean}
  */
-const isLikelyASubmitButton = (el) => {
-    const text = getText(el)
+const isLikelyASubmitButton = (el, matching) => {
+    const text = getTextShallow(el)
     const ariaLabel = el.getAttribute('aria-label') || ''
     const dataTestId = el.getAttribute('data-test-id') || ''
 
+    if (
+        (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+        el.getAttribute('name') === 'submit') && // is called "submit"
+        !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)
+    ) return true
+
     return (
-        el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-        el.getAttribute('name') === 'submit' || // is called "submit"
         /primary|submit/i.test(el.className) || // has high-signal submit classes
         /submit/i.test(dataTestId) ||
-        SUBMIT_BUTTON_REGEX.test(text) || // has high-signal text
+        matching.getDDGMatcherRegex('submitButtonRegex')?.test(text) || // has high-signal text
         (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
     ) &&
     el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !SUBMIT_BUTTON_UNLIKELY_REGEX.test(text + ' ' + ariaLabel)
+    !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)
 }
 
 /**
@@ -336,11 +345,11 @@ const buttonMatchesFormType = (el, formObj) => {
 
 const buttonInputTypes = ['submit', 'button']
 /**
- * Get the text of an element
- * @param {Element} el
+ * Get the text of an element, one level deep max
+ * @param {Node} el
  * @returns {string}
  */
-const getText = (el) => {
+const getTextShallow = (el) => {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
@@ -516,7 +525,7 @@ export {
     escapeXML,
     isLikelyASubmitButton,
     buttonMatchesFormType,
-    getText,
+    getTextShallow,
     isLocalNetwork,
     isValidTLD,
     wasAutofilledByChrome,

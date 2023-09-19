@@ -6,7 +6,6 @@ import { getInputSubtype, createMatching } from './matching.js'
 import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
-import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
 import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js'
 
 /**
@@ -171,7 +170,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         baseWrapper.innerHTML = testContent
         document.title = title
 
-        const buttons = document.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        const matching = createMatching()
+        const buttons = document.querySelectorAll(matching.cssSelector('submitButtonSelector'))
         buttons.forEach((button) => {
             // We're doing this so that isPotentiallyViewable(button) === true. See jest.setup.js for more info
             // @ts-ignore

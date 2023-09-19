@@ -1,12 +1,12 @@
 import {removeExcessWhitespace} from './matching.js'
-const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
+const EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
 
 /**
  * Extract all strings of an element's children to an array.
  * "element.textContent" is a string which is merged of all children nodes,
  * which can cause issues with things like script tags etc.
  *
- * @param  {HTMLElement} element
+ * @param  {Element} element
  *         A DOM element to be extracted.
  * @returns {string[]}
  *          All strings in an element.
@@ -39,4 +39,4 @@ const extractElementStrings = (element) => {
     return [...strings]
 }
 
-export {extractElementStrings}
+export {extractElementStrings, EXCLUDED_TAGS}

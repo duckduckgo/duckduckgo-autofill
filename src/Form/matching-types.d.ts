@@ -15,7 +15,8 @@ interface Matcher {
 }
 
 interface MatcherLists {
-    email: Matcher[]
+    unknown: Matcher[]
+    emailAddress: Matcher[]
     password: Matcher[]
     username: Matcher[]
     cc: Matcher[]
@@ -28,7 +29,8 @@ interface MatcherConfiguration {
 }
 
 type MatcherTypeNames =
-  | 'email'
+  | 'unknown'
+  | 'emailAddress'
   | 'password'
   | 'username'
   | 'cardName'
@@ -51,6 +53,19 @@ type MatcherTypeNames =
   | 'birthdayDay'
   | 'birthdayMonth'
   | 'birthdayYear'
+
+type FormMatcherNames =
+    | 'loginRegex'
+    | 'signupRegex'
+    | 'conservativeSignupRegex'
+    | 'resetPasswordLink'
+    | 'loginProvidersRegex'
+
+type ButtonMatcherNames =
+    | 'submitButtonRegex'
+    | 'submitButtonUnlikelyRegex'
+
+type AllDDGMatcherNames = MatcherTypeNames | FormMatcherNames | ButtonMatcherNames
 
 type Strategy =
   | CSSSelectorStrategy
@@ -136,7 +151,7 @@ interface VendorRegexConfiguration {
 }
 
 interface DDGMatcherConfiguration {
-    matchers: Record<MatcherTypeNames | string, DDGMatcher>
+    matchers: Record<AllDDGMatcherNames | string, DDGMatcher>
 }
 
 interface DDGMatcher {
@@ -149,9 +164,10 @@ interface DDGMatcher {
 }
 
 type RequiredCssSelectors = {
-    FORM_INPUTS_SELECTOR: string
-    SUBMIT_BUTTON_SELECTOR: string
-    GENERIC_TEXT_FIELD: string
+    formInputsSelector: string
+    submitButtonSelector: string
+    genericTextField: string
+    safeUniversalSelector: string
 }
 
 /**

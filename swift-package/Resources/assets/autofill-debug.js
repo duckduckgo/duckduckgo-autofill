@@ -8705,7 +8705,7 @@ class InterfacePrototype {
     await this.postInit();
 
     if (this.settings.featureToggles.credentials_saving) {
-      (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms);
+      (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms, this.scanner.matching);
     }
   }
   /**
@@ -9854,16 +9854,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initFormSubmissionsApi = initFormSubmissionsApi;
 
-var _selectorsCss = require("../Form/selectors-css.js");
-
 var _autofillUtils = require("../autofill-utils.js");
+
+var _labelUtil = require("../Form/label-util.js");
 
 /**
  * This is a single place to contain all functionality relating to form submission detection
  *
  * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+ * @param {import("../Form/matching").Matching} matching
  */
-function initFormSubmissionsApi(forms) {
+function initFormSubmissionsApi(forms, matching) {
   /**
    * Global submit events
    */
@@ -9899,16 +9900,16 @@ function initFormSubmissionsApi(forms) {
     matchingForm === null || matchingForm === void 0 ? void 0 : matchingForm.submitHandler('global pointerdown event + matching form');
 
     if (!matchingForm) {
-      var _event$target, _event$target2;
+      var _event$target, _matching$getDDGMatch, _event$target2;
 
-      const selector = _selectorsCss.SUBMIT_BUTTON_SELECTOR + ', a[href="#"], a[href^=javascript], *[onclick]'; // check if the click happened on a button
+      const selector = matching.cssSelector('submitButtonSelector') + ', a[href="#"], a[href^=javascript], *[onclick], [class*=button i]'; // check if the click happened on a button
 
       const button =
       /** @type HTMLElement */
       (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.closest(selector);
       if (!button) return;
-      const text = (0, _autofillUtils.getText)(button);
-      const hasRelevantText = /(log|sign).?(in|up)|continue|next|submit/i.test(text);
+      const text = (0, _autofillUtils.getTextShallow)(button) || (0, _labelUtil.extractElementStrings)(button).join(' ');
+      const hasRelevantText = (_matching$getDDGMatch = matching.getDDGMatcherRegex('submitButtonRegex')) === null || _matching$getDDGMatch === void 0 ? void 0 : _matching$getDDGMatch.test(text);
 
       if (hasRelevantText && text.length < 25) {
         // check if there's a form with values
@@ -9951,7 +9952,7 @@ function initFormSubmissionsApi(forms) {
   });
 }
 
-},{"../Form/selectors-css.js":44,"../autofill-utils.js":63}],31:[function(require,module,exports){
+},{"../Form/label-util.js":39,"../autofill-utils.js":63}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10318,10 +10319,10 @@ class Form {
         formValues.credentials.username = formValues.identities.phone;
       } else {
         // If we still don't have a username, try scanning the form's text for an email address
-        this.form.querySelectorAll('*:not(select):not(option)').forEach(el => {
+        this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
           var _elText$match;
 
-          const elText = (0, _autofillUtils.getText)(el); // Ignore long texts to avoid false positives
+          const elText = (0, _autofillUtils.getTextShallow)(el); // Ignore long texts to avoid false positives
 
           if (elText.length > 70) return;
           const emailOrUsername = (_elText$match = elText.match( // https://www.emailregex.com/
@@ -10484,12 +10485,18 @@ class Form {
   }
 
   categorizeInputs() {
-    const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR');
+    const selector = this.matching.cssSelector('formInputsSelector');
 
     if (this.form.matches(selector)) {
       this.addInput(this.form);
     } else {
-      const foundInputs = this.form.querySelectorAll(selector);
+      let foundInputs = this.form.querySelectorAll(selector); // If the markup is broken form.querySelectorAll may not return the fields, so we select from the parent
+
+      if (foundInputs.length === 0 && this.form instanceof HTMLFormElement && this.form.length > 0) {
+        var _this$form$parentElem;
+
+        foundInputs = ((_this$form$parentElem = this.form.parentElement) === null || _this$form$parentElem === void 0 ? void 0 : _this$form$parentElem.querySelectorAll(selector)) || foundInputs;
+      }
 
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
@@ -10504,11 +10511,11 @@ class Form {
   }
 
   get submitButtons() {
-    const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR');
+    const selector = this.matching.cssSelector('submitButtonSelector');
     const allButtons =
     /** @type {HTMLElement[]} */
     [...this.form.querySelectorAll(selector)];
-    return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
+    return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
 
   attemptSubmissionIfNeeded() {
@@ -11011,13 +11018,6 @@ var _autofillUtils = require("../autofill-utils.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|unlock|logged in as|mfa-submit-form/i);
-const signupRegex = new RegExp(/sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i);
-const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i);
-const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i);
-const resetPasswordLink = new RegExp(/(forgot(ten)?|reset|don't remember) (your )?password|password forgotten/i);
-const loginProvidersRegex = new RegExp(/ with /i);
-
 class FormAnalyzer {
   /** @type HTMLElement */
 
@@ -11133,6 +11133,8 @@ class FormAnalyzer {
 
 
   updateSignal(_ref) {
+    var _this$matching$getDDG, _this$matching$getDDG2, _this$matching$getDDG3;
+
     let {
       string,
       strength,
@@ -11141,15 +11143,15 @@ class FormAnalyzer {
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     } = _ref;
-    const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string) || resetPasswordLink.test(string); // Check explicitly for unified login/signup forms
+    const matchesLogin = /current.?password/i.test(string) || ((_this$matching$getDDG = this.matching.getDDGMatcherRegex('loginRegex')) === null || _this$matching$getDDG === void 0 ? void 0 : _this$matching$getDDG.test(string)) || ((_this$matching$getDDG2 = this.matching.getDDGMatcherRegex('resetPasswordLink')) === null || _this$matching$getDDG2 === void 0 ? void 0 : _this$matching$getDDG2.test(string)); // Check explicitly for unified login/signup forms
 
-    if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
+    if (shouldCheckUnifiedForm && matchesLogin && (_this$matching$getDDG3 = this.matching.getDDGMatcherRegex('conservativeSignupRegex')) !== null && _this$matching$getDDG3 !== void 0 && _this$matching$getDDG3.test(string)) {
       this.increaseHybridSignal(strength, signalType);
       return this;
     }
 
-    const signupRegexToUse = shouldBeConservative ? conservativeSignupRegex : signupRegex;
-    const matchesSignup = /new.?password/i.test(string) || signupRegexToUse.test(string); // In some cases a login match means the login is somewhere else, i.e. when a link points outside
+    const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
+    const matchesSignup = /new.?password/i.test(string) || (signupRegexToUse === null || signupRegexToUse === void 0 ? void 0 : signupRegexToUse.test(string)); // In some cases a login match means the login is somewhere else, i.e. when a link points outside
 
     if (shouldFlip) {
       if (matchesLogin) this.increaseSignalBy(strength, signalType);
@@ -11175,6 +11177,24 @@ class FormAnalyzer {
         shouldCheckUnifiedForm: isInput
       });
     });
+  }
+
+  evaluateUrl() {
+    var _this$matching$getDDG4, _this$matching$getDDG5;
+
+    const path = window.location.pathname;
+    const matchesLogin = (_this$matching$getDDG4 = this.matching.getDDGMatcherRegex('loginRegex')) === null || _this$matching$getDDG4 === void 0 ? void 0 : _this$matching$getDDG4.test(path);
+    const matchesSignup = (_this$matching$getDDG5 = this.matching.getDDGMatcherRegex('conservativeSignupRegex')) === null || _this$matching$getDDG5 === void 0 ? void 0 : _this$matching$getDDG5.test(path); // If the url matches both, do nothing: the signal is probably confounding
+
+    if (matchesLogin && matchesSignup) return;
+
+    if (matchesLogin) {
+      this.decreaseSignalBy(1, 'url matches login');
+    }
+
+    if (matchesSignup) {
+      this.increaseSignalBy(1, 'url matches signup');
+    }
   }
 
   evaluatePageTitle() {
@@ -11208,7 +11228,7 @@ class FormAnalyzer {
     this.evaluatePageTitle();
     this.evaluatePageHeadings(); // Check for submit buttons
 
-    const buttons = document.querySelectorAll(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'));
+    const buttons = document.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
     buttons.forEach(button => {
       // if the button has a form, it's not related to our input, because our input has no form here
       if (button instanceof HTMLButtonElement) {
@@ -11221,7 +11241,7 @@ class FormAnalyzer {
   }
 
   evaluateElement(el) {
-    const string = (0, _autofillUtils.getText)(el);
+    const string = (0, _autofillUtils.getTextShallow)(el);
 
     if (el.matches(this.matching.cssSelector('password'))) {
       // These are explicit signals by the web author, so we weigh them heavily
@@ -11230,12 +11250,13 @@ class FormAnalyzer {
         strength: 5,
         signalType: "explicit: ".concat(el.getAttribute('autocomplete'))
       });
+      return;
     } // check button contents
 
 
-    if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
+    if (el.matches(this.matching.cssSelector('submitButtonSelector') + ', *[class*=button]')) {
       // If we're confident this is the submit button, it's a stronger signal
-      let likelyASubmit = (0, _autofillUtils.isLikelyASubmitButton)(el);
+      let likelyASubmit = (0, _autofillUtils.isLikelyASubmitButton)(el, this.matching);
 
       if (likelyASubmit) {
         this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(submit => {
@@ -11252,21 +11273,27 @@ class FormAnalyzer {
         strength,
         signalType: "submit: ".concat(string)
       });
+      return;
     } // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
 
 
     if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
-      let shouldFlip = true;
+      var _this$matching$getDDG6, _this$matching$getDDG7;
 
-      if (resetPasswordLink.test(string) || // Don't flip forgotten password links
-      loginProvidersRegex.test(string) // Don't flip login providers links
-      ) {
+      let shouldFlip = true;
+      let strength = 1; // Don't flip forgotten password links
+
+      if ((_this$matching$getDDG6 = this.matching.getDDGMatcherRegex('resetPasswordLink')) !== null && _this$matching$getDDG6 !== void 0 && _this$matching$getDDG6.test(string)) {
+        shouldFlip = false;
+        strength = 3;
+      } else if ((_this$matching$getDDG7 = this.matching.getDDGMatcherRegex('loginProvidersRegex')) !== null && _this$matching$getDDG7 !== void 0 && _this$matching$getDDG7.test(string)) {
+        // Don't flip login providers links
         shouldFlip = false;
       }
 
       this.updateSignal({
         string,
-        strength: 1,
+        strength,
         signalType: "external link: ".concat(string),
         shouldFlip
       });
@@ -11287,12 +11314,14 @@ class FormAnalyzer {
   }
 
   evaluateForm() {
-    // Check page title
+    // Check page url
+    this.evaluateUrl(); // Check page title
+
     this.evaluatePageTitle(); // Check form attributes
 
-    this.evaluateElAttributes(this.form); // Check form contents (skip select and option because they contain too much noise)
+    this.evaluateElAttributes(this.form); // Check form contents (noisy elements are skipped with the safeUniversalSelector)
 
-    this.form.querySelectorAll('*:not(select):not(option):not(script)').forEach(el => {
+    this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
       // Check if element is not hidden. Note that we can't use offsetHeight
       // nor intersectionObserver, because the element could be outside the
       // viewport or its parent hidden
@@ -11300,7 +11329,7 @@ class FormAnalyzer {
       if (displayValue !== 'none') this.evaluateElement(el);
     }); // A form with many fields is unlikely to be a login form
 
-    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'));
+    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
 
     if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
@@ -11962,7 +11991,7 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
  */
 
 const formatCCYear = (input, year, form) => {
-  const selector = form.matching.cssSelector('FORM_INPUTS_SELECTOR');
+  const selector = form.matching.cssSelector('formInputsSelector');
   if (input.maxLength === 4 || (0, _matching.checkPlaceholderAndLabels)(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
   return "".concat(Number(year) - 2000);
 };
@@ -11983,7 +12012,7 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
 
   const formattedYear = formatCCYear(input, year, form);
   const paddedMonth = "".concat(month).padStart(2, '0');
-  const cssSelector = form.matching.cssSelector('FORM_INPUTS_SELECTOR');
+  const cssSelector = form.matching.cssSelector('formInputsSelector');
   const separator = ((_matchInPlaceholderAn = (0, _matching.matchInPlaceholderAndLabels)(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)) === null || _matchInPlaceholderAn === void 0 ? void 0 : (_matchInPlaceholderAn2 = _matchInPlaceholderAn.groups) === null || _matchInPlaceholderAn2 === void 0 ? void 0 : _matchInPlaceholderAn2.separator) || '/';
   return "".concat(paddedMonth).concat(separator).concat(formattedYear);
 };
@@ -12678,21 +12707,23 @@ exports.isFieldDecorated = isFieldDecorated;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.extractElementStrings = void 0;
+exports.extractElementStrings = exports.EXCLUDED_TAGS = void 0;
 
 var _matching = require("./matching.js");
 
-const EXCLUDED_TAGS = ['SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
+const EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
 /**
  * Extract all strings of an element's children to an array.
  * "element.textContent" is a string which is merged of all children nodes,
  * which can cause issues with things like script tags etc.
  *
- * @param  {HTMLElement} element
+ * @param  {Element} element
  *         A DOM element to be extracted.
  * @returns {string[]}
  *          All strings in an element.
  */
+
+exports.EXCLUDED_TAGS = EXCLUDED_TAGS;
 
 const extractElementStrings = element => {
   const strings = new Set();
@@ -12753,11 +12784,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.matchingConfiguration = void 0;
 
-var css = _interopRequireWildcard(require("./selectors-css.js"));
-
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var _selectorsCss = require("./selectors-css.js");
 
 /**
  * This is here to mimic what Remote Configuration might look like
@@ -12769,11 +12796,17 @@ const matchingConfiguration = {
   /** @type {MatcherConfiguration} */
   matchers: {
     fields: {
-      email: {
-        type: 'email',
+      unknown: {
+        type: 'unknown',
         strategies: {
-          cssSelector: 'email',
-          ddgMatcher: 'email',
+          ddgMatcher: 'unknown'
+        }
+      },
+      emailAddress: {
+        type: 'emailAddress',
+        strategies: {
+          cssSelector: 'emailAddress',
+          ddgMatcher: 'emailAddress',
           vendorRegex: 'email'
         }
       },
@@ -12949,7 +12982,8 @@ const matchingConfiguration = {
       }
     },
     lists: {
-      email: ['email'],
+      unknown: ['unknown'],
+      emailAddress: ['emailAddress'],
       password: ['password'],
       username: ['username'],
       cc: ['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'],
@@ -12959,55 +12993,50 @@ const matchingConfiguration = {
   strategies: {
     /** @type {CssSelectorConfiguration} */
     cssSelector: {
-      selectors: {
-        // Generic
-        FORM_INPUTS_SELECTOR: css.__secret_do_not_use.FORM_INPUTS_SELECTOR,
-        SUBMIT_BUTTON_SELECTOR: css.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
-        GENERIC_TEXT_FIELD: css.__secret_do_not_use.GENERIC_TEXT_FIELD,
-        // user
-        email: css.__secret_do_not_use.email,
-        password: css.__secret_do_not_use.password,
-        username: css.__secret_do_not_use.username,
-        // CC
-        cardName: css.__secret_do_not_use.cardName,
-        cardNumber: css.__secret_do_not_use.cardNumber,
-        cardSecurityCode: css.__secret_do_not_use.cardSecurityCode,
-        expirationMonth: css.__secret_do_not_use.expirationMonth,
-        expirationYear: css.__secret_do_not_use.expirationYear,
-        expiration: css.__secret_do_not_use.expiration,
-        // Identities
-        firstName: css.__secret_do_not_use.firstName,
-        middleName: css.__secret_do_not_use.middleName,
-        lastName: css.__secret_do_not_use.lastName,
-        fullName: css.__secret_do_not_use.fullName,
-        phone: css.__secret_do_not_use.phone,
-        addressStreet: css.__secret_do_not_use.addressStreet1,
-        addressStreet2: css.__secret_do_not_use.addressStreet2,
-        addressCity: css.__secret_do_not_use.addressCity,
-        addressProvince: css.__secret_do_not_use.addressProvince,
-        addressPostalCode: css.__secret_do_not_use.addressPostalCode,
-        addressCountryCode: css.__secret_do_not_use.addressCountryCode,
-        birthdayDay: css.__secret_do_not_use.birthdayDay,
-        birthdayMonth: css.__secret_do_not_use.birthdayMonth,
-        birthdayYear: css.__secret_do_not_use.birthdayYear
-      }
+      selectors: _selectorsCss.selectors
     },
 
     /** @type {DDGMatcherConfiguration} */
     ddgMatcher: {
       matchers: {
-        email: {
-          match: '.mail\\b|apple.?id',
+        unknown: {
+          match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' + // Italian
+          '|cerca|filtr|oggetto|titolo|(due|più) fattori' + // German
+          '|suche|filtern|betreff' + // Dutch
+          '|zoeken|filter|onderwerp|titel' + // French
+          '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique' + // Spanish
+          '|busca|busqueda|filtra|dos pasos|un solo uso' + // Swedish
+          '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
+          skip: 'phone|mobile|email|password'
+        },
+        emailAddress: {
+          match: '.mail\\b|apple.?id' + // Italian
+          '|posta elettronica' + // Dutch
+          '|e.?mailadres' + // Spanish
+          '|correo electr|correo-e|^correo$' + // Swedish
+          '|\\be.?post|e.?postadress',
           skip: 'phone|(first.?|last.?)name|number|code',
           forceUnknown: 'search|filter|subject|title|\btab\b|otp'
         },
         password: {
-          match: 'password',
+          match: 'password' + // German
+          '|passwort|kennwort' + // Dutch
+          '|wachtwoord' + // French
+          '|mot de passe' + // Spanish
+          '|clave|contraseña' + // Swedish
+          '|lösenord',
           skip: 'email|one-time|error|hint',
-          forceUnknown: 'captcha|mfa|2fa|two factor|otp'
+          forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
         },
         username: {
-          match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername',
+          match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' + // Italian
+          '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente' + // German
+          '|nutzername|anmeldename' + // Dutch
+          '|gebruikersnaam' + // French
+          '|nom d.utilisateur|identifiant|pseudo' + // Spanish
+          '|usuari|cuenta|identificador|apodo' + // in Spanish dni and nie stand for id number, often used as username
+          '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' + // Swedish
+          '|användarnamn|kontonamn|användar-id',
           skip: 'phone',
           forceUnknown: 'search|policy'
         },
@@ -13017,6 +13046,7 @@ const matchingConfiguration = {
         },
         cardNumber: {
           match: 'card.*number|number.*card',
+          skip: 'phone',
           forceUnknown: 'plus'
         },
         cardSecurityCode: {
@@ -13032,33 +13062,37 @@ const matchingConfiguration = {
         },
         expiration: {
           match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-          skip: 'invalid'
+          skip: 'invalid|^dd/'
         },
         // Identities
         firstName: {
-          match: '(first|given|fore).?name',
-          skip: 'last'
+          match: '(first|given|fore).?name' + // Italian
+          '|\\bnome',
+          skip: 'last|cognome|completo'
         },
         middleName: {
           match: '(middle|additional).?name'
         },
         lastName: {
-          match: '(last|family|sur)[^i]?name',
-          skip: 'first'
+          match: '(last|family|sur)[^i]?name' + // Italian
+          '|cognome',
+          skip: 'first|\\bnome'
         },
         fullName: {
-          match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b',
+          match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' + // Italian
+          '|\\bnome',
           forceUnknown: 'company|org|item'
         },
         phone: {
-          match: 'phone',
+          match: 'phone|mobile' + // Italian
+          '|telefono|cellulare',
           skip: 'code|pass|country',
           forceUnknown: 'ext|type|otp'
         },
         addressStreet: {
           match: 'address',
           forceUnknown: '\\bip\\b|duck|web|url',
-          skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in'
+          skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico'
         },
         addressStreet2: {
           match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
@@ -13066,19 +13100,20 @@ const matchingConfiguration = {
           skip: 'email|log.?in|sign.?in'
         },
         addressCity: {
-          match: 'city|town',
+          match: 'city|town|città|comune',
+          skip: '\\bzip\\b|\\bcap\\b',
           forceUnknown: 'vatican'
         },
         addressProvince: {
-          match: 'state|province|region|county',
+          match: 'state|province|region|county|provincia|regione',
           forceUnknown: 'united',
           skip: 'country'
         },
         addressPostalCode: {
-          match: '\\bzip\\b|postal\b|post.?code'
+          match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'
         },
         addressCountryCode: {
-          match: 'country'
+          match: 'country|\\bnation\\b|nazione|paese'
         },
         birthdayDay: {
           match: '(birth.*day|day.*birth)',
@@ -13090,6 +13125,69 @@ const matchingConfiguration = {
         },
         birthdayYear: {
           match: '(birth.*year|year.*birth)'
+        },
+        loginRegex: {
+          match: 'sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' + '|mfa-submit-form' + // fix chase.com
+          '|unlock|logged in as' + // fix bitwarden
+          // Italian
+          '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password' + // German
+          '|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl' + // Dutch
+          '|inloggen' + // French
+          '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
+          '|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar' + // Swedish
+          '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
+        },
+        signupRegex: {
+          match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' + // Italian
+          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' + // German
+          '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite' + // Dutch
+          '|nieuwsbrief|aanmaken|profiel' + // French
+          '|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' + // Spanish
+          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
+          '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
+        },
+        conservativeSignupRegex: {
+          match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' + // Italian
+          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' + // German
+          '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' + // Dutch
+          '|registreren|eigenschappen|profiel|bijwerken' + // French
+          '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' + // Spanish
+          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
+          '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera'
+        },
+        resetPasswordLink: {
+          match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' + // Italian
+          '|password dimenticata|reset(?:ta) password|recuper[ao] password' + // German
+          '|(vergessen|verloren|verlegt|wiederherstellen) passwort' + // Dutch
+          '|wachtwoord (vergeten|reset)' + // French
+          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
+          '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' + // Swedish
+          '|glömt lösenord|återställ lösenord'
+        },
+        loginProvidersRegex: {
+          match: ' with ' + // Italian and Spanish
+          '| con ' + // German
+          '| mit ' + // Dutch
+          '| met ' + // French
+          '| avec '
+        },
+        submitButtonRegex: {
+          match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' + // Italian
+          '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' + // German
+          '|senden|\\bja\\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden' + // Dutch
+          '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' + // French
+          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner' + // Spanish
+          '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' + // Swedish
+          '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
+        },
+        submitButtonUnlikelyRegex: {
+          match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' + // Italian
+          '|annulla|mostra|nascondi|stampa|indietro|già' + // German
+          '|abbrechen|passwort|zeigen|verbergen|drucken|zurück' + // Dutch
+          '|annuleer|wachtwoord|toon|vorige' + // French
+          '|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà' + // Spanish
+          '|anular|cancelar|imprimir|cerrar' + // Swedish
+          '|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan'
         }
       }
     },
@@ -13275,7 +13373,7 @@ const matchingConfiguration = {
         '|സംസ്ഥാനം' + // ml
         '|استان' + // fa
         '|राज्य' + // hi
-        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))' + // tr
+        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]limiz|kent)(\\b|_|\\*))' + // tr
         '|^시[·・]?도',
         // ko-KR
         'postal-code': 'zip|postal|post.*code|pcode' + '|pin.?code' + // en-IN
@@ -13312,7 +13410,7 @@ const matchingConfiguration = {
         '|持卡人姓名',
         // zh-TW
         name: '^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name' + '|name.*first.*last|firstandlastname' + '|nombre.*y.*apellidos' + // es
-        '|^nom(?!bre)' + // fr-FR
+        '|^nom(?!bre)\\b' + // fr-FR
         '|お名前|氏名' + // ja-JP
         '|^nome' + // pt-BR, pt-PT
         '|نام.*نام.*خانوادگی' + // fa
@@ -13324,7 +13422,7 @@ const matchingConfiguration = {
         '|nombre' + // es
         '|forename|prénom|prenom' + // fr-FR
         '|名' + // ja-JP
-        '|nome' + // pt-BR, pt-PT
+        '|\\bnome' + // pt-BR, pt-PT
         '|Имя' + // ru
         '|نام' + // fa
         '|이름' + // ko-KR
@@ -13495,8 +13593,6 @@ var _constants = require("../constants.js");
 
 var _labelUtil = require("./label-util.js");
 
-var _selectorsCss = require("./selectors-css.js");
-
 var _matchingConfiguration = require("./matching-configuration.js");
 
 var _matchingUtils = require("./matching-utils.js");
@@ -13526,8 +13622,8 @@ const {
 /** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
 
 const dimensionBounds = {
-  email: {
-    minWidth: 40
+  emailAddress: {
+    minWidth: 35
   }
 };
 /**
@@ -13624,11 +13720,12 @@ class Matching {
     _classPrivateFieldSet(this, _ddgMatchers, _classPrivateFieldGet(this, _config).strategies.ddgMatcher.matchers);
 
     _classPrivateFieldSet(this, _matcherLists, {
+      unknown: [],
       cc: [],
       id: [],
       password: [],
       username: [],
-      email: []
+      emailAddress: []
     });
     /**
      * Convert the raw config data into actual references.
@@ -13676,6 +13773,19 @@ class Matching {
     return match;
   }
   /**
+   * Strategies can have different lookup names. This returns the correct one
+   * @param {MatcherTypeNames} matcherName
+   * @param {StrategyNames} vendorRegex
+   * @returns {MatcherTypeNames}
+   */
+
+
+  getStrategyLookupByType(matcherName, vendorRegex) {
+    var _classPrivateFieldGet2;
+
+    return (_classPrivateFieldGet2 = _classPrivateFieldGet(this, _config).matchers.fields[matcherName]) === null || _classPrivateFieldGet2 === void 0 ? void 0 : _classPrivateFieldGet2.strategies[vendorRegex];
+  }
+  /**
    * Try to access a 'css selector' by name from configuration
    * @param {keyof RequiredCssSelectors | string} selectorName
    * @returns {string};
@@ -13712,6 +13822,23 @@ class Matching {
     }
 
     return match;
+  }
+  /**
+   * Returns the RegExp for the given matcherName, with proper flags
+   * @param {AllDDGMatcherNames} matcherName
+   * @returns {RegExp|undefined}
+   */
+
+
+  getDDGMatcherRegex(matcherName) {
+    const matcher = this.ddgMatcher(matcherName);
+
+    if (!matcher || !matcher.match) {
+      console.warn('DDG matcher has unexpected format');
+      return undefined;
+    }
+
+    return safeRegex(matcher.match);
   }
   /**
    * Try to access a list of matchers by name - these are the ones collected in the constructor
@@ -13803,7 +13930,8 @@ class Matching {
       return presetType;
     }
 
-    this.setActiveElementStrings(input, formEl); // // For CC forms we run aggressive matches, so we want to make sure we only
+    this.setActiveElementStrings(input, formEl);
+    if (this.subtypeFromMatchers('unknown', input)) return 'unknown'; // // For CC forms we run aggressive matches, so we want to make sure we only
     // // run them on actual CC forms to avoid false positives and expensive loops
 
     if (opts.isCCForm) {
@@ -13816,10 +13944,14 @@ class Matching {
 
     if (input instanceof HTMLInputElement) {
       if (this.subtypeFromMatchers('password', input)) {
-        return 'credentials.password';
+        // Any other input type is likely a false match
+        // Arguably "text" should be as well, but it can be used for password reveal fields
+        if (['password', 'text'].includes(input.type) && input.name !== 'email' && input.placeholder !== 'Username') {
+          return 'credentials.password';
+        }
       }
 
-      if (this.subtypeFromMatchers('email', input) && this.isInputLargeEnough('email', input)) {
+      if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
         if (opts.isLogin || opts.isHybrid) {
           // TODO: Being this support back in the future
           // https://app.asana.com/0/1198964220583541/1204686960531034/f
@@ -14017,8 +14149,7 @@ class Matching {
 
     for (let stringName of matchableStrings) {
       let elementString = this.activeElementStrings[stringName];
-      if (!elementString) continue;
-      elementString = elementString.toLowerCase(); // Scoring to ensure all DDG tests are valid
+      if (!elementString) continue; // Scoring to ensure all DDG tests are valid
 
       let score = 0;
       /** @type {MatchingResult} */
@@ -14169,7 +14300,7 @@ class Matching {
       labelText: explicitLabelsText,
       placeholderAttr: el.placeholder || '',
       id: el.id,
-      relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+      relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector'))
     };
 
     this._elementStringCache.set(el, next);
@@ -14218,9 +14349,7 @@ _defineProperty(Matching, "emptyConfig", {
       matchers: {}
     },
     'cssSelector': {
-      selectors: {
-        FORM_INPUTS_SELECTOR: _selectorsCss.FORM_INPUTS_SELECTOR
-      }
+      selectors: {}
     }
   }
 });
@@ -14403,6 +14532,25 @@ const getExplicitLabelsText = el => {
   return '';
 };
 /**
+ * Tries to get a relevant previous Element sibling, excluding certain tags
+ * @param {Element} el
+ * @returns {Element|null}
+ */
+
+
+exports.getExplicitLabelsText = getExplicitLabelsText;
+
+const recursiveGetPreviousElSibling = el => {
+  const previousEl = el.previousElementSibling;
+  if (!previousEl) return null; // Skip elements with no childNodes
+
+  if (_labelUtil.EXCLUDED_TAGS.includes(previousEl.tagName)) {
+    return recursiveGetPreviousElSibling(previousEl);
+  }
+
+  return previousEl;
+};
+/**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {HTMLElement} form
@@ -14411,28 +14559,44 @@ const getExplicitLabelsText = el => {
  */
 
 
-exports.getExplicitLabelsText = getExplicitLabelsText;
-
 const getRelatedText = (el, form, cssSelector) => {
   let scope = getLargestMeaningfulContainer(el, form, cssSelector); // If we didn't find a container, try looking for an adjacent label
 
   if (scope === el) {
-    if (el.previousElementSibling instanceof HTMLLabelElement) {
-      scope = el.previousElementSibling;
+    let previousEl = recursiveGetPreviousElSibling(el);
+
+    if (previousEl instanceof HTMLElement) {
+      scope = previousEl;
+    } // If there is still no meaningful container return empty string
+
+
+    if (scope === el || scope instanceof HTMLSelectElement) {
+      if (el.previousSibling instanceof Text) {
+        return removeExcessWhitespace(el.previousSibling.textContent);
+      }
+
+      return '';
     }
   } // If there is still no meaningful container return empty string
 
 
-  if (scope === el || scope.nodeName === 'SELECT') return '';
+  if (scope === el || scope instanceof HTMLSelectElement) {
+    if (el.previousSibling instanceof Text) {
+      return removeExcessWhitespace(el.previousSibling.textContent);
+    }
+
+    return '';
+  }
+
   let trimmedText = '';
   const label = scope.querySelector('label');
 
   if (label) {
     // Try searching for a label first
-    trimmedText = removeExcessWhitespace((0, _autofillUtils.getText)(label));
+    trimmedText = (0, _autofillUtils.getTextShallow)(label);
   } else {
     // If the container has a select element, remove its contents to avoid noise
-    trimmedText = removeExcessWhitespace((0, _labelUtil.extractElementStrings)(scope).join(' '));
+    trimmedText = (0, _labelUtil.extractElementStrings)(scope).join(' ');
   } // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
 
 
@@ -14454,7 +14618,7 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
   /* TODO: there could be more than one select el for the same label, in that case we should
       change how we compute the container */
   const parentElement = el.parentElement;
-  if (!parentElement || el === form) return el;
+  if (!parentElement || el === form || !cssSelector) return el;
   const inputsInParentsScope = parentElement.querySelectorAll(cssSelector); // To avoid noise, ensure that our input is the only in scope
 
   if (inputsInParentsScope.length === 1) {
@@ -14494,7 +14658,7 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
   return !!matchInPlaceholderAndLabels(input, regex, form, cssSelector);
 };
 /**
- * Creating Regex instances can throw, so we add this to be
+ * Returns a RegExp from a string
  * @param {string} string
  * @returns {RegExp | undefined} string
  */
@@ -14504,9 +14668,8 @@ exports.checkPlaceholderAndLabels = checkPlaceholderAndLabels;
 
 const safeRegex = string => {
   try {
-    // This is lower-cased here because giving a `i` on a regex flag is a performance problem in some cases
-    const input = String(string).toLowerCase().normalize('NFKC');
-    return new RegExp(input, 'u');
+    const input = String(string).normalize('NFKC');
+    return new RegExp(input, 'ui');
   } catch (e) {
     console.warn('Could not generate regex from string input', string);
     return undefined;
@@ -14525,45 +14688,22 @@ function createMatching() {
   return new Matching(_matchingConfiguration.matchingConfiguration);
 }
 
-},{"../autofill-utils.js":63,"../constants.js":66,"./label-util.js":39,"./matching-configuration.js":41,"./matching-utils.js":42,"./selectors-css.js":44,"./vendor-regex.js":45}],44:[function(require,module,exports){
+},{"../autofill-utils.js":63,"../constants.js":66,"./label-util.js":39,"./matching-configuration.js":41,"./matching-utils.js":42,"./vendor-regex.js":45}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.__secret_do_not_use = exports.SUBMIT_BUTTON_SELECTOR = exports.FORM_INPUTS_SELECTOR = void 0;
-const FORM_INPUTS_SELECTOR = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]),\n[autocomplete=username],\nselect";
-exports.FORM_INPUTS_SELECTOR = FORM_INPUTS_SELECTOR;
-const SUBMIT_BUTTON_SELECTOR = "\ninput[type=submit],\ninput[type=button],\ninput[type=image],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
-exports.SUBMIT_BUTTON_SELECTOR = SUBMIT_BUTTON_SELECTOR;
-const email = ["\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]", // https://account.nicovideo.jp/login
-"input[name=\"mail_tel\" i]"]; // We've seen non-standard types like 'user'. This selector should get them, too
+exports.selectors = void 0;
+const formInputsSelector = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete=\"fake\"]),\n[autocomplete=username],\nselect";
+const submitButtonSelector = "\ninput[type=submit],\ninput[type=button],\ninput[type=image],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
+const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)'; // We've seen non-standard types like 'user'. This selector should get them, too
 
-const GENERIC_TEXT_FIELD = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
-const password = ["input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i])", // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
-'input.js-cloudsave-phrase'];
-const cardName = "\ninput[autocomplete=\"cc-name\" i],\ninput[autocomplete=\"ccname\" i],\ninput[name=\"ccname\" i],\ninput[name=\"cc-name\" i],\ninput[name=\"ppw-accountHolderName\" i],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
-const cardNumber = "\ninput[autocomplete=\"cc-number\" i],\ninput[autocomplete=\"ccnumber\" i],\ninput[autocomplete=\"cardnumber\" i],\ninput[autocomplete=\"card-number\" i],\ninput[name=\"ccnumber\" i],\ninput[name=\"cc-number\" i],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
-const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\" i],\ninput[autocomplete=\"csc\" i],\ninput[autocomplete=\"cc-cvc\" i],\ninput[autocomplete=\"cvc\" i],\ninput[name=\"cvc\" i],\ninput[name=\"cc-cvc\" i],\ninput[name=\"cc-csc\" i],\ninput[name=\"csc\" i],\ninput[name*=security i][name*=code i]";
-const expirationMonth = "\n[autocomplete=\"cc-exp-month\" i],\n[autocomplete=\"cc_exp_month\" i],\n[name=\"ccmonth\" i],\n[name=\"ppw-expirationDate_month\" i],\n[name=cardExpiryMonth i],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=cc_exp_month i]";
-const expirationYear = "\n[autocomplete=\"cc-exp-year\" i],\n[autocomplete=\"cc_exp_year\" i],\n[name=\"ccyear\" i],\n[name=\"ppw-expirationDate_year\" i],\n[name=cardExpiryYear i],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=cc-exp-year i],\n[name*=cc_exp_year i]";
-const expiration = "\n[autocomplete=\"cc-exp\" i],\n[name=\"cc-exp\" i],\n[name=\"exp-date\" i],\n[name=\"expirationDate\" i],\ninput[id*=expiration i]";
-const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
-const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
-const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
-const fullName = "\n[name=name], [autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
-const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),\n[name*=mobile i]:not([name*=type i]),\n[autocomplete=tel],\n[autocomplete=\"tel-national\"],\n[placeholder*=\"phone number\" i]";
-const addressStreet1 = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
-const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
-const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
-const addressProvince = "\n[name=province i], [name=state i], [autocomplete=address-level1 i]";
-const addressPostalCode = "\n[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],\n[name*=postalCode i], [name*=zipcode i]";
-const addressCountryCode = ["[name=country i], [autocomplete=country i],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
-];
-const birthdayDay = "\n[name=bday-day i],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day i], [name=date-of-birth-day i],\n[name^=birthdate_d i], [name^=birthdate-d i],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
-const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month i], [name=date-of-birth-month i],\n[name^=birthdate_m i], [name^=birthdate-m i],\nselect[name=\"mm\" i]";
-const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
-const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
+const genericTextField = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
+const emailAddress = ["\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]", // https://account.nicovideo.jp/login
+"input[name=\"mail_tel\" i]", // https://www.morningstar.it/it/membership/LoginPopup.aspx
+"input[value=email i]"];
+const username = ["".concat(genericTextField, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
 "input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
 "input[name=\"userid\" i]", "input[id=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[id=\"login_id\" i]", "input[id=\"loginid\" i]", "input[name=\"login\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"j_username\" i]", // https://account.uwindsor.ca/login
 "input[name=\"uwinid\" i]", // livedoor.com
@@ -14579,30 +14719,59 @@ const username = ["".concat(GENERIC_TEXT_FIELD, "[autocomplete^=user i]"), "inpu
 "input[name=\"tridField\" i]", // https://membernetprb2c.b2clogin.com
 "input[id=\"signInName\" i]", // https://www.w3.org/accounts/request
 "input[id=\"w3c_accountsbundle_accountrequeststep1_login\" i]", "input[id=\"username\" i]", "input[name=\"_user\" i]", "input[name=\"login_username\" i]", // https://www.flytap.com/
-"input[name^=\"login-user-account\" i]", "input[placeholder^=\"username\" i]"]; // todo: these are still used directly right now, mostly in scanForInputs
-// todo: ensure these can be set via configuration
-
-// Exported here for now, to be moved to configuration later
-// eslint-disable-next-line camelcase
-const __secret_do_not_use = {
-  GENERIC_TEXT_FIELD,
-  SUBMIT_BUTTON_SELECTOR,
-  FORM_INPUTS_SELECTOR,
-  email: email,
-  password,
+"input[name^=\"login-user-account\" i]", // https://www.sanitas.es
+"input[id=\"loginusuario\" i]", // https://www.guardiacivil.es/administracion/login.html
+"input[name=\"usuario\" i]", // https://m.bintercanarias.com/
+"input[id=\"UserLoginFormUsername\" i]", // https://id.docker.com/login
+"input[id=\"nw_username\" i]", // https://appleid.apple.com/es/sign-in (needed for all languages)
+"input[can-field=\"accountName\"]", "input[placeholder^=\"username\" i]"];
+const password = ["input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])", // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
+'input.js-cloudsave-phrase'];
+const cardName = "\ninput[autocomplete=\"cc-name\" i],\ninput[autocomplete=\"ccname\" i],\ninput[name=\"ccname\" i],\ninput[name=\"cc-name\" i],\ninput[name=\"ppw-accountHolderName\" i],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
+const cardNumber = "\ninput[autocomplete=\"cc-number\" i],\ninput[autocomplete=\"ccnumber\" i],\ninput[autocomplete=\"cardnumber\" i],\ninput[autocomplete=\"card-number\" i],\ninput[name=\"ccnumber\" i],\ninput[name=\"cc-number\" i],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
+const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\" i],\ninput[autocomplete=\"csc\" i],\ninput[autocomplete=\"cc-cvc\" i],\ninput[autocomplete=\"cvc\" i],\ninput[name=\"cvc\" i],\ninput[name=\"cc-cvc\" i],\ninput[name=\"cc-csc\" i],\ninput[name=\"csc\" i],\ninput[name*=security i][name*=code i]";
+const expirationMonth = "\n[autocomplete=\"cc-exp-month\" i],\n[autocomplete=\"cc_exp_month\" i],\n[name=\"ccmonth\" i],\n[name=\"ppw-expirationDate_month\" i],\n[name=cardExpiryMonth i],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=\"card_exp-month\" i],\n[name*=cc_exp_month i]";
+const expirationYear = "\n[autocomplete=\"cc-exp-year\" i],\n[autocomplete=\"cc_exp_year\" i],\n[name=\"ccyear\" i],\n[name=\"ppw-expirationDate_year\" i],\n[name=cardExpiryYear i],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=\"cc-exp-year\" i],\n[name*=\"card_exp-year\" i],\n[name*=cc_exp_year i]";
+const expiration = "\n[autocomplete=\"cc-exp\" i],\n[name=\"cc-exp\" i],\n[name=\"exp-date\" i],\n[name=\"expirationDate\" i],\ninput[id*=expiration i]";
+const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
+const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
+const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
+const fullName = "\n[autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
+const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),\n[name*=mobile i]:not([name*=type i]),\n[autocomplete=tel],\n[autocomplete=\"tel-national\"],\n[placeholder*=\"phone number\" i]";
+const addressStreet = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
+const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
+const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
+const addressProvince = "\n[name=province i], [name=state i], [autocomplete=address-level1 i]";
+const addressPostalCode = "\n[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],\n[name*=postalCode i], [name*=zipcode i]";
+const addressCountryCode = ["[name=country i], [autocomplete=country i],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
+];
+const birthdayDay = "\n[name=bday-day i],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day i], [name=date-of-birth-day i],\n[name^=birthdate_d i], [name^=birthdate-d i],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
+const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month i], [name=date-of-birth-month i],\n[name^=birthdate_m i], [name^=birthdate-m i],\nselect[name=\"mm\" i]";
+const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
+const selectors = {
+  // Generic
+  genericTextField,
+  submitButtonSelector,
+  formInputsSelector,
+  safeUniversalSelector,
+  // Credentials
+  emailAddress,
   username,
+  password,
+  // Credit Card
   cardName,
   cardNumber,
   cardSecurityCode,
   expirationMonth,
   expirationYear,
   expiration,
+  // Identities
   firstName,
   middleName,
   lastName,
   fullName,
   phone,
-  addressStreet1,
+  addressStreet,
   addressStreet2,
   addressCity,
   addressProvince,
@@ -14612,7 +14781,7 @@ const __secret_do_not_use = {
   birthdayMonth,
   birthdayYear
 };
-exports.__secret_do_not_use = __secret_do_not_use;
+exports.selectors = selectors;
 
 },{}],45:[function(require,module,exports){
 "use strict";
@@ -15251,8 +15420,6 @@ exports.createScanner = createScanner;
 
 var _Form = require("./Form/Form.js");
 
-var _selectorsCss = require("./Form/selectors-css.js");
-
 var _constants = require("./constants.js");
 
 var _matching = require("./Form/matching.js");
@@ -15274,6 +15441,7 @@ const {
  *     init(): (reason, ...rest)=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
+ *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
  * }} Scanner
  *
@@ -15326,6 +15494,8 @@ class DefaultScanner {
 
   /** @type {boolean} Indicates whether we called stopScanning */
 
+  /** @type {import("./Form/matching").Matching} matching */
+
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
    * @param {ScannerOptions} options
@@ -15344,6 +15514,8 @@ class DefaultScanner {
     _defineProperty(this, "rescanAll", false);
 
     _defineProperty(this, "stopped", false);
+
+    _defineProperty(this, "matching", void 0);
 
     _defineProperty(this, "mutObs", new MutationObserver(mutationList => {
       /** @type {HTMLElement[]} */
@@ -15449,10 +15621,10 @@ class DefaultScanner {
       return this;
     }
 
-    if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, _selectorsCss.FORM_INPUTS_SELECTOR)) {
+    if ('matches' in context && (_context$matches = context.matches) !== null && _context$matches !== void 0 && _context$matches.call(context, this.matching.cssSelector('formInputsSelector'))) {
       this.addInput(context);
     } else {
-      const inputs = context.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
+      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
 
       if (inputs.length > this.options.maxInputsPerPage) {
         this.stopScanner('Too many input fields in the given context, stop scanning', context);
@@ -15527,8 +15699,8 @@ class DefaultScanner {
       }
 
       element = element.parentElement;
-      const inputs = element.querySelectorAll(_selectorsCss.FORM_INPUTS_SELECTOR);
-      const buttons = element.querySelectorAll(_selectorsCss.SUBMIT_BUTTON_SELECTOR); // If we find a button or another input, we assume that's our form
+      const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+      const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector')); // If we find a button or another input, we assume that's our form
 
       if (inputs.length > 1 || buttons.length) {
         // found related input, return common ancestor
@@ -15674,7 +15846,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":33,"./Form/matching.js":43,"./Form/selectors-css.js":44,"./autofill-utils.js":63,"./constants.js":66,"./deviceApiCalls/__generated__/deviceApiCalls.js":67}],52:[function(require,module,exports){
+},{"./Form/Form.js":33,"./Form/matching.js":43,"./autofill-utils.js":63,"./constants.js":66,"./deviceApiCalls/__generated__/deviceApiCalls.js":67}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17805,7 +17977,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getText = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
 exports.isFormLikelyToBeUsedAsPageWrapper = isFormLikelyToBeUsedAsPageWrapper;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -17889,6 +18061,10 @@ const isAutofillEnabledFromProcessedConfig = processedConfig => {
   const site = processedConfig.site;
 
   if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
+    if (shouldLog()) {
+      console.log('⚠️ Autofill disabled by remote config');
+    }
+
     return false;
   }
 
@@ -17901,6 +18077,10 @@ const isIncontextSignupEnabledFromProcessedConfig = processedConfig => {
   const site = processedConfig.site;
 
   if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
+    if (shouldLog()) {
+      console.log('⚠️ In-context signup disabled by remote config');
+    }
+
     return false;
   }
 
@@ -18193,26 +18373,28 @@ function escapeXML(str) {
   };
   return String(str).replace(/[&"'<>/]/g, m => replacements[m]);
 }
-
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i;
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i;
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
+ * @param {import("./Form/matching").Matching} matching
  * @return {boolean}
  */
 
-const isLikelyASubmitButton = el => {
-  const text = getText(el);
+
+const isLikelyASubmitButton = (el, matching) => {
+  var _matching$getDDGMatch, _matching$getDDGMatch2, _matching$getDDGMatch3;
+
+  const text = getTextShallow(el);
   const ariaLabel = el.getAttribute('aria-label') || '';
   const dataTestId = el.getAttribute('data-test-id') || '';
-  return (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-  el.getAttribute('name') === 'submit' || // is called "submit"
-  /primary|submit/i.test(el.className) || // has high-signal submit classes
-  /submit/i.test(dataTestId) || SUBMIT_BUTTON_REGEX.test(text) || // has high-signal text
+  if ((el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+  el.getAttribute('name') === 'submit') && // is called "submit"
+  !((_matching$getDDGMatch = matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')) !== null && _matching$getDDGMatch !== void 0 && _matching$getDDGMatch.test(text + ' ' + ariaLabel))) return true;
+  return (/primary|submit/i.test(el.className) || // has high-signal submit classes
+  /submit/i.test(dataTestId) || ((_matching$getDDGMatch2 = matching.getDDGMatcherRegex('submitButtonRegex')) === null || _matching$getDDGMatch2 === void 0 ? void 0 : _matching$getDDGMatch2.test(text)) || // has high-signal text
   el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px
   ) && el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-  !SUBMIT_BUTTON_UNLIKELY_REGEX.test(text + ' ' + ariaLabel);
+  !((_matching$getDDGMatch3 = matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')) !== null && _matching$getDDGMatch3 !== void 0 && _matching$getDDGMatch3.test(text + ' ' + ariaLabel));
 };
 /**
  * Check that a button matches the form type - login buttons on a login form, signup buttons on a signup form
@@ -18236,12 +18418,12 @@ const buttonMatchesFormType = (el, formObj) => {
 exports.buttonMatchesFormType = buttonMatchesFormType;
 const buttonInputTypes = ['submit', 'button'];
 /**
- * Get the text of an element
- * @param {Element} el
+ * Get the text of an element, one level deep max
+ * @param {Node} el
  * @returns {string}
  */
 
-const getText = el => {
+const getTextShallow = el => {
   // for buttons, we don't care about descendants, just get the whole text as is
   // this is important in order to give proper attribution of the text to the button
   if (el instanceof HTMLButtonElement) return (0, _matching.removeExcessWhitespace)(el.textContent);
@@ -18273,7 +18455,7 @@ const getText = el => {
  */
 
 
-exports.getText = getText;
+exports.getTextShallow = getTextShallow;
 
 function isLocalNetwork() {
   let hostname = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : window.location.hostname;
@@ -18548,7 +18730,7 @@ exports.constants = void 0;
 const constants = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
   ATTR_AUTOFILL: 'data-ddg-autofill',
-  TEXT_LENGTH_CUTOFF: 50,
+  TEXT_LENGTH_CUTOFF: 100,
   MAX_INPUTS_PER_PAGE: 100,
   MAX_FORMS_PER_PAGE: 30,
   MAX_INPUTS_PER_FORM: 80,

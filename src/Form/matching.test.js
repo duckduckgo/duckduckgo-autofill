@@ -28,8 +28,8 @@ beforeEach(() => {
 
 describe('css-selector matching', () => {
     it.each(/** @type MatchingTestCases */([
-        { html: `<input name=email />`, matcher: 'email', matched: true },
-        { html: `<input name=oops! />`, matcher: 'email', matched: false }
+        { html: `<input name=email />`, matcher: 'emailAddress', matched: true },
+        { html: `<input name=oops! />`, matcher: 'emailAddress', matched: false }
     ]))(`$html: '$matched'`, (args) => {
         const { html, matched, matcher } = args
         const { inputs } = setFormHtml(html)
@@ -42,9 +42,9 @@ describe('css-selector matching', () => {
 
 describe('ddg-matchers matching', () => {
     it.each(/** @type MatchingTestCases */([
-        { html: `<input placeholder=email />`, matcher: 'email', matched: true },
-        { html: `<input placeholder=mail />`, matcher: 'email', matched: false },
-        { html: `<input placeholder=email-search />`, matcher: 'email', matched: false }
+        { html: `<input placeholder=email />`, matcher: 'emailAddress', matched: true },
+        { html: `<input placeholder=mail />`, matcher: 'emailAddress', matched: false },
+        { html: `<input placeholder=email-search />`, matcher: 'emailAddress', matched: false }
     ])
     )(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
@@ -60,10 +60,10 @@ describe('ddg-matchers matching', () => {
 
 describe('vendor-regexes matching', () => {
     it.each(/** @type MatchingTestCases */([
-        { html: `<input name=email />`, matcher: 'email', matched: true },
-        { html: `<input name=email-address />`, matcher: 'email', matched: true },
-        { html: `<input name="courriel" />`, matcher: 'email', matched: true }, // fr
-        { html: `<input name="メールアドレス" />`, matcher: 'email', matched: true } // ja-JP
+        { html: `<input name=email />`, matcher: 'emailAddress', matched: true },
+        { html: `<input name=email-address />`, matcher: 'emailAddress', matched: true },
+        { html: `<input name="courriel" />`, matcher: 'emailAddress', matched: true }, // fr
+        { html: `<input name="メールアドレス" />`, matcher: 'emailAddress', matched: true } // ja-JP
     ]))(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
@@ -71,7 +71,7 @@ describe('vendor-regexes matching', () => {
         const matching = createMatching()
         const result = matching
             .forInput(inputs[0], formElement)
-            .execVendorRegex(matcher)
+            .execVendorRegex(matching.getStrategyLookupByType(matcher, 'vendorRegex'))
         expect(result.matched).toBe(matched)
     })
 })
@@ -179,13 +179,13 @@ describe('matching', () => {
         const matching = new Matching({
             matchers: {
                 lists: {
-                    email: ['email']
+                    emailAddress: ['emailAddress']
                 },
                 fields: {
-                    email: {
-                        type: 'email',
+                    emailAddress: {
+                        type: 'emailAddress',
                         strategies: {
-                            ddgMatcher: 'email-ddg',
+                            ddgMatcher: 'emailAddress',
                             vendorRegex: 'email'
                         }
                     }
@@ -204,12 +204,12 @@ describe('matching', () => {
                 },
                 'ddgMatcher': {
                     matchers: {
-                        'email-ddg': { match: 'email', forceUnknown: 'search' }
+                        'emailAddress': { match: 'emailAddress', forceUnknown: 'search' }
                     }
                 },
                 'cssSelector': {
                     selectors: {
-                        'FORM_INPUTS_SELECTOR': 'input'
+                        'formInputsSelector': 'input'
                     }
                 }
             }

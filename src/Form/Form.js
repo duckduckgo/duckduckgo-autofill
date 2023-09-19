@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isPotentiallyViewable, buttonMatchesFormType,
-    safeExecute, getText, wasAutofilledByChrome, shouldLog
+    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
@@ -219,8 +219,8 @@ class Form {
                 formValues.credentials.username = formValues.identities.phone
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
-                this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
-                    const elText = getText(el)
+                this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach((el) => {
+                    const elText = getTextShallow(el)
                     // Ignore long texts to avoid false positives
                     if (elText.length > 70) return
 
@@ -362,11 +362,15 @@ class Form {
     }
 
     categorizeInputs () {
-        const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR')
+        const selector = this.matching.cssSelector('formInputsSelector')
         if (this.form.matches(selector)) {
             this.addInput(this.form)
         } else {
-            const foundInputs = this.form.querySelectorAll(selector)
+            let foundInputs = this.form.querySelectorAll(selector)
+            // If the markup is broken form.querySelectorAll may not return the fields, so we select from the parent
+            if (foundInputs.length === 0 && this.form instanceof HTMLFormElement && this.form.length > 0) {
+                foundInputs = this.form.parentElement?.querySelectorAll(selector) || foundInputs
+            }
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
@@ -379,12 +383,12 @@ class Form {
     }
 
     get submitButtons () {
-        const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
+        const selector = this.matching.cssSelector('submitButtonSelector')
         const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
         return allButtons
             .filter((btn) =>
-                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this)
             )
     }
 

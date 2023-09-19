@@ -1,5 +1,4 @@
 import { Form } from './Form/Form.js'
-import { SUBMIT_BUTTON_SELECTOR, FORM_INPUTS_SELECTOR } from './Form/selectors-css.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
 import {logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
@@ -17,6 +16,7 @@ const {
  *     init(): (reason, ...rest)=> void;
  *     enqueue(elements: (HTMLElement|Document)[]): void;
  *     findEligibleInputs(context): Scanner;
+ *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
  * }} Scanner
  *
@@ -68,6 +68,8 @@ class DefaultScanner {
     rescanAll = false;
     /** @type {boolean} Indicates whether we called stopScanning */
     stopped = false
+    /** @type {import("./Form/matching").Matching} matching */
+    matching
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -133,10 +135,10 @@ class DefaultScanner {
             return this
         }
 
-        if ('matches' in context && context.matches?.(FORM_INPUTS_SELECTOR)) {
+        if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelector'))) {
             this.addInput(context)
         } else {
-            const inputs = context.querySelectorAll(FORM_INPUTS_SELECTOR)
+            const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'))
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.stopScanner('Too many input fields in the given context, stop scanning', context)
                 return this
@@ -203,8 +205,8 @@ class DefaultScanner {
 
             element = element.parentElement
 
-            const inputs = element.querySelectorAll(FORM_INPUTS_SELECTOR)
-            const buttons = element.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+            const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'))
+            const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'))
             // If we find a button or another input, we assume that's our form
             if (inputs.length > 1 || buttons.length) {
                 // found related input, return common ancestor
