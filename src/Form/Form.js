@@ -205,7 +205,7 @@ class Form {
             // If we have a password but no username, let's search further
             const hiddenFields = /** @type [HTMLInputElement] */([...this.form.querySelectorAll('input[type=hidden]')])
             const probableField = hiddenFields.find((field) => {
-                const regex = safeRegex('email|' + this.matching.ddgMatcher('username')?.match)
+                const regex = safeRegex('email|' + this.matching.getDDGMatcherRegex('username')?.source)
                 const attributeText = field.id + ' ' + field.name
                 return regex?.test(attributeText)
             })

@@ -266,7 +266,7 @@ const birthdayYear = `
 [name^=birthdate_y i], [name^=birthdate-y i],
 [aria-label="birthday" i][placeholder="year" i]`
 
-export const selectors = {
+const selectors = {
     // Generic
     genericTextField,
     submitButtonSelector,
@@ -302,3 +302,5 @@ export const selectors = {
     birthdayMonth,
     birthdayYear
 }
+
+module.exports = {selectors}

@@ -1,6 +1,6 @@
 import { removeExcessWhitespace, Matching } from './matching.js'
 import { constants } from '../constants.js'
-import { matchingConfiguration } from './matching-configuration.js'
+import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
 import { getTextShallow, isLikelyASubmitButton } from '../autofill-utils.js'
 
 class FormAnalyzer {

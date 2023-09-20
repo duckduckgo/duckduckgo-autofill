@@ -1,7 +1,6 @@
-import {createCacheableVendorRegexes} from './vendor-regex.js'
 import {constants} from '../constants.js'
 import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
-import {matchingConfiguration} from './matching-configuration.js'
+import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
 import {getTextShallow} from '../autofill-utils.js'
 
@@ -29,9 +28,9 @@ class Matching {
 
     /**
      * This acts as an internal cache for the larger vendorRegexes
-     * @type {{RULES: Record<keyof VendorRegexRules, RegExp|undefined>}}
+     * @type {VendorRegexConfiguration['rules']}
      */
-    #vendorRegExpCache;
+    #vendorRegexRules;
 
     /** @type {MatcherLists} */
     #matcherLists;
@@ -54,8 +53,7 @@ class Matching {
     constructor (config) {
         this.#config = config
 
-        const { rules, ruleSets } = this.#config.strategies.vendorRegex
-        this.#vendorRegExpCache = createCacheableVendorRegexes(rules, ruleSets)
+        this.#vendorRegexRules = this.#config.strategies.vendorRegex.rules
         this.#cssSelectors = this.#config.strategies.cssSelector.selectors
         this.#ddgMatchers = this.#config.strategies.ddgMatcher.matchers
 
@@ -99,7 +97,7 @@ class Matching {
      * @returns {RegExp | undefined}
      */
     vendorRegex (regexName) {
-        const match = this.#vendorRegExpCache.RULES[regexName]
+        const match = this.#vendorRegexRules[regexName]
         if (!match) {
             console.warn('Vendor Regex not found for', regexName)
             return undefined
@@ -119,7 +117,7 @@ class Matching {
 
     /**
      * Try to access a 'css selector' by name from configuration
-     * @param {keyof RequiredCssSelectors | string} selectorName
+     * @param {RequiredCssSelectors | string} selectorName
      * @returns {string};
      */
     cssSelector (selectorName) {
@@ -128,15 +126,12 @@ class Matching {
             console.warn('CSS selector not found for %s, using a default value', selectorName)
             return ''
         }
-        if (Array.isArray(match)) {
-            return match.join(',')
-        }
         return match
     }
 
     /**
      * Try to access a 'ddg matcher' by name from configuration
-     * @param {keyof RequiredCssSelectors | string} matcherName
+     * @param {MatcherTypeNames | string} matcherName
      * @returns {DDGMatcher | undefined}
      */
     ddgMatcher (matcherName) {
@@ -159,7 +154,7 @@ class Matching {
             console.warn('DDG matcher has unexpected format')
             return undefined
         }
-        return safeRegex(matcher.match)
+        return matcher?.match
     }
 
     /**
@@ -437,7 +432,7 @@ class Matching {
         if (!ddgMatcher || !ddgMatcher.match) {
             return defaultResult
         }
-        let matchRexExp = safeRegex(ddgMatcher.match || '')
+        let matchRexExp = this.getDDGMatcherRegex(lookup)
         if (!matchRexExp) {
             return defaultResult
         }
@@ -464,7 +459,7 @@ class Matching {
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
             if (ddgMatcher.forceUnknown) {
-                let notRegex = safeRegex(ddgMatcher.forceUnknown)
+                let notRegex = ddgMatcher.forceUnknown
                 if (!notRegex) {
                     return { ...result, matched: false }
                 }
@@ -477,7 +472,7 @@ class Matching {
             }
 
             if (ddgMatcher.skip) {
-                let skipRegex = safeRegex(ddgMatcher.skip)
+                let skipRegex = ddgMatcher.skip
                 if (!skipRegex) {
                     return { ...result, matched: false }
                 }
@@ -530,7 +525,6 @@ class Matching {
         for (let stringName of stringsToMatch) {
             let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
-            elementString = elementString.toLowerCase()
             if (regex.test(elementString)) {
                 return {
                     ...defaultResult,

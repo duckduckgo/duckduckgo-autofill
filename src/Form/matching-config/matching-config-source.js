@@ -1,10 +1,8 @@
-import {selectors} from './selectors-css.js'
+const {selectors} = require('./selectors-css.js')
 
 /**
  * This is here to mimic what Remote Configuration might look like
  * later on.
- *
- * @type {MatchingConfiguration}
  */
 const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
@@ -220,9 +218,9 @@ const matchingConfiguration = {
         }
     },
     strategies: {
-        /** @type {CssSelectorConfiguration} */
+        /** @type {{selectors: Record<CSSSelectorNames| string, string | string[]>}} */
         cssSelector: {selectors},
-        /** @type {DDGMatcherConfiguration} */
+        /** @type {DDGMatcherConfigurationInternal} */
         ddgMatcher: {
             matchers: {
                 unknown: {
@@ -281,8 +279,8 @@ const matchingConfiguration = {
                         '|nom d.utilisateur|identifiant|pseudo' +
                         // Spanish
                         '|usuari|cuenta|identificador|apodo' +
-                            // in Spanish dni and nie stand for id number, often used as username
-                            '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
+                        // in Spanish dni and nie stand for id number, often used as username
+                        '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
                     skip: 'phone',
@@ -459,6 +457,7 @@ const matchingConfiguration = {
          * @type {VendorRegexConfiguration}
          */
         vendorRegex: {
+            /** @type {Record<keyof VendorRegexRules, RegExp | null>} */
             rules: {
                 email: null,
                 tel: null,
@@ -983,7 +982,7 @@ const matchingConfiguration = {
                         '|月', // zh-CN
 
                     'cc-exp-year':
-                        // 'exp|^/|(add)?year' + // todo: Decide if we need any of this
+                    // 'exp|^/|(add)?year' + // todo: Decide if we need any of this
                         'ablaufdatum|gueltig|gültig|jahr' + // de-DE
                         '|fecha' + // es
                         '|scadenza' + // it-IT
@@ -1007,4 +1006,4 @@ const matchingConfiguration = {
     }
 }
 
-export { matchingConfiguration }
+module.exports = { matchingConfiguration }
