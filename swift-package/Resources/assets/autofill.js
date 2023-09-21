@@ -6631,7 +6631,7 @@ class Form {
       const probableField = hiddenFields.find(field => {
         var _this$matching$getDDG;
 
-        const regex = (0, _matching.safeRegex)('email|' + ((_this$matching$getDDG = this.matching.getDDGMatcherRegex('username')) === null || _this$matching$getDDG === void 0 ? void 0 : _this$matching$getDDG.source));
+        const regex = new RegExp('email|' + ((_this$matching$getDDG = this.matching.getDDGMatcherRegex('username')) === null || _this$matching$getDDG === void 0 ? void 0 : _this$matching$getDDG.source));
         const attributeText = field.id + ' ' + field.name;
         return regex === null || regex === void 0 ? void 0 : regex.test(attributeText);
       });
@@ -9645,7 +9645,7 @@ exports.getInputType = getInputType;
 exports.getMainTypeFromType = getMainTypeFromType;
 exports.getRelatedText = void 0;
 exports.getSubtypeFromType = getSubtypeFromType;
-exports.safeRegex = exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
+exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
 
 var _constants = require("../constants.js");
 
@@ -10706,31 +10706,13 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
   return !!matchInPlaceholderAndLabels(input, regex, form, cssSelector);
 };
 /**
- * Returns a RegExp from a string
- * @param {string} string
- * @returns {RegExp | undefined} string
- */
-
-
-exports.checkPlaceholderAndLabels = checkPlaceholderAndLabels;
-
-const safeRegex = string => {
-  try {
-    const input = String(string).normalize('NFKC');
-    return new RegExp(input, 'ui');
-  } catch (e) {
-    console.warn('Could not generate regex from string input', string);
-    return undefined;
-  }
-};
-/**
  * Factory for instances of Matching
  *
  * @return {Matching}
  */
 
 
-exports.safeRegex = safeRegex;
+exports.checkPlaceholderAndLabels = checkPlaceholderAndLabels;
 
 function createMatching() {
   return new Matching(_compiledMatchingConfig.matchingConfiguration);

@@ -10,7 +10,7 @@ import {
     safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog
 } from '../autofill-utils.js'
 
-import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
+import {getInputSubtype, getInputMainType, createMatching} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
@@ -205,7 +205,7 @@ class Form {
             // If we have a password but no username, let's search further
             const hiddenFields = /** @type [HTMLInputElement] */([...this.form.querySelectorAll('input[type=hidden]')])
             const probableField = hiddenFields.find((field) => {
-                const regex = safeRegex('email|' + this.matching.getDDGMatcherRegex('username')?.source)
+                const regex = new RegExp('email|' + this.matching.getDDGMatcherRegex('username')?.source)
                 const attributeText = field.id + ' ' + field.name
                 return regex?.test(attributeText)
             })

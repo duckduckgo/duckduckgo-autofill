@@ -913,21 +913,6 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
 }
 
 /**
- * Returns a RegExp from a string
- * @param {string} string
- * @returns {RegExp | undefined} string
- */
-const safeRegex = (string) => {
-    try {
-        const input = String(string).normalize('NFKC')
-        return new RegExp(input, 'ui')
-    } catch (e) {
-        console.warn('Could not generate regex from string input', string)
-        return undefined
-    }
-}
-
-/**
  * Factory for instances of Matching
  *
  * @return {Matching}
@@ -947,7 +932,6 @@ export {
     getRelatedText,
     matchInPlaceholderAndLabels,
     checkPlaceholderAndLabels,
-    safeRegex,
     Matching,
     createMatching
 }
