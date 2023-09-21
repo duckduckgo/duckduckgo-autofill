@@ -279,8 +279,8 @@ const matchingConfiguration = {
                         '|nom d.utilisateur|identifiant|pseudo' +
                         // Spanish
                         '|usuari|cuenta|identificador|apodo' +
-                        // in Spanish dni and nie stand for id number, often used as username
-                        '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
+                            // in Spanish dni and nie stand for id number, often used as username
+                            '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
                     skip: 'phone',
@@ -971,7 +971,7 @@ const matchingConfiguration = {
                         '|(numero|número|numéro)(?!.*(document|fono|phone|réservation))',
 
                     'cc-exp-month':
-                    // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
+                        // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
                         'gueltig|gültig|monat' + // de-DE
                         '|fecha' + // es
                         '|date.*exp' + // fr-FR
