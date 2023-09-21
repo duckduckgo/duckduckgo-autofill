@@ -982,7 +982,7 @@ const matchingConfiguration = {
                         '|月', // zh-CN
 
                     'cc-exp-year':
-                    // 'exp|^/|(add)?year' + // todo: Decide if we need any of this
+                        // 'exp|^/|(add)?year' + // todo: Decide if we need any of this
                         'ablaufdatum|gueltig|gültig|jahr' + // de-DE
                         '|fecha' + // es
                         '|scadenza' + // it-IT
