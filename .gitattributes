@@ -1,2 +1,3 @@
 dist/** binary linguist-generated
 swift-package/Resources/assets/** binary linguist-generated
+src/Form/matching-config/__generated__/** binary linguist-generated
