@@ -204,7 +204,7 @@ describe('matching', () => {
                 },
                 'ddgMatcher': {
                     matchers: {
-                        'emailAddress': { match: 'emailAddress', forceUnknown: 'search' }
+                        'emailAddress': { match: /emailAddress/ui, forceUnknown: /search/ui }
                     }
                 },
                 'cssSelector': {

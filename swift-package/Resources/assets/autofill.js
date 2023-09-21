@@ -3641,7 +3641,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api/index.js":6,"./DeviceInterface/AndroidInterface.js":15,"./DeviceInterface/AppleDeviceInterface.js":16,"./DeviceInterface/AppleOverlayDeviceInterface.js":17,"./DeviceInterface/ExtensionInterface.js":18,"./DeviceInterface/WindowsInterface.js":20,"./DeviceInterface/WindowsOverlayDeviceInterface.js":21,"./Settings.js":44,"./config.js":57,"./deviceApiCalls/transports/transports.js":65}],15:[function(require,module,exports){
+},{"../packages/device-api/index.js":6,"./DeviceInterface/AndroidInterface.js":15,"./DeviceInterface/AppleDeviceInterface.js":16,"./DeviceInterface/AppleOverlayDeviceInterface.js":17,"./DeviceInterface/ExtensionInterface.js":18,"./DeviceInterface/WindowsInterface.js":20,"./DeviceInterface/WindowsOverlayDeviceInterface.js":21,"./Settings.js":42,"./config.js":55,"./deviceApiCalls/transports/transports.js":63}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3791,7 +3791,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../UI/controllers/NativeUIController.js":50,"../autofill-utils.js":55,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4243,7 +4243,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":6,"../Form/matching.js":35,"../InContextSignup.js":38,"../UI/HTMLTooltip.js":48,"../UI/controllers/HTMLTooltipUIController.js":49,"../UI/controllers/NativeUIController.js":50,"../UI/controllers/OverlayUIController.js":51,"../autofill-utils.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"../deviceApiCalls/additionalDeviceApiCalls.js":61,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],17:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../Form/matching.js":35,"../InContextSignup.js":36,"../UI/HTMLTooltip.js":46,"../UI/controllers/HTMLTooltipUIController.js":47,"../UI/controllers/NativeUIController.js":48,"../UI/controllers/OverlayUIController.js":49,"../autofill-utils.js":53,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/additionalDeviceApiCalls.js":59,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4398,7 +4398,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":6,"../UI/controllers/HTMLTooltipUIController.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"../deviceApiCalls/__generated__/validators.zod.js":60,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../UI/controllers/HTMLTooltipUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/__generated__/validators.zod.js":58,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4676,7 +4676,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../Form/matching.js":35,"../InContextSignup.js":38,"../UI/HTMLTooltip.js":48,"../UI/controllers/HTMLTooltipUIController.js":49,"../autofill-utils.js":55,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
+},{"../Form/matching.js":35,"../InContextSignup.js":36,"../UI/HTMLTooltip.js":46,"../UI/controllers/HTMLTooltipUIController.js":47,"../autofill-utils.js":53,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5745,7 +5745,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":6,"../EmailProtection.js":24,"../Form/formatters.js":28,"../Form/matching.js":35,"../InputTypes/Credentials.js":39,"../PasswordGenerator.js":42,"../Scanner.js":43,"../Settings.js":44,"../UI/controllers/NativeUIController.js":50,"../autofill-utils.js":55,"../config.js":57,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"../deviceApiCalls/__generated__/validators.zod.js":60,"../deviceApiCalls/transports/transports.js":65,"./initFormSubmissionsApi.js":22}],20:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"../EmailProtection.js":24,"../Form/formatters.js":28,"../Form/matching.js":35,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"../config.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/__generated__/validators.zod.js":58,"../deviceApiCalls/transports/transports.js":63,"./initFormSubmissionsApi.js":22}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5961,7 +5961,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/controllers/OverlayUIController.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./InterfacePrototype.js":19}],21:[function(require,module,exports){
+},{"../UI/controllers/OverlayUIController.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":19}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6170,7 +6170,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./InterfacePrototype.js":19,"./overlayApi.js":23}],22:[function(require,module,exports){
+},{"../UI/controllers/HTMLTooltipUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":19,"./overlayApi.js":23}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6276,7 +6276,7 @@ function initFormSubmissionsApi(forms, matching) {
   });
 }
 
-},{"../Form/label-util.js":31,"../autofill-utils.js":55}],23:[function(require,module,exports){
+},{"../Form/label-util.js":31,"../autofill-utils.js":53}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6343,7 +6343,7 @@ function overlayApi(device) {
   };
 }
 
-},{"../deviceApiCalls/__generated__/deviceApiCalls.js":59}],24:[function(require,module,exports){
+},{"../deviceApiCalls/__generated__/deviceApiCalls.js":57}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6629,9 +6629,9 @@ class Form {
       /** @type [HTMLInputElement] */
       [...this.form.querySelectorAll('input[type=hidden]')];
       const probableField = hiddenFields.find(field => {
-        var _this$matching$ddgMat;
+        var _this$matching$getDDG;
 
-        const regex = (0, _matching.safeRegex)('email|' + ((_this$matching$ddgMat = this.matching.ddgMatcher('username')) === null || _this$matching$ddgMat === void 0 ? void 0 : _this$matching$ddgMat.match));
+        const regex = new RegExp('email|' + ((_this$matching$getDDG = this.matching.getDDGMatcherRegex('username')) === null || _this$matching$getDDG === void 0 ? void 0 : _this$matching$getDDG.source));
         const attributeText = field.id + ' ' + field.name;
         return regex === null || regex === void 0 ? void 0 : regex.test(attributeText);
       });
@@ -7324,7 +7324,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils.js":55,"../constants.js":58,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":35}],26:[function(require,module,exports){
+},{"../autofill-utils.js":53,"../constants.js":56,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":35}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7336,7 +7336,7 @@ var _matching = require("./matching.js");
 
 var _constants = require("../constants.js");
 
-var _matchingConfiguration = require("./matching-configuration.js");
+var _compiledMatchingConfig = require("./matching-config/__generated__/compiled-matching-config.js");
 
 var _autofillUtils = require("../autofill-utils.js");
 
@@ -7360,7 +7360,7 @@ class FormAnalyzer {
     _defineProperty(this, "_isCCForm", undefined);
 
     this.form = form;
-    this.matching = matching || new _matching.Matching(_matchingConfiguration.matchingConfiguration);
+    this.matching = matching || new _matching.Matching(_compiledMatchingConfig.matchingConfiguration);
     /**
      * The signal is a continuum where negative values imply login and positive imply signup
      * @type {number}
@@ -7718,7 +7718,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils.js":55,"../constants.js":58,"./matching-configuration.js":33,"./matching.js":35}],27:[function(require,module,exports){
+},{"../autofill-utils.js":53,"../constants.js":56,"./matching-config/__generated__/compiled-matching-config.js":33,"./matching.js":35}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9025,7 +9025,7 @@ const isFieldDecorated = input => {
 
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":39,"../InputTypes/CreditCard.js":40,"../InputTypes/Identity.js":41,"../UI/img/ddgPasswordIcon.js":53,"../constants.js":58,"./logo-svg.js":32,"./matching.js":35}],31:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":51,"../constants.js":56,"./logo-svg.js":32,"./matching.js":35}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9108,16 +9108,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.matchingConfiguration = void 0;
 
-var _selectorsCss = require("./selectors-css.js");
+/* DO NOT EDIT, this file was generated by scripts/precompile-regexes.js */
 
-/**
- * This is here to mimic what Remote Configuration might look like
- * later on.
- *
- * @type {MatchingConfiguration}
- */
+/** @type {MatchingConfiguration} */
 const matchingConfiguration = {
-  /** @type {MatcherConfiguration} */
   matchers: {
     fields: {
       unknown: {
@@ -9315,504 +9309,246 @@ const matchingConfiguration = {
     }
   },
   strategies: {
-    /** @type {CssSelectorConfiguration} */
     cssSelector: {
-      selectors: _selectorsCss.selectors
+      selectors: {
+        genericTextField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])',
+        submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
+        formInputsSelector: 'input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]), [autocomplete=username], select',
+        safeUniversalSelector: '*:not(select):not(option):not(script):not(noscript):not(style):not(br)',
+        emailAddress: 'input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]), input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]), input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=email], input[type=text][aria-label*=email i]:not([aria-label*=search i]), input:not([type])[aria-label*=email i]:not([aria-label*=search i]), input[name=username][type=email], input[autocomplete=username][type=email], input[autocomplete=username][placeholder*=email i], input[autocomplete=email],input[name="mail_tel" i],input[value=email i]',
+        username: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])[autocomplete^=user i],input[name=username i],input[name="loginId" i],input[name="userid" i],input[id="userid" i],input[name="user_id" i],input[name="user-id" i],input[id="login-id" i],input[id="login_id" i],input[id="loginid" i],input[name="login" i],input[name=accountname i],input[autocomplete=username i],input[name*=accountid i],input[name="j_username" i],input[id="j_username" i],input[name="uwinid" i],input[name="livedoor_id" i],input[name="ssousername" i],input[name="j_userlogin_pwd" i],input[name="user[login]" i],input[name="user" i],input[name$="_username" i],input[id="lmSsoinput" i],input[name="account_subdomain" i],input[name="masterid" i],input[name="tridField" i],input[id="signInName" i],input[id="w3c_accountsbundle_accountrequeststep1_login" i],input[id="username" i],input[name="_user" i],input[name="login_username" i],input[name^="login-user-account" i],input[id="loginusuario" i],input[name="usuario" i],input[id="UserLoginFormUsername" i],input[id="nw_username" i],input[can-field="accountName"],input[placeholder^="username" i]',
+        password: 'input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i]),input.js-cloudsave-phrase',
+        cardName: 'input[autocomplete="cc-name" i], input[autocomplete="ccname" i], input[name="ccname" i], input[name="cc-name" i], input[name="ppw-accountHolderName" i], input[id*=cardname i], input[id*=card-name i], input[id*=card_name i]',
+        cardNumber: 'input[autocomplete="cc-number" i], input[autocomplete="ccnumber" i], input[autocomplete="cardnumber" i], input[autocomplete="card-number" i], input[name="ccnumber" i], input[name="cc-number" i], input[name*=card i][name*=number i], input[name*=cardnumber i], input[id*=cardnumber i], input[id*=card-number i], input[id*=card_number i]',
+        cardSecurityCode: 'input[autocomplete="cc-csc" i], input[autocomplete="csc" i], input[autocomplete="cc-cvc" i], input[autocomplete="cvc" i], input[name="cvc" i], input[name="cc-cvc" i], input[name="cc-csc" i], input[name="csc" i], input[name*=security i][name*=code i]',
+        expirationMonth: '[autocomplete="cc-exp-month" i], [autocomplete="cc_exp_month" i], [name="ccmonth" i], [name="ppw-expirationDate_month" i], [name=cardExpiryMonth i], [name*=ExpDate_Month i], [name*=expiration i][name*=month i], [id*=expiration i][id*=month i], [name*=cc-exp-month i], [name*="card_exp-month" i], [name*=cc_exp_month i]',
+        expirationYear: '[autocomplete="cc-exp-year" i], [autocomplete="cc_exp_year" i], [name="ccyear" i], [name="ppw-expirationDate_year" i], [name=cardExpiryYear i], [name*=ExpDate_Year i], [name*=expiration i][name*=year i], [id*=expiration i][id*=year i], [name*="cc-exp-year" i], [name*="card_exp-year" i], [name*=cc_exp_year i]',
+        expiration: '[autocomplete="cc-exp" i], [name="cc-exp" i], [name="exp-date" i], [name="expirationDate" i], input[id*=expiration i]',
+        firstName: '[name*=fname i], [autocomplete*=given-name i], [name*=firstname i], [autocomplete*=firstname i], [name*=first-name i], [autocomplete*=first-name i], [name*=first_name i], [autocomplete*=first_name i], [name*=givenname i], [autocomplete*=givenname i], [name*=given-name i], [name*=given_name i], [autocomplete*=given_name i], [name*=forename i], [autocomplete*=forename i]',
+        middleName: '[name*=mname i], [autocomplete*=additional-name i], [name*=middlename i], [autocomplete*=middlename i], [name*=middle-name i], [autocomplete*=middle-name i], [name*=middle_name i], [autocomplete*=middle_name i], [name*=additionalname i], [autocomplete*=additionalname i], [name*=additional-name i], [name*=additional_name i], [autocomplete*=additional_name i]',
+        lastName: '[name=lname], [autocomplete*=family-name i], [name*=lastname i], [autocomplete*=lastname i], [name*=last-name i], [autocomplete*=last-name i], [name*=last_name i], [autocomplete*=last_name i], [name*=familyname i], [autocomplete*=familyname i], [name*=family-name i], [name*=family_name i], [autocomplete*=family_name i], [name*=surname i], [autocomplete*=surname i]',
+        fullName: '[autocomplete=name], [name*=fullname i], [autocomplete*=fullname i], [name*=full-name i], [autocomplete*=full-name i], [name*=full_name i], [autocomplete*=full_name i], [name*=your-name i], [autocomplete*=your-name i]',
+        phone: '[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]), [name*=mobile i]:not([name*=type i]), [autocomplete=tel], [autocomplete="tel-national"], [placeholder*="phone number" i]',
+        addressStreet: '[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i], [name=street i], [name=ppw-line1 i], [name*=addressLine1 i]',
+        addressStreet2: '[name=address2 i], [autocomplete=address-line2 i], [name=ppw-line2 i], [name*=addressLine2 i]',
+        addressCity: '[name=city i], [autocomplete=address-level2 i], [name=ppw-city i], [name*=addressCity i]',
+        addressProvince: '[name=province i], [name=state i], [autocomplete=address-level1 i]',
+        addressPostalCode: '[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i], [name*=postalCode i], [name*=zipcode i]',
+        addressCountryCode: '[name=country i], [autocomplete=country i], [name*=countryCode i], [name*=country-code i], [name*=countryName i], [name*=country-name i],select.idms-address-country',
+        birthdayDay: '[name=bday-day i], [name*=birthday_day i], [name*=birthday-day i], [name=date_of_birth_day i], [name=date-of-birth-day i], [name^=birthdate_d i], [name^=birthdate-d i], [aria-label="birthday" i][placeholder="day" i]',
+        birthdayMonth: '[name=bday-month i], [name*=birthday_month i], [name*=birthday-month i], [name=date_of_birth_month i], [name=date-of-birth-month i], [name^=birthdate_m i], [name^=birthdate-m i], select[name="mm" i]',
+        birthdayYear: '[name=bday-year i], [name*=birthday_year i], [name*=birthday-year i], [name=date_of_birth_year i], [name=date-of-birth-year i], [name^=birthdate_y i], [name^=birthdate-y i], [aria-label="birthday" i][placeholder="year" i]'
+      }
     },
-
-    /** @type {DDGMatcherConfiguration} */
     ddgMatcher: {
       matchers: {
         unknown: {
-          match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' + // Italian
-          '|cerca|filtr|oggetto|titolo|(due|più) fattori' + // German
-          '|suche|filtern|betreff' + // Dutch
-          '|zoeken|filter|onderwerp|titel' + // French
-          '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique' + // Spanish
-          '|busca|busqueda|filtra|dos pasos|un solo uso' + // Swedish
-          '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
-          skip: 'phone|mobile|email|password'
+          match: /search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp|cerca|filtr|oggetto|titolo|(due|più) fattori|suche|filtern|betreff|zoeken|filter|onderwerp|titel|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique|busca|busqueda|filtra|dos pasos|un solo uso|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs/iu,
+          skip: /phone|mobile|email|password/iu
         },
         emailAddress: {
-          match: '.mail\\b|apple.?id' + // Italian
-          '|posta elettronica' + // Dutch
-          '|e.?mailadres' + // Spanish
-          '|correo electr|correo-e|^correo$' + // Swedish
-          '|\\be.?post|e.?postadress',
-          skip: 'phone|(first.?|last.?)name|number|code',
-          forceUnknown: 'search|filter|subject|title|\btab\b|otp'
+          match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,
+          skip: /phone|(first.?|last.?)name|number|code/iu,
+          forceUnknown: /search|filter|subject|title|tab|otp/iu
         },
         password: {
-          match: 'password' + // German
-          '|passwort|kennwort' + // Dutch
-          '|wachtwoord' + // French
-          '|mot de passe' + // Spanish
-          '|clave|contraseña' + // Swedish
-          '|lösenord',
-          skip: 'email|one-time|error|hint',
-          forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
+          match: /password|passwort|kennwort|wachtwoord|mot de passe|clave|contraseña|lösenord/iu,
+          skip: /email|one-time|error|hint/iu,
+          forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         username: {
-          match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' + // Italian
-          '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente' + // German
-          '|nutzername|anmeldename' + // Dutch
-          '|gebruikersnaam' + // French
-          '|nom d.utilisateur|identifiant|pseudo' + // Spanish
-          '|usuari|cuenta|identificador|apodo' + // in Spanish dni and nie stand for id number, often used as username
-          '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' + // Swedish
-          '|användarnamn|kontonamn|användar-id',
-          skip: 'phone',
-          forceUnknown: 'search|policy'
+          match: /(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|\/).+|\*|:)( required)?)?$|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente|nutzername|anmeldename|gebruikersnaam|nom d.utilisateur|identifiant|pseudo|usuari|cuenta|identificador|apodo|\bdni\b|\bnie\b| del? documento|documento de identidad|användarnamn|kontonamn|användar-id/iu,
+          skip: /phone/iu,
+          forceUnknown: /search|policy/iu
         },
-        // CC
         cardName: {
-          match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'
+          match: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/iu
         },
         cardNumber: {
-          match: 'card.*number|number.*card',
-          skip: 'phone',
-          forceUnknown: 'plus'
+          match: /card.*number|number.*card/iu,
+          skip: /phone/iu,
+          forceUnknown: /plus/iu
         },
         cardSecurityCode: {
-          match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id'
+          match: /security.?code|card.?verif|cvv|csc|cvc|cv2|card id/iu
         },
         expirationMonth: {
-          match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-          skip: 'mm[/\\s.\\-_—–]'
+          match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/iu,
+          skip: /mm[/\s.\-_—–]/iu
         },
         expirationYear: {
-          match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)',
-          skip: 'mm[/\\s.\\-_—–]'
+          match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/iu,
+          skip: /mm[/\s.\-_—–]/iu
         },
         expiration: {
-          match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-          skip: 'invalid|^dd/'
+          match: /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/iu,
+          skip: /invalid|^dd\//iu
         },
-        // Identities
         firstName: {
-          match: '(first|given|fore).?name' + // Italian
-          '|\\bnome',
-          skip: 'last|cognome|completo'
+          match: /(first|given|fore).?name|\bnome/iu,
+          skip: /last|cognome|completo/iu
         },
         middleName: {
-          match: '(middle|additional).?name'
+          match: /(middle|additional).?name/iu
         },
         lastName: {
-          match: '(last|family|sur)[^i]?name' + // Italian
-          '|cognome',
-          skip: 'first|\\bnome'
+          match: /(last|family|sur)[^i]?name|cognome/iu,
+          skip: /first|\bnome/iu
         },
         fullName: {
-          match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' + // Italian
-          '|\\bnome',
-          forceUnknown: 'company|org|item'
+          match: /^(full.?|whole\s|first.*last\s|real\s|contact.?)?name\b|\bnome/iu,
+          forceUnknown: /company|org|item/iu
         },
         phone: {
-          match: 'phone|mobile' + // Italian
-          '|telefono|cellulare',
-          skip: 'code|pass|country',
-          forceUnknown: 'ext|type|otp'
+          match: /phone|mobile|telefono|cellulare/iu,
+          skip: /code|pass|country/iu,
+          forceUnknown: /ext|type|otp/iu
         },
         addressStreet: {
-          match: 'address',
-          forceUnknown: '\\bip\\b|duck|web|url',
-          skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico'
+          match: /address/iu,
+          forceUnknown: /\bip\b|duck|web|url/iu,
+          skip: /address.*(2|two|3|three)|email|log.?in|sign.?in|civico/iu
         },
         addressStreet2: {
-          match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
-          forceUnknown: '\\bip\\b|duck',
-          skip: 'email|log.?in|sign.?in'
+          match: /address.*(2|two)|apartment|\bapt\b|\bflat\b|\bline.*(2|two)/iu,
+          forceUnknown: /\bip\b|duck/iu,
+          skip: /email|log.?in|sign.?in/iu
         },
         addressCity: {
-          match: 'city|town|città|comune',
-          skip: '\\bzip\\b|\\bcap\\b',
-          forceUnknown: 'vatican'
+          match: /city|town|città|comune/iu,
+          skip: /\bzip\b|\bcap\b/iu,
+          forceUnknown: /vatican/iu
         },
         addressProvince: {
-          match: 'state|province|region|county|provincia|regione',
-          forceUnknown: 'united',
-          skip: 'country'
+          match: /state|province|region|county|provincia|regione/iu,
+          forceUnknown: /united/iu,
+          skip: /country/iu
         },
         addressPostalCode: {
-          match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'
+          match: /\bzip\b|postal|post.?code|\bcap\b|codice postale/iu
         },
         addressCountryCode: {
-          match: 'country|\\bnation\\b|nazione|paese'
+          match: /country|\bnation\b|nazione|paese/iu
         },
         birthdayDay: {
-          match: '(birth.*day|day.*birth)',
-          skip: 'month|year'
+          match: /(birth.*day|day.*birth)/iu,
+          skip: /month|year/iu
         },
         birthdayMonth: {
-          match: '(birth.*month|month.*birth)',
-          skip: 'year'
+          match: /(birth.*month|month.*birth)/iu,
+          skip: /year/iu
         },
         birthdayYear: {
-          match: '(birth.*year|year.*birth)'
+          match: /(birth.*year|year.*birth)/iu
         },
         loginRegex: {
-          match: 'sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' + '|mfa-submit-form' + // fix chase.com
-          '|unlock|logged in as' + // fix bitwarden
-          // Italian
-          '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password' + // German
-          '|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl' + // Dutch
-          '|inloggen' + // French
-          '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
-          '|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar' + // Swedish
-          '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
+          match: /sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|mfa-submit-form|unlock|logged in as|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl|inloggen|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord/iu
         },
         signupRegex: {
-          match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' + // Italian
-          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' + // German
-          '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite' + // Dutch
-          '|nieuwsbrief|aanmaken|profiel' + // French
-          '|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' + // Spanish
-          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
-          '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
+          match: /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite|nieuwsbrief|aanmaken|profiel|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord/iu
         },
         conservativeSignupRegex: {
-          match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' + // Italian
-          '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' + // German
-          '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' + // Dutch
-          '|registreren|eigenschappen|profiel|bijwerken' + // French
-          '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' + // Spanish
-          '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' + // Swedish
-          '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera'
+          match: /sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)|registreren|eigenschappen|profiel|bijwerken|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera/iu
         },
         resetPasswordLink: {
-          match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' + // Italian
-          '|password dimenticata|reset(?:ta) password|recuper[ao] password' + // German
-          '|(vergessen|verloren|verlegt|wiederherstellen) passwort' + // Dutch
-          '|wachtwoord (vergeten|reset)' + // French
-          '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' + // Spanish
-          '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' + // Swedish
-          '|glömt lösenord|återställ lösenord'
+          match: /(forgot(ten)?|reset|don't remember) (your )?password|password forgotten|password dimenticata|reset(?:ta) password|recuper[ao] password|(vergessen|verloren|verlegt|wiederherstellen) passwort|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
         },
         loginProvidersRegex: {
-          match: ' with ' + // Italian and Spanish
-          '| con ' + // German
-          '| mit ' + // Dutch
-          '| met ' + // French
-          '| avec '
+          match: / with | con | mit | met | avec /iu
         },
         submitButtonRegex: {
-          match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' + // Italian
-          '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' + // German
-          '|senden|\\bja\\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden' + // Dutch
-          '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' + // French
-          '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner' + // Spanish
-          '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' + // Swedish
-          '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
+          match: /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona|senden|\bja\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera/iu
         },
         submitButtonUnlikelyRegex: {
-          match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' + // Italian
-          '|annulla|mostra|nascondi|stampa|indietro|già' + // German
-          '|abbrechen|passwort|zeigen|verbergen|drucken|zurück' + // Dutch
-          '|annuleer|wachtwoord|toon|vorige' + // French
-          '|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà' + // Spanish
-          '|anular|cancelar|imprimir|cerrar' + // Swedish
-          '|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan'
+          match: /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already|annulla|mostra|nascondi|stampa|indietro|già|abbrechen|passwort|zeigen|verbergen|drucken|zurück|annuleer|wachtwoord|toon|vorige|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà|anular|cancelar|imprimir|cerrar|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan/iu
         }
       }
     },
-
-    /**
-     * @type {VendorRegexConfiguration}
-     */
     vendorRegex: {
       rules: {
-        email: null,
-        tel: null,
-        organization: null,
-        'street-address': null,
-        'address-line1': null,
-        'address-line2': null,
-        'address-line3': null,
-        'address-level2': null,
-        'address-level1': null,
-        'postal-code': null,
-        country: null,
-        'cc-name': null,
-        name: null,
-        'given-name': null,
-        'additional-name': null,
-        'family-name': null,
-        'cc-number': null,
-        'cc-exp-month': null,
-        'cc-exp-year': null,
-        'cc-exp': null,
-        'cc-type': null
+        email: /((^e-?mail$)|(^email-?address$))|(e.?mail|courriel|correo.*electr(o|ó)nico|メールアドレス|электронной.?почты|邮件|邮箱|電郵地址|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?മെയിൽ|ایمیل|پست.*الکترونیک|ईमेल|इलॅक्ट्रॉनिक.?मेल|(\b|_)eposta(\b|_)|(?:이메일|전자.?우편|[ee]-?mail)(.?주소)?)/iu,
+        tel: /((^phone$)|(^mobile$)|(^mobile-?phone$)|(^tel$)|(^telephone$)|(^phone-?number$))|(phone|mobile|contact.?number|telefonnummer|telefono|teléfono|telfixe|電話|telefone|telemovel|телефон|मोबाइल|(\b|_|\*)telefon(\b|_|\*)|电话|മൊബൈല്‍|(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?)/iu,
+        organization: /((^company$)|(^company-?name$)|(^organization$)|(^organization-?name$))|(company|business|organization|organisation|empresa|societe|société|ragione.?sociale|会社|название.?компании|单位|公司|شرکت|회사|직장)/iu,
+        'street-address': /((^address$)|(^street-?address$)|(^addr$)|(^street$)|(^mailing-?addr(ess)?$)|(^billing-?addr(ess)?$)|(^mail-?addr(ess)?$)|(^bill-?addr(ess)?$))|(streetaddress|street-address)/iu,
+        'address-line1': /(addrline1|address_1)|((^address-?1$)|(^address-?line-?1$)|(^addr-?1$)|(^street-?1$))|(^address$|address[_-]?line[_-]?(1|one)|address1|addr1|street|(?:shipping|billing)address$|strasse|straße|hausnummer|housenumber|house.?name|direccion|dirección|adresse|indirizzo|^住所$|住所1|адрес|地址|(\b|_)adres(?! (başlığı(nız)?|tarifi))(\b|_)|^주소.?$|주소.?1)/iu,
+        'address-line2': /(addrline2|address_2)|((^address-?2$)|(^address-?line-?2$)|(^addr-?2$)|(^street-?2$))|(address[_-]?line(2|two)|address2|addr2|street|suite|unit(?!e)|adresszusatz|ergänzende.?angaben|direccion2|colonia|adicional|addresssuppl|complementnom|appartement|indirizzo2|住所2|complemento|addrcomplement|улица|地址2|주소.?2)/iu,
+        'address-line3': /(addrline3|address_3)|((^address-?3$)|(^address-?line-?3$)|(^addr-?3$)|(^street-?3$))|(address[_-]?line(3|three)|address3|addr3|street|suite|unit(?!e)|adresszusatz|ergänzende.?angaben|direccion3|colonia|adicional|addresssuppl|complementnom|appartement|indirizzo3|住所3|complemento|addrcomplement|улица|地址3|주소.?3)/iu,
+        'address-level2': /((^city$)|(^town$)|(^address-?level-?2$)|(^address-?city$)|(^address-?town$))|(city|town|\bort\b|stadt|suburb|ciudad|provincia|localidad|poblacion|ville|commune|localit(a|à)|citt(a|à)|市区町村|cidade|город|市|分區|شهر|शहर|ग्राम|गाँव|നഗരം|ഗ്രാമം|((\b|_|\*)([i̇ii̇]l[cç]e(miz|niz)?)(\b|_|\*))|^시[^도·・]|시[·・]?군[·・]?구)/iu,
+        'address-level1': /(land)|((^state$)|(^province$)|(^provence$)|(^address-?level-?1$)|(^address-?state$)|(^address-?province$))|(county|region|province|county|principality|都道府県|estado|provincia|область|省|地區|സംസ്ഥാനം|استان|राज्य|((\b|_|\*)(eyalet|[şs]ehir|[i̇ii̇]limiz|kent)(\b|_|\*))|^시[·・]?도)/iu,
+        'postal-code': /((^postal$)|(^zip$)|(^zip2$)|(^zip-?code$)|(^postal-?code$)|(^post-?code$)|(^address-?zip$)|(^address-?postal$)|(^address-?code$)|(^address-?postal-?code$)|(^address-?zip-?code$))|(zip|postal|post.*code|pcode|pin.?code|postleitzahl|\bcp\b|\bcdp\b|\bcap\b|郵便番号|codigo|codpos|\bcep\b|почтовый.?индекс|पिन.?कोड|പിന്‍കോഡ്|邮政编码|邮编|郵遞區號|(\b|_)posta kodu(\b|_)|우편.?번호)/iu,
+        country: /((^country$)|(^country-?code$)|(^country-?name$)|(^address-?country$)|(^address-?country-?name$)|(^address-?country-?code$))|(country|countries|país|pais|(\b|_)land(\b|_)(?!.*(mark.*))|国家|국가|나라|(\b|_)(ülke|ulce|ulke)(\b|_)|کشور)/iu,
+        'cc-name': /(accountholdername|titulaire)|(cc-?name|card-?name|cardholder-?name|cardholder|(^nom$))|(card.?(?:holder|owner)|name.*(\b)?on(\b)?.*card|(?:card|cc).?name|cc.?full.?name|karteninhaber|nombre.*tarjeta|nom.*carte|nome.*cart|名前|имя.*карты|信用卡开户名|开户名|持卡人姓名|持卡人姓名)/iu,
+        name: /((^name$)|full-?name|your-?name)|(^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|nombre.*y.*apellidos|^nom(?!bre)\b|お名前|氏名|^nome|نام.*نام.*خانوادگی|姓名|(\b|_|\*)ad[ı]? soyad[ı]?(\b|_|\*)|성명)/iu,
+        'given-name': /((^f-?name$)|(^first-?name$)|(^given-?name$)|(^first-?n$))|(first.*name|initials|fname|first$|given.*name|vorname|nombre|forename|prénom|prenom|名|\bnome|имя|نام|이름|പേര്|(\b|_|\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\b|_|\*)|नाम)/iu,
+        'additional-name': /(apellido.?materno|lastlastname)|((^m-?name$)|(^middle-?name$)|(^additional-?name$)|(^middle-?initial$)|(^middle-?n$)|(^middle-?i$))|(middle.*name|mname|middle$|middle.*initial|m\.i\.|mi$|\bmi\b)/iu,
+        'family-name': /((^l-?name$)|(^last-?name$)|(^s-?name$)|(^surname$)|(^family-?name$)|(^family-?n$)|(^last-?n$))|(last.*name|lname|surname|last$|secondname|family.*name|nachname|apellidos?|famille|^nom(?!bre)|cognome|姓|apelidos|surename|sobrenome|фамилия|نام.*خانوادگی|उपनाम|മറുപേര്|(\b|_|\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\b|_|\*)|\b성(?:[^명]|\b))/iu,
+        'cc-number': /((cc|kk)nr)|(cc-?number|cc-?num|card-?number|card-?num|(^number$)|(^cc$)|cc-?no|card-?no|(^credit-?card$)|numero-?carte|(^carte$)|(^carte-?credit$)|num-?carte|cb-?num)|((add)?(?:card|cc|acct).?(?:number|#|no|num|field)|カード番号|номер.*карты|信用卡号|信用卡号码|信用卡卡號|카드|(numero|número|numéro)(?!.*(document|fono|phone|réservation)))/iu,
+        'cc-exp-month': /((cc|kk)month)|((^exp-?month$)|(^cc-?exp-?month$)|(^cc-?month$)|(^card-?month$)|(^cc-?mo$)|(^card-?mo$)|(^exp-?mo$)|(^card-?exp-?mo$)|(^cc-?exp-?mo$)|(^card-?expiration-?month$)|(^expiration-?month$)|(^cc-?mm$)|(^cc-?m$)|(^card-?mm$)|(^card-?m$)|(^card-?exp-?mm$)|(^cc-?exp-?mm$)|(^exp-?mm$)|(^exp-?m$)|(^expire-?month$)|(^expire-?mo$)|(^expiry-?month$)|(^expiry-?mo$)|(^card-?expire-?month$)|(^card-?expire-?mo$)|(^card-?expiry-?month$)|(^card-?expiry-?mo$)|(^mois-?validite$)|(^mois-?expiration$)|(^m-?validite$)|(^m-?expiration$)|(^expiry-?date-?field-?month$)|(^expiration-?date-?month$)|(^expiration-?date-?mm$)|(^exp-?mon$)|(^validity-?mo$)|(^exp-?date-?mo$)|(^cb-?date-?mois$)|(^date-?m$))|(gueltig|gültig|monat|fecha|date.*exp|scadenza|有効期限|validade|срок действия карты|月)/iu,
+        'cc-exp-year': /((cc|kk)year)|((^exp-?year$)|(^cc-?exp-?year$)|(^cc-?year$)|(^card-?year$)|(^cc-?yr$)|(^card-?yr$)|(^exp-?yr$)|(^card-?exp-?yr$)|(^cc-?exp-?yr$)|(^card-?expiration-?year$)|(^expiration-?year$)|(^cc-?yy$)|(^cc-?y$)|(^card-?yy$)|(^card-?y$)|(^card-?exp-?yy$)|(^cc-?exp-?yy$)|(^exp-?yy$)|(^exp-?y$)|(^cc-?yyyy$)|(^card-?yyyy$)|(^card-?exp-?yyyy$)|(^cc-?exp-?yyyy$)|(^expire-?year$)|(^expire-?yr$)|(^expiry-?year$)|(^expiry-?yr$)|(^card-?expire-?year$)|(^card-?expire-?yr$)|(^card-?expiry-?year$)|(^card-?expiry-?yr$)|(^an-?validite$)|(^an-?expiration$)|(^annee-?validite$)|(^annee-?expiration$)|(^expiry-?date-?field-?year$)|(^expiration-?date-?year$)|(^cb-?date-?ann$)|(^expiration-?date-?yy$)|(^expiration-?date-?yyyy$)|(^validity-?year$)|(^exp-?date-?year$)|(^date-?y$))|(ablaufdatum|gueltig|gültig|jahr|fecha|scadenza|有効期限|validade|срок действия карты|年|有效期)/iu,
+        'cc-exp': /((^cc-?exp$)|(^card-?exp$)|(^cc-?expiration$)|(^card-?expiration$)|(^cc-?ex$)|(^card-?ex$)|(^card-?expire$)|(^card-?expiry$)|(^validite$)|(^expiration$)|(^expiry$)|mm-?yy|mm-?yyyy|yy-?mm|yyyy-?mm|expiration-?date|payment-?card-?expiration|(^payment-?cc-?date$))|(expir|exp.*date|^expfield$|gueltig|gültig|fecha|date.*exp|scadenza|有効期限|validade|срок действия карты)/iu,
+        'cc-type': /(type|kartenmarke)|((^cc-?type$)|(^card-?type$)|(^card-?brand$)|(^cc-?brand$)|(^cb-?type$))/iu
       },
-      ruleSets: [//= ========================================================================
-      // Firefox-specific rules
-      {
+      ruleSets: [{
         'address-line1': 'addrline1|address_1',
         'address-line2': 'addrline2|address_2',
         'address-line3': 'addrline3|address_3',
         'address-level1': 'land',
-        // de-DE
         'additional-name': 'apellido.?materno|lastlastname',
-        'cc-name': 'accountholdername' + '|titulaire',
-        // fr-FR
+        'cc-name': 'accountholdername|titulaire',
         'cc-number': '(cc|kk)nr',
-        // de-DE
         'cc-exp-month': '(cc|kk)month',
-        // de-DE
         'cc-exp-year': '(cc|kk)year',
-        // de-DE
-        'cc-type': 'type' + '|kartenmarke' // de-DE
-
-      }, //= ========================================================================
-      // These are the rules used by Bitwarden [0], converted into RegExp form.
-      // [0] https://github.com/bitwarden/browser/blob/c2b8802201fac5e292d55d5caf3f1f78088d823c/src/services/autofill.service.ts#L436
-      {
+        'cc-type': 'type|kartenmarke'
+      }, {
         email: '(^e-?mail$)|(^email-?address$)',
-        tel: '(^phone$)' + '|(^mobile$)' + '|(^mobile-?phone$)' + '|(^tel$)' + '|(^telephone$)' + '|(^phone-?number$)',
-        organization: '(^company$)' + '|(^company-?name$)' + '|(^organization$)' + '|(^organization-?name$)',
-        'street-address': '(^address$)' + '|(^street-?address$)' + '|(^addr$)' + '|(^street$)' + '|(^mailing-?addr(ess)?$)' + // Modified to not grab lines, below
-        '|(^billing-?addr(ess)?$)' + // Modified to not grab lines, below
-        '|(^mail-?addr(ess)?$)' + // Modified to not grab lines, below
-        '|(^bill-?addr(ess)?$)',
-        // Modified to not grab lines, below
-        'address-line1': '(^address-?1$)' + '|(^address-?line-?1$)' + '|(^addr-?1$)' + '|(^street-?1$)',
-        'address-line2': '(^address-?2$)' + '|(^address-?line-?2$)' + '|(^addr-?2$)' + '|(^street-?2$)',
-        'address-line3': '(^address-?3$)' + '|(^address-?line-?3$)' + '|(^addr-?3$)' + '|(^street-?3$)',
-        'address-level2': '(^city$)' + '|(^town$)' + '|(^address-?level-?2$)' + '|(^address-?city$)' + '|(^address-?town$)',
-        'address-level1': '(^state$)' + '|(^province$)' + '|(^provence$)' + '|(^address-?level-?1$)' + '|(^address-?state$)' + '|(^address-?province$)',
-        'postal-code': '(^postal$)' + '|(^zip$)' + '|(^zip2$)' + '|(^zip-?code$)' + '|(^postal-?code$)' + '|(^post-?code$)' + '|(^address-?zip$)' + '|(^address-?postal$)' + '|(^address-?code$)' + '|(^address-?postal-?code$)' + '|(^address-?zip-?code$)',
-        country: '(^country$)' + '|(^country-?code$)' + '|(^country-?name$)' + '|(^address-?country$)' + '|(^address-?country-?name$)' + '|(^address-?country-?code$)',
+        tel: '(^phone$)|(^mobile$)|(^mobile-?phone$)|(^tel$)|(^telephone$)|(^phone-?number$)',
+        organization: '(^company$)|(^company-?name$)|(^organization$)|(^organization-?name$)',
+        'street-address': '(^address$)|(^street-?address$)|(^addr$)|(^street$)|(^mailing-?addr(ess)?$)|(^billing-?addr(ess)?$)|(^mail-?addr(ess)?$)|(^bill-?addr(ess)?$)',
+        'address-line1': '(^address-?1$)|(^address-?line-?1$)|(^addr-?1$)|(^street-?1$)',
+        'address-line2': '(^address-?2$)|(^address-?line-?2$)|(^addr-?2$)|(^street-?2$)',
+        'address-line3': '(^address-?3$)|(^address-?line-?3$)|(^addr-?3$)|(^street-?3$)',
+        'address-level2': '(^city$)|(^town$)|(^address-?level-?2$)|(^address-?city$)|(^address-?town$)',
+        'address-level1': '(^state$)|(^province$)|(^provence$)|(^address-?level-?1$)|(^address-?state$)|(^address-?province$)',
+        'postal-code': '(^postal$)|(^zip$)|(^zip2$)|(^zip-?code$)|(^postal-?code$)|(^post-?code$)|(^address-?zip$)|(^address-?postal$)|(^address-?code$)|(^address-?postal-?code$)|(^address-?zip-?code$)',
+        country: '(^country$)|(^country-?code$)|(^country-?name$)|(^address-?country$)|(^address-?country-?name$)|(^address-?country-?code$)',
         name: '(^name$)|full-?name|your-?name',
-        'given-name': '(^f-?name$)' + '|(^first-?name$)' + '|(^given-?name$)' + '|(^first-?n$)',
-        'additional-name': '(^m-?name$)' + '|(^middle-?name$)' + '|(^additional-?name$)' + '|(^middle-?initial$)' + '|(^middle-?n$)' + '|(^middle-?i$)',
-        'family-name': '(^l-?name$)' + '|(^last-?name$)' + '|(^s-?name$)' + '|(^surname$)' + '|(^family-?name$)' + '|(^family-?n$)' + '|(^last-?n$)',
-        'cc-name': 'cc-?name' + '|card-?name' + '|cardholder-?name' + '|cardholder' + // "|(^name$)" + // Removed to avoid overwriting "name", above.
-        '|(^nom$)',
-        'cc-number': 'cc-?number' + '|cc-?num' + '|card-?number' + '|card-?num' + '|(^number$)' + '|(^cc$)' + '|cc-?no' + '|card-?no' + '|(^credit-?card$)' + '|numero-?carte' + '|(^carte$)' + '|(^carte-?credit$)' + '|num-?carte' + '|cb-?num',
-        'cc-exp': '(^cc-?exp$)' + '|(^card-?exp$)' + '|(^cc-?expiration$)' + '|(^card-?expiration$)' + '|(^cc-?ex$)' + '|(^card-?ex$)' + '|(^card-?expire$)' + '|(^card-?expiry$)' + '|(^validite$)' + '|(^expiration$)' + '|(^expiry$)' + '|mm-?yy' + '|mm-?yyyy' + '|yy-?mm' + '|yyyy-?mm' + '|expiration-?date' + '|payment-?card-?expiration' + '|(^payment-?cc-?date$)',
-        'cc-exp-month': '(^exp-?month$)' + '|(^cc-?exp-?month$)' + '|(^cc-?month$)' + '|(^card-?month$)' + '|(^cc-?mo$)' + '|(^card-?mo$)' + '|(^exp-?mo$)' + '|(^card-?exp-?mo$)' + '|(^cc-?exp-?mo$)' + '|(^card-?expiration-?month$)' + '|(^expiration-?month$)' + '|(^cc-?mm$)' + '|(^cc-?m$)' + '|(^card-?mm$)' + '|(^card-?m$)' + '|(^card-?exp-?mm$)' + '|(^cc-?exp-?mm$)' + '|(^exp-?mm$)' + '|(^exp-?m$)' + '|(^expire-?month$)' + '|(^expire-?mo$)' + '|(^expiry-?month$)' + '|(^expiry-?mo$)' + '|(^card-?expire-?month$)' + '|(^card-?expire-?mo$)' + '|(^card-?expiry-?month$)' + '|(^card-?expiry-?mo$)' + '|(^mois-?validite$)' + '|(^mois-?expiration$)' + '|(^m-?validite$)' + '|(^m-?expiration$)' + '|(^expiry-?date-?field-?month$)' + '|(^expiration-?date-?month$)' + '|(^expiration-?date-?mm$)' + '|(^exp-?mon$)' + '|(^validity-?mo$)' + '|(^exp-?date-?mo$)' + '|(^cb-?date-?mois$)' + '|(^date-?m$)',
-        'cc-exp-year': '(^exp-?year$)' + '|(^cc-?exp-?year$)' + '|(^cc-?year$)' + '|(^card-?year$)' + '|(^cc-?yr$)' + '|(^card-?yr$)' + '|(^exp-?yr$)' + '|(^card-?exp-?yr$)' + '|(^cc-?exp-?yr$)' + '|(^card-?expiration-?year$)' + '|(^expiration-?year$)' + '|(^cc-?yy$)' + '|(^cc-?y$)' + '|(^card-?yy$)' + '|(^card-?y$)' + '|(^card-?exp-?yy$)' + '|(^cc-?exp-?yy$)' + '|(^exp-?yy$)' + '|(^exp-?y$)' + '|(^cc-?yyyy$)' + '|(^card-?yyyy$)' + '|(^card-?exp-?yyyy$)' + '|(^cc-?exp-?yyyy$)' + '|(^expire-?year$)' + '|(^expire-?yr$)' + '|(^expiry-?year$)' + '|(^expiry-?yr$)' + '|(^card-?expire-?year$)' + '|(^card-?expire-?yr$)' + '|(^card-?expiry-?year$)' + '|(^card-?expiry-?yr$)' + '|(^an-?validite$)' + '|(^an-?expiration$)' + '|(^annee-?validite$)' + '|(^annee-?expiration$)' + '|(^expiry-?date-?field-?year$)' + '|(^expiration-?date-?year$)' + '|(^cb-?date-?ann$)' + '|(^expiration-?date-?yy$)' + '|(^expiration-?date-?yyyy$)' + '|(^validity-?year$)' + '|(^exp-?date-?year$)' + '|(^date-?y$)',
-        'cc-type': '(^cc-?type$)' + '|(^card-?type$)' + '|(^card-?brand$)' + '|(^cc-?brand$)' + '|(^cb-?type$)'
-      }, //= ========================================================================
-      // These rules are from Chromium source codes [1]. Most of them
-      // converted to JS format have the same meaning with the original ones
-      // except the first line of "address-level1".
-      // [1] https://source.chromium.org/chromium/chromium/src/+/master:components/autofill/core/common/autofill_regex_constants.cc
-      {
-        // ==== Email ====
-        email: 'e.?mail' + '|courriel' + // fr
-        '|correo.*electr(o|ó)nico' + // es-ES
-        '|メールアドレス' + // ja-JP
-        '|Электронной.?Почты' + // ru
-        '|邮件|邮箱' + // zh-CN
-        '|電郵地址' + // zh-TW
-        '|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?' + 'മെയിൽ' + // ml
-        '|ایمیل|پست.*الکترونیک' + // fa
-        '|ईमेल|इलॅक्ट्रॉनिक.?मेल' + // hi
-        '|(\\b|_)eposta(\\b|_)' + // tr
-        '|(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?',
-        // ko-KR
-        // ==== Telephone ====
-        tel: 'phone|mobile|contact.?number' + '|telefonnummer' + // de-DE
-        '|telefono|teléfono' + // es
-        '|telfixe' + // fr-FR
-        '|電話' + // ja-JP
-        '|telefone|telemovel' + // pt-BR, pt-PT
-        '|телефон' + // ru
-        '|मोबाइल' + // hi for mobile
-        '|(\\b|_|\\*)telefon(\\b|_|\\*)' + // tr
-        '|电话' + // zh-CN
-        '|മൊബൈല്‍' + // ml for mobile
-        '|(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?',
-        // ko-KR
-        // ==== Address Fields ====
-        organization: 'company|business|organization|organisation' + // '|(?<!con)firma' + // de-DE // // todo: not supported in safari
-        '|empresa' + // es
-        '|societe|société' + // fr-FR
-        '|ragione.?sociale' + // it-IT
-        '|会社' + // ja-JP
-        '|название.?компании' + // ru
-        '|单位|公司' + // zh-CN
-        '|شرکت' + // fa
-        '|회사|직장',
-        // ko-KR
+        'given-name': '(^f-?name$)|(^first-?name$)|(^given-?name$)|(^first-?n$)',
+        'additional-name': '(^m-?name$)|(^middle-?name$)|(^additional-?name$)|(^middle-?initial$)|(^middle-?n$)|(^middle-?i$)',
+        'family-name': '(^l-?name$)|(^last-?name$)|(^s-?name$)|(^surname$)|(^family-?name$)|(^family-?n$)|(^last-?n$)',
+        'cc-name': 'cc-?name|card-?name|cardholder-?name|cardholder|(^nom$)',
+        'cc-number': 'cc-?number|cc-?num|card-?number|card-?num|(^number$)|(^cc$)|cc-?no|card-?no|(^credit-?card$)|numero-?carte|(^carte$)|(^carte-?credit$)|num-?carte|cb-?num',
+        'cc-exp': '(^cc-?exp$)|(^card-?exp$)|(^cc-?expiration$)|(^card-?expiration$)|(^cc-?ex$)|(^card-?ex$)|(^card-?expire$)|(^card-?expiry$)|(^validite$)|(^expiration$)|(^expiry$)|mm-?yy|mm-?yyyy|yy-?mm|yyyy-?mm|expiration-?date|payment-?card-?expiration|(^payment-?cc-?date$)',
+        'cc-exp-month': '(^exp-?month$)|(^cc-?exp-?month$)|(^cc-?month$)|(^card-?month$)|(^cc-?mo$)|(^card-?mo$)|(^exp-?mo$)|(^card-?exp-?mo$)|(^cc-?exp-?mo$)|(^card-?expiration-?month$)|(^expiration-?month$)|(^cc-?mm$)|(^cc-?m$)|(^card-?mm$)|(^card-?m$)|(^card-?exp-?mm$)|(^cc-?exp-?mm$)|(^exp-?mm$)|(^exp-?m$)|(^expire-?month$)|(^expire-?mo$)|(^expiry-?month$)|(^expiry-?mo$)|(^card-?expire-?month$)|(^card-?expire-?mo$)|(^card-?expiry-?month$)|(^card-?expiry-?mo$)|(^mois-?validite$)|(^mois-?expiration$)|(^m-?validite$)|(^m-?expiration$)|(^expiry-?date-?field-?month$)|(^expiration-?date-?month$)|(^expiration-?date-?mm$)|(^exp-?mon$)|(^validity-?mo$)|(^exp-?date-?mo$)|(^cb-?date-?mois$)|(^date-?m$)',
+        'cc-exp-year': '(^exp-?year$)|(^cc-?exp-?year$)|(^cc-?year$)|(^card-?year$)|(^cc-?yr$)|(^card-?yr$)|(^exp-?yr$)|(^card-?exp-?yr$)|(^cc-?exp-?yr$)|(^card-?expiration-?year$)|(^expiration-?year$)|(^cc-?yy$)|(^cc-?y$)|(^card-?yy$)|(^card-?y$)|(^card-?exp-?yy$)|(^cc-?exp-?yy$)|(^exp-?yy$)|(^exp-?y$)|(^cc-?yyyy$)|(^card-?yyyy$)|(^card-?exp-?yyyy$)|(^cc-?exp-?yyyy$)|(^expire-?year$)|(^expire-?yr$)|(^expiry-?year$)|(^expiry-?yr$)|(^card-?expire-?year$)|(^card-?expire-?yr$)|(^card-?expiry-?year$)|(^card-?expiry-?yr$)|(^an-?validite$)|(^an-?expiration$)|(^annee-?validite$)|(^annee-?expiration$)|(^expiry-?date-?field-?year$)|(^expiration-?date-?year$)|(^cb-?date-?ann$)|(^expiration-?date-?yy$)|(^expiration-?date-?yyyy$)|(^validity-?year$)|(^exp-?date-?year$)|(^date-?y$)',
+        'cc-type': '(^cc-?type$)|(^card-?type$)|(^card-?brand$)|(^cc-?brand$)|(^cb-?type$)'
+      }, {
+        email: 'e.?mail|courriel|correo.*electr(o|ó)nico|メールアドレス|Электронной.?Почты|邮件|邮箱|電郵地址|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?മെയിൽ|ایمیل|پست.*الکترونیک|ईमेल|इलॅक्ट्रॉनिक.?मेल|(\\b|_)eposta(\\b|_)|(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?',
+        tel: 'phone|mobile|contact.?number|telefonnummer|telefono|teléfono|telfixe|電話|telefone|telemovel|телефон|मोबाइल|(\\b|_|\\*)telefon(\\b|_|\\*)|电话|മൊബൈല്‍|(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?',
+        organization: 'company|business|organization|organisation|empresa|societe|société|ragione.?sociale|会社|название.?компании|单位|公司|شرکت|회사|직장',
         'street-address': 'streetaddress|street-address',
-        'address-line1': '^address$|address[_-]?line[_-]?(1|one)|address1|addr1|street' + '|(?:shipping|billing)address$' + '|strasse|straße|hausnummer|housenumber' + // de-DE
-        '|house.?name' + // en-GB
-        '|direccion|dirección' + // es
-        '|adresse' + // fr-FR
-        '|indirizzo' + // it-IT
-        '|^住所$|住所1' + // ja-JP
-        // '|morada|((?<!identificação do )endereço)' + // pt-BR, pt-PT // todo: not supported in safari
-        '|Адрес' + // ru
-        '|地址' + // zh-CN
-        '|(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)' + // tr
-        '|^주소.?$|주소.?1',
-        // ko-KR
-        'address-line2': 'address[_-]?line(2|two)|address2|addr2|street|suite|unit(?!e)' + // Firefox adds `(?!e)` to unit to skip `United State`
-        '|adresszusatz|ergänzende.?angaben' + // de-DE
-        '|direccion2|colonia|adicional' + // es
-        '|addresssuppl|complementnom|appartement' + // fr-FR
-        '|indirizzo2' + // it-IT
-        '|住所2' + // ja-JP
-        '|complemento|addrcomplement' + // pt-BR, pt-PT
-        '|Улица' + // ru
-        '|地址2' + // zh-CN
-        '|주소.?2',
-        // ko-KR
-        'address-line3': 'address[_-]?line(3|three)|address3|addr3|street|suite|unit(?!e)' + // Firefox adds `(?!e)` to unit to skip `United State`
-        '|adresszusatz|ergänzende.?angaben' + // de-DE
-        '|direccion3|colonia|adicional' + // es
-        '|addresssuppl|complementnom|appartement' + // fr-FR
-        '|indirizzo3' + // it-IT
-        '|住所3' + // ja-JP
-        '|complemento|addrcomplement' + // pt-BR, pt-PT
-        '|Улица' + // ru
-        '|地址3' + // zh-CN
-        '|주소.?3',
-        // ko-KR
-        'address-level2': 'city|town' + '|\\bort\\b|stadt' + // de-DE
-        '|suburb' + // en-AU
-        '|ciudad|provincia|localidad|poblacion' + // es
-        '|ville|commune' + // fr-FR
-        '|localit(a|à)|citt(a|à)' + // it-IT
-        '|市区町村' + // ja-JP
-        '|cidade' + // pt-BR, pt-PT
-        '|Город' + // ru
-        '|市' + // zh-CN
-        '|分區' + // zh-TW
-        '|شهر' + // fa
-        '|शहर' + // hi for city
-        '|ग्राम|गाँव' + // hi for village
-        '|നഗരം|ഗ്രാമം' + // ml for town|village
-        '|((\\b|_|\\*)([İii̇]l[cç]e(miz|niz)?)(\\b|_|\\*))' + // tr
-        '|^시[^도·・]|시[·・]?군[·・]?구',
-        // ko-KR
-        'address-level1': // '(?<!(united|hist|history).?)state|county|region|province' + // todo: not supported in safari
-        'county|region|province' + '|county|principality' + // en-UK
-        '|都道府県' + // ja-JP
-        '|estado|provincia' + // pt-BR, pt-PT
-        '|область' + // ru
-        '|省' + // zh-CN
-        '|地區' + // zh-TW
-        '|സംസ്ഥാനം' + // ml
-        '|استان' + // fa
-        '|राज्य' + // hi
-        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]limiz|kent)(\\b|_|\\*))' + // tr
-        '|^시[·・]?도',
-        // ko-KR
-        'postal-code': 'zip|postal|post.*code|pcode' + '|pin.?code' + // en-IN
-        '|postleitzahl' + // de-DE
-        '|\\bcp\\b' + // es
-        '|\\bcdp\\b' + // fr-FR
-        '|\\bcap\\b' + // it-IT
-        '|郵便番号' + // ja-JP
-        '|codigo|codpos|\\bcep\\b' + // pt-BR, pt-PT
-        '|Почтовый.?Индекс' + // ru
-        '|पिन.?कोड' + // hi
-        '|പിന്‍കോഡ്' + // ml
-        '|邮政编码|邮编' + // zh-CN
-        '|郵遞區號' + // zh-TW
-        '|(\\b|_)posta kodu(\\b|_)' + // tr
-        '|우편.?번호',
-        // ko-KR
-        country: 'country|countries' + '|país|pais' + // es
-        '|(\\b|_)land(\\b|_)(?!.*(mark.*))' + // de-DE landmark is a type in india.
-        // '|(?<!(入|出))国' + // ja-JP // todo: not supported in safari
-        '|国家' + // zh-CN
-        '|국가|나라' + // ko-KR
-        '|(\\b|_)(ülke|ulce|ulke)(\\b|_)' + // tr
-        '|کشور',
-        // fa
-        // ==== Name Fields ====
-        'cc-name': 'card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card' + '|(?:card|cc).?name|cc.?full.?name' + '|karteninhaber' + // de-DE
-        '|nombre.*tarjeta' + // es
-        '|nom.*carte' + // fr-FR
-        '|nome.*cart' + // it-IT
-        '|名前' + // ja-JP
-        '|Имя.*карты' + // ru
-        '|信用卡开户名|开户名|持卡人姓名' + // zh-CN
-        '|持卡人姓名',
-        // zh-TW
-        name: '^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name' + '|name.*first.*last|firstandlastname' + '|nombre.*y.*apellidos' + // es
-        '|^nom(?!bre)\\b' + // fr-FR
-        '|お名前|氏名' + // ja-JP
-        '|^nome' + // pt-BR, pt-PT
-        '|نام.*نام.*خانوادگی' + // fa
-        '|姓名' + // zh-CN
-        '|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)' + // tr
-        '|성명',
-        // ko-KR
-        'given-name': 'first.*name|initials|fname|first$|given.*name' + '|vorname' + // de-DE
-        '|nombre' + // es
-        '|forename|prénom|prenom' + // fr-FR
-        '|名' + // ja-JP
-        '|\\bnome' + // pt-BR, pt-PT
-        '|Имя' + // ru
-        '|نام' + // fa
-        '|이름' + // ko-KR
-        '|പേര്' + // ml
-        '|(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)' + // tr
-        '|नाम',
-        // hi
+        'address-line1': '^address$|address[_-]?line[_-]?(1|one)|address1|addr1|street|(?:shipping|billing)address$|strasse|straße|hausnummer|housenumber|house.?name|direccion|dirección|adresse|indirizzo|^住所$|住所1|Адрес|地址|(\\b|_)adres(?! (başlığı(nız)?|tarifi))(\\b|_)|^주소.?$|주소.?1',
+        'address-line2': 'address[_-]?line(2|two)|address2|addr2|street|suite|unit(?!e)|adresszusatz|ergänzende.?angaben|direccion2|colonia|adicional|addresssuppl|complementnom|appartement|indirizzo2|住所2|complemento|addrcomplement|Улица|地址2|주소.?2',
+        'address-line3': 'address[_-]?line(3|three)|address3|addr3|street|suite|unit(?!e)|adresszusatz|ergänzende.?angaben|direccion3|colonia|adicional|addresssuppl|complementnom|appartement|indirizzo3|住所3|complemento|addrcomplement|Улица|地址3|주소.?3',
+        'address-level2': 'city|town|\\bort\\b|stadt|suburb|ciudad|provincia|localidad|poblacion|ville|commune|localit(a|à)|citt(a|à)|市区町村|cidade|Город|市|分區|شهر|शहर|ग्राम|गाँव|നഗരം|ഗ്രാമം|((\\b|_|\\*)([İii̇]l[cç]e(miz|niz)?)(\\b|_|\\*))|^시[^도·・]|시[·・]?군[·・]?구',
+        'address-level1': 'county|region|province|county|principality|都道府県|estado|provincia|область|省|地區|സംസ്ഥാനം|استان|राज्य|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]limiz|kent)(\\b|_|\\*))|^시[·・]?도',
+        'postal-code': 'zip|postal|post.*code|pcode|pin.?code|postleitzahl|\\bcp\\b|\\bcdp\\b|\\bcap\\b|郵便番号|codigo|codpos|\\bcep\\b|Почтовый.?Индекс|पिन.?कोड|പിന്‍കോഡ്|邮政编码|邮编|郵遞區號|(\\b|_)posta kodu(\\b|_)|우편.?번호',
+        country: 'country|countries|país|pais|(\\b|_)land(\\b|_)(?!.*(mark.*))|国家|국가|나라|(\\b|_)(ülke|ulce|ulke)(\\b|_)|کشور',
+        'cc-name': 'card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card|(?:card|cc).?name|cc.?full.?name|karteninhaber|nombre.*tarjeta|nom.*carte|nome.*cart|名前|Имя.*карты|信用卡开户名|开户名|持卡人姓名|持卡人姓名',
+        name: '^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|nombre.*y.*apellidos|^nom(?!bre)\\b|お名前|氏名|^nome|نام.*نام.*خانوادگی|姓名|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)|성명',
+        'given-name': 'first.*name|initials|fname|first$|given.*name|vorname|nombre|forename|prénom|prenom|名|\\bnome|Имя|نام|이름|പേര്|(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)|नाम',
         'additional-name': 'middle.*name|mname|middle$|middle.*initial|m\\.i\\.|mi$|\\bmi\\b',
-        'family-name': 'last.*name|lname|surname|last$|secondname|family.*name' + '|nachname' + // de-DE
-        '|apellidos?' + // es
-        '|famille|^nom(?!bre)' + // fr-FR
-        '|cognome' + // it-IT
-        '|姓' + // ja-JP
-        '|apelidos|surename|sobrenome' + // pt-BR, pt-PT
-        '|Фамилия' + // ru
-        '|نام.*خانوادگی' + // fa
-        '|उपनाम' + // hi
-        '|മറുപേര്' + // ml
-        '|(\\b|_|\\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\\b|_|\\*)' + // tr
-        '|\\b성(?:[^명]|\\b)',
-        // ko-KR
-        // ==== Credit Card Fields ====
-        // Note: `cc-name` expression has been moved up, above `name`, in
-        // order to handle specialization through ordering.
-        'cc-number': '(add)?(?:card|cc|acct).?(?:number|#|no|num|field)' + // '|(?<!telefon|haus|person|fødsels)nummer' + // de-DE, sv-SE, no // todo: not supported in safari
-        '|カード番号' + // ja-JP
-        '|Номер.*карты' + // ru
-        '|信用卡号|信用卡号码' + // zh-CN
-        '|信用卡卡號' + // zh-TW
-        '|카드' + // ko-KR
-        // es/pt/fr
-        '|(numero|número|numéro)(?!.*(document|fono|phone|réservation))',
-        'cc-exp-month': // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
-        'gueltig|gültig|monat' + // de-DE
-        '|fecha' + // es
-        '|date.*exp' + // fr-FR
-        '|scadenza' + // it-IT
-        '|有効期限' + // ja-JP
-        '|validade' + // pt-BR, pt-PT
-        '|Срок действия карты' + // ru
-        '|月',
-        // zh-CN
-        'cc-exp-year': // 'exp|^/|(add)?year' + // todo: Decide if we need any of this
-        'ablaufdatum|gueltig|gültig|jahr' + // de-DE
-        '|fecha' + // es
-        '|scadenza' + // it-IT
-        '|有効期限' + // ja-JP
-        '|validade' + // pt-BR, pt-PT
-        '|Срок действия карты' + // ru
-        '|年|有效期',
-        // zh-CN
-        'cc-exp': 'expir|exp.*date|^expfield$' + '|gueltig|gültig' + // de-DE
-        '|fecha' + // es
-        '|date.*exp' + // fr-FR
-        '|scadenza' + // it-IT
-        '|有効期限' + // ja-JP
-        '|validade' + // pt-BR, pt-PT
-        '|Срок действия карты' // ru
-
+        'family-name': 'last.*name|lname|surname|last$|secondname|family.*name|nachname|apellidos?|famille|^nom(?!bre)|cognome|姓|apelidos|surename|sobrenome|Фамилия|نام.*خانوادگی|उपनाम|മറുപേര്|(\\b|_|\\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\\b|_|\\*)|\\b성(?:[^명]|\\b)',
+        'cc-number': '(add)?(?:card|cc|acct).?(?:number|#|no|num|field)|カード番号|Номер.*карты|信用卡号|信用卡号码|信用卡卡號|카드|(numero|número|numéro)(?!.*(document|fono|phone|réservation))',
+        'cc-exp-month': 'gueltig|gültig|monat|fecha|date.*exp|scadenza|有効期限|validade|Срок действия карты|月',
+        'cc-exp-year': 'ablaufdatum|gueltig|gültig|jahr|fecha|scadenza|有効期限|validade|Срок действия карты|年|有效期',
+        'cc-exp': 'expir|exp.*date|^expfield$|gueltig|gültig|fecha|date.*exp|scadenza|有効期限|validade|Срок действия карты'
       }]
     }
   }
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{"./selectors-css.js":36}],34:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9895,7 +9631,7 @@ function logUnmatched(el, allStrings) {
   console.groupEnd();
 }
 
-},{"../autofill-utils.js":55,"./matching.js":35}],35:[function(require,module,exports){
+},{"../autofill-utils.js":53,"./matching.js":35}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9909,15 +9645,13 @@ exports.getInputType = getInputType;
 exports.getMainTypeFromType = getMainTypeFromType;
 exports.getRelatedText = void 0;
 exports.getSubtypeFromType = getSubtypeFromType;
-exports.safeRegex = exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
-
-var _vendorRegex = require("./vendor-regex.js");
+exports.removeExcessWhitespace = exports.matchInPlaceholderAndLabels = void 0;
 
 var _constants = require("../constants.js");
 
 var _labelUtil = require("./label-util.js");
 
-var _matchingConfiguration = require("./matching-configuration.js");
+var _compiledMatchingConfig = require("./matching-config/__generated__/compiled-matching-config.js");
 
 var _matchingUtils = require("./matching-utils.js");
 
@@ -9962,7 +9696,7 @@ var _cssSelectors = /*#__PURE__*/new WeakMap();
 
 var _ddgMatchers = /*#__PURE__*/new WeakMap();
 
-var _vendorRegExpCache = /*#__PURE__*/new WeakMap();
+var _vendorRegexRules = /*#__PURE__*/new WeakMap();
 
 var _matcherLists = /*#__PURE__*/new WeakMap();
 
@@ -9977,7 +9711,7 @@ class Matching {
 
   /**
    * This acts as an internal cache for the larger vendorRegexes
-   * @type {{RULES: Record<keyof VendorRegexRules, RegExp|undefined>}}
+   * @type {VendorRegexConfiguration['rules']}
    */
 
   /** @type {MatcherLists} */
@@ -10005,7 +9739,7 @@ class Matching {
       value: void 0
     });
 
-    _classPrivateFieldInitSpec(this, _vendorRegExpCache, {
+    _classPrivateFieldInitSpec(this, _vendorRegexRules, {
       writable: true,
       value: void 0
     });
@@ -10032,12 +9766,7 @@ class Matching {
 
     _classPrivateFieldSet(this, _config, config);
 
-    const {
-      rules,
-      ruleSets
-    } = _classPrivateFieldGet(this, _config).strategies.vendorRegex;
-
-    _classPrivateFieldSet(this, _vendorRegExpCache, (0, _vendorRegex.createCacheableVendorRegexes)(rules, ruleSets));
+    _classPrivateFieldSet(this, _vendorRegexRules, _classPrivateFieldGet(this, _config).strategies.vendorRegex.rules);
 
     _classPrivateFieldSet(this, _cssSelectors, _classPrivateFieldGet(this, _config).strategies.cssSelector.selectors);
 
@@ -10087,7 +9816,7 @@ class Matching {
 
 
   vendorRegex(regexName) {
-    const match = _classPrivateFieldGet(this, _vendorRegExpCache).RULES[regexName];
+    const match = _classPrivateFieldGet(this, _vendorRegexRules)[regexName];
 
     if (!match) {
       console.warn('Vendor Regex not found for', regexName);
@@ -10111,7 +9840,7 @@ class Matching {
   }
   /**
    * Try to access a 'css selector' by name from configuration
-   * @param {keyof RequiredCssSelectors | string} selectorName
+   * @param {RequiredCssSelectors | string} selectorName
    * @returns {string};
    */
 
@@ -10124,15 +9853,11 @@ class Matching {
       return '';
     }
 
-    if (Array.isArray(match)) {
-      return match.join(',');
-    }
-
     return match;
   }
   /**
    * Try to access a 'ddg matcher' by name from configuration
-   * @param {keyof RequiredCssSelectors | string} matcherName
+   * @param {MatcherTypeNames | string} matcherName
    * @returns {DDGMatcher | undefined}
    */
 
@@ -10162,7 +9887,7 @@ class Matching {
       return undefined;
     }
 
-    return safeRegex(matcher.match);
+    return matcher === null || matcher === void 0 ? void 0 : matcher.match;
   }
   /**
    * Try to access a list of matchers by name - these are the ones collected in the constructor
@@ -10460,7 +10185,7 @@ class Matching {
       return defaultResult;
     }
 
-    let matchRexExp = safeRegex(ddgMatcher.match || '');
+    let matchRexExp = this.getDDGMatcherRegex(lookup);
 
     if (!matchRexExp) {
       return defaultResult;
@@ -10485,7 +10210,7 @@ class Matching {
       // If it DOES match - then we need to prevent any future strategies from continuing
 
       if (ddgMatcher.forceUnknown) {
-        let notRegex = safeRegex(ddgMatcher.forceUnknown);
+        let notRegex = ddgMatcher.forceUnknown;
 
         if (!notRegex) {
           return { ...result,
@@ -10505,7 +10230,7 @@ class Matching {
       }
 
       if (ddgMatcher.skip) {
-        let skipRegex = safeRegex(ddgMatcher.skip);
+        let skipRegex = ddgMatcher.skip;
 
         if (!skipRegex) {
           return { ...result,
@@ -10578,7 +10303,6 @@ class Matching {
     for (let stringName of stringsToMatch) {
       let elementString = this.activeElementStrings[stringName];
       if (!elementString) continue;
-      elementString = elementString.toLowerCase();
 
       if (regex.test(elementString)) {
         return { ...defaultResult,
@@ -10982,192 +10706,19 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
   return !!matchInPlaceholderAndLabels(input, regex, form, cssSelector);
 };
 /**
- * Returns a RegExp from a string
- * @param {string} string
- * @returns {RegExp | undefined} string
- */
-
-
-exports.checkPlaceholderAndLabels = checkPlaceholderAndLabels;
-
-const safeRegex = string => {
-  try {
-    const input = String(string).normalize('NFKC');
-    return new RegExp(input, 'ui');
-  } catch (e) {
-    console.warn('Could not generate regex from string input', string);
-    return undefined;
-  }
-};
-/**
  * Factory for instances of Matching
  *
  * @return {Matching}
  */
 
 
-exports.safeRegex = safeRegex;
+exports.checkPlaceholderAndLabels = checkPlaceholderAndLabels;
 
 function createMatching() {
-  return new Matching(_matchingConfiguration.matchingConfiguration);
+  return new Matching(_compiledMatchingConfig.matchingConfiguration);
 }
 
-},{"../autofill-utils.js":55,"../constants.js":58,"./label-util.js":31,"./matching-configuration.js":33,"./matching-utils.js":34,"./vendor-regex.js":37}],36:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.selectors = void 0;
-const formInputsSelector = "\ninput:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete=\"fake\"]),\n[autocomplete=username],\nselect";
-const submitButtonSelector = "\ninput[type=submit],\ninput[type=button],\ninput[type=image],\nbutton:not([role=switch]):not([role=link]),\n[role=button],\na[href=\"#\"][id*=button i],\na[href=\"#\"][id*=btn i]";
-const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)'; // We've seen non-standard types like 'user'. This selector should get them, too
-
-const genericTextField = "\ninput:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])";
-const emailAddress = ["\ninput:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=\"\"][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]),\ninput[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]),\ninput:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]),\ninput[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=\"\"][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]),\ninput[type=email],\ninput[type=text][aria-label*=email i]:not([aria-label*=search i]),\ninput:not([type])[aria-label*=email i]:not([aria-label*=search i]),\ninput[name=username][type=email],\ninput[autocomplete=username][type=email],\ninput[autocomplete=username][placeholder*=email i],\ninput[autocomplete=email]", // https://account.nicovideo.jp/login
-"input[name=\"mail_tel\" i]", // https://www.morningstar.it/it/membership/LoginPopup.aspx
-"input[value=email i]"];
-const username = ["".concat(genericTextField, "[autocomplete^=user i]"), "input[name=username i]", // fix for `aa.com`
-"input[name=\"loginId\" i]", // fix for https://online.mbank.pl/pl/Login
-"input[name=\"userid\" i]", "input[id=\"userid\" i]", "input[name=\"user_id\" i]", "input[name=\"user-id\" i]", "input[id=\"login-id\" i]", "input[id=\"login_id\" i]", "input[id=\"loginid\" i]", "input[name=\"login\" i]", "input[name=accountname i]", "input[autocomplete=username i]", "input[name*=accountid i]", "input[name=\"j_username\" i]", "input[id=\"j_username\" i]", // https://account.uwindsor.ca/login
-"input[name=\"uwinid\" i]", // livedoor.com
-"input[name=\"livedoor_id\" i]", // https://login.oracle.com/mysso/signon.jsp?request_id=
-"input[name=\"ssousername\" i]", // https://secure.nsandi.com/
-"input[name=\"j_userlogin_pwd\" i]", // https://freelance.habr.com/users/sign_up
-"input[name=\"user[login]\" i]", // https://weblogin.utoronto.ca
-"input[name=\"user\" i]", // https://customerportal.mastercard.com/login
-"input[name$=\"_username\" i]", // https://accounts.hindustantimes.com/?type=plain&ref=lm
-"input[id=\"lmSsoinput\" i]", // bigcartel.com/login
-"input[name=\"account_subdomain\" i]", // https://www.mydns.jp/members/
-"input[name=\"masterid\" i]", // https://giris.turkiye.gov.tr
-"input[name=\"tridField\" i]", // https://membernetprb2c.b2clogin.com
-"input[id=\"signInName\" i]", // https://www.w3.org/accounts/request
-"input[id=\"w3c_accountsbundle_accountrequeststep1_login\" i]", "input[id=\"username\" i]", "input[name=\"_user\" i]", "input[name=\"login_username\" i]", // https://www.flytap.com/
-"input[name^=\"login-user-account\" i]", // https://www.sanitas.es
-"input[id=\"loginusuario\" i]", // https://www.guardiacivil.es/administracion/login.html
-"input[name=\"usuario\" i]", // https://m.bintercanarias.com/
-"input[id=\"UserLoginFormUsername\" i]", // https://id.docker.com/login
-"input[id=\"nw_username\" i]", // https://appleid.apple.com/es/sign-in (needed for all languages)
-"input[can-field=\"accountName\"]", "input[placeholder^=\"username\" i]"];
-const password = ["input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])", // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
-'input.js-cloudsave-phrase'];
-const cardName = "\ninput[autocomplete=\"cc-name\" i],\ninput[autocomplete=\"ccname\" i],\ninput[name=\"ccname\" i],\ninput[name=\"cc-name\" i],\ninput[name=\"ppw-accountHolderName\" i],\ninput[id*=cardname i],\ninput[id*=card-name i],\ninput[id*=card_name i]";
-const cardNumber = "\ninput[autocomplete=\"cc-number\" i],\ninput[autocomplete=\"ccnumber\" i],\ninput[autocomplete=\"cardnumber\" i],\ninput[autocomplete=\"card-number\" i],\ninput[name=\"ccnumber\" i],\ninput[name=\"cc-number\" i],\ninput[name*=card i][name*=number i],\ninput[name*=cardnumber i],\ninput[id*=cardnumber i],\ninput[id*=card-number i],\ninput[id*=card_number i]";
-const cardSecurityCode = "\ninput[autocomplete=\"cc-csc\" i],\ninput[autocomplete=\"csc\" i],\ninput[autocomplete=\"cc-cvc\" i],\ninput[autocomplete=\"cvc\" i],\ninput[name=\"cvc\" i],\ninput[name=\"cc-cvc\" i],\ninput[name=\"cc-csc\" i],\ninput[name=\"csc\" i],\ninput[name*=security i][name*=code i]";
-const expirationMonth = "\n[autocomplete=\"cc-exp-month\" i],\n[autocomplete=\"cc_exp_month\" i],\n[name=\"ccmonth\" i],\n[name=\"ppw-expirationDate_month\" i],\n[name=cardExpiryMonth i],\n[name*=ExpDate_Month i],\n[name*=expiration i][name*=month i],\n[id*=expiration i][id*=month i],\n[name*=cc-exp-month i],\n[name*=\"card_exp-month\" i],\n[name*=cc_exp_month i]";
-const expirationYear = "\n[autocomplete=\"cc-exp-year\" i],\n[autocomplete=\"cc_exp_year\" i],\n[name=\"ccyear\" i],\n[name=\"ppw-expirationDate_year\" i],\n[name=cardExpiryYear i],\n[name*=ExpDate_Year i],\n[name*=expiration i][name*=year i],\n[id*=expiration i][id*=year i],\n[name*=\"cc-exp-year\" i],\n[name*=\"card_exp-year\" i],\n[name*=cc_exp_year i]";
-const expiration = "\n[autocomplete=\"cc-exp\" i],\n[name=\"cc-exp\" i],\n[name=\"exp-date\" i],\n[name=\"expirationDate\" i],\ninput[id*=expiration i]";
-const firstName = "\n[name*=fname i], [autocomplete*=given-name i],\n[name*=firstname i], [autocomplete*=firstname i],\n[name*=first-name i], [autocomplete*=first-name i],\n[name*=first_name i], [autocomplete*=first_name i],\n[name*=givenname i], [autocomplete*=givenname i],\n[name*=given-name i],\n[name*=given_name i], [autocomplete*=given_name i],\n[name*=forename i], [autocomplete*=forename i]";
-const middleName = "\n[name*=mname i], [autocomplete*=additional-name i],\n[name*=middlename i], [autocomplete*=middlename i],\n[name*=middle-name i], [autocomplete*=middle-name i],\n[name*=middle_name i], [autocomplete*=middle_name i],\n[name*=additionalname i], [autocomplete*=additionalname i],\n[name*=additional-name i],\n[name*=additional_name i], [autocomplete*=additional_name i]";
-const lastName = "\n[name=lname], [autocomplete*=family-name i],\n[name*=lastname i], [autocomplete*=lastname i],\n[name*=last-name i], [autocomplete*=last-name i],\n[name*=last_name i], [autocomplete*=last_name i],\n[name*=familyname i], [autocomplete*=familyname i],\n[name*=family-name i],\n[name*=family_name i], [autocomplete*=family_name i],\n[name*=surname i], [autocomplete*=surname i]";
-const fullName = "\n[autocomplete=name],\n[name*=fullname i], [autocomplete*=fullname i],\n[name*=full-name i], [autocomplete*=full-name i],\n[name*=full_name i], [autocomplete*=full_name i],\n[name*=your-name i], [autocomplete*=your-name i]";
-const phone = "\n[name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),\n[name*=mobile i]:not([name*=type i]),\n[autocomplete=tel],\n[autocomplete=\"tel-national\"],\n[placeholder*=\"phone number\" i]";
-const addressStreet = "\n[name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],\n[name=street i],\n[name=ppw-line1 i], [name*=addressLine1 i]";
-const addressStreet2 = "\n[name=address2 i], [autocomplete=address-line2 i],\n[name=ppw-line2 i], [name*=addressLine2 i]";
-const addressCity = "\n[name=city i], [autocomplete=address-level2 i],\n[name=ppw-city i], [name*=addressCity i]";
-const addressProvince = "\n[name=province i], [name=state i], [autocomplete=address-level1 i]";
-const addressPostalCode = "\n[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],\n[name*=postalCode i], [name*=zipcode i]";
-const addressCountryCode = ["[name=country i], [autocomplete=country i],\n     [name*=countryCode i], [name*=country-code i],\n     [name*=countryName i], [name*=country-name i]", "select.idms-address-country" // Fix for Apple signup
-];
-const birthdayDay = "\n[name=bday-day i],\n[name*=birthday_day i], [name*=birthday-day i],\n[name=date_of_birth_day i], [name=date-of-birth-day i],\n[name^=birthdate_d i], [name^=birthdate-d i],\n[aria-label=\"birthday\" i][placeholder=\"day\" i]";
-const birthdayMonth = "\n[name=bday-month i],\n[name*=birthday_month i], [name*=birthday-month i],\n[name=date_of_birth_month i], [name=date-of-birth-month i],\n[name^=birthdate_m i], [name^=birthdate-m i],\nselect[name=\"mm\" i]";
-const birthdayYear = "\n[name=bday-year i],\n[name*=birthday_year i], [name*=birthday-year i],\n[name=date_of_birth_year i], [name=date-of-birth-year i],\n[name^=birthdate_y i], [name^=birthdate-y i],\n[aria-label=\"birthday\" i][placeholder=\"year\" i]";
-const selectors = {
-  // Generic
-  genericTextField,
-  submitButtonSelector,
-  formInputsSelector,
-  safeUniversalSelector,
-  // Credentials
-  emailAddress,
-  username,
-  password,
-  // Credit Card
-  cardName,
-  cardNumber,
-  cardSecurityCode,
-  expirationMonth,
-  expirationYear,
-  expiration,
-  // Identities
-  firstName,
-  middleName,
-  lastName,
-  fullName,
-  phone,
-  addressStreet,
-  addressStreet2,
-  addressCity,
-  addressProvince,
-  addressPostalCode,
-  addressCountryCode,
-  birthdayDay,
-  birthdayMonth,
-  birthdayYear
-};
-exports.selectors = selectors;
-
-},{}],37:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.createCacheableVendorRegexes = createCacheableVendorRegexes;
-
-/**
- * Given some ruleSets, create an efficient
- * lookup system for accessing cached regexes by name.
- *
- * @param {VendorRegexConfiguration["rules"]} rules
- * @param {VendorRegexConfiguration["ruleSets"]} ruleSets
- * @return {{RULES: Record<keyof VendorRegexRules, RegExp | undefined>}}
- */
-function createCacheableVendorRegexes(rules, ruleSets) {
-  const vendorRegExp = {
-    RULES: rules,
-    RULE_SETS: ruleSets,
-
-    _getRule(name) {
-      let rules = [];
-      this.RULE_SETS.forEach(set => {
-        if (set[name]) {
-          var _set$name;
-
-          // Add the rule.
-          // We make the regex lower case so that we can match it against the
-          // lower-cased field name and get a rough equivalent of a case-insensitive
-          // match. This avoids a performance cliff with the "iu" flag on regular
-          // expressions.
-          rules.push("(".concat((_set$name = set[name]) === null || _set$name === void 0 ? void 0 : _set$name.toLowerCase(), ")").normalize('NFKC'));
-        }
-      });
-      const value = new RegExp(rules.join('|'), 'u');
-      Object.defineProperty(this.RULES, name, {
-        get: undefined
-      });
-      Object.defineProperty(this.RULES, name, {
-        value
-      });
-      return value;
-    },
-
-    init() {
-      Object.keys(this.RULES).forEach(field => Object.defineProperty(this.RULES, field, {
-        get() {
-          return vendorRegExp._getRule(field);
-        }
-
-      }));
-    }
-
-  };
-  vendorRegExp.init(); // @ts-ignore
-
-  return vendorRegExp;
-}
-
-},{}],38:[function(require,module,exports){
+},{"../autofill-utils.js":53,"../constants.js":56,"./label-util.js":31,"./matching-config/__generated__/compiled-matching-config.js":33,"./matching-utils.js":34}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11320,7 +10871,7 @@ class InContextSignup {
 
 exports.InContextSignup = InContextSignup;
 
-},{"./autofill-utils.js":55,"./deviceApiCalls/__generated__/deviceApiCalls.js":59}],39:[function(require,module,exports){
+},{"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11536,7 +11087,7 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-},{"../autofill-utils.js":55}],40:[function(require,module,exports){
+},{"../autofill-utils.js":53}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11588,7 +11139,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11662,7 +11213,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":28}],42:[function(require,module,exports){
+},{"../Form/formatters.js":28}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11734,7 +11285,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password/index.js":9,"../packages/password/rules.json":13}],43:[function(require,module,exports){
+},{"../packages/password/index.js":9,"../packages/password/rules.json":13}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12170,7 +11721,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":25,"./Form/matching.js":35,"./autofill-utils.js":55,"./constants.js":58,"./deviceApiCalls/__generated__/deviceApiCalls.js":59}],44:[function(require,module,exports){
+},{"./Form/Form.js":25,"./Form/matching.js":35,"./autofill-utils.js":53,"./constants.js":56,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12575,7 +12126,7 @@ _defineProperty(Settings, "defaults", {
   enabled: null
 });
 
-},{"../packages/device-api/index.js":6,"./autofill-utils.js":55,"./deviceApiCalls/__generated__/deviceApiCalls.js":59,"./deviceApiCalls/__generated__/validators.zod.js":60,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],45:[function(require,module,exports){
+},{"../packages/device-api/index.js":6,"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57,"./deviceApiCalls/__generated__/validators.zod.js":58,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12684,7 +12235,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../InputTypes/Credentials.js":39,"../autofill-utils.js":55,"./HTMLTooltip.js":48}],46:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../autofill-utils.js":53,"./HTMLTooltip.js":46}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12758,7 +12309,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils.js":55,"./HTMLTooltip.js":48}],47:[function(require,module,exports){
+},{"../autofill-utils.js":53,"./HTMLTooltip.js":46}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12805,7 +12356,7 @@ class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailSignupHTMLTooltip;
 exports.default = _default;
 
-},{"./HTMLTooltip.js":48}],48:[function(require,module,exports){
+},{"./HTMLTooltip.js":46}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13247,7 +12798,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching.js":35,"../autofill-utils.js":55,"./styles/styles.js":54}],49:[function(require,module,exports){
+},{"../Form/matching.js":35,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13661,7 +13212,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":30,"../../Form/matching.js":35,"../../autofill-utils.js":55,"../DataHTMLTooltip.js":45,"../EmailHTMLTooltip.js":46,"../EmailSignupHTMLTooltip.js":47,"../HTMLTooltip.js":48,"./UIController.js":52}],50:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":30,"../../Form/matching.js":35,"../../autofill-utils.js":53,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltip.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13864,7 +13415,7 @@ class NativeUIController extends _UIController.UIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":35,"../../InputTypes/Credentials.js":39,"../../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./UIController.js":52}],51:[function(require,module,exports){
+},{"../../Form/matching.js":35,"../../InputTypes/Credentials.js":37,"../../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./UIController.js":50}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14165,7 +13716,7 @@ class OverlayUIController extends _UIController.UIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":35,"./UIController.js":52}],52:[function(require,module,exports){
+},{"../../Form/matching.js":35,"./UIController.js":50}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14261,7 +13812,7 @@ class UIController {
 
 exports.UIController = UIController;
 
-},{}],53:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14283,7 +13834,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],54:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14293,7 +13844,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n    max-height: 290px;\n    overflow-y: auto;\n}\n.top-autofill .tooltip--data {\n    min-height: 100vh;\n}\n.tooltip--data.tooltip--incontext-signup {\n    width: 360px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    :not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 48px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email__caret {\n    position: absolute;\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--email__caret::before,\n.tooltip--email__caret::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: -28px;\n}\n.tooltip--email__caret::before {\n    border-bottom-color: #D0D0D0;\n    top: -1px;\n}\n.tooltip--email__caret::after {\n    border-bottom-color: #FFFFFF;\n    top: 0px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 8px 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.wrapper:not(.top-autofill) .tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n    border-radius: 3px;\n}\n.tooltip--data__item-container {\n    max-height: 220px;\n    overflow: auto;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 20px 20px;\n    background-repeat: no-repeat;\n    background-position: center 6px;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    font-size: 13px;\n    line-height: 1;\n}\n.label + .label {\n    margin-top: 2px;\n}\n.label.label--medium {\n    font-weight: 500;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9);\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.wrapper:not(.top-autofill) .tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n.tooltip__button--manage {\n    font-size: 13px;\n    padding: 5px 9px;\n    border-radius: 3px;\n    margin: 0;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 9px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#incontextSignup::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    /* This is the same icon as `daxBase64` in `src/Form/logo-svg.js` */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTY0IDEyOGMzNS4zNDYgMCA2NC0yOC42NTQgNjQtNjRzLTI4LjY1NC02NC02NC02NC02NCAyOC42NTQtNjQgNjQgMjguNjU0IDY0IDY0IDY0eiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im03MyAxMTEuNzVjMC0uNS4xMjMtLjYxNC0xLjQ2Ni0zLjc4Mi00LjIyNC04LjQ1OS04LjQ3LTIwLjM4NC02LjU0LTI4LjA3NS4zNTMtMS4zOTctMy45NzgtNTEuNzQ0LTcuMDQtNTMuMzY1LTMuNDAyLTEuODEzLTcuNTg4LTQuNjktMTEuNDE4LTUuMzMtMS45NDMtLjMxLTQuNDktLjE2NC02LjQ4Mi4xMDUtLjM1My4wNDctLjM2OC42ODMtLjAzLjc5OCAxLjMwOC40NDMgMi44OTUgMS4yMTIgMy44MyAyLjM3NS4xNzguMjItLjA2LjU2Ni0uMzQyLjU3Ny0uODgyLjAzMi0yLjQ4Mi40MDItNC41OTMgMi4xOTUtLjI0NC4yMDctLjA0MS41OTIuMjczLjUzIDQuNTM2LS44OTcgOS4xNy0uNDU1IDExLjkgMi4wMjcuMTc3LjE2LjA4NC40NS0uMTQ3LjUxMi0yMy42OTQgNi40NC0xOS4wMDMgMjcuMDUtMTIuNjk2IDUyLjM0NCA1LjYxOSAyMi41MyA3LjczMyAyOS43OTIgOC40IDMyLjAwNGEuNzE4LjcxOCAwIDAgMCAuNDIzLjQ2N2M4LjE1NiAzLjI0OCAyNS45MjggMy4zOTIgMjUuOTI4LTIuMTMyeiIgZmlsbD0iI2RkZCIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBkPSJtNzYuMjUgMTE2LjVjLTIuODc1IDEuMTI1LTguNSAxLjYyNS0xMS43NSAxLjYyNS00Ljc2NCAwLTExLjYyNS0uNzUtMTQuMTI1LTEuODc1LTEuNTQ0LTQuNzUxLTYuMTY0LTE5LjQ4LTEwLjcyNy0zOC4xODVsLS40NDctMS44MjctLjAwNC0uMDE1Yy01LjQyNC0yMi4xNTctOS44NTUtNDAuMjUzIDE0LjQyNy00NS45MzguMjIyLS4wNTIuMzMtLjMxNy4xODQtLjQ5Mi0yLjc4Ni0zLjMwNS04LjAwNS00LjM4OC0xNC42MDUtMi4xMTEtLjI3LjA5My0uNTA2LS4xOC0uMzM3LS40MTIgMS4yOTQtMS43ODMgMy44MjMtMy4xNTUgNS4wNzEtMy43NTYuMjU4LS4xMjQuMjQyLS41MDItLjAzLS41ODhhMjcuODc3IDI3Ljg3NyAwIDAgMCAtMy43NzItLjljLS4zNy0uMDU5LS40MDMtLjY5My0uMDMyLS43NDMgOS4zNTYtMS4yNTkgMTkuMTI1IDEuNTUgMjQuMDI4IDcuNzI2YS4zMjYuMzI2IDAgMCAwIC4xODYuMTE0YzE3Ljk1MiAzLjg1NiAxOS4yMzggMzIuMjM1IDE3LjE3IDMzLjUyOC0uNDA4LjI1NS0xLjcxNS4xMDgtMy40MzgtLjA4NS02Ljk4Ni0uNzgxLTIwLjgxOC0yLjMyOS05LjQwMiAxOC45NDguMTEzLjIxLS4wMzYuNDg4LS4yNzIuNTI1LTYuNDM4IDEgMS44MTIgMjEuMTczIDcuODc1IDM0LjQ2MXoiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Im04NC4yOCA5MC42OThjLTEuMzY3LS42MzMtNi42MjEgMy4xMzUtMTAuMTEgNi4wMjgtLjcyOC0xLjAzMS0yLjEwMy0xLjc4LTUuMjAzLTEuMjQyLTIuNzEzLjQ3Mi00LjIxMSAxLjEyNi00Ljg4IDIuMjU0LTQuMjgzLTEuNjIzLTExLjQ4OC00LjEzLTEzLjIyOS0xLjcxLTEuOTAyIDIuNjQ2LjQ3NiAxNS4xNjEgMy4wMDMgMTYuNzg2IDEuMzIuODQ5IDcuNjMtMy4yMDggMTAuOTI2LTYuMDA1LjUzMi43NDkgMS4zODggMS4xNzggMy4xNDggMS4xMzcgMi42NjItLjA2MiA2Ljk3OS0uNjgxIDcuNjQ5LTEuOTIxLjA0LS4wNzUuMDc1LS4xNjQuMTA1LS4yNjYgMy4zODggMS4yNjYgOS4zNSAyLjYwNiAxMC42ODIgMi40MDYgMy40Ny0uNTIxLS40ODQtMTYuNzIzLTIuMDktMTcuNDY3eiIgZmlsbD0iIzNjYTgyYiIvPgogICAgPHBhdGggZD0ibTc0LjQ5IDk3LjA5N2MuMTQ0LjI1Ni4yNi41MjYuMzU4LjguNDgzIDEuMzUyIDEuMjcgNS42NDguNjc0IDYuNzA5LS41OTUgMS4wNjItNC40NTkgMS41NzQtNi44NDMgMS42MTVzLTIuOTItLjgzMS0zLjQwMy0yLjE4MWMtLjM4Ny0xLjA4MS0uNTc3LTMuNjIxLS41NzItNS4wNzUtLjA5OC0yLjE1OC42OS0yLjkxNiA0LjMzNC0zLjUwNiAyLjY5Ni0uNDM2IDQuMTIxLjA3MSA0Ljk0NC45NCAzLjgyOC0yLjg1NyAxMC4yMTUtNi44ODkgMTAuODM4LTYuMTUyIDMuMTA2IDMuNjc0IDMuNDk5IDEyLjQyIDIuODI2IDE1LjkzOS0uMjIgMS4xNTEtMTAuNTA1LTEuMTM5LTEwLjUwNS0yLjM4IDAtNS4xNTItMS4zMzctNi41NjUtMi42NS02Ljcxem0tMjIuNTMtMS42MDljLjg0My0xLjMzMyA3LjY3NC4zMjUgMTEuNDI0IDEuOTkzIDAgMC0uNzcgMy40OTEuNDU2IDcuNjA0LjM1OSAxLjIwMy04LjYyNyA2LjU1OC05LjggNS42MzctMS4zNTUtMS4wNjUtMy44NS0xMi40MzItMi4wOC0xNS4yMzR6IiBmaWxsPSIjNGNiYTNjIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im01NS4yNjkgNjguNDA2Yy41NTMtMi40MDMgMy4xMjctNi45MzIgMTIuMzIxLTYuODIyIDQuNjQ4LS4wMTkgMTAuNDIyLS4wMDIgMTQuMjUtLjQzNmE1MS4zMTIgNTEuMzEyIDAgMCAwIDEyLjcyNi0zLjA5NWMzLjk4LTEuNTE5IDUuMzkyLTEuMTggNS44ODctLjI3Mi41NDQuOTk5LS4wOTcgMi43MjItMS40ODggNC4zMDktMi42NTYgMy4wMy03LjQzMSA1LjM4LTE1Ljg2NSA2LjA3Ni04LjQzMy42OTgtMTQuMDItMS41NjUtMTYuNDI1IDIuMTE4LTEuMDM4IDEuNTg5LS4yMzYgNS4zMzMgNy45MiA2LjUxMiAxMS4wMiAxLjU5IDIwLjA3Mi0xLjkxNyAyMS4xOS4yMDEgMS4xMTkgMi4xMTgtNS4zMjMgNi40MjgtMTYuMzYyIDYuNTE4cy0xNy45MzQtMy44NjUtMjAuMzc5LTUuODNjLTMuMTAyLTIuNDk1LTQuNDktNi4xMzMtMy43NzUtOS4yNzl6IiBmaWxsPSIjZmMzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxnIGZpbGw9IiMxNDMwN2UiIG9wYWNpdHk9Ii44Ij4KICAgICAgPHBhdGggZD0ibTY5LjMyNyA0Mi4xMjdjLjYxNi0xLjAwOCAxLjk4MS0xLjc4NiA0LjIxNi0xLjc4NiAyLjIzNCAwIDMuMjg1Ljg4OSA0LjAxMyAxLjg4LjE0OC4yMDItLjA3Ni40NC0uMzA2LjM0YTU5Ljg2OSA1OS44NjkgMCAwIDEgLS4xNjgtLjA3M2MtLjgxNy0uMzU3LTEuODItLjc5NS0zLjU0LS44Mi0xLjgzOC0uMDI2LTIuOTk3LjQzNS0zLjcyNy44MzEtLjI0Ni4xMzQtLjYzNC0uMTMzLS40ODgtLjM3MnptLTI1LjE1NyAxLjI5YzIuMTctLjkwNyAzLjg3Ni0uNzkgNS4wODEtLjUwNC4yNTQuMDYuNDMtLjIxMy4yMjctLjM3Ny0uOTM1LS43NTUtMy4wMy0xLjY5Mi01Ljc2LS42NzQtMi40MzcuOTA5LTMuNTg1IDIuNzk2LTMuNTkyIDQuMDM4LS4wMDIuMjkyLjYuMzE3Ljc1Ni4wNy40Mi0uNjcgMS4xMi0xLjY0NiAzLjI4OS0yLjU1M3oiLz4KICAgICAgPHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtNzUuNDQgNTUuOTJhMy40NyAzLjQ3IDAgMCAxIC0zLjQ3NC0zLjQ2MiAzLjQ3IDMuNDcgMCAwIDEgMy40NzUtMy40NiAzLjQ3IDMuNDcgMCAwIDEgMy40NzQgMy40NiAzLjQ3IDMuNDcgMCAwIDEgLTMuNDc1IDMuNDYyem0yLjQ0Ny00LjYwOGEuODk5Ljg5OSAwIDAgMCAtMS43OTkgMGMwIC40OTQuNDA1Ljg5NS45Ljg5NS40OTkgMCAuOS0uNC45LS44OTV6bS0yNS40NjQgMy41NDJhNC4wNDIgNC4wNDIgMCAwIDEgLTQuMDQ5IDQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIC00LjA1LTQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIDQuMDUtNC4wMzcgNC4wNDUgNC4wNDUgMCAwIDEgNC4wNSA0LjAzN3ptLTEuMTkzLTEuMzM4YTEuMDUgMS4wNSAwIDAgMCAtMi4wOTcgMCAxLjA0OCAxLjA0OCAwIDAgMCAyLjA5NyAweiIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8L2c+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im02NCAxMTcuNzVjMjkuNjg1IDAgNTMuNzUtMjQuMDY1IDUzLjc1LTUzLjc1cy0yNC4wNjUtNTMuNzUtNTMuNzUtNTMuNzUtNTMuNzUgMjQuMDY1LTUzLjc1IDUzLjc1IDI0LjA2NSA1My43NSA1My43NSA1My43NXptMCA1YzMyLjQ0NyAwIDU4Ljc1LTI2LjMwMyA1OC43NS01OC43NXMtMjYuMzAzLTU4Ljc1LTU4Ljc1LTU4Ljc1LTU4Ljc1IDI2LjMwMy01OC43NSA1OC43NSAyNi4zMDMgNTguNzUgNTguNzUgNTguNzV6IiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n\n/* Email Protection signup notice */\n:not(.top-autofill) .tooltip--email-signup {\n    text-align: left;\n    color: #222222;\n    padding: 16px 20px;\n    width: 380px;\n}\n\n.tooltip--email-signup h1 {\n    font-weight: 700;\n    font-size: 16px;\n    line-height: 1.5;\n    margin: 0;\n}\n\n.tooltip--email-signup p {\n    font-weight: 400;\n    font-size: 14px;\n    line-height: 1.4;\n}\n\n.notice-controls {\n    display: flex;\n}\n\n.tooltip--email-signup .notice-controls > * {\n    border-radius: 8px;\n    border: 0;\n    cursor: pointer;\n    display: inline-block;\n    font-family: inherit;\n    font-style: normal;\n    font-weight: bold;\n    padding: 8px 12px;\n    text-decoration: none;\n}\n\n.notice-controls .ghost {\n    margin-left: 1rem;\n}\n\n.tooltip--email-signup a.primary {\n    background: #3969EF;\n    color: #fff;\n}\n\n.tooltip--email-signup a.primary:hover,\n.tooltip--email-signup a.primary:focus {\n    background: #2b55ca;\n}\n\n.tooltip--email-signup a.primary:active {\n    background: #1e42a4;\n}\n\n.tooltip--email-signup button.ghost {\n    background: transparent;\n    color: #3969EF;\n}\n\n.tooltip--email-signup button.ghost:hover,\n.tooltip--email-signup button.ghost:focus {\n    background-color: rgba(0, 0, 0, 0.06);\n    color: #2b55ca;\n}\n\n.tooltip--email-signup button.ghost:active {\n    background-color: rgba(0, 0, 0, 0.12);\n    color: #1e42a4;\n}\n\n.tooltip--email-signup button.close-tooltip {\n    background-color: transparent;\n    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMiAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5NCAwLjY1NjkwN0MwLjY4MzQxOCAwLjI2NjM4MyAxLjMxNjU4IDAuMjY2MzgzIDEuNzA3MTEgMC42NTY5MDdMNiA0Ljk0OThMMTAuMjkyOSAwLjY1NjkwN0MxMC42ODM0IDAuMjY2MzgzIDExLjMxNjYgMC4yNjYzODMgMTEuNzA3MSAwLjY1NjkwN0MxMi4wOTc2IDEuMDQ3NDMgMTIuMDk3NiAxLjY4MDYgMTEuNzA3MSAyLjA3MTEyTDcuNDE0MjEgNi4zNjQwMUwxMS43MDcxIDEwLjY1NjlDMTIuMDk3NiAxMS4wNDc0IDEyLjA5NzYgMTEuNjgwNiAxMS43MDcxIDEyLjA3MTFDMTEuMzE2NiAxMi40NjE2IDEwLjY4MzQgMTIuNDYxNiAxMC4yOTI5IDEyLjA3MTFMNiA3Ljc3ODIzTDEuNzA3MTEgMTIuMDcxMUMxLjMxNjU4IDEyLjQ2MTYgMC42ODM0MTcgMTIuNDYxNiAwLjI5Mjg5MyAxMi4wNzExQy0wLjA5NzYzMTEgMTEuNjgwNiAtMC4wOTc2MzExIDExLjA0NzQgMC4yOTI4OTMgMTAuNjU2OUw0LjU4NTc5IDYuMzY0MDFMMC4yOTI4OTQgMi4wNzExMkMtMC4wOTc2MzA2IDEuNjgwNiAtMC4wOTc2MzA2IDEuMDQ3NDMgMC4yOTI4OTQgMC42NTY5MDdaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0Ii8+Cjwvc3ZnPgo=);\n    background-position: center center;\n    background-repeat: no-repeat;\n    border: 0;\n    cursor: pointer;\n    padding: 16px;\n    position: absolute;\n    right: 12px;\n    top: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],55:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14921,7 +14472,7 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
   return formChildrenPercentage > 50;
 }
 
-},{"./Form/matching.js":35}],56:[function(require,module,exports){
+},{"./Form/matching.js":35}],54:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -14956,7 +14507,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":14,"./autofill-utils.js":55,"./requestIdleCallback.js":67}],57:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./autofill-utils.js":53,"./requestIdleCallback.js":65}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15044,7 +14595,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],58:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15062,7 +14613,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],59:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15552,7 +15103,7 @@ class CloseEmailProtectionTabCall extends _deviceApi.DeviceApiCall {
 
 exports.CloseEmailProtectionTabCall = CloseEmailProtectionTabCall;
 
-},{"../../../packages/device-api":6,"./validators.zod.js":60}],60:[function(require,module,exports){
+},{"../../../packages/device-api":6,"./validators.zod.js":58}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15636,7 +15187,7 @@ exports.askToUnlockProviderResultSchema = askToUnlockProviderResultSchema;
 const apiSchema = null;
 exports.apiSchema = apiSchema;
 
-},{}],61:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15677,7 +15228,7 @@ class GetAlias extends _index.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":6,"./__generated__/validators.zod.js":60}],62:[function(require,module,exports){
+},{"../../packages/device-api/index.js":6,"./__generated__/validators.zod.js":58}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15835,7 +15386,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":59}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":57}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15911,7 +15462,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":59,"@duckduckgo/content-scope-utils":2}],64:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":57,"@duckduckgo/content-scope-utils":2}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16083,7 +15634,7 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
   });
 }
 
-},{"../../../packages/device-api/index.js":6,"../../Settings.js":44,"../../autofill-utils.js":55,"../__generated__/deviceApiCalls.js":59}],65:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6,"../../Settings.js":42,"../../autofill-utils.js":53,"../__generated__/deviceApiCalls.js":57}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16137,7 +15688,7 @@ function createTransport(globalConfig) {
   return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
-},{"./android.transport.js":62,"./apple.transport.js":63,"./extension.transport.js":64,"./windows.transport.js":66}],66:[function(require,module,exports){
+},{"./android.transport.js":60,"./apple.transport.js":61,"./extension.transport.js":62,"./windows.transport.js":64}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16237,7 +15788,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":6}],67:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":6}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16285,4 +15836,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[56]);
+},{}]},{},[54]);

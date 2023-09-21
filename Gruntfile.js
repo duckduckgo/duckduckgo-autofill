@@ -78,7 +78,8 @@ module.exports = function (grunt) {
         },
         exec: {
             copyAssets: 'npm run copy-assets',
-            schemaCompile: 'npm run schema:generate'
+            schemaCompile: 'npm run schema:generate',
+            precompileRegexes: 'npm run precompile-regexes'
         },
         /**
          * Run predefined tasks whenever watched files are added,
@@ -88,6 +89,10 @@ module.exports = function (grunt) {
             schemas: {
                 files: ['src/deviceApiCalls/**/*.{json,js}', 'packages/device-api/**/*.{json,js}'],
                 tasks: ['exec:schemaCompile']
+            },
+            precompileRegexes: {
+                files: ['src/Form/matching-config/*'],
+                tasks: ['exec:precompileRegexes']
             },
             scripts: {
                 files: ['src/**/*.{json,js}', 'packages/password/**/*.{json,js}', 'packages/device-api/**/*.{json,js}'],
@@ -105,6 +110,7 @@ module.exports = function (grunt) {
     })
 
     grunt.registerTask('default', [
+        'exec:precompileRegexes',
         'exec:schemaCompile',
         'browserify:dist',
         'browserify:debug',

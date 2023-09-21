@@ -141,12 +141,13 @@ type InputTypeConfigs =
 
 type InputTypeConfig = Record<SupportedMainTypes, InputTypeConfigs>
 
+type CSSSelectorNames = RequiredCssSelectors | MatcherTypeNames
 interface CssSelectorConfiguration {
-    selectors: RequiredCssSelectors | Record<MatcherTypeNames | string, string | string[]>
+    selectors: Record<CSSSelectorNames| string, string>
 }
 
 interface VendorRegexConfiguration {
-    rules: Record<string, null>
+    rules: Record<keyof VendorRegexRules | string, RegExp | null>
     ruleSets: Record<string, string>[]
 }
 
@@ -154,7 +155,20 @@ interface DDGMatcherConfiguration {
     matchers: Record<AllDDGMatcherNames | string, DDGMatcher>
 }
 
+interface DDGMatcherConfigurationInternal {
+    matchers: Record<AllDDGMatcherNames | string, DDGMatcherInternal>
+}
+
 interface DDGMatcher {
+    match?: RegExp;
+    forceUnknown?: RegExp
+    skip?: RegExp
+    matchableStrings?: MatchableStrings[]
+    skipStrings?: MatchableStrings[]
+    maxDigits?: number
+}
+
+interface DDGMatcherInternal {
     match?: string;
     forceUnknown?: string
     skip?: string
@@ -163,12 +177,11 @@ interface DDGMatcher {
     maxDigits?: number
 }
 
-type RequiredCssSelectors = {
-    formInputsSelector: string
-    submitButtonSelector: string
-    genericTextField: string
-    safeUniversalSelector: string
-}
+type RequiredCssSelectors =
+    "formInputsSelector"
+    | "submitButtonSelector"
+    | "genericTextField"
+    | "safeUniversalSelector"
 
 /**
  * This is just here to describe the current vendor regexes

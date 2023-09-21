@@ -1,10 +1,8 @@
-import {selectors} from './selectors-css.js'
+const {selectors} = require('./selectors-css.js')
 
 /**
  * This is here to mimic what Remote Configuration might look like
  * later on.
- *
- * @type {MatchingConfiguration}
  */
 const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
@@ -220,9 +218,9 @@ const matchingConfiguration = {
         }
     },
     strategies: {
-        /** @type {CssSelectorConfiguration} */
+        /** @type {{selectors: Record<CSSSelectorNames| string, string | string[]>}} */
         cssSelector: {selectors},
-        /** @type {DDGMatcherConfiguration} */
+        /** @type {DDGMatcherConfigurationInternal} */
         ddgMatcher: {
             matchers: {
                 unknown: {
@@ -459,6 +457,7 @@ const matchingConfiguration = {
          * @type {VendorRegexConfiguration}
          */
         vendorRegex: {
+            /** @type {Record<keyof VendorRegexRules, RegExp | null>} */
             rules: {
                 email: null,
                 tel: null,
@@ -972,7 +971,7 @@ const matchingConfiguration = {
                         '|(numero|número|numéro)(?!.*(document|fono|phone|réservation))',
 
                     'cc-exp-month':
-                    // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
+                        // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
                         'gueltig|gültig|monat' + // de-DE
                         '|fecha' + // es
                         '|date.*exp' + // fr-FR
@@ -1007,4 +1006,4 @@ const matchingConfiguration = {
     }
 }
 
-export { matchingConfiguration }
+module.exports = { matchingConfiguration }
