@@ -307,6 +307,7 @@ test.describe('macos', () => {
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
                 .platform('macos')
+                // Up the failsafe threshold to run the test
                 .withConstants({
                     MAX_INPUTS_PER_PAGE: 2000,
                     MAX_INPUTS_PER_FORM: 2000
@@ -316,7 +317,6 @@ test.describe('macos', () => {
             const perfPage = scannerPerf(page)
             perfPage.navigate()
 
-            // In production, we expect autofill to bail on such a page
             perfPage.validateInitialScanPerf(300)
         })
     })
