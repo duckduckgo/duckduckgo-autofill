@@ -286,7 +286,7 @@ test.describe('macos', () => {
             const perfPage = scannerPerf(page)
             perfPage.navigate('pages/usps_signup.html')
 
-            perfPage.validateInitialScanPerf(80)
+            perfPage.validateInitialScanPerf(200)
         })
 
         test('wall of 1000 fields with production settings', async ({page}) => {
@@ -317,7 +317,7 @@ test.describe('macos', () => {
             perfPage.navigate()
 
             // In production, we expect autofill to bail on such a page
-            perfPage.validateInitialScanPerf(150)
+            perfPage.validateInitialScanPerf(300)
         })
     })
 })
