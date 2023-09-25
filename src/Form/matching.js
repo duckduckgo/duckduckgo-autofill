@@ -30,7 +30,7 @@ class Matching {
      * This acts as an internal cache for the larger vendorRegexes
      * @type {VendorRegexConfiguration['rules']}
      */
-    #vendorRegexRules;
+    #vendorRegexRules
 
     /** @type {MatcherLists} */
     #matcherLists
