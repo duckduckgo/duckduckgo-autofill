@@ -7,6 +7,7 @@ export const constants = {
         'email-autofill': 'pages/email-autofill.html',
         'emailAtBottom': 'pages/email-at-bottom.html',
         'emailAtTopLeft': 'pages/email-at-top-left.html',
+        'scanner-perf': 'pages/scanner-perf.html',
         'iframeContainer': 'pages/iframe-container.html',
         'signup': 'pages/signup.html',
         'mutatingForm': 'pages/mutating-form.html',
