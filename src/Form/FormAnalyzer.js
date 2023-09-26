@@ -5,9 +5,9 @@ import { getTextShallow, isLikelyASubmitButton } from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */
-    form;
+    form
     /** @type Matching */
-    matching;
+    matching
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input

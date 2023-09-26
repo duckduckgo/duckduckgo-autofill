@@ -25,16 +25,16 @@ export class HTMLTooltipUIController extends UIController {
     _activeTooltip = null
 
     /** @type {HTMLTooltipControllerOptions} */
-    _options;
+    _options
 
     /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
-    _htmlTooltipOptions;
+    _htmlTooltipOptions
 
     /**
      * Overwritten when calling createTooltip
      * @type {import('../../Form/matching').SupportedTypes}
      */
-    _activeInputType = 'unknown';
+    _activeInputType = 'unknown'
 
     /**
      * @param {HTMLTooltipControllerOptions} options
@@ -48,8 +48,8 @@ export class HTMLTooltipUIController extends UIController {
         window.addEventListener('pointerup', this, true)
     }
 
-    _activeInput;
-    _activeInputOriginalAutocomplete;
+    _activeInput
+    _activeInputOriginalAutocomplete
 
     /**
      * Cleans up after this UI controller by removing the tooltip and all

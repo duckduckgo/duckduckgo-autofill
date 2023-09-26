@@ -81,190 +81,190 @@ import { MissingHandler } from './messaging.js'
  * @implements {MessagingTransport}
  */
 export class WebkitMessagingTransport {
-  /** @type {WebkitMessagingConfig} */
-  config
-  globals
-  /**
+    /** @type {WebkitMessagingConfig} */
+    config
+    globals
+    /**
    * @param {WebkitMessagingConfig} config
    */
-  constructor (config) {
-      this.config = config
-      this.globals = captureGlobals()
-      if (!this.config.hasModernWebkitAPI) {
-          this.captureWebkitHandlers(this.config.webkitMessageHandlerNames)
-      }
-  }
-  /**
+    constructor (config) {
+        this.config = config
+        this.globals = captureGlobals()
+        if (!this.config.hasModernWebkitAPI) {
+            this.captureWebkitHandlers(this.config.webkitMessageHandlerNames)
+        }
+    }
+    /**
    * Sends message to the webkit layer (fire and forget)
    * @param {String} handler
    * @param {*} data
    * @internal
    */
-  wkSend (handler, data = {}) {
-      if (!(handler in this.globals.window.webkit.messageHandlers)) {
-          throw new MissingHandler(`Missing webkit handler: '${handler}'`, handler)
-      }
-      const outgoing = {
-          ...data,
-          messageHandling: { ...data.messageHandling, secret: this.config.secret }
-      }
-      if (!this.config.hasModernWebkitAPI) {
-          if (!(handler in this.globals.capturedWebkitHandlers)) {
-              throw new MissingHandler(`cannot continue, method ${handler} not captured on macos < 11`, handler)
-          } else {
-              return this.globals.capturedWebkitHandlers[handler](outgoing)
-          }
-      }
-      return this.globals.window.webkit.messageHandlers[handler].postMessage?.(outgoing)
-  }
+    wkSend (handler, data = {}) {
+        if (!(handler in this.globals.window.webkit.messageHandlers)) {
+            throw new MissingHandler(`Missing webkit handler: '${handler}'`, handler)
+        }
+        const outgoing = {
+            ...data,
+            messageHandling: { ...data.messageHandling, secret: this.config.secret }
+        }
+        if (!this.config.hasModernWebkitAPI) {
+            if (!(handler in this.globals.capturedWebkitHandlers)) {
+                throw new MissingHandler(`cannot continue, method ${handler} not captured on macos < 11`, handler)
+            } else {
+                return this.globals.capturedWebkitHandlers[handler](outgoing)
+            }
+        }
+        return this.globals.window.webkit.messageHandlers[handler].postMessage?.(outgoing)
+    }
 
-  /**
+    /**
    * Sends message to the webkit layer and waits for the specified response
    * @param {String} handler
    * @param {*} data
    * @returns {Promise<*>}
    * @internal
    */
-  async wkSendAndWait (handler, data = {}) {
-      if (this.config.hasModernWebkitAPI) {
-          const response = await this.wkSend(handler, data)
-          return this.globals.JSONparse(response || '{}')
-      }
+    async wkSendAndWait (handler, data = {}) {
+        if (this.config.hasModernWebkitAPI) {
+            const response = await this.wkSend(handler, data)
+            return this.globals.JSONparse(response || '{}')
+        }
 
-      try {
-          const randMethodName = this.createRandMethodName()
-          const key = await this.createRandKey()
-          const iv = this.createRandIv()
+        try {
+            const randMethodName = this.createRandMethodName()
+            const key = await this.createRandKey()
+            const iv = this.createRandIv()
 
-          const { ciphertext, tag } = await new this.globals.Promise((/** @type {any} */ resolve) => {
-              this.generateRandomMethod(randMethodName, resolve)
-              data.messageHandling = new SecureMessagingParams({
-                  methodName: randMethodName,
-                  secret: this.config.secret,
-                  key: this.globals.Arrayfrom(key),
-                  iv: this.globals.Arrayfrom(iv)
-              })
-              this.wkSend(handler, data)
-          })
+            const { ciphertext, tag } = await new this.globals.Promise((/** @type {any} */ resolve) => {
+                this.generateRandomMethod(randMethodName, resolve)
+                data.messageHandling = new SecureMessagingParams({
+                    methodName: randMethodName,
+                    secret: this.config.secret,
+                    key: this.globals.Arrayfrom(key),
+                    iv: this.globals.Arrayfrom(iv)
+                })
+                this.wkSend(handler, data)
+            })
 
-          const cipher = new this.globals.Uint8Array([...ciphertext, ...tag])
-          const decrypted = await this.decrypt(cipher, key, iv)
-          return this.globals.JSONparse(decrypted || '{}')
-      } catch (e) {
-      // re-throw when the error is just a 'MissingHandler'
-          if (e instanceof MissingHandler) {
-              throw e
-          } else {
-              console.error('decryption failed', e)
-              console.error(e)
-              return { error: e }
-          }
-      }
-  }
-  /**
+            const cipher = new this.globals.Uint8Array([...ciphertext, ...tag])
+            const decrypted = await this.decrypt(cipher, key, iv)
+            return this.globals.JSONparse(decrypted || '{}')
+        } catch (e) {
+            // re-throw when the error is just a 'MissingHandler'
+            if (e instanceof MissingHandler) {
+                throw e
+            } else {
+                console.error('decryption failed', e)
+                console.error(e)
+                return { error: e }
+            }
+        }
+    }
+    /**
    * @param {string} name
    * @param {Record<string, any>} [data]
    */
-  notify (name, data = {}) {
-      this.wkSend(name, data)
-  }
-  /**
+    notify (name, data = {}) {
+        this.wkSend(name, data)
+    }
+    /**
    * @param {string} name
    * @param {Record<string, any>} [data]
    */
-  request (name, data = {}) {
-      return this.wkSendAndWait(name, data)
-  }
-  /**
+    request (name, data = {}) {
+        return this.wkSendAndWait(name, data)
+    }
+    /**
    * Generate a random method name and adds it to the global scope
    * The native layer will use this method to send the response
    * @param {string | number} randomMethodName
    * @param {Function} callback
    */
-  generateRandomMethod (randomMethodName, callback) {
-      this.globals.ObjectDefineProperty(this.globals.window, randomMethodName, {
-          enumerable: false,
-          // configurable, To allow for deletion later
-          configurable: true,
-          writable: false,
-          /**
+    generateRandomMethod (randomMethodName, callback) {
+        this.globals.ObjectDefineProperty(this.globals.window, randomMethodName, {
+            enumerable: false,
+            // configurable, To allow for deletion later
+            configurable: true,
+            writable: false,
+            /**
        * @param {any[]} args
        */
-          value: (...args) => {
-              callback(...args)
-              // @ts-ignore - we want this to throw if it fails as it would indicate a fatal error.
-              delete this.globals.window[randomMethodName]
-          }
-      })
-  }
+            value: (...args) => {
+                callback(...args)
+                // @ts-ignore - we want this to throw if it fails as it would indicate a fatal error.
+                delete this.globals.window[randomMethodName]
+            }
+        })
+    }
 
-  randomString () {
-      return '' + this.globals.getRandomValues(new this.globals.Uint32Array(1))[0]
-  }
+    randomString () {
+        return '' + this.globals.getRandomValues(new this.globals.Uint32Array(1))[0]
+    }
 
-  createRandMethodName () {
-      return '_' + this.randomString()
-  }
+    createRandMethodName () {
+        return '_' + this.randomString()
+    }
 
-  /**
+    /**
    * @type {{name: string, length: number}}
    */
-  algoObj = { name: 'AES-GCM', length: 256 }
+    algoObj = { name: 'AES-GCM', length: 256 }
 
-  /**
+    /**
    * @returns {Promise<Uint8Array>}
    */
-  async createRandKey () {
-      const key = await this.globals.generateKey(this.algoObj, true, ['encrypt', 'decrypt'])
-      const exportedKey = await this.globals.exportKey('raw', key)
-      return new this.globals.Uint8Array(exportedKey)
-  }
+    async createRandKey () {
+        const key = await this.globals.generateKey(this.algoObj, true, ['encrypt', 'decrypt'])
+        const exportedKey = await this.globals.exportKey('raw', key)
+        return new this.globals.Uint8Array(exportedKey)
+    }
 
-  /**
+    /**
    * @returns {Uint8Array}
    */
-  createRandIv () {
-      return this.globals.getRandomValues(new this.globals.Uint8Array(12))
-  }
+    createRandIv () {
+        return this.globals.getRandomValues(new this.globals.Uint8Array(12))
+    }
 
-  /**
+    /**
    * @param {BufferSource} ciphertext
    * @param {BufferSource} key
    * @param {Uint8Array} iv
    * @returns {Promise<string>}
    */
-  async decrypt (ciphertext, key, iv) {
-      const cryptoKey = await this.globals.importKey('raw', key, 'AES-GCM', false, ['decrypt'])
-      const algo = { name: 'AES-GCM', iv }
+    async decrypt (ciphertext, key, iv) {
+        const cryptoKey = await this.globals.importKey('raw', key, 'AES-GCM', false, ['decrypt'])
+        const algo = { name: 'AES-GCM', iv }
 
-      let decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext)
+        let decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext)
 
-      let dec = new this.globals.TextDecoder()
-      return dec.decode(decrypted)
-  }
+        let dec = new this.globals.TextDecoder()
+        return dec.decode(decrypted)
+    }
 
-  /**
+    /**
    * When required (such as on macos 10.x), capture the `postMessage` method on
    * each webkit messageHandler
    *
    * @param {string[]} handlerNames
    */
-  captureWebkitHandlers (handlerNames) {
-      const handlers = window.webkit.messageHandlers
-      if (!handlers) throw new MissingHandler('window.webkit.messageHandlers was absent', 'all')
-      for (let webkitMessageHandlerName of handlerNames) {
-          if (typeof handlers[webkitMessageHandlerName]?.postMessage === 'function') {
-              /**
+    captureWebkitHandlers (handlerNames) {
+        const handlers = window.webkit.messageHandlers
+        if (!handlers) throw new MissingHandler('window.webkit.messageHandlers was absent', 'all')
+        for (let webkitMessageHandlerName of handlerNames) {
+            if (typeof handlers[webkitMessageHandlerName]?.postMessage === 'function') {
+                /**
          * `bind` is used here to ensure future calls to the captured
          * `postMessage` have the correct `this` context
          */
-              const original = handlers[webkitMessageHandlerName]
-              const bound = handlers[webkitMessageHandlerName].postMessage?.bind(original)
-              this.globals.capturedWebkitHandlers[webkitMessageHandlerName] = bound
-              delete handlers[webkitMessageHandlerName].postMessage
-          }
-      }
-  }
+                const original = handlers[webkitMessageHandlerName]
+                const bound = handlers[webkitMessageHandlerName].postMessage?.bind(original)
+                this.globals.capturedWebkitHandlers[webkitMessageHandlerName] = bound
+                delete handlers[webkitMessageHandlerName].postMessage
+            }
+        }
+    }
 }
 
 /**

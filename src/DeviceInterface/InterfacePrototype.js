@@ -46,8 +46,8 @@ class InterfacePrototype {
     autopromptFired = false
 
     /** @type {PasswordGenerator} */
-    passwordGenerator = new PasswordGenerator();
-    emailProtection = new EmailProtection(this);
+    passwordGenerator = new PasswordGenerator()
+    emailProtection = new EmailProtection(this)
 
     /** @type {import("../InContextSignup.js").InContextSignup | null} */
     inContextSignup = null
@@ -59,19 +59,19 @@ class InterfacePrototype {
     }
 
     /** @type {GlobalConfig} */
-    globalConfig;
+    globalConfig
 
     /** @type {import('../Scanner').Scanner} */
-    scanner;
+    scanner
 
     /** @type {import("../UI/controllers/UIController.js").UIController | null} */
-    uiController;
+    uiController
 
     /** @type {import("../../packages/device-api").DeviceApi} */
-    deviceApi;
+    deviceApi
 
     /** @type {boolean} */
-    isInitializationStarted;
+    isInitializationStarted
 
     /** @type {((reason, ...rest) => void) | null} */
     _scannerCleanup = null

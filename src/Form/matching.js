@@ -18,22 +18,22 @@ const dimensionBounds = {
  */
 class Matching {
     /** @type {MatchingConfiguration} */
-    #config;
+    #config
 
     /** @type {CssSelectorConfiguration['selectors']} */
-    #cssSelectors;
+    #cssSelectors
 
     /** @type {Record<string, DDGMatcher>} */
-    #ddgMatchers;
+    #ddgMatchers
 
     /**
      * This acts as an internal cache for the larger vendorRegexes
      * @type {VendorRegexConfiguration['rules']}
      */
-    #vendorRegexRules;
+    #vendorRegexRules
 
     /** @type {MatcherLists} */
-    #matcherLists;
+    #matcherLists
 
     /** @type {Array<StrategyNames>} */
     #defaultStrategyOrder = ['cssSelector', 'ddgMatcher', 'vendorRegex']
@@ -555,7 +555,7 @@ class Matching {
      * @param {HTMLElement} form
      * @returns {Record<MatchableStrings, string>}
      */
-    _elementStringCache = new WeakMap();
+    _elementStringCache = new WeakMap()
     getElementStrings (el, form) {
         if (this._elementStringCache.has(el)) {
             return this._elementStringCache.get(el)

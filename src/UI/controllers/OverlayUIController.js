@@ -31,7 +31,7 @@ import {getMainTypeFromType, getSubtypeFromType} from '../../Form/matching.js'
  */
 export class OverlayUIController extends UIController {
     /** @type {"idle" | "parentShown"} */
-    #state = 'idle';
+    #state = 'idle'
 
     /** @type {import('../HTMLTooltip.js').HTMLTooltip | null} */
     _activeTooltip = null
@@ -39,7 +39,7 @@ export class OverlayUIController extends UIController {
     /**
      * @type {OverlayControllerOptions}
      */
-    _options;
+    _options
 
     /**
      * @param {OverlayControllerOptions} options

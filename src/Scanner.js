@@ -55,17 +55,17 @@ const defaultScannerOptions = {
  */
 class DefaultScanner {
     /** @type Map<HTMLElement, Form> */
-    forms = new Map();
+    forms = new Map()
     /** @type {any|undefined} the timer to reset */
-    debounceTimer;
+    debounceTimer
     /** @type {Set<HTMLElement|Document>} stored changed elements until they can be processed */
     changedElements = new Set()
     /** @type {ScannerOptions} */
-    options;
+    options
     /** @type {HTMLInputElement | null} */
-    activeInput = null;
+    activeInput = null
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
-    rescanAll = false;
+    rescanAll = false
     /** @type {boolean} Indicates whether we called stopScanning */
     stopped = false
     /** @type {import("./Form/matching").Matching} matching */

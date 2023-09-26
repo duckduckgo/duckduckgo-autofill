@@ -316,7 +316,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     }
 
     /** @type {any} */
-    pollingTimeout = null;
+    pollingTimeout = null
     /**
      * Poll the native listener until the user has selected a credential.
      * Message return types are:

@@ -6,7 +6,7 @@ import rules from '../packages/password/rules.json'
  */
 class PasswordGenerator {
     /** @type {string|null} */
-    #previous = null;
+    #previous = null
 
     /** @returns {boolean} */
     get generated () {

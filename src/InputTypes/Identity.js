@@ -5,7 +5,7 @@ import { getCountryDisplayName } from '../Form/formatters.js'
  */
 export class IdentityTooltipItem {
     /** @type {IdentityObject} */
-    #data;
+    #data
     /** @param {IdentityObject} data */
     constructor (data) {
         this.#data = data
@@ -19,7 +19,7 @@ export class IdentityTooltipItem {
             return 'Generate Private Duck Address'
         }
         return this.#data[subtype]
-    };
+    }
     label (subtype) {
         if (this.#data.id === 'privateAddress') {
             return this.#data[subtype]
@@ -28,5 +28,5 @@ export class IdentityTooltipItem {
     }
     labelSmall = (_) => {
         return this.#data.title
-    };
+    }
 }

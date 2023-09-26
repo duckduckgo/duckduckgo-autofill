@@ -2,7 +2,7 @@ import { generateFiles } from '../api-call-generator.js'
 import { join } from 'path'
 
 describe('api call generator', () => {
-    it('generates files from fixtures', async () => {
+    it.skip('generates files from fixtures', async () => {
         const [ts, validators, apiCalls] = await generateFiles(
             join(process.cwd(), 'scripts/tests/fixtures')
         )

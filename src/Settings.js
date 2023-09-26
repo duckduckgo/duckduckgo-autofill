@@ -24,9 +24,9 @@ import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
  */
 export class Settings {
     /** @type {GlobalConfig} */
-    globalConfig;
+    globalConfig
     /** @type {DeviceApi} */
-    deviceApi;
+    deviceApi
     /** @type {AutofillFeatureToggles | null} */
     _featureToggles = null
     /** @type {AvailableInputTypes | null} */

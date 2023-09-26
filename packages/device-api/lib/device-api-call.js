@@ -5,16 +5,16 @@
  */
 export class DeviceApiCall {
     /** @type {string} */
-    method= 'unknown';
+    method = 'unknown'
     /**
      * An optional 'id' - used to indicate if a request requires a response.
      * @type {string|null}
      */
-    id = null;
+    id = null
     /** @type {Params | null | undefined} */
-    paramsValidator = null;
+    paramsValidator = null
     /** @type {Result | null | undefined} */
-    resultValidator = null;
+    resultValidator = null
     /** @type {import("zod").infer<Params>} */
     params
     /**
@@ -24,7 +24,7 @@ export class DeviceApiCall {
      * @deprecated this is here to aid migration, should be removed ASAP
      * @type {boolean}
      */
-    throwOnResultKeysMissing = true;
+    throwOnResultKeysMissing = true
     /**
      * New messages should be in a particular format, eg: { success: T },
      * but you can set this to false if you want to access the result as-is,
@@ -32,7 +32,7 @@ export class DeviceApiCall {
      * @deprecated this is here to aid migration, should be removed ASAP
      * @type {boolean}
      */
-    unwrapResult = true;
+    unwrapResult = true
     /**
      * @param {import("zod").infer<Params>} data
      */
@@ -142,7 +142,7 @@ export class DeviceApiCallError extends Error {}
  */
 export class SchemaValidationError extends Error {
     /** @type {import("zod").ZodIssue[]} */
-    validationErrors = [];
+    validationErrors = []
 
     /**
      * @param {import("zod").ZodIssue[]} errors

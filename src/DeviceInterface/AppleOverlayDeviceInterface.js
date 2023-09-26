@@ -17,7 +17,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * Mark top frame as not stripping credential data
      * @type {boolean}
      */
-    stripCredentials = false;
+    stripCredentials = false
 
     /**
      * overlay API helpers
