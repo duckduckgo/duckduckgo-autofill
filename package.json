@@ -20,7 +20,7 @@
     "test:clean-tree": "npm run build && sh scripts/check-for-changes.sh",
     "test:passwords": "PASSWORD_STRESS_TEST=true jest generate.test.js",
     "test:unit": "jest",
-    "test:integration": "npm run build && npm run copy-assets && playwright test",
+    "test:integration": "npm run build && playwright test",
     "test:integration:fast": "playwright test --timeout 10000 --workers 8",
     "test:integration:showui": "npm run test:integration -- --headed",
     "test:integration:fast:showui": "npm run test:integration:fast -- --headed",
