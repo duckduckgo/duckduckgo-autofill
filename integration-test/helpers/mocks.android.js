@@ -197,7 +197,6 @@ export function createAndroidMocks () {
                     },
                     storeFormData (request) {
                         /** @type {MockCall} */
-                        // @ts-expect-error
                         const call = ['storeFormData', request, mocks.getAutofillData]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     }
