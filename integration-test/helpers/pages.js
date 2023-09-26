@@ -1,6 +1,6 @@
 import { constants } from './mocks.js'
 import { expect } from '@playwright/test'
-import {mockedCalls, payloadsOnly} from './harness.js'
+import {mockedCalls, payloadsOnly, performanceEntries} from './harness.js'
 import {addTopAutofillMouseFocus, clickOnIcon} from './utils.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
@@ -283,7 +283,6 @@ export function signupPage (page) {
             const calls = await mockedCalls(page, { names: ['storeFormData'] })
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const [, sent] = calls[0]
-            // @ts-expect-error
             expect(sent.Data.credentials).toEqual(credentials)
         }
         /**
@@ -481,7 +480,6 @@ export function loginPage (page, opts = {}) {
          */
         async assertParentOpened () {
             const credsCalls = await mockedCalls(page, { names: ['getSelectedCredentials'] })
-            // @ts-expect-error
             const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
             expect(hasSucceeded).toBe(true)
         }
@@ -738,4 +736,28 @@ export function overlayPage (page) {
     }
 
     return new OverlayPage()
+}
+
+/**
+ * A wrapper around interactions for `integration-test/pages/scanner-perf.html`
+ *
+ * @param {import("@playwright/test").Page} page
+ */
+export function scannerPerf (page) {
+    return /** @type {const} */({
+        async navigate (url = constants.pages['scanner-perf']) {
+            await page.goto(url, {waitUntil: 'load'})
+        },
+        async validateInitialScanPerf (expectedDuration) {
+            const entries = await performanceEntries(page, 'initial_scanner:init')
+
+            expect(entries).toHaveLength(1)
+
+            // we only care about the first one (for now)
+            const entry = entries[0]
+            console.log(`🏎💨 initial scan took: ${Math.round(entry.duration)}ms`)
+
+            expect(entry.duration).toBeLessThan(expectedDuration)
+        }
+    })
 }
