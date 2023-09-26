@@ -4251,25 +4251,25 @@ var _webkit = require("./webkit.js");
  */
 class Messaging {
   /**
-   * @param {WebkitMessagingConfig} config
-   */
+  * @param {WebkitMessagingConfig} config
+  */
   constructor(config) {
     this.transport = getTransport(config);
   }
   /**
-   * Send a 'fire-and-forget' message.
-   * @throws {Error}
-   * {@link MissingHandler}
-   *
-   * @example
-   *
-   * ```
-   * const messaging = new Messaging(config)
-   * messaging.notify("foo", {bar: "baz"})
-   * ```
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   */
+  * Send a 'fire-and-forget' message.
+  * @throws {Error}
+  * {@link MissingHandler}
+  *
+  * @example
+  *
+  * ```
+  * const messaging = new Messaging(config)
+  * messaging.notify("foo", {bar: "baz"})
+  * ```
+  * @param {string} name
+  * @param {Record<string, any>} [data]
+  */
 
 
   notify(name) {
@@ -4277,20 +4277,20 @@ class Messaging {
     this.transport.notify(name, data);
   }
   /**
-   * Send a request, and wait for a response
-   * @throws {Error}
-   * {@link MissingHandler}
-   *
-   * @example
-   * ```
-   * const messaging = new Messaging(config)
-   * const response = await messaging.request("foo", {bar: "baz"})
-   * ```
-   *
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @return {Promise<any>}
-   */
+  * Send a request, and wait for a response
+  * @throws {Error}
+  * {@link MissingHandler}
+  *
+  * @example
+  * ```
+  * const messaging = new Messaging(config)
+  * const response = await messaging.request("foo", {bar: "baz"})
+  * ```
+  *
+  * @param {string} name
+  * @param {Record<string, any>} [data]
+  * @return {Promise<any>}
+  */
 
 
   request(name) {
@@ -4308,23 +4308,21 @@ exports.Messaging = Messaging;
 
 class MessagingTransport {
   /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @returns {void}
-   */
+  * @param {string} name
+  * @param {Record<string, any>} [data]
+  * @returns {void}
+  */
   // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   notify(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     throw new Error("must implement 'notify'");
   }
   /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @return {Promise<any>}
-   */
+  * @param {string} name
+  * @param {Record<string, any>} [data]
+  * @return {Promise<any>}
+  */
   // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 
   request(name) {
@@ -4355,9 +4353,9 @@ function getTransport(config) {
 
 class MissingHandler extends Error {
   /**
-   * @param {string} message
-   * @param {string} handlerName
-   */
+  * @param {string} message
+  * @param {string} handlerName
+  */
   constructor(message, handlerName) {
     super(message);
     this.handlerName = handlerName;
@@ -4382,6 +4380,10 @@ exports.WebkitMessagingTransport = exports.WebkitMessagingConfig = exports.Secur
 var _messaging = require("./messaging.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * @typedef {import("./messaging").MessagingTransport} MessagingTransport
+ */
 
 /**
  * @example
@@ -4551,7 +4553,6 @@ class WebkitMessagingTransport {
    * @param {string} name
    * @param {Record<string, any>} [data]
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 
   request(name) {
@@ -4576,8 +4577,8 @@ class WebkitMessagingTransport {
       writable: false,
 
       /**
-       * @param {any[]} args
-       */
+      * @param {any[]} args
+      */
       value: function () {
         callback(...arguments); // @ts-ignore - we want this to throw if it fails as it would indicate a fatal error.
 
@@ -4651,9 +4652,9 @@ class WebkitMessagingTransport {
         var _handlers$webkitMessa2;
 
         /**
-         * `bind` is used here to ensure future calls to the captured
-         * `postMessage` have the correct `this` context
-         */
+        * `bind` is used here to ensure future calls to the captured
+        * `postMessage` have the correct `this` context
+        */
         const original = handlers[webkitMessageHandlerName];
         const bound = (_handlers$webkitMessa2 = handlers[webkitMessageHandlerName].postMessage) === null || _handlers$webkitMessa2 === void 0 ? void 0 : _handlers$webkitMessa2.bind(original);
         this.globals.capturedWebkitHandlers[webkitMessageHandlerName] = bound;
@@ -4685,11 +4686,11 @@ exports.WebkitMessagingTransport = WebkitMessagingTransport;
 
 class WebkitMessagingConfig {
   /**
-   * @param {object} params
-   * @param {boolean} params.hasModernWebkitAPI
-   * @param {string[]} params.webkitMessageHandlerNames
-   * @param {string} params.secret
-   */
+  * @param {object} params
+  * @param {boolean} params.hasModernWebkitAPI
+  * @param {string[]} params.webkitMessageHandlerNames
+  * @param {string} params.secret
+  */
   constructor(params) {
     /**
      * Whether or not the current WebKit Platform supports secure messaging
@@ -4697,14 +4698,14 @@ class WebkitMessagingConfig {
      */
     this.hasModernWebkitAPI = params.hasModernWebkitAPI;
     /**
-     * A list of WebKit message handler names that a user script can send
-     */
+    * A list of WebKit message handler names that a user script can send
+    */
 
     this.webkitMessageHandlerNames = params.webkitMessageHandlerNames;
     /**
-     * A string provided by native platforms to be sent with future outgoing
-     * messages
-     */
+    * A string provided by native platforms to be sent with future outgoing
+    * messages
+    */
 
     this.secret = params.secret;
   }
@@ -4720,30 +4721,30 @@ exports.WebkitMessagingConfig = WebkitMessagingConfig;
 
 class SecureMessagingParams {
   /**
-   * @param {object} params
-   * @param {string} params.methodName
-   * @param {string} params.secret
-   * @param {number[]} params.key
-   * @param {number[]} params.iv
-   */
+  * @param {object} params
+  * @param {string} params.methodName
+  * @param {string} params.secret
+  * @param {number[]} params.key
+  * @param {number[]} params.iv
+  */
   constructor(params) {
     /**
      * The method that's been appended to `window` to be called later
      */
     this.methodName = params.methodName;
     /**
-     * The secret used to ensure message sender validity
-     */
+    * The secret used to ensure message sender validity
+    */
 
     this.secret = params.secret;
     /**
-     * The CipherKey as number[]
-     */
+    * The CipherKey as number[]
+    */
 
     this.key = params.key;
     /**
-     * The Initial Vector as number[]
-     */
+    * The Initial Vector as number[]
+    */
 
     this.iv = params.iv;
   }
