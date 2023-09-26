@@ -283,7 +283,6 @@ export function signupPage (page) {
             const calls = await mockedCalls(page, { names: ['storeFormData'] })
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const [, sent] = calls[0]
-            // @ts-expect-error
             expect(sent.Data.credentials).toEqual(credentials)
         }
         /**
@@ -481,7 +480,6 @@ export function loginPage (page, opts = {}) {
          */
         async assertParentOpened () {
             const credsCalls = await mockedCalls(page, { names: ['getSelectedCredentials'] })
-            // @ts-expect-error
             const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
             expect(hasSucceeded).toBe(true)
         }

@@ -27,12 +27,12 @@
     "maxNodeModuleJsDepth": 1
   },
   "include": [
-    "node_modules/@duckduckgo/content-scope-utils",
     "src",
     "scripts",
     "packages/password",
     "integration-test",
     "packages/device-api",
+    "packages/messaging",
     "*.js",
     "types.d.ts"
   ],

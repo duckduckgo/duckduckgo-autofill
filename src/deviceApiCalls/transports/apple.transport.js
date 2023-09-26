@@ -1,4 +1,4 @@
-import { Messaging, MissingHandler, WebkitMessagingConfig } from '@duckduckgo/content-scope-utils'
+import { Messaging, MissingHandler, WebkitMessagingConfig } from '../../../packages/messaging/messaging.js'
 import { DeviceApiTransport } from '../../../packages/device-api/index.js'
 import { GetRuntimeConfigurationCall } from '../__generated__/deviceApiCalls.js'
 

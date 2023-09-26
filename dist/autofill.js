@@ -58,21 +58,450 @@ function processConfig(data, userList, preferences) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _messaging = require("./messaging.js");
-
-Object.keys(_messaging).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _messaging[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function () {
-      return _messaging[key];
-    }
-  });
+Object.defineProperty(exports, "DeviceApi", {
+  enumerable: true,
+  get: function () {
+    return _deviceApi.DeviceApi;
+  }
+});
+Object.defineProperty(exports, "DeviceApiCall", {
+  enumerable: true,
+  get: function () {
+    return _deviceApiCall.DeviceApiCall;
+  }
+});
+Object.defineProperty(exports, "DeviceApiTransport", {
+  enumerable: true,
+  get: function () {
+    return _deviceApi.DeviceApiTransport;
+  }
+});
+Object.defineProperty(exports, "createNotification", {
+  enumerable: true,
+  get: function () {
+    return _deviceApiCall.createNotification;
+  }
+});
+Object.defineProperty(exports, "createRequest", {
+  enumerable: true,
+  get: function () {
+    return _deviceApiCall.createRequest;
+  }
+});
+Object.defineProperty(exports, "validate", {
+  enumerable: true,
+  get: function () {
+    return _deviceApiCall.validate;
+  }
 });
 
-},{"./messaging.js":3}],3:[function(require,module,exports){
+var _deviceApiCall = require("./lib/device-api-call.js");
+
+var _deviceApi = require("./lib/device-api.js");
+
+},{"./lib/device-api-call.js":3,"./lib/device-api.js":4}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SchemaValidationError = exports.DeviceApiCallError = exports.DeviceApiCall = void 0;
+exports.createDeviceApiCall = createDeviceApiCall;
+exports.createNotification = void 0;
+exports.createRequest = createRequest;
+exports.validate = validate;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * This roughly follows https://www.jsonrpc.org/specification
+ * @template {import("zod").ZodType} Params=import("zod").ZodType
+ * @template {import("zod").ZodType} Result=import("zod").ZodType
+ */
+class DeviceApiCall {
+  /** @type {string} */
+
+  /**
+   * An optional 'id' - used to indicate if a request requires a response.
+   * @type {string|null}
+   */
+
+  /** @type {Params | null | undefined} */
+
+  /** @type {Result | null | undefined} */
+
+  /** @type {import("zod").infer<Params>} */
+
+  /**
+   * This is a carve-out for legacy messages that are not typed yet.
+   * If you set this to 'true', then the response will not be checked to conform
+   * to any shape
+   * @deprecated this is here to aid migration, should be removed ASAP
+   * @type {boolean}
+   */
+
+  /**
+   * New messages should be in a particular format, eg: { success: T },
+   * but you can set this to false if you want to access the result as-is,
+   * without any unwrapping logic
+   * @deprecated this is here to aid migration, should be removed ASAP
+   * @type {boolean}
+   */
+
+  /**
+   * @param {import("zod").infer<Params>} data
+   */
+  constructor(data) {
+    _defineProperty(this, "method", 'unknown');
+
+    _defineProperty(this, "id", null);
+
+    _defineProperty(this, "paramsValidator", null);
+
+    _defineProperty(this, "resultValidator", null);
+
+    _defineProperty(this, "params", void 0);
+
+    _defineProperty(this, "throwOnResultKeysMissing", true);
+
+    _defineProperty(this, "unwrapResult", true);
+
+    this.params = data;
+  }
+  /**
+   * @returns {import("zod").infer<Params>|undefined}
+   */
+
+
+  validateParams() {
+    if (this.params === undefined) {
+      return undefined;
+    }
+
+    this._validate(this.params, this.paramsValidator);
+
+    return this.params;
+  }
+  /**
+   * @param {any|null} incoming
+   * @returns {import("zod").infer<Result>}
+   */
+
+
+  validateResult(incoming) {
+    this._validate(incoming, this.resultValidator);
+
+    if (!incoming) {
+      return incoming;
+    }
+
+    if (!this.unwrapResult) {
+      return incoming;
+    }
+
+    if ('data' in incoming) {
+      console.warn('response had `data` property. Please migrate to `success`');
+      return incoming.data;
+    }
+
+    if ('success' in incoming) {
+      return incoming.success;
+    }
+
+    if ('error' in incoming) {
+      if (typeof incoming.error.message === 'string') {
+        throw new DeviceApiCallError("".concat(this.method, ": ").concat(incoming.error.message));
+      }
+    }
+
+    if (this.throwOnResultKeysMissing) {
+      throw new Error('unreachable. Response did not contain `success` or `data`');
+    }
+
+    return incoming;
+  }
+  /**
+   * @param {any} data
+   * @param {import("zod").ZodType|undefined|null} [validator]
+   * @private
+   */
+
+
+  _validate(data, validator) {
+    if (!validator) return data;
+
+    if (validator) {
+      const result = validator === null || validator === void 0 ? void 0 : validator.safeParse(data);
+
+      if (!result) {
+        throw new Error('unreachable, data failure', data);
+      }
+
+      if (!result.success) {
+        if ('error' in result) {
+          this.throwError(result.error.issues);
+        } else {
+          console.error('unknown error from validate');
+        }
+      }
+    }
+  }
+  /**
+   * @param {import('zod').ZodIssue[]} errors
+   */
+
+
+  throwError(errors) {
+    const error = SchemaValidationError.fromZodErrors(errors, this.constructor.name);
+    throw error;
+  }
+  /**
+   * Use this helper for creating stand-in response messages that are typed correctly.
+   *
+   * @examples
+   *
+   * ```js
+   * const msg = new Message();
+   * const response = msg.response({}) // <-- This argument will be typed correctly
+   * ```
+   *
+   * @param {import("zod").infer<Result>} response
+   * @returns {import("zod").infer<Result>}
+   */
+
+
+  result(response) {
+    return response;
+  }
+  /**
+   * @returns {import("zod").infer<Result>}
+   */
+
+
+  preResultValidation(response) {
+    return response;
+  }
+
+}
+
+exports.DeviceApiCall = DeviceApiCall;
+
+class DeviceApiCallError extends Error {}
+/**
+ * Check for this error if you'd like to
+ */
+
+
+exports.DeviceApiCallError = DeviceApiCallError;
+
+class SchemaValidationError extends Error {
+  constructor() {
+    super(...arguments);
+
+    _defineProperty(this, "validationErrors", []);
+  }
+
+  /**
+   * @param {import("zod").ZodIssue[]} errors
+   * @param {string} name
+   * @returns {SchemaValidationError}
+   */
+  static fromZodErrors(errors, name) {
+    const heading = "".concat(errors.length, " SchemaValidationError(s) errors for ") + name;
+
+    function log(issue) {
+      switch (issue.code) {
+        case 'invalid_literal':
+        case 'invalid_type':
+          {
+            console.log("".concat(name, ". Path: '").concat(issue.path.join('.'), "', Error: '").concat(issue.message, "'"));
+            break;
+          }
+
+        case 'invalid_union':
+          {
+            for (let unionError of issue.unionErrors) {
+              for (let issue1 of unionError.issues) {
+                log(issue1);
+              }
+            }
+
+            break;
+          }
+
+        default:
+          {
+            console.log(name, 'other issue:', issue);
+          }
+      }
+    }
+
+    for (let error of errors) {
+      log(error);
+    }
+
+    const message = [heading, 'please see the details above'].join('\n    ');
+    const error = new SchemaValidationError(message);
+    error.validationErrors = errors;
+    return error;
+  }
+
+}
+/**
+ * Creates an instance of `DeviceApiCall` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
+ * @param {string} method
+ * @param {import("zod").infer<Params>} [params]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {DeviceApiCall<Params, Result>}
+ */
+
+
+exports.SchemaValidationError = SchemaValidationError;
+
+function createDeviceApiCall(method, params) {
+  let paramsValidator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  let resultValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  /** @type {DeviceApiCall<Params, Result>} */
+  const deviceApiCall = new DeviceApiCall(params);
+  deviceApiCall.paramsValidator = paramsValidator;
+  deviceApiCall.resultValidator = resultValidator;
+  deviceApiCall.method = method;
+  deviceApiCall.throwOnResultKeysMissing = false;
+  deviceApiCall.unwrapResult = false;
+  return deviceApiCall;
+}
+/**
+ * Creates an instance of `DeviceApiCall` from only a name and 'params'
+ * and optional validators. Use this to help migrate existing messages.
+ *
+ * Note: This creates a regular DeviceApiCall, but adds the 'id' as a string
+ * so that transports know that it expects a response.
+ *
+ * @template {import("zod").ZodType} Params
+ * @template {import("zod").ZodType} Result
+ * @param {string} method
+ * @param {import("zod").infer<Params>} [params]
+ * @param {string} [id]
+ * @param {Params|null} [paramsValidator]
+ * @param {Result|null} [resultValidator]
+ * @returns {DeviceApiCall<Params, Result>}
+ */
+
+
+function createRequest(method, params) {
+  let id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'n/a';
+  let paramsValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  let resultValidator = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+  const call = createDeviceApiCall(method, params, paramsValidator, resultValidator);
+  call.id = id;
+  return call;
+}
+
+const createNotification = createDeviceApiCall;
+/**
+ * Validate any arbitrary data with any Zod validator
+ *
+ * @template {import("zod").ZodType} Validator
+ * @param {any} data
+ * @param {Validator | null} [validator]
+ * @returns {import("zod").infer<Validator>}
+ */
+
+exports.createNotification = createNotification;
+
+function validate(data) {
+  let validator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+  if (validator) {
+    return validator.parse(data);
+  }
+
+  return data;
+}
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DeviceApiTransport = exports.DeviceApi = void 0;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Platforms should only need to implement this `send` method
+ */
+class DeviceApiTransport {
+  /**
+   * @param {import("./device-api-call.js").DeviceApiCall} _deviceApiCall
+   * @param {CallOptions} [_options]
+   * @returns {Promise<any>}
+   */
+  async send(_deviceApiCall, _options) {
+    return undefined;
+  }
+
+}
+/**
+ * This is the base Sender class that platforms can will implement.
+ *
+ * Note: The 'handle' method must be implemented, unless you also implement 'send'
+ *
+ * @typedef CallOptions
+ * @property {AbortSignal} [signal]
+ */
+
+
+exports.DeviceApiTransport = DeviceApiTransport;
+
+class DeviceApi {
+  /** @type {DeviceApiTransport} */
+
+  /** @param {DeviceApiTransport} transport */
+  constructor(transport) {
+    _defineProperty(this, "transport", void 0);
+
+    this.transport = transport;
+  }
+  /**
+   * @template {import("./device-api-call").DeviceApiCall} D
+   * @param {D} deviceApiCall
+   * @param {CallOptions} [options]
+   * @returns {Promise<NonNullable<ReturnType<D['validateResult']>['success']>>}
+   */
+
+
+  async request(deviceApiCall, options) {
+    deviceApiCall.validateParams();
+    let result = await this.transport.send(deviceApiCall, options);
+    let processed = deviceApiCall.preResultValidation(result);
+    return deviceApiCall.validateResult(processed);
+  }
+  /**
+   * @template {import("./device-api-call").DeviceApiCall} P
+   * @param {P} deviceApiCall
+   * @param {CallOptions} [options]
+   * @returns {Promise<void>}
+   */
+
+
+  async notify(deviceApiCall, options) {
+    deviceApiCall.validateParams();
+    return this.transport.send(deviceApiCall, options);
+  }
+
+}
+
+exports.DeviceApi = DeviceApi;
+
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -85,16 +514,8 @@ Object.defineProperty(exports, "WebkitMessagingConfig", {
     return _webkit.WebkitMessagingConfig;
   }
 });
-Object.defineProperty(exports, "WindowsMessagingConfig", {
-  enumerable: true,
-  get: function () {
-    return _windows.WindowsMessagingConfig;
-  }
-});
 
-var _windows = require("./messaging/windows.js");
-
-var _webkit = require("./messaging/webkit.js");
+var _webkit = require("./webkit.js");
 
 /**
  * @module Messaging
@@ -154,14 +575,14 @@ var _webkit = require("./messaging/webkit.js");
  */
 class Messaging {
   /**
-   * @param {WebkitMessagingConfig | WindowsMessagingConfig} config
+   * @param {WebkitMessagingConfig} config
    */
   constructor(config) {
     this.transport = getTransport(config);
   }
   /**
    * Send a 'fire-and-forget' message.
-   * @throws
+   * @throws {Error}
    * {@link MissingHandler}
    *
    * @example
@@ -181,7 +602,7 @@ class Messaging {
   }
   /**
    * Send a request, and wait for a response
-   * @throws
+   * @throws {Error}
    * {@link MissingHandler}
    *
    * @example
@@ -237,7 +658,7 @@ class MessagingTransport {
 
 }
 /**
- * @param {WebkitMessagingConfig | WindowsMessagingConfig} config
+ * @param {WebkitMessagingConfig} config
  * @returns {MessagingTransport}
  */
 
@@ -247,10 +668,6 @@ exports.MessagingTransport = MessagingTransport;
 function getTransport(config) {
   if (config instanceof _webkit.WebkitMessagingConfig) {
     return new _webkit.WebkitMessagingTransport(config);
-  }
-
-  if (config instanceof _windows.WindowsMessagingConfig) {
-    return new _windows.WindowsMessagingTransport(config);
   }
 
   throw new Error('unreachable');
@@ -278,7 +695,7 @@ class MissingHandler extends Error {
 
 exports.MissingHandler = MissingHandler;
 
-},{"./messaging/webkit.js":4,"./messaging/windows.js":5}],4:[function(require,module,exports){
+},{"./webkit.js":6}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -286,7 +703,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.WebkitMessagingTransport = exports.WebkitMessagingConfig = exports.SecureMessagingParams = void 0;
 
-var _messaging = require("../messaging.js");
+var _messaging = require("./messaging.js");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -692,525 +1109,7 @@ function captureGlobals() {
   };
 }
 
-},{"../messaging.js":3}],5:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.WindowsMessagingTransport = exports.WindowsMessagingConfig = void 0;
-
-var _messaging = require("../messaging.js");
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * @implements {MessagingTransport}
- */
-class WindowsMessagingTransport {
-  /**
-   * @param {WindowsMessagingConfig} config
-   */
-  constructor(config) {
-    _defineProperty(this, "config", void 0);
-
-    this.config = config;
-  }
-  /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   */
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-
-  notify(name) {
-    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    throw new Error('todo: implement notify for windows');
-  }
-  /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @param {{signal?: AbortSignal}} opts
-   * @return {Promise<any>}
-   */
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-
-  request(name) {
-    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    let opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    throw new Error('todo: implement request for windows');
-  }
-
-}
-
-exports.WindowsMessagingTransport = WindowsMessagingTransport;
-
-class WindowsMessagingConfig {
-  /**
-   * @param {object} params
-   * @param {string} params.featureName
-   */
-  constructor(params) {
-    this.featureName = params.featureName;
-  }
-
-}
-
-exports.WindowsMessagingConfig = WindowsMessagingConfig;
-
-},{"../messaging.js":3}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "DeviceApi", {
-  enumerable: true,
-  get: function () {
-    return _deviceApi.DeviceApi;
-  }
-});
-Object.defineProperty(exports, "DeviceApiCall", {
-  enumerable: true,
-  get: function () {
-    return _deviceApiCall.DeviceApiCall;
-  }
-});
-Object.defineProperty(exports, "DeviceApiTransport", {
-  enumerable: true,
-  get: function () {
-    return _deviceApi.DeviceApiTransport;
-  }
-});
-Object.defineProperty(exports, "createNotification", {
-  enumerable: true,
-  get: function () {
-    return _deviceApiCall.createNotification;
-  }
-});
-Object.defineProperty(exports, "createRequest", {
-  enumerable: true,
-  get: function () {
-    return _deviceApiCall.createRequest;
-  }
-});
-Object.defineProperty(exports, "validate", {
-  enumerable: true,
-  get: function () {
-    return _deviceApiCall.validate;
-  }
-});
-
-var _deviceApiCall = require("./lib/device-api-call.js");
-
-var _deviceApi = require("./lib/device-api.js");
-
-},{"./lib/device-api-call.js":7,"./lib/device-api.js":8}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.SchemaValidationError = exports.DeviceApiCallError = exports.DeviceApiCall = void 0;
-exports.createDeviceApiCall = createDeviceApiCall;
-exports.createNotification = void 0;
-exports.createRequest = createRequest;
-exports.validate = validate;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * This roughly follows https://www.jsonrpc.org/specification
- * @template {import("zod").ZodType} Params=import("zod").ZodType
- * @template {import("zod").ZodType} Result=import("zod").ZodType
- */
-class DeviceApiCall {
-  /** @type {string} */
-
-  /**
-   * An optional 'id' - used to indicate if a request requires a response.
-   * @type {string|null}
-   */
-
-  /** @type {Params | null | undefined} */
-
-  /** @type {Result | null | undefined} */
-
-  /** @type {import("zod").infer<Params>} */
-
-  /**
-   * This is a carve-out for legacy messages that are not typed yet.
-   * If you set this to 'true', then the response will not be checked to conform
-   * to any shape
-   * @deprecated this is here to aid migration, should be removed ASAP
-   * @type {boolean}
-   */
-
-  /**
-   * New messages should be in a particular format, eg: { success: T },
-   * but you can set this to false if you want to access the result as-is,
-   * without any unwrapping logic
-   * @deprecated this is here to aid migration, should be removed ASAP
-   * @type {boolean}
-   */
-
-  /**
-   * @param {import("zod").infer<Params>} data
-   */
-  constructor(data) {
-    _defineProperty(this, "method", 'unknown');
-
-    _defineProperty(this, "id", null);
-
-    _defineProperty(this, "paramsValidator", null);
-
-    _defineProperty(this, "resultValidator", null);
-
-    _defineProperty(this, "params", void 0);
-
-    _defineProperty(this, "throwOnResultKeysMissing", true);
-
-    _defineProperty(this, "unwrapResult", true);
-
-    this.params = data;
-  }
-  /**
-   * @returns {import("zod").infer<Params>|undefined}
-   */
-
-
-  validateParams() {
-    if (this.params === undefined) {
-      return undefined;
-    }
-
-    this._validate(this.params, this.paramsValidator);
-
-    return this.params;
-  }
-  /**
-   * @param {any|null} incoming
-   * @returns {import("zod").infer<Result>}
-   */
-
-
-  validateResult(incoming) {
-    this._validate(incoming, this.resultValidator);
-
-    if (!incoming) {
-      return incoming;
-    }
-
-    if (!this.unwrapResult) {
-      return incoming;
-    }
-
-    if ('data' in incoming) {
-      console.warn('response had `data` property. Please migrate to `success`');
-      return incoming.data;
-    }
-
-    if ('success' in incoming) {
-      return incoming.success;
-    }
-
-    if ('error' in incoming) {
-      if (typeof incoming.error.message === 'string') {
-        throw new DeviceApiCallError("".concat(this.method, ": ").concat(incoming.error.message));
-      }
-    }
-
-    if (this.throwOnResultKeysMissing) {
-      throw new Error('unreachable. Response did not contain `success` or `data`');
-    }
-
-    return incoming;
-  }
-  /**
-   * @param {any} data
-   * @param {import("zod").ZodType|undefined|null} [validator]
-   * @private
-   */
-
-
-  _validate(data, validator) {
-    if (!validator) return data;
-
-    if (validator) {
-      const result = validator === null || validator === void 0 ? void 0 : validator.safeParse(data);
-
-      if (!result) {
-        throw new Error('unreachable, data failure', data);
-      }
-
-      if (!result.success) {
-        if ('error' in result) {
-          this.throwError(result.error.issues);
-        } else {
-          console.error('unknown error from validate');
-        }
-      }
-    }
-  }
-  /**
-   * @param {import('zod').ZodIssue[]} errors
-   */
-
-
-  throwError(errors) {
-    const error = SchemaValidationError.fromZodErrors(errors, this.constructor.name);
-    throw error;
-  }
-  /**
-   * Use this helper for creating stand-in response messages that are typed correctly.
-   *
-   * @examples
-   *
-   * ```js
-   * const msg = new Message();
-   * const response = msg.response({}) // <-- This argument will be typed correctly
-   * ```
-   *
-   * @param {import("zod").infer<Result>} response
-   * @returns {import("zod").infer<Result>}
-   */
-
-
-  result(response) {
-    return response;
-  }
-  /**
-   * @returns {import("zod").infer<Result>}
-   */
-
-
-  preResultValidation(response) {
-    return response;
-  }
-
-}
-
-exports.DeviceApiCall = DeviceApiCall;
-
-class DeviceApiCallError extends Error {}
-/**
- * Check for this error if you'd like to
- */
-
-
-exports.DeviceApiCallError = DeviceApiCallError;
-
-class SchemaValidationError extends Error {
-  constructor() {
-    super(...arguments);
-
-    _defineProperty(this, "validationErrors", []);
-  }
-
-  /**
-   * @param {import("zod").ZodIssue[]} errors
-   * @param {string} name
-   * @returns {SchemaValidationError}
-   */
-  static fromZodErrors(errors, name) {
-    const heading = "".concat(errors.length, " SchemaValidationError(s) errors for ") + name;
-
-    function log(issue) {
-      switch (issue.code) {
-        case 'invalid_literal':
-        case 'invalid_type':
-          {
-            console.log("".concat(name, ". Path: '").concat(issue.path.join('.'), "', Error: '").concat(issue.message, "'"));
-            break;
-          }
-
-        case 'invalid_union':
-          {
-            for (let unionError of issue.unionErrors) {
-              for (let issue1 of unionError.issues) {
-                log(issue1);
-              }
-            }
-
-            break;
-          }
-
-        default:
-          {
-            console.log(name, 'other issue:', issue);
-          }
-      }
-    }
-
-    for (let error of errors) {
-      log(error);
-    }
-
-    const message = [heading, 'please see the details above'].join('\n    ');
-    const error = new SchemaValidationError(message);
-    error.validationErrors = errors;
-    return error;
-  }
-
-}
-/**
- * Creates an instance of `DeviceApiCall` from only a name and 'params'
- * and optional validators. Use this to help migrate existing messages.
- *
- * @template {import("zod").ZodType} Params
- * @template {import("zod").ZodType} Result
- * @param {string} method
- * @param {import("zod").infer<Params>} [params]
- * @param {Params|null} [paramsValidator]
- * @param {Result|null} [resultValidator]
- * @returns {DeviceApiCall<Params, Result>}
- */
-
-
-exports.SchemaValidationError = SchemaValidationError;
-
-function createDeviceApiCall(method, params) {
-  let paramsValidator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-  let resultValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-
-  /** @type {DeviceApiCall<Params, Result>} */
-  const deviceApiCall = new DeviceApiCall(params);
-  deviceApiCall.paramsValidator = paramsValidator;
-  deviceApiCall.resultValidator = resultValidator;
-  deviceApiCall.method = method;
-  deviceApiCall.throwOnResultKeysMissing = false;
-  deviceApiCall.unwrapResult = false;
-  return deviceApiCall;
-}
-/**
- * Creates an instance of `DeviceApiCall` from only a name and 'params'
- * and optional validators. Use this to help migrate existing messages.
- *
- * Note: This creates a regular DeviceApiCall, but adds the 'id' as a string
- * so that transports know that it expects a response.
- *
- * @template {import("zod").ZodType} Params
- * @template {import("zod").ZodType} Result
- * @param {string} method
- * @param {import("zod").infer<Params>} [params]
- * @param {string} [id]
- * @param {Params|null} [paramsValidator]
- * @param {Result|null} [resultValidator]
- * @returns {DeviceApiCall<Params, Result>}
- */
-
-
-function createRequest(method, params) {
-  let id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'n/a';
-  let paramsValidator = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-  let resultValidator = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
-  const call = createDeviceApiCall(method, params, paramsValidator, resultValidator);
-  call.id = id;
-  return call;
-}
-
-const createNotification = createDeviceApiCall;
-/**
- * Validate any arbitrary data with any Zod validator
- *
- * @template {import("zod").ZodType} Validator
- * @param {any} data
- * @param {Validator | null} [validator]
- * @returns {import("zod").infer<Validator>}
- */
-
-exports.createNotification = createNotification;
-
-function validate(data) {
-  let validator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-  if (validator) {
-    return validator.parse(data);
-  }
-
-  return data;
-}
-
-},{}],8:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.DeviceApiTransport = exports.DeviceApi = void 0;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * Platforms should only need to implement this `send` method
- */
-class DeviceApiTransport {
-  /**
-   * @param {import("./device-api-call.js").DeviceApiCall} _deviceApiCall
-   * @param {CallOptions} [_options]
-   * @returns {Promise<any>}
-   */
-  async send(_deviceApiCall, _options) {
-    return undefined;
-  }
-
-}
-/**
- * This is the base Sender class that platforms can will implement.
- *
- * Note: The 'handle' method must be implemented, unless you also implement 'send'
- *
- * @typedef CallOptions
- * @property {AbortSignal} [signal]
- */
-
-
-exports.DeviceApiTransport = DeviceApiTransport;
-
-class DeviceApi {
-  /** @type {DeviceApiTransport} */
-
-  /** @param {DeviceApiTransport} transport */
-  constructor(transport) {
-    _defineProperty(this, "transport", void 0);
-
-    this.transport = transport;
-  }
-  /**
-   * @template {import("./device-api-call").DeviceApiCall} D
-   * @param {D} deviceApiCall
-   * @param {CallOptions} [options]
-   * @returns {Promise<NonNullable<ReturnType<D['validateResult']>['success']>>}
-   */
-
-
-  async request(deviceApiCall, options) {
-    deviceApiCall.validateParams();
-    let result = await this.transport.send(deviceApiCall, options);
-    let processed = deviceApiCall.preResultValidation(result);
-    return deviceApiCall.validateResult(processed);
-  }
-  /**
-   * @template {import("./device-api-call").DeviceApiCall} P
-   * @param {P} deviceApiCall
-   * @param {CallOptions} [options]
-   * @returns {Promise<void>}
-   */
-
-
-  async notify(deviceApiCall, options) {
-    deviceApiCall.validateParams();
-    return this.transport.send(deviceApiCall, options);
-  }
-
-}
-
-exports.DeviceApi = DeviceApi;
-
-},{}],9:[function(require,module,exports){
+},{"./messaging.js":5}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1359,7 +1258,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":10,"./lib/constants.js":11,"./lib/rules-parser.js":12}],10:[function(require,module,exports){
+},{"./lib/apple.password.js":8,"./lib/constants.js":9,"./lib/rules-parser.js":10}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1983,7 +1882,7 @@ exports.Password = Password;
 
 _defineProperty(Password, "defaults", defaults);
 
-},{"./constants.js":11,"./rules-parser.js":12}],11:[function(require,module,exports){
+},{"./constants.js":9,"./rules-parser.js":10}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2004,7 +1903,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2737,7 +2636,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],13:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -3568,7 +3467,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3641,7 +3540,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api/index.js":6,"./DeviceInterface/AndroidInterface.js":15,"./DeviceInterface/AppleDeviceInterface.js":16,"./DeviceInterface/AppleOverlayDeviceInterface.js":17,"./DeviceInterface/ExtensionInterface.js":18,"./DeviceInterface/WindowsInterface.js":20,"./DeviceInterface/WindowsOverlayDeviceInterface.js":21,"./Settings.js":42,"./config.js":55,"./deviceApiCalls/transports/transports.js":63}],15:[function(require,module,exports){
+},{"../packages/device-api/index.js":2,"./DeviceInterface/AndroidInterface.js":13,"./DeviceInterface/AppleDeviceInterface.js":14,"./DeviceInterface/AppleOverlayDeviceInterface.js":15,"./DeviceInterface/ExtensionInterface.js":16,"./DeviceInterface/WindowsInterface.js":18,"./DeviceInterface/WindowsOverlayDeviceInterface.js":19,"./Settings.js":40,"./config.js":53,"./deviceApiCalls/transports/transports.js":61}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3791,7 +3690,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 
 exports.AndroidInterface = AndroidInterface;
 
-},{"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],16:[function(require,module,exports){
+},{"../UI/controllers/NativeUIController.js":46,"../autofill-utils.js":51,"./InterfacePrototype.js":17,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4243,7 +4142,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":6,"../Form/matching.js":35,"../InContextSignup.js":36,"../UI/HTMLTooltip.js":46,"../UI/controllers/HTMLTooltipUIController.js":47,"../UI/controllers/NativeUIController.js":48,"../UI/controllers/OverlayUIController.js":49,"../autofill-utils.js":53,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/additionalDeviceApiCalls.js":59,"./InterfacePrototype.js":19,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],17:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../Form/matching.js":33,"../InContextSignup.js":34,"../UI/HTMLTooltip.js":44,"../UI/controllers/HTMLTooltipUIController.js":45,"../UI/controllers/NativeUIController.js":46,"../UI/controllers/OverlayUIController.js":47,"../autofill-utils.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"../deviceApiCalls/additionalDeviceApiCalls.js":57,"./InterfacePrototype.js":17,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4398,7 +4297,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":6,"../UI/controllers/HTMLTooltipUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/__generated__/validators.zod.js":58,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":45,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"../deviceApiCalls/__generated__/validators.zod.js":56,"./AppleDeviceInterface.js":14,"./overlayApi.js":21}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4676,7 +4575,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../Form/matching.js":35,"../InContextSignup.js":36,"../UI/HTMLTooltip.js":46,"../UI/controllers/HTMLTooltipUIController.js":47,"../autofill-utils.js":53,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
+},{"../Form/matching.js":33,"../InContextSignup.js":34,"../UI/HTMLTooltip.js":44,"../UI/controllers/HTMLTooltipUIController.js":45,"../autofill-utils.js":51,"./InterfacePrototype.js":17}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5745,7 +5644,7 @@ class InterfacePrototype {
 var _default = InterfacePrototype;
 exports.default = _default;
 
-},{"../../packages/device-api/index.js":6,"../EmailProtection.js":24,"../Form/formatters.js":28,"../Form/matching.js":35,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"../config.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/__generated__/validators.zod.js":58,"../deviceApiCalls/transports/transports.js":63,"./initFormSubmissionsApi.js":22}],20:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../EmailProtection.js":22,"../Form/formatters.js":26,"../Form/matching.js":33,"../InputTypes/Credentials.js":35,"../PasswordGenerator.js":38,"../Scanner.js":39,"../Settings.js":40,"../UI/controllers/NativeUIController.js":46,"../autofill-utils.js":51,"../config.js":53,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"../deviceApiCalls/__generated__/validators.zod.js":56,"../deviceApiCalls/transports/transports.js":61,"./initFormSubmissionsApi.js":20}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5961,7 +5860,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/controllers/OverlayUIController.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":19}],21:[function(require,module,exports){
+},{"../UI/controllers/OverlayUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./InterfacePrototype.js":17}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6170,7 +6069,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":19,"./overlayApi.js":23}],22:[function(require,module,exports){
+},{"../UI/controllers/HTMLTooltipUIController.js":45,"../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./InterfacePrototype.js":17,"./overlayApi.js":21}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6276,7 +6175,7 @@ function initFormSubmissionsApi(forms, matching) {
   });
 }
 
-},{"../Form/label-util.js":31,"../autofill-utils.js":53}],23:[function(require,module,exports){
+},{"../Form/label-util.js":29,"../autofill-utils.js":51}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6343,7 +6242,7 @@ function overlayApi(device) {
   };
 }
 
-},{"../deviceApiCalls/__generated__/deviceApiCalls.js":57}],24:[function(require,module,exports){
+},{"../deviceApiCalls/__generated__/deviceApiCalls.js":55}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6404,7 +6303,7 @@ class EmailProtection {
 
 exports.EmailProtection = EmailProtection;
 
-},{}],25:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7324,7 +7223,7 @@ class Form {
 
 exports.Form = Form;
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":35}],26:[function(require,module,exports){
+},{"../autofill-utils.js":51,"../constants.js":54,"./FormAnalyzer.js":24,"./formatters.js":26,"./inputStyles.js":27,"./inputTypeConfig.js":28,"./matching.js":33}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7718,7 +7617,7 @@ class FormAnalyzer {
 var _default = FormAnalyzer;
 exports.default = _default;
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./matching-config/__generated__/compiled-matching-config.js":33,"./matching.js":35}],27:[function(require,module,exports){
+},{"../autofill-utils.js":51,"../constants.js":54,"./matching-config/__generated__/compiled-matching-config.js":31,"./matching.js":33}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8286,7 +8185,7 @@ const COUNTRY_NAMES_TO_CODES = {
 };
 exports.COUNTRY_NAMES_TO_CODES = COUNTRY_NAMES_TO_CODES;
 
-},{}],28:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8643,7 +8542,7 @@ const prepareFormValuesForStorage = formValues => {
 
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames.js":27,"./matching.js":35}],29:[function(require,module,exports){
+},{"./countryNames.js":25,"./matching.js":33}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8745,7 +8644,7 @@ const getIconStylesAutofilled = (input, form) => {
 
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":30}],30:[function(require,module,exports){
+},{"./inputTypeConfig.js":28}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9025,7 +8924,7 @@ const isFieldDecorated = input => {
 
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":51,"../constants.js":56,"./logo-svg.js":32,"./matching.js":35}],31:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":35,"../InputTypes/CreditCard.js":36,"../InputTypes/Identity.js":37,"../UI/img/ddgPasswordIcon.js":49,"../constants.js":54,"./logo-svg.js":30,"./matching.js":33}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9086,7 +8985,7 @@ const extractElementStrings = element => {
 
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching.js":35}],32:[function(require,module,exports){
+},{"./matching.js":33}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9100,7 +8999,7 @@ const daxGrayscaleSvg = "\n<svg width=\"128\" height=\"128\" viewBox=\"0 0 128 1
 const daxGrayscaleBase64 = "data:image/svg+xml;base64,".concat(window.btoa(daxGrayscaleSvg));
 exports.daxGrayscaleBase64 = daxGrayscaleBase64;
 
-},{}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9548,7 +9447,7 @@ const matchingConfiguration = {
 };
 exports.matchingConfiguration = matchingConfiguration;
 
-},{}],34:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9631,7 +9530,7 @@ function logUnmatched(el, allStrings) {
   console.groupEnd();
 }
 
-},{"../autofill-utils.js":53,"./matching.js":35}],35:[function(require,module,exports){
+},{"../autofill-utils.js":51,"./matching.js":33}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10718,7 +10617,7 @@ function createMatching() {
   return new Matching(_compiledMatchingConfig.matchingConfiguration);
 }
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./label-util.js":31,"./matching-config/__generated__/compiled-matching-config.js":33,"./matching-utils.js":34}],36:[function(require,module,exports){
+},{"../autofill-utils.js":51,"../constants.js":54,"./label-util.js":29,"./matching-config/__generated__/compiled-matching-config.js":31,"./matching-utils.js":32}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10871,7 +10770,7 @@ class InContextSignup {
 
 exports.InContextSignup = InContextSignup;
 
-},{"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],37:[function(require,module,exports){
+},{"./autofill-utils.js":51,"./deviceApiCalls/__generated__/deviceApiCalls.js":55}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11087,7 +10986,7 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-},{"../autofill-utils.js":53}],38:[function(require,module,exports){
+},{"../autofill-utils.js":51}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11139,7 +11038,7 @@ class CreditCardTooltipItem {
 
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],39:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11213,7 +11112,7 @@ class IdentityTooltipItem {
 
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":28}],40:[function(require,module,exports){
+},{"../Form/formatters.js":26}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11285,7 +11184,7 @@ class PasswordGenerator {
 
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password/index.js":9,"../packages/password/rules.json":13}],41:[function(require,module,exports){
+},{"../packages/password/index.js":7,"../packages/password/rules.json":11}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11721,7 +11620,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":25,"./Form/matching.js":35,"./autofill-utils.js":53,"./constants.js":56,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],42:[function(require,module,exports){
+},{"./Form/Form.js":23,"./Form/matching.js":33,"./autofill-utils.js":51,"./constants.js":54,"./deviceApiCalls/__generated__/deviceApiCalls.js":55}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12126,7 +12025,7 @@ _defineProperty(Settings, "defaults", {
   enabled: null
 });
 
-},{"../packages/device-api/index.js":6,"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57,"./deviceApiCalls/__generated__/validators.zod.js":58,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],43:[function(require,module,exports){
+},{"../packages/device-api/index.js":2,"./autofill-utils.js":51,"./deviceApiCalls/__generated__/deviceApiCalls.js":55,"./deviceApiCalls/__generated__/validators.zod.js":56,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12235,7 +12134,7 @@ class DataHTMLTooltip extends _HTMLTooltip.default {
 var _default = DataHTMLTooltip;
 exports.default = _default;
 
-},{"../InputTypes/Credentials.js":37,"../autofill-utils.js":53,"./HTMLTooltip.js":46}],44:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":35,"../autofill-utils.js":51,"./HTMLTooltip.js":44}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12309,7 +12208,7 @@ class EmailHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailHTMLTooltip;
 exports.default = _default;
 
-},{"../autofill-utils.js":53,"./HTMLTooltip.js":46}],45:[function(require,module,exports){
+},{"../autofill-utils.js":51,"./HTMLTooltip.js":44}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12356,7 +12255,7 @@ class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
 var _default = EmailSignupHTMLTooltip;
 exports.default = _default;
 
-},{"./HTMLTooltip.js":46}],46:[function(require,module,exports){
+},{"./HTMLTooltip.js":44}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12798,7 +12697,7 @@ exports.HTMLTooltip = HTMLTooltip;
 var _default = HTMLTooltip;
 exports.default = _default;
 
-},{"../Form/matching.js":35,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
+},{"../Form/matching.js":33,"../autofill-utils.js":51,"./styles/styles.js":50}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13212,7 +13111,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":30,"../../Form/matching.js":35,"../../autofill-utils.js":53,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltip.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":28,"../../Form/matching.js":33,"../../autofill-utils.js":51,"../DataHTMLTooltip.js":41,"../EmailHTMLTooltip.js":42,"../EmailSignupHTMLTooltip.js":43,"../HTMLTooltip.js":44,"./UIController.js":48}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13415,7 +13314,7 @@ class NativeUIController extends _UIController.UIController {
 
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":35,"../../InputTypes/Credentials.js":37,"../../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./UIController.js":50}],49:[function(require,module,exports){
+},{"../../Form/matching.js":33,"../../InputTypes/Credentials.js":35,"../../deviceApiCalls/__generated__/deviceApiCalls.js":55,"./UIController.js":48}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13716,7 +13615,7 @@ class OverlayUIController extends _UIController.UIController {
 
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":35,"./UIController.js":50}],50:[function(require,module,exports){
+},{"../../Form/matching.js":33,"./UIController.js":48}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13812,7 +13711,7 @@ class UIController {
 
 exports.UIController = UIController;
 
-},{}],51:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13834,7 +13733,7 @@ exports.ddgCcIconFilled = ddgCcIconFilled;
 const ddgIdentityIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==";
 exports.ddgIdentityIconBase = ddgIdentityIconBase;
 
-},{}],52:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13844,7 +13743,7 @@ exports.CSS_STYLES = void 0;
 const CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n    max-height: 290px;\n    overflow-y: auto;\n}\n.top-autofill .tooltip--data {\n    min-height: 100vh;\n}\n.tooltip--data.tooltip--incontext-signup {\n    width: 360px;\n}\n:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    :not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 48px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email__caret {\n    position: absolute;\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--email__caret::before,\n.tooltip--email__caret::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: -28px;\n}\n.tooltip--email__caret::before {\n    border-bottom-color: #D0D0D0;\n    top: -1px;\n}\n.tooltip--email__caret::after {\n    border-bottom-color: #FFFFFF;\n    top: 0px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 8px 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n}\n.tooltip__button.currentFocus,\n.wrapper:not(.top-autofill) .tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n    border-radius: 3px;\n}\n.tooltip--data__item-container {\n    max-height: 220px;\n    overflow: auto;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 20px 20px;\n    background-repeat: no-repeat;\n    background-position: center 6px;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    font-size: 13px;\n    line-height: 1;\n}\n.label + .label {\n    margin-top: 2px;\n}\n.label.label--medium {\n    font-weight: 500;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9);\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.wrapper:not(.top-autofill) .tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n.tooltip__button--manage {\n    font-size: 13px;\n    padding: 5px 9px;\n    border-radius: 3px;\n    margin: 0;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik05LjYzNiA4LjY4MkM5LjYzNiA1LjU0NCAxMi4xOCAzIDE1LjMxOCAzIDE4LjQ1NiAzIDIxIDUuNTQ0IDIxIDguNjgyYzAgMy4xMzgtMi41NDQgNS42ODItNS42ODIgNS42ODItLjY5MiAwLTEuMzUzLS4xMjQtMS45NjQtLjM0OS0uMzcyLS4xMzctLjc5LS4wNDEtMS4wNjYuMjQ1bC0uNzEzLjc0SDEwYy0uNTUyIDAtMSAuNDQ4LTEgMXYySDdjLS41NTIgMC0xIC40NDgtMSAxdjJIM3YtMi44ODFsNi42NjgtNi42NjhjLjI2NS0uMjY2LjM2LS42NTguMjQ0LTEuMDE1LS4xNzktLjU1MS0uMjc2LTEuMTQtLjI3Ni0xLjc1NHpNMTUuMzE4IDFjLTQuMjQyIDAtNy42ODIgMy40NC03LjY4MiA3LjY4MiAwIC42MDcuMDcxIDEuMi4yMDUgMS43NjdsLTYuNTQ4IDYuNTQ4Yy0uMTg4LjE4OC0uMjkzLjQ0Mi0uMjkzLjcwOFYyMmMwIC4yNjUuMTA1LjUyLjI5My43MDcuMTg3LjE4OC40NDIuMjkzLjcwNy4yOTNoNGMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMxLjEwNSAwIDItLjg5NSAyLTJ2LTFoMWMuMjcyIDAgLjUzMi0uMTEuNzItLjMwNmwuNTc3LS42Yy42NDUuMTc2IDEuMzIzLjI3IDIuMDIxLjI3IDQuMjQzIDAgNy42ODItMy40NCA3LjY4Mi03LjY4MkMyMyA0LjQzOSAxOS41NiAxIDE1LjMxOCAxek0xNSA4YzAtLjU1Mi40NDgtMSAxLTFzMSAuNDQ4IDEgMS0uNDQ4IDEtMSAxLTEtLjQ0OC0xLTF6bTEtM2MtMS42NTcgMC0zIDEuMzQzLTMgM3MxLjM0MyAzIDMgMyAzLTEuMzQzIDMtMy0xLjM0My0zLTMtM3oiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjkiLz4KPC9zdmc+');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 9px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#incontextSignup::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    /* This is the same icon as `daxBase64` in `src/Form/logo-svg.js` */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTY0IDEyOGMzNS4zNDYgMCA2NC0yOC42NTQgNjQtNjRzLTI4LjY1NC02NC02NC02NC02NCAyOC42NTQtNjQgNjQgMjguNjU0IDY0IDY0IDY0eiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im03MyAxMTEuNzVjMC0uNS4xMjMtLjYxNC0xLjQ2Ni0zLjc4Mi00LjIyNC04LjQ1OS04LjQ3LTIwLjM4NC02LjU0LTI4LjA3NS4zNTMtMS4zOTctMy45NzgtNTEuNzQ0LTcuMDQtNTMuMzY1LTMuNDAyLTEuODEzLTcuNTg4LTQuNjktMTEuNDE4LTUuMzMtMS45NDMtLjMxLTQuNDktLjE2NC02LjQ4Mi4xMDUtLjM1My4wNDctLjM2OC42ODMtLjAzLjc5OCAxLjMwOC40NDMgMi44OTUgMS4yMTIgMy44MyAyLjM3NS4xNzguMjItLjA2LjU2Ni0uMzQyLjU3Ny0uODgyLjAzMi0yLjQ4Mi40MDItNC41OTMgMi4xOTUtLjI0NC4yMDctLjA0MS41OTIuMjczLjUzIDQuNTM2LS44OTcgOS4xNy0uNDU1IDExLjkgMi4wMjcuMTc3LjE2LjA4NC40NS0uMTQ3LjUxMi0yMy42OTQgNi40NC0xOS4wMDMgMjcuMDUtMTIuNjk2IDUyLjM0NCA1LjYxOSAyMi41MyA3LjczMyAyOS43OTIgOC40IDMyLjAwNGEuNzE4LjcxOCAwIDAgMCAuNDIzLjQ2N2M4LjE1NiAzLjI0OCAyNS45MjggMy4zOTIgMjUuOTI4LTIuMTMyeiIgZmlsbD0iI2RkZCIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBkPSJtNzYuMjUgMTE2LjVjLTIuODc1IDEuMTI1LTguNSAxLjYyNS0xMS43NSAxLjYyNS00Ljc2NCAwLTExLjYyNS0uNzUtMTQuMTI1LTEuODc1LTEuNTQ0LTQuNzUxLTYuMTY0LTE5LjQ4LTEwLjcyNy0zOC4xODVsLS40NDctMS44MjctLjAwNC0uMDE1Yy01LjQyNC0yMi4xNTctOS44NTUtNDAuMjUzIDE0LjQyNy00NS45MzguMjIyLS4wNTIuMzMtLjMxNy4xODQtLjQ5Mi0yLjc4Ni0zLjMwNS04LjAwNS00LjM4OC0xNC42MDUtMi4xMTEtLjI3LjA5My0uNTA2LS4xOC0uMzM3LS40MTIgMS4yOTQtMS43ODMgMy44MjMtMy4xNTUgNS4wNzEtMy43NTYuMjU4LS4xMjQuMjQyLS41MDItLjAzLS41ODhhMjcuODc3IDI3Ljg3NyAwIDAgMCAtMy43NzItLjljLS4zNy0uMDU5LS40MDMtLjY5My0uMDMyLS43NDMgOS4zNTYtMS4yNTkgMTkuMTI1IDEuNTUgMjQuMDI4IDcuNzI2YS4zMjYuMzI2IDAgMCAwIC4xODYuMTE0YzE3Ljk1MiAzLjg1NiAxOS4yMzggMzIuMjM1IDE3LjE3IDMzLjUyOC0uNDA4LjI1NS0xLjcxNS4xMDgtMy40MzgtLjA4NS02Ljk4Ni0uNzgxLTIwLjgxOC0yLjMyOS05LjQwMiAxOC45NDguMTEzLjIxLS4wMzYuNDg4LS4yNzIuNTI1LTYuNDM4IDEgMS44MTIgMjEuMTczIDcuODc1IDM0LjQ2MXoiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Im04NC4yOCA5MC42OThjLTEuMzY3LS42MzMtNi42MjEgMy4xMzUtMTAuMTEgNi4wMjgtLjcyOC0xLjAzMS0yLjEwMy0xLjc4LTUuMjAzLTEuMjQyLTIuNzEzLjQ3Mi00LjIxMSAxLjEyNi00Ljg4IDIuMjU0LTQuMjgzLTEuNjIzLTExLjQ4OC00LjEzLTEzLjIyOS0xLjcxLTEuOTAyIDIuNjQ2LjQ3NiAxNS4xNjEgMy4wMDMgMTYuNzg2IDEuMzIuODQ5IDcuNjMtMy4yMDggMTAuOTI2LTYuMDA1LjUzMi43NDkgMS4zODggMS4xNzggMy4xNDggMS4xMzcgMi42NjItLjA2MiA2Ljk3OS0uNjgxIDcuNjQ5LTEuOTIxLjA0LS4wNzUuMDc1LS4xNjQuMTA1LS4yNjYgMy4zODggMS4yNjYgOS4zNSAyLjYwNiAxMC42ODIgMi40MDYgMy40Ny0uNTIxLS40ODQtMTYuNzIzLTIuMDktMTcuNDY3eiIgZmlsbD0iIzNjYTgyYiIvPgogICAgPHBhdGggZD0ibTc0LjQ5IDk3LjA5N2MuMTQ0LjI1Ni4yNi41MjYuMzU4LjguNDgzIDEuMzUyIDEuMjcgNS42NDguNjc0IDYuNzA5LS41OTUgMS4wNjItNC40NTkgMS41NzQtNi44NDMgMS42MTVzLTIuOTItLjgzMS0zLjQwMy0yLjE4MWMtLjM4Ny0xLjA4MS0uNTc3LTMuNjIxLS41NzItNS4wNzUtLjA5OC0yLjE1OC42OS0yLjkxNiA0LjMzNC0zLjUwNiAyLjY5Ni0uNDM2IDQuMTIxLjA3MSA0Ljk0NC45NCAzLjgyOC0yLjg1NyAxMC4yMTUtNi44ODkgMTAuODM4LTYuMTUyIDMuMTA2IDMuNjc0IDMuNDk5IDEyLjQyIDIuODI2IDE1LjkzOS0uMjIgMS4xNTEtMTAuNTA1LTEuMTM5LTEwLjUwNS0yLjM4IDAtNS4xNTItMS4zMzctNi41NjUtMi42NS02Ljcxem0tMjIuNTMtMS42MDljLjg0My0xLjMzMyA3LjY3NC4zMjUgMTEuNDI0IDEuOTkzIDAgMC0uNzcgMy40OTEuNDU2IDcuNjA0LjM1OSAxLjIwMy04LjYyNyA2LjU1OC05LjggNS42MzctMS4zNTUtMS4wNjUtMy44NS0xMi40MzItMi4wOC0xNS4yMzR6IiBmaWxsPSIjNGNiYTNjIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im01NS4yNjkgNjguNDA2Yy41NTMtMi40MDMgMy4xMjctNi45MzIgMTIuMzIxLTYuODIyIDQuNjQ4LS4wMTkgMTAuNDIyLS4wMDIgMTQuMjUtLjQzNmE1MS4zMTIgNTEuMzEyIDAgMCAwIDEyLjcyNi0zLjA5NWMzLjk4LTEuNTE5IDUuMzkyLTEuMTggNS44ODctLjI3Mi41NDQuOTk5LS4wOTcgMi43MjItMS40ODggNC4zMDktMi42NTYgMy4wMy03LjQzMSA1LjM4LTE1Ljg2NSA2LjA3Ni04LjQzMy42OTgtMTQuMDItMS41NjUtMTYuNDI1IDIuMTE4LTEuMDM4IDEuNTg5LS4yMzYgNS4zMzMgNy45MiA2LjUxMiAxMS4wMiAxLjU5IDIwLjA3Mi0xLjkxNyAyMS4xOS4yMDEgMS4xMTkgMi4xMTgtNS4zMjMgNi40MjgtMTYuMzYyIDYuNTE4cy0xNy45MzQtMy44NjUtMjAuMzc5LTUuODNjLTMuMTAyLTIuNDk1LTQuNDktNi4xMzMtMy43NzUtOS4yNzl6IiBmaWxsPSIjZmMzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxnIGZpbGw9IiMxNDMwN2UiIG9wYWNpdHk9Ii44Ij4KICAgICAgPHBhdGggZD0ibTY5LjMyNyA0Mi4xMjdjLjYxNi0xLjAwOCAxLjk4MS0xLjc4NiA0LjIxNi0xLjc4NiAyLjIzNCAwIDMuMjg1Ljg4OSA0LjAxMyAxLjg4LjE0OC4yMDItLjA3Ni40NC0uMzA2LjM0YTU5Ljg2OSA1OS44NjkgMCAwIDEgLS4xNjgtLjA3M2MtLjgxNy0uMzU3LTEuODItLjc5NS0zLjU0LS44Mi0xLjgzOC0uMDI2LTIuOTk3LjQzNS0zLjcyNy44MzEtLjI0Ni4xMzQtLjYzNC0uMTMzLS40ODgtLjM3MnptLTI1LjE1NyAxLjI5YzIuMTctLjkwNyAzLjg3Ni0uNzkgNS4wODEtLjUwNC4yNTQuMDYuNDMtLjIxMy4yMjctLjM3Ny0uOTM1LS43NTUtMy4wMy0xLjY5Mi01Ljc2LS42NzQtMi40MzcuOTA5LTMuNTg1IDIuNzk2LTMuNTkyIDQuMDM4LS4wMDIuMjkyLjYuMzE3Ljc1Ni4wNy40Mi0uNjcgMS4xMi0xLjY0NiAzLjI4OS0yLjU1M3oiLz4KICAgICAgPHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtNzUuNDQgNTUuOTJhMy40NyAzLjQ3IDAgMCAxIC0zLjQ3NC0zLjQ2MiAzLjQ3IDMuNDcgMCAwIDEgMy40NzUtMy40NiAzLjQ3IDMuNDcgMCAwIDEgMy40NzQgMy40NiAzLjQ3IDMuNDcgMCAwIDEgLTMuNDc1IDMuNDYyem0yLjQ0Ny00LjYwOGEuODk5Ljg5OSAwIDAgMCAtMS43OTkgMGMwIC40OTQuNDA1Ljg5NS45Ljg5NS40OTkgMCAuOS0uNC45LS44OTV6bS0yNS40NjQgMy41NDJhNC4wNDIgNC4wNDIgMCAwIDEgLTQuMDQ5IDQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIC00LjA1LTQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIDQuMDUtNC4wMzcgNC4wNDUgNC4wNDUgMCAwIDEgNC4wNSA0LjAzN3ptLTEuMTkzLTEuMzM4YTEuMDUgMS4wNSAwIDAgMCAtMi4wOTcgMCAxLjA0OCAxLjA0OCAwIDAgMCAyLjA5NyAweiIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8L2c+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im02NCAxMTcuNzVjMjkuNjg1IDAgNTMuNzUtMjQuMDY1IDUzLjc1LTUzLjc1cy0yNC4wNjUtNTMuNzUtNTMuNzUtNTMuNzUtNTMuNzUgMjQuMDY1LTUzLjc1IDUzLjc1IDI0LjA2NSA1My43NSA1My43NSA1My43NXptMCA1YzMyLjQ0NyAwIDU4Ljc1LTI2LjMwMyA1OC43NS01OC43NXMtMjYuMzAzLTU4Ljc1LTU4Ljc1LTU4Ljc1LTU4Ljc1IDI2LjMwMy01OC43NSA1OC43NSAyNi4zMDMgNTguNzUgNTguNzUgNTguNzV6IiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n\n/* Email Protection signup notice */\n:not(.top-autofill) .tooltip--email-signup {\n    text-align: left;\n    color: #222222;\n    padding: 16px 20px;\n    width: 380px;\n}\n\n.tooltip--email-signup h1 {\n    font-weight: 700;\n    font-size: 16px;\n    line-height: 1.5;\n    margin: 0;\n}\n\n.tooltip--email-signup p {\n    font-weight: 400;\n    font-size: 14px;\n    line-height: 1.4;\n}\n\n.notice-controls {\n    display: flex;\n}\n\n.tooltip--email-signup .notice-controls > * {\n    border-radius: 8px;\n    border: 0;\n    cursor: pointer;\n    display: inline-block;\n    font-family: inherit;\n    font-style: normal;\n    font-weight: bold;\n    padding: 8px 12px;\n    text-decoration: none;\n}\n\n.notice-controls .ghost {\n    margin-left: 1rem;\n}\n\n.tooltip--email-signup a.primary {\n    background: #3969EF;\n    color: #fff;\n}\n\n.tooltip--email-signup a.primary:hover,\n.tooltip--email-signup a.primary:focus {\n    background: #2b55ca;\n}\n\n.tooltip--email-signup a.primary:active {\n    background: #1e42a4;\n}\n\n.tooltip--email-signup button.ghost {\n    background: transparent;\n    color: #3969EF;\n}\n\n.tooltip--email-signup button.ghost:hover,\n.tooltip--email-signup button.ghost:focus {\n    background-color: rgba(0, 0, 0, 0.06);\n    color: #2b55ca;\n}\n\n.tooltip--email-signup button.ghost:active {\n    background-color: rgba(0, 0, 0, 0.12);\n    color: #1e42a4;\n}\n\n.tooltip--email-signup button.close-tooltip {\n    background-color: transparent;\n    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMiAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5NCAwLjY1NjkwN0MwLjY4MzQxOCAwLjI2NjM4MyAxLjMxNjU4IDAuMjY2MzgzIDEuNzA3MTEgMC42NTY5MDdMNiA0Ljk0OThMMTAuMjkyOSAwLjY1NjkwN0MxMC42ODM0IDAuMjY2MzgzIDExLjMxNjYgMC4yNjYzODMgMTEuNzA3MSAwLjY1NjkwN0MxMi4wOTc2IDEuMDQ3NDMgMTIuMDk3NiAxLjY4MDYgMTEuNzA3MSAyLjA3MTEyTDcuNDE0MjEgNi4zNjQwMUwxMS43MDcxIDEwLjY1NjlDMTIuMDk3NiAxMS4wNDc0IDEyLjA5NzYgMTEuNjgwNiAxMS43MDcxIDEyLjA3MTFDMTEuMzE2NiAxMi40NjE2IDEwLjY4MzQgMTIuNDYxNiAxMC4yOTI5IDEyLjA3MTFMNiA3Ljc3ODIzTDEuNzA3MTEgMTIuMDcxMUMxLjMxNjU4IDEyLjQ2MTYgMC42ODM0MTcgMTIuNDYxNiAwLjI5Mjg5MyAxMi4wNzExQy0wLjA5NzYzMTEgMTEuNjgwNiAtMC4wOTc2MzExIDExLjA0NzQgMC4yOTI4OTMgMTAuNjU2OUw0LjU4NTc5IDYuMzY0MDFMMC4yOTI4OTQgMi4wNzExMkMtMC4wOTc2MzA2IDEuNjgwNiAtMC4wOTc2MzA2IDEuMDQ3NDMgMC4yOTI4OTQgMC42NTY5MDdaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0Ii8+Cjwvc3ZnPgo=);\n    background-position: center center;\n    background-repeat: no-repeat;\n    border: 0;\n    cursor: pointer;\n    padding: 16px;\n    position: absolute;\n    right: 12px;\n    top: 12px;\n}\n";
 exports.CSS_STYLES = CSS_STYLES;
 
-},{}],53:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14472,7 +14371,7 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
   return formChildrenPercentage > 50;
 }
 
-},{"./Form/matching.js":35}],54:[function(require,module,exports){
+},{"./Form/matching.js":33}],52:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -14507,7 +14406,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":14,"./autofill-utils.js":53,"./requestIdleCallback.js":65}],55:[function(require,module,exports){
+},{"./DeviceInterface.js":12,"./autofill-utils.js":51,"./requestIdleCallback.js":63}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14595,7 +14494,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],56:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14613,7 +14512,7 @@ const constants = {
 };
 exports.constants = constants;
 
-},{}],57:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15103,7 +15002,7 @@ class CloseEmailProtectionTabCall extends _deviceApi.DeviceApiCall {
 
 exports.CloseEmailProtectionTabCall = CloseEmailProtectionTabCall;
 
-},{"../../../packages/device-api":6,"./validators.zod.js":58}],58:[function(require,module,exports){
+},{"../../../packages/device-api":2,"./validators.zod.js":56}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15187,7 +15086,7 @@ exports.askToUnlockProviderResultSchema = askToUnlockProviderResultSchema;
 const apiSchema = null;
 exports.apiSchema = apiSchema;
 
-},{}],59:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15228,7 +15127,7 @@ class GetAlias extends _index.DeviceApiCall {
 
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":6,"./__generated__/validators.zod.js":58}],60:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"./__generated__/validators.zod.js":56}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15386,7 +15285,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":57}],61:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../__generated__/deviceApiCalls.js":55}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15394,7 +15293,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AppleTransport = void 0;
 
-var _contentScopeUtils = require("@duckduckgo/content-scope-utils");
+var _messaging = require("../../../packages/messaging/messaging.js");
 
 var _index = require("../../../packages/device-api/index.js");
 
@@ -15405,12 +15304,12 @@ class AppleTransport extends _index.DeviceApiTransport {
   constructor(globalConfig) {
     super();
     this.config = globalConfig;
-    const webkitConfig = new _contentScopeUtils.WebkitMessagingConfig({
+    const webkitConfig = new _messaging.WebkitMessagingConfig({
       hasModernWebkitAPI: this.config.hasModernWebkitAPI,
       webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
       secret: this.config.secret
     });
-    this.messaging = new _contentScopeUtils.Messaging(webkitConfig);
+    this.messaging = new _messaging.Messaging(webkitConfig);
   }
 
   async send(deviceApiCall) {
@@ -15422,7 +15321,7 @@ class AppleTransport extends _index.DeviceApiTransport {
         return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined);
       }
     } catch (e) {
-      if (e instanceof _contentScopeUtils.MissingHandler) {
+      if (e instanceof _messaging.MissingHandler) {
         if (this.config.isDDGTestMode) {
           console.log('MissingWebkitHandler error for:', deviceApiCall.method);
         }
@@ -15462,7 +15361,7 @@ function appleSpecificRuntimeConfiguration(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":6,"../__generated__/deviceApiCalls.js":57,"@duckduckgo/content-scope-utils":2}],62:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/messaging.js":5,"../__generated__/deviceApiCalls.js":55}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15634,7 +15533,7 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
   });
 }
 
-},{"../../../packages/device-api/index.js":6,"../../Settings.js":42,"../../autofill-utils.js":53,"../__generated__/deviceApiCalls.js":57}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../../Settings.js":40,"../../autofill-utils.js":51,"../__generated__/deviceApiCalls.js":55}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15688,7 +15587,7 @@ function createTransport(globalConfig) {
   return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
-},{"./android.transport.js":60,"./apple.transport.js":61,"./extension.transport.js":62,"./windows.transport.js":64}],64:[function(require,module,exports){
+},{"./android.transport.js":58,"./apple.transport.js":59,"./extension.transport.js":60,"./windows.transport.js":62}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15788,7 +15687,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":6}],65:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15836,4 +15735,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 var _default = {};
 exports.default = _default;
 
-},{}]},{},[54]);
+},{}]},{},[52]);
