@@ -39,6 +39,7 @@ interface Window {
     BrowserAutofill: {
         getAutofillData(data: string): void;
         storeFormData(data: string): void;
+        userTypedInForm(data: string): void;
     }
 
     // Used in Apple apps

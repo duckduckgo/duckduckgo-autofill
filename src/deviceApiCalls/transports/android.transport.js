@@ -3,7 +3,7 @@ import {
     GetAutofillDataCall,
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
-    StoreFormDataCall
+    StoreFormDataCall, UserTypedInFormCall
 } from '../__generated__/deviceApiCalls.js'
 
 export class AndroidTransport extends DeviceApiTransport {
@@ -43,6 +43,9 @@ export class AndroidTransport extends DeviceApiTransport {
         }
         if (deviceApiCall instanceof StoreFormDataCall) {
             return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
+        }
+        if (deviceApiCall instanceof UserTypedInFormCall) {
+            return window.BrowserAutofill.userTypedInForm(JSON.stringify(deviceApiCall.params))
         }
         throw new Error('android: not implemented: ' + deviceApiCall.method)
     }
