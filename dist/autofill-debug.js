@@ -10315,6 +10315,8 @@ class FormAnalyzer {
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     } = _ref;
+    // If the string is empty or too long (noisy) do nothing
+    if (!string || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return this;
     const matchesLogin = /current.?password/i.test(string) || this.matching.getDDGMatcherRegex('loginRegex')?.test(string) || this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string);
 
     // Check explicitly for unified login/signup forms
@@ -10373,12 +10375,9 @@ class FormAnalyzer {
     });
   }
   evaluatePageHeadings() {
-    const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]');
-    headings.forEach(_ref2 => {
-      let {
-        textContent
-      } = _ref2;
-      textContent = (0, _matching.removeExcessWhitespace)(textContent || '');
+    const headings = document.querySelectorAll('h1, h2, h3');
+    headings.forEach(heading => {
+      const textContent = (0, _matching.removeExcessWhitespace)(heading.textContent || '');
       this.updateSignal({
         string: textContent,
         strength: 0.5,
@@ -10455,15 +10454,12 @@ class FormAnalyzer {
       });
     } else {
       // any other case
-      // only consider the el if it's a small text to avoid noisy disclaimers
-      if ((0, _matching.removeExcessWhitespace)(el.textContent)?.length < _constants.constants.TEXT_LENGTH_CUTOFF) {
-        this.updateSignal({
-          string,
-          strength: 1,
-          signalType: `generic: ${string}`,
-          shouldCheckUnifiedForm: true
-        });
-      }
+      this.updateSignal({
+        string,
+        strength: 1,
+        signalType: `generic: ${string}`,
+        shouldCheckUnifiedForm: true
+      });
     }
   }
   evaluateForm() {
@@ -10520,11 +10516,11 @@ class FormAnalyzer {
     }
 
     // Read form attributes to find a signal
-    const hasCCAttribute = [...formEl.attributes].some(_ref3 => {
+    const hasCCAttribute = [...formEl.attributes].some(_ref2 => {
       let {
         name,
         value
-      } = _ref3;
+      } = _ref2;
       return /(credit|payment).?card/i.test(`${name}=${value}`);
     });
     if (hasCCAttribute) {
@@ -13877,6 +13873,9 @@ class DefaultScanner {
       this.forms.get(parentForm)?.addInput(input);
       return;
     }
+
+    // Do not add explicitly search forms
+    if (parentForm.role === 'search') return;
 
     // Check if the forms we've seen are either disconnected,
     // or are parent/child of the currently-found form
