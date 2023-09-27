@@ -231,6 +231,9 @@ class DefaultScanner {
             return
         }
 
+        // Do not add explicitly search forms
+        if (parentForm.role === 'search') return
+
         // Check if the forms we've seen are either disconnected,
         // or are parent/child of the currently-found form
         let previouslyFoundParent, childForm

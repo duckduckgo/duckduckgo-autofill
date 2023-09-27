@@ -117,6 +117,12 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false,
         shouldBeConservative = false
     }) {
+        // If the string is empty or too long (noisy) do nothing
+        if (
+            !string ||
+            string.length > constants.TEXT_LENGTH_CUTOFF
+        ) return this
+
         const matchesLogin = /current.?password/i.test(string) || this.matching.getDDGMatcherRegex('loginRegex')?.test(string) || this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string)
 
         // Check explicitly for unified login/signup forms
@@ -177,9 +183,10 @@ class FormAnalyzer {
     }
 
     evaluatePageHeadings () {
-        const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
-        headings.forEach(({textContent}) => {
-            textContent = removeExcessWhitespace(textContent || '')
+        const headings = document.querySelectorAll('h1, h2, h3')
+        headings.forEach((heading) => {
+            const textContent = removeExcessWhitespace(heading.textContent || '')
+
             this.updateSignal({
                 string: textContent,
                 strength: 0.5,
@@ -256,10 +263,7 @@ class FormAnalyzer {
             this.updateSignal({string, strength, signalType: `external link: ${string}`, shouldFlip})
         } else {
             // any other case
-            // only consider the el if it's a small text to avoid noisy disclaimers
-            if (removeExcessWhitespace(el.textContent)?.length < constants.TEXT_LENGTH_CUTOFF) {
-                this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
-            }
+            this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
         }
     }
 
