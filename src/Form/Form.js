@@ -106,8 +106,12 @@ class Form {
             if (!this.isAutofilling) {
                 this.handlerExecuted = false
                 this.shouldPromptToStoreData = true
+
+                if (this.isLogin && this.device.globalConfig.isAndroid) {
+                    this.device.userTypedInForm()
+                }
             }
-        })
+        }, {once: true})
 
         this.categorizeInputs()
         this.mutObs.observe(this.form, this.mutObsConfig)

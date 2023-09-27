@@ -20,7 +20,7 @@ import {DeviceApi, validate} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall,
-    AskToUnlockProviderCall, SendJSPixelCall
+    AskToUnlockProviderCall, SendJSPixelCall, UserTypedInFormCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
@@ -864,6 +864,10 @@ class InterfacePrototype {
      */
     firePixel (pixelParams) {
         this.deviceApi.notify(new SendJSPixelCall(pixelParams))
+    }
+
+    userTypedInForm () {
+        this.deviceApi.notify(new UserTypedInFormCall({}))
     }
 
     /**

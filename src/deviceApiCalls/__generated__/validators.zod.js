@@ -417,5 +417,6 @@ export const apiSchema = z.object({
         resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
     })).optional(),
     startEmailProtectionSignup: z.record(z.unknown()).optional(),
-    closeEmailProtectionTab: z.record(z.unknown()).optional()
+    closeEmailProtectionTab: z.record(z.unknown()).optional(),
+    userTypedInForm: z.record(z.unknown()).optional()
 });

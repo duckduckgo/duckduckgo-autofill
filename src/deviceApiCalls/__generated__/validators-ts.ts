@@ -225,6 +225,12 @@ export interface API {
   closeEmailProtectionTab?: {
     [k: string]: unknown;
   };
+  /**
+   * Notifies the native app that the user typed something in the form (currently Android-only)
+   */
+  userTypedInForm?: {
+    [k: string]: unknown;
+  };
 }
 /**
  * Parameters for the addDebugFlag method

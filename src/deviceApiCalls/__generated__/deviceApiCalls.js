@@ -223,3 +223,9 @@ export class StartEmailProtectionSignupCall extends DeviceApiCall {
 export class CloseEmailProtectionTabCall extends DeviceApiCall {
   method = "closeEmailProtectionTab"
 }
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class UserTypedInFormCall extends DeviceApiCall {
+  method = "userTypedInForm"
+}

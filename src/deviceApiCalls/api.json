@@ -203,6 +203,10 @@
     "closeEmailProtectionTab": {
       "type": "object",
       "description": "Used by macOS to close the Email Protection tab after successful in-context sign-up or login"
+    },
+    "userTypedInForm": {
+      "type": "object",
+      "description": "Notifies the native app that the user typed something in the form (currently Android-only)"
     }
   }
 }
