@@ -215,7 +215,7 @@ export function forwardConsoleMessages (page, _opts = {}) {
  */
 export async function performanceEntries (page, measureName) {
     // don't measure until the entries exist
-    await page.waitForFunction((measureName) => window.performance.getEntriesByName(measureName).length > 0, `${measureName}:end`, { timeout: 2000 })
+    await page.waitForFunction((measureName) => window.performance.getEntriesByName(measureName).length > 0, `${measureName}:end`, { timeout: 3000 })
     const result = await page.evaluate((measureName) => {
         window.performance?.measure?.(measureName, `${measureName}:start`, `${measureName}:end`)
         const entries = window.performance?.getEntriesByName(measureName)

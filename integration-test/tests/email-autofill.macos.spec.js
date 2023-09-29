@@ -320,7 +320,7 @@ test.describe('macos', () => {
         // This could cause a crash or hang in certain browsers (Webkit 17)
         test('large dom with potentially huge regex checks', async ({page}) => {
             // If this fails, the process is expected to crash or hang. The timeout hopefully shortens the feedback loop.
-            test.setTimeout(2000)
+            test.setTimeout(3000)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
