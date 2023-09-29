@@ -5317,7 +5317,7 @@ function initFormSubmissionsApi(forms, matching) {
       const button = /** @type HTMLElement */event.target?.closest(selector);
       if (!button) return;
       const text = (0, _autofillUtils.getTextShallow)(button) || (0, _labelUtil.extractElementStrings)(button).join(' ');
-      const hasRelevantText = matching.getDDGMatcherRegex('submitButtonRegex')?.test(text);
+      const hasRelevantText = (0, _autofillUtils.safeRegexTest)(matching.getDDGMatcherRegex('submitButtonRegex'), text);
       if (hasRelevantText && text.length < 25) {
         // check if there's a form with values
         const filledForm = [...forms.values()].find(form => form.hasValues());
@@ -5342,7 +5342,7 @@ function initFormSubmissionsApi(forms, matching) {
   const observer = new PerformanceObserver(list => {
     const entries = list.getEntries().filter(entry =>
     // @ts-ignore why does TS not know about `entry.initiatorType`?
-    ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && /login|sign-in|signin/.test(entry.name));
+    ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && (0, _autofillUtils.safeRegexTest)(/login|sign-in|signin/, entry.name));
     if (!entries.length) return;
     const filledForm = [...forms.values()].find(form => form.hasValues());
     const focusedForm = [...forms.values()].find(form => form.hasFocus());
@@ -5632,7 +5632,7 @@ class Form {
       const probableField = hiddenFields.find(field => {
         const regex = new RegExp('email|' + this.matching.getDDGMatcherRegex('username')?.source);
         const attributeText = field.id + ' ' + field.name;
-        return regex?.test(attributeText);
+        return (0, _autofillUtils.safeRegexTest)(regex, attributeText);
       });
       if (probableField?.value) {
         formValues.credentials.username = probableField.value;
@@ -6372,15 +6372,15 @@ class FormAnalyzer {
     } = _ref;
     // If the string is empty or too long (noisy) do nothing
     if (!string || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return this;
-    const matchesLogin = /current.?password/i.test(string) || this.matching.getDDGMatcherRegex('loginRegex')?.test(string) || this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string);
+    const matchesLogin = (0, _autofillUtils.safeRegexTest)(/current.?password/i, string) || (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), string) || (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('resetPasswordLink'), string);
 
     // Check explicitly for unified login/signup forms
-    if (shouldCheckUnifiedForm && matchesLogin && this.matching.getDDGMatcherRegex('conservativeSignupRegex')?.test(string)) {
+    if (shouldCheckUnifiedForm && matchesLogin && (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), string)) {
       this.increaseHybridSignal(strength, signalType);
       return this;
     }
     const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
-    const matchesSignup = /new.?password/i.test(string) || signupRegexToUse?.test(string);
+    const matchesSignup = (0, _autofillUtils.safeRegexTest)(/new.?password/i, string) || (0, _autofillUtils.safeRegexTest)(signupRegexToUse, string);
 
     // In some cases a login match means the login is somewhere else, i.e. when a link points outside
     if (shouldFlip) {
@@ -6408,8 +6408,8 @@ class FormAnalyzer {
   }
   evaluateUrl() {
     const path = window.location.pathname;
-    const matchesLogin = this.matching.getDDGMatcherRegex('loginRegex')?.test(path);
-    const matchesSignup = this.matching.getDDGMatcherRegex('conservativeSignupRegex')?.test(path);
+    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
+    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
 
     // If the url matches both, do nothing: the signal is probably confounding
     if (matchesLogin && matchesSignup) return;
@@ -6494,10 +6494,10 @@ class FormAnalyzer {
       let shouldFlip = true;
       let strength = 1;
       // Don't flip forgotten password links
-      if (this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string)) {
+      if ((0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)) {
         shouldFlip = false;
         strength = 3;
-      } else if (this.matching.getDDGMatcherRegex('loginProvidersRegex')?.test(string)) {
+      } else if ((0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginProvidersRegex'), string)) {
         // Don't flip login providers links
         shouldFlip = false;
       }
@@ -6576,7 +6576,7 @@ class FormAnalyzer {
         name,
         value
       } = _ref2;
-      return /(credit|payment).?card/i.test(`${name}=${value}`);
+      return (0, _autofillUtils.safeRegexTest)(/(credit|payment).?card/i, `${name}=${value}`);
     });
     if (hasCCAttribute) {
       this._isCCForm = true;
@@ -8866,7 +8866,7 @@ class Matching {
             matched: false
           };
         }
-        if (notRegex.test(elementString)) {
+        if ((0, _autofillUtils.safeRegexTest)(notRegex, elementString)) {
           return {
             ...result,
             matched: false,
@@ -8885,7 +8885,7 @@ class Matching {
             matched: false
           };
         }
-        if (skipRegex.test(elementString)) {
+        if ((0, _autofillUtils.safeRegexTest)(skipRegex, elementString)) {
           return {
             ...result,
             matched: false,
@@ -8895,7 +8895,7 @@ class Matching {
       }
 
       // if the `match` regex fails, moves onto the next string
-      if (!matchRexExp.test(elementString)) {
+      if (!(0, _autofillUtils.safeRegexTest)(matchRexExp, elementString)) {
         continue;
       }
 
@@ -8946,7 +8946,7 @@ class Matching {
     for (let stringName of stringsToMatch) {
       let elementString = this.activeElementStrings[stringName];
       if (!elementString) continue;
-      if (regex.test(elementString)) {
+      if ((0, _autofillUtils.safeRegexTest)(regex, elementString)) {
         return {
           ...defaultResult,
           matched: true,
@@ -11922,13 +11922,16 @@ exports.isLocalNetwork = isLocalNetwork;
 exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
 exports.logPerformance = logPerformance;
-exports.setValue = exports.sendAndWaitForAnswer = exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
+exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
+exports.safeRegexTest = safeRegexTest;
+exports.setValue = exports.sendAndWaitForAnswer = void 0;
 exports.shouldLog = shouldLog;
 exports.shouldLogPerformance = shouldLogPerformance;
 exports.truncateFromMiddle = truncateFromMiddle;
 exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
 var _matching = require("./Form/matching.js");
+var _constants = require("./constants.js");
 const SIGN_IN_MSG = exports.SIGN_IN_MSG = {
   signMeIn: true
 };
@@ -12281,15 +12284,15 @@ const isLikelyASubmitButton = (el, matching) => {
   // is explicitly set as "submit"
   el.getAttribute('name') === 'submit') &&
   // is called "submit"
-  !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)) return true;
-  return (/primary|submit/i.test(el.className) ||
+  !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)) return true;
+  return (safeRegexTest(/primary|submit/i, el.className) ||
   // has high-signal submit classes
-  /submit/i.test(dataTestId) || matching.getDDGMatcherRegex('submitButtonRegex')?.test(text) ||
+  safeRegexTest(/submit/i, dataTestId) || safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) ||
   // has high-signal text
-  el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className) // it's a large element 250x40px
+  el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className) // it's a large element 250x40px
   ) && el.offsetHeight * el.offsetWidth >= 2000 &&
   // it's not a very small button like inline links and such
-  !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel);
+  !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel);
 };
 
 /**
@@ -12300,9 +12303,9 @@ const isLikelyASubmitButton = (el, matching) => {
 exports.isLikelyASubmitButton = isLikelyASubmitButton;
 const buttonMatchesFormType = (el, formObj) => {
   if (formObj.isLogin) {
-    return !/sign.?up|register|join/i.test(el.textContent || '');
+    return !safeRegexTest(/sign.?up|register|join/i, el.textContent || '');
   } else if (formObj.isSignup) {
-    return !/(log|sign).?([io])n/i.test(el.textContent || '');
+    return !safeRegexTest(/(log|sign).?([io])n/i, el.textContent || '');
   } else {
     return true;
   }
@@ -12463,7 +12466,18 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
   return formChildrenPercentage > 50;
 }
 
-},{"./Form/matching.js":33}],52:[function(require,module,exports){
+/**
+ * Wrapper around RegExp.test that safeguard against checking huge strings
+ * @param {RegExp | undefined} regex
+ * @param {String} string
+ * @returns {boolean}
+ */
+function safeRegexTest(regex, string) {
+  if (!string || !regex || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return false;
+  return regex.test(string);
+}
+
+},{"./Form/matching.js":33,"./constants.js":54}],52:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");

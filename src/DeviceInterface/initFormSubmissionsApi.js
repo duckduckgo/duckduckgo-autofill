@@ -1,4 +1,4 @@
-import {buttonMatchesFormType, getTextShallow} from '../autofill-utils.js'
+import {buttonMatchesFormType, getTextShallow, safeRegexTest} from '../autofill-utils.js'
 import {extractElementStrings} from '../Form/label-util.js'
 
 /**
@@ -51,7 +51,7 @@ export function initFormSubmissionsApi (forms, matching) {
             if (!button) return
 
             const text = getTextShallow(button) || extractElementStrings(button).join(' ')
-            const hasRelevantText = matching.getDDGMatcherRegex('submitButtonRegex')?.test(text)
+            const hasRelevantText = safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text)
             if (hasRelevantText && text.length < 25) {
                 // check if there's a form with values
                 const filledForm = [...forms.values()].find(form => form.hasValues())
@@ -77,7 +77,7 @@ export function initFormSubmissionsApi (forms, matching) {
         const entries = list.getEntries().filter((entry) =>
             // @ts-ignore why does TS not know about `entry.initiatorType`?
             ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) &&
-            /login|sign-in|signin/.test(entry.name)
+            safeRegexTest(/login|sign-in|signin/, entry.name)
         )
 
         if (!entries.length) return

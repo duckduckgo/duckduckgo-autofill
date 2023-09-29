@@ -1,7 +1,7 @@
 import { removeExcessWhitespace, Matching } from './matching.js'
 import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
-import { getTextShallow, isLikelyASubmitButton } from '../autofill-utils.js'
+import {getTextShallow, isLikelyASubmitButton, safeRegexTest} from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -123,16 +123,23 @@ class FormAnalyzer {
             string.length > constants.TEXT_LENGTH_CUTOFF
         ) return this
 
-        const matchesLogin = /current.?password/i.test(string) || this.matching.getDDGMatcherRegex('loginRegex')?.test(string) || this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string)
+        const matchesLogin =
+            safeRegexTest(/current.?password/i, string) ||
+                safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), string) ||
+                safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)
 
         // Check explicitly for unified login/signup forms
-        if (shouldCheckUnifiedForm && matchesLogin && this.matching.getDDGMatcherRegex('conservativeSignupRegex')?.test(string)) {
+        if (
+            shouldCheckUnifiedForm &&
+            matchesLogin &&
+            safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), string)
+        ) {
             this.increaseHybridSignal(strength, signalType)
             return this
         }
 
         const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex')
-        const matchesSignup = /new.?password/i.test(string) || signupRegexToUse?.test(string)
+        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -162,8 +169,8 @@ class FormAnalyzer {
     evaluateUrl () {
         const path = window.location.pathname
 
-        const matchesLogin = this.matching.getDDGMatcherRegex('loginRegex')?.test(path)
-        const matchesSignup = this.matching.getDDGMatcherRegex('conservativeSignupRegex')?.test(path)
+        const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), path)
+        const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path)
 
         // If the url matches both, do nothing: the signal is probably confounding
         if (matchesLogin && matchesSignup) return
@@ -253,10 +260,10 @@ class FormAnalyzer {
             let shouldFlip = true
             let strength = 1
             // Don't flip forgotten password links
-            if (this.matching.getDDGMatcherRegex('resetPasswordLink')?.test(string)) {
+            if (safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)) {
                 shouldFlip = false
                 strength = 3
-            } else if (this.matching.getDDGMatcherRegex('loginProvidersRegex')?.test(string)) {
+            } else if (safeRegexTest(this.matching.getDDGMatcherRegex('loginProvidersRegex'), string)) {
                 // Don't flip login providers links
                 shouldFlip = false
             }
@@ -323,7 +330,7 @@ class FormAnalyzer {
 
         // Read form attributes to find a signal
         const hasCCAttribute = [...formEl.attributes].some(({name, value}) =>
-            /(credit|payment).?card/i.test(`${name}=${value}`)
+            safeRegexTest(/(credit|payment).?card/i, `${name}=${value}`)
         )
         if (hasCCAttribute) {
             this._isCCForm = true
