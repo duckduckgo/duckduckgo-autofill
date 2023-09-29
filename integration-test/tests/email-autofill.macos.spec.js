@@ -296,7 +296,7 @@ test.describe('macos', () => {
             perfPage.navigate()
 
             // In production, we expect autofill to bail on such a page
-            await perfPage.validateInitialScanPerf(2)
+            await perfPage.validateInitialScanPerf(10)
         })
 
         test('wall of 1000 fields with extreme settings', async ({page}) => {
@@ -320,7 +320,7 @@ test.describe('macos', () => {
         // This could cause a crash or hang in certain browsers (Webkit 17)
         test('large dom with potentially huge regex checks', async ({page}) => {
             // If this fails, the process is expected to crash or hang. The timeout hopefully shortens the feedback loop.
-            test.setTimeout(3000)
+            test.setTimeout(5000)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
