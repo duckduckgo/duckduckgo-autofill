@@ -8,6 +8,7 @@ export const constants = {
         'emailAtBottom': 'pages/email-at-bottom.html',
         'emailAtTopLeft': 'pages/email-at-top-left.html',
         'scanner-perf': 'pages/scanner-perf.html',
+        'perf-huge-regex': 'pages/perf-huge-regex.html',
         'iframeContainer': 'pages/iframe-container.html',
         'signup': 'pages/signup.html',
         'mutatingForm': 'pages/mutating-form.html',

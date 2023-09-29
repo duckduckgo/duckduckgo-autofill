@@ -279,18 +279,16 @@ test.describe('macos', () => {
     })
     test.describe('matching performance', () => {
         test('real-world form', async ({page}) => {
-            await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await defaultMacosScript(page)
 
             const perfPage = scannerPerf(page)
             perfPage.navigate('pages/usps_signup.html')
 
-            perfPage.validateInitialScanPerf(200)
+            await perfPage.validateInitialScanPerf(200)
         })
 
         test('wall of 1000 fields with production settings', async ({page}) => {
-            await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await defaultMacosScript(page)
 
@@ -298,11 +296,10 @@ test.describe('macos', () => {
             perfPage.navigate()
 
             // In production, we expect autofill to bail on such a page
-            perfPage.validateInitialScanPerf(2)
+            await perfPage.validateInitialScanPerf(2)
         })
 
         test('wall of 1000 fields with extreme settings', async ({page}) => {
-            await forwardConsoleMessages(page)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
@@ -317,7 +314,23 @@ test.describe('macos', () => {
             const perfPage = scannerPerf(page)
             perfPage.navigate()
 
-            perfPage.validateInitialScanPerf(300)
+            await perfPage.validateInitialScanPerf(300)
+        })
+
+        // This could cause a crash or hang in certain browsers (Webkit 17)
+        test('large dom with potentially huge regex checks', async ({page}) => {
+            // If this fails, the process is expected to crash or hang. The timeout hopefully shortens the feedback loop.
+            test.setTimeout(2000)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .platform('macos')
+                .applyTo(page)
+
+            const perfPage = scannerPerf(page)
+            perfPage.navigate(constants.pages['perf-huge-regex'])
+
+            await perfPage.validateInitialScanPerf(80)
         })
     })
 })
