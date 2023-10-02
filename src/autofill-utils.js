@@ -1,4 +1,5 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
+import {constants} from './constants.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -315,17 +316,17 @@ const isLikelyASubmitButton = (el, matching) => {
     if (
         (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
         el.getAttribute('name') === 'submit') && // is called "submit"
-        !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)
+        !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
     ) return true
 
     return (
-        /primary|submit/i.test(el.className) || // has high-signal submit classes
-        /submit/i.test(dataTestId) ||
-        matching.getDDGMatcherRegex('submitButtonRegex')?.test(text) || // has high-signal text
-        (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
+        safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
+        safeRegexTest(/submit/i, dataTestId) ||
+        safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
+        (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className)) // it's a large element 250x40px
     ) &&
     el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !matching.getDDGMatcherRegex('submitButtonUnlikelyRegex')?.test(text + ' ' + ariaLabel)
+    !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
 }
 
 /**
@@ -335,9 +336,9 @@ const isLikelyASubmitButton = (el, matching) => {
  */
 const buttonMatchesFormType = (el, formObj) => {
     if (formObj.isLogin) {
-        return !/sign.?up|register|join/i.test(el.textContent || '')
+        return !safeRegexTest(/sign.?up|register|join/i, el.textContent || '')
     } else if (formObj.isSignup) {
-        return !/(log|sign).?([io])n/i.test(el.textContent || '')
+        return !safeRegexTest(/(log|sign).?([io])n/i, el.textContent || '')
     } else {
         return true
     }
@@ -506,6 +507,18 @@ function isFormLikelyToBeUsedAsPageWrapper (form) {
     return formChildrenPercentage > 50
 }
 
+/**
+ * Wrapper around RegExp.test that safeguard against checking huge strings
+ * @param {RegExp | undefined} regex
+ * @param {String} string
+ * @returns {boolean}
+ */
+function safeRegexTest (regex, string) {
+    if (!string || !regex || string.length > constants.TEXT_LENGTH_CUTOFF) return false
+
+    return regex.test(string)
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -534,5 +547,6 @@ export {
     logPerformance,
     whenIdle,
     truncateFromMiddle,
-    isFormLikelyToBeUsedAsPageWrapper
+    isFormLikelyToBeUsedAsPageWrapper,
+    safeRegexTest
 }

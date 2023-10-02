@@ -7,7 +7,7 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isPotentiallyViewable, buttonMatchesFormType,
-    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog
+    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog, safeRegexTest
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching} from './matching.js'
@@ -207,7 +207,7 @@ class Form {
             const probableField = hiddenFields.find((field) => {
                 const regex = new RegExp('email|' + this.matching.getDDGMatcherRegex('username')?.source)
                 const attributeText = field.id + ' ' + field.name
-                return regex?.test(attributeText)
+                return safeRegexTest(regex, attributeText)
             })
             if (probableField?.value) {
                 formValues.credentials.username = probableField.value

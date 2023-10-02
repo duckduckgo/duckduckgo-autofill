@@ -2,7 +2,7 @@ import {constants} from '../constants.js'
 import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
 import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
-import {getTextShallow} from '../autofill-utils.js'
+import {getTextShallow, safeRegexTest} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -463,7 +463,7 @@ class Matching {
                 if (!notRegex) {
                     return { ...result, matched: false }
                 }
-                if (notRegex.test(elementString)) {
+                if (safeRegexTest(notRegex, elementString)) {
                     return { ...result, matched: false, proceed: false }
                 } else {
                     // All good here, increment the score
@@ -476,13 +476,13 @@ class Matching {
                 if (!skipRegex) {
                     return { ...result, matched: false }
                 }
-                if (skipRegex.test(elementString)) {
+                if (safeRegexTest(skipRegex, elementString)) {
                     return { ...result, matched: false, skip: true }
                 }
             }
 
             // if the `match` regex fails, moves onto the next string
-            if (!matchRexExp.test(elementString)) {
+            if (!safeRegexTest(matchRexExp, elementString)) {
                 continue
             }
 
@@ -525,7 +525,7 @@ class Matching {
         for (let stringName of stringsToMatch) {
             let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
-            if (regex.test(elementString)) {
+            if (safeRegexTest(regex, elementString)) {
                 return {
                     ...defaultResult,
                     matched: true,
