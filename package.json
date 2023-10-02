@@ -62,7 +62,7 @@
     "jest-html-reporter": "^3.10.2",
     "json-schema-to-typescript": "^13.1.1",
     "load-grunt-tasks": "^5.1.0",
-    "markdown-it": "^13.0.1",
+    "markdown-it": "^13.0.2",
     "playwright": "^1.38.1",
     "through2": "^4.0.2",
     "ts-to-zod": "^3.1.3",
