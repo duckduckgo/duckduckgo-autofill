@@ -579,16 +579,16 @@ export function loginPage (page, opts = {}) {
             expect(mockCalls).toHaveLength(0)
         }
         async openDialog () {
-            const button = await page.waitForSelector(`button:has-text("Click here to Login")`)
+            const button = await page.waitForSelector(`button:has-text("Click here to open dialog")`)
             await button.click({ force: true })
             await this.assertDialogOpen()
         }
         async assertDialogClose () {
-            const form = await page.locator('#login')
+            const form = await page.locator('.dialog')
             await expect(form).toBeHidden()
         }
         async assertDialogOpen () {
-            const form = await page.locator('#login')
+            const form = await page.locator('.dialog')
             await expect(form).toBeVisible()
         }
         async hitEscapeKey () {

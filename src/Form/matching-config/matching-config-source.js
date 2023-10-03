@@ -293,12 +293,12 @@ const matchingConfiguration = {
                 cardSecurityCode: {match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id'},
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    skip: 'mm[/\\s.\\-_—–]'
+                    skip: 'mm[/\\s.\\-_—–]|check'
                 },
-                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]'},
+                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check'},
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    skip: 'invalid|^dd/'
+                    skip: 'invalid|^dd/|check'
                 },
 
                 // Identities
