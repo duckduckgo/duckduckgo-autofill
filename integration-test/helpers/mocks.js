@@ -16,6 +16,7 @@ export const constants = {
         'loginWithPoorForm': 'pages/login-poor-form.html',
         'loginWithText': 'pages/login-with-text.html',
         'loginWithFormInModal': 'pages/login-in-modal.html',
+        'signupWithFormInModal': 'pages/signup-in-modal.html',
         'loginCovered': 'pages/login-covered.html',
         'loginMultistep': 'pages/login-multistep.html'
     },
