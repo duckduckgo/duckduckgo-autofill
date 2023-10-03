@@ -502,5 +502,6 @@
   { "html": "morningstar_login.html" },
   { "html": "alrincon_login.html" },
   { "html": "metalarchives_login.html" },
+  { "html": "accor_hotel-booking.html" },
   { "html": "flytap_login.html" }
 ]

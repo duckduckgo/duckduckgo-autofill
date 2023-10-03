@@ -266,15 +266,15 @@ const matchingConfiguration = {
         },
         expirationMonth: {
           match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/iu,
-          skip: /mm[/\s.\-_—–]/iu
+          skip: /mm[/\s.\-_—–]|check/iu
         },
         expirationYear: {
           match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/iu,
-          skip: /mm[/\s.\-_—–]/iu
+          skip: /mm[/\s.\-_—–]|check/iu
         },
         expiration: {
           match: /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/iu,
-          skip: /invalid|^dd\//iu
+          skip: /invalid|^dd\/|check/iu
         },
         firstName: {
           match: /(first|given|fore).?name|\bnome/iu,
