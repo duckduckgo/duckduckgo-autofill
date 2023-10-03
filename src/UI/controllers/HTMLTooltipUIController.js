@@ -44,7 +44,7 @@ export class HTMLTooltipUIController extends UIController {
         super()
         this._options = options
         this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
-        // Use pointerup to mimic click behaviour when we're in the top-frame webview
+        // Use pointerup to mimic native click behaviour when we're in the top-frame webview
         if (options.device.globalConfig.isTopFrame) {
             window.addEventListener('pointerup', this, true)
         } else {
