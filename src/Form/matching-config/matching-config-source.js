@@ -437,7 +437,7 @@ const matchingConfiguration = {
                         '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
                 },
                 submitButtonUnlikelyRegex: {
-                    match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' +
+                    match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already|keep' +
                         // Italian
                         '|annulla|mostra|nascondi|stampa|indietro|già' +
                         // German

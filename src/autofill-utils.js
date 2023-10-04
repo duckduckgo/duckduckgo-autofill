@@ -1,5 +1,6 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
 import {constants} from './constants.js'
+import {getAriaLabelledText} from './Form/label-util.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -312,21 +313,24 @@ const isLikelyASubmitButton = (el, matching) => {
     const text = getTextShallow(el)
     const ariaLabel = el.getAttribute('aria-label') || ''
     const dataTestId = el.getAttribute('data-test-id') || ''
+    let ariaLabelledBy = getAriaLabelledText(el)
+
+    const allText = [text, ariaLabel, ariaLabelledBy].join(' ')
 
     if (
         (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
         el.getAttribute('name') === 'submit') && // is called "submit"
-        !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
+        !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), allText)
     ) return true
 
     return (
         safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
         safeRegexTest(/submit/i, dataTestId) ||
-        safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
+        safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), allText) || // has high-signal text
         (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className)) // it's a large element 250x40px
     ) &&
     el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
+    !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), allText)
 }
 
 /**

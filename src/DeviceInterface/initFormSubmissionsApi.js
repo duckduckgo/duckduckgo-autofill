@@ -1,5 +1,5 @@
 import {buttonMatchesFormType, getTextShallow, safeRegexTest} from '../autofill-utils.js'
-import {extractElementStrings} from '../Form/label-util.js'
+import {extractElementStrings, getAriaLabelledText} from '../Form/label-util.js'
 
 /**
  * This is a single place to contain all functionality relating to form submission detection
@@ -50,7 +50,7 @@ export function initFormSubmissionsApi (forms, matching) {
             const button = /** @type HTMLElement */(event.target)?.closest(selector)
             if (!button) return
 
-            const text = getTextShallow(button) || extractElementStrings(button).join(' ')
+            const text = getTextShallow(button) || getAriaLabelledText(button) || extractElementStrings(button).join(' ')
             const hasRelevantText = safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text)
             if (hasRelevantText && text.length < 25) {
                 // check if there's a form with values

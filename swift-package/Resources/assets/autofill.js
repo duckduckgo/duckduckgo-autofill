@@ -5316,7 +5316,7 @@ function initFormSubmissionsApi(forms, matching) {
       // check if the click happened on a button
       const button = /** @type HTMLElement */event.target?.closest(selector);
       if (!button) return;
-      const text = (0, _autofillUtils.getTextShallow)(button) || (0, _labelUtil.extractElementStrings)(button).join(' ');
+      const text = (0, _autofillUtils.getTextShallow)(button) || (0, _labelUtil.getAriaLabelledText)(button) || (0, _labelUtil.extractElementStrings)(button).join(' ');
       const hasRelevantText = (0, _autofillUtils.safeRegexTest)(matching.getDDGMatcherRegex('submitButtonRegex'), text);
       if (hasRelevantText && text.length < 25) {
         // check if there's a form with values
@@ -7804,6 +7804,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.extractElementStrings = exports.EXCLUDED_TAGS = void 0;
+exports.getAriaLabelledText = getAriaLabelledText;
 var _matching = require("./matching.js");
 const EXCLUDED_TAGS = exports.EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE'];
 
@@ -7843,7 +7844,24 @@ const extractElementStrings = element => {
   _extractElementStrings(element);
   return [...strings];
 };
+
+/**
+ *
+ * @param {Element} el
+ * @returns {string}
+ */
 exports.extractElementStrings = extractElementStrings;
+function getAriaLabelledText(el) {
+  // Try to access another element if it was marked as the label for this input/select
+  const ariaLabelAttr = el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby');
+  if (ariaLabelAttr) {
+    const labelledByElement = document.getElementById(ariaLabelAttr);
+    if (labelledByElement) {
+      return extractElementStrings(labelledByElement).join(' ');
+    }
+  }
+  return '';
+}
 
 },{"./matching.js":33}],30:[function(require,module,exports){
 "use strict";
@@ -8237,7 +8255,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           match: /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona|senden|\bja\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera/iu
         },
         submitButtonUnlikelyRegex: {
-          match: /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already|annulla|mostra|nascondi|stampa|indietro|già|abbrechen|passwort|zeigen|verbergen|drucken|zurück|annuleer|wachtwoord|toon|vorige|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà|anular|cancelar|imprimir|cerrar|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan/iu
+          match: /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already|keep|annulla|mostra|nascondi|stampa|indietro|già|abbrechen|passwort|zeigen|verbergen|drucken|zurück|annuleer|wachtwoord|toon|vorige|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà|anular|cancelar|imprimir|cerrar|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan/iu
         }
       }
     },
@@ -9169,13 +9187,8 @@ const getExplicitLabelsText = el => {
   }
 
   // Try to access another element if it was marked as the label for this input/select
-  const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'));
-  if (ariaLabelAttr) {
-    const labelledByElement = document.getElementById(ariaLabelAttr);
-    if (labelledByElement) {
-      labelTextCandidates.push(...(0, _labelUtil.extractElementStrings)(labelledByElement));
-    }
-  }
+  const ariaLabelledBy = (0, _labelUtil.getAriaLabelledText)(el);
+  if (ariaLabelledBy) labelTextCandidates.push(ariaLabelledBy);
 
   // Labels with long text are likely to be noisy and lead to false positives
   const filteredLabels = labelTextCandidates.filter(string => string.length < 65);
@@ -11938,6 +11951,7 @@ exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
 var _matching = require("./Form/matching.js");
 var _constants = require("./constants.js");
+var _labelUtil = require("./Form/label-util.js");
 const SIGN_IN_MSG = exports.SIGN_IN_MSG = {
   signMeIn: true
 };
@@ -12286,19 +12300,21 @@ const isLikelyASubmitButton = (el, matching) => {
   const text = getTextShallow(el);
   const ariaLabel = el.getAttribute('aria-label') || '';
   const dataTestId = el.getAttribute('data-test-id') || '';
+  let ariaLabelledBy = (0, _labelUtil.getAriaLabelledText)(el);
+  const allText = [text, ariaLabel, ariaLabelledBy].join(' ');
   if ((el.getAttribute('type') === 'submit' ||
   // is explicitly set as "submit"
   el.getAttribute('name') === 'submit') &&
   // is called "submit"
-  !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)) return true;
+  !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), allText)) return true;
   return (safeRegexTest(/primary|submit/i, el.className) ||
   // has high-signal submit classes
-  safeRegexTest(/submit/i, dataTestId) || safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) ||
+  safeRegexTest(/submit/i, dataTestId) || safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), allText) ||
   // has high-signal text
   el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className) // it's a large element 250x40px
   ) && el.offsetHeight * el.offsetWidth >= 2000 &&
   // it's not a very small button like inline links and such
-  !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel);
+  !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), allText);
 };
 
 /**
@@ -12483,7 +12499,7 @@ function safeRegexTest(regex, string) {
   return regex.test(string);
 }
 
-},{"./Form/matching.js":33,"./constants.js":54}],52:[function(require,module,exports){
+},{"./Form/label-util.js":29,"./Form/matching.js":33,"./constants.js":54}],52:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -12613,7 +12629,7 @@ exports.constants = void 0;
 const constants = exports.constants = {
   ATTR_INPUT_TYPE: 'data-ddg-inputType',
   ATTR_AUTOFILL: 'data-ddg-autofill',
-  TEXT_LENGTH_CUTOFF: 100,
+  TEXT_LENGTH_CUTOFF: 85,
   MAX_INPUTS_PER_PAGE: 100,
   MAX_FORMS_PER_PAGE: 30,
   MAX_INPUTS_PER_FORM: 80,

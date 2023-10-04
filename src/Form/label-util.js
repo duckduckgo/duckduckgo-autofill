@@ -39,4 +39,23 @@ const extractElementStrings = (element) => {
     return [...strings]
 }
 
-export {extractElementStrings, EXCLUDED_TAGS}
+/**
+ *
+ * @param {Element} el
+ * @returns {string}
+ */
+function getAriaLabelledText (el) {
+    // Try to access another element if it was marked as the label for this input/select
+    const ariaLabelAttr = el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby')
+
+    if (ariaLabelAttr) {
+        const labelledByElement = document.getElementById(ariaLabelAttr)
+        if (labelledByElement) {
+            return extractElementStrings(labelledByElement).join(' ')
+        }
+    }
+
+    return ''
+}
+
+export {extractElementStrings, getAriaLabelledText, EXCLUDED_TAGS}

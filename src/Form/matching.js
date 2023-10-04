@@ -1,5 +1,5 @@
 import {constants} from '../constants.js'
-import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
+import {EXCLUDED_TAGS, extractElementStrings, getAriaLabelledText} from './label-util.js'
 import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
 import {getTextShallow, safeRegexTest} from '../autofill-utils.js'
@@ -781,14 +781,9 @@ const getExplicitLabelsText = (el) => {
     }
 
     // Try to access another element if it was marked as the label for this input/select
-    const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'))
+    const ariaLabelledBy = getAriaLabelledText(el)
 
-    if (ariaLabelAttr) {
-        const labelledByElement = document.getElementById(ariaLabelAttr)
-        if (labelledByElement) {
-            labelTextCandidates.push(...extractElementStrings(labelledByElement))
-        }
-    }
+    if (ariaLabelledBy) labelTextCandidates.push(ariaLabelledBy)
 
     // Labels with long text are likely to be noisy and lead to false positives
     const filteredLabels = labelTextCandidates.filter((string) => string.length < 65)
