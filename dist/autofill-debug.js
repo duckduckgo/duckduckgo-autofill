@@ -9266,7 +9266,7 @@ function initFormSubmissionsApi(forms, matching) {
       const focusedForm = [...forms.values()].find(form => form.hasFocus(e));
       focusedForm?.submitHandler('global keydown + Enter');
     }
-  });
+  }, true);
 
   /**
    * Global pointer down events
