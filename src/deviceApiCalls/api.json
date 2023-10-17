@@ -203,6 +203,14 @@
     "closeEmailProtectionTab": {
       "type": "object",
       "description": "Used by macOS to close the Email Protection tab after successful in-context sign-up or login"
+    },
+    "ShowInContextEmailProtectionSignupPrompt": {
+      "type": "object",
+      "description": "Used by Android to open the in-context signup prompt and report back when completed",
+      "properties": {
+        "id": { "type": "string", "const":  "ShowInContextEmailProtectionSignupPromptResponse"},
+        "resultValidator": { "$ref":  "./schemas/showInContextEmailProtectionSignupPrompt.result.json" }
+      }
     }
   }
 }

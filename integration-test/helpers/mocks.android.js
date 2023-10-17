@@ -44,6 +44,7 @@ export function androidStringReplacements (overrides = {}) {
                             inputType_identities: false,
                             inputType_creditCards: false,
                             emailProtection: true,
+                            emailProtection_incontext_signup: true,
                             password_generation: false,
                             credentials_saving: true,
                             inlineIcon_credentials: true,
@@ -75,6 +76,8 @@ export function createAndroidMocks () {
     const mocks = {
         /** @type {GetAutofillDataResponse['success']|null} */
         getAutofillData: null,
+        showInContextEmailProtectionSignupPrompt: { isSignedIn: true },
+        incontextSignupDismissedAt: {},
         /** @type {string|null} */
         address: null,
         isSignedIn: ''
@@ -198,6 +201,29 @@ export function createAndroidMocks () {
                     storeFormData (request) {
                         /** @type {MockCall} */
                         const call = ['storeFormData', request, mocks.getAutofillData]
+                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    },
+                    showInContextEmailProtectionSignupPrompt (request) {
+                        return respond('ShowInContextEmailProtectionSignupPrompt', request, mocks.showInContextEmailProtectionSignupPrompt)
+                    },
+                    getIncontextSignupDismissedAt (request) {
+                        const call = ['getIncontextSignupDismissedAt', request, mocks.incontextSignupDismissedAt]
+                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                        window.postMessage(JSON.stringify({
+                            type: 'getIncontextSignupDismissedAt',
+                            success: mocks.incontextSignupDismissedAt
+                        }), window.origin)
+                    },
+                    setIncontextSignupPermanentlyDismissedAt (request) {
+                        const call = ['setIncontextSignupPermanentlyDismissedAt', request]
+                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    },
+                    startEmailProtectionSignup (request) {
+                        const call = ['startEmailProtectionSignup', request]
+                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    },
+                    closeEmailProtectionTab (request) {
+                        const call = ['closeEmailProtectionTab', request]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     }
                 }

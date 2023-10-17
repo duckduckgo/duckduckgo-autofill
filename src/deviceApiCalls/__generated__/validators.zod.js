@@ -70,6 +70,12 @@ export const emailProtectionStoreUserDataParamsSchema = z.object({
     cohort: z.string()
 });
 
+export const showInContextEmailProtectionSignupPromptSchema = z.object({
+    success: z.object({
+        isSignedIn: z.boolean()
+    })
+});
+
 export const generatedPasswordSchema = z.object({
     value: z.string(),
     username: z.string()
@@ -417,5 +423,9 @@ export const apiSchema = z.object({
         resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
     })).optional(),
     startEmailProtectionSignup: z.record(z.unknown()).optional(),
-    closeEmailProtectionTab: z.record(z.unknown()).optional()
+    closeEmailProtectionTab: z.record(z.unknown()).optional(),
+    ShowInContextEmailProtectionSignupPrompt: z.record(z.unknown()).and(z.object({
+        id: z.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
+        resultValidator: showInContextEmailProtectionSignupPromptSchema.optional()
+    })).optional()
 });
