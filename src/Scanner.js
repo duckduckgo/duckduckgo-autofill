@@ -194,9 +194,14 @@ class DefaultScanner {
             }
         }
 
+        /**
+         * Max number of nodes we want to traverse upwards, critical to avoid enclosing large portions of the DOM
+         * @type {number}
+         */
+        let traversalLayerCount = 0
         let element = input
         // traverse the DOM to search for related inputs
-        while (element.parentElement && element.parentElement !== document.documentElement) {
+        while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
             // Avoid overlapping containers or forms
             const siblingForm = element.parentElement?.querySelector('form')
             if (siblingForm && siblingForm !== element) {
@@ -212,6 +217,7 @@ class DefaultScanner {
                 // found related input, return common ancestor
                 return element
             }
+            traversalLayerCount++
         }
 
         return input
