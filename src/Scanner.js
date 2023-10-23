@@ -18,6 +18,7 @@ const {
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
+ *     stopScanner: (reason: string, ...rest: any) => void;
  * }} Scanner
  *
  * @typedef {{
@@ -151,7 +152,7 @@ class DefaultScanner {
     /**
      * Stops scanning, switches off the mutation observer and clears all forms
      * @param {string} reason
-     * @param {...any} rest
+     * @param {any} rest
      */
     stopScanner (reason, ...rest) {
         this.stopped = true
