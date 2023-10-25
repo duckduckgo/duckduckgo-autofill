@@ -89,7 +89,7 @@ class Form {
                     }
                     // Must check for inputs because a parent may be removed and not show up in record.removedNodes
                     if ([...this.inputs.all].some(input => !input.isConnected)) {
-                        // ADD COMMENT
+                        // This is re-connected in recategorizeAllInputs, disconnecting here to avoid risk of re-work
                         this.mutObs.disconnect()
                         // If any known input has been removed from the DOM, reanalyze the whole form
                         window.requestIdleCallback(() => {
