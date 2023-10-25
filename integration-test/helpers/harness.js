@@ -41,7 +41,7 @@ export async function withEmailProtectionExtensionSignedInAs (page, username) {
  *     MAX_INPUTS_PER_PAGE: number,
  *     MAX_FORMS_PER_PAGE: number,
  *     MAX_INPUTS_PER_FORM: number,
- *     MAX_FORM_MUT_OBS_COUNT: number
+ *     MAX_FORM_RESCANS: number
  * }} [p.constants]
  * @return {Promise<void>}
  */

@@ -27,7 +27,7 @@ const {
     ATTR_AUTOFILL,
     ATTR_INPUT_TYPE,
     MAX_INPUTS_PER_FORM,
-    MAX_FORM_MUT_OBS_COUNT
+    MAX_FORM_RESCANS
 } = constants
 
 class Form {
@@ -335,7 +335,7 @@ class Form {
      */
     recategorizeAllInputs () {
         // If the form mutates too much, disconnect to avoid performance issues
-        if (this.rescanCount >= MAX_FORM_MUT_OBS_COUNT) {
+        if (this.rescanCount >= MAX_FORM_RESCANS) {
             this.mutObs.disconnect()
             return
         }
@@ -453,7 +453,7 @@ class Form {
         }
 
         // When new inputs are added after the initial scan, reanalyze the whole form
-        if (this.initialScanComplete && this.rescanCount < MAX_FORM_MUT_OBS_COUNT) {
+        if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
             this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
             this.recategorizeAllInputs()
             return this
