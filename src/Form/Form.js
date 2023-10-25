@@ -83,6 +83,7 @@ class Form {
             (records) => {
                 const anythingRemoved = records.some(record => record.removedNodes.length > 0)
                 if (anythingRemoved) {
+                    // Ensure we destroy the form if it's removed from the DOM
                     if (!this.form.isConnected) {
                         this.destroy()
                         return
