@@ -9438,7 +9438,7 @@ const {
   ATTR_AUTOFILL,
   ATTR_INPUT_TYPE,
   MAX_INPUTS_PER_FORM,
-  MAX_FORM_MUT_OBS_COUNT
+  MAX_FORM_RESCANS
 } = _constants.constants;
 class Form {
   /** @type {import("../Form/matching").Matching} */
@@ -9500,7 +9500,7 @@ class Form {
         }
         // Must check for inputs because a parent may be removed and not show up in record.removedNodes
         if ([...this.inputs.all].some(input => !input.isConnected)) {
-          // ADD COMMENT
+          // This is re-connected in recategorizeAllInputs, disconnecting here to avoid risk of re-work
           this.mutObs.disconnect();
           // If any known input has been removed from the DOM, reanalyze the whole form
           window.requestIdleCallback(() => {
@@ -9729,7 +9729,7 @@ class Form {
    */
   recategorizeAllInputs() {
     // If the form mutates too much, disconnect to avoid performance issues
-    if (this.rescanCount >= MAX_FORM_MUT_OBS_COUNT) {
+    if (this.rescanCount >= MAX_FORM_RESCANS) {
       this.mutObs.disconnect();
       return;
     }
@@ -9841,7 +9841,7 @@ class Form {
     }
 
     // When new inputs are added after the initial scan, reanalyze the whole form
-    if (this.initialScanComplete && this.rescanCount < MAX_FORM_MUT_OBS_COUNT) {
+    if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
       this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
       this.recategorizeAllInputs();
       return this;
@@ -16611,7 +16611,7 @@ const constants = exports.constants = {
   MAX_INPUTS_PER_PAGE: 100,
   MAX_FORMS_PER_PAGE: 30,
   MAX_INPUTS_PER_FORM: 80,
-  MAX_FORM_MUT_OBS_COUNT: 50
+  MAX_FORM_RESCANS: 50
 };
 
 },{}],65:[function(require,module,exports){
