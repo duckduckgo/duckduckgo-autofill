@@ -26,7 +26,8 @@ import {constants} from '../constants.js'
 const {
     ATTR_AUTOFILL,
     ATTR_INPUT_TYPE,
-    MAX_INPUTS_PER_FORM
+    MAX_INPUTS_PER_FORM,
+    MAX_FORM_MUT_OBS_COUNT
 } = constants
 
 class Form {
@@ -75,6 +76,30 @@ class Form {
                 if (!entry.isIntersecting) this.removeTooltip()
             }
         })
+
+        this.rescanCount = 0
+        this.mutObsConfig = { childList: true, subtree: true }
+        this.mutObs = new MutationObserver(
+            (records) => {
+                const anythingRemoved = records.some(record => record.removedNodes.length > 0)
+                if (anythingRemoved) {
+                    if (!this.form.isConnected) {
+                        this.destroy()
+                        return
+                    }
+                    // Must check for inputs because a parent may be removed and not show up in record.removedNodes
+                    if ([...this.inputs.all].some(input => !input.isConnected)) {
+                        // ADD COMMENT
+                        this.mutObs.disconnect()
+                        // If any known input has been removed from the DOM, reanalyze the whole form
+                        window.requestIdleCallback(() => {
+                            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
+                            this.recategorizeAllInputs()
+                        })
+                    }
+                }
+            }
+        )
 
         // This ensures we fire the handler again if the form is changed
         this.addListener(form, 'input', () => {
@@ -309,6 +334,12 @@ class Form {
      * Resets our input scoring and starts from scratch
      */
     recategorizeAllInputs () {
+        // If the form mutates too much, disconnect to avoid performance issues
+        if (this.rescanCount >= MAX_FORM_MUT_OBS_COUNT) {
+            this.mutObs.disconnect()
+            return
+        }
+        this.rescanCount++
         this.initialScanComplete = false
         this.removeAllDecorations()
         this.forgetAllInputs()
@@ -327,11 +358,13 @@ class Form {
     }
     // This removes all listeners to avoid memory leaks and weird behaviours
     destroy () {
+        this.mutObs.disconnect()
         this.removeAllDecorations()
         this.removeTooltip()
         this.forgetAllInputs()
         this.matching.clear()
         this.intObs = null
+        this.device.scanner.forms.delete(this.form)
     }
 
     categorizeInputs () {
@@ -347,12 +380,17 @@ class Form {
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
-                if (shouldLog()) {
-                    console.log('The form has too many inputs, bailing.')
-                }
+                // This is rather extreme, but better safe than sorry
+                this.device.scanner.stopScanner('The form has too many inputs, bailing.')
+                return
             }
         }
         this.initialScanComplete = true
+
+        // Observe only if the container isn't the body, to avoid performance overloads
+        if (this.form !== document.body) {
+            this.mutObs.observe(this.form, this.mutObsConfig)
+        }
     }
 
     get submitButtons () {
@@ -410,10 +448,14 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            if (shouldLog()) {
-                console.log('The form has too many inputs, destroying.')
-            }
-            this.destroy()
+            this.device.scanner.stopScanner('The form has too many inputs, destroying.')
+            return this
+        }
+
+        // When new inputs are added after the initial scan, reanalyze the whole form
+        if (this.initialScanComplete && this.rescanCount < MAX_FORM_MUT_OBS_COUNT) {
+            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
+            this.recategorizeAllInputs()
             return this
         }
 

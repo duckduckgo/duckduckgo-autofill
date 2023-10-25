@@ -9437,7 +9437,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const {
   ATTR_AUTOFILL,
   ATTR_INPUT_TYPE,
-  MAX_INPUTS_PER_FORM
+  MAX_INPUTS_PER_FORM,
+  MAX_FORM_MUT_OBS_COUNT
 } = _constants.constants;
 class Form {
   /** @type {import("../Form/matching").Matching} */
@@ -9483,6 +9484,30 @@ class Form {
     this.intObs = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) this.removeTooltip();
+      }
+    });
+    this.rescanCount = 0;
+    this.mutObsConfig = {
+      childList: true,
+      subtree: true
+    };
+    this.mutObs = new MutationObserver(records => {
+      const anythingRemoved = records.some(record => record.removedNodes.length > 0);
+      if (anythingRemoved) {
+        if (!this.form.isConnected) {
+          this.destroy();
+          return;
+        }
+        // Must check for inputs because a parent may be removed and not show up in record.removedNodes
+        if ([...this.inputs.all].some(input => !input.isConnected)) {
+          // ADD COMMENT
+          this.mutObs.disconnect();
+          // If any known input has been removed from the DOM, reanalyze the whole form
+          window.requestIdleCallback(() => {
+            this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+            this.recategorizeAllInputs();
+          });
+        }
       }
     });
 
@@ -9703,6 +9728,12 @@ class Form {
    * Resets our input scoring and starts from scratch
    */
   recategorizeAllInputs() {
+    // If the form mutates too much, disconnect to avoid performance issues
+    if (this.rescanCount >= MAX_FORM_MUT_OBS_COUNT) {
+      this.mutObs.disconnect();
+      return;
+    }
+    this.rescanCount++;
     this.initialScanComplete = false;
     this.removeAllDecorations();
     this.forgetAllInputs();
@@ -9721,11 +9752,13 @@ class Form {
   }
   // This removes all listeners to avoid memory leaks and weird behaviours
   destroy() {
+    this.mutObs.disconnect();
     this.removeAllDecorations();
     this.removeTooltip();
     this.forgetAllInputs();
     this.matching.clear();
     this.intObs = null;
+    this.device.scanner.forms.delete(this.form);
   }
   categorizeInputs() {
     const selector = this.matching.cssSelector('formInputsSelector');
@@ -9740,12 +9773,17 @@ class Form {
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
       } else {
-        if ((0, _autofillUtils.shouldLog)()) {
-          console.log('The form has too many inputs, bailing.');
-        }
+        // This is rather extreme, but better safe than sorry
+        this.device.scanner.stopScanner('The form has too many inputs, bailing.');
+        return;
       }
     }
     this.initialScanComplete = true;
+
+    // Observe only if the container isn't the body, to avoid performance overloads
+    if (this.form !== document.body) {
+      this.mutObs.observe(this.form, this.mutObsConfig);
+    }
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
@@ -9798,10 +9836,14 @@ class Form {
 
     // If the form has too many inputs, destroy everything to avoid performance issues
     if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-      if ((0, _autofillUtils.shouldLog)()) {
-        console.log('The form has too many inputs, destroying.');
-      }
-      this.destroy();
+      this.device.scanner.stopScanner('The form has too many inputs, destroying.');
+      return this;
+    }
+
+    // When new inputs are added after the initial scan, reanalyze the whole form
+    if (this.initialScanComplete && this.rescanCount < MAX_FORM_MUT_OBS_COUNT) {
+      this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+      this.recategorizeAllInputs();
       return this;
     }
 
@@ -13087,7 +13129,8 @@ function getInputSubtype(input) {
  */
 const removeExcessWhitespace = function () {
   let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  if (!string) return '';
+  // The length check is extra safety to avoid trimming strings that would be discarded anyway
+  if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return '';
   return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
 };
 
@@ -13653,6 +13696,7 @@ const {
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
+ *     stopScanner: (reason: string, ...rest: any) => void;
  * }} Scanner
  *
  * @typedef {{
@@ -13794,7 +13838,7 @@ class DefaultScanner {
   /**
    * Stops scanning, switches off the mutation observer and clears all forms
    * @param {string} reason
-   * @param {...any} rest
+   * @param {any} rest
    */
   stopScanner(reason) {
     this.stopped = true;
@@ -13835,9 +13879,15 @@ class DefaultScanner {
         }
       }
     }
+
+    /**
+     * Max number of nodes we want to traverse upwards, critical to avoid enclosing large portions of the DOM
+     * @type {number}
+     */
+    let traversalLayerCount = 0;
     let element = input;
     // traverse the DOM to search for related inputs
-    while (element.parentElement && element.parentElement !== document.documentElement) {
+    while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
       // Avoid overlapping containers or forms
       const siblingForm = element.parentElement?.querySelector('form');
       if (siblingForm && siblingForm !== element) {
@@ -13851,6 +13901,7 @@ class DefaultScanner {
         // found related input, return common ancestor
         return element;
       }
+      traversalLayerCount++;
     }
     return input;
   }
