@@ -12332,7 +12332,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
         },
         password: {
           match: /password|passwort|kennwort|wachtwoord|mot de passe|clave|contraseña|lösenord/iu,
-          skip: /email|one-time|error|hint/iu,
+          skip: /email|one-time|error|hint|username/iu,
           forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         username: {

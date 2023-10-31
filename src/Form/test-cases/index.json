@@ -503,5 +503,6 @@
   { "html": "alrincon_login.html" },
   { "html": "metalarchives_login.html" },
   { "html": "accor_hotel-booking.html" },
+  { "html": "pcsretirementcom_login.html", "expectedSubmitFalsePositives": 3 },
   { "html": "flytap_login.html" }
 ]
