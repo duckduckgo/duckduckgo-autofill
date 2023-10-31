@@ -8166,7 +8166,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
         },
         password: {
           match: /password|passwort|kennwort|wachtwoord|mot de passe|clave|contraseña|lösenord/iu,
-          skip: /email|one-time|error|hint|username/iu,
+          skip: /email|one-time|error|hint/iu,
           forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         username: {
@@ -8703,7 +8703,9 @@ class Matching {
       if (this.subtypeFromMatchers('password', input)) {
         // Any other input type is likely a false match
         // Arguably "text" should be as well, but it can be used for password reveal fields
-        if (['password', 'text'].includes(input.type) && input.name !== 'email' && input.placeholder !== 'Username') {
+        if (['password', 'text'].includes(input.type) && input.name !== 'email' &&
+        // pcsretirement.com, improper use of the for attribute
+        input.name !== 'Username') {
           return 'credentials.password';
         }
       }

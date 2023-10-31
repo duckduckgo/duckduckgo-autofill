@@ -264,7 +264,7 @@ const matchingConfiguration = {
                         '|clave|contraseña' +
                         // Swedish
                         '|lösenord',
-                    skip: 'email|one-time|error|hint|username',
+                    skip: 'email|one-time|error|hint',
                     forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
                 },
                 username: {
