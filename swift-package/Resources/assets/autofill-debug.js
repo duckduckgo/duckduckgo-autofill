@@ -78,6 +78,7 @@ class ZodError extends Error {
     };
     const actualProto = new.target.prototype;
     if (Object.setPrototypeOf) {
+      // eslint-disable-next-line ban/ban
       Object.setPrototypeOf(this, actualProto);
     } else {
       this.__proto__ = actualProto;
@@ -115,6 +116,13 @@ class ZodError extends Error {
               curr[el] = curr[el] || {
                 _errors: []
               };
+              // if (typeof el === "string") {
+              //   curr[el] = curr[el] || { _errors: [] };
+              // } else if (typeof el === "number") {
+              //   const errorArray: any = [];
+              //   errorArray._errors = [];
+              //   curr[el] = curr[el] || errorArray;
+              // }
             } else {
               curr[el] = curr[el] || {
                 _errors: []
@@ -280,7 +288,8 @@ function addIssueToContext(ctx, issueData) {
     issueData: issueData,
     data: ctx.data,
     path: ctx.path,
-    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, (0, errors_1.getErrorMap)(), en_1.default].filter(x => !!x)
+    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, (0, errors_1.getErrorMap)(), en_1.default // then global default map
+    ].filter(x => !!x)
   });
   ctx.common.issues.push(issue);
 }
@@ -404,7 +413,9 @@ var util;
       return obj[e];
     });
   };
-  util.objectKeys = typeof Object.keys === "function" ? obj => Object.keys(obj) : object => {
+  util.objectKeys = typeof Object.keys === "function" // eslint-disable-line ban/ban
+  ? obj => Object.keys(obj) // eslint-disable-line ban/ban
+  : object => {
     const keys = [];
     for (const key in object) {
       if (Object.prototype.hasOwnProperty.call(object, key)) {
@@ -419,7 +430,8 @@ var util;
     }
     return undefined;
   };
-  util.isInteger = typeof Number.isInteger === "function" ? val => Number.isInteger(val) : val => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
+  util.isInteger = typeof Number.isInteger === "function" ? val => Number.isInteger(val) // eslint-disable-line ban/ban
+  : val => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
   function joinValues(array) {
     let separator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : " | ";
     return array.map(val => typeof val === "string" ? `'${val}'` : val).join(separator);
@@ -437,7 +449,7 @@ var objectUtil;
   objectUtil.mergeShapes = (first, second) => {
     return {
       ...first,
-      ...second
+      ...second // second overwrites first
     };
   };
 })(objectUtil = exports.objectUtil || (exports.objectUtil = {}));
@@ -705,6 +717,7 @@ function processCreateParams(params) {
 }
 class ZodType {
   constructor(def) {
+    /** Alias of safeParseAsync */
     this.spa = this.safeParseAsync;
     this._def = def;
     this.parse = this.parse.bind(this);
@@ -965,12 +978,31 @@ exports.Schema = ZodType;
 exports.ZodSchema = ZodType;
 const cuidRegex = /^c[^\s-]{8,}$/i;
 const cuid2Regex = /^[a-z][a-z0-9]*$/;
-const ulidRegex = /[0-9A-HJKMNP-TV-Z]{26}/;
+const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+// const uuidRegex =
+//   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
 const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
-const emailRegex = /^([A-Z0-9_+-]+\.?)*[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
-const emojiRegex = /^(\p{Extended_Pictographic}|\p{Emoji_Component})+$/u;
+// from https://stackoverflow.com/a/46181/1550155
+// old version: too slow, didn't support unicode
+// const emailRegex = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
+//old email regex
+// const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@((?!-)([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{1,})[^-<>()[\].,;:\s@"]$/i;
+// eslint-disable-next-line
+// const emailRegex =
+//   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\])|(\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\.[A-Za-z]{2,})+))$/;
+// const emailRegex =
+//   /^[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+// const emailRegex =
+//   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
+const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
+// const emailRegex =
+//   /^[a-z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9\-]+)*$/i;
+// from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
+const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
+let emojiRegex;
 const ipv4Regex = /^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$/;
 const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+// Adapted from https://stackoverflow.com/a/3143231
 const datetimeRegex = args => {
   if (args.precision) {
     if (args.offset) {
@@ -1002,33 +1034,6 @@ function isValidIP(ip, version) {
   return false;
 }
 class ZodString extends ZodType {
-  constructor() {
-    super(...arguments);
-    this._regex = (regex, validation, message) => this.refinement(data => regex.test(data), {
-      validation,
-      code: ZodError_1.ZodIssueCode.invalid_string,
-      ...errorUtil_1.errorUtil.errToObj(message)
-    });
-    this.nonempty = message => this.min(1, errorUtil_1.errorUtil.errToObj(message));
-    this.trim = () => new ZodString({
-      ...this._def,
-      checks: [...this._def.checks, {
-        kind: "trim"
-      }]
-    });
-    this.toLowerCase = () => new ZodString({
-      ...this._def,
-      checks: [...this._def.checks, {
-        kind: "toLowerCase"
-      }]
-    });
-    this.toUpperCase = () => new ZodString({
-      ...this._def,
-      checks: [...this._def.checks, {
-        kind: "toUpperCase"
-      }]
-    });
-  }
   _parse(input) {
     if (this._def.coerce) {
       input.data = String(input.data);
@@ -1040,7 +1045,10 @@ class ZodString extends ZodType {
         code: ZodError_1.ZodIssueCode.invalid_type,
         expected: util_1.ZodParsedType.string,
         received: ctx.parsedType
-      });
+      }
+      //
+      );
+
       return parseUtil_1.INVALID;
     }
     const status = new parseUtil_1.ParseStatus();
@@ -1109,6 +1117,9 @@ class ZodString extends ZodType {
           status.dirty();
         }
       } else if (check.kind === "emoji") {
+        if (!emojiRegex) {
+          emojiRegex = new RegExp(_emojiRegex, "u");
+        }
         if (!emojiRegex.test(input.data)) {
           ctx = this._getOrReturnCtx(input, ctx);
           (0, parseUtil_1.addIssueToContext)(ctx, {
@@ -1255,6 +1266,13 @@ class ZodString extends ZodType {
       value: input.data
     };
   }
+  _regex(regex, validation, message) {
+    return this.refinement(data => regex.test(data), {
+      validation,
+      code: ZodError_1.ZodIssueCode.invalid_string,
+      ...errorUtil_1.errorUtil.errToObj(message)
+    });
+  }
   _addCheck(check) {
     return new ZodString({
       ...this._def,
@@ -1376,6 +1394,37 @@ class ZodString extends ZodType {
       ...errorUtil_1.errorUtil.errToObj(message)
     });
   }
+  /**
+   * @deprecated Use z.string().min(1) instead.
+   * @see {@link ZodString.min}
+   */
+  nonempty(message) {
+    return this.min(1, errorUtil_1.errorUtil.errToObj(message));
+  }
+  trim() {
+    return new ZodString({
+      ...this._def,
+      checks: [...this._def.checks, {
+        kind: "trim"
+      }]
+    });
+  }
+  toLowerCase() {
+    return new ZodString({
+      ...this._def,
+      checks: [...this._def.checks, {
+        kind: "toLowerCase"
+      }]
+    });
+  }
+  toUpperCase() {
+    return new ZodString({
+      ...this._def,
+      checks: [...this._def.checks, {
+        kind: "toUpperCase"
+      }]
+    });
+  }
   get isDatetime() {
     return !!this._def.checks.find(ch => ch.kind === "datetime");
   }
@@ -1432,6 +1481,7 @@ ZodString.create = params => {
     ...processCreateParams(params)
   });
 };
+// https://stackoverflow.com/questions/3966484/why-does-modulus-operator-return-fractional-number-in-javascript/31711034#31711034
 function floatSafeRemainder(val, step) {
   const valDecCount = (val.toString().split(".")[1] || "").length;
   const stepDecCount = (step.toString().split(".")[1] || "").length;
@@ -2037,6 +2087,7 @@ ZodNull.create = params => {
 class ZodAny extends ZodType {
   constructor() {
     super(...arguments);
+    // to prevent instances of other classes from extending ZodAny. this causes issues with catchall in ZodObject.
     this._any = true;
   }
   _parse(input) {
@@ -2053,6 +2104,7 @@ ZodAny.create = params => {
 class ZodUnknown extends ZodType {
   constructor() {
     super(...arguments);
+    // required
     this._unknown = true;
   }
   _parse(input) {
@@ -2250,7 +2302,47 @@ class ZodObject extends ZodType {
   constructor() {
     super(...arguments);
     this._cached = null;
+    /**
+     * @deprecated In most cases, this is no longer needed - unknown properties are now silently stripped.
+     * If you want to pass through unknown properties, use `.passthrough()` instead.
+     */
     this.nonstrict = this.passthrough;
+    // extend<
+    //   Augmentation extends ZodRawShape,
+    //   NewOutput extends util.flatten<{
+    //     [k in keyof Augmentation | keyof Output]: k extends keyof Augmentation
+    //       ? Augmentation[k]["_output"]
+    //       : k extends keyof Output
+    //       ? Output[k]
+    //       : never;
+    //   }>,
+    //   NewInput extends util.flatten<{
+    //     [k in keyof Augmentation | keyof Input]: k extends keyof Augmentation
+    //       ? Augmentation[k]["_input"]
+    //       : k extends keyof Input
+    //       ? Input[k]
+    //       : never;
+    //   }>
+    // >(
+    //   augmentation: Augmentation
+    // ): ZodObject<
+    //   extendShape<T, Augmentation>,
+    //   UnknownKeys,
+    //   Catchall,
+    //   NewOutput,
+    //   NewInput
+    // > {
+    //   return new ZodObject({
+    //     ...this._def,
+    //     shape: () => ({
+    //       ...this._def.shape(),
+    //       ...augmentation,
+    //     }),
+    //   }) as any;
+    // }
+    /**
+     * @deprecated Use `.extend` instead
+     *  */
     this.augment = this.extend;
   }
   _getCached() {
@@ -2329,6 +2421,7 @@ class ZodObject extends ZodType {
         throw new Error(`Internal ZodObject error: invalid unknownKeys value.`);
       }
     } else {
+      // run catchall validation
       const catchall = this._def.catchall;
       for (const key of extraKeys) {
         const value = ctx.data[key];
@@ -2337,7 +2430,9 @@ class ZodObject extends ZodType {
             status: "valid",
             value: key
           },
-          value: catchall._parse(new ParseInputLazyPath(ctx, value, ctx.path, key)),
+          value: catchall._parse(new ParseInputLazyPath(ctx, value, ctx.path, key) //, ctx.child(key), value, getParsedType(value)
+          ),
+
           alwaysSet: key in ctx.data
         });
       }
@@ -2395,6 +2490,23 @@ class ZodObject extends ZodType {
       unknownKeys: "passthrough"
     });
   }
+  // const AugmentFactory =
+  //   <Def extends ZodObjectDef>(def: Def) =>
+  //   <Augmentation extends ZodRawShape>(
+  //     augmentation: Augmentation
+  //   ): ZodObject<
+  //     extendShape<ReturnType<Def["shape"]>, Augmentation>,
+  //     Def["unknownKeys"],
+  //     Def["catchall"]
+  //   > => {
+  //     return new ZodObject({
+  //       ...def,
+  //       shape: () => ({
+  //         ...def.shape(),
+  //         ...augmentation,
+  //       }),
+  //     }) as any;
+  //   };
   extend(augmentation) {
     return new ZodObject({
       ...this._def,
@@ -2404,6 +2516,11 @@ class ZodObject extends ZodType {
       })
     });
   }
+  /**
+   * Prior to zod@1.0.12 there was a bug in the
+   * inferred type of merged objects. Please
+   * upgrade if you are experiencing issues.
+   */
   merge(merging) {
     const merged = new ZodObject({
       unknownKeys: merging._def.unknownKeys,
@@ -2416,11 +2533,67 @@ class ZodObject extends ZodType {
     });
     return merged;
   }
+  // merge<
+  //   Incoming extends AnyZodObject,
+  //   Augmentation extends Incoming["shape"],
+  //   NewOutput extends {
+  //     [k in keyof Augmentation | keyof Output]: k extends keyof Augmentation
+  //       ? Augmentation[k]["_output"]
+  //       : k extends keyof Output
+  //       ? Output[k]
+  //       : never;
+  //   },
+  //   NewInput extends {
+  //     [k in keyof Augmentation | keyof Input]: k extends keyof Augmentation
+  //       ? Augmentation[k]["_input"]
+  //       : k extends keyof Input
+  //       ? Input[k]
+  //       : never;
+  //   }
+  // >(
+  //   merging: Incoming
+  // ): ZodObject<
+  //   extendShape<T, ReturnType<Incoming["_def"]["shape"]>>,
+  //   Incoming["_def"]["unknownKeys"],
+  //   Incoming["_def"]["catchall"],
+  //   NewOutput,
+  //   NewInput
+  // > {
+  //   const merged: any = new ZodObject({
+  //     unknownKeys: merging._def.unknownKeys,
+  //     catchall: merging._def.catchall,
+  //     shape: () =>
+  //       objectUtil.mergeShapes(this._def.shape(), merging._def.shape()),
+  //     typeName: ZodFirstPartyTypeKind.ZodObject,
+  //   }) as any;
+  //   return merged;
+  // }
   setKey(key, schema) {
     return this.augment({
       [key]: schema
     });
   }
+  // merge<Incoming extends AnyZodObject>(
+  //   merging: Incoming
+  // ): //ZodObject<T & Incoming["_shape"], UnknownKeys, Catchall> = (merging) => {
+  // ZodObject<
+  //   extendShape<T, ReturnType<Incoming["_def"]["shape"]>>,
+  //   Incoming["_def"]["unknownKeys"],
+  //   Incoming["_def"]["catchall"]
+  // > {
+  //   // const mergedShape = objectUtil.mergeShapes(
+  //   //   this._def.shape(),
+  //   //   merging._def.shape()
+  //   // );
+  //   const merged: any = new ZodObject({
+  //     unknownKeys: merging._def.unknownKeys,
+  //     catchall: merging._def.catchall,
+  //     shape: () =>
+  //       objectUtil.mergeShapes(this._def.shape(), merging._def.shape()),
+  //     typeName: ZodFirstPartyTypeKind.ZodObject,
+  //   }) as any;
+  //   return merged;
+  // }
   catchall(index) {
     return new ZodObject({
       ...this._def,
@@ -2451,6 +2624,9 @@ class ZodObject extends ZodType {
       shape: () => shape
     });
   }
+  /**
+   * @deprecated
+   */
   deepPartial() {
     return deepPartialify(this);
   }
@@ -2527,6 +2703,7 @@ class ZodUnion extends ZodType {
     } = this._processInputParams(input);
     const options = this._def.options;
     function handleResults(results) {
+      // return first issue-free validation if it exists
       for (const result of results) {
         if (result.result.status === "valid") {
           return result.result;
@@ -2534,10 +2711,12 @@ class ZodUnion extends ZodType {
       }
       for (const result of results) {
         if (result.result.status === "dirty") {
+          // add issues from dirty option
           ctx.common.issues.push(...result.ctx.common.issues);
           return result.result;
         }
       }
+      // return invalid
       const unionErrors = results.map(result => new ZodError_1.ZodError(result.ctx.common.issues));
       (0, parseUtil_1.addIssueToContext)(ctx, {
         code: ZodError_1.ZodIssueCode.invalid_union,
@@ -2617,6 +2796,13 @@ ZodUnion.create = (types, params) => {
     ...processCreateParams(params)
   });
 };
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
+//////////                                 //////////
+//////////      ZodDiscriminatedUnion      //////////
+//////////                                 //////////
+/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////
 const getDiscriminator = type => {
   if (type instanceof ZodLazy) {
     return getDiscriminator(type.schema);
@@ -2627,6 +2813,7 @@ const getDiscriminator = type => {
   } else if (type instanceof ZodEnum) {
     return type.options;
   } else if (type instanceof ZodNativeEnum) {
+    // eslint-disable-next-line ban/ban
     return Object.keys(type.enum);
   } else if (type instanceof ZodDefault) {
     return getDiscriminator(type._def.innerType);
@@ -2685,8 +2872,18 @@ class ZodDiscriminatedUnion extends ZodType {
   get optionsMap() {
     return this._def.optionsMap;
   }
+  /**
+   * The constructor of the discriminated union schema. Its behaviour is very similar to that of the normal z.union() constructor.
+   * However, it only allows a union of objects, all of which need to share a discriminator property. This property must
+   * have a different value for each object in the union.
+   * @param discriminator the name of the discriminator property
+   * @param types an array of object schemas
+   * @param params
+   */
   static create(discriminator, options, params) {
+    // Get all the valid discriminator values
     const optionsMap = new Map();
+    // try {
     for (const type of options) {
       const discriminatorValues = getDiscriminator(type.shape[discriminator]);
       if (!discriminatorValues) {
@@ -2869,7 +3066,7 @@ class ZodTuple extends ZodType {
       const schema = this._def.items[itemIndex] || this._def.rest;
       if (!schema) return null;
       return schema._parse(new ParseInputLazyPath(ctx, item, ctx.path, itemIndex));
-    }).filter(x => !!x);
+    }).filter(x => !!x); // filter nulls
     if (ctx.common.async) {
       return Promise.all(items).then(results => {
         return parseUtil_1.ParseStatus.mergeArray(status, results);
@@ -3173,6 +3370,9 @@ class ZodFunction extends ZodType {
     };
     const fn = ctx.data;
     if (this._def.returns instanceof ZodPromise) {
+      // Would love a way to avoid disabling this rule, but we need
+      // an alias (using an arrow function was what caused 2651).
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const me = this;
       return (0, parseUtil_1.OK)(async function () {
         for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -3191,6 +3391,9 @@ class ZodFunction extends ZodType {
         return parsedReturns;
       });
     } else {
+      // Would love a way to avoid disabling this rule, but we need
+      // an alias (using an arrow function was what caused 2651).
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const me = this;
       return (0, parseUtil_1.OK)(function () {
         for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -3485,7 +3688,9 @@ class ZodEffects extends ZodType {
       }
     }
     if (effect.type === "refinement") {
-      const executeRefinement = acc => {
+      const executeRefinement = (acc
+      // effect: RefinementEffect<any>
+      ) => {
         const result = effect.refinement(acc, checkCtx);
         if (ctx.common.async) {
           return Promise.resolve(result);
@@ -3503,6 +3708,7 @@ class ZodEffects extends ZodType {
         });
         if (inner.status === "aborted") return parseUtil_1.INVALID;
         if (inner.status === "dirty") status.dirty();
+        // return value is ignored
         executeRefinement(inner.value);
         return {
           status: status.value,
@@ -3652,6 +3858,7 @@ class ZodCatch extends ZodType {
     const {
       ctx
     } = this._processInputParams(input);
+    // newCtx is used to not collect issues from inner types in ctx
     const newCtx = {
       ...ctx,
       common: {
@@ -3822,7 +4029,18 @@ ZodReadonly.create = (type, params) => {
 };
 const custom = function (check) {
   let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  let fatal = arguments.length > 2 ? arguments[2] : undefined;
+  let
+  /**
+   * @deprecated
+   *
+   * Pass `fatal` into the params object instead:
+   *
+   * ```ts
+   * z.string().custom((val) => val.length > 5, { fatal: false })
+   * ```
+   *
+   */
+  fatal = arguments.length > 2 ? arguments[2] : undefined;
   if (check) return ZodAny.create().superRefine((data, ctx) => {
     var _a, _b;
     if (!check(data)) {
@@ -3885,10 +4103,13 @@ var ZodFirstPartyTypeKind;
   ZodFirstPartyTypeKind["ZodPipeline"] = "ZodPipeline";
   ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
 })(ZodFirstPartyTypeKind = exports.ZodFirstPartyTypeKind || (exports.ZodFirstPartyTypeKind = {}));
+// requires TS 4.4+
 class Class {
   constructor() {}
 }
-const instanceOfType = function (cls) {
+const instanceOfType = function (
+// const instanceOfType = <T extends new (...args: any[]) => any>(
+cls) {
   let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
     message: `Input not instance of ${cls.name}`
   };
