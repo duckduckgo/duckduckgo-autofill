@@ -258,7 +258,8 @@ class Matching {
                 if (
                     ['password', 'text'].includes(input.type) &&
                     input.name !== 'email' &&
-                    input.placeholder !== 'Username'
+                    // pcsretirement.com, improper use of the for attribute
+                    input.name !== 'Username'
                 ) {
                     return 'credentials.password'
                 }
