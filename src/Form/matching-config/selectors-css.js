@@ -1,7 +1,12 @@
-const formInputsSelector = `
-input:not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not([type=search]):not([type=reset]):not([type=image]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]),
-[autocomplete=username],
-select`
+// We've seen non-standard types like 'user'. This selector should get them, too
+const genericTextField = `
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`
+
+const formInputsSelector = [
+    genericTextField,
+    '[autocomplete=username]',
+    'select'
+]
 
 const submitButtonSelector = `
 input[type=submit],
@@ -13,10 +18,6 @@ a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`
 
 const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)'
-
-// We've seen non-standard types like 'user'. This selector should get them, too
-const genericTextField = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=file]):not([type=hidden]):not([type=month]):not([type=number]):not([type=radio]):not([type=range]):not([type=reset]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week])`
 
 const emailAddress = [
     `

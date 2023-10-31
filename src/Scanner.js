@@ -18,6 +18,7 @@ const {
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
+ *     stopScanner: (reason: string, ...rest: any) => void;
  * }} Scanner
  *
  * @typedef {{
@@ -151,7 +152,7 @@ class DefaultScanner {
     /**
      * Stops scanning, switches off the mutation observer and clears all forms
      * @param {string} reason
-     * @param {...any} rest
+     * @param {any} rest
      */
     stopScanner (reason, ...rest) {
         this.stopped = true
@@ -194,9 +195,14 @@ class DefaultScanner {
             }
         }
 
+        /**
+         * Max number of nodes we want to traverse upwards, critical to avoid enclosing large portions of the DOM
+         * @type {number}
+         */
+        let traversalLayerCount = 0
         let element = input
         // traverse the DOM to search for related inputs
-        while (element.parentElement && element.parentElement !== document.documentElement) {
+        while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
             // Avoid overlapping containers or forms
             const siblingForm = element.parentElement?.querySelector('form')
             if (siblingForm && siblingForm !== element) {
@@ -212,6 +218,7 @@ class DefaultScanner {
                 // found related input, return common ancestor
                 return element
             }
+            traversalLayerCount++
         }
 
         return input

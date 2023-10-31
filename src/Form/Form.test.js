@@ -380,7 +380,7 @@ describe('Form bails', () => {
     beforeEach(() => {
         document.body.innerHTML = ''
     })
-    test('when it has too many fields', async () => {
+    test('when it has too many fields on load', async () => {
         const formEl = attachAndReturnGenericForm()
         for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
             const input = document.createElement('input')

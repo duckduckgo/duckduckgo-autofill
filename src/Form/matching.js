@@ -759,7 +759,8 @@ function getInputSubtype (input) {
  * @return {string}
  */
 const removeExcessWhitespace = (string = '') => {
-    if (!string) return ''
+    // The length check is extra safety to avoid trimming strings that would be discarded anyway
+    if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return ''
 
     return (string)
         .replace(/\n/g, ' ')

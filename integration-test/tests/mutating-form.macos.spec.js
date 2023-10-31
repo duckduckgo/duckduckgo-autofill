@@ -8,7 +8,7 @@ import {test as base} from '@playwright/test'
  */
 const test = base.extend({})
 
-test.describe.skip('Mutating form page', () => {
+test.describe('Mutating form page', () => {
     async function applyScript (page) {
         await createAutofillScript()
             .replaceAll(macosContentScopeReplacements())
