@@ -10234,6 +10234,10 @@ class Settings {
    */
   async getAvailableInputTypes() {
     try {
+      // This info is not needed in the topFrame, so we avoid calling the native app
+      if (this.globalConfig.isTopFrame) {
+        return Settings.defaults.availableInputTypes;
+      }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
