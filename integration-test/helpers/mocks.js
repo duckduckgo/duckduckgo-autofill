@@ -7,6 +7,8 @@ export const constants = {
         'email-autofill': 'pages/email-autofill.html',
         'emailAtBottom': 'pages/email-at-bottom.html',
         'emailAtTopLeft': 'pages/email-at-top-left.html',
+        'scanner-perf': 'pages/scanner-perf.html',
+        'perf-huge-regex': 'pages/perf-huge-regex.html',
         'iframeContainer': 'pages/iframe-container.html',
         'signup': 'pages/signup.html',
         'mutatingForm': 'pages/mutating-form.html',
@@ -14,6 +16,7 @@ export const constants = {
         'loginWithPoorForm': 'pages/login-poor-form.html',
         'loginWithText': 'pages/login-with-text.html',
         'loginWithFormInModal': 'pages/login-in-modal.html',
+        'signupWithFormInModal': 'pages/signup-in-modal.html',
         'loginCovered': 'pages/login-covered.html',
         'loginMultistep': 'pages/login-multistep.html'
     },

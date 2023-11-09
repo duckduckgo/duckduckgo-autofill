@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Signup form within a modal</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+<p><a href="../index.html">[Home]</a></p>
+
+<p id="demo"><button type="button" id="open-modal">Click here to open dialog</button></p>
+
+<p id="random-text">Some random text to use as "something outside the dialog element". Clicking here should close the dialog (if open).</p>
+
+<div class="dialog" hidden>
+  <form action="/signup" id="signup">
+    <h2>Signup</h2>
+    <fieldset>
+      <label for="email">Email</label>
+      <input id="email" type="email">
+      <label for="password">Password</label>
+      <input id="password" type="password">
+      <button type="submit">Signup</button>
+    </fieldset>
+  </form>
+</div>
+<script type="module">
+  const openModalBtn = document.getElementById('open-modal')
+  const dialogEl = document.querySelector('.dialog')
+  openModalBtn.addEventListener('click', () => {
+    dialogEl.removeAttribute('hidden')
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {dialogEl.setAttribute('hidden', '')}
+    }, {once: true})
+    window.addEventListener('pointerdown', (e) => {
+      if (!dialogEl.contains(e.target)) {dialogEl.setAttribute('hidden', '')}
+    })
+  })
+
+  const form = document.forms.login;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (form.checkValidity()) {
+      setTimeout(() => dialogEl.innerHTML = '<h1>Submitted!</h1>', 100)
+    }
+  })
+</script>
+</body>
+
+</html>

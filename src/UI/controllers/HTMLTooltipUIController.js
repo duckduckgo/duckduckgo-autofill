@@ -25,16 +25,16 @@ export class HTMLTooltipUIController extends UIController {
     _activeTooltip = null
 
     /** @type {HTMLTooltipControllerOptions} */
-    _options;
+    _options
 
     /** @type {import('../HTMLTooltip.js').HTMLTooltipOptions} */
-    _htmlTooltipOptions;
+    _htmlTooltipOptions
 
     /**
      * Overwritten when calling createTooltip
      * @type {import('../../Form/matching').SupportedTypes}
      */
-    _activeInputType = 'unknown';
+    _activeInputType = 'unknown'
 
     /**
      * @param {HTMLTooltipControllerOptions} options
@@ -44,12 +44,17 @@ export class HTMLTooltipUIController extends UIController {
         super()
         this._options = options
         this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
-        window.addEventListener('pointerdown', this, true)
-        window.addEventListener('pointerup', this, true)
+        // Use pointerup to mimic native click behaviour when we're in the top-frame webview
+        if (options.device.globalConfig.isTopFrame) {
+            window.addEventListener('pointerup', this, true)
+        } else {
+            // Pointerdown is needed here to avoid self-closing modals disappearing because this even happens in the page
+            window.addEventListener('pointerdown', this, true)
+        }
     }
 
-    _activeInput;
-    _activeInputOriginalAutocomplete;
+    _activeInput
+    _activeInputOriginalAutocomplete
 
     /**
      * Cleans up after this UI controller by removing the tooltip and all
@@ -214,9 +219,7 @@ export class HTMLTooltipUIController extends UIController {
 
         // @ts-ignore
         if (e.target.nodeName === 'DDG-AUTOFILL') {
-            e.preventDefault()
-            e.stopImmediatePropagation()
-            // Ignore pointer down events, we'll handle them on pointer up
+            this._handleClickInTooltip(e)
         } else {
             this.removeTooltip().catch(e => {
                 console.error('error removing tooltip', e)
@@ -232,15 +235,19 @@ export class HTMLTooltipUIController extends UIController {
 
         // @ts-ignore
         if (e.target.nodeName === 'DDG-AUTOFILL') {
-            e.preventDefault()
-            e.stopImmediatePropagation()
-
-            const isMainMouseButton = e.button === 0
-            if (!isMainMouseButton) return
-
-            const activeTooltip = this.getActiveTooltip()
-            activeTooltip?.dispatchClick()
+            this._handleClickInTooltip(e)
         }
+    }
+
+    _handleClickInTooltip (e) {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+
+        const isMainMouseButton = e.button === 0
+        if (!isMainMouseButton) return
+
+        const activeTooltip = this.getActiveTooltip()
+        activeTooltip?.dispatchClick()
     }
 
     async removeTooltip (_via) {

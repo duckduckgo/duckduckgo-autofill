@@ -1,20 +1,24 @@
-import * as css from './selectors-css.js'
+const {selectors} = require('./selectors-css.js')
 
 /**
  * This is here to mimic what Remote Configuration might look like
  * later on.
- *
- * @type {MatchingConfiguration}
  */
 const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
     matchers: {
         fields: {
-            email: {
-                type: 'email',
+            unknown: {
+                type: 'unknown',
                 strategies: {
-                    cssSelector: 'email',
-                    ddgMatcher: 'email',
+                    ddgMatcher: 'unknown'
+                }
+            },
+            emailAddress: {
+                type: 'emailAddress',
+                strategies: {
+                    cssSelector: 'emailAddress',
+                    ddgMatcher: 'emailAddress',
                     vendorRegex: 'email'
                 }
             },
@@ -190,7 +194,8 @@ const matchingConfiguration = {
             }
         },
         lists: {
-            email: ['email'],
+            unknown: ['unknown'],
+            emailAddress: ['emailAddress'],
             password: ['password'],
             username: ['username'],
             cc: ['cardName', 'cardNumber', 'cardSecurityCode', 'expirationMonth', 'expirationYear', 'expiration'],
@@ -213,95 +218,246 @@ const matchingConfiguration = {
         }
     },
     strategies: {
-        /** @type {CssSelectorConfiguration} */
-        cssSelector: {
-            selectors: {
-
-                // Generic
-                FORM_INPUTS_SELECTOR: css.__secret_do_not_use.FORM_INPUTS_SELECTOR,
-                SUBMIT_BUTTON_SELECTOR: css.__secret_do_not_use.SUBMIT_BUTTON_SELECTOR,
-                GENERIC_TEXT_FIELD: css.__secret_do_not_use.GENERIC_TEXT_FIELD,
-
-                // user
-                email: css.__secret_do_not_use.email,
-                password: css.__secret_do_not_use.password,
-                username: css.__secret_do_not_use.username,
-
-                // CC
-                cardName: css.__secret_do_not_use.cardName,
-                cardNumber: css.__secret_do_not_use.cardNumber,
-                cardSecurityCode: css.__secret_do_not_use.cardSecurityCode,
-                expirationMonth: css.__secret_do_not_use.expirationMonth,
-                expirationYear: css.__secret_do_not_use.expirationYear,
-                expiration: css.__secret_do_not_use.expiration,
-
-                // Identities
-                firstName: css.__secret_do_not_use.firstName,
-                middleName: css.__secret_do_not_use.middleName,
-                lastName: css.__secret_do_not_use.lastName,
-                fullName: css.__secret_do_not_use.fullName,
-                phone: css.__secret_do_not_use.phone,
-                addressStreet: css.__secret_do_not_use.addressStreet1,
-                addressStreet2: css.__secret_do_not_use.addressStreet2,
-                addressCity: css.__secret_do_not_use.addressCity,
-                addressProvince: css.__secret_do_not_use.addressProvince,
-                addressPostalCode: css.__secret_do_not_use.addressPostalCode,
-                addressCountryCode: css.__secret_do_not_use.addressCountryCode,
-                birthdayDay: css.__secret_do_not_use.birthdayDay,
-                birthdayMonth: css.__secret_do_not_use.birthdayMonth,
-                birthdayYear: css.__secret_do_not_use.birthdayYear
-            }
-        },
-        /** @type {DDGMatcherConfiguration} */
+        /** @type {{selectors: Record<CSSSelectorNames| string, string | string[]>}} */
+        cssSelector: {selectors},
+        /** @type {DDGMatcherConfigurationInternal} */
         ddgMatcher: {
             matchers: {
-                email: {match: '.mail\\b|apple.?id', skip: 'phone|(first.?|last.?)name|number|code', forceUnknown: 'search|filter|subject|title|\btab\b|otp'},
-                password: {match: 'password', skip: 'email|one-time|error|hint', forceUnknown: 'captcha|mfa|2fa|two factor|otp'},
-                username: {match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:))?$|benutzername', skip: 'phone', forceUnknown: 'search|policy'},
+                unknown: {
+                    match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' +
+                        // Italian
+                        '|cerca|filtr|oggetto|titolo|(due|più) fattori' +
+                        // German
+                        '|suche|filtern|betreff' +
+                        // Dutch
+                        '|zoeken|filter|onderwerp|titel' +
+                        // French
+                        '|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique' +
+                        // Spanish
+                        '|busca|busqueda|filtra|dos pasos|un solo uso' +
+                        // Swedish
+                        '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
+                    skip: 'phone|mobile|email|password'
+                },
+                emailAddress: {
+                    match: '.mail\\b|apple.?id' +
+                        // Italian
+                        '|posta elettronica' +
+                        // Dutch
+                        '|e.?mailadres' +
+                        // Spanish
+                        '|correo electr|correo-e|^correo$' +
+                        // Swedish
+                        '|\\be.?post|e.?postadress',
+                    skip: 'phone|(first.?|last.?)name|number|code',
+                    forceUnknown: 'search|filter|subject|title|\btab\b|otp'
+                },
+                password: {
+                    match: 'password' +
+                        // German
+                        '|passwort|kennwort' +
+                        // Dutch
+                        '|wachtwoord' +
+                        // French
+                        '|mot de passe' +
+                        // Spanish
+                        '|clave|contraseña' +
+                        // Swedish
+                        '|lösenord',
+                    skip: 'email|one-time|error|hint',
+                    forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
+                },
+                username: {
+                    match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
+                        // Italian
+                        '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente' +
+                        // German
+                        '|nutzername|anmeldename' +
+                        // Dutch
+                        '|gebruikersnaam' +
+                        // French
+                        '|nom d.utilisateur|identifiant|pseudo' +
+                        // Spanish
+                        '|usuari|cuenta|identificador|apodo' +
+                            // in Spanish dni and nie stand for id number, often used as username
+                            '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
+                        // Swedish
+                        '|användarnamn|kontonamn|användar-id',
+                    skip: 'phone',
+                    forceUnknown: 'search|policy'
+                },
 
                 // CC
                 cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
-                cardNumber: {match: 'card.*number|number.*card', forceUnknown: 'plus'},
+                cardNumber: {match: 'card.*number|number.*card', skip: 'phone', forceUnknown: 'plus'},
                 cardSecurityCode: {match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id'},
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    skip: 'mm[/\\s.\\-_—–]'
+                    skip: 'mm[/\\s.\\-_—–]|check'
                 },
-                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]'},
+                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check'},
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    skip: 'invalid'
+                    skip: 'invalid|^dd/|check'
                 },
 
                 // Identities
-                firstName: {match: '(first|given|fore).?name', skip: 'last'},
-                middleName: {match: '(middle|additional).?name'},
-                lastName: {match: '(last|family|sur)[^i]?name', skip: 'first'},
-                fullName: {match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b', forceUnknown: 'company|org|item'},
-                phone: {match: 'phone', skip: 'code|pass|country', forceUnknown: 'ext|type|otp'},
+                firstName: {
+                    match: '(first|given|fore).?name' +
+                        // Italian
+                        '|\\bnome',
+                    skip: 'last|cognome|completo'
+                },
+                middleName: {
+                    match: '(middle|additional).?name'
+                },
+                lastName: {
+                    match: '(last|family|sur)[^i]?name' +
+                        // Italian
+                        '|cognome',
+                    skip: 'first|\\bnome'
+                },
+                fullName: {
+                    match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' +
+                        // Italian
+                        '|\\bnome',
+                    forceUnknown: 'company|org|item'
+                },
+                phone: {
+                    match: 'phone|mobile' +
+                        // Italian
+                        '|telefono|cellulare',
+                    skip: 'code|pass|country',
+                    forceUnknown: 'ext|type|otp'
+                },
                 addressStreet: {
                     match: 'address',
                     forceUnknown: '\\bip\\b|duck|web|url',
-                    skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in'
+                    skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico'
                 },
                 addressStreet2: {
                     match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
                     forceUnknown: '\\bip\\b|duck',
                     skip: 'email|log.?in|sign.?in'
                 },
-                addressCity: {match: 'city|town', forceUnknown: 'vatican'},
-                addressProvince: {match: 'state|province|region|county', forceUnknown: 'united', skip: 'country'},
-                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code'},
-                addressCountryCode: {match: 'country'},
+                addressCity: {match: 'city|town|città|comune', skip: '\\bzip\\b|\\bcap\\b', forceUnknown: 'vatican'},
+                addressProvince: {match: 'state|province|region|county|provincia|regione', forceUnknown: 'united', skip: 'country'},
+                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'},
+                addressCountryCode: {match: 'country|\\bnation\\b|nazione|paese'},
                 birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
                 birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},
-                birthdayYear: {match: '(birth.*year|year.*birth)'}
+                birthdayYear: {match: '(birth.*year|year.*birth)'},
+                loginRegex: {
+                    match:
+                        'sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' +
+                        '|mfa-submit-form' + // fix chase.com
+                        '|unlock|logged in as' + // fix bitwarden
+                        // Italian
+                        '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password' +
+                        // German
+                        '|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl' +
+                        // Dutch
+                        '|inloggen' +
+                        // French
+                        '|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' +
+                        // Spanish
+                        '|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar' +
+                        // Swedish
+                        '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
+                },
+                signupRegex: {
+                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' +
+                        // Italian
+                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' +
+                        // German
+                        '|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite' +
+                        // Dutch
+                        '|nieuwsbrief|aanmaken|profiel' +
+                        // French
+                        '|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe' +
+                        // Spanish
+                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
+                        // Swedish
+                        '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
+                },
+                conservativeSignupRegex: {
+                    match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                        // Italian
+                        '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' +
+                        // German
+                        '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' +
+                        // Dutch
+                        '|registreren|eigenschappen|profiel|bijwerken' +
+                        // French
+                        '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' +
+                        // Spanish
+                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
+                        // Swedish
+                        '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera'
+                },
+                resetPasswordLink: {
+                    match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' +
+                        // Italian
+                        '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
+                        // German
+                        '|(vergessen|verloren|verlegt|wiederherstellen) passwort' +
+                        // Dutch
+                        '|wachtwoord (vergeten|reset)' +
+                        // French
+                        '|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)' +
+                        // Spanish
+                        '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' +
+                        // Swedish
+                        '|glömt lösenord|återställ lösenord'
+                },
+                loginProvidersRegex: {
+                    match: ' with ' +
+                        // Italian and Spanish
+                        '| con ' +
+                        // German
+                        '| mit ' +
+                        // Dutch
+                        '| met ' +
+                        // French
+                        '| avec '
+                },
+                submitButtonRegex: {
+                    match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' +
+                        // Italian
+                        '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' +
+                        // German
+                        '|senden|\\bja\\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden' +
+                        // Dutch
+                        '|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden' +
+                        // French
+                        '|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner' +
+                        // Spanish
+                        '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' +
+                        // Swedish
+                        '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
+                },
+                submitButtonUnlikelyRegex: {
+                    match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' +
+                        // Italian
+                        '|annulla|mostra|nascondi|stampa|indietro|già' +
+                        // German
+                        '|abbrechen|passwort|zeigen|verbergen|drucken|zurück' +
+                        // Dutch
+                        '|annuleer|wachtwoord|toon|vorige' +
+                        // French
+                        '|annuler|mot de passe|montrer|cacher|imprimer|retour|déjà' +
+                        // Spanish
+                        '|anular|cancelar|imprimir|cerrar' +
+                        // Swedish
+                        '|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan'
+                }
             }
         },
         /**
          * @type {VendorRegexConfiguration}
          */
         vendorRegex: {
+            /** @type {Record<keyof VendorRegexRules, RegExp | null>} */
             rules: {
                 email: null,
                 tel: null,
@@ -713,7 +869,7 @@ const matchingConfiguration = {
                         '|സംസ്ഥാനം' + // ml
                         '|استان' + // fa
                         '|राज्य' + // hi
-                        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))' + // tr
+                        '|((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]limiz|kent)(\\b|_|\\*))' + // tr
                         '|^시[·・]?도', // ko-KR
 
                     'postal-code':
@@ -760,7 +916,7 @@ const matchingConfiguration = {
                         '^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name' +
                         '|name.*first.*last|firstandlastname' +
                         '|nombre.*y.*apellidos' + // es
-                        '|^nom(?!bre)' + // fr-FR
+                        '|^nom(?!bre)\\b' + // fr-FR
                         '|お名前|氏名' + // ja-JP
                         '|^nome' + // pt-BR, pt-PT
                         '|نام.*نام.*خانوادگی' + // fa
@@ -774,7 +930,7 @@ const matchingConfiguration = {
                         '|nombre' + // es
                         '|forename|prénom|prenom' + // fr-FR
                         '|名' + // ja-JP
-                        '|nome' + // pt-BR, pt-PT
+                        '|\\bnome' + // pt-BR, pt-PT
                         '|Имя' + // ru
                         '|نام' + // fa
                         '|이름' + // ko-KR
@@ -815,7 +971,7 @@ const matchingConfiguration = {
                         '|(numero|número|numéro)(?!.*(document|fono|phone|réservation))',
 
                     'cc-exp-month':
-                    // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
+                        // 'expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth' + // todo: Decide if we need any of this
                         'gueltig|gültig|monat' + // de-DE
                         '|fecha' + // es
                         '|date.*exp' + // fr-FR
@@ -850,4 +1006,4 @@ const matchingConfiguration = {
     }
 }
 
-export { matchingConfiguration }
+module.exports = { matchingConfiguration }

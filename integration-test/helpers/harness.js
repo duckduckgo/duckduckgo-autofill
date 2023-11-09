@@ -33,12 +33,19 @@ export async function withEmailProtectionExtensionSignedInAs (page, username) {
 }
 
 /**
- * @param {import("@playwright/test").Page} page
- * @param {Record<string, string | boolean>} replacements
- * @param {Platform} [platform]
+ * @param {object} p
+ * @param {import("@playwright/test").Page} p.page
+ * @param {Record<string, string | boolean>} p.replacements
+ * @param {Platform} [p.platform]
+ * @param {{
+ *     MAX_INPUTS_PER_PAGE: number,
+ *     MAX_FORMS_PER_PAGE: number,
+ *     MAX_INPUTS_PER_FORM: number,
+ *     MAX_FORM_RESCANS: number
+ * }} [p.constants]
  * @return {Promise<void>}
  */
-function withStringReplacements (page, replacements, platform = 'macos') {
+function withStringReplacements ({page, replacements, platform = 'macos', constants}) {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
     for (let [keyName, value] of Object.entries(replacements)) {
@@ -46,6 +53,12 @@ function withStringReplacements (page, replacements, platform = 'macos') {
             ? value
             : JSON.stringify(value)
         output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
+    }
+
+    if (constants) {
+        for (let [keyName, value] of Object.entries(constants)) {
+            output = output.replace(new RegExp(`${keyName}: \\d+`), `${keyName}: ${value}`)
+        }
     }
 
     // 'macos' + 'ios'  can execute scripts before page scripts
@@ -98,6 +111,13 @@ export function createAutofillScript () {
     /** @type {Platform} */
     let platform = 'macos'
 
+    let constants = {
+        MAX_INPUTS_PER_PAGE: 100,
+        MAX_FORMS_PER_PAGE: 30,
+        MAX_INPUTS_PER_FORM: 80,
+        MAX_FORM_RESCANS: 50
+    }
+
     /** @type {ScriptBuilder} */
     const builder = {
         replace (key, value) {
@@ -116,11 +136,15 @@ export function createAutofillScript () {
             platform = p
             return this
         },
+        withConstants (consts) {
+            constants = consts
+            return this
+        },
         async applyTo (page) {
             if (platform === 'windows') {
                 replacements['isWindows'] = true
             }
-            return withStringReplacements(page, replacements, platform)
+            return withStringReplacements({page, replacements, platform, constants})
         }
     }
 
@@ -190,6 +214,8 @@ export function forwardConsoleMessages (page, _opts = {}) {
  * @return {Promise<PerformanceEntryList>}
  */
 export async function performanceEntries (page, measureName) {
+    // don't measure until the entries exist
+    await page.waitForFunction((measureName) => window.performance.getEntriesByName(measureName).length > 0, `${measureName}:end`, { timeout: 5000 })
     const result = await page.evaluate((measureName) => {
         window.performance?.measure?.(measureName, `${measureName}:start`, `${measureName}:end`)
         const entries = window.performance?.getEntriesByName(measureName)

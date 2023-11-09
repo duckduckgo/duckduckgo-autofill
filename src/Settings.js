@@ -24,9 +24,9 @@ import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
  */
 export class Settings {
     /** @type {GlobalConfig} */
-    globalConfig;
+    globalConfig
     /** @type {DeviceApi} */
-    deviceApi;
+    deviceApi
     /** @type {AutofillFeatureToggles | null} */
     _featureToggles = null
     /** @type {AvailableInputTypes | null} */
@@ -119,6 +119,10 @@ export class Settings {
      */
     async getAvailableInputTypes () {
         try {
+            // This info is not needed in the topFrame, so we avoid calling the native app
+            if (this.globalConfig.isTopFrame) {
+                return Settings.defaults.availableInputTypes
+            }
             return await this.deviceApi.request(new GetAvailableInputTypesCall(null))
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {

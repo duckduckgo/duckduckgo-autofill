@@ -80,6 +80,8 @@ interface ScriptBuilder {
     tap(fn: (replacements: Partial<Replacements>, platform: string) => void): Omit<ScriptBuilder, "applyTo">
     // set the platform - this is required
     platform(platform: Platform): Omit<ScriptBuilder, "platform">
+    // can alter constants as defined in src/constants.js if needed
+    withConstants(constants: any): Omit<ScriptBuilder, "withConstants">
     // apply to the page, this is the final step
     applyTo(page: import("@playwright/test").Page): Promise<void>
 }

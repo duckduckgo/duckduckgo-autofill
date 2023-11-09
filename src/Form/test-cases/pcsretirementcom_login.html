@@ -1,0 +1,55 @@
+<!-- https://www.pcsretirement.com/login -->
+<!-- If this test failing blocks a nice improvement, ignore it. This site has a bug, it's not the algo's fault. -->
+
+<form method="post" id="loginForm" onsubmit="">
+    <input type="hidden" id="UserType" name="UserType" value="Participant">
+    <div class="login-form-title nowrap"><h4>Log in to your account</h4></div>
+
+    <div class="user-type-panel">
+        <input type="button" value="Participant" name="userTypeButton" id="Participant" class="btn brand-primary-color brand-primary-solid" onclick="UpdateUserType($(this), 'Participant')">
+        <input type="button" value="Sponsor/TPA" name="userTypeButton" id="Sponsor" class="btn brand-primary-color user-type-button" onclick="UpdateUserType($(this), 'Sponsor')">
+        <input type="button" value="Advisor" name="userTypeButton" id="Advisor" class="btn brand-primary-color user-type-button" onclick="UpdateUserType($(this), 'Advisor')">
+    </div>
+
+    <div name="languageSelectorRow" class="content-row form-row form-check form-check-inline pl-1 pt-1 pb-3">
+        <input type="radio" class="form-check-input" name="languageSelector" value="English" checked="checked">
+        <label class="form-check-label mr-3" for="languageSelector">English</label>
+        <input type="radio" class="form-check-input" name="languageSelector" value="SPA">
+        <label class="form-check-label" for="languageSelector">Español</label>
+    </div>
+
+
+    <div class="content-row">
+        <div class="form-group">
+            <label for="Username" class="form-label required">Username </label>
+            <input class="form-control" placeholder="Username " autocorrect="off" autocapitalize="off" spellcheck="false" type="text" id="Username" name="Username" value="" data-manual-scoring="username">
+        </div>
+        <div class="form-group">
+            <label for="Username" class="form-label required">Password </label>
+            <input type="password" class="form-control" placeholder="Please enter your password " id="Password" name="Password" data-manual-scoring="password">
+            <div class="brand-primary-color text-right nowrap mt-2">
+                <a id="forgotPasswordLink" href="#">Having trouble logging in? </a>
+            </div>
+        </div>
+    </div>
+    <div class="content-row">
+        <button id="submit-button" type="submit" class="btn btn-block brand-primary-solid" disabled="" data-manual-submit>Log In</button>
+    </div>
+    <div class="left-right-lines-wrapper content-row nowrap">
+        <hr class="brand-secondary-solid">
+        <div class="nowrap">Don't have credentials</div>
+        <hr class="brand-secondary-solid">
+    </div>
+    <div name="participant-redirection" class="content-row">
+        <a href="https://www.pcsretirement.com/login/Register/Search" class="btn btn-block brand-secondary-solid user-type-button nowrap" role="button">Register for web access</a>
+    </div>
+    <div name="advisor-redirection" class="content-row hidden">
+        <a href="https://www.pcsretirement.com/resources/advisor-lab#registration" class="btn btn-block brand-secondary-solid user-type-button nowrap" role="button">Register for web access</a>
+    </div>
+    <div name="sponsor-redirection" class="content-row hidden">
+        <a href="https://www.pcsretirement.com/login/Contact" class="btn btn-block brand-secondary-solid user-type-button nowrap" role="button">Register for web access</a>
+    </div>
+
+    <input id="RequestClientIp" name="RequestClientIp" type="hidden" value="">
+    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8HnUUXEcWsVAgsnceZ6J-X6_Oq0F840ZVBUdV12lF41SqPnfe6NC4PzG2m3rSzPWBPG9GuQEhWy8kEHE1OH7WQxn0zk0EYECYxtNuVljuBTYhG19JDmOJXVydD_Xs2rCaJTKmJCCYx_7MnWptRijbEs">
+</form>

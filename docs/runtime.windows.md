@@ -1,6 +1,6 @@
 ## Links 
 
-- [Privacy Test Pages, Form Submissions](https://privacy-test-pages.glitch.me/autofill/form-submission.html)
+- [Privacy Test Pages, Form Submissions](https://privacy-test-pages.site/autofill/form-submission.html)
 
 ## `getRuntimeConfiguration()`
 

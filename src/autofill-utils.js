@@ -1,4 +1,5 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
+import {constants} from './constants.js'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -52,6 +53,9 @@ const autofillEnabled = (globalConfig, processConfig) => {
 const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
     const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
+        if (shouldLog()) {
+            console.log('⚠️ Autofill disabled by remote config')
+        }
         return false
     }
 
@@ -61,6 +65,9 @@ const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
 const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
     const site = processedConfig.site
     if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
+        if (shouldLog()) {
+            console.log('⚠️ In-context signup disabled by remote config')
+        }
         return false
     }
 
@@ -295,28 +302,31 @@ function escapeXML (str) {
     return String(str).replace(/[&"'<>/]/g, m => replacements[m])
 }
 
-const SUBMIT_BUTTON_REGEX = /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate/i
-const SUBMIT_BUTTON_UNLIKELY_REGEX = /facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print/i
 /**
  * Determines if an element is likely to be a submit button
  * @param {HTMLElement} el A button, input, anchor or other element with role=button
+ * @param {import("./Form/matching").Matching} matching
  * @return {boolean}
  */
-const isLikelyASubmitButton = (el) => {
-    const text = getText(el)
+const isLikelyASubmitButton = (el, matching) => {
+    const text = getTextShallow(el)
     const ariaLabel = el.getAttribute('aria-label') || ''
     const dataTestId = el.getAttribute('data-test-id') || ''
 
+    if (
+        (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
+        el.getAttribute('name') === 'submit') && // is called "submit"
+        !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
+    ) return true
+
     return (
-        el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-        el.getAttribute('name') === 'submit' || // is called "submit"
-        /primary|submit/i.test(el.className) || // has high-signal submit classes
-        /submit/i.test(dataTestId) ||
-        SUBMIT_BUTTON_REGEX.test(text) || // has high-signal text
-        (el.offsetHeight * el.offsetWidth >= 10000 && !/secondary/i.test(el.className)) // it's a large element 250x40px
+        safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
+        safeRegexTest(/submit/i, dataTestId) ||
+        safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
+        (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className)) // it's a large element 250x40px
     ) &&
     el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !SUBMIT_BUTTON_UNLIKELY_REGEX.test(text + ' ' + ariaLabel)
+    !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
 }
 
 /**
@@ -326,33 +336,43 @@ const isLikelyASubmitButton = (el) => {
  */
 const buttonMatchesFormType = (el, formObj) => {
     if (formObj.isLogin) {
-        return !/sign.?up|register|join/i.test(el.textContent || '')
+        return !safeRegexTest(/sign.?up|register|join/i, el.textContent || '')
     } else if (formObj.isSignup) {
-        return !/(log|sign).?([io])n/i.test(el.textContent || '')
+        return !safeRegexTest(/(log|sign).?([io])n/i, el.textContent || '')
     } else {
         return true
     }
 }
 
+const buttonInputTypes = ['submit', 'button']
 /**
- * Get the text of an element
- * @param {Element} el
+ * Get the text of an element, one level deep max
+ * @param {Node} el
  * @returns {string}
  */
-const getText = (el) => {
+const getTextShallow = (el) => {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
     if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
 
-    if (el instanceof HTMLInputElement && ['submit', 'button'].includes(el.type)) return el.value
-    if (el instanceof HTMLInputElement && el.type === 'image') {
-        return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+    if (el instanceof HTMLInputElement) {
+        if (buttonInputTypes.includes(el.type)) {
+            return el.value
+        }
+
+        if (el.type === 'image') {
+            return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+        }
     }
 
-    return removeExcessWhitespace(
-        Array.from(el.childNodes).reduce((text, child) =>
-            child instanceof Text ? text + ' ' + child.textContent : text, '')
-    )
+    let text = ''
+    for (const childNode of el.childNodes) {
+        if (childNode instanceof Text) {
+            text += ' ' + childNode.textContent
+        }
+    }
+
+    return removeExcessWhitespace(text)
 }
 
 /**
@@ -397,15 +417,40 @@ const wasAutofilledByChrome = (input) => {
 }
 
 /**
- * Checks if we should log debug info to the console
+ * Checks if we should log form analysis debug info to the console
  * @returns {boolean}
  */
 function shouldLog () {
+    return readDebugSetting('ddg-autofill-debug')
+}
+
+/**
+ * Checks if we should log performance info to the console
+ * @returns {boolean}
+ */
+function shouldLogPerformance () {
+    return readDebugSetting('ddg-autofill-perf')
+}
+
+/**
+ * Check if a sessionStorage item is set to 'true'
+ * @param setting
+ * @returns {boolean}
+ */
+function readDebugSetting (setting) {
     // sessionStorage throws in invalid schemes like data: and file:
     try {
-        return window.sessionStorage?.getItem('ddg-autofill-debug') === 'true'
+        return window.sessionStorage?.getItem(setting) === 'true'
     } catch (e) {
         return false
+    }
+}
+
+function logPerformance (markName) {
+    if (shouldLogPerformance()) {
+        const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`)
+        console.log(`${markName} took ${Math.round(measurement?.duration)}ms`)
+        window.performance?.clearMarks()
     }
 }
 
@@ -462,6 +507,18 @@ function isFormLikelyToBeUsedAsPageWrapper (form) {
     return formChildrenPercentage > 50
 }
 
+/**
+ * Wrapper around RegExp.test that safeguard against checking huge strings
+ * @param {RegExp | undefined} regex
+ * @param {String} string
+ * @returns {boolean}
+ */
+function safeRegexTest (regex, string) {
+    if (!string || !regex || string.length > constants.TEXT_LENGTH_CUTOFF) return false
+
+    return regex.test(string)
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -481,12 +538,15 @@ export {
     escapeXML,
     isLikelyASubmitButton,
     buttonMatchesFormType,
-    getText,
+    getTextShallow,
     isLocalNetwork,
     isValidTLD,
     wasAutofilledByChrome,
     shouldLog,
+    shouldLogPerformance,
+    logPerformance,
     whenIdle,
     truncateFromMiddle,
-    isFormLikelyToBeUsedAsPageWrapper
+    isFormLikelyToBeUsedAsPageWrapper,
+    safeRegexTest
 }

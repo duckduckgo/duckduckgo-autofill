@@ -30,6 +30,7 @@
         "integration-test/extension/autofill.js",
         "integration-test/extension/autofill-debug.js",
         "src/deviceApiCalls/__generated__/*",
+        "src/Form/matching-config/__generated__/*",
         "playwright-report/*"
     ]
 }

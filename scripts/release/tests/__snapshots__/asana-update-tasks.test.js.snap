@@ -10,7 +10,7 @@ exports[`when all data is available updates each platforms task notes 1`] = `
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/android/pr/1\\">Android PR</a></li>
+    <li><a href="https://github.com/duckduckgo/android/pr/1">Android PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -25,8 +25,8 @@ exports[`when all data is available updates each platforms task notes 1`] = `
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/BrowserServicesKit/pr/1\\">BrowserServicesKit PR</a></li>
-    <li><a href=\\"https://github.com/duckduckgo/ios/pr/1\\">iOS PR</a></li><li><a href=\\"https://github.com/duckduckgo/macos-browser/pr/1\\">macOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/BrowserServicesKit/pr/1">BrowserServicesKit PR</a></li>
+    <li><a href="https://github.com/duckduckgo/ios/pr/1">iOS PR</a></li><li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
 </ol>
 <h2>Release notes:</h2>
 <p>[[notes]]</p>",
@@ -40,7 +40,7 @@ exports[`when all data is available updates each platforms task notes 1`] = `
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/ios/pr/1\\">iOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/ios/pr/1">iOS PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -55,7 +55,7 @@ exports[`when all data is available updates each platforms task notes 1`] = `
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/macos-browser/pr/1\\">macOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -70,7 +70,7 @@ exports[`when all data is available updates each platforms task notes 1`] = `
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/windows-browser/pr/1\\">Windows PR</a></li>
+    <li><a href="https://github.com/duckduckgo/windows-browser/pr/1">Windows PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -90,7 +90,7 @@ exports[`when not all PR URLs are available updates each platforms task notes ex
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/android/pr/1\\">Android PR</a></li>
+    <li><a href="https://github.com/duckduckgo/android/pr/1">Android PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -105,8 +105,8 @@ exports[`when not all PR URLs are available updates each platforms task notes ex
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/BrowserServicesKit/pr/1\\">BrowserServicesKit PR</a></li>
-    <li>Error creating iOS PR</li><li><a href=\\"https://github.com/duckduckgo/macos-browser/pr/1\\">macOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/BrowserServicesKit/pr/1">BrowserServicesKit PR</a></li>
+    <li>Error creating iOS PR</li><li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
 </ol>
 <h2>Release notes:</h2>
 <p>[[notes]]</p>",
@@ -120,7 +120,7 @@ exports[`when not all PR URLs are available updates each platforms task notes ex
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/macos-browser/pr/1\\">macOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -135,7 +135,7 @@ exports[`when not all PR URLs are available updates each platforms task notes ex
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href=\\"https://github.com/duckduckgo/windows-browser/pr/1\\">Windows PR</a></li>
+    <li><a href="https://github.com/duckduckgo/windows-browser/pr/1">Windows PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>

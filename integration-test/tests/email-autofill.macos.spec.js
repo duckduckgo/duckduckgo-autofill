@@ -1,10 +1,10 @@
 import {
-    createAutofillScript,
-    forwardConsoleMessages, performanceEntries
+    createAutofillScript, defaultMacosScript,
+    forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, signupPage} from '../helpers/pages.js'
+import {emailAutofillPage, scannerPerf, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAvailableInputTypes, stripDuckExtension} from '../helpers/utils.js'
 import {testContext} from '../helpers/test-context.js'
@@ -278,19 +278,59 @@ test.describe('macos', () => {
         ])
     })
     test.describe('matching performance', () => {
-        test.skip('matching performance v1', async ({page}) => {
-            await forwardConsoleMessages(page)
+        test('real-world form', async ({page}) => {
+            await createWebkitMocks().applyTo(page)
+            await defaultMacosScript(page)
+
+            const perfPage = scannerPerf(page)
+            perfPage.navigate('pages/usps_signup.html')
+
+            await perfPage.validateInitialScanPerf(200)
+        })
+
+        test('wall of 1000 fields with production settings', async ({page}) => {
+            await createWebkitMocks().applyTo(page)
+            await defaultMacosScript(page)
+
+            const perfPage = scannerPerf(page)
+            perfPage.navigate()
+
+            // In production, we expect autofill to bail on such a page
+            await perfPage.validateInitialScanPerf(10)
+        })
+
+        test('wall of 1000 fields with extreme settings', async ({page}) => {
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .platform('macos')
+                // Up the failsafe threshold to run the test
+                .withConstants({
+                    MAX_INPUTS_PER_PAGE: 2000,
+                    MAX_INPUTS_PER_FORM: 2000
+                })
+                .applyTo(page)
+
+            const perfPage = scannerPerf(page)
+            perfPage.navigate()
+
+            await perfPage.validateInitialScanPerf(300)
+        })
+
+        // This could cause a crash or hang in certain browsers (Webkit 17)
+        test('large dom with potentially huge regex checks', async ({page}) => {
+            // If this fails, the process is expected to crash or hang. The timeout hopefully shortens the feedback loop.
+            test.setTimeout(5000)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
                 .platform('macos')
                 .applyTo(page)
 
-            await page.goto('src/Form/test-cases/usps_signup.html')
-            const r = await performanceEntries(page, 'scanner:init')
-            for (let performanceEntry of r) {
-                console.log(performanceEntry.duration)
-            }
+            const perfPage = scannerPerf(page)
+            perfPage.navigate(constants.pages['perf-huge-regex'])
+
+            await perfPage.validateInitialScanPerf(80)
         })
     })
 })

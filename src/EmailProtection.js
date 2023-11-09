@@ -3,7 +3,7 @@
  */
 class EmailProtection {
     /** @type {string|null} */
-    #previous = null;
+    #previous = null
 
     /** @param {import("./DeviceInterface/InterfacePrototype").default} device */
     constructor (device) {

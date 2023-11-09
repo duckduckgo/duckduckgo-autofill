@@ -24,15 +24,15 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * Mark top frame as not stripping credential data
      * @type {boolean}
      */
-    stripCredentials = false;
+    stripCredentials = false
 
     /**
      * overlay API helpers
      */
-    overlay = overlayApi(this);
+    overlay = overlayApi(this)
 
-    previousScreenX = 0;
-    previousScreenY = 0;
+    previousScreenX = 0
+    previousScreenY = 0
 
     /**
      * Because we're running inside the Overlay, we always create the HTML

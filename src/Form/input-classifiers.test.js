@@ -6,13 +6,15 @@ import { getInputSubtype, createMatching } from './matching.js'
 import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
-import {SUBMIT_BUTTON_SELECTOR} from './selectors-css.js'
 import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js'
 
 /**
  * @type {object[]}
  */
 const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'test-cases/index.json')).toString('utf-8'))
+testCases.forEach(testCase => {
+    testCase.testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', testCase.html), 'utf-8')
+})
 
 /**
  * @param {HTMLInputElement} el
@@ -147,15 +149,16 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         expectedSubmitFalsePositives = 0,
         expectedSubmitFalseNegatives = 0,
         title = '__test__',
-        hasExtraWrappers = true
+        hasExtraWrappers = true,
+        testContent
     } = testCase
 
     const testTextString = expectedFailures.length > 0
         ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
         : `should NOT contain failures`
 
-    it(testTextString, () => {
-        const testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', html), 'utf-8')
+    it.concurrent(testTextString, async () => {
+        document.body.innerHTML = ''
 
         let baseWrapper = document.body
 
@@ -167,7 +170,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         baseWrapper.innerHTML = testContent
         document.title = title
 
-        const buttons = document.querySelectorAll(SUBMIT_BUTTON_SELECTOR)
+        const matching = createMatching()
+        const buttons = document.querySelectorAll(matching.cssSelector('submitButtonSelector'))
         buttons.forEach((button) => {
             // We're doing this so that isPotentiallyViewable(button) === true. See jest.setup.js for more info
             // @ts-ignore

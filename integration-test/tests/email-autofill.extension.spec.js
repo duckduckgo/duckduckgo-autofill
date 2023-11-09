@@ -1,7 +1,7 @@
 import {forwardConsoleMessages, withEmailProtectionExtensionSignedInAs} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage} from '../helpers/pages.js'
+import {emailAutofillPage, loginPage} from '../helpers/pages.js'
 import { stripDuckExtension } from '../helpers/utils.js'
 import {testContext} from '../helpers/test-context.js'
 
@@ -65,5 +65,33 @@ test.describe('chrome extension', () => {
             'autofill_show', 'autofill_private_address', // first private autofill
             'autofill_show', 'autofill_private_address' // second private autofill
         ])
+    })
+
+    test('should not close the modal when autofilling', async ({page}) => {
+        const {personalAddress} = constants.fields.email
+
+        forwardConsoleMessages(page)
+        await withEmailProtectionExtensionSignedInAs(page, stripDuckExtension(personalAddress))
+        // page abstraction
+        const emailPage = loginPage(page)
+        await emailPage.navigate('signupWithFormInModal')
+
+        await emailPage.openDialog()
+
+        await emailPage.clickIntoUsernameInput()
+
+        // buttons, unique to the extension
+        const personalAddressBtn = await page.locator(`text=Use ${personalAddress} Block email trackers`)
+
+        // click first option
+        await personalAddressBtn.click()
+
+        // ensure autofill populates the field
+        await emailPage.assertUsernameFilled(personalAddress)
+
+        await emailPage.assertDialogOpen()
+
+        await emailPage.clickOutsideTheDialog()
+        await emailPage.assertDialogClose()
     })
 })

@@ -46,8 +46,8 @@ class InterfacePrototype {
     autopromptFired = false
 
     /** @type {PasswordGenerator} */
-    passwordGenerator = new PasswordGenerator();
-    emailProtection = new EmailProtection(this);
+    passwordGenerator = new PasswordGenerator()
+    emailProtection = new EmailProtection(this)
 
     /** @type {import("../InContextSignup.js").InContextSignup | null} */
     inContextSignup = null
@@ -59,21 +59,21 @@ class InterfacePrototype {
     }
 
     /** @type {GlobalConfig} */
-    globalConfig;
+    globalConfig
 
     /** @type {import('../Scanner').Scanner} */
-    scanner;
+    scanner
 
     /** @type {import("../UI/controllers/UIController.js").UIController | null} */
-    uiController;
+    uiController
 
     /** @type {import("../../packages/device-api").DeviceApi} */
-    deviceApi;
+    deviceApi
 
     /** @type {boolean} */
-    isInitializationStarted;
+    isInitializationStarted
 
-    /** @type {(()=>void) | null} */
+    /** @type {((reason, ...rest) => void) | null} */
     _scannerCleanup = null
 
     /**
@@ -102,9 +102,12 @@ class InterfacePrototype {
         return new NativeUIController()
     }
 
-    removeAutofillUIFromPage () {
+    /**
+     * @param {string} reason
+     */
+    removeAutofillUIFromPage (reason) {
         this.uiController?.destroy()
-        this._scannerCleanup?.()
+        this._scannerCleanup?.(reason)
     }
 
     get hasLocalAddresses () {
@@ -275,7 +278,7 @@ class InterfacePrototype {
         await this.postInit()
 
         if (this.settings.featureToggles.credentials_saving) {
-            initFormSubmissionsApi(this.scanner.forms)
+            initFormSubmissionsApi(this.scanner.forms, this.scanner.matching)
         }
     }
 
@@ -332,7 +335,7 @@ class InterfacePrototype {
     postInit () {
         const cleanup = this.scanner.init()
         this.addLogoutListener(() => {
-            cleanup()
+            cleanup('Logged out')
             if (this.globalConfig.isDDGDomain) {
                 notifyWebApp({ deviceSignedIn: {value: false} })
             }

@@ -1,22 +1,13 @@
 import { removeExcessWhitespace, Matching } from './matching.js'
 import { constants } from '../constants.js'
-import { matchingConfiguration } from './matching-configuration.js'
-import { getText, isLikelyASubmitButton } from '../autofill-utils.js'
-
-const loginRegex = new RegExp(/sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|unlock|logged in as|mfa-submit-form/i)
-const signupRegex = new RegExp(
-    /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm?/i
-)
-const conservativeSignupRegex = new RegExp(/sign.?up|join|register|enroll|newsletter|subscri(be|ption)|settings|preferences|profile|update/i)
-const strictSignupRegex = new RegExp(/sign.?up|join|register|(create|new).+account|enroll|settings|preferences|profile|update/i)
-const resetPasswordLink = new RegExp(/(forgot(ten)?|reset|don't remember) (your )?password|password forgotten/i)
-const loginProvidersRegex = new RegExp(/ with /i)
+import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
+import {getTextShallow, isLikelyASubmitButton, safeRegexTest} from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */
-    form;
+    form
     /** @type Matching */
-    matching;
+    matching
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
@@ -126,16 +117,29 @@ class FormAnalyzer {
         shouldCheckUnifiedForm = false,
         shouldBeConservative = false
     }) {
-        const matchesLogin = /current.?password/i.test(string) || loginRegex.test(string) || resetPasswordLink.test(string)
+        // If the string is empty or too long (noisy) do nothing
+        if (
+            !string ||
+            string.length > constants.TEXT_LENGTH_CUTOFF
+        ) return this
+
+        const matchesLogin =
+            safeRegexTest(/current.?password/i, string) ||
+                safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), string) ||
+                safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)
 
         // Check explicitly for unified login/signup forms
-        if (shouldCheckUnifiedForm && matchesLogin && strictSignupRegex.test(string)) {
+        if (
+            shouldCheckUnifiedForm &&
+            matchesLogin &&
+            safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), string)
+        ) {
             this.increaseHybridSignal(strength, signalType)
             return this
         }
 
-        const signupRegexToUse = shouldBeConservative ? conservativeSignupRegex : signupRegex
-        const matchesSignup = /new.?password/i.test(string) || signupRegexToUse.test(string)
+        const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex')
+        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string)
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -162,15 +166,34 @@ class FormAnalyzer {
         })
     }
 
+    evaluateUrl () {
+        const path = window.location.pathname
+
+        const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), path)
+        const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path)
+
+        // If the url matches both, do nothing: the signal is probably confounding
+        if (matchesLogin && matchesSignup) return
+
+        if (matchesLogin) {
+            this.decreaseSignalBy(1, 'url matches login')
+        }
+
+        if (matchesSignup) {
+            this.increaseSignalBy(1, 'url matches signup')
+        }
+    }
+
     evaluatePageTitle () {
         const pageTitle = document.title
         this.updateSignal({string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true})
     }
 
     evaluatePageHeadings () {
-        const headings = document.querySelectorAll('h1, h2, h3, [class*="title"], [id*="title"]')
-        headings.forEach(({textContent}) => {
-            textContent = removeExcessWhitespace(textContent || '')
+        const headings = document.querySelectorAll('h1, h2, h3')
+        headings.forEach((heading) => {
+            const textContent = removeExcessWhitespace(heading.textContent || '')
+
             this.updateSignal({
                 string: textContent,
                 strength: 0.5,
@@ -185,7 +208,7 @@ class FormAnalyzer {
         this.evaluatePageTitle()
         this.evaluatePageHeadings()
         // Check for submit buttons
-        const buttons = document.querySelectorAll(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))
+        const buttons = document.querySelectorAll(this.matching.cssSelector('submitButtonSelector'))
         buttons.forEach(button => {
             // if the button has a form, it's not related to our input, because our input has no form here
             if (button instanceof HTMLButtonElement) {
@@ -198,7 +221,7 @@ class FormAnalyzer {
     }
 
     evaluateElement (el) {
-        const string = getText(el)
+        const string = getTextShallow(el)
 
         if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
@@ -207,12 +230,13 @@ class FormAnalyzer {
                 strength: 5,
                 signalType: `explicit: ${el.getAttribute('autocomplete')}`
             })
+            return
         }
 
         // check button contents
-        if (el.matches(this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR'))) {
+        if (el.matches(this.matching.cssSelector('submitButtonSelector') + ', *[class*=button]')) {
             // If we're confident this is the submit button, it's a stronger signal
-            let likelyASubmit = isLikelyASubmitButton(el)
+            let likelyASubmit = isLikelyASubmitButton(el, this.matching)
             if (likelyASubmit) {
                 this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(
                     (submit) => {
@@ -225,6 +249,7 @@ class FormAnalyzer {
             }
             const strength = likelyASubmit ? 20 : 2
             this.updateSignal({string, strength, signalType: `submit: ${string}`})
+            return
         }
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
         if (
@@ -233,31 +258,34 @@ class FormAnalyzer {
             el.matches('button[class*=secondary]')
         ) {
             let shouldFlip = true
-            if (
-                resetPasswordLink.test(string) || // Don't flip forgotten password links
-                loginProvidersRegex.test(string) // Don't flip login providers links
-            ) {
+            let strength = 1
+            // Don't flip forgotten password links
+            if (safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)) {
+                shouldFlip = false
+                strength = 3
+            } else if (safeRegexTest(this.matching.getDDGMatcherRegex('loginProvidersRegex'), string)) {
+                // Don't flip login providers links
                 shouldFlip = false
             }
-            this.updateSignal({string, strength: 1, signalType: `external link: ${string}`, shouldFlip})
+            this.updateSignal({string, strength, signalType: `external link: ${string}`, shouldFlip})
         } else {
             // any other case
-            // only consider the el if it's a small text to avoid noisy disclaimers
-            if (removeExcessWhitespace(el.textContent)?.length < constants.TEXT_LENGTH_CUTOFF) {
-                this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
-            }
+            this.updateSignal({string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true})
         }
     }
 
     evaluateForm () {
+        // Check page url
+        this.evaluateUrl()
+
         // Check page title
         this.evaluatePageTitle()
 
         // Check form attributes
         this.evaluateElAttributes(this.form)
 
-        // Check form contents (skip select and option because they contain too much noise)
-        this.form.querySelectorAll('*:not(select):not(option):not(script)').forEach(el => {
+        // Check form contents (noisy elements are skipped with the safeUniversalSelector)
+        this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
             // Check if element is not hidden. Note that we can't use offsetHeight
             // nor intersectionObserver, because the element could be outside the
             // viewport or its parent hidden
@@ -266,7 +294,7 @@ class FormAnalyzer {
         })
 
         // A form with many fields is unlikely to be a login form
-        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('GENERIC_TEXT_FIELD'))
+        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'))
         if (relevantFields.length >= 4) {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
         }
@@ -276,6 +304,45 @@ class FormAnalyzer {
             this.evaluatePageHeadings()
         }
         return this
+    }
+
+    /** @type {undefined|boolean} */
+    _isCCForm = undefined
+    /**
+     * Tries to infer if it's a credit card form
+     * @returns {boolean}
+     */
+    isCCForm () {
+        if (this._isCCForm !== undefined) return this._isCCForm
+
+        const formEl = this.form
+        const ccFieldSelector = this.matching.joinCssSelectors('cc')
+        if (!ccFieldSelector) {
+            this._isCCForm = false
+            return this._isCCForm
+        }
+        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector)
+        // If the form contains one of the specific selectors, we have high confidence
+        if (hasCCSelectorChild) {
+            this._isCCForm = true
+            return this._isCCForm
+        }
+
+        // Read form attributes to find a signal
+        const hasCCAttribute = [...formEl.attributes].some(({name, value}) =>
+            safeRegexTest(/(credit|payment).?card/i, `${name}=${value}`)
+        )
+        if (hasCCAttribute) {
+            this._isCCForm = true
+            return this._isCCForm
+        }
+
+        // Match form textContent against common cc fields (includes hidden labels)
+        const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
+
+        // We check for more than one to minimise false positives
+        this._isCCForm = Boolean(textMatches && textMatches.length > 1)
+        return this._isCCForm
     }
 }
 

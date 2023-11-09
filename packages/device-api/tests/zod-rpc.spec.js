@@ -38,7 +38,7 @@ describe('device-api', () => {
     describe('can send new messages', () => {
         it('when there is no validation', async () => {
             class T1 extends DeviceApiCall {
-        method = 'abc';
+                method = 'abc'
             }
             const { handler, transport } = testIo()
             await handler.notify(new T1(null))
@@ -47,8 +47,8 @@ describe('device-api', () => {
         it('when there is params validation', async () => {
             expect.assertions(2)
             class T1 extends DeviceApiCall {
-        method = 'abc';
-        paramsValidator = z.string();
+                method = 'abc'
+                paramsValidator = z.string()
             }
             const { handler, transport } = testIo()
             try {
@@ -64,8 +64,8 @@ describe('device-api', () => {
         it('when there is result validation', async () => {
             expect.assertions(2)
             class T1 extends DeviceApiCall {
-        method = 'abc';
-        resultValidator = z.string();
+                method = 'abc'
+                resultValidator = z.string()
             }
             const { handler, transport } = testIo()
             try {
@@ -85,7 +85,7 @@ describe('device-api', () => {
             }
             const handler = new DeviceApi(transport)
             class T1 extends DeviceApiCall {
-                method = 'abc';
+                method = 'abc'
                 resultValidator = z.object({
                     success: z.string().optional(),
                     error: z.object({ message: z.string() })

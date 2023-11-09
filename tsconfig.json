@@ -27,18 +27,19 @@
     "maxNodeModuleJsDepth": 1
   },
   "include": [
-    "node_modules/@duckduckgo/content-scope-utils",
     "src",
     "scripts",
     "packages/password",
     "integration-test",
     "packages/device-api",
+    "packages/messaging",
     "*.js",
     "types.d.ts"
   ],
   "exclude": [
     "jest-test-environment.js",
     "Gruntfile.js",
-    "integration-test/extension"
+    "integration-test/extension",
+    "scripts/precompile-regexes.js"
   ]
 }

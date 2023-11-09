@@ -11,7 +11,7 @@
 <body>
 <p><a href="../index.html">[Home]</a></p>
 
-<p id="demo"><button type="button" id="open-modal">Click here to login</button></p>
+<p id="demo"><button type="button" id="open-modal">Click here to open dialog</button></p>
 
 <p id="random-text">Some random text to use as "something outside the dialog element". Clicking here should close the dialog (if open).</p>
 
@@ -37,7 +37,7 @@
     }, {once: true})
     window.addEventListener('pointerdown', (e) => {
       if (!dialogEl.contains(e.target)) {dialogEl.setAttribute('hidden', '')}
-    }, {once: true})
+    })
   })
 
   const form = document.forms.login;

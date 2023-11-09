@@ -7,10 +7,10 @@ import {
     isEventWithinDax,
     isLikelyASubmitButton,
     isPotentiallyViewable, buttonMatchesFormType,
-    safeExecute, getText, wasAutofilledByChrome, shouldLog
+    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog, safeRegexTest
 } from '../autofill-utils.js'
 
-import {getInputSubtype, getInputMainType, createMatching, safeRegex} from './matching.js'
+import {getInputSubtype, getInputMainType, createMatching} from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
@@ -26,17 +26,17 @@ import {constants} from '../constants.js'
 const {
     ATTR_AUTOFILL,
     ATTR_INPUT_TYPE,
-    MAX_FORM_MUT_OBS_COUNT,
-    MAX_INPUTS_PER_FORM
+    MAX_INPUTS_PER_FORM,
+    MAX_FORM_RESCANS
 } = constants
 
 class Form {
     /** @type {import("../Form/matching").Matching} */
-    matching;
+    matching
     /** @type {HTMLElement} */
-    form;
+    form
     /** @type {HTMLInputElement | null} */
-    activeInput;
+    activeInput
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
@@ -77,25 +77,26 @@ class Form {
             }
         })
 
-        this.mutObsCount = 0
+        this.rescanCount = 0
         this.mutObsConfig = { childList: true, subtree: true }
         this.mutObs = new MutationObserver(
             (records) => {
                 const anythingRemoved = records.some(record => record.removedNodes.length > 0)
                 if (anythingRemoved) {
+                    // Ensure we destroy the form if it's removed from the DOM
+                    if (!this.form.isConnected) {
+                        this.destroy()
+                        return
+                    }
                     // Must check for inputs because a parent may be removed and not show up in record.removedNodes
                     if ([...this.inputs.all].some(input => !input.isConnected)) {
+                        // This is re-connected in recategorizeAllInputs, disconnecting here to avoid risk of re-work
+                        this.mutObs.disconnect()
                         // If any known input has been removed from the DOM, reanalyze the whole form
                         window.requestIdleCallback(() => {
                             this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
                             this.recategorizeAllInputs()
                         })
-
-                        this.mutObsCount++
-                        // If the form mutates too much, disconnect to avoid performance issues
-                        if (this.mutObsCount >= MAX_FORM_MUT_OBS_COUNT) {
-                            this.mutObs.disconnect()
-                        }
                     }
                 }
             }
@@ -110,7 +111,6 @@ class Form {
         })
 
         this.categorizeInputs()
-        this.mutObs.observe(this.form, this.mutObsConfig)
 
         this.logFormInfo()
 
@@ -127,6 +127,9 @@ class Form {
     }
     get isHybrid () {
         return this.formAnalyzer.isHybrid
+    }
+    get isCCForm () {
+        return this.formAnalyzer.isCCForm()
     }
 
     logFormInfo () {
@@ -202,9 +205,9 @@ class Form {
             // If we have a password but no username, let's search further
             const hiddenFields = /** @type [HTMLInputElement] */([...this.form.querySelectorAll('input[type=hidden]')])
             const probableField = hiddenFields.find((field) => {
-                const regex = safeRegex('email|' + this.matching.ddgMatcher('username')?.match)
+                const regex = new RegExp('email|' + this.matching.getDDGMatcherRegex('username')?.source)
                 const attributeText = field.id + ' ' + field.name
-                return regex?.test(attributeText)
+                return safeRegexTest(regex, attributeText)
             })
             if (probableField?.value) {
                 formValues.credentials.username = probableField.value
@@ -216,8 +219,8 @@ class Form {
                 formValues.credentials.username = formValues.identities.phone
             } else {
                 // If we still don't have a username, try scanning the form's text for an email address
-                this.form.querySelectorAll('*:not(select):not(option)').forEach((el) => {
-                    const elText = getText(el)
+                this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach((el) => {
+                    const elText = getTextShallow(el)
                     // Ignore long texts to avoid false positives
                     if (elText.length > 70) return
 
@@ -332,6 +335,12 @@ class Form {
      * Resets our input scoring and starts from scratch
      */
     recategorizeAllInputs () {
+        // If the form mutates too much, disconnect to avoid performance issues
+        if (this.rescanCount >= MAX_FORM_RESCANS) {
+            this.mutObs.disconnect()
+            return
+        }
+        this.rescanCount++
         this.initialScanComplete = false
         this.removeAllDecorations()
         this.forgetAllInputs()
@@ -350,37 +359,48 @@ class Form {
     }
     // This removes all listeners to avoid memory leaks and weird behaviours
     destroy () {
+        this.mutObs.disconnect()
         this.removeAllDecorations()
         this.removeTooltip()
-        this.mutObs.disconnect()
+        this.forgetAllInputs()
         this.matching.clear()
         this.intObs = null
+        this.device.scanner.forms.delete(this.form)
     }
 
     categorizeInputs () {
-        const selector = this.matching.cssSelector('FORM_INPUTS_SELECTOR')
+        const selector = this.matching.cssSelector('formInputsSelector')
         if (this.form.matches(selector)) {
             this.addInput(this.form)
         } else {
-            const foundInputs = this.form.querySelectorAll(selector)
+            let foundInputs = this.form.querySelectorAll(selector)
+            // If the markup is broken form.querySelectorAll may not return the fields, so we select from the parent
+            if (foundInputs.length === 0 && this.form instanceof HTMLFormElement && this.form.length > 0) {
+                foundInputs = this.form.parentElement?.querySelectorAll(selector) || foundInputs
+            }
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
-                if (shouldLog()) {
-                    console.log('The form has too many inputs, bailing.')
-                }
+                // This is rather extreme, but better safe than sorry
+                this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`)
+                return
             }
         }
         this.initialScanComplete = true
+
+        // Observe only if the container isn't the body, to avoid performance overloads
+        if (this.form !== document.body) {
+            this.mutObs.observe(this.form, this.mutObsConfig)
+        }
     }
 
     get submitButtons () {
-        const selector = this.matching.cssSelector('SUBMIT_BUTTON_SELECTOR')
+        const selector = this.matching.cssSelector('submitButtonSelector')
         const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
 
         return allButtons
             .filter((btn) =>
-                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn) && buttonMatchesFormType(btn, this)
+                isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this)
             )
     }
 
@@ -429,15 +449,12 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            if (shouldLog()) {
-                console.log('The form has too many inputs, destroying.')
-            }
-            this.destroy()
+            this.device.scanner.stopScanner('The form has too many inputs, bailing.')
             return this
         }
 
         // When new inputs are added after the initial scan, reanalyze the whole form
-        if (this.initialScanComplete) {
+        if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
             this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching)
             this.recategorizeAllInputs()
             return this
@@ -451,6 +468,7 @@ class Form {
         const opts = {
             isLogin: this.isLogin,
             isHybrid: this.isHybrid,
+            isCCForm: this.isCCForm,
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
             supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
         }

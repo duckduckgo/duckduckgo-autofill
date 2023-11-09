@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Scanner Perf Test</title>
+    <style>
+        label { display: block }
+    </style>
+</head>
+<body>
+<div>
+    <form action="" id="demo" name="demo">
+        <button type="submit">Sign in</button>
+    </form>
+</div>
+<script>
+    const form = document.forms.demo;
+    const inputs = []
+    for (let i = 0; i < 1000; i += 1) {
+        const container = document.createElement('div');
+        container.innerHTML = `<label>Input: ${i}<input name="input-${i}" /></label>`
+        inputs.push(container)
+    }
+    form.append(...inputs)
+</script>
+</body>
+</html>

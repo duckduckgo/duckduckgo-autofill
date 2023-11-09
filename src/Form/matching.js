@@ -1,16 +1,14 @@
-import { createCacheableVendorRegexes } from './vendor-regex.js'
-import { constants } from '../constants.js'
-import { extractElementStrings } from './label-util.js'
-import { FORM_INPUTS_SELECTOR } from './selectors-css.js'
-import { matchingConfiguration } from './matching-configuration.js'
+import {constants} from '../constants.js'
+import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
+import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
-import {getText} from '../autofill-utils.js'
+import {getTextShallow, safeRegexTest} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
 /** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
 const dimensionBounds = {
-    email: { minWidth: 40 }
+    emailAddress: { minWidth: 35 }
 }
 
 /**
@@ -20,22 +18,22 @@ const dimensionBounds = {
  */
 class Matching {
     /** @type {MatchingConfiguration} */
-    #config;
+    #config
 
     /** @type {CssSelectorConfiguration['selectors']} */
-    #cssSelectors;
+    #cssSelectors
 
     /** @type {Record<string, DDGMatcher>} */
-    #ddgMatchers;
+    #ddgMatchers
 
     /**
      * This acts as an internal cache for the larger vendorRegexes
-     * @type {{RULES: Record<keyof VendorRegexRules, RegExp|undefined>}}
+     * @type {VendorRegexConfiguration['rules']}
      */
-    #vendorRegExpCache;
+    #vendorRegexRules
 
     /** @type {MatcherLists} */
-    #matcherLists;
+    #matcherLists
 
     /** @type {Array<StrategyNames>} */
     #defaultStrategyOrder = ['cssSelector', 'ddgMatcher', 'vendorRegex']
@@ -55,17 +53,17 @@ class Matching {
     constructor (config) {
         this.#config = config
 
-        const { rules, ruleSets } = this.#config.strategies.vendorRegex
-        this.#vendorRegExpCache = createCacheableVendorRegexes(rules, ruleSets)
+        this.#vendorRegexRules = this.#config.strategies.vendorRegex.rules
         this.#cssSelectors = this.#config.strategies.cssSelector.selectors
         this.#ddgMatchers = this.#config.strategies.ddgMatcher.matchers
 
         this.#matcherLists = {
+            unknown: [],
             cc: [],
             id: [],
             password: [],
             username: [],
-            email: []
+            emailAddress: []
         }
 
         /**
@@ -99,7 +97,7 @@ class Matching {
      * @returns {RegExp | undefined}
      */
     vendorRegex (regexName) {
-        const match = this.#vendorRegExpCache.RULES[regexName]
+        const match = this.#vendorRegexRules[regexName]
         if (!match) {
             console.warn('Vendor Regex not found for', regexName)
             return undefined
@@ -108,8 +106,18 @@ class Matching {
     }
 
     /**
+     * Strategies can have different lookup names. This returns the correct one
+     * @param {MatcherTypeNames} matcherName
+     * @param {StrategyNames} vendorRegex
+     * @returns {MatcherTypeNames}
+     */
+    getStrategyLookupByType (matcherName, vendorRegex) {
+        return this.#config.matchers.fields[matcherName]?.strategies[vendorRegex]
+    }
+
+    /**
      * Try to access a 'css selector' by name from configuration
-     * @param {keyof RequiredCssSelectors | string} selectorName
+     * @param {RequiredCssSelectors | string} selectorName
      * @returns {string};
      */
     cssSelector (selectorName) {
@@ -118,15 +126,12 @@ class Matching {
             console.warn('CSS selector not found for %s, using a default value', selectorName)
             return ''
         }
-        if (Array.isArray(match)) {
-            return match.join(',')
-        }
         return match
     }
 
     /**
      * Try to access a 'ddg matcher' by name from configuration
-     * @param {keyof RequiredCssSelectors | string} matcherName
+     * @param {MatcherTypeNames | string} matcherName
      * @returns {DDGMatcher | undefined}
      */
     ddgMatcher (matcherName) {
@@ -136,6 +141,20 @@ class Matching {
             return undefined
         }
         return match
+    }
+
+    /**
+     * Returns the RegExp for the given matcherName, with proper flags
+     * @param {AllDDGMatcherNames} matcherName
+     * @returns {RegExp|undefined}
+     */
+    getDDGMatcherRegex (matcherName) {
+        const matcher = this.ddgMatcher(matcherName)
+        if (!matcher || !matcher.match) {
+            console.warn('DDG matcher has unexpected format')
+            return undefined
+        }
+        return matcher?.match
     }
 
     /**
@@ -221,9 +240,11 @@ class Matching {
 
         this.setActiveElementStrings(input, formEl)
 
-        // // For CC forms we run aggressive matches, so we want to make sure we only
-        // // run them on actual CC forms to avoid false positives and expensive loops
-        if (this.isCCForm(formEl)) {
+        if (this.subtypeFromMatchers('unknown', input)) return 'unknown'
+
+        // For CC forms we run aggressive matches, so we want to make sure we only
+        // run them on actual CC forms to avoid false positives and expensive loops
+        if (opts.isCCForm) {
             const subtype = this.subtypeFromMatchers('cc', input)
             if (subtype && isValidCreditCardSubtype(subtype)) {
                 return `creditCards.${subtype}`
@@ -232,10 +253,19 @@ class Matching {
 
         if (input instanceof HTMLInputElement) {
             if (this.subtypeFromMatchers('password', input)) {
-                return 'credentials.password'
+                // Any other input type is likely a false match
+                // Arguably "text" should be as well, but it can be used for password reveal fields
+                if (
+                    ['password', 'text'].includes(input.type) &&
+                    input.name !== 'email' &&
+                    // pcsretirement.com, improper use of the for attribute
+                    input.name !== 'Username'
+                ) {
+                    return 'credentials.password'
+                }
             }
 
-            if (this.subtypeFromMatchers('email', input) && this.isInputLargeEnough('email', input)) {
+            if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
                 if (opts.isLogin || opts.isHybrid) {
                     // TODO: Being this support back in the future
                     // https://app.asana.com/0/1198964220583541/1204686960531034/f
@@ -278,6 +308,7 @@ class Matching {
      * @typedef {{
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
+     *   isCCForm?: boolean,
      *   hasCredentials?: boolean,
      *   supportsIdentitiesAutofill?: boolean
      * }} SetInputTypeOpts
@@ -402,7 +433,7 @@ class Matching {
         if (!ddgMatcher || !ddgMatcher.match) {
             return defaultResult
         }
-        let matchRexExp = safeRegex(ddgMatcher.match || '')
+        let matchRexExp = this.getDDGMatcherRegex(lookup)
         if (!matchRexExp) {
             return defaultResult
         }
@@ -415,7 +446,6 @@ class Matching {
         for (let stringName of matchableStrings) {
             let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
-            elementString = elementString.toLowerCase()
 
             // Scoring to ensure all DDG tests are valid
             let score = 0
@@ -430,11 +460,11 @@ class Matching {
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
             if (ddgMatcher.forceUnknown) {
-                let notRegex = safeRegex(ddgMatcher.forceUnknown)
+                let notRegex = ddgMatcher.forceUnknown
                 if (!notRegex) {
                     return { ...result, matched: false }
                 }
-                if (notRegex.test(elementString)) {
+                if (safeRegexTest(notRegex, elementString)) {
                     return { ...result, matched: false, proceed: false }
                 } else {
                     // All good here, increment the score
@@ -443,17 +473,17 @@ class Matching {
             }
 
             if (ddgMatcher.skip) {
-                let skipRegex = safeRegex(ddgMatcher.skip)
+                let skipRegex = ddgMatcher.skip
                 if (!skipRegex) {
                     return { ...result, matched: false }
                 }
-                if (skipRegex.test(elementString)) {
+                if (safeRegexTest(skipRegex, elementString)) {
                     return { ...result, matched: false, skip: true }
                 }
             }
 
             // if the `match` regex fails, moves onto the next string
-            if (!matchRexExp.test(elementString)) {
+            if (!safeRegexTest(matchRexExp, elementString)) {
                 continue
             }
 
@@ -496,8 +526,7 @@ class Matching {
         for (let stringName of stringsToMatch) {
             let elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
-            elementString = elementString.toLowerCase()
-            if (regex.test(elementString)) {
+            if (safeRegexTest(regex, elementString)) {
                 return {
                     ...defaultResult,
                     matched: true,
@@ -527,7 +556,7 @@ class Matching {
      * @param {HTMLElement} form
      * @returns {Record<MatchableStrings, string>}
      */
-    _elementStringCache = new WeakMap();
+    _elementStringCache = new WeakMap()
     getElementStrings (el, form) {
         if (this._elementStringCache.has(el)) {
             return this._elementStringCache.get(el)
@@ -541,7 +570,7 @@ class Matching {
             labelText: explicitLabelsText,
             placeholderAttr: el.placeholder || '',
             id: el.id,
-            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('FORM_INPUTS_SELECTOR'))
+            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector'))
         }
         this._elementStringCache.set(el, next)
         return next
@@ -558,32 +587,6 @@ class Matching {
     forInput (input, form) {
         this.setActiveElementStrings(input, form)
         return this
-    }
-    /**
-     * Tries to infer if it's a credit card form
-     * @param {HTMLElement} formEl
-     * @returns {boolean}
-     */
-    isCCForm (formEl) {
-        const ccFieldSelector = this.joinCssSelectors('cc')
-        if (!ccFieldSelector) {
-            return false
-        }
-        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector)
-        // If the form contains one of the specific selectors, we have high confidence
-        if (hasCCSelectorChild) return true
-
-        // Read form attributes to find a signal
-        const hasCCAttribute = [...formEl.attributes].some(({name, value}) =>
-            /(credit|payment).?card/i.test(`${name}=${value}`)
-        )
-        if (hasCCAttribute) return true
-
-        // Match form textContent against common cc fields (includes hidden labels)
-        const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
-
-        // We check for more than one to minimise false positives
-        return Boolean(textMatches && textMatches.length > 1)
     }
 
     /**
@@ -603,9 +606,7 @@ class Matching {
                 matchers: {}
             },
             'cssSelector': {
-                selectors: {
-                    FORM_INPUTS_SELECTOR
-                }
+                selectors: {}
             }
         }
     }
@@ -759,7 +760,10 @@ function getInputSubtype (input) {
  * @return {string}
  */
 const removeExcessWhitespace = (string = '') => {
-    return (string || '')
+    // The length check is extra safety to avoid trimming strings that would be discarded anyway
+    if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return ''
+
+    return (string)
         .replace(/\n/g, ' ')
         .replace(/\s{2,}/g, ' ').trim()
 }
@@ -799,6 +803,22 @@ const getExplicitLabelsText = (el) => {
 }
 
 /**
+ * Tries to get a relevant previous Element sibling, excluding certain tags
+ * @param {Element} el
+ * @returns {Element|null}
+ */
+const recursiveGetPreviousElSibling = (el) => {
+    const previousEl = el.previousElementSibling
+    if (!previousEl) return null
+
+    // Skip elements with no childNodes
+    if (EXCLUDED_TAGS.includes(previousEl.tagName)) {
+        return recursiveGetPreviousElSibling(previousEl)
+    }
+    return previousEl
+}
+
+/**
  * Get all text close to the input (useful when no labels are defined)
  * @param {HTMLInputElement|HTMLSelectElement} el
  * @param {HTMLElement} form
@@ -810,22 +830,35 @@ const getRelatedText = (el, form, cssSelector) => {
 
     // If we didn't find a container, try looking for an adjacent label
     if (scope === el) {
-        if (el.previousElementSibling instanceof HTMLLabelElement) {
-            scope = el.previousElementSibling
+        let previousEl = recursiveGetPreviousElSibling(el)
+        if (previousEl instanceof HTMLElement) {
+            scope = previousEl
+        }
+        // If there is still no meaningful container return empty string
+        if (scope === el || scope instanceof HTMLSelectElement) {
+            if (el.previousSibling instanceof Text) {
+                return removeExcessWhitespace(el.previousSibling.textContent)
+            }
+            return ''
         }
     }
 
     // If there is still no meaningful container return empty string
-    if (scope === el || scope.nodeName === 'SELECT') return ''
+    if (scope === el || scope instanceof HTMLSelectElement) {
+        if (el.previousSibling instanceof Text) {
+            return removeExcessWhitespace(el.previousSibling.textContent)
+        }
+        return ''
+    }
 
     let trimmedText = ''
     const label = scope.querySelector('label')
     if (label) {
         // Try searching for a label first
-        trimmedText = removeExcessWhitespace(getText(label))
+        trimmedText = getTextShallow(label)
     } else {
         // If the container has a select element, remove its contents to avoid noise
-        trimmedText = removeExcessWhitespace(extractElementStrings(scope).join(' '))
+        trimmedText = extractElementStrings(scope).join(' ')
     }
 
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
@@ -845,7 +878,7 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
     /* TODO: there could be more than one select el for the same label, in that case we should
         change how we compute the container */
     const parentElement = el.parentElement
-    if (!parentElement || el === form) return el
+    if (!parentElement || el === form || !cssSelector) return el
 
     const inputsInParentsScope = parentElement.querySelectorAll(cssSelector)
     // To avoid noise, ensure that our input is the only in scope
@@ -882,22 +915,6 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
 }
 
 /**
- * Creating Regex instances can throw, so we add this to be
- * @param {string} string
- * @returns {RegExp | undefined} string
- */
-const safeRegex = (string) => {
-    try {
-        // This is lower-cased here because giving a `i` on a regex flag is a performance problem in some cases
-        const input = String(string).toLowerCase().normalize('NFKC')
-        return new RegExp(input, 'u')
-    } catch (e) {
-        console.warn('Could not generate regex from string input', string)
-        return undefined
-    }
-}
-
-/**
  * Factory for instances of Matching
  *
  * @return {Matching}
@@ -917,7 +934,6 @@ export {
     getRelatedText,
     matchInPlaceholderAndLabels,
     checkPlaceholderAndLabels,
-    safeRegex,
     Matching,
     createMatching
 }
