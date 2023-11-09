@@ -1,0 +1,314 @@
+<!-- https://www.lakeshorelearning.com/checkout-page -->
+<form class="form" id="edit-guest-payment">
+    <div class="row narrow">
+        <!-- ko if: payments.isGiftCertificateApplied() && isAdditionalPaymentRequired()--><!-- /ko -->
+        <div class="col-sm-12">
+            <!-- ko if: payments.createPayment().paymentMethod() == 'creditCard' -->
+            <div class="row narrow" style="color: rgb(237, 28, 36); display: none;"
+                 data-bind="visible: payments.errorMessage().length > 0, foreach: payments.errorMessage()"></div>
+            <!-- /ko -->
+            <!-- ko ifnot: (payments.isStoreCreditOverTotal() || $component.isBucksCoveredBopisOrder())-->
+            <div class="row narrow checkout-payment-methods" role="radiogroup" aria-required="true"
+                 data-bind="css: $component.checkoutPage ? 'checkout-payment-methods' : 'account-payment-methods'">
+                <!-- ko if: !guestGiftCardEdit() && !($component.profileGiftCardsEnabled && payments.isGiftCertificateApplied() && !isGiftCardNotCoveredTotal())-->
+                <div class="mb0">
+                    <div class="mt0">
+                        <!-- ko if: isPrimaryPaymentMethodsActive() -->
+                        <label class="control radio-control">
+                            <input type="radio" name="paymentMethod" value="creditCard"
+                                   data-bind="checked: currentPaymentMethod" automation-id="co_bill_cc_radio">
+                            <strong>Credit Card</strong>
+                            <div class="radio-indicator"></div>
+                        </label>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isPrimaryPaymentMethodsActive()--><!-- /ko -->
+                    </div>
+                </div>
+                <!-- /ko -->
+                <!-- Gift Card 2 -->
+                <!-- ko if: $component.checkoutPage && (hasShippingItems() || $component.isBopisCheckout()) && !$component.isGiftCardItemInOrder() && !$component.profileGiftCardsEnabled -->
+                <!-- /ko -->
+                <!-- ko if: !guestGiftCardEdit()  && !($component.profileGiftCardsEnabled && payments.isGiftCertificateApplied() && !isGiftCardNotCoveredTotal())-->
+                <div class="mb0">
+                    <div class="mt0">
+                        <!-- ko if: isPrimaryPaymentMethodsActive() && payOnAccountEnabled() -->
+                        <label class="control radio-control">
+                            <input type="radio" name="paymentMethod" value="onAccount"
+                                   data-bind="checked: currentPaymentMethod" automation-id="co_bill_acct_radio">
+                            <strong>Pay on Account</strong>
+                            <div class="radio-indicator"></div>
+                        </label>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isPrimaryPaymentMethodsActive() && payOnAccountEnabled() --><!-- /ko -->
+                    </div>
+                </div>
+                <!-- /ko -->
+            </div>
+
+            <!-- ko if: payments.createPayment().paymentMethod() == 'creditCard' -->
+            <div class="row narrow">
+                <div class="col-sm-12">
+                    <div style="display: none;" class="row narrow">
+                        <div class="form-group col-sm-6"
+                             data-bind="css: {'has-error': payments.errors().cardHolderName}">
+                            <label class="control-label bold">Name <small>(as it appears on the card)</small></label>
+                            <input class="form-control" type="text" maxlength="80"
+                                   automation-id="co_bill_cardholder_name"
+                                   data-bind="textInput: payments.createPayment().cardHolderName, validateInput:'LtrCh1'"
+                                   data-manual-scoring="fullName">
+                            <div class="help-block"
+                                 data-bind="visible: payments.errors().cardHolderName, text: payments.errors().cardHolderName"
+                                 style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="row narrow mt20 test666">
+                        <div class="form-group col-lg-5 col-md-5 col-sm-5"
+                             data-bind="css: {'has-error': payments.errors().creditCardNumber}">
+                            <label class="control-label bold">Card #</label>
+                            <div class="input-cc">
+                                <!-- ko if: payments.createPayment().ccValidateInput() == 'Num' -->
+                                <input id="cc-num" class="form-control fs-mask" type="text" maxlength="16"
+                                       automation-id="co_bill_ccno" aria-required="true" data-bind="valueUpdate:'keyup', validateInput: 'Num', textInput: payments.createPayment().creditCardNumberDisplay,
+																									enterkey: function() {$component.enterSaveBillingAddress();}"
+                                       data-manual-scoring="cardNumber">
+                                <!-- /ko -->
+                                <!-- ko if: payments.createPayment().ccValidateInput() == 'LtrNumCh5' --><!-- /ko -->
+                                <img data-bind="visible: payments.createPayment().creditCardTypeImgSrcAttr(), attr: {src: payments.createPayment().creditCardTypeImgSrcAttr()}"
+                                     class="mr5" src="assets/images/cc-visa.png">
+                            </div>
+                            <div class="help-block"
+                                 data-bind="visible: payments.errors().creditCardNumber, text: payments.errors().creditCardNumber"
+                                 style="display: none;"></div>
+                        </div>
+                        <div class="form-group col-sm-4 col-xs-8"
+                             data-bind="css: {'has-error': (payments.errors().expirationMonth || payments.errors().expirationYear || payments.errors().notifyDate)}">
+                            <label class="control-label bold" id="cc-same-month-popover-payment" data-placement="top"
+                                   data-trigger="manual" data-toggle="popover"
+                                   data-bind="attr: { 'data-content': $data.ccPopoverWarning }"
+                                   data-content="It looks like your credit card expires soon. You may update the expiration date now or continue with completing your order."
+                                   data-original-title="" title="">Exp. Date</label>
+                            <div class="row narrow">
+                                <div class="col-xs-6"
+                                     data-bind="css: {'has-error': (payments.errors().expirationMonth || payments.errors().notifyDate)}">
+                                    <select id="dd-new-cc-month" class="form-control" aria-required="true" data-bind="event: { change: checkIfSelectSameMonth('dd-new-cc-month','dd-new-cc-year', 'cc-same-month-popover-payment') },
+																									options: payments.monthsList,
+																									optionsValue: 'name',
+																									value: payments.createPayment().expirationMonth,
+																									optionsText: 'name',
+																									optionsCaption: 'MM', enterkey: function() {$component.enterSaveBillingAddress();}"
+                                            automation-id="co_bill_cc_month" data-manual-scoring="expirationMonth">
+                                        <option value="">MM</option>
+                                        <option value="01">01</option>
+                                        <option value="02">02</option>
+                                        <option value="03">03</option>
+                                        <option value="04">04</option>
+                                        <option value="05">05</option>
+                                        <option value="06">06</option>
+                                        <option value="07">07</option>
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                    <span class="caret caret-select"></span>
+                                    <div class="help-block"
+                                         data-bind="visible: payments.errors().expirationMonth, text: payments.errors().expirationMonth"
+                                         style="display: none;"></div>
+                                </div>
+                                <div class="col-xs-6"
+                                     data-bind="css: {'has-error': (payments.errors().expirationYear || payments.errors().notifyDate)}">
+                                    <select id="dd-new-cc-year" class="form-control" aria-required="true" data-bind="event: { change: checkIfSelectSameMonth('dd-new-cc-month','dd-new-cc-year', 'cc-same-month-popover-payment') },
+																									options: payments.yearsList,
+																									optionsValue: 'fullYear',
+																									value: payments.createPayment().expirationYear,
+																									optionsText: 'name',
+																									optionsCaption: 'YY', enterkey: function() {$component.enterSaveBillingAddress();}"
+                                            automation-id="co_bill_cc_year" data-manual-scoring="expirationYear">
+                                        <option value="">YY</option>
+                                        <option value="2023">23</option>
+                                        <option value="2024">24</option>
+                                        <option value="2025">25</option>
+                                        <option value="2026">26</option>
+                                        <option value="2027">27</option>
+                                        <option value="2028">28</option>
+                                        <option value="2029">29</option>
+                                        <option value="2030">30</option>
+                                        <option value="2031">31</option>
+                                        <option value="2032">32</option>
+                                        <option value="2033">33</option>
+                                        <option value="2034">34</option>
+                                        <option value="2035">35</option>
+                                        <option value="2036">36</option>
+                                        <option value="2037">37</option>
+                                        <option value="2038">38</option>
+                                        <option value="2039">39</option>
+                                        <option value="2040">40</option>
+                                        <option value="2041">41</option>
+                                        <option value="2042">42</option>
+                                        <option value="2043">43</option>
+                                    </select>
+                                    <span class="caret caret-select"></span>
+                                    <div class="help-block"
+                                         data-bind="visible: payments.errors().expirationYear, text: payments.errors().expirationYear"
+                                         style="display: none;"></div>
+                                </div>
+                            </div>
+                            <div class="row narrow" data-bind="css: {'has-error': payments.errors().notifyDate}">
+                                <div class="help-block"
+                                     data-bind="visible: payments.errors().notifyDate, text: payments.errors().notifyDate"
+                                     style="display: none;"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-sm-2 col-xs-4"
+                             data-bind="css: {'has-error': payments.errors().cardVerificationNumber}">
+                            <label class="control-label bold">CVV</label>
+                            <a id="cvv-help" class="order-status no-link" tabindex="-1" href="#" data-toggle="modal"
+                               data-target="#modal-cvv-help" data-dismiss="modal"></a>
+                            <input class="form-control fs-mask" type="text" maxlength="4"
+                                   automation-id="co_bill_cvv" aria-required="true" data-bind="value: payments.createPayment().cardVerificationNumber, validateCVV, validateInput:'Num',
+																						valueUpdate: 'keyup', enterkey: function() {$component.enterSaveBillingAddress();}"
+                                   data-manual-scoring="cardSecurityCode"
+                                   style="background-color: rgb(248, 244, 152) !important; color: rgb(51, 51, 51) !important;">
+                            <div class="help-block"
+                                 data-bind="visible: payments.errors().cardVerificationNumber, text: payments.errors().cardVerificationNumber"
+                                 style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /ko -->
+
+            <!-- ko if: payments.createPayment().paymentMethod() == 'onAccount' --><!-- /ko -->
+
+            <!-- ko if: payments.createPayment().paymentMethod() == 'payPal' && payments.isPayPalEnabled --><!-- /ko -->
+
+            <!-- ko if: payments.createPayment().paymentMethod() == 'giftCard' && !isGiftCardItemInOrder() && !$component.profileGiftCardsEnabled-->
+            <!-- /ko -->
+            <!-- /ko -->
+
+            <!-- ko if: ( (payments.isStoreCreditOverTotal() || payments.isGiftCertificateOverTotal()) &&
+             !(payments.isGiftCertificateApplied() && !isAdditionalPaymentRequired() && (additionalPaymentRequiredMsg() == payments.message()))) -->
+            <!-- /ko -->
+            <!-- ko ifnot: payments.createPayment().paymentMethod() == 'payPal'-->
+            <div class="row narrow exempt">
+
+                <!-- ko if: payments.createPayment().paymentMethod() == 'creditCard' || (!$component.profileGiftCardsEnabled && payments.createPayment().paymentMethod() == 'giftCard')-->
+
+                <div class="form-group col-sm-4 col-xs-12">
+                    <label class="control-label bold">Tax Exempt</label>
+                    <div class="row narrow" role="radiogroup" aria-required="true">
+                        <div class="display-inline-block mr10">
+                            <label class="control radio-control">
+                                <input type="radio" name="paymentType" data-bind="value: $component.profile.isGSAUser() ? $component.profile.isGSAUser() : false,
+																								checked: payments.createPayment().billingAddress().taxExempt,
+																								disable: $component.profile.isGSAUser()"
+                                       automation-id="co_bill_tax_exempt_no_radio" value="false">No
+                                <div class="radio-indicator"></div>
+                            </label>
+                        </div>
+                        <div class="display-inline-block">
+                            <label class="control radio-control">
+                                <input type="radio" name="paymentType" data-bind="value: $component.profile.isGSAUser()? !$component.profile.isGSAUser(): true,
+																						 	checked: payments.createPayment().billingAddress().taxExempt,
+																						  click: $component.payments.taxExemptOnChange,
+																							disable: $component.profile.isGSAUser()"
+                                       value="true">Yes
+                                <div class="radio-indicator" automation-id="co_bill_tax_exempt_yes_radio"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ko if: payments.createPayment().billingAddress().taxExempt --><!-- /ko -->
+
+                <!-- /ko -->
+
+                <!-- ko if: !$component.isGuestUser() && $component.checkoutPage && payments.createPayment().paymentMethod() != 'giftCard'-->
+                <!-- /ko -->
+                <!-- ko if: payments.paymentMethods() && payments.paymentMethods().length > 1 && !$component.checkoutPage -->
+                <!-- /ko -->
+            </div>
+            <!-- /ko -->
+        </div>
+        <div class="col-sm-3">
+            <!-- ko if: payments.createPayment().paymentMethod() == 'payPal' --><!-- /ko -->
+
+            <!-- ko ifnot: payments.createPayment().paymentMethod() == 'payPal' -->
+            <!-- ko if: $component.useShippingAddress() && $component.currentPaymentMethod() != 'giftCard' && !$component.billingAddressDesignEnabled-->
+            <!-- /ko -->
+            <!-- /ko -->
+        </div>
+        <!-- Billing Form 2 - Add address for the first time at checkout and Wallet page -->
+        <div class="col-sm-12">
+            <!-- ko ifnot: payments.createPayment().paymentMethod() == 'payPal' || payments.createPayment().paymentMethod() == 'giftCard' -->
+            <!-- ko if: $component.billingAddressDesignEnabled -->
+            <div class="row narrow">
+                <h3 class="mb20">Billing Address</h3>
+                <div class="col-sm-12 mb20" data-bind="css: {'mb20': $component.orderShipType === 'webOnly'}">
+                    <!-- ko if: $component.checkoutPage && $component.shippingAddressInfo() && $component.shippingAddress && !$component.isRegistryOwnerAdressSelected() && hasShippingItems() -->
+                    <div class="row narrow">
+                        <div class="col-sm-6">
+                            <label class="control checkbox-control mb10">
+                                <input class="ml0" tabindex="1" type="checkbox"
+                                       data-bind="checked: !$component.isRegistryOwnerAdressSelected() &amp;&amp; $component.payments.useShippingAddress, enterkey: function(){$component.checkForSave($data, $element, 'new', 'first')}">Same
+                                as Shipping Address
+                                <div class="radio-indicator" automation-id="co_shp_use_billing"></div>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: $component.useShippingAddress() && !$component.isRegistryOwnerAdressSelected() -->
+                    <div class="row narrow">
+                        <div class="col-sm-12" x-ms-format-detection="none">
+                            <p data-bind="text: $component.shippingAddress">Peppa Pig - 3 Wynne Dr Barn 2, Farmville, VA
+                                23901 - (160) 188-5822</p>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: !$component.useShippingAddress() || $component.isRegistryOwnerAdressSelected() -->
+                    <!-- /ko -->
+
+                </div>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: !payments.createPayment().sameAsShip() && !$component.billingAddressDesignEnabled -->
+            <!-- /ko -->
+            <!-- /ko -->
+
+            <!-- ko if: $component.checkoutPage && $component.orderShipType !== 'webOnly' --><!-- /ko -->
+        </div>
+    </div>
+
+    <div class="row narrow pb25" data-bind="css: {pb25: !$component.isGCAppliedAndOverTotal()}">
+        <!-- ko ifnot: $component.checkoutPage --><!-- /ko -->
+        <!-- ko if: $component.checkoutPage -->
+        <div class="col-md-12 text-right">
+            <!-- ko if: $component.checkoutPage && !$component.showContinueAndCancelBtn() -->
+            <!--IF REGULAR ORDER-->
+            <!-- ko ifnot: payments.createPayment().paymentMethod() == 'payPal' -->
+            <div class="ll-btn-container align-right reverse-xs">
+                <!-- ko if: !isSplitPayment() && $component.isSaved() --><!-- /ko -->
+                <!-- ko if: isSplitPayment() --><!-- /ko -->
+                <button class="btn btn-sld-red ll-btn-sm" automation-id="co_bill_continue" data-bind="enable:payments.isSaveBtnEnabled(),
+																				clickBubble: false,
+																				click: function(data, event){$component.saveForm(data, event, 'apply-with-gc', false)},
+																				css: $component.isSaved() ? 'btn-sld-blue' : 'btn-sld-red'"
+                        data-manual-submit>
+                    <span data-bind="text: $component.isSaved() ? 'Save' : 'Continue'">Continue</span>
+                </button>
+            </div>
+            <!-- /ko -->
+
+
+            <!--IF PAYPAL ORDER-->
+            <!-- ko if: payments.createPayment().paymentMethod() == 'payPal' && payments.isPayPalEnabled --><!-- /ko -->
+            <!-- /ko -->
+
+            <!-- ko if: $component.checkoutPage && $component.showContinueAndCancelBtn() && $component.paymentMethodsCount() == 0 -->
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </div>
+</form>
