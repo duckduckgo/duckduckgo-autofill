@@ -105,7 +105,7 @@ const username = [
 
 const password = [
     `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])`,
-    // DDG's CloudSave feature https://emanuele.duckduckgo.com/settings
+    // DDG's CloudSave feature https://duckduckgo.com/settings
     'input.js-cloudsave-phrase'
 ]
 
@@ -154,7 +154,8 @@ const expirationMonth = `
 [id*=expiration i][id*=month i],
 [name*=cc-exp-month i],
 [name*="card_exp-month" i],
-[name*=cc_exp_month i]`
+[name*=cc_exp_month i],
+[id*=cc-month i]`
 
 const expirationYear = `
 [autocomplete="cc-exp-year" i],
@@ -167,7 +168,8 @@ const expirationYear = `
 [id*=expiration i][id*=year i],
 [name*="cc-exp-year" i],
 [name*="card_exp-year" i],
-[name*=cc_exp_year i]`
+[name*=cc_exp_year i],
+[id*=cc-year i]`
 
 const expiration = `
 [autocomplete="cc-exp" i],
