@@ -173,13 +173,10 @@ export async function defaultIOSScript (page) {
 
 /**
  * @param {import("@playwright/test").Page} page
- * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} featureToggles
  */
-export async function withIOSFeatureToggles (page, featureToggles) {
+export async function createIOSAutofillScript (page) {
     return createAutofillScript()
-        .replaceAll(iosContentScopeReplacements({
-            featureToggles: featureToggles
-        }))
+        .replaceAll(iosContentScopeReplacements())
         .platform('ios')
         .applyTo(page)
 }

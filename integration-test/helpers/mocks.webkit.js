@@ -137,6 +137,7 @@ export const macosWithoutOverlay = () => {
             'pmHandlerOpenManageIdentities',
             'pmHandlerOpenManagePasswords',
             'getAvailableInputTypes',
+            'getRuntimeConfiguration',
             'getAutofillData',
             'storeFormData',
             'setSize',
@@ -212,6 +213,44 @@ export function createWebkitMocks (platform = 'macos') {
         getAutofillData: null,
         /** @type {null | Record<string, any>} */
         getAvailableInputTypes: null,
+        getRuntimeConfiguration: {
+            success: {
+                'contentScope': {
+                    'features': {
+                        'autofill': {
+                            'state': 'enabled',
+                            'exceptions': []
+                        }
+                    },
+                    'unprotectedTemporary': []
+                },
+                'userUnprotectedDomains': [],
+                'userPreferences': {
+                    'debug': false,
+                    'platform': {
+                        'name': 'macos'
+                    },
+                    'features': {
+                        'autofill': {
+                            'settings': {
+                                'featureToggles': {
+                                    inputType_credentials: true,
+                                    inputType_identities: true,
+                                    inputType_creditCards: true,
+                                    emailProtection: true,
+                                    emailProtection_incontext_signup: true,
+                                    password_generation: true,
+                                    credentials_saving: true,
+                                    inlineIcon_credentials: true,
+                                    email: true
+                                }
+                            }
+                        }
+                    }
+                },
+                availableInputTypes: constants.availableInputTypes
+            }
+        },
         storeFormData: null,
         selectedDetail: null,
         /** @type {AskToUnlockProviderTypes | null} */
@@ -296,8 +335,9 @@ export function createWebkitMocks (platform = 'macos') {
             webkitBase.getAvailableInputTypes = {success: inputTypes}
             return this
         },
-        withFeatureToggles: function (_featureToggles) {
-            throw new Error('unreachable - webkit cannot mock feature toggles this way. Use script replacements')
+        withFeatureToggles: function (featureToggles) {
+            Object.assign(webkitBase.getRuntimeConfiguration.success.userPreferences.features.autofill.settings.featureToggles, featureToggles)
+            return this
         },
         withAskToUnlockProvider: function () {
             webkitBase.askToUnlockProvider = {

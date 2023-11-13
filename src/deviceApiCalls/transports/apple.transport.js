@@ -1,6 +1,5 @@
 import { Messaging, MissingHandler, WebkitMessagingConfig } from '../../../packages/messaging/messaging.js'
 import { DeviceApiTransport } from '../../../packages/device-api/index.js'
-import { GetRuntimeConfigurationCall } from '../__generated__/deviceApiCalls.js'
 
 export class AppleTransport extends DeviceApiTransport {
     /** @param {GlobalConfig} globalConfig */
@@ -28,32 +27,10 @@ export class AppleTransport extends DeviceApiTransport {
                 if (this.config.isDDGTestMode) {
                     console.log('MissingWebkitHandler error for:', deviceApiCall.method)
                 }
-                if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
-                    return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config))
-                }
                 throw new Error('unimplemented handler: ' + deviceApiCall.method)
             } else {
                 throw e
             }
-        }
-    }
-}
-
-/**
- * @param {GlobalConfig} globalConfig
- * @returns {ReturnType<GetRuntimeConfigurationCall['result']>}
- */
-function appleSpecificRuntimeConfiguration (globalConfig) {
-    return {
-        success: {
-            // @ts-ignore
-            contentScope: globalConfig.contentScope,
-            // @ts-ignore
-            userPreferences: globalConfig.userPreferences,
-            // @ts-ignore
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-            // @ts-ignore
-            availableInputTypes: globalConfig.availableInputTypes
         }
     }
 }

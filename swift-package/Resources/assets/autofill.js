@@ -10200,7 +10200,7 @@ class Settings {
     } catch (e) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
       if (this.globalConfig.isDDGTestMode) {
-        console.log('isDDGTestMode: getFeatureToggles: ❌', e);
+        console.log('isDDGTestMode: getEnabled: ❌', e);
       }
       return null;
     }
@@ -13147,7 +13147,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.AppleTransport = void 0;
 var _messaging = require("../../../packages/messaging/messaging.js");
 var _index = require("../../../packages/device-api/index.js");
-var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 class AppleTransport extends _index.DeviceApiTransport {
   /** @param {GlobalConfig} globalConfig */
   constructor(globalConfig) {
@@ -13173,9 +13172,6 @@ class AppleTransport extends _index.DeviceApiTransport {
         if (this.config.isDDGTestMode) {
           console.log('MissingWebkitHandler error for:', deviceApiCall.method);
         }
-        if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
-          return deviceApiCall.result(appleSpecificRuntimeConfiguration(this.config));
-        }
         throw new Error('unimplemented handler: ' + deviceApiCall.method);
       } else {
         throw e;
@@ -13183,28 +13179,9 @@ class AppleTransport extends _index.DeviceApiTransport {
     }
   }
 }
-
-/**
- * @param {GlobalConfig} globalConfig
- * @returns {ReturnType<GetRuntimeConfigurationCall['result']>}
- */
 exports.AppleTransport = AppleTransport;
-function appleSpecificRuntimeConfiguration(globalConfig) {
-  return {
-    success: {
-      // @ts-ignore
-      contentScope: globalConfig.contentScope,
-      // @ts-ignore
-      userPreferences: globalConfig.userPreferences,
-      // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-      // @ts-ignore
-      availableInputTypes: globalConfig.availableInputTypes
-    }
-  };
-}
 
-},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/messaging.js":5,"../__generated__/deviceApiCalls.js":55}],60:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/messaging.js":5}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {

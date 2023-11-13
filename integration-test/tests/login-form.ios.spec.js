@@ -1,7 +1,7 @@
 import {constants} from '../helpers/mocks.js'
 import {
     forwardConsoleMessages,
-    withIOSFeatureToggles
+    createIOSAutofillScript
 } from '../helpers/harness.js'
 import {
     loginPage
@@ -38,7 +38,7 @@ async function testLoginPage (page, opts) {
 
     await mocks.applyTo(page)
 
-    await withIOSFeatureToggles(page, opts.featureToggles)
+    await createIOSAutofillScript(page)
 
     const login = loginPage(page)
     await login.navigate(opts.pageType)

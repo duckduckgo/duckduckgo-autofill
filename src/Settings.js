@@ -85,7 +85,7 @@ export class Settings {
         } catch (e) {
             // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
             if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: getFeatureToggles: ❌', e)
+                console.log('isDDGTestMode: getEnabled: ❌', e)
             }
             return null
         }
