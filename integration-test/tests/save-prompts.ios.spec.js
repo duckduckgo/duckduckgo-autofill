@@ -1,6 +1,6 @@
 import {
     forwardConsoleMessages,
-    withIOSFeatureToggles
+    createIOSAutofillScript
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {loginPage, signupPage} from '../helpers/pages.js'
@@ -17,14 +17,14 @@ test.describe('iOS Save prompts', () => {
     test.describe('and saving credentials disabled ❌', () => {
         test('should not prompt to save', async ({page}) => {
             await forwardConsoleMessages(page)
-            await createWebkitMocks().applyTo(page)
 
             /** @type {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts.js').AutofillFeatureToggles>} */
             const toggles = {
                 credentials_saving: false
             }
+            await createWebkitMocks().withFeatureToggles(toggles).applyTo(page)
 
-            await withIOSFeatureToggles(page, toggles)
+            await createIOSAutofillScript(page)
 
             const login = loginPage(page)
             await login.navigate()
@@ -59,16 +59,17 @@ test.describe('iOS Save prompts', () => {
                 password: '123456'
             }
 
-            await createWebkitMocks().applyTo(page)
-
-            await withIOSFeatureToggles(page, {
+            const featureToggles = {
                 emailProtection: true,
                 inputType_credentials: true,
                 credentials_saving: true,
                 inputType_identities: false,
                 inputType_creditCards: false,
                 password_generation: false
-            })
+            }
+            await createWebkitMocks().withFeatureToggles(featureToggles).applyTo(page)
+
+            await createIOSAutofillScript(page)
 
             const signup = signupPage(page)
             await signup.navigate()
@@ -82,9 +83,7 @@ test.describe('iOS Save prompts', () => {
             async function setup (page) {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks().applyTo(page)
-                await withIOSFeatureToggles(page, {
-                    credentials_saving: true
-                })
+                await createIOSAutofillScript(page)
                 const login = loginPage(page)
                 await login.navigate()
                 return login
@@ -128,9 +127,7 @@ test.describe('iOS Save prompts', () => {
             async function setup (page) {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks().applyTo(page)
-                await withIOSFeatureToggles(page, {
-                    credentials_saving: true
-                })
+                await createIOSAutofillScript(page)
                 const login = loginPage(page)
                 await login.navigate('loginWithPoorForm')
 

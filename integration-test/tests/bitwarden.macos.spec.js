@@ -19,6 +19,9 @@ test.describe('When Bitwarden is the password provider', () => {
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
+            .withFeatureToggles({
+                third_party_credentials_provider: true
+            })
             .withAvailableInputTypes(createAvailableInputTypes({
                 credentialsProviderStatus: 'locked'
             }))
@@ -33,11 +36,7 @@ test.describe('When Bitwarden is the password provider', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements({
-                featureToggles: {
-                    third_party_credentials_provider: true
-                }
-            }))
+            .replaceAll(macosContentScopeReplacements())
             .platform('macos')
             .applyTo(page)
 
@@ -71,6 +70,9 @@ test.describe('When Bitwarden is the password provider', () => {
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
+            .withFeatureToggles({
+                third_party_credentials_provider: true
+            })
             .withAvailableInputTypes(createAvailableInputTypes())
             .withCredentials({
                 id: '01',
@@ -82,11 +84,7 @@ test.describe('When Bitwarden is the password provider', () => {
 
         // Load the autofill.js script with replacements
         await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements({
-                featureToggles: {
-                    third_party_credentials_provider: true
-                }
-            }))
+            .replaceAll(macosContentScopeReplacements())
             .platform('macos')
             .applyTo(page)
 
@@ -103,6 +101,9 @@ test.describe('When Bitwarden is the password provider', () => {
         test('in overlay', async ({page}) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks()
+                .withFeatureToggles({
+                    third_party_credentials_provider: true
+                })
                 .withAvailableInputTypes(createAvailableInputTypes({
                     credentialsProviderStatus: 'locked'
                 }))
@@ -137,6 +138,9 @@ test.describe('When Bitwarden is the password provider', () => {
             await forwardConsoleMessages(page)
 
             await createWebkitMocks()
+                .withFeatureToggles({
+                    third_party_credentials_provider: true
+                })
                 .withAvailableInputTypes(createAvailableInputTypes({
                     credentialsProviderStatus: 'locked'
                 }))
@@ -150,11 +154,7 @@ test.describe('When Bitwarden is the password provider', () => {
 
             // Load the autofill.js script with replacements
             await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({
-                    featureToggles: {
-                        third_party_credentials_provider: true
-                    }
-                }))
+                .replaceAll(macosContentScopeReplacements())
                 .replace('hasModernWebkitAPI', true)
                 .platform('macos')
                 .applyTo(page)
