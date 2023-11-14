@@ -505,5 +505,10 @@
   { "html": "accor_hotel-booking.html" },
   { "html": "pcsretirementcom_login.html", "expectedSubmitFalsePositives": 3 },
   { "html": "lakeshorelearning_checkout.html" },
+  { "html": "appleid_change-password.html" },
+  { "html": "cleanshotcloud_change-password.html" },
+  { "html": "amazon_change-password.html" },
+  { "html": "twitter_change-password.html" },
+  { "html": "google_change-password.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "flytap_login.html" }
 ]
