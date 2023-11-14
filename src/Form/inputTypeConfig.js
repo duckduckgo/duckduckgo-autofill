@@ -1,6 +1,6 @@
 import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
-import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType} from './matching.js'
+import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType, getInputVariant} from './matching.js'
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
 import { IdentityTooltipItem } from '../InputTypes/Identity.js'
@@ -100,12 +100,26 @@ const inputTypeConfig = {
             if (!canBeInteractedWith(input)) return ''
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
+                const subtype = getInputSubtype(input)
+                const variant = getInputVariant(input)
+
+                if (subtype === 'password' && variant === 'new') {
+                    return ddgPasswordIcons.ddgPasswordGenIconBase
+                }
+
                 return ddgPasswordIcons.ddgPasswordIconBase
             }
             return ''
         },
-        getIconFilled: (_input, {device}) => {
+        getIconFilled: (input, {device}) => {
             if (device.settings.featureToggles.inlineIcon_credentials) {
+                const subtype = getInputSubtype(input)
+                const variant = getInputVariant(input)
+
+                if (subtype === 'password' && variant === 'new') {
+                    return ddgPasswordIcons.ddgPasswordGenIconFilled
+                }
+
                 return ddgPasswordIcons.ddgPasswordIconFilled
             }
             return ''
