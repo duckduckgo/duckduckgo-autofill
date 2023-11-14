@@ -710,17 +710,11 @@ class Form {
         // Do not autofill if it's disabled or readonly to avoid potential breakage
         if (!canBeInteractedWith(input)) return
 
-        // @ts-ignore
-        const activeInputSubtype = getInputSubtype(this.activeInput)
-        const inputSubtype = getInputSubtype(input)
-        const isEmailAutofill = activeInputSubtype === 'emailAddress' && inputSubtype === 'emailAddress'
-
-        // Don't override values for identities, unless it's the current input or we're autofilling email
+        // Don't override values the user provided, unless it's the focused input or we're autofilling creditCards
         if (
-            dataType === 'identities' && // only for identities
+            dataType !== 'creditCards' && // creditCards always override, the others only when we're focusing the input
             input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
-            this.activeInput !== input && // and this is not the active input
-            !isEmailAutofill // and we're not auto-filling email
+            this.activeInput !== input // and this is not the active input
         ) return // do not overwrite the value
 
         // If the value is already there, just return
