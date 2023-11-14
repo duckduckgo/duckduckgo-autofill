@@ -261,7 +261,15 @@ class Matching {
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
                 ) {
-                    return 'credentials.password'
+                    const autocompleteAttr = input.getAttribute('autocomplete')
+                    if (autocompleteAttr) {
+                        if (safeRegexTest(/new.?password|password.?new/i, autocompleteAttr)) return 'credentials.password.new'
+                        if (safeRegexTest(/current.?password|password.?current/i, autocompleteAttr)) return 'credentials.password.current'
+                    }
+                    if (opts.isLogin || opts.isHybrid) {
+                        return 'credentials.password.current'
+                    }
+                    return 'credentials.password.new'
                 }
             }
 
@@ -695,7 +703,15 @@ function isValidCreditCardSubtype (supportedType) {
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
 const supportedCredentialsSubtypes = /** @type {const} */ ([
     'password',
+    'password.new',
+    'password.current',
     'username'
+])
+
+/** @typedef {supportedVariants[number]} SupportedVariants */
+const supportedVariants = /** @type {const} */ ([
+    'new',
+    'current'
 ])
 
 /**
@@ -727,6 +743,17 @@ function getSubtypeFromType (type) {
 }
 
 /**
+ * Retrieves the variant
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedVariants | ''}
+ */
+function getVariantFromType (type) {
+    const variant = type?.split('.')[2]
+    const validVariant = isValidVariant(variant)
+    return validVariant ? variant : ''
+}
+
+/**
  * @param {SupportedSubTypes | any} supportedSubType
  * @returns {supportedSubType is SupportedSubTypes}
  */
@@ -745,6 +772,14 @@ function isValidSupportedType (supportedType) {
 }
 
 /**
+ * @param {SupportedVariants | any} supportedVariant
+ * @returns {supportedVariant is SupportedVariants}
+ */
+function isValidVariant (supportedVariant) {
+    return supportedVariants.includes(supportedVariant)
+}
+
+/**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
  * @returns {SupportedSubTypes | 'unknown'}
@@ -752,6 +787,16 @@ function isValidSupportedType (supportedType) {
 function getInputSubtype (input) {
     const type = getInputType(input)
     return getSubtypeFromType(type)
+}
+
+/**
+ * Retrieves the input variant
+ * @param {HTMLInputElement|Element} input
+ * @returns {SupportedVariants | ''}
+ */
+function getInputVariant (input) {
+    const type = getInputType(input)
+    return getVariantFromType(type)
 }
 
 /**
@@ -927,6 +972,8 @@ export {
     getInputType,
     getInputSubtype,
     getSubtypeFromType,
+    getInputVariant,
+    getVariantFromType,
     removeExcessWhitespace,
     getInputMainType,
     getMainTypeFromType,
