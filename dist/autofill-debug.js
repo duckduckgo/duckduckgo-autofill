@@ -6768,6 +6768,9 @@ module.exports={
   "gmx.net": {
     "password-rules": "minlength: 8; maxlength: 40; allowed: lower, upper, digit, [-<=>~!|()@#{}$%,.?^'&*_+`:;\"[]];"
   },
+  "gocurb.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [$%&#*?!@^];"
+  },
   "google.com": {
     "password-rules": "minlength: 8; allowed: lower, upper, digit, [-!\"#$%&'()*+,./:;<=>?@[^_{|}~]];"
   },
@@ -6959,6 +6962,9 @@ module.exports={
   },
   "myhealthrecord.com": {
     "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
+  },
+  "mysavings.breadfinancial.com": {
+    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [+_%@!$*~];"
   },
   "mysedgwick.com": {
     "password-rules": "minlength: 8; maxlength: 16; allowed: lower; required: upper; required: digit; required: [@#%^&+=!]; allowed: [-~_$.,;]"
@@ -7241,6 +7247,9 @@ module.exports={
   },
   "wmata.com": {
     "password-rules": "minlength: 8; required: lower, upper; required: digit; required: digit; required: [-!@#$%^&*~/\"()_=+\\|,.?[]];"
+  },
+  "worldstrides.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [-!#$%&*+=?@^_~];"
   },
   "wsj.com": {
     "password-rules": "minlength: 5; maxlength: 15; required: digit; allowed: lower, upper, [-~!@#$^*_=`|(){}[:;\"'<>,.?]];"
