@@ -348,18 +348,18 @@ test.describe('Auto-fill a login form on macOS', () => {
                     username: personalAddress,
                     password
                 },
-                expectedLabel: 'Manage Logins…'
+                expectedLabel: 'Manage passwords…'
             },
             {
                 description: 'with identities',
                 identity: constants.fields.identity,
-                expectedLabel: 'Manage Identities…'
+                expectedLabel: 'Manage identities…'
             },
             {
                 description: 'with identities and Email Protection',
                 identity: constants.fields.identity,
                 emailProtection: {personalAddress, privateAddress},
-                expectedLabel: 'Manage Identities…'
+                expectedLabel: 'Manage identities…'
             },
             {
                 description: 'with Email Protection and no identities should not show',
@@ -369,7 +369,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             {
                 description: 'with credit card',
                 creditCard: constants.fields.creditCard,
-                expectedLabel: 'Manage Credit Cards…'
+                expectedLabel: 'Manage credit cards…'
             }
         ]
 
