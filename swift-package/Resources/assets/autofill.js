@@ -6195,29 +6195,22 @@ class Form {
   }
   autofillData(data, dataType) {
     this.isAutofilling = true;
-    const isActiveInputCCName = this.activeInput ? (0, _matching.getInputSubtype)(this.activeInput) === 'cardName' : false;
-    // If autofill is initiated from a credit card name field, we only fill the name, not the entire form
-    // https://app.asana.com/0/1175293949586521/1206076643301381/f
-    if (isActiveInputCCName) {
-      this.autofillInput(this.activeInput, data.cardName, dataType);
-    } else {
-      this.execOnInputs(input => {
-        const inputSubtype = (0, _matching.getInputSubtype)(input);
-        let autofillData = data[inputSubtype];
-        if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
-          autofillData = (0, _formatters.getUnifiedExpiryDate)(input, data.expirationMonth, data.expirationYear, this);
-        }
-        if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
-          autofillData = (0, _formatters.formatCCYear)(input, autofillData, this);
-        }
-        if (inputSubtype === 'addressCountryCode') {
-          autofillData = (0, _formatters.getCountryName)(input, data);
-        }
-        if (autofillData) {
-          this.autofillInput(input, autofillData, dataType);
-        }
-      }, dataType);
-    }
+    this.execOnInputs(input => {
+      const inputSubtype = (0, _matching.getInputSubtype)(input);
+      let autofillData = data[inputSubtype];
+      if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
+        autofillData = (0, _formatters.getUnifiedExpiryDate)(input, data.expirationMonth, data.expirationYear, this);
+      }
+      if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
+        autofillData = (0, _formatters.formatCCYear)(input, autofillData, this);
+      }
+      if (inputSubtype === 'addressCountryCode') {
+        autofillData = (0, _formatters.getCountryName)(input, data);
+      }
+      if (autofillData) {
+        this.autofillInput(input, autofillData, dataType);
+      }
+    }, dataType);
     this.isAutofilling = false;
 
     // After autofill we check if form values match the data provided…

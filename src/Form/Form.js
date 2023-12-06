@@ -769,33 +769,26 @@ class Form {
     autofillData (data, dataType) {
         this.isAutofilling = true
 
-        const isActiveInputCCName = this.activeInput ? getInputSubtype(this.activeInput) === 'cardName' : false
-        // If autofill is initiated from a credit card name field, we only fill the name, not the entire form
-        // https://app.asana.com/0/1175293949586521/1206076643301381/f
-        if (isActiveInputCCName) {
-            this.autofillInput(this.activeInput, data.cardName, dataType)
-        } else {
-            this.execOnInputs((input) => {
-                const inputSubtype = getInputSubtype(input)
-                let autofillData = data[inputSubtype]
+        this.execOnInputs((input) => {
+            const inputSubtype = getInputSubtype(input)
+            let autofillData = data[inputSubtype]
 
-                if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
-                    autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this)
-                }
+            if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
+                autofillData = getUnifiedExpiryDate(input, data.expirationMonth, data.expirationYear, this)
+            }
 
-                if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
-                    autofillData = formatCCYear(input, autofillData, this)
-                }
+            if (inputSubtype === 'expirationYear' && input instanceof HTMLInputElement) {
+                autofillData = formatCCYear(input, autofillData, this)
+            }
 
-                if (inputSubtype === 'addressCountryCode') {
-                    autofillData = getCountryName(input, data)
-                }
+            if (inputSubtype === 'addressCountryCode') {
+                autofillData = getCountryName(input, data)
+            }
 
-                if (autofillData) {
-                    this.autofillInput(input, autofillData, dataType)
-                }
-            }, dataType)
-        }
+            if (autofillData) {
+                this.autofillInput(input, autofillData, dataType)
+            }
+        }, dataType)
 
         this.isAutofilling = false
 
