@@ -164,7 +164,7 @@ export function signupPage (page) {
             await input.click()
 
             const passwordBtn = page.locator('button:has-text("Generated password")')
-            await expect(passwordBtn).toContainText('Login information will be saved for this website')
+            await expect(passwordBtn).toContainText('Password will be saved for this website')
 
             const passwordButtonText = await passwordBtn.innerText()
             const [, generatedPassword] = passwordButtonText.split('\n')
