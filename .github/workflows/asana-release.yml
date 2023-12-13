@@ -54,7 +54,6 @@ jobs:
         with:
           repository: duckduckgo/android
           path: android/
-          ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - uses: actions/setup-node@v3
         with:
@@ -112,7 +111,6 @@ jobs:
         with:
           repository: duckduckgo/BrowserServicesKit
           path: bsk/
-          ref: main
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update BSK autofill reference
         run: |
@@ -161,7 +159,6 @@ jobs:
         with:
           repository: duckduckgo/iOS
           path: ios/
-          ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update iOS autofill reference
         env:
@@ -213,7 +210,6 @@ jobs:
         with:
           repository: duckduckgo/macos-browser
           path: macos/
-          ref: develop
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update macOS autofill reference
         env:
@@ -265,7 +261,6 @@ jobs:
         with:
           repository: duckduckgo/duckduckgo-privacy-extension
           path: extensions/
-          ref: main
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - uses: actions/setup-node@v3
         with:
@@ -321,7 +316,6 @@ jobs:
         with:
           repository: duckduckgo/windows-browser
           path: windows/
-          ref: develop
           submodules: true
           token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
       - name: Update Windows autofill reference
