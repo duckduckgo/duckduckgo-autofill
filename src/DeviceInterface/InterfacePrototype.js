@@ -778,7 +778,7 @@ class InterfacePrototype {
     preAttachTooltip (topContextData, input, form) {
         // A list of checks to determine if we need to generate a password
         const checks = [
-            topContextData.inputType === 'credentials.password',
+            topContextData.inputType === 'credentials.password.new',
             this.settings.featureToggles.password_generation,
             form.isSignup
         ]

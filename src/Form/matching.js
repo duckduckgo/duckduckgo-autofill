@@ -261,15 +261,7 @@ class Matching {
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
                 ) {
-                    const autocompleteAttr = input.getAttribute('autocomplete')
-                    if (autocompleteAttr) {
-                        if (safeRegexTest(/new.?password|password.?new/i, autocompleteAttr)) return 'credentials.password.new'
-                        if (safeRegexTest(/current.?password|password.?current/i, autocompleteAttr)) return 'credentials.password.current'
-                    }
-                    if (opts.isLogin || opts.isHybrid) {
-                        return 'credentials.password.current'
-                    }
-                    return 'credentials.password.new'
+                    return this.inferPasswordVariant(input, opts)
                 }
             }
 
@@ -405,6 +397,46 @@ class Matching {
             }
         }
         return undefined
+    }
+
+    /**
+     * Returns the password type string including the variant
+     * @param {HTMLInputElement} input
+     * @param opts
+     * @returns {'credentials.password.new'|'credentials.password.current'}
+     */
+    inferPasswordVariant (input, opts) {
+        const autocompleteAttr = input.autocomplete
+        const nameAttr = input.name
+        const idAttr = input.id
+        if (autocompleteAttr) {
+            if (
+                safeRegexTest(/new.?password|password.?new/i, autocompleteAttr) ||
+                safeRegexTest(/new.?password|password.?new/i, nameAttr) ||
+                safeRegexTest(/new.?password|password.?new/i, idAttr)
+            ) {
+                return 'credentials.password.new'
+            }
+            if (
+                safeRegexTest(/current.?password|password.?current/i, autocompleteAttr) ||
+                safeRegexTest(/current.?password|password.?current/i, nameAttr) ||
+                safeRegexTest(/current.?password|password.?current/i, idAttr)
+            ) {
+                return 'credentials.password.current'
+            }
+        }
+        const newPasswordMatch = this.execDDGMatcher('newPassword')
+        if (newPasswordMatch.matched) {
+            return 'credentials.password.new'
+        }
+        const currentPasswordMatch = this.execDDGMatcher('currentPassword')
+        if (currentPasswordMatch.matched) {
+            return 'credentials.password.current'
+        }
+        if (opts.isLogin || opts.isHybrid) {
+            return 'credentials.password.current'
+        }
+        return 'credentials.password.new'
     }
 
     /**
