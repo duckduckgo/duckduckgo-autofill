@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { getUnifiedExpiryDate } from './formatters.js'
 import { createScanner } from '../Scanner.js'
-import { getInputSubtype, createMatching } from './matching.js'
+import {getInputSubtype, createMatching, getInputVariant} from './matching.js'
 import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
@@ -139,8 +139,24 @@ describe('Input Classifiers', () => {
         })
     })
 })
-let testResults = []
 
+const getMismatchedValue = (score) => {
+    if (score.inferredType !== score.manualType) {
+        return score.manualType
+    }
+
+    if (score.manualVariant && score.manualVariant !== score.inferredVariant) {
+        return `${score.manualType}.${score.manualVariant}`
+    }
+
+    return ''
+}
+
+const isThereAMismatch = (score) => {
+    return Boolean(getMismatchedValue(score))
+}
+
+let testResults = []
 describe.each(testCases)('Test $html fields', (testCase) => {
     const {
         html,
@@ -184,7 +200,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             button._jsdomMockOffsetHeight = 50
         })
 
-        const deviceInterface = InterfacePrototype.default()
+        const deviceInterface = InterfacePrototype.default({isDDGTestMode: true})
         const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
         const scanner = createScanner(deviceInterface)
@@ -213,6 +229,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             const {manualScoring, ddgInputtype, ...rest} = field.dataset
             // @ts-ignore
             field.style = ''
+            const [manualType, manualVariant] = field.getAttribute('data-manual-scoring')?.split('.') || []
+
             return {
                 attrs: {
                     name: field.name,
@@ -221,7 +239,9 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                 },
                 html: field.outerHTML,
                 inferredType: getInputSubtype(field),
-                manualScore: field.getAttribute('data-manual-scoring')
+                inferredVariant: getInputVariant(field),
+                manualType,
+                manualVariant
             }
         }
 
@@ -246,15 +266,17 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         testResults.push({testCase, scores, submitButtonScores})
 
-        let bad = scores.filter(x => x.inferredType !== x.manualScore)
-        let failed = bad.map(x => x.manualScore)
+        let bad = scores.filter(score => isThereAMismatch(score))
+        let failed = bad.map(score => getMismatchedValue(score))
 
         if (bad.length !== expectedFailures.length) {
             for (let score of bad) {
                 console.log(
                     'file:         ' + html,
-                    '\nmanualType:   ' + JSON.stringify(score.manualScore),
+                    '\nmanualType:   ' + JSON.stringify(score.manualType),
                     '\ninferredType: ' + JSON.stringify(score.inferredType),
+                    '\nmanualVariant:   ' + JSON.stringify(score.manualVariant),
+                    '\ninferredVariant: ' + JSON.stringify(score.inferredVariant),
                     '\nid:           ' + JSON.stringify(score.attrs.id),
                     '\nname:         ' + JSON.stringify(score.attrs.name),
                     '\nHTML:         ' + score.html
@@ -281,7 +303,7 @@ afterAll(() => {
 
     testResults.forEach((result) => {
         const siteName = result.testCase.html.split('_')[0]
-        const testHasFailures = result.scores.some(field => field.manualScore !== field.inferredType)
+        const testHasFailures = result.scores.some(score => isThereAMismatch(score))
         if (siteHasFailures[siteName] !== true) {
             siteHasFailures[siteName] = testHasFailures
         }
@@ -302,21 +324,21 @@ afterAll(() => {
 
     testResults.forEach((result) => {
         result.scores.forEach((field) => {
-            const {manualScore, inferredType} = field
-            if (!totalFieldsByType[manualScore]) {
-                totalFieldsByType[manualScore] = 0
-                totalFailuresByFieldType[manualScore] = 0
+            const {manualType, inferredType} = field
+            if (!totalFieldsByType[manualType]) {
+                totalFieldsByType[manualType] = 0
+                totalFailuresByFieldType[manualType] = 0
             }
 
-            if (manualScore !== inferredType) {
+            if (manualType !== inferredType) {
                 totalFailedFields++
-                totalFailuresByFieldType[manualScore]++
+                totalFailuresByFieldType[manualType]++
             }
-            if ((!manualScore || manualScore === 'unknown') && inferredType !== manualScore) {
+            if ((!manualType || manualType === 'unknown') && inferredType !== manualType) {
                 totalFalsePositives++
             }
             totalFields++
-            totalFieldsByType[manualScore]++
+            totalFieldsByType[manualType]++
         })
     })
 
