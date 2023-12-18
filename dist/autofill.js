@@ -2446,6 +2446,9 @@ module.exports={
   "classmates.com": {
     "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit, [!@#$%^&*];"
   },
+  "clegc-gckey.gc.ca": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower, upper, digit;"
+  },
   "clien.net": {
     "password-rules": "minlength: 5; required: lower, upper; required: digit;"
   },
@@ -2579,7 +2582,7 @@ module.exports={
     "password-rules": "minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&*_+=`|(){}[:;,.?]];"
   },
   "fidelity.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; allowed: upper,digit,[!$%'()+,./:;=?@^_|~];"
+    "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: [!$%'()+,./:;=?@^_|~]; max-consecutive: 2;"
   },
   "flysas.com": {
     "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [-~!@#$%^&_+=`|(){}[:\"'<>,.?]];"
@@ -2727,6 +2730,9 @@ module.exports={
   },
   "lg.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-!#$%&'()*+,.:;=?@[^_{|}~]];"
+  },
+  "linearity.io": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
   },
   "live.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
