@@ -344,9 +344,11 @@ class FormAnalyzer {
 
         // Match form textContent against common cc fields (includes hidden labels)
         const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig)
+        // De-dupe matches to avoid counting the same element more than once
+        const deDupedMatches = new Set(textMatches?.map(match => match.toLowerCase()))
 
         // We check for more than one to minimise false positives
-        this._isCCForm = Boolean(textMatches && textMatches.length > 1)
+        this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1)
         return this._isCCForm
     }
 }
