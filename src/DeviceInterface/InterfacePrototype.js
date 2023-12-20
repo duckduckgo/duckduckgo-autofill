@@ -779,8 +779,7 @@ class InterfacePrototype {
         // A list of checks to determine if we need to generate a password
         const checks = [
             topContextData.inputType === 'credentials.password.new',
-            this.settings.featureToggles.password_generation,
-            form.isSignup
+            this.settings.featureToggles.password_generation
         ]
 
         // if all checks pass, generate and save a password
