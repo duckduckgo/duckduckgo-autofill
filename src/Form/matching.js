@@ -2,7 +2,7 @@ import {constants} from '../constants.js'
 import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
 import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
-import {getTextShallow, safeRegexTest} from '../autofill-utils.js'
+import {getTextShallow, safeRegexTest, shouldLog} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -265,9 +265,15 @@ class Matching {
                 }
             }
 
-            if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
+            if (this.subtypeFromMatchers('emailAddress', input)) {
+                if (!this.isInputLargeEnough('emailAddress', input)) {
+                    if (shouldLog()) {
+                        console.log('Field matched for Email Address, but discarded because too small when scanned')
+                    }
+                    return 'unknown'
+                }
                 if (opts.isLogin || opts.isHybrid) {
-                    // TODO: Being this support back in the future
+                    // TODO: Bring this support back in the future
                     // https://app.asana.com/0/1198964220583541/1204686960531034/f
                     // Show identities when supported and there are no credentials
                     // if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
@@ -620,6 +626,7 @@ class Matching {
     }
 
     /**
+     * Only used for testing
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLElement} form
      * @returns {Matching}
