@@ -237,6 +237,7 @@ class FormAnalyzer {
         if (el.matches(this.matching.cssSelector('submitButtonSelector') + ', *[class*=button]')) {
             // If we're confident this is the submit button, it's a stronger signal
             let likelyASubmit = isLikelyASubmitButton(el, this.matching)
+            let shouldFlip = false
             if (likelyASubmit) {
                 this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(
                     (submit) => {
@@ -246,9 +247,13 @@ class FormAnalyzer {
                         }
                     }
                 )
+            } else {
+                // Here we don't think this is a submit, so if there is another submit in the form, flip the score
+                const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'))
+                shouldFlip = thereIsASubmitButton
             }
-            const strength = likelyASubmit ? 20 : 2
-            this.updateSignal({string, strength, signalType: `submit: ${string}`})
+            const strength = likelyASubmit ? 20 : 4
+            this.updateSignal({string, strength, signalType: `button: ${string}`, shouldFlip})
             return
         }
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
