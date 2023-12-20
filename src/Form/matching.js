@@ -417,16 +417,18 @@ class Matching {
         const idAttr = input.id
         if (autocompleteAttr) {
             if (
-                safeRegexTest(/new.?password|password.?new/i, autocompleteAttr) ||
+                (safeRegexTest(/new.?password|password.?new/i, autocompleteAttr) ||
                 safeRegexTest(/new.?password|password.?new/i, nameAttr) ||
-                safeRegexTest(/new.?password|password.?new/i, idAttr)
+                safeRegexTest(/new.?password|password.?new/i, idAttr)) &&
+                opts.isSignup
             ) {
                 return 'credentials.password.new'
             }
             if (
-                safeRegexTest(/current.?password|password.?current/i, autocompleteAttr) ||
+                (safeRegexTest(/current.?password|password.?current/i, autocompleteAttr) ||
                 safeRegexTest(/current.?password|password.?current/i, nameAttr) ||
-                safeRegexTest(/current.?password|password.?current/i, idAttr)
+                safeRegexTest(/current.?password|password.?current/i, idAttr)) &&
+                (opts.isLogin || opts.isHybrid)
             ) {
                 return 'credentials.password.current'
             }
