@@ -31,14 +31,14 @@ form signature in host form: 3665990058380001014
 field frame token: D4A086A47A11E6E385515267A74816E5
 form renderer id: 2
 field renderer id: 22
-autocomplete: off" data-ddg-testresultelementid="586602" data-manual-scoring="username OR emailAddress"><!-- end ngIf: authBoxLoginCtrl.environment === 'pro' -->
+autocomplete: off" data-ddg-testresultelementid="586602" data-manual-scoring="username"><!-- end ngIf: authBoxLoginCtrl.environment === 'pro' -->
       <!-- es necesario meter docid auque vaya vacio -->
       <input name="wt-msisdn" value="" type="hidden">
     </div>
   </div>
   <div class="row panel-error ng-hide" ng-show="authBoxLoginCtrl.errorFormatLogin">
     <div class="imgCaution">
-      
+
     </div>
     <span class="error_p line ng-binding">Formato incorrecto.</span>
     <!--linea error input-->
@@ -46,7 +46,7 @@ autocomplete: off" data-ddg-testresultelementid="586602" data-manual-scoring="us
   <!-- Subir a cms -->
   <div class="row panel-error ng-hide" ng-show="authBoxLoginCtrl.checkPasswordandUser">
     <div class="imgCaution">
-      
+
     </div>
     <span class="error_p line ng-binding">
       <!--Por favor, rellene este campo -->
@@ -69,16 +69,16 @@ form signature in host form: 3665990058380001014
 field frame token: D4A086A47A11E6E385515267A74816E5
 form renderer id: 2
 field renderer id: 20
-autocomplete: new-password" data-ddg-testresultelementid="586603" data-manual-scoring="password">
+autocomplete: new-password" data-ddg-testresultelementid="586603" data-manual-scoring="password.current">
     </div>
     <div class="imgForm">
-      
+
     </div>
   </div>
   <!-- Error -->
   <div class="row panel-error ng-hide" ng-show="authBoxLoginCtrl.errorLogin || authBoxLoginCtrl.errorFormatPwd">
     <div class="imgCaution">
-      
+
     </div>
     <span class="error_p panel-image ng-binding"></span>
   </div>
@@ -101,7 +101,7 @@ autocomplete: new-password" data-ddg-testresultelementid="586603" data-manual-sc
   <div ng-class="{'marginTop65':authBoxLoginCtrl.isInmersiveNow || authBoxLoginCtrl.isTuya}" class="o-comp__auth-box-login-infoUser-div" ng-click="authBoxLoginCtrl.openTextHelp()">
     <div class="o-comp__auth-box-login-infoUser">
       <p class="o-comp__auth-box-login-infoUserP">
-        
+
         <span class="o-comp__auth-box-login-new_passport ng-binding">
           ¿Cuál es mi usuario?
         </span>

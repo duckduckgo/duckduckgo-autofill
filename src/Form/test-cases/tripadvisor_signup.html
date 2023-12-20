@@ -2,7 +2,7 @@
     <script
         type="text/javascript">require('ta/registration/RegController').addBackAction("regSignUp", "ssoButtons");</script>
     <div class="coreRegBackButton"><button type="button" class="ui_icon single-chevron-left"
-            onclick="require('ta/registration/RegController').resetAllOverlays();require('ta/Core/TA.Record').trackEventOnPage('reg_trigger', 'go_back_link_click', 'Reg Form | sign_up_and_save', '40486');require('ta/registration/loadRegJquery')('#regSignUp').hide();require('ta/registration/RegController').messageForAction('splash');require('ta/registration/loadRegJquery')('#ssoButtons').show();require('ta/registration/loadRegJquery')('#overlayHeader').show(); 
+            onclick="require('ta/registration/RegController').resetAllOverlays();require('ta/Core/TA.Record').trackEventOnPage('reg_trigger', 'go_back_link_click', 'Reg Form | sign_up_and_save', '40486');require('ta/registration/loadRegJquery')('#regSignUp').hide();require('ta/registration/RegController').messageForAction('splash');require('ta/registration/loadRegJquery')('#ssoButtons').show();require('ta/registration/loadRegJquery')('#overlayHeader').show();
 require('ta/registration/loadRegJquery')('.regLegalDisclaimer').show();require('ta/registration/loadRegJquery')('.joinNowForFree').show();require('ta/registration/RegController').resizeFrame();"></button>
     </div>
     <div class="signUpBody">
@@ -29,7 +29,7 @@ require('ta/registration/loadRegJquery')('.regLegalDisclaimer').show();require('
             class="text coreRegInputText" title=""
             onkeydown="return ta.util.keys.onEnterKeyClickFormChild(event, '.regSubmitBtnEvent');"
             onfocus="require('ta/registration/RegController').resetErrorOverlays();" autocomplete="new-password"
-            placeholder="Password" data-manual-scoring="password"><span class="showHidePasswordButton"
+            placeholder="Password" data-manual-scoring="password.new"><span class="showHidePasswordButton"
             onclick="const psw = require('ta/registration/loadRegJquery')('#regSignUp\\.password');psw.attr('type', psw.attr('type') === 'password' ? 'text' : 'password');require('ta/registration/loadRegJquery')(this).children('.regHiddenPassword').toggle();require('ta/registration/loadRegJquery')(this).children('.regOpenedPassword').toggle();psw.focus();"><span
                 class="regHiddenPassword"><img src="https://static.tacdn.com/img2/icons/eye-not-active.svg"
                     alt="Show password"></span><span class="regOpenedPassword"><img

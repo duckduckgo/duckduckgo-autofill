@@ -1,0 +1,44 @@
+<!-- https://account.jetbrains.com/change-password -->
+<form method="post" action="/change-password" class="form-horizontal form-password" js-password-strength-url="/password-strength?_st=RAGYhw9aw8LoPHz9lac987yZWeAF5Dl7RP1dcyonD6GhacHQePoOryfABuZYWqmK">
+    <div class="form-group">
+        <div class="col-sm-4 col-md-3 control-label">
+            <label for="old_password" class="">Current&nbsp;Password</label>
+        </div>
+        <div class="col-xs-7 control-field">
+            <input autocomplete="current-password" name="old_password" id="old_password" type="password" autofocus="" class="form-control" data-manual-scoring="password.current">
+            <div class="help-block"><a href="/forgot-password" class="btn btn-link link">Forgot password?</a></div>
+            <div class="error-message"></div>
+        </div>
+        <div class="col-xs-1 col-md-2 control-field">
+            <div js-input-ids="old_password" class="password-stealth js-password-eye"><a><i class="icon icon-eye-close text-muted"></i></a></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4 col-md-3 control-label">
+            <label for="password" class="">New&nbsp;Password</label>
+        </div>
+        <div class="col-xs-7 control-field">
+            <input autocomplete="new-password" name="password" id="password" type="password" class="form-control" value="" data-manual-scoring="password.new"><div class="progress "><div class="progress-bar progress-bar-danger" style="width: 0%;"></div></div><span class="password-verdict"></span>
+            <div class="error-message"></div>
+        </div>
+        <div class="col-xs-1 col-md-2 control-field">
+            <div js-input-ids="password,pass2" class="password-stealth js-password-eye"><a><i class="icon icon-eye-close text-muted"></i></a></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4 col-md-3 control-label">
+            <label for="pass2" class="">Repeat&nbsp;New&nbsp;Password</label>
+        </div>
+        <div class="col-xs-7 control-field">
+            <input autocomplete="new-password" name="pass2" id="pass2" type="password" class="form-control" value="" required="" data-manual-scoring="password.new">
+            <div class="error-message"></div>
+        </div>
+        <div class="col-xs-1 col-md-2 control-field"></div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4 col-md-3 control-label">
+            <label class=""></label>
+        </div>
+        <div class="col-xs-8 control-field"><button class="btn btn-primary pwd-submit-btn btn-primary btn-lg" data-manual-submit>Save Changes</button></div>
+    </div>
+</form>
