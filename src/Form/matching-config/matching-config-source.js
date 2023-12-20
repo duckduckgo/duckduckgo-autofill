@@ -224,9 +224,9 @@ const matchingConfiguration = {
         ddgMatcher: {
             matchers: {
                 unknown: {
-                    match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' +
+                    match: 'search|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp' +
                         // Italian
-                        '|cerca|filtr|oggetto|titolo|(due|più) fattori' +
+                        '|cerca|filtr|oggetto|titolo|(due|2|più).?fattori' +
                         // German
                         '|suche|filtern|betreff' +
                         // Dutch
@@ -271,7 +271,7 @@ const matchingConfiguration = {
                     match: 'new|re.?(enter|type)|repeat|update|reset'
                 },
                 currentPassword: {
-                    match: 'current|old|previous|expired'
+                    match: 'current|old|previous|expired|existing'
                 },
                 username: {
                     match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +

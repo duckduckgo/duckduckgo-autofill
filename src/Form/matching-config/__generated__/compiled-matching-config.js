@@ -235,7 +235,7 @@ const matchingConfiguration = {
     ddgMatcher: {
       matchers: {
         unknown: {
-          match: /search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp|cerca|filtr|oggetto|titolo|(due|più) fattori|suche|filtern|betreff|zoeken|filter|onderwerp|titel|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique|busca|busqueda|filtra|dos pasos|un solo uso|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs/iu,
+          match: /search|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp|cerca|filtr|oggetto|titolo|(due|2|più).?fattori|suche|filtern|betreff|zoeken|filter|onderwerp|titel|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique|busca|busqueda|filtra|dos pasos|un solo uso|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs/iu,
           skip: /phone|mobile|email|password/iu
         },
         emailAddress: {
@@ -249,7 +249,7 @@ const matchingConfiguration = {
           forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         newPassword: { match: /new|re.?(enter|type)|repeat|update|reset/iu },
-        currentPassword: { match: /current|old|previous|expired/iu },
+        currentPassword: { match: /current|old|previous|expired|existing/iu },
         username: {
           match: /(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|\/).+|\*|:)( required)?)?$|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente|nutzername|anmeldename|gebruikersnaam|nom d.utilisateur|identifiant|pseudo|usuari|cuenta|identificador|apodo|\bdni\b|\bnie\b| del? documento|documento de identidad|användarnamn|kontonamn|användar-id/iu,
           skip: /phone/iu,
