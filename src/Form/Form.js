@@ -199,11 +199,10 @@ class Form {
             }, {credentials: {}, creditCards: {}, identities: {}})
 
         if (
-            formValues.credentials.password &&
             !formValues.credentials.username &&
             !formValues.identities.emailAddress
         ) {
-            // If we have a password but no username, let's search further
+            // If we could find no username, let's search further
             const hiddenFields = /** @type [HTMLInputElement] */([...this.form.querySelectorAll('input[type=hidden]')])
             const probableField = hiddenFields.find((field) => {
                 const regex = new RegExp('email|' + this.matching.getDDGMatcherRegex('username')?.source)
