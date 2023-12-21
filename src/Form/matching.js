@@ -412,27 +412,23 @@ class Matching {
      * @returns {'credentials.password.new'|'credentials.password.current'}
      */
     inferPasswordVariant (input, opts) {
-        const autocompleteAttr = input.autocomplete
-        const nameAttr = input.name
-        const idAttr = input.id
-        if (autocompleteAttr) {
-            if (
-                (safeRegexTest(/new.?password|password.?new/i, autocompleteAttr) ||
-                safeRegexTest(/new.?password|password.?new/i, nameAttr) ||
-                safeRegexTest(/new.?password|password.?new/i, idAttr)) &&
-                opts.isSignup
-            ) {
-                return 'credentials.password.new'
-            }
-            if (
-                (safeRegexTest(/current.?password|password.?current/i, autocompleteAttr) ||
-                safeRegexTest(/current.?password|password.?current/i, nameAttr) ||
-                safeRegexTest(/current.?password|password.?current/i, idAttr)) &&
-                (opts.isLogin || opts.isHybrid)
-            ) {
-                return 'credentials.password.current'
-            }
+        // Check attributes first
+        // This is done mainly to ensure coverage for all languages, since attributes are usually in English
+        const attrsToCheck = [input.autocomplete, input.name, input.id]
+        if (
+            opts.isSignup &&
+            attrsToCheck.some(str => safeRegexTest(/new.?password|password.?new/i, str))
+        ) {
+            return 'credentials.password.new'
         }
+        if (
+            (opts.isLogin || opts.isHybrid) &&
+            attrsToCheck.some(str => safeRegexTest(/(current|old|previous).?password|password.?(current|old|previous)/i, str))
+        ) {
+            return 'credentials.password.current'
+        }
+
+        // Check strings using the usual DDG matcher
         const newPasswordMatch = this.execDDGMatcher('newPassword')
         if (newPasswordMatch.matched) {
             return 'credentials.password.new'
@@ -441,6 +437,8 @@ class Matching {
         if (currentPasswordMatch.matched) {
             return 'credentials.password.current'
         }
+
+        // Otherwise, rely on the passed form type
         if (opts.isLogin || opts.isHybrid) {
             return 'credentials.password.current'
         }
