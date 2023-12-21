@@ -6612,6 +6612,9 @@ module.exports={
   "classmates.com": {
     "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit, [!@#$%^&*];"
   },
+  "clegc-gckey.gc.ca": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower, upper, digit;"
+  },
   "clien.net": {
     "password-rules": "minlength: 5; required: lower, upper; required: digit;"
   },
@@ -6745,7 +6748,7 @@ module.exports={
     "password-rules": "minlength: 8; max-consecutive: 3; required: lower; required: upper; required: digit; allowed: [-!@#$%^&*_+=`|(){}[:;,.?]];"
   },
   "fidelity.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: lower; allowed: upper,digit,[!$%'()+,./:;=?@^_|~];"
+    "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: [!$%'()+,./:;=?@^_|~]; max-consecutive: 2;"
   },
   "flysas.com": {
     "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [-~!@#$%^&_+=`|(){}[:\"'<>,.?]];"
@@ -6802,7 +6805,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: special;"
   },
   "hotels.com": {
-    "password-rules": "minlength: 6; maxlength: 20; required: digit; allowed: lower, upper, [@$!#()&^*%];"
+    "password-rules": "minlength: 6; maxlength: 20; required: digit; required: [-~#@$%&!*_?^]; allowed: lower, upper;"
   },
   "hotwire.com": {
     "password-rules": "minlength: 6; maxlength: 30; allowed: lower, upper, digit, [-~!@#$%^&*_+=`|(){}[:;\"'<>,.?]];"
@@ -6821,6 +6824,9 @@ module.exports={
   },
   "hyresbostader.se": {
     "password-rules": "minlength: 6; maxlength: 20; required: lower, upper; required: digit;"
+  },
+  "ichunqiu.com": {
+    "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit;"
   },
   "id.sonyentertainmentnetwork.com": {
     "password-rules": "minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
@@ -6893,6 +6899,9 @@ module.exports={
   },
   "lg.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-!#$%&'()*+,.:;=?@[^_{|}~]];"
+  },
+  "linearity.io": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
   },
   "live.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
@@ -16898,7 +16907,7 @@ function createGlobalConfig(overrides) {
   // INJECT webkitMessageHandlerNames HERE
 
   let isDDGTestMode = false;
-  isDDGTestMode = true;
+  // INJECT isDDGTestMode HERE
 
   let contentScope = null;
   let userUnprotectedDomains = null;
