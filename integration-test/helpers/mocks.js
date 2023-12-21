@@ -12,7 +12,6 @@ export const constants = {
         'iframeContainer': 'pages/iframe-container.html',
         'signup': 'pages/signup.html',
         'mutatingForm': 'pages/mutating-form.html',
-        'passwordUpdate': 'pages/password-update.html',
         'login': 'pages/login.html',
         'loginWithPoorForm': 'pages/login-poor-form.html',
         'loginWithText': 'pages/login-with-text.html',
