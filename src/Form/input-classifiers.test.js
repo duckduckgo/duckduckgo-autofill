@@ -200,7 +200,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             button._jsdomMockOffsetHeight = 50
         })
 
-        const deviceInterface = InterfacePrototype.default({isDDGTestMode: true})
+        const deviceInterface = InterfacePrototype.default()
         const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
         const scanner = createScanner(deviceInterface)
