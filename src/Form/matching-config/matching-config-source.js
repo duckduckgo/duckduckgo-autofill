@@ -224,9 +224,9 @@ const matchingConfiguration = {
         ddgMatcher: {
             matchers: {
                 unknown: {
-                    match: 'search|filter|subject|title|captcha|mfa|2fa|two factor|one-time|otp' +
+                    match: 'search|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp' +
                         // Italian
-                        '|cerca|filtr|oggetto|titolo|(due|più) fattori' +
+                        '|cerca|filtr|oggetto|titolo|(due|2|più).?fattori' +
                         // German
                         '|suche|filtern|betreff' +
                         // Dutch
@@ -266,6 +266,12 @@ const matchingConfiguration = {
                         '|lösenord',
                     skip: 'email|one-time|error|hint',
                     forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
+                },
+                newPassword: {
+                    match: 'new|re.?(enter|type)|repeat|update|reset'
+                },
+                currentPassword: {
+                    match: 'current|old|previous|expired|existing'
                 },
                 username: {
                     match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
@@ -366,7 +372,7 @@ const matchingConfiguration = {
                         '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
                 },
                 signupRegex: {
-                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|guest|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|retype|repeat) password|password confirm' +
+                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' +
                         // German
@@ -422,7 +428,7 @@ const matchingConfiguration = {
                         '| avec '
                 },
                 submitButtonRegex: {
-                    match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate' +
+                    match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\\bset\\b' +
                         // Italian
                         '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' +
                         // German
@@ -437,7 +443,7 @@ const matchingConfiguration = {
                         '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
                 },
                 submitButtonUnlikelyRegex: {
-                    match: 'facebook|twitter|google|apple|cancel|password|show|toggle|reveal|hide|print|back|already' +
+                    match: 'facebook|twitter|google|apple|cancel|show|toggle|reveal|hide|print|back|already' +
                         // Italian
                         '|annulla|mostra|nascondi|stampa|indietro|già' +
                         // German

@@ -2,11 +2,16 @@ import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.j
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {mutatingFormPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
+import {createAvailableInputTypes} from '../helpers/utils.js'
+import {constants} from '../helpers/mocks.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
  */
 const test = base.extend({})
+
+const {personalAddress} = constants.fields.email
+const password = '123456'
 
 test.describe('Mutating form page', () => {
     async function applyScript (page) {
@@ -19,7 +24,15 @@ test.describe('Mutating form page', () => {
     test('works fine on macOS', async ({page}) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
-        await createWebkitMocks().applyTo(page)
+        await createWebkitMocks()
+            .withAvailableInputTypes(createAvailableInputTypes())
+            .withCredentials({
+                id: '01',
+                username: personalAddress,
+                password,
+                credentialsProvider: 'duckduckgo'
+            })
+            .applyTo(page)
 
         // Load the autofill.js script with replacements
         await await applyScript(page)
@@ -27,10 +40,10 @@ test.describe('Mutating form page', () => {
         const mutatingForm = mutatingFormPage(page)
         await mutatingForm.navigate()
 
-        await mutatingForm.passwordFieldShowsKey()
+        await mutatingForm.passwordFieldShowsGenKey()
 
         await mutatingForm.toggleLoginOrSignup()
 
-        await mutatingForm.assertPasswordHasNoIcon()
+        await mutatingForm.passwordFieldShowsFillKey()
     })
 })

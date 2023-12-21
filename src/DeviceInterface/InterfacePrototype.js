@@ -778,9 +778,8 @@ class InterfacePrototype {
     preAttachTooltip (topContextData, input, form) {
         // A list of checks to determine if we need to generate a password
         const checks = [
-            topContextData.inputType === 'credentials.password',
-            this.settings.featureToggles.password_generation,
-            form.isSignup
+            topContextData.inputType === 'credentials.password.new',
+            this.settings.featureToggles.password_generation
         ]
 
         // if all checks pass, generate and save a password
@@ -869,10 +868,11 @@ class InterfacePrototype {
     /**
      * This serves as a single place to create a default instance
      * of InterfacePrototype that can be useful in testing scenarios
+     * @param {Partial<GlobalConfig>} [globalConfigOverrides]
      * @returns {InterfacePrototype}
      */
-    static default () {
-        const globalConfig = createGlobalConfig()
+    static default (globalConfigOverrides) {
+        const globalConfig = createGlobalConfig(globalConfigOverrides)
         const transport = createTransport(globalConfig)
         const deviceApi = new DeviceApi(transport)
         const settings = Settings.default(globalConfig, deviceApi)

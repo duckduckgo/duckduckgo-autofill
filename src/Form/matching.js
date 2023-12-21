@@ -2,7 +2,7 @@ import {constants} from '../constants.js'
 import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
 import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
-import {getTextShallow, safeRegexTest} from '../autofill-utils.js'
+import {getTextShallow, safeRegexTest, shouldLog} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -261,13 +261,19 @@ class Matching {
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
                 ) {
-                    return 'credentials.password'
+                    return this.inferPasswordVariant(input, opts)
                 }
             }
 
-            if (this.subtypeFromMatchers('emailAddress', input) && this.isInputLargeEnough('emailAddress', input)) {
+            if (this.subtypeFromMatchers('emailAddress', input)) {
+                if (!this.isInputLargeEnough('emailAddress', input)) {
+                    if (shouldLog()) {
+                        console.log('Field matched for Email Address, but discarded because too small when scanned')
+                    }
+                    return 'unknown'
+                }
                 if (opts.isLogin || opts.isHybrid) {
-                    // TODO: Being this support back in the future
+                    // TODO: Bring this support back in the future
                     // https://app.asana.com/0/1198964220583541/1204686960531034/f
                     // Show identities when supported and there are no credentials
                     // if (opts.supportsIdentitiesAutofill && !opts.hasCredentials) {
@@ -397,6 +403,46 @@ class Matching {
             }
         }
         return undefined
+    }
+
+    /**
+     * Returns the password type string including the variant
+     * @param {HTMLInputElement} input
+     * @param opts
+     * @returns {'credentials.password.new'|'credentials.password.current'}
+     */
+    inferPasswordVariant (input, opts) {
+        // Check attributes first
+        // This is done mainly to ensure coverage for all languages, since attributes are usually in English
+        const attrsToCheck = [input.autocomplete, input.name, input.id]
+        if (
+            opts.isSignup &&
+            attrsToCheck.some(str => safeRegexTest(/new.?password|password.?new/i, str))
+        ) {
+            return 'credentials.password.new'
+        }
+        if (
+            (opts.isLogin || opts.isHybrid) &&
+            attrsToCheck.some(str => safeRegexTest(/(current|old|previous).?password|password.?(current|old|previous)/i, str))
+        ) {
+            return 'credentials.password.current'
+        }
+
+        // Check strings using the usual DDG matcher
+        const newPasswordMatch = this.execDDGMatcher('newPassword')
+        if (newPasswordMatch.matched) {
+            return 'credentials.password.new'
+        }
+        const currentPasswordMatch = this.execDDGMatcher('currentPassword')
+        if (currentPasswordMatch.matched) {
+            return 'credentials.password.current'
+        }
+
+        // Otherwise, rely on the passed form type
+        if (opts.isLogin || opts.isHybrid) {
+            return 'credentials.password.current'
+        }
+        return 'credentials.password.new'
     }
 
     /**
@@ -580,6 +626,7 @@ class Matching {
     }
 
     /**
+     * Only used for testing
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLElement} form
      * @returns {Matching}
@@ -695,7 +742,15 @@ function isValidCreditCardSubtype (supportedType) {
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
 const supportedCredentialsSubtypes = /** @type {const} */ ([
     'password',
+    'password.new',
+    'password.current',
     'username'
+])
+
+/** @typedef {supportedVariants[number]} SupportedVariants */
+const supportedVariants = /** @type {const} */ ([
+    'new',
+    'current'
 ])
 
 /**
@@ -727,6 +782,17 @@ function getSubtypeFromType (type) {
 }
 
 /**
+ * Retrieves the variant
+ * @param {SupportedTypes | string} type
+ * @returns {SupportedVariants | ''}
+ */
+function getVariantFromType (type) {
+    const variant = type?.split('.')[2]
+    const validVariant = isValidVariant(variant)
+    return validVariant ? variant : ''
+}
+
+/**
  * @param {SupportedSubTypes | any} supportedSubType
  * @returns {supportedSubType is SupportedSubTypes}
  */
@@ -745,6 +811,14 @@ function isValidSupportedType (supportedType) {
 }
 
 /**
+ * @param {SupportedVariants | any} supportedVariant
+ * @returns {supportedVariant is SupportedVariants}
+ */
+function isValidVariant (supportedVariant) {
+    return supportedVariants.includes(supportedVariant)
+}
+
+/**
  * Retrieves the input subtype
  * @param {HTMLInputElement|Element} input
  * @returns {SupportedSubTypes | 'unknown'}
@@ -755,17 +829,28 @@ function getInputSubtype (input) {
 }
 
 /**
+ * Retrieves the input variant
+ * @param {HTMLInputElement|Element} input
+ * @returns {SupportedVariants | ''}
+ */
+function getInputVariant (input) {
+    const type = getInputType(input)
+    return getVariantFromType(type)
+}
+
+/**
  * Remove whitespace of more than 2 in a row and trim the string
  * @param {string | null} string
  * @return {string}
  */
 const removeExcessWhitespace = (string = '') => {
+    string = string?.trim() || ''
     // The length check is extra safety to avoid trimming strings that would be discarded anyway
     if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return ''
 
     return (string)
         .replace(/\n/g, ' ')
-        .replace(/\s{2,}/g, ' ').trim()
+        .replace(/\s{2,}/g, ' ')
 }
 
 /**
@@ -927,6 +1012,8 @@ export {
     getInputType,
     getInputSubtype,
     getSubtypeFromType,
+    getInputVariant,
+    getVariantFromType,
     removeExcessWhitespace,
     getInputMainType,
     getMainTypeFromType,

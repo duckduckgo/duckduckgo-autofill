@@ -11,7 +11,7 @@
   <div class="progress-indicator-fullpage ng-hide" ng-show="loading">
     <div class="progress-indicator">
       <div class="circle-progress-indicator">
-        
+
       </div>
       <!-- 字串 如需顯示請參考下列描述 -->
       <!-- 0 ~ 8s 顯示-->
@@ -21,18 +21,18 @@
 
   <div class="root">
     <!-- header -->
-    
-    
+
+
     <header class="header ng-scope" ng-class="{'m--header':is_inner_page}" id="header" ng-controller="headerCtrl">
       <div class="logo" ng-click="gotoProfile()">
-        
-        
+
+
       </div>
 
       <div class="utils-location-only">
         <div class="util-btn util-location" ng-class="{'active':current_dropdown_menu == 'location'}" ng-click="toggleDropdown('location'); $event.stopPropagation()">
           <div class="location-group">
-            
+
             <span class="current-location ng-hide" ng-show="china_site">China</span>
             <span class="current-location" ng-show="!china_site">Global</span>
           </div>
@@ -54,83 +54,83 @@
 
       <div class="utils" ng-hide="is_invitation_signup_page">
         <div class="util-btn util-service" ng-class="{'active':current_dropdown_menu == 'service'}" ng-click="toggleDropdown('service'); $event.stopPropagation()">
-          
+
           <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'service'">
             <ul class="comp-dropdown-menu">
               <!-- ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">QNAP Account</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">myQNAPcloud</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">Organization Center</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">AMIZ Cloud</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">QuWAN</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">Software Store</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">License Manager</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">Qmiix</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">Service Portal</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">Warranty Extension</div>
               </li>
               <!-- end ngRepeat: app in apps_info -->
               <li class="service-item ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                 <div class="service-logo">
-                  
+
                 </div>
                 <div class="service-name ng-binding">AfoBot</div>
               </li>
@@ -140,7 +140,7 @@
         </div>
 
         <div class="util-btn util-location" ng-class="{'active':current_dropdown_menu == 'location'}" ng-hide="is_license_shop || is_remind_pw_and_ts_page" ng-click="toggleDropdown('location');$event.stopPropagation()">
-          
+
           <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'location'">
             <ul class="comp-dropdown-menu">
               <li class="section">
@@ -156,7 +156,7 @@
         </div>
 
         <div class="util-btn util-lang" ng-class="{'active':current_dropdown_menu == 'lang'}" ng-click="toggleDropdown('lang'); $event.stopPropagation()">
-          
+
           <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'lang'">
             <ul class="comp-dropdown-menu">
               <li class="section">
@@ -259,7 +259,7 @@
         </div>
 
         <div class="util-btn util-more" ng-class="{'active':current_dropdown_menu == 'info'}" ng-click="toggleDropdown('info'); $event.stopPropagation()">
-          
+
           <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'info'">
             <ul class="comp-dropdown-menu">
               <li class="section m--section">
@@ -268,21 +268,21 @@
                   <!-- ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">QNAP Account</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">myQNAPcloud</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">
                       Organization Center
@@ -291,49 +291,49 @@
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">AMIZ Cloud</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">QuWAN</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">Software Store</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">License Manager</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">Qmiix</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">Service Portal</div>
                   </div>
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">
                       Warranty Extension
@@ -342,7 +342,7 @@
                   <!-- end ngRepeat: app in apps_info -->
                   <div class="section-items selection ng-scope" ng-repeat="app in apps_info" ng-click="goToAppByJson(app)" ng-show="app.website_url.length > 0">
                     <div class="service-logo">
-                      
+
                     </div>
                     <div class="service-name ng-binding">AfoBot</div>
                   </div>
@@ -538,7 +538,7 @@
         <div class="util-btn util-account ng-hide" ng-show="is_sign_in" ng-click="toggleDropdown('user'); $event.stopPropagation()">
           <div class="avatar no-avatar">
             <span ng-hide="user.avatars" class="ng-binding"></span>
-            
+
           </div>
           <div class="comp-dropdown ng-hide" ng-show="current_dropdown_menu == 'user'">
             <ul class="comp-dropdown-menu">
@@ -548,7 +548,7 @@
                   <div class="account-img">
                     <div class="avatar no-avatar">
                       <span ng-hide="user.avatars" class="ng-binding"></span>
-                      
+
                     </div>
                   </div>
                   <div class="account-info">
@@ -567,7 +567,7 @@
       </div>
     </header>
 
-    
+
     <div class="fixed-alert ng-scope ng-hide" ng-controller="alertController" ng-class="[alertClass]" ng-click="$event.stopPropagation()" ng-show="show_alert">
       <div class="alert-content">
         <button type="button" class="alert-close-btn" aria-hidden="true" ng-click="closeAlert()">
@@ -579,19 +579,19 @@
       </div>
     </div>
 
-    
+
 
     <!-- content -->
 
-    
-    
-    
+
+
+
     <div class="wrap">
       <!-- ngView:  -->
       <main class="main-content ng-scope" ng-view="" ng-init="require_captcha='False'; captcha={url:''}; xsrf_token='2|3497cc4d|1f20231099a9f10012acbc251729b9bb|1679075728'">
-        
-        
-        
+
+
+
         <div class="content-section section-signup ng-scope">
           <div class="section-head">Create QNAP ID</div>
           <!-- 中國加上 class: section-body-cn -->
@@ -720,7 +720,7 @@ field renderer id: 16" data-ddg-testresultelementid="566595" data-manual-scoring
 server type: NO_SERVER_DATA
 heuristic type: EMAIL_ADDRESS
 label: Sign up with email or phone number
-parseable name: 
+parseable name:
 section: display_name_0_14
 field signature: 1318412689
 form signature: 4825907953512257244
@@ -739,14 +739,14 @@ field renderer id: 17" data-ddg-testresultelementid="566596" data-manual-scoring
 
                 <div class="comp-input modern pwd-visibility mb32">
                   <span class="pwd-visible-trigger">
-                    
-                    
+
+
                   </span>
 
                   <input class="modern ng-pristine ng-untouched ng-valid" id="password" type="password" ng-class="{'invalid':password_rule_check_result_obj.error}" ng-model="password" ng-trim="false" ng-change="checkPassword()" tabindex="1" ng-focus="checkToShowPasswordWarningPopver()" ng-blur="show_password_error_pop = false" autofill-information="overall type: ACCOUNT_CREATION_PASSWORD
 server type: ACCOUNT_CREATION_PASSWORD
 heuristic type: UNKNOWN_TYPE
-label: Adding an email address allows you to sign in with your phone number or your email address. You can 
+label: Adding an email address allows you to sign in with your phone number or your email address. You can
 parseable name: password
 section: display_name_0_14
 field signature: 2051817934
@@ -754,7 +754,7 @@ form signature: 4825907953512257244
 form signature in host form: 4825907953512257244
 field frame token: 4D529BCF8234394E3F4DF0AD6FD69EB9
 form renderer id: 2
-field renderer id: 18" data-ddg-testresultelementid="566598" data-manual-scoring="password">
+field renderer id: 18" data-ddg-testresultelementid="566598" data-manual-scoring="password.new">
                   <label class="input-label">Password</label>
                   <div class="pwd-strength">
                     <!--
@@ -821,14 +821,14 @@ field renderer id: 18" data-ddg-testresultelementid="566598" data-manual-scoring
                 <div class="comp-input modern pwd-visibility mt-16 mb32">
                   <!-- 點選切換圖檔 -->
                   <span class="pwd-visible-trigger">
-                    
-                    
+
+
                   </span>
                   <input type="password" class="modern ng-pristine ng-untouched ng-valid ng-valid-retype" ng-class="{'invalid':password_not_match}" tabindex="1" ng-model="confirm_password" retype="password" ng-trim="false" oncopy="return false" ondrag="return false" ondrop="return false" oncute="return false" ng-blur="checkPasswordConfirm()" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: CREDIT_CARD_VERIFICATION_CODE
-label: Adding an email address allows you to sign in with your phone number or your email address. You can 
-parseable name: 
+label: Adding an email address allows you to sign in with your phone number or your email address. You can
+parseable name:
 section: display_name_0_14
 field signature: 475301429
 form signature: 4825907953512257244
@@ -848,15 +848,15 @@ field renderer id: 19" data-ddg-testresultelementid="566600">
                 </div>
                 <div class="m--social-signup mb48" ng-hide="china_site">
                   <a href="" class="q-btn q-btn-default social-btn social-btn-google mb24" ng-click="socialSignUp('google')">
-                    
+
                     <span>Google</span>
                   </a>
                   <a href="" class="q-btn q-btn-default social-btn social-btn-facebook mb24" ng-click="facebookLink('signup')">
-                    
+
                     <span>Facebook</span>
                   </a>
                   <a href="" class="q-btn q-btn-default social-btn social-btn-apple" ng-click="appleSignin('signup')">
-                    
+
                     <span>Apple</span>
                   </a>
                 </div>
@@ -867,14 +867,14 @@ field renderer id: 19" data-ddg-testresultelementid="566600">
                   </div>
                   <div class="comp-captcha">
                     <div class="captcha-img">
-                      
+
                     </div>
                     <div class="comp-input-group input-group-action-right">
                       <input type="text" ng-model="captcha_value" class="ng-pristine ng-untouched ng-valid" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
 label: Type the characters you see in the picture below.
-parseable name: 
+parseable name:
 section: display_name_0_14
 field signature: 1318412689
 form signature: 4825907953512257244
@@ -1372,8 +1372,8 @@ field renderer id: 23" data-ddg-testresultelementid="566606">
       <span id="scopeset_qmiix">@scopeset_qmiix@</span>
     </div>
 
-    
-    
+
+
     <div class="footer ng-scope" id="footer" ng-controller="footerController">
       <div class="footer-utils">
         <div class="footer-links">
@@ -1431,13 +1431,13 @@ field renderer id: 23" data-ddg-testresultelementid="566606">
   <div>
     <div class="grecaptcha-badge" data-style="bottomright">
       <div class="grecaptcha-logo">
-        
+
       </div>
       <div class="grecaptcha-error"></div>
       <textarea id="g-recaptcha-response-100000" name="g-recaptcha-response" class="g-recaptcha-response" autofill-information="overall type: UNKNOWN_TYPE
 server type: NO_SERVER_DATA
 heuristic type: UNKNOWN_TYPE
-label: 
+label:
 parseable name: g-recaptcha-response
 section: g-recaptcha-response_0_25
 field signature: 3309787731
@@ -1447,6 +1447,6 @@ field frame token: 4D529BCF8234394E3F4DF0AD6FD69EB9
 form renderer id: 0
 field renderer id: 25" data-ddg-testresultelementid="566608"></textarea>
     </div>
-    
+
   </div>
 

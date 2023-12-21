@@ -68,8 +68,11 @@ export function mutatingFormPage (page) {
             const toggleBtn = page.locator('#toggle-login-signup')
             await toggleBtn.click()
         }
-        passwordFieldShowsKey () {
-            return loginPage(page).passwordFieldShowsKey()
+        passwordFieldShowsFillKey () {
+            return loginPage(page).passwordFieldShowsFillKey()
+        }
+        passwordFieldShowsGenKey () {
+            return loginPage(page).passwordFieldShowsGenKey()
         }
         assertPasswordHasNoIcon () {
             return signupPage(page).assertPasswordHasNoIcon()
@@ -366,11 +369,17 @@ export function loginPage (page, opts = {}) {
             const emailStyle = await page.locator('#email').getAttribute('style')
             expect(emailStyle).toContain(constants.iconMatchers.dax)
         }
-        async passwordFieldShowsKey () {
+        async passwordFieldShowsFillKey () {
             // don't make assertions until the element is both found + has a none-empty 'style' attribute
             await page.waitForFunction(() => Boolean(document.querySelector('#password')?.getAttribute('style')))
             const emailStyle = await page.locator('#password').getAttribute('style')
-            expect(emailStyle).toContain(constants.iconMatchers.key)
+            expect(emailStyle).toContain(constants.iconMatchers.keyFill)
+        }
+        async passwordFieldShowsGenKey () {
+            // don't make assertions until the element is both found + has a none-empty 'style' attribute
+            await page.waitForFunction(() => Boolean(document.querySelector('#password')?.getAttribute('style')))
+            const emailStyle = await page.locator('#password').getAttribute('style')
+            expect(emailStyle).toContain(constants.iconMatchers.keyGen)
         }
         async passwordHasNoIcon () {
             const passwordStyle = await page.locator('#password').getAttribute('style')
@@ -383,7 +392,7 @@ export function loginPage (page, opts = {}) {
         async onlyPasswordFieldHasIcon () {
             const styles1 = await page.locator('#email').getAttribute('style')
             expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
-            await this.passwordFieldShowsKey()
+            await this.passwordFieldShowsFillKey()
         }
         /**
          * @param {string} username

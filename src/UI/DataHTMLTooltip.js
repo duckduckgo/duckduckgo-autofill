@@ -53,7 +53,8 @@ class DataHTMLTooltip extends HTMLTooltip {
             items.some(item => !['personalAddress', 'privateAddress', PROVIDER_LOCKED].includes(item.id()))
 
         const topClass = wrapperClass || ''
-        const dataTypeClass = `tooltip__button--data--${config.type}`
+
+        const dataTypeClass = `tooltip__button--data--${config.type}${this.variant ? '__' + this.variant : ''}`
         this.shadow.innerHTML = `
 ${css}
 <div class="wrapper wrapper--data ${topClass}" hidden>

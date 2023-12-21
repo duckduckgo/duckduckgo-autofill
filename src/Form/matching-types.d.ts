@@ -32,6 +32,8 @@ type MatcherTypeNames =
   | 'unknown'
   | 'emailAddress'
   | 'password'
+  | 'newPassword'
+  | 'currentPassword'
   | 'username'
   | 'cardName'
   | 'cardNumber'

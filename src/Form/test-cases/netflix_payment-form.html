@@ -1,0 +1,137 @@
+<!-- https://www.netflix.com/simplemember/creditoption -->
+<form method="POST" data-uia="payment-form">
+    <div class="paymentFormContainer">
+        <div class="changePaymentContainer clearfix"><a class="changePaymentLink default-ltr-cache-22elhg e1ff4m3w1"
+                                                        data-uia="link-change-payment"
+                                                        href="/simplemember/paymentpicker"><i
+                class="icon-thin-caret-back"></i><span class="changePaymentText">Change payment method</span></a></div>
+        <div>
+            <div class="stepHeader-container" data-uia="header">
+                <div class="stepHeader" role="status"><h1 class="stepTitle" data-uia="stepTitle">Enter your payment
+                    details</h1></div>
+            </div>
+            <div class="contextContainer"></div>
+        </div>
+        <div class="fieldContainer"><span class="logos logos-block" data-uia="cardLogos-comp"
+                                          aria-label="We accept Visa, Mastercard and American Express."><img
+                src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/VISA.png" alt="Visa"
+                class="logoIcon VISA default-ltr-cache-kg1rox e18ygst00"
+                srcset="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/VISA@2x.png 2x"
+                data-uia="logoIcon-VISA"><img
+                src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/MASTERCARD.png"
+                alt="Mastercard" class="logoIcon MASTERCARD default-ltr-cache-kg1rox e18ygst00"
+                srcset="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/MASTERCARD@2x.png 2x"
+                data-uia="logoIcon-MASTERCARD"><img
+                src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/AMEX.png"
+                alt="American Express" class="logoIcon AMEX default-ltr-cache-kg1rox e18ygst00"
+                srcset="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/AMEX@2x.png 2x"
+                data-uia="logoIcon-AMEX"></span>
+            <div class="formFieldContainer">
+                <ul class="simpleForm structural ui-grid inlineContainer">
+                    <li data-uia="field-creditCardNumber+wrapper" class="nfFormSpace">
+                        <div class="cardNumberContainer">
+                            <div data-uia="field-creditCardNumber+container" class="nfInput nfInputOversize hasLogo">
+                                <div class="nfInputPlacement"><label class="input_id"
+                                                                     placeholder="creditCardNumber"><input
+                                        data-uia="field-creditCardNumber" name="creditCardNumber" class="nfTextField"
+                                        id="id_creditCardNumber" type="tel" tabindex="0" autocomplete="cc-number"
+                                        maxlength="19" minlength="12" dir="" placeholder="" value=""
+                                        data-manual-scoring="cardNumber" data-ddg-autofill="true"><label
+                                        for="id_creditCardNumber" class="placeLabel">Card number</label></label><span
+                                        class="default-ltr-cache-17w7xsa e1hwh5ed0"><svg width="24" height="22"
+                                                                                         viewBox="0 0 24 24" fill="none"
+                                                                                         xmlns="http://www.w3.org/2000/svg"
+                                                                                         class="default-ltr-cache-4z3qvp e1svuwfo1"
+                                                                                         data-name="CreditCard"
+                                                                                         aria-hidden="true"
+                                                                                         color="rgb(128,128,128)"><path
+                                        fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M0 6C0 4.34315 1.34315 3 3 3H21C22.6569 3 24 4.34315 24 6V18C24 19.6569 22.6569 21 21 21H3C1.34314 21 0 19.6569 0 18V6ZM3 5C2.44772 5 2 5.44772 2 6V8H22V6C22 5.44771 21.5523 5 21 5H3ZM2 18V10H22V18C22 18.5523 21.5523 19 21 19H3C2.44772 19 2 18.5523 2 18ZM16 16H20V14H16V16Z"
+                                        fill="currentColor"></path></svg></span></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li data-uia="field-creditExpirationMonth+wrapper" class="nfFormSpace inline">
+                        <div data-uia="field-creditExpirationMonth+container" class="nfInput nfInputOversize">
+                            <div class="nfInputPlacement"><label class="input_id"
+                                                                 placeholder="creditExpirationMonth"><input
+                                    data-uia="field-creditExpirationMonth" name="creditExpirationMonth"
+                                    class="nfTextField" id="id_creditExpirationMonth" type="tel" tabindex="0"
+                                    autocomplete="cc-exp" dir="" placeholder="MM/YY" value=""
+                                    data-manual-scoring="expiration" data-ddg-autofill="true"><label
+                                    for="id_creditExpirationMonth" class="placeLabel">Expiration date</label></label>
+                            </div>
+                        </div>
+                    </li>
+                    <li data-uia="field-creditExpirationYear+wrapper" class="nfFormSpace hidden"></li>
+                    <li data-uia="field-creditCardSecurityCode+wrapper" class="nfFormSpace inline">
+                        <div data-uia="field-creditCardSecurityCode+container" class="nfInput nfInputOversize tooltip">
+                            <div class="nfInputPlacement"><label class="input_id"
+                                                                 placeholder="creditCardSecurityCode"><input
+                                    data-uia="field-creditCardSecurityCode" name="creditCardSecurityCode"
+                                    class="nfTextField" id="id_creditCardSecurityCode" type="tel" tabindex="0"
+                                    autocomplete="cc-csc" maxlength="4" minlength="3" dir="" placeholder="" value=""
+                                    data-manual-scoring="cardSecurityCode" data-ddg-autofill="true"><label
+                                    for="id_creditCardSecurityCode" class="placeLabel">CVV</label></label></div>
+                            <button type="button" class="tooltipWrapper" data-uia="tooltipWrapper">
+                                <svg width="26" height="24" viewBox="0 0 24 24" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg" class="default-ltr-cache-4z3qvp e1svuwfo1"
+                                     data-name="CircleQuestionMark" aria-hidden="true" color="#999999">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0ZM12 8C10.6831 8 10 8.74303 10 9.5H8C8 7.25697 10.0032 6 12 6C13.9968 6 16 7.25697 16 9.5C16 10.8487 14.9191 11.7679 13.8217 12.18C13.5572 12.2793 13.3322 12.4295 13.1858 12.5913C13.0452 12.7467 13 12.883 13 13V14H11V13C11 11.5649 12.1677 10.6647 13.1186 10.3076C13.8476 10.0339 14 9.64823 14 9.5C14 8.74303 13.3169 8 12 8ZM13.5 16.5C13.5 17.3284 12.8284 18 12 18C11.1716 18 10.5 17.3284 10.5 16.5C10.5 15.6716 11.1716 15 12 15C12.8284 15 13.5 15.6716 13.5 16.5Z"
+                                          fill="currentColor"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </li>
+                    <li data-uia="field-firstName+wrapper" class="nfFormSpace">
+                        <div data-uia="field-firstName+container" class="nfInput nfInputOversize">
+                            <div class="nfInputPlacement"><label class="input_id" placeholder="firstName"><input
+                                    data-uia="field-firstName" name="firstName" class="nfTextField" id="id_firstName"
+                                    type="text" tabindex="0" autocomplete="cc-given-name" maxlength="100" minlength="1"
+                                    dir="" placeholder="" value="" data-manual-scoring="firstName"
+                                    data-ddg-autofill="true"><label for="id_firstName" class="placeLabel">First
+                                name</label></label></div>
+                        </div>
+                    </li>
+                    <li data-uia="field-lastName+wrapper" class="nfFormSpace">
+                        <div data-uia="field-lastName+container" class="nfInput nfInputOversize">
+                            <div class="nfInputPlacement"><label class="input_id" placeholder="lastName"><input
+                                    data-uia="field-lastName" name="lastName" class="nfTextField" id="id_lastName"
+                                    type="text" tabindex="0" autocomplete="cc-family-name" dir="" placeholder=""
+                                    value="" data-manual-scoring="lastName" data-ddg-autofill="true"><label
+                                    for="id_lastName" class="placeLabel">Last name</label></label></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <div class="tou--container" data-uia="tou-container">
+                    <div class="user-consent--container" data-uia="termsOfUseMatlock+member-eu"><span id=""
+                                                                                                      data-uia="termsOfUse-Disclosure">By clicking the “Save” button below, you agree that Netflix will automatically continue your membership and charge the membership fee (currently €12,99/month) to your payment method until you cancel. You may cancel at any time to avoid future charges.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="submitBtnContainer">
+        <button type="submit" autocomplete="off" tabindex="0" class="nf-btn nf-btn-primary nf-btn-solid nf-btn-oversize"
+                data-uia="action-submit-payment" placeholder="" data-manual-submit>Save
+        </button>
+    </div>
+    <div class="recaptcha-terms-of-use-container">
+        <div class="recaptcha-terms-of-use" data-uia="recaptcha-terms-of-use">
+            <p><span>This page is protected by Google reCAPTCHA to ensure you're not a bot.</span>&nbsp;<button
+                    class="recaptcha-terms-of-use--link-button" data-uia="recaptcha-learn-more-button">Learn more.
+            </button>
+            </p>
+            <div class="recaptcha-terms-of-use--disclosure" data-uia="recaptcha-disclosure"><span id=""
+                                                                                                  data-uia="recaptcha-disclosure-text">The information collected by Google reCAPTCHA is subject to the Google <a
+                    href="https://policies.google.com/privacy" id="recaptcha-privacy-link"
+                    data-uia="recaptcha-privacy-link" target="_blank">Privacy Policy</a> and <a
+                    href="https://policies.google.com/terms" id="recaptcha-tos-link" data-uia="recaptcha-tos-link"
+                    target="_blank">Terms of Service</a>, and is used for providing, maintaining, and improving the reCAPTCHA service and for general security purposes (it is not used for personalized advertising by Google).</span>
+            </div>
+        </div>
+    </div>
+</form>
