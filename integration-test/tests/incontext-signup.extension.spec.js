@@ -1,7 +1,8 @@
 import {forwardConsoleMessages, setupMockedDomain} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
-import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
 import {testContext} from '../helpers/test-context.js'
+import {incontextSignupPage} from '../helpers/pages/incontextSignupPage.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  *  Tests for email autofill in chrome extension.

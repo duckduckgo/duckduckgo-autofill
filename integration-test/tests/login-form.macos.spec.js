@@ -1,9 +1,10 @@
 import {constants} from '../helpers/mocks.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.js'
-import {loginPage, overlayPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createAvailableInputTypes} from '../helpers/utils.js'
+import {loginPage} from '../helpers/pages/loginPage.js'
+import {overlayPage} from '../helpers/pages/overlayPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos

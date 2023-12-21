@@ -1,9 +1,10 @@
 import {forwardConsoleMessages, withEmailProtectionExtensionSignedInAs} from '../helpers/harness.js'
 import { test as base, expect } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, loginPage} from '../helpers/pages.js'
 import { stripDuckExtension } from '../helpers/utils.js'
 import {testContext} from '../helpers/test-context.js'
+import {loginPage} from '../helpers/pages/loginPage.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  *  Tests for email autofill in chrome extension.

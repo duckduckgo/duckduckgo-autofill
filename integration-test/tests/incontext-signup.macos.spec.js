@@ -1,7 +1,8 @@
 import {createAutofillScript, forwardConsoleMessages, setupMockedDomain, mockedCalls} from '../helpers/harness.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import { test as base, expect } from '@playwright/test'
-import {emailAutofillPage, incontextSignupPage} from '../helpers/pages.js'
+import {incontextSignupPage} from '../helpers/pages/incontextSignupPage.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos

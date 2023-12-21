@@ -1,9 +1,9 @@
 import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {mutatingFormPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createAvailableInputTypes} from '../helpers/utils.js'
 import {constants} from '../helpers/mocks.js'
+import {mutatingFormPage} from '../helpers/pages/mutatingFormPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos

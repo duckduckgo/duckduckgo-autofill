@@ -4,10 +4,12 @@ import {
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, scannerPerf, signupPage} from '../helpers/pages.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAvailableInputTypes, stripDuckExtension} from '../helpers/utils.js'
 import {testContext} from '../helpers/test-context.js'
+import {signupPage} from '../helpers/pages/signupPage.js'
+import {scannerPerf} from '../helpers/pages/scannerPerf.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos

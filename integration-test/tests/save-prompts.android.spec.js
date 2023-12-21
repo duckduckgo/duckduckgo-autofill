@@ -3,10 +3,11 @@ import {
     forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
-import {loginPage, signupPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {constants} from '../helpers/mocks.js'
 import {testContext} from '../helpers/test-context.js'
+import {signupPage} from '../helpers/pages/signupPage.js'
+import {loginPage} from '../helpers/pages/loginPage.js'
 
 /**
  *  Tests for email autofill on ios tooltipHandler
