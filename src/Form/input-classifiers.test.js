@@ -11,9 +11,9 @@ import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js
 /**
  * @type {object[]}
  */
-const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, 'test-cases/index.json')).toString('utf-8'))
+const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, '../../test-forms/index.json')).toString('utf-8'))
 testCases.forEach(testCase => {
-    testCase.testContent = fs.readFileSync(path.resolve(__dirname, './test-cases', testCase.html), 'utf-8')
+    testCase.testContent = fs.readFileSync(path.resolve(__dirname, '../../test-forms', testCase.html), 'utf-8')
 })
 
 /**
