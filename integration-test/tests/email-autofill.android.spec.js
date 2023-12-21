@@ -4,9 +4,10 @@ import {
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage, signupPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {testContext} from '../helpers/test-context.js'
+import {signupPage} from '../helpers/pages/signupPage.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  *  Tests for email autofill on android tooltipHandler

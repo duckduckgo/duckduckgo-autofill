@@ -3,10 +3,10 @@ import {
     forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
-import {signupPage} from '../helpers/pages.js'
 import {constants} from '../helpers/mocks.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
 import {testContext} from '../helpers/test-context.js'
+import {signupPage} from '../helpers/pages/signupPage.js'
 
 const test = testContext(base)
 

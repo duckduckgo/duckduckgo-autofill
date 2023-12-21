@@ -3,11 +3,12 @@ import {
     createAutofillScript,
     forwardConsoleMessages
 } from '../helpers/harness.js'
-import {loginPage, overlayPage} from '../helpers/pages.js'
 import {test as base} from '@playwright/test'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
 import {createAvailableInputTypes} from '../helpers/utils.js'
 import {testContext} from '../helpers/test-context.js'
+import {loginPage} from '../helpers/pages/loginPage.js'
+import {overlayPage} from '../helpers/pages/overlayPage.js'
 
 const test = testContext(base)
 

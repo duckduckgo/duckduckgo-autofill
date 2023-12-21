@@ -1,8 +1,8 @@
 import {createAutofillScript, forwardConsoleMessages, mockedCalls, setupMockedDomain} from '../helpers/harness.js'
 import {expect, test as base} from '@playwright/test'
-import {emailAutofillPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {testContext} from '../helpers/test-context.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  * Tests for email in-context signup events in Android.

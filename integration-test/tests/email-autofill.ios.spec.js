@@ -4,9 +4,9 @@ import {
 } from '../helpers/harness.js'
 import { test as base } from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {emailAutofillPage} from '../helpers/pages.js'
 import {createWebkitMocks, iosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {testContext} from '../helpers/test-context.js'
+import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
 /**
  *  Tests for email autofill on ios tooltipHandler

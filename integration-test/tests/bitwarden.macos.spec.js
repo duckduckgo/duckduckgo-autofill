@@ -2,8 +2,9 @@ import {constants} from '../helpers/mocks.js'
 import {createAutofillScript, forwardConsoleMessages, mockedCalls} from '../helpers/harness.js'
 import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
 import {createAvailableInputTypes} from '../helpers/utils.js'
-import {loginPage, overlayPage} from '../helpers/pages.js'
 import {expect, test as base} from '@playwright/test'
+import {loginPage} from '../helpers/pages/loginPage.js'
+import {overlayPage} from '../helpers/pages/overlayPage.js'
 
 /**
  *  Tests for various Bitwarden scenarios on macos

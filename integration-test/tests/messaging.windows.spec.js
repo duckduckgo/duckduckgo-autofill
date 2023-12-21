@@ -3,9 +3,9 @@ import {
     forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base, expect} from '@playwright/test'
-import {signupPage} from '../helpers/pages.js'
 import {createWindowsMocks} from '../helpers/mocks.windows.js'
 import {testContext} from '../helpers/test-context.js'
+import {signupPage} from '../helpers/pages/signupPage.js'
 
 /**
  *  Tests for autofill scenarios on Windows

@@ -1,9 +1,9 @@
 import {constants} from '../helpers/mocks.js'
 import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.js'
-import {loginPage} from '../helpers/pages.js'
 import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {test as base} from '@playwright/test'
 import {testContext} from '../helpers/test-context.js'
+import {loginPage} from '../helpers/pages/loginPage.js'
 
 /**
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
