@@ -134,14 +134,8 @@ const inputTypeConfig = {
             // at this point, it's not a 'login' form, so we could offer to provide a password
             if (device.settings.featureToggles.password_generation) {
                 const subtype = getInputSubtype(input)
-                const variant = getInputVariant(input)
-                if (subtype === 'password' && variant) {
-                    if (variant === 'new') {
-                        return canBeInteractedWith(input)
-                    }
-                    if (variant === 'current') {
-                        return canBeAutofilled(input, device)
-                    }
+                if (subtype === 'password') {
+                    return canBeInteractedWith(input)
                 }
             }
 
