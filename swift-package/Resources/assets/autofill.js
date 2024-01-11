@@ -5350,7 +5350,8 @@ function initFormSubmissionsApi(forms, matching) {
    * @param {PointerEvent} event
    */
   window.addEventListener('pointerdown', event => {
-    const matchingForm = [...forms.values()].find(form => {
+    const formsArray = [...forms.values()];
+    const matchingForm = formsArray.find(form => {
       const btns = [...form.submitButtons];
       // @ts-ignore
       if (btns.includes(event.target)) return true;
@@ -5364,11 +5365,15 @@ function initFormSubmissionsApi(forms, matching) {
       // check if the click happened on a button
       const button = /** @type HTMLElement */event.target?.closest(selector);
       if (!button) return;
+
+      // If the element we've found includes a form it can't be a button, it's a false match
+      const buttonIsAFalsePositive = formsArray.some(form => button?.contains(form.form));
+      if (buttonIsAFalsePositive) return;
       const text = (0, _autofillUtils.getTextShallow)(button) || (0, _labelUtil.extractElementStrings)(button).join(' ');
       const hasRelevantText = (0, _autofillUtils.safeRegexTest)(matching.getDDGMatcherRegex('submitButtonRegex'), text);
       if (hasRelevantText && text.length < 25) {
         // check if there's a form with values
-        const filledForm = [...forms.values()].find(form => form.hasValues());
+        const filledForm = formsArray.find(form => form.hasValues());
         if (filledForm && (0, _autofillUtils.buttonMatchesFormType)( /** @type HTMLElement */button, filledForm)) {
           filledForm?.submitHandler('global pointerdown event + filled form');
         }
@@ -5378,7 +5383,7 @@ function initFormSubmissionsApi(forms, matching) {
       // https://app.asana.com/0/1198964220583541/1201650539303898/f
       if ( /** @type HTMLElement */event.target?.closest('#passwordNext button, #identifierNext button')) {
         // check if there's a form with values
-        const filledForm = [...forms.values()].find(form => form.hasValues());
+        const filledForm = formsArray.find(form => form.hasValues());
         filledForm?.submitHandler('global pointerdown event + google escape hatch');
       }
     }
@@ -5388,12 +5393,13 @@ function initFormSubmissionsApi(forms, matching) {
    * @type {PerformanceObserver}
    */
   const observer = new PerformanceObserver(list => {
+    const formsArray = [...forms.values()];
     const entries = list.getEntries().filter(entry =>
     // @ts-ignore why does TS not know about `entry.initiatorType`?
     ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) && (0, _autofillUtils.safeRegexTest)(/login|sign-in|signin/, entry.name));
     if (!entries.length) return;
-    const filledForm = [...forms.values()].find(form => form.hasValues());
-    const focusedForm = [...forms.values()].find(form => form.hasFocus());
+    const filledForm = formsArray.find(form => form.hasValues());
+    const focusedForm = formsArray.find(form => form.hasFocus());
     // If a form is still focused the user is still typing: do nothing
     if (focusedForm) return;
     filledForm?.submitHandler('performance observer');
@@ -7790,17 +7796,19 @@ const inputTypeConfig = {
         isHybrid,
         device
       } = _ref5;
-      // if we are on a 'login' page, check if we have data to autofill the field
-      if (isLogin || isHybrid) {
-        return canBeAutofilled(input, device);
-      }
+      const subtype = (0, _matching.getInputSubtype)(input);
+      const variant = (0, _matching.getInputVariant)(input);
 
-      // at this point, it's not a 'login' form, so we could offer to provide a password
+      // Check first for password generation and the password.new scoring
       if (device.settings.featureToggles.password_generation) {
-        const subtype = (0, _matching.getInputSubtype)(input);
-        if (subtype === 'password') {
+        if (subtype === 'password' && variant === 'new') {
           return canBeInteractedWith(input);
         }
+      }
+
+      // if we are on a 'login' page, check if we have data to autofill the field
+      if (isLogin || isHybrid || variant === 'current') {
+        return canBeAutofilled(input, device);
       }
       return false;
     },
@@ -8231,7 +8239,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
         username: {
           match: /(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|\/).+|\*|:)( required)?)?$|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente|nutzername|anmeldename|gebruikersnaam|nom d.utilisateur|identifiant|pseudo|usuari|cuenta|identificador|apodo|\bdni\b|\bnie\b| del? documento|documento de identidad|användarnamn|kontonamn|användar-id/iu,
           skip: /phone/iu,
-          forceUnknown: /search|policy/iu
+          forceUnknown: /search|policy|choose a user\b/iu
         },
         cardName: {
           match: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/iu
@@ -8314,7 +8322,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           match: /(birth.*year|year.*birth)/iu
         },
         loginRegex: {
-          match: /sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|mfa-submit-form|unlock|logged in as|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl|inloggen|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord/iu
+          match: /sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|mfa-submit-form|unlock|logged in as|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl|inloggen|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord/iu
         },
         signupRegex: {
           match: /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite|nieuwsbrief|aanmaken|profiel|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord/iu
