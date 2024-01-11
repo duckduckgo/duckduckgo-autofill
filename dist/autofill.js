@@ -3061,6 +3061,9 @@ module.exports={
   "vivo.com.br": {
     "password-rules": "maxlength: 6; max-consecutive: 3; allowed: digit;"
   },
+  "volaris.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
+  },
   "wa.aaa.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: ascii-printable;"
   },
