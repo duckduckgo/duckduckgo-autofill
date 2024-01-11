@@ -520,11 +520,14 @@
   { "html": "github_change-password.html" },
   { "html": "reddit_change-password.html" },
   { "html": "wordpress_change-password.html" },
+  { "html": "mlb_change-password.html" },
   { "html": "twitchtv_login.html" },
   { "html": "twitchtv_signup.html" },
   { "html": "amazon_card.html" },
   { "html": "leafly_login.html" },
   { "html": "leafly_login.html" },
   { "html": "etsy_security-step.html", "expectedSubmitFalsePositives": 1 },
+  { "html": "github_assign-reviewer.html" },
+  { "html": "simplii_login.html" },
   { "html": "flytap_login.html" }
 ]

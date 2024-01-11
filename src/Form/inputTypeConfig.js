@@ -126,17 +126,19 @@ const inputTypeConfig = {
         },
         getIconAlternate: () => '',
         shouldDecorate: async (input, {isLogin, isHybrid, device}) => {
-            // if we are on a 'login' page, check if we have data to autofill the field
-            if (isLogin || isHybrid) {
-                return canBeAutofilled(input, device)
-            }
+            const subtype = getInputSubtype(input)
+            const variant = getInputVariant(input)
 
-            // at this point, it's not a 'login' form, so we could offer to provide a password
+            // Check first for password generation and the password.new scoring
             if (device.settings.featureToggles.password_generation) {
-                const subtype = getInputSubtype(input)
-                if (subtype === 'password') {
+                if (subtype === 'password' && variant === 'new') {
                     return canBeInteractedWith(input)
                 }
+            }
+
+            // if we are on a 'login' page, check if we have data to autofill the field
+            if (isLogin || isHybrid || variant === 'current') {
+                return canBeAutofilled(input, device)
             }
 
             return false
