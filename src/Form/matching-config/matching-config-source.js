@@ -290,7 +290,9 @@ const matchingConfiguration = {
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
                     skip: 'phone',
-                    forceUnknown: 'search|policy'
+                    forceUnknown: 'search|policy' +
+                        // Github assignee picker
+                        '|choose a user\\b'
                 },
 
                 // CC
@@ -355,7 +357,7 @@ const matchingConfiguration = {
                 birthdayYear: {match: '(birth.*year|year.*birth)'},
                 loginRegex: {
                     match:
-                        'sign(ing)?.?in(?!g)|log.?(i|o)n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' +
+                        'sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' +
                         '|mfa-submit-form' + // fix chase.com
                         '|unlock|logged in as' + // fix bitwarden
                         // Italian
