@@ -31,7 +31,8 @@ export function initFormSubmissionsApi (forms, matching) {
      * @param {PointerEvent} event
      */
     window.addEventListener('pointerdown', (event) => {
-        const matchingForm = [...forms.values()].find(
+        const formsArray = [...forms.values()]
+        const matchingForm = formsArray.find(
             (form) => {
                 const btns = [...form.submitButtons]
                 // @ts-ignore
@@ -50,11 +51,15 @@ export function initFormSubmissionsApi (forms, matching) {
             const button = /** @type HTMLElement */(event.target)?.closest(selector)
             if (!button) return
 
+            // If the element we've found includes a form it can't be a button, it's a false match
+            const buttonIsAFalsePositive = formsArray.some(form => button?.contains(form.form))
+            if (buttonIsAFalsePositive) return
+
             const text = getTextShallow(button) || extractElementStrings(button).join(' ')
             const hasRelevantText = safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text)
             if (hasRelevantText && text.length < 25) {
                 // check if there's a form with values
-                const filledForm = [...forms.values()].find(form => form.hasValues())
+                const filledForm = formsArray.find(form => form.hasValues())
                 if (filledForm && buttonMatchesFormType(/** @type HTMLElement */(button), filledForm)) {
                     filledForm?.submitHandler('global pointerdown event + filled form')
                 }
@@ -64,7 +69,7 @@ export function initFormSubmissionsApi (forms, matching) {
             // https://app.asana.com/0/1198964220583541/1201650539303898/f
             if (/** @type HTMLElement */(event.target)?.closest('#passwordNext button, #identifierNext button')) {
                 // check if there's a form with values
-                const filledForm = [...forms.values()].find(form => form.hasValues())
+                const filledForm = formsArray.find(form => form.hasValues())
                 filledForm?.submitHandler('global pointerdown event + google escape hatch')
             }
         }
@@ -74,6 +79,7 @@ export function initFormSubmissionsApi (forms, matching) {
      * @type {PerformanceObserver}
      */
     const observer = new PerformanceObserver((list) => {
+        const formsArray = [...forms.values()]
         const entries = list.getEntries().filter((entry) =>
             // @ts-ignore why does TS not know about `entry.initiatorType`?
             ['fetch', 'xmlhttprequest'].includes(entry.initiatorType) &&
@@ -82,8 +88,8 @@ export function initFormSubmissionsApi (forms, matching) {
 
         if (!entries.length) return
 
-        const filledForm = [...forms.values()].find(form => form.hasValues())
-        const focusedForm = [...forms.values()].find((form) => form.hasFocus())
+        const filledForm = formsArray.find(form => form.hasValues())
+        const focusedForm = formsArray.find((form) => form.hasFocus())
         // If a form is still focused the user is still typing: do nothing
         if (focusedForm) return
 
