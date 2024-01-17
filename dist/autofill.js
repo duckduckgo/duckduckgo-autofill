@@ -2782,6 +2782,9 @@ module.exports={
   "microsoft.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: special;"
   },
+  "milogin.michigan.gov": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [@#$!~&];"
+  },
   "mintmobile.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit; required: special; allowed: [!#$%&()*+:;=@[^_`{}~]];"
   },
