@@ -7,7 +7,8 @@ import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.
 const {
     MAX_INPUTS_PER_PAGE,
     MAX_FORMS_PER_PAGE,
-    MAX_INPUTS_PER_FORM
+    MAX_INPUTS_PER_FORM,
+    ATTR_INPUT_TYPE
 } = constants
 
 /**
@@ -103,6 +104,10 @@ class DefaultScanner {
         if (this.device.globalConfig.isExtension) {
             this.device.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }))
         }
+
+        // Add the shadow DOM listener. Handlers in handleEvent
+        window.addEventListener('pointerdown', this, true)
+
         const delay = this.options.initialDelay
         // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
         if (delay === 0) {
@@ -111,6 +116,7 @@ class DefaultScanner {
             // otherwise, use the delay time to defer the initial scan
             setTimeout(() => this.scanAndObserve(), delay)
         }
+
         return (reason, ...rest) => {
             this.stopScanner(reason, ...rest)
         }
@@ -167,6 +173,7 @@ class DefaultScanner {
         clearTimeout(this.debounceTimer)
         this.changedElements.clear()
         this.mutObs.disconnect()
+        window.removeEventListener('pointerdown', this, true)
 
         this.forms.forEach(form => {
             form.destroy()
@@ -357,6 +364,56 @@ class DefaultScanner {
         }
         this.enqueue(outgoing)
     })
+
+    handleEvent (event) {
+        switch (event.type) {
+        case 'pointerdown':
+            window.performance?.mark?.('scan_shadow:init:start')
+            const shadowCache = new WeakSet()
+            this.scanShadow(event, shadowCache)
+            window.performance?.mark?.('scan_shadow:init:end')
+            logPerformance('scan_shadow')
+            break
+        }
+    }
+
+    /**
+     * Scans shadow trees recursively to see if an input field was clicked
+     * @param {Partial<PointerEvent>} event
+     * @param {WeakSet} shadowCache
+     */
+    scanShadow (event, shadowCache) {
+        // Make sure the recursor stops when the scanner is stopped
+        if (this.stopped) return
+
+        const {target, x, y} = event
+        if (!target || x === undefined || y === undefined) return
+
+        const shadowRoot = target instanceof Element && target.shadowRoot
+        if (shadowRoot && !shadowCache.has(target)) {
+            shadowCache.add(target)
+
+            const clickStack = shadowRoot.elementsFromPoint(x, y)
+            // We're only interested in input fields or nested shadow trees
+            const inputOrShadowRoot = clickStack.find((el) => {
+                return el instanceof HTMLInputElement || (el.shadowRoot && !shadowCache.has(el))
+            })
+
+            // If it's an input we haven't already scanned, scan the whole shadow tree
+            if (
+                inputOrShadowRoot instanceof HTMLInputElement &&
+                !inputOrShadowRoot?.hasAttribute(ATTR_INPUT_TYPE)
+            ) {
+                this.findEligibleInputs(inputOrShadowRoot.getRootNode())
+                return
+            }
+
+            // If it's a nested shadow tree, recurse
+            if (inputOrShadowRoot?.shadowRoot) {
+                return this.scanShadow({target: inputOrShadowRoot, x, y}, shadowCache)
+            }
+        }
+    }
 }
 
 /**
