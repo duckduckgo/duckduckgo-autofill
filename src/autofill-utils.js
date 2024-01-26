@@ -519,6 +519,48 @@ function safeRegexTest (regex, string) {
     return regex.test(string)
 }
 
+/**
+ * Returns the event target, or an element that matches wantedTargetType, piercing the shadow tree
+ * @param {PointerEvent | FocusEvent} event
+ * @param {typeof Element} [wantedTargetType]
+ * @returns {*|Element}
+ */
+function pierceShadowTree (event, wantedTargetType) {
+    const {target} = event
+
+    // Sanity checks
+    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target
+
+    const clickStack = event.composedPath()
+
+    // If we're not looking for a specific element, get the top of the stack
+    if (!wantedTargetType) {
+        return clickStack[0]
+    }
+
+    // Otherwise, search the wanted target, or return the original target
+    return clickStack.find(el => el instanceof wantedTargetType) || target
+}
+
+/**
+ * Return the active element, piercing through shadow DOMs, or null
+ * @param {Document | DocumentOrShadowRoot} root
+ * @returns {Element | null}
+ */
+function getActiveElement (root = document) {
+    const activeElement = root.activeElement
+
+    if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement
+
+    const innerActiveElement = activeElement.shadowRoot.activeElement
+
+    if (innerActiveElement?.shadowRoot) {
+        return getActiveElement(innerActiveElement.shadowRoot)
+    }
+
+    return innerActiveElement
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -548,5 +590,7 @@ export {
     whenIdle,
     truncateFromMiddle,
     isFormLikelyToBeUsedAsPageWrapper,
-    safeRegexTest
+    safeRegexTest,
+    pierceShadowTree,
+    getActiveElement
 }

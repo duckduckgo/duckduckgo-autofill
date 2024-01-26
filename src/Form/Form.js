@@ -6,8 +6,14 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isPotentiallyViewable, buttonMatchesFormType,
-    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog, safeRegexTest
+    isPotentiallyViewable,
+    buttonMatchesFormType,
+    safeExecute,
+    getTextShallow,
+    wasAutofilledByChrome,
+    shouldLog,
+    safeRegexTest,
+    getActiveElement
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -103,14 +109,7 @@ class Form {
             }
         )
 
-        // This ensures we fire the handler again if the form is changed
-        this.addListener(form, 'input', () => {
-            if (!this.isAutofilling) {
-                this.handlerExecuted = false
-                this.shouldPromptToStoreData = true
-            }
-        })
-
+        this.initFormListeners()
         this.categorizeInputs()
 
         this.logFormInfo()
@@ -157,7 +156,7 @@ class Form {
      * @param {KeyboardEvent | null} [e]
      */
     hasFocus (e) {
-        return this.form.contains(document.activeElement) || this.form.contains(/** @type HTMLElement */(e?.target))
+        return this.form.contains(getActiveElement()) || this.form.contains(/** @type HTMLElement */(e?.target))
     }
 
     submitHandler (via = 'unknown') {
@@ -344,6 +343,8 @@ class Form {
         this.initialScanComplete = false
         this.removeAllDecorations()
         this.forgetAllInputs()
+
+        this.initFormListeners()
         this.categorizeInputs()
     }
     resetAllInputs () {
@@ -366,6 +367,24 @@ class Form {
         this.matching.clear()
         this.intObs = null
         this.device.scanner.forms.delete(this.form)
+    }
+
+    initFormListeners () {
+        // This ensures we fire the handler again if the form is changed
+        this.addListener(this.form, 'input', () => {
+            // console.log('typing class body', this.isAutofilling)
+            if (!this.isAutofilling) {
+                this.submitHandlerExecuted = false
+                this.shouldPromptToStoreData = true
+            }
+        })
+
+        // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
+        if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
+            this.addListener(this.form, 'submit', () => {
+                this.submitHandler('in-form submit handler')
+            }, {capture: true})
+        }
     }
 
     categorizeInputs () {

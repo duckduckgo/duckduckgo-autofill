@@ -1,7 +1,11 @@
 import { Form } from './Form/Form.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
+import {
+    logPerformance,
+    isFormLikelyToBeUsedAsPageWrapper,
+    shouldLog, pierceShadowTree
+} from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
@@ -107,6 +111,9 @@ class DefaultScanner {
 
         // Add the shadow DOM listener. Handlers in handleEvent
         window.addEventListener('pointerdown', this, true)
+        if (!this.device.globalConfig.isMobileApp) {
+            window.addEventListener('focus', this, true)
+        }
 
         const delay = this.options.initialDelay
         // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
@@ -366,52 +373,35 @@ class DefaultScanner {
     })
 
     handleEvent (event) {
+        if (!event.target?.shadowRoot) return
+
         switch (event.type) {
         case 'pointerdown':
+        case 'focus': {
             window.performance?.mark?.('scan_shadow:init:start')
-            const shadowCache = new WeakSet()
-            this.scanShadow(event, shadowCache)
+            const realTarget = pierceShadowTree(event, HTMLInputElement)
+            this.scanShadow(realTarget)
             window.performance?.mark?.('scan_shadow:init:end')
             logPerformance('scan_shadow')
             break
+        }
         }
     }
 
     /**
      * Scans shadow trees recursively to see if an input field was clicked
-     * @param {Partial<PointerEvent>} event
-     * @param {WeakSet} shadowCache
+     * @param {Element} realTarget
      */
-    scanShadow (event, shadowCache) {
-        // Make sure the recursor stops when the scanner is stopped
+    scanShadow (realTarget) {
+        // If the scanner is stopped, just return
         if (this.stopped) return
 
-        const {target, x, y} = event
-        if (!target || x === undefined || y === undefined) return
-
-        const shadowRoot = target instanceof Element && target.shadowRoot
-        if (shadowRoot && !shadowCache.has(target)) {
-            shadowCache.add(target)
-
-            const clickStack = shadowRoot.elementsFromPoint(x, y)
-            // We're only interested in input fields or nested shadow trees
-            const inputOrShadowRoot = clickStack.find((el) => {
-                return el instanceof HTMLInputElement || (el.shadowRoot && !shadowCache.has(el))
-            })
-
-            // If it's an input we haven't already scanned, scan the whole shadow tree
-            if (
-                inputOrShadowRoot instanceof HTMLInputElement &&
-                !inputOrShadowRoot?.hasAttribute(ATTR_INPUT_TYPE)
-            ) {
-                this.findEligibleInputs(inputOrShadowRoot.getRootNode())
-                return
-            }
-
-            // If it's a nested shadow tree, recurse
-            if (inputOrShadowRoot?.shadowRoot) {
-                return this.scanShadow({target: inputOrShadowRoot, x, y}, shadowCache)
-            }
+        // If it's an input we haven't already scanned, scan the whole shadow tree
+        if (
+            realTarget instanceof HTMLInputElement &&
+            !realTarget?.hasAttribute(ATTR_INPUT_TYPE)
+        ) {
+            this.findEligibleInputs(realTarget.getRootNode())
         }
     }
 }
