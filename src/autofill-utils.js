@@ -523,7 +523,7 @@ function safeRegexTest (regex, string) {
  * Returns the event target, or an element that matches wantedTargetType, piercing the shadow tree
  * @param {PointerEvent | FocusEvent} event
  * @param {typeof Element} [wantedTargetType]
- * @returns {*|Element}
+ * @returns {EventTarget | null}
  */
 function pierceShadowTree (event, wantedTargetType) {
     const {target} = event
