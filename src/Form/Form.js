@@ -71,7 +71,7 @@ class Form {
         this.activeInput = null
         // We set this to true to skip event listeners while we're autofilling
         this.isAutofilling = false
-        this.handlerExecuted = false
+        this.submitHandlerExecuted = false
         this.shouldPromptToStoreData = true
         this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
 
@@ -164,14 +164,14 @@ class Form {
             console.log('Form.submitHandler via:', via, this)
         }
 
-        if (this.handlerExecuted) return
+        if (this.submitHandlerExecuted) return
 
         const values = this.getValuesReadyForStorage()
 
         this.device.postSubmit?.(values, this)
 
         // mark this form as being handled
-        this.handlerExecuted = true
+        this.submitHandlerExecuted = true
     }
 
     /**

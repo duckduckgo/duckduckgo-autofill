@@ -844,7 +844,7 @@ class InterfacePrototype {
         if (!form.form) return
         if (!form.hasValues(values)) return
         const checks = [
-            form.shouldPromptToStoreData,
+            form.shouldPromptToStoreData && !form.submitHandlerExecuted,
             this.passwordGenerator.generated
         ]
 
