@@ -14432,33 +14432,29 @@ class DefaultScanner {
     this.enqueue(outgoing);
   });
   handleEvent(event) {
-    if (!event.target?.shadowRoot) return;
     switch (event.type) {
       case 'pointerdown':
       case 'focus':
-        {
-          window.performance?.mark?.('scan_shadow:init:start');
-          const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
-          this.scanShadow(realTarget);
-          window.performance?.mark?.('scan_shadow:init:end');
-          (0, _autofillUtils.logPerformance)('scan_shadow');
-          break;
-        }
+        this.scanShadow(event);
+        break;
     }
   }
 
   /**
    * Scans shadow trees recursively to see if an input field was clicked
-   * @param {Element} realTarget
    */
-  scanShadow(realTarget) {
-    // If the scanner is stopped, just return
-    if (this.stopped) return;
+  scanShadow(event) {
+    // If the scanner is stopped or there's no shadow root, just return
+    if (this.stopped || !event.target?.shadowRoot) return;
+    window.performance?.mark?.('scan_shadow:init:start');
+    const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
 
     // If it's an input we haven't already scanned, scan the whole shadow tree
-    if (realTarget instanceof HTMLInputElement && !realTarget?.hasAttribute(ATTR_INPUT_TYPE)) {
+    if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       this.findEligibleInputs(realTarget.getRootNode());
     }
+    window.performance?.mark?.('scan_shadow:init:end');
+    (0, _autofillUtils.logPerformance)('scan_shadow');
   }
 }
 
