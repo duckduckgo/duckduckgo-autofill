@@ -375,7 +375,6 @@ class Form {
     initFormListeners () {
         // This ensures we fire the handler again if the form is changed
         this.addListener(this.form, 'input', () => {
-            // console.log('typing class body', this.isAutofilling)
             if (!this.isAutofilling) {
                 this.submitHandlerExecuted = false
                 this.resetShouldPromptToStoreData()
