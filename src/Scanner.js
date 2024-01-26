@@ -111,6 +111,7 @@ class DefaultScanner {
 
         // Add the shadow DOM listener. Handlers in handleEvent
         window.addEventListener('pointerdown', this, true)
+        // We don't listen for focus events on mobile, they can cause keyboard flashing
         if (!this.device.globalConfig.isMobileApp) {
             window.addEventListener('focus', this, true)
         }
