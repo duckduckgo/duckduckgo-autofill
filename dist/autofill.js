@@ -10082,6 +10082,7 @@ class DefaultScanner {
     this.changedElements.clear();
     this.mutObs.disconnect();
     window.removeEventListener('pointerdown', this, true);
+    window.removeEventListener('focus', this, true);
     this.forms.forEach(form => {
       form.destroy();
     });
