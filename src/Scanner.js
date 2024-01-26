@@ -384,11 +384,16 @@ class DefaultScanner {
     }
 
     /**
-     * Scans shadow trees recursively to see if an input field was clicked
+     * Scan clicked input fields, even if they're within a shadow tree
+     * @param {FocusEvent | PointerEvent} event
      */
     scanShadow (event) {
         // If the scanner is stopped or there's no shadow root, just return
-        if (this.stopped || !event.target?.shadowRoot) return
+        if (
+            this.stopped ||
+            !(event.target instanceof Element) ||
+            !event.target?.shadowRoot
+        ) return
 
         window.performance?.mark?.('scan_shadow:init:start')
 
