@@ -6,8 +6,14 @@ import {
     setValue,
     isEventWithinDax,
     isLikelyASubmitButton,
-    isPotentiallyViewable, buttonMatchesFormType,
-    safeExecute, getTextShallow, wasAutofilledByChrome, shouldLog, safeRegexTest
+    isPotentiallyViewable,
+    buttonMatchesFormType,
+    safeExecute,
+    getTextShallow,
+    wasAutofilledByChrome,
+    shouldLog,
+    safeRegexTest,
+    getActiveElement
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -65,8 +71,8 @@ class Form {
         this.activeInput = null
         // We set this to true to skip event listeners while we're autofilling
         this.isAutofilling = false
-        this.handlerExecuted = false
-        this.shouldPromptToStoreData = true
+        this.submitHandlerExecuted = false
+        this.shouldPromptToStoreData = deviceInterface.settings.featureToggles.credentials_saving
         this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
 
         /**
@@ -103,14 +109,7 @@ class Form {
             }
         )
 
-        // This ensures we fire the handler again if the form is changed
-        this.addListener(form, 'input', () => {
-            if (!this.isAutofilling) {
-                this.handlerExecuted = false
-                this.shouldPromptToStoreData = true
-            }
-        })
-
+        this.initFormListeners()
         this.categorizeInputs()
 
         this.logFormInfo()
@@ -157,7 +156,7 @@ class Form {
      * @param {KeyboardEvent | null} [e]
      */
     hasFocus (e) {
-        return this.form.contains(document.activeElement) || this.form.contains(/** @type HTMLElement */(e?.target))
+        return this.form.contains(getActiveElement()) || this.form.contains(/** @type HTMLElement */(e?.target))
     }
 
     submitHandler (via = 'unknown') {
@@ -165,14 +164,14 @@ class Form {
             console.log('Form.submitHandler via:', via, this)
         }
 
-        if (this.handlerExecuted) return
+        if (this.submitHandlerExecuted) return
 
         const values = this.getValuesReadyForStorage()
 
         this.device.postSubmit?.(values, this)
 
         // mark this form as being handled
-        this.handlerExecuted = true
+        this.submitHandlerExecuted = true
     }
 
     /**
@@ -295,8 +294,8 @@ class Form {
         // This ensures we are not removing the highlight ourselves when autofilling more than once
         if (e && !e.isTrusted) return
 
-        // If the user has changed the value, we prompt to update the stored data
-        this.shouldPromptToStoreData = true
+        // If the user has changed the value, reset shouldPromptToStoreData to initial value
+        this.resetShouldPromptToStoreData()
 
         this.execOnInputs((input) => this.removeInputHighlight(input), dataType)
     }
@@ -344,6 +343,8 @@ class Form {
         this.initialScanComplete = false
         this.removeAllDecorations()
         this.forgetAllInputs()
+
+        this.initFormListeners()
         this.categorizeInputs()
     }
     resetAllInputs () {
@@ -353,6 +354,9 @@ class Form {
         })
         if (this.activeInput) this.activeInput.focus()
         this.matching.clear()
+    }
+    resetShouldPromptToStoreData () {
+        this.shouldPromptToStoreData = this.device.settings.featureToggles.credentials_saving
     }
     dismissTooltip () {
         this.removeTooltip()
@@ -366,6 +370,23 @@ class Form {
         this.matching.clear()
         this.intObs = null
         this.device.scanner.forms.delete(this.form)
+    }
+
+    initFormListeners () {
+        // This ensures we fire the handler again if the form is changed
+        this.addListener(this.form, 'input', () => {
+            if (!this.isAutofilling) {
+                this.submitHandlerExecuted = false
+                this.resetShouldPromptToStoreData()
+            }
+        })
+
+        // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
+        if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
+            this.addListener(this.form, 'submit', () => {
+                this.submitHandler('in-form submit handler')
+            }, {capture: true})
+        }
     }
 
     categorizeInputs () {

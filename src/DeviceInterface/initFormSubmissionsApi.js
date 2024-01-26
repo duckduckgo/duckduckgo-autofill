@@ -1,4 +1,9 @@
-import {buttonMatchesFormType, getTextShallow, safeRegexTest} from '../autofill-utils.js'
+import {
+    buttonMatchesFormType,
+    getTextShallow,
+    pierceShadowTree,
+    safeRegexTest
+} from '../autofill-utils.js'
 import {extractElementStrings} from '../Form/label-util.js'
 
 /**
@@ -31,15 +36,17 @@ export function initFormSubmissionsApi (forms, matching) {
      * @param {PointerEvent} event
      */
     window.addEventListener('pointerdown', (event) => {
+        const realTarget = pierceShadowTree(event)
+
         const formsArray = [...forms.values()]
         const matchingForm = formsArray.find(
             (form) => {
                 const btns = [...form.submitButtons]
                 // @ts-ignore
-                if (btns.includes(event.target)) return true
+                if (btns.includes(realTarget)) return true
 
                 // @ts-ignore
-                if (btns.find((btn) => btn.contains(event.target))) return true
+                if (btns.find((btn) => btn.contains(realTarget))) return true
             }
         )
 
@@ -48,7 +55,7 @@ export function initFormSubmissionsApi (forms, matching) {
         if (!matchingForm) {
             const selector = matching.cssSelector('submitButtonSelector') + ', a[href="#"], a[href^=javascript], *[onclick], [class*=button i]'
             // check if the click happened on a button
-            const button = /** @type HTMLElement */(event.target)?.closest(selector)
+            const button = /** @type HTMLElement */(realTarget)?.closest(selector)
             if (!button) return
 
             // If the element we've found includes a form it can't be a button, it's a false match
@@ -67,7 +74,7 @@ export function initFormSubmissionsApi (forms, matching) {
 
             // TODO: Temporary hack to support Google signin in different languages
             // https://app.asana.com/0/1198964220583541/1201650539303898/f
-            if (/** @type HTMLElement */(event.target)?.closest('#passwordNext button, #identifierNext button')) {
+            if (/** @type HTMLElement */(realTarget)?.closest('#passwordNext button, #identifierNext button')) {
                 // check if there's a form with values
                 const filledForm = formsArray.find(form => form.hasValues())
                 filledForm?.submitHandler('global pointerdown event + google escape hatch')

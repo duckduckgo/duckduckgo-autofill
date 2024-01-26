@@ -1,13 +1,18 @@
 import { Form } from './Form/Form.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog} from './autofill-utils.js'
+import {
+    logPerformance,
+    isFormLikelyToBeUsedAsPageWrapper,
+    shouldLog, pierceShadowTree
+} from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 const {
     MAX_INPUTS_PER_PAGE,
     MAX_FORMS_PER_PAGE,
-    MAX_INPUTS_PER_FORM
+    MAX_INPUTS_PER_FORM,
+    ATTR_INPUT_TYPE
 } = constants
 
 /**
@@ -103,6 +108,14 @@ class DefaultScanner {
         if (this.device.globalConfig.isExtension) {
             this.device.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }))
         }
+
+        // Add the shadow DOM listener. Handlers in handleEvent
+        window.addEventListener('pointerdown', this, true)
+        // We don't listen for focus events on mobile, they can cause keyboard flashing
+        if (!this.device.globalConfig.isMobileApp) {
+            window.addEventListener('focus', this, true)
+        }
+
         const delay = this.options.initialDelay
         // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
         if (delay === 0) {
@@ -111,6 +124,7 @@ class DefaultScanner {
             // otherwise, use the delay time to defer the initial scan
             setTimeout(() => this.scanAndObserve(), delay)
         }
+
         return (reason, ...rest) => {
             this.stopScanner(reason, ...rest)
         }
@@ -167,6 +181,8 @@ class DefaultScanner {
         clearTimeout(this.debounceTimer)
         this.changedElements.clear()
         this.mutObs.disconnect()
+        window.removeEventListener('pointerdown', this, true)
+        window.removeEventListener('focus', this, true)
 
         this.forms.forEach(form => {
             form.destroy()
@@ -357,6 +373,43 @@ class DefaultScanner {
         }
         this.enqueue(outgoing)
     })
+
+    handleEvent (event) {
+        switch (event.type) {
+        case 'pointerdown':
+        case 'focus':
+            this.scanShadow(event)
+            break
+        }
+    }
+
+    /**
+     * Scan clicked input fields, even if they're within a shadow tree
+     * @param {FocusEvent | PointerEvent} event
+     */
+    scanShadow (event) {
+        // If the scanner is stopped or there's no shadow root, just return
+        if (
+            this.stopped ||
+            !(event.target instanceof Element) ||
+            !event.target?.shadowRoot
+        ) return
+
+        window.performance?.mark?.('scan_shadow:init:start')
+
+        const realTarget = pierceShadowTree(event, HTMLInputElement)
+
+        // If it's an input we haven't already scanned, scan the whole shadow tree
+        if (
+            realTarget instanceof HTMLInputElement &&
+            !realTarget.hasAttribute(ATTR_INPUT_TYPE)
+        ) {
+            this.findEligibleInputs(realTarget.getRootNode())
+        }
+
+        window.performance?.mark?.('scan_shadow:init:end')
+        logPerformance('scan_shadow')
+    }
 }
 
 /**

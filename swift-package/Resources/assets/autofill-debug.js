@@ -9236,7 +9236,7 @@ class InterfacePrototype {
   postSubmit(values, form) {
     if (!form.form) return;
     if (!form.hasValues(values)) return;
-    const checks = [form.shouldPromptToStoreData, this.passwordGenerator.generated];
+    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated];
     if (checks.some(Boolean)) {
       const formData = (0, _Credentials.appendGeneratedKey)(values, {
         password: this.passwordGenerator.password,
@@ -9660,20 +9660,21 @@ function initFormSubmissionsApi(forms, matching) {
    * @param {PointerEvent} event
    */
   window.addEventListener('pointerdown', event => {
+    const realTarget = (0, _autofillUtils.pierceShadowTree)(event);
     const formsArray = [...forms.values()];
     const matchingForm = formsArray.find(form => {
       const btns = [...form.submitButtons];
       // @ts-ignore
-      if (btns.includes(event.target)) return true;
+      if (btns.includes(realTarget)) return true;
 
       // @ts-ignore
-      if (btns.find(btn => btn.contains(event.target))) return true;
+      if (btns.find(btn => btn.contains(realTarget))) return true;
     });
     matchingForm?.submitHandler('global pointerdown event + matching form');
     if (!matchingForm) {
       const selector = matching.cssSelector('submitButtonSelector') + ', a[href="#"], a[href^=javascript], *[onclick], [class*=button i]';
       // check if the click happened on a button
-      const button = /** @type HTMLElement */event.target?.closest(selector);
+      const button = /** @type HTMLElement */realTarget?.closest(selector);
       if (!button) return;
 
       // If the element we've found includes a form it can't be a button, it's a false match
@@ -9691,7 +9692,7 @@ function initFormSubmissionsApi(forms, matching) {
 
       // TODO: Temporary hack to support Google signin in different languages
       // https://app.asana.com/0/1198964220583541/1201650539303898/f
-      if ( /** @type HTMLElement */event.target?.closest('#passwordNext button, #identifierNext button')) {
+      if ( /** @type HTMLElement */realTarget?.closest('#passwordNext button, #identifierNext button')) {
         // check if there's a form with values
         const filledForm = formsArray.find(form => form.hasValues());
         filledForm?.submitHandler('global pointerdown event + google escape hatch');
@@ -9868,8 +9869,8 @@ class Form {
     this.activeInput = null;
     // We set this to true to skip event listeners while we're autofilling
     this.isAutofilling = false;
-    this.handlerExecuted = false;
-    this.shouldPromptToStoreData = true;
+    this.submitHandlerExecuted = false;
+    this.shouldPromptToStoreData = deviceInterface.settings.featureToggles.credentials_saving;
     this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
 
     /**
@@ -9905,14 +9906,7 @@ class Form {
         }
       }
     });
-
-    // This ensures we fire the handler again if the form is changed
-    this.addListener(form, 'input', () => {
-      if (!this.isAutofilling) {
-        this.handlerExecuted = false;
-        this.shouldPromptToStoreData = true;
-      }
-    });
+    this.initFormListeners();
     this.categorizeInputs();
     this.logFormInfo();
     if (shouldAutoprompt) {
@@ -9952,19 +9946,19 @@ class Form {
    * @param {KeyboardEvent | null} [e]
    */
   hasFocus(e) {
-    return this.form.contains(document.activeElement) || this.form.contains( /** @type HTMLElement */e?.target);
+    return this.form.contains((0, _autofillUtils.getActiveElement)()) || this.form.contains( /** @type HTMLElement */e?.target);
   }
   submitHandler() {
     let via = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unknown';
     if (this.device.globalConfig.isDDGTestMode) {
       console.log('Form.submitHandler via:', via, this);
     }
-    if (this.handlerExecuted) return;
+    if (this.submitHandlerExecuted) return;
     const values = this.getValuesReadyForStorage();
     this.device.postSubmit?.(values, this);
 
     // mark this form as being handled
-    this.handlerExecuted = true;
+    this.submitHandlerExecuted = true;
   }
 
   /**
@@ -10077,8 +10071,8 @@ class Form {
     // This ensures we are not removing the highlight ourselves when autofilling more than once
     if (e && !e.isTrusted) return;
 
-    // If the user has changed the value, we prompt to update the stored data
-    this.shouldPromptToStoreData = true;
+    // If the user has changed the value, reset shouldPromptToStoreData to initial value
+    this.resetShouldPromptToStoreData();
     this.execOnInputs(input => this.removeInputHighlight(input), dataType);
   }
   removeInputDecoration(input) {
@@ -10132,6 +10126,7 @@ class Form {
     this.initialScanComplete = false;
     this.removeAllDecorations();
     this.forgetAllInputs();
+    this.initFormListeners();
     this.categorizeInputs();
   }
   resetAllInputs() {
@@ -10141,6 +10136,9 @@ class Form {
     });
     if (this.activeInput) this.activeInput.focus();
     this.matching.clear();
+  }
+  resetShouldPromptToStoreData() {
+    this.shouldPromptToStoreData = this.device.settings.featureToggles.credentials_saving;
   }
   dismissTooltip() {
     this.removeTooltip();
@@ -10154,6 +10152,24 @@ class Form {
     this.matching.clear();
     this.intObs = null;
     this.device.scanner.forms.delete(this.form);
+  }
+  initFormListeners() {
+    // This ensures we fire the handler again if the form is changed
+    this.addListener(this.form, 'input', () => {
+      if (!this.isAutofilling) {
+        this.submitHandlerExecuted = false;
+        this.resetShouldPromptToStoreData();
+      }
+    });
+
+    // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
+    if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
+      this.addListener(this.form, 'submit', () => {
+        this.submitHandler('in-form submit handler');
+      }, {
+        capture: true
+      });
+    }
   }
   categorizeInputs() {
     const selector = this.matching.cssSelector('formInputsSelector');
@@ -14196,7 +14212,8 @@ var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js"
 const {
   MAX_INPUTS_PER_PAGE,
   MAX_FORMS_PER_PAGE,
-  MAX_INPUTS_PER_FORM
+  MAX_INPUTS_PER_FORM,
+  ATTR_INPUT_TYPE
 } = _constants.constants;
 
 /**
@@ -14295,6 +14312,13 @@ class DefaultScanner {
         flag: 'autofill'
       }));
     }
+
+    // Add the shadow DOM listener. Handlers in handleEvent
+    window.addEventListener('pointerdown', this, true);
+    // We don't listen for focus events on mobile, they can cause keyboard flashing
+    if (!this.device.globalConfig.isMobileApp) {
+      window.addEventListener('focus', this, true);
+    }
     const delay = this.options.initialDelay;
     // if the delay is zero, (chrome/firefox etc) then use `requestIdleCallback`
     if (delay === 0) {
@@ -14365,6 +14389,8 @@ class DefaultScanner {
     clearTimeout(this.debounceTimer);
     this.changedElements.clear();
     this.mutObs.disconnect();
+    window.removeEventListener('pointerdown', this, true);
+    window.removeEventListener('focus', this, true);
     this.forms.forEach(form => {
       form.destroy();
     });
@@ -14546,6 +14572,32 @@ class DefaultScanner {
     }
     this.enqueue(outgoing);
   });
+  handleEvent(event) {
+    switch (event.type) {
+      case 'pointerdown':
+      case 'focus':
+        this.scanShadow(event);
+        break;
+    }
+  }
+
+  /**
+   * Scan clicked input fields, even if they're within a shadow tree
+   * @param {FocusEvent | PointerEvent} event
+   */
+  scanShadow(event) {
+    // If the scanner is stopped or there's no shadow root, just return
+    if (this.stopped || !(event.target instanceof Element) || !event.target?.shadowRoot) return;
+    window.performance?.mark?.('scan_shadow:init:start');
+    const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
+
+    // If it's an input we haven't already scanned, scan the whole shadow tree
+    if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
+      this.findEligibleInputs(realTarget.getRootNode());
+    }
+    window.performance?.mark?.('scan_shadow:init:end');
+    (0, _autofillUtils.logPerformance)('scan_shadow');
+  }
 }
 
 /**
@@ -16433,14 +16485,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = exports.formatDuckAddress = void 0;
+exports.formatDuckAddress = void 0;
+exports.getActiveElement = getActiveElement;
+exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
 exports.isFormLikelyToBeUsedAsPageWrapper = isFormLikelyToBeUsedAsPageWrapper;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = void 0;
 exports.isLocalNetwork = isLocalNetwork;
 exports.isPotentiallyViewable = void 0;
 exports.isValidTLD = isValidTLD;
 exports.logPerformance = logPerformance;
-exports.safeExecute = exports.removeInlineStyles = exports.notifyWebApp = void 0;
+exports.notifyWebApp = void 0;
+exports.pierceShadowTree = pierceShadowTree;
+exports.safeExecute = exports.removeInlineStyles = void 0;
 exports.safeRegexTest = safeRegexTest;
 exports.setValue = exports.sendAndWaitForAnswer = void 0;
 exports.shouldLog = shouldLog;
@@ -16993,6 +17049,46 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
 function safeRegexTest(regex, string) {
   if (!string || !regex || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return false;
   return regex.test(string);
+}
+
+/**
+ * Returns the event target, or an element that matches wantedTargetType, piercing the shadow tree
+ * @param {PointerEvent | FocusEvent} event
+ * @param {typeof Element} [wantedTargetType]
+ * @returns {EventTarget | null}
+ */
+function pierceShadowTree(event, wantedTargetType) {
+  const {
+    target
+  } = event;
+
+  // Sanity checks
+  if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target;
+  const clickStack = event.composedPath();
+
+  // If we're not looking for a specific element, get the top of the stack
+  if (!wantedTargetType) {
+    return clickStack[0];
+  }
+
+  // Otherwise, search the wanted target, or return the original target
+  return clickStack.find(el => el instanceof wantedTargetType) || target;
+}
+
+/**
+ * Return the active element, piercing through shadow DOMs, or null
+ * @param {Document | DocumentOrShadowRoot} root
+ * @returns {Element | null}
+ */
+function getActiveElement() {
+  let root = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
+  const activeElement = root.activeElement;
+  if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement;
+  const innerActiveElement = activeElement.shadowRoot.activeElement;
+  if (innerActiveElement?.shadowRoot) {
+    return getActiveElement(innerActiveElement.shadowRoot);
+  }
+  return innerActiveElement;
 }
 
 },{"./Form/matching.js":43,"./constants.js":64}],62:[function(require,module,exports){
