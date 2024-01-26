@@ -9729,7 +9729,7 @@ class Form {
     // We set this to true to skip event listeners while we're autofilling
     this.isAutofilling = false;
     this.submitHandlerExecuted = false;
-    this.shouldPromptToStoreData = true;
+    this.shouldPromptToStoreData = deviceInterface.settings.featureToggles.credentials_saving;
     this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
 
     /**
@@ -9930,8 +9930,8 @@ class Form {
     // This ensures we are not removing the highlight ourselves when autofilling more than once
     if (e && !e.isTrusted) return;
 
-    // If the user has changed the value, we prompt to update the stored data
-    this.shouldPromptToStoreData = true;
+    // If the user has changed the value, reset shouldPromptToStoreData to initial value
+    this.resetShouldPromptToStoreData();
     this.execOnInputs(input => this.removeInputHighlight(input), dataType);
   }
   removeInputDecoration(input) {
@@ -9996,6 +9996,9 @@ class Form {
     if (this.activeInput) this.activeInput.focus();
     this.matching.clear();
   }
+  resetShouldPromptToStoreData() {
+    this.shouldPromptToStoreData = this.device.settings.featureToggles.credentials_saving;
+  }
   dismissTooltip() {
     this.removeTooltip();
   }
@@ -10015,7 +10018,7 @@ class Form {
       // console.log('typing class body', this.isAutofilling)
       if (!this.isAutofilling) {
         this.submitHandlerExecuted = false;
-        this.shouldPromptToStoreData = true;
+        this.resetShouldPromptToStoreData();
       }
     });
 
