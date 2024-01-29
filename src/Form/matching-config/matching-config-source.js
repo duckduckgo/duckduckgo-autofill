@@ -250,7 +250,7 @@ const matchingConfiguration = {
                         // Swedish
                         '|\\be.?post|e.?postadress',
                     skip: 'phone|(first.?|last.?)name|number|code',
-                    forceUnknown: 'search|filter|subject|title|\btab\b|otp'
+                    forceUnknown: 'search|filter|subject|title|\\btab\\b|otp'
                 },
                 password: {
                     match: 'password' +
@@ -268,13 +268,13 @@ const matchingConfiguration = {
                     forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
                 },
                 newPassword: {
-                    match: 'new|re.?(enter|type)|repeat|update|reset'
+                    match: 'new|re.?(enter|type)|repeat|update|reset\\b'
                 },
                 currentPassword: {
                     match: 'current|old|previous|expired|existing'
                 },
                 username: {
-                    match: '(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
+                    match: '(user|account|online.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
                         // Italian
                         '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente' +
                         // German
@@ -350,7 +350,7 @@ const matchingConfiguration = {
                 },
                 addressCity: {match: 'city|town|città|comune', skip: '\\bzip\\b|\\bcap\\b', forceUnknown: 'vatican'},
                 addressProvince: {match: 'state|province|region|county|provincia|regione', forceUnknown: 'united', skip: 'country'},
-                addressPostalCode: {match: '\\bzip\\b|postal\b|post.?code|\\bcap\\b|codice postale'},
+                addressPostalCode: {match: '\\bzip\\b|postal\\b|post.?code|\\bcap\\b|codice postale'},
                 addressCountryCode: {match: 'country|\\bnation\\b|nazione|paese'},
                 birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
                 birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},

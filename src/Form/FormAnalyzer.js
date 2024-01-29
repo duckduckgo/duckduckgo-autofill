@@ -250,7 +250,8 @@ class FormAnalyzer {
             } else {
                 // Here we don't think this is a submit, so if there is another submit in the form, flip the score
                 const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'))
-                shouldFlip = thereIsASubmitButton
+                const isSocialButton = /facebook|twitter|google|apple/i.test(string)
+                shouldFlip = thereIsASubmitButton && !isSocialButton
             }
             const strength = likelyASubmit ? 20 : 4
             this.updateSignal({string, strength, signalType: `button: ${string}`, shouldFlip})
