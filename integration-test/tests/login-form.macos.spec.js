@@ -5,6 +5,7 @@ import {test as base} from '@playwright/test'
 import {createAvailableInputTypes} from '../helpers/utils.js'
 import {loginPage} from '../helpers/pages/loginPage.js'
 import {overlayPage} from '../helpers/pages/overlayPage.js'
+import {genericPage} from '../helpers/pages/genericPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -261,6 +262,8 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.assertDialogClose()
                 await login.openDialog()
 
+                await genericPage(page).passwordFieldShowsFillKey()
+
                 await login.selectFirstCredential(personalAddress)
                 await login.assertFirstCredential(personalAddress, password)
                 await login.assertFormNotSubmittedAutomatically()
@@ -322,6 +325,9 @@ test.describe('Auto-fill a login form on macOS', () => {
         test('Escape key should only close the dialog if our tooltip is not showing', async ({page}) => {
             const login = await createLoginFormInModalPage(page)
             await login.openDialog()
+
+            await genericPage(page).passwordFieldShowsFillKey()
+
             await login.clickIntoUsernameInput()
             await login.hitEscapeKey()
             await login.assertDialogOpen()
