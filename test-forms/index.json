@@ -92,7 +92,7 @@
   { "html": "bestbuy_signup.html" },
   { "html": "bestbuy_checkout.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "rottentomatoes_login.html" },
-  { "html": "rottentomatoes_signup.html", "expectedFailures": ["emailAddress"], "expectedSubmitFalsePositives": 1 },
+  { "html": "rottentomatoes_signup.html" },
   { "html": "costco_login.html" },
   { "html": "costco_signup.html" },
   { "html": "costco_checkout.html", "expectedSubmitFalseNegatives": 1, "expectedSubmitFalsePositives": 2 },
@@ -529,5 +529,8 @@
   { "html": "etsy_security-step.html", "expectedSubmitFalsePositives": 1 },
   { "html": "github_assign-reviewer.html" },
   { "html": "simplii_login.html" },
+  { "html": "nytedu_login.html" },
+  { "html": "usaa_login.html" },
+  { "html": "wallstreetjournal_login.html", "expectedSubmitFalsePositives": 1 },
   { "html": "flytap_login.html" }
 ]

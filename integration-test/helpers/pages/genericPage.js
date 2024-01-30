@@ -10,15 +10,19 @@ import {constants} from '../mocks.js'
 export function genericPage (page) {
     class GenericPage {
         async passwordFieldShowsFillKey (selector = '#password') {
-            // don't make assertions until the element is both found + has a none-empty 'style' attribute
-            await page.waitForFunction(selector => Boolean(document.querySelector(selector)?.getAttribute('style')), selector)
+            // don't make assertions until the element has been scanned
+            const field = page.locator(selector)
+            await expect(field).toHaveAttribute('data-ddg-inputtype')
+
             const passwordStyle = await page.locator(selector).getAttribute('style')
             expect(passwordStyle).toContain(constants.iconMatchers.keyFill)
         }
 
         async passwordFieldShowsGenKey (selector = '#password') {
-            // don't make assertions until the element is both found + has a none-empty 'style' attribute
-            await page.waitForFunction(selector => Boolean(document.querySelector(selector)?.getAttribute('style')), selector)
+            // don't make assertions until the element has been scanned
+            const field = page.locator(selector)
+            await expect(field).toHaveAttribute('data-ddg-inputtype')
+
             const passwordStyle = await page.locator(selector).getAttribute('style')
             expect(passwordStyle).toContain(constants.iconMatchers.keyGen)
         }
@@ -28,9 +32,14 @@ export function genericPage (page) {
             expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
         }
 
+        async clickThePasswordField (selector = '#password') {
+            const input = page.locator(selector)
+            await input.click({force: true})
+        }
+
         async selectGeneratedPassword (selector = '#password') {
             const input = page.locator(selector)
-            await input.click()
+            await input.click({force: true})
 
             const passwordBtn = page.locator('button:has-text("Generated password")')
             await expect(passwordBtn).toContainText('Password will be saved for this website')

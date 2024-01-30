@@ -20,7 +20,7 @@ export function incontextSignupPage (page, {platform} = {platform: 'extension'})
          */
         async navigate (domain, to = 'iframeContainer') {
             const pageName = constants.pages[to]
-            const pagePath = `integration-test/${pageName}`
+            const pagePath = `/${pageName}`
             await page.goto(new URL(pagePath, domain).href)
         }
 

@@ -6721,7 +6721,8 @@ class FormAnalyzer {
       } else {
         // Here we don't think this is a submit, so if there is another submit in the form, flip the score
         const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
-        shouldFlip = thereIsASubmitButton;
+        const isSocialButton = /facebook|twitter|google|apple/i.test(string);
+        shouldFlip = thereIsASubmitButton && !isSocialButton;
       }
       const strength = likelyASubmit ? 20 : 4;
       this.updateSignal({
@@ -8383,7 +8384,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
         emailAddress: {
           match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,
           skip: /phone|(first.?|last.?)name|number|code/iu,
-          forceUnknown: /search|filter|subject|title|tab|otp/iu
+          forceUnknown: /search|filter|subject|title|\btab\b|otp/iu
         },
         password: {
           match: /password|passwort|kennwort|wachtwoord|mot de passe|clave|contraseña|lösenord/iu,
@@ -8391,13 +8392,13 @@ const matchingConfiguration = exports.matchingConfiguration = {
           forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         newPassword: {
-          match: /new|re.?(enter|type)|repeat|update|reset/iu
+          match: /new|re.?(enter|type)|repeat|update|reset\b/iu
         },
         currentPassword: {
           match: /current|old|previous|expired|existing/iu
         },
         username: {
-          match: /(user|account|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|\/).+|\*|:)( required)?)?$|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente|nutzername|anmeldename|gebruikersnaam|nom d.utilisateur|identifiant|pseudo|usuari|cuenta|identificador|apodo|\bdni\b|\bnie\b| del? documento|documento de identidad|användarnamn|kontonamn|användar-id/iu,
+          match: /(user|account|online.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|\/).+|\*|:)( required)?)?$|(nome|id|login).?utente|(nome|id) (dell.)?account|codice cliente|nutzername|anmeldename|gebruikersnaam|nom d.utilisateur|identifiant|pseudo|usuari|cuenta|identificador|apodo|\bdni\b|\bnie\b| del? documento|documento de identidad|användarnamn|kontonamn|användar-id/iu,
           skip: /phone/iu,
           forceUnknown: /search|policy|choose a user\b/iu
         },
@@ -8465,7 +8466,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           skip: /country/iu
         },
         addressPostalCode: {
-          match: /\bzip\b|postal|post.?code|\bcap\b|codice postale/iu
+          match: /\bzip\b|postal\b|post.?code|\bcap\b|codice postale/iu
         },
         addressCountryCode: {
           match: /country|\bnation\b|nazione|paese/iu

@@ -1,0 +1,126 @@
+<form class="form flex flex-col" novalidate="">
+    <div class="form__row instructions-otp" style="display: none">
+        <div class="form__full">
+            <div class="centered-padded text-center"><p data-token="instructionsOTP">Enter the email address or username
+                associated with your account. We'll email a one time passcode if it matches our records</p></div>
+        </div>
+    </div>
+    <div class="form__ttip flex flex-col space-y-1">
+        <div class="flex items-center">
+            <label for="username" data-token="usernameOrEmail">Email or username</label>
+            <button type="button" id="emailOrUsernameTooltip" class="tooltip-trigger ml-1 h-4 w-4 rounded-full" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="16px" height="16px" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg></button>
+        </div>
+        <div class="input-icon-container">
+            <input type="email" class="username dj-input w-full" name="username" id="username" maxlength="100" autocomplete="off" tabindex="0" data-manual-scoring="username">
+            <span id="username-input-error-icon" style="display: none" class="input-error-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" x2="12" y1="8" y2="12"></line>
+                    <line x1="12" x2="12.01" y1="16" y2="16"></line>
+                </svg></span>
+        </div>
+        <p id="address-username-error" class="username-error input-error" style="display: none" data-token="pleaseEnterYourEmailAddressOrUsername">
+            Please enter your email address or username.</p>
+        <div class="form__full username-error-container" style="display: none">
+            <p class="username-login-errors errors" id="username-login-errors" style="display: none"></p></div>
+    </div>
+    <div class="form__full error-container" style="display: none">
+        <p class="errors" id="recaptcha-error" style="display: none" data-token="errorForUser210988">Due to five
+            unsuccessful login attempts, please check the verification box below, re-enter your login details and click
+            Login. For password assistance, click 'Forgot your password?' below.</p></div>
+    <div class="form__full" style="display: none" id="recaptcha-container"></div>
+    <div class="form__full">
+        <div class="sign-in hide-if-one-time-linking flex flex-col space-y-2">
+            <button type="submit" class="solid-button basic-login-submit dj-btn-primary group" tabindex="0" style="display: none;" data-manual-submit>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="spinner spinner-color hidden h-6 w-6 animate-spin duration-700 group-[.loading]:block"><path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z" fill="currentColor"></path></svg>
+                <span class="group-[.loading]:hidden" data-token="signIn" token-title="signIn" title="Sign In">Sign In
+                </span>
+            </button>
+            <button type="button" class="solid-button continue-submit dj-btn-primary group" data-manual-submit>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="spinner spinner-color hidden h-6 w-6 animate-spin duration-700 group-[.loading]:block"><path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z" fill="currentColor"></path></svg>
+                <span class="group-[.loading]:hidden" data-token="continue">Continue</span>
+            </button>
+            <button type="button" style="" class="solid-button secondary-button margin-top-20 sendOTP dj-btn-transparent group">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="spinner spinner-color hidden h-6 w-6 animate-spin duration-700 group-[.loading]:block"><path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z" fill="currentColor"></path></svg>
+                <span class="group-[.loading]:hidden" data-token="sendOTP">Send One-Time Passcode</span>
+            </button>
+        </div>
+        <div class="one-time-linking-connect show-if-one-time-linking mt-4" style="display: none;">
+            <button type="submit" class="solid-button dj-btn-primary group w-full" data-manual-submit>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="spinner spinner-color hidden h-6 w-6 animate-spin duration-700 group-[.loading]:block"><path opacity="0.2" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"></path><path d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z" fill="currentColor"></path></svg>
+                <span data-token="otl-connect-continue" class="group-[.loading]:hidden">Connect and continue</span>
+            </button>
+        </div>
+        <div class="next-step">
+            <button type="submit" class="solid-button dj-btn-primary mt-4 w-full" tabindex="0" style="display: none;" data-manual-submit>
+                <span data-token="nextTitle" token-title="nextTitle" title="Next">Next</span>
+            </button>
+        </div>
+    </div>
+    <div id="login-options-container" class="form__full mt-4">
+        <div class="call-to-action flex flex-col items-center space-y-2 text-center">
+            <p id="internal-forgot-routing" class="internal-forgot-routing text-center">
+                <span data-token="forgotYourPre">Forgot your</span>
+                <button type="button" class="client-aware forgot-username-link dj-link" data-token="usernamePre">
+                    username
+                </button>
+                <span data-token="orTkn">or</span>
+                <button type="button" class="client-aware forgot-password-link dj-link" data-token="passwordPre">
+                    password
+                </button>
+                ?
+            </p>
+            <p id="external-forgot-routing" class="text-center" style="display: none;">
+                <span data-token="forgotYourPre">Forgot your</span>
+                <a class="client-aware forgot-link" data-token="usernameOrPassword">username or password?</a></p>
+            <hr class="separator my-6 w-full border-zinc-100" style="display: none">
+            <p id="not-a-member" class="hide-if-one-time-linking text-center" style="display: none;">
+                <span data-token="notASubscriber">Not a subscriber?</span>
+                <a class="client-aware not-a-member-link" data-token="clickHereToLearnMore" href="http://customercenter.wsj.com/register">Click
+                    here to learn more!</a>
+                <a class="client-aware create-free-acc-link" style="display: none" data-token="createFreeAccount">create
+                    free account</a>
+                <span class="mw-label-or" style="display: none" data-token="orTkn">or</span>
+                <a class="client-aware subscribe-link" style="display: none" data-token="subscribe">Subscribe</a></p>
+            <button type="button" id="free-account-button" data-token="createFreeAccount" class="dj-btn-unstyled mx-auto mt-6 block w-2/3 bg-dj__accent capitalize hover:bg-dj__accent_hover" style="display: none">
+                create free account
+            </button>
+        </div>
+    </div>
+    <div id="social-card" class="mt-4 flex flex-col space-y-2 show">
+        <div id="social-separator" class="flex items-center justify-center">
+            <div class="flex-grow border-t border-zinc-100"></div>
+            <span class="mx-4 text-sm" data-token="socialSignHeader">Social Sign-in</span>
+            <div class="flex-grow border-t border-zinc-100"></div>
+        </div>
+        <div class="flex flex-col items-center justify-center space-y-2">
+            <div id="socialbtn-facebook-wrapper" class="w-full form__full">
+                <button type="button" class="socialbtn socialbtn-facebook dj-btn-transparent flex w-full items-center justify-center">
+                    <div class="relative flex h-11 w-11 items-center justify-center border-r border-inherit">
+                        <img alt="facebook-icon" src="/one_identity_login_pages/login/5ca439d58ef61d5b2a75926d27f412cf/img/facebook-logo.svg" class="flex h-6 w-6 items-center justify-center object-contain">
+                    </div>
+                    <span class="flex-1 text-center" data-token="signInWithFacebook">Sign in with Facebook</span>
+                </button>
+            </div>
+            <div id="socialbtn-google-wrapper" class="w-full form__full">
+                <button type="button" class="socialbtn socialbtn-google dj-btn-transparent flex w-full items-center justify-center">
+                    <div class="relative flex h-11 w-11 items-center justify-center border-r border-inherit">
+                        <img alt="google-icon" src="/one_identity_login_pages/login/5ca439d58ef61d5b2a75926d27f412cf/img/google-logo.svg" class="flex h-5 w-5 items-center justify-center object-contain">
+                    </div>
+                    <span class="flex-1 text-center" data-token="signInWithGoogle">Sign in with Google</span>
+                </button>
+            </div>
+            <div id="socialbtn-apple-wrapper" class="w-full form__full">
+                <button type="button" class="socialbtn socialbtn-apple dj-btn-transparent flex w-full items-center justify-center">
+                    <div class="relative flex h-11 w-11 items-center justify-center border-r border-inherit">
+                        <img alt="apple-icon" src="/one_identity_login_pages/login/5ca439d58ef61d5b2a75926d27f412cf/img/apple.svg" class="flex h-full w-8 items-center justify-center object-contain">
+                    </div>
+                    <span class="flex-1 text-center" data-token="signInWithApple">Sign in with Apple</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,25 +1,28 @@
+const localPagesPrefix = 'integration-test/pages'
+const privacyTestPagesPrefix = 'node_modules/@duckduckgo/privacy-test-pages/autofill'
 /**
  * Try to use this a place to store re-used values across the integration tests.
  */
 export const constants = {
     pages: {
-        'overlay': 'pages/overlay.html',
-        'email-autofill': 'pages/email-autofill.html',
-        'emailAtBottom': 'pages/email-at-bottom.html',
-        'emailAtTopLeft': 'pages/email-at-top-left.html',
-        'scanner-perf': 'pages/scanner-perf.html',
-        'perf-huge-regex': 'pages/perf-huge-regex.html',
-        'iframeContainer': 'pages/iframe-container.html',
-        'signup': 'pages/signup.html',
-        'mutatingForm': 'pages/mutating-form.html',
-        'passwordUpdate': 'pages/password-update.html',
-        'login': 'pages/login.html',
-        'loginWithPoorForm': 'pages/login-poor-form.html',
-        'loginWithText': 'pages/login-with-text.html',
-        'loginWithFormInModal': 'pages/login-in-modal.html',
-        'signupWithFormInModal': 'pages/signup-in-modal.html',
-        'loginCovered': 'pages/login-covered.html',
-        'loginMultistep': 'pages/login-multistep.html'
+        'overlay': `${localPagesPrefix}/overlay.html`,
+        'email-autofill': `${localPagesPrefix}/email-autofill.html`,
+        'emailAtBottom': `${localPagesPrefix}/email-at-bottom.html`,
+        'emailAtTopLeft': `${localPagesPrefix}/email-at-top-left.html`,
+        'scanner-perf': `${localPagesPrefix}/scanner-perf.html`,
+        'perf-huge-regex': `${localPagesPrefix}/perf-huge-regex.html`,
+        'iframeContainer': `${localPagesPrefix}/iframe-container.html`,
+        'signup': `${localPagesPrefix}/signup.html`,
+        'mutatingForm': `${localPagesPrefix}/mutating-form.html`,
+        'passwordUpdate': `${privacyTestPagesPrefix}/password-update.html`,
+        'login': `${localPagesPrefix}/login.html`,
+        'loginWithPoorForm': `${localPagesPrefix}/login-poor-form.html`,
+        'loginWithText': `${localPagesPrefix}/login-with-text.html`,
+        'loginWithFormInModal': `${privacyTestPagesPrefix}/autoprompt/2-form-in-modal.html`,
+        'signupWithFormInModal': `${localPagesPrefix}/signup-in-modal.html`,
+        'loginCovered': `${localPagesPrefix}/login-covered.html`,
+        'loginMultistep': `${localPagesPrefix}/login-multistep.html`,
+        'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`
     },
     fields: {
         email: {

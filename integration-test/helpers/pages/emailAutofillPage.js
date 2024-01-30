@@ -17,7 +17,7 @@ export function emailAutofillPage (page) {
         async navigate (domain) {
             const emailAutofillPageName = constants.pages['email-autofill']
             if (domain) {
-                const pagePath = `integration-test/${emailAutofillPageName}`
+                const pagePath = `/${emailAutofillPageName}`
                 await page.goto(new URL(pagePath, domain).href)
             } else {
                 await page.goto(emailAutofillPageName)
