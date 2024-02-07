@@ -21,7 +21,10 @@ class AndroidInterface extends InterfacePrototype {
         console.log('AndroidInterface.getAutofillConfig')
         const config = await sendAndWaitForAnswer(() => window.BrowserAutofill.getAutofillConfig(), 'getAutofillConfig')
         console.log('TODO AndroidInterface.getAutofillConfig', config)
-        this.globalConfig.availableInputTypes = config
+        this.globalConfig.contentScope = config.contentScope
+        this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains
+        this.globalConfig.userPreferences = config.userPreferences
+        this.globalConfig.availableInputTypes = config.availableInputTypes
     }
 
     /**
