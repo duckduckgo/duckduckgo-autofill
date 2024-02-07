@@ -27,6 +27,8 @@ export const addDebugFlagParamsSchema = z.object({
     flag: z.string()
 });
 
+export const getAutofillConfigParamsSchema = z.object({});
+
 export const getAutofillCredentialsParamsSchema = z.object({
     id: z.string()
 });
@@ -76,6 +78,10 @@ export const showInContextEmailProtectionSignupPromptSchema = z.object({
     })
 });
 
+export const genericErrorSchema = z.object({
+    message: z.string()
+});
+
 export const generatedPasswordSchema = z.object({
     value: z.string(),
     username: z.string()
@@ -98,10 +104,6 @@ export const credentialsSchema = z.object({
     }).optional(),
     credentialsProvider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional(),
     providerStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
-});
-
-export const genericErrorSchema = z.object({
-    message: z.string()
 });
 
 export const contentScopeSchema = z.object({
@@ -204,6 +206,17 @@ export const autofillFeatureTogglesSchema = z.object({
     credentials_saving: z.boolean().optional(),
     inlineIcon_credentials: z.boolean().optional(),
     third_party_credentials_provider: z.boolean().optional()
+});
+
+export const getAutofillConfigResultSchema = z.object({
+    type: z.literal("getAutofillConfigResponse").optional(),
+    success: z.object({
+        contentScope: z.record(z.unknown()),
+        userUnprotectedDomains: z.array(z.unknown()),
+        userPreferences: z.record(z.unknown()),
+        availableInputTypes: z.record(z.unknown())
+    }).optional(),
+    error: genericErrorSchema.optional()
 });
 
 export const getAutofillDataRequestSchema = z.object({
@@ -334,6 +347,11 @@ export const checkCredentialsProviderStatusResultSchema = z.object({
 export const apiSchema = z.object({
     addDebugFlag: z.record(z.unknown()).and(z.object({
         paramsValidator: addDebugFlagParamsSchema.optional()
+    })).optional(),
+    getAutofillConfig: z.record(z.unknown()).and(z.object({
+        id: z.literal("getAutofillConfigResponse").optional(),
+        paramsValidator: getAutofillConfigParamsSchema.optional(),
+        resultValidator: getAutofillConfigResultSchema.optional()
     })).optional(),
     getAutofillData: z.record(z.unknown()).and(z.object({
         id: z.literal("getAutofillDataResponse").optional(),
