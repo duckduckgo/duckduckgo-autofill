@@ -1,6 +1,7 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
     CloseEmailProtectionTabCall,
+    GetAutofillConfigCall,
     GetAutofillDataCall,
     GetAvailableInputTypesCall,
     GetIncontextSignupDismissedAtCall,
@@ -71,6 +72,10 @@ export class AndroidTransport extends DeviceApiTransport {
 
         if (deviceApiCall instanceof StoreFormDataCall) {
             return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof GetAutofillConfigCall) {
+            return window.BrowserAutofill.getAutofillConfig()
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method)
