@@ -19,7 +19,7 @@ class AndroidInterface extends InterfacePrototype {
 
     async getAutofillConfig () {
         console.log('AndroidInterface.getAutofillConfig')
-        const config = await sendAndWaitForAnswer(() => window.BrowserAutofill.getAutofillConfig(), 'getAutofillConfig')
+        const config = await sendAndWaitForAnswer(() => window.BrowserAutofill.getAutofillConfig(), 'getAutofillConfigResponse')
         console.log('TODO AndroidInterface.getAutofillConfig', config)
         this.globalConfig.contentScope = config.contentScope
         this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains
