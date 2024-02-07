@@ -75,7 +75,8 @@ export class AndroidTransport extends DeviceApiTransport {
         }
 
         if (deviceApiCall instanceof GetAutofillConfigCall) {
-            return window.BrowserAutofill.getAutofillConfig()
+            window.BrowserAutofill.getAutofillConfig()
+            return waitForResponse(deviceApiCall.id, this.config)
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method)

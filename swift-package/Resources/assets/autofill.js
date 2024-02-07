@@ -13473,7 +13473,8 @@ class AndroidTransport extends _index.DeviceApiTransport {
       return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
     }
     if (deviceApiCall instanceof _deviceApiCalls.GetAutofillConfigCall) {
-      return window.BrowserAutofill.getAutofillConfig();
+      window.BrowserAutofill.getAutofillConfig();
+      return waitForResponse(deviceApiCall.id, this.config);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
   }
