@@ -7510,9 +7510,12 @@ class AndroidInterface extends _InterfacePrototype.default {
   }
   async getAutofillConfig() {
     console.log('AndroidInterface.getAutofillConfig');
-    const config = await (0, _autofillUtils.sendAndWaitForAnswer)(() => window.BrowserAutofill.getAutofillConfig(), 'getAutofillConfig');
+    const config = await (0, _autofillUtils.sendAndWaitForAnswer)(() => window.BrowserAutofill.getAutofillConfig(), 'getAutofillConfigResponse');
     console.log('TODO AndroidInterface.getAutofillConfig', config);
-    this.globalConfig.availableInputTypes = config;
+    this.globalConfig.contentScope = config.contentScope;
+    this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains;
+    this.globalConfig.userPreferences = config.userPreferences;
+    this.globalConfig.availableInputTypes = config.availableInputTypes;
   }
 
   /**
