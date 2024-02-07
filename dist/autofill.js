@@ -3344,7 +3344,7 @@ class AndroidInterface extends _InterfacePrototype.default {
   }
   async getAutofillConfig() {
     console.log('AndroidInterface.getAutofillConfig');
-    const config = await (0, _autofillUtils.sendAndWaitForAnswer)(() => window.EmailInterface.getAutofillConfig(), 'getAutofillConfig');
+    const config = await (0, _autofillUtils.sendAndWaitForAnswer)(() => window.BrowserAutofill.getAutofillConfig(), 'getAutofillConfig');
     console.log('TODO AndroidInterface.getAutofillConfig', config);
     this.globalConfig.availableInputTypes = config;
   }
