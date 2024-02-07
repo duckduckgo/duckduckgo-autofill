@@ -27,6 +27,7 @@ interface Window {
 
     // Used in the Android app
     EmailInterface: {
+        getAutofillConfig(): string
         isSignedIn(): string
         getUserData(): string
         storeCredentials(token: string, username: string, cohort: string): string

@@ -12,6 +12,18 @@ class AndroidInterface extends InterfacePrototype {
         return autofillEnabled(this.globalConfig, processConfig)
     }
 
+    async preInit () {
+        console.log('AndroidInterface.preInit')
+        await this.getAutofillConfig()
+    }
+
+    async getAutofillConfig () {
+        console.log('AndroidInterface.getAutofillConfig')
+        const config = await sendAndWaitForAnswer(() => window.EmailInterface.getAutofillConfig(), 'getAutofillConfig')
+        console.log('TODO AndroidInterface.getAutofillConfig', config)
+        this.globalConfig.availableInputTypes = config
+    }
+
     /**
      * @returns {Promise<string|undefined>}
      */
