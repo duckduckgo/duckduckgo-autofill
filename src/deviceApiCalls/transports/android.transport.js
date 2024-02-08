@@ -66,8 +66,17 @@ export class AndroidTransport extends DeviceApiTransport {
         }
 
         if (deviceApiCall instanceof GetAutofillDataCall) {
-            window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
+            // @ts-expect-error - missing global
+            const listener = window.ddgGetAutofillData
+            // TODO fix this up to match the new pattern
+            const responseOnce = new Promise((resolve) => {
+                listener.addEventListener('message', (e) => {
+                    resolve(e.data)
+                })
+            })
+            listener.postMessage(JSON.stringify(deviceApiCall.params))
+            const configJSON = await responseOnce
+            return JSON.parse(configJSON)
         }
 
         if (deviceApiCall instanceof StoreFormDataCall) {
