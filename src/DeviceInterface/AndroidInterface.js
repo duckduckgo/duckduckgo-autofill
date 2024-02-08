@@ -14,14 +14,11 @@ class AndroidInterface extends InterfacePrototype {
     }
 
     async preInit () {
-        console.log('AndroidInterface.preInit')
         await this.getAutofillConfig()
     }
 
     async getAutofillConfig () {
-        console.log('AndroidInterface.getAutofillConfig')
         const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
-        console.log('TODO AndroidInterface.getAutofillConfig', config)
         this.globalConfig.contentScope = config.contentScope
         this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains || []
         this.globalConfig.userPreferences = config.userPreferences

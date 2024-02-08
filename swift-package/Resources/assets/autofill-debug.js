@@ -7507,13 +7507,10 @@ class AndroidInterface extends _InterfacePrototype.default {
     return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
   }
   async preInit() {
-    console.log('AndroidInterface.preInit');
     await this.getAutofillConfig();
   }
   async getAutofillConfig() {
-    console.log('AndroidInterface.getAutofillConfig');
     const config = await this.deviceApi.request(new _deviceApiCalls.GetAutofillConfigCall({}));
-    console.log('TODO AndroidInterface.getAutofillConfig', config);
     this.globalConfig.contentScope = config.contentScope;
     this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains || [];
     this.globalConfig.userPreferences = config.userPreferences;
@@ -18001,37 +17998,30 @@ class AndroidTransport extends _index.DeviceApiTransport {
       window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
       return waitForResponse(deviceApiCall.id, this.config);
     }
-    if (deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
-      // @ts-expect-error - missing global
-      const listener = window.ddgGetAutofillData;
-      // TODO fix this up to match the new pattern
-      const responseOnce = new Promise(resolve => {
-        listener.addEventListener('message', e => {
-          resolve(e.data);
-        });
-      });
-      listener.postMessage(JSON.stringify(deviceApiCall.params));
-      const configJSON = await responseOnce;
-      return JSON.parse(configJSON);
-    }
     if (deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall) {
       return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
     }
-    if (deviceApiCall instanceof _deviceApiCalls.GetAutofillConfigCall) {
-      // @ts-expect-error - missing global
-      const listener = window.ddgGetAutofillConfig;
-      // TODO fix this up to match the new pattern
-      const responseOnce = new Promise(resolve => {
-        listener.addEventListener('message', e => {
-          resolve(e.data);
-        });
-      });
-      listener.postMessage('');
-      const configJSON = await responseOnce;
-      return JSON.parse(configJSON);
+    if (deviceApiCall instanceof _deviceApiCalls.GetAutofillConfigCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
+      return listenForWebListener(deviceApiCall);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
   }
+}
+exports.AndroidTransport = AndroidTransport;
+async function listenForWebListener(request) {
+  const method = request.method;
+  const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1);
+  const listener = window[listenerName];
+  // TODO fix this up to match the new pattern
+  const responseOnce = new Promise(resolve => {
+    listener.addEventListener('message', e => {
+      resolve(e.data);
+    });
+  });
+  const message = JSON.stringify(request?.params) || '';
+  listener.postMessage(message);
+  const configJSON = await responseOnce;
+  return JSON.parse(configJSON);
 }
 
 /**
@@ -18039,7 +18029,6 @@ class AndroidTransport extends _index.DeviceApiTransport {
  * @param {GlobalConfig} config
  * @returns {Promise<*>}
  */
-exports.AndroidTransport = AndroidTransport;
 function waitForResponse(expectedResponse, config) {
   return new Promise(resolve => {
     const handler = e => {

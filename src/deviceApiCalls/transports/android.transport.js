@@ -65,40 +65,33 @@ export class AndroidTransport extends DeviceApiTransport {
             return waitForResponse(deviceApiCall.id, this.config)
         }
 
-        if (deviceApiCall instanceof GetAutofillDataCall) {
-            // @ts-expect-error - missing global
-            const listener = window.ddgGetAutofillData
-            // TODO fix this up to match the new pattern
-            const responseOnce = new Promise((resolve) => {
-                listener.addEventListener('message', (e) => {
-                    resolve(e.data)
-                })
-            })
-            listener.postMessage(JSON.stringify(deviceApiCall.params))
-            const configJSON = await responseOnce
-            return JSON.parse(configJSON)
-        }
-
         if (deviceApiCall instanceof StoreFormDataCall) {
             return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
         }
 
-        if (deviceApiCall instanceof GetAutofillConfigCall) {
-            // @ts-expect-error - missing global
-            const listener = window.ddgGetAutofillConfig
-            // TODO fix this up to match the new pattern
-            const responseOnce = new Promise((resolve) => {
-                listener.addEventListener('message', (e) => {
-                    resolve(e.data)
-                })
-            })
-            listener.postMessage('')
-            const configJSON = await responseOnce
-            return JSON.parse(configJSON)
+        if (deviceApiCall instanceof GetAutofillConfigCall ||
+            deviceApiCall instanceof GetAutofillDataCall) {
+            return listenForWebListener(deviceApiCall)
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method)
     }
+}
+
+async function listenForWebListener (request) {
+    const method = request.method
+    const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1)
+    const listener = window[listenerName]
+    // TODO fix this up to match the new pattern
+    const responseOnce = new Promise((resolve) => {
+        listener.addEventListener('message', (e) => {
+            resolve(e.data)
+        })
+    })
+    const message = JSON.stringify(request?.params) || ''
+    listener.postMessage(message)
+    const configJSON = await responseOnce
+    return JSON.parse(configJSON)
 }
 
 /**
