@@ -43,11 +43,6 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config)
         }
 
-        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
-            window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
         if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
             return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params))
         }
@@ -69,7 +64,8 @@ export class AndroidTransport extends DeviceApiTransport {
             return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
         }
 
-        if (deviceApiCall instanceof GetAutofillConfigCall ||
+        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
+            deviceApiCall instanceof GetAutofillConfigCall ||
             deviceApiCall instanceof GetAutofillDataCall) {
             return listenForWebListener(deviceApiCall)
         }
