@@ -60,11 +60,8 @@ export class AndroidTransport extends DeviceApiTransport {
             return waitForResponse(deviceApiCall.id, this.config)
         }
 
-        if (deviceApiCall instanceof StoreFormDataCall) {
-            return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
+        if (deviceApiCall instanceof StoreFormDataCall ||
+            deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
             deviceApiCall instanceof GetAutofillConfigCall ||
             deviceApiCall instanceof GetAutofillDataCall) {
             return listenForWebListener(deviceApiCall)

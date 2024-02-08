@@ -13460,10 +13460,7 @@ class AndroidTransport extends _index.DeviceApiTransport {
       window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
       return waitForResponse(deviceApiCall.id, this.config);
     }
-    if (deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall) {
-      return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillConfigCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
+    if (deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall || deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillConfigCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
       return listenForWebListener(deviceApiCall);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
