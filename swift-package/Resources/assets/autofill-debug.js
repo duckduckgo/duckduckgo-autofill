@@ -7511,7 +7511,8 @@ class AndroidInterface extends _InterfacePrototype.default {
   async getAutofillConfig() {
     console.log('AndroidInterface.getAutofillConfig');
     // TODO fix this up to match the new pattern
-    const config = await window.ddgGetAutofillConfig.postMessage();
+    const configJSON = await window.ddgGetAutofillConfig.postMessage('');
+    const config = JSON.parse(configJSON);
     // const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
     console.log('TODO AndroidInterface.getAutofillConfig', config);
     this.globalConfig.contentScope = config.contentScope;
