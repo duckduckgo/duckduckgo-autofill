@@ -19,7 +19,9 @@ class AndroidInterface extends InterfacePrototype {
 
     async getAutofillConfig () {
         console.log('AndroidInterface.getAutofillConfig')
-        const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
+        // TODO fix this up to match the new pattern
+        const config = await window.ddgGetAutofillConfig.postMessage('')
+        // const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
         console.log('TODO AndroidInterface.getAutofillConfig', config)
         this.globalConfig.contentScope = config.contentScope
         this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains || []
