@@ -3333,6 +3333,8 @@ var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 var _InContextSignup = require("../InContextSignup.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+// @ts-nocheck
+
 class AndroidInterface extends _InterfacePrototype.default {
   inContextSignup = new _InContextSignup.InContextSignup(this);
   async isEnabled() {
@@ -3344,8 +3346,16 @@ class AndroidInterface extends _InterfacePrototype.default {
   }
   async getAutofillConfig() {
     console.log('AndroidInterface.getAutofillConfig');
+    // @ts-expect-error - missing global
+    const listener = window.ddgGetAutofillConfig;
     // TODO fix this up to match the new pattern
-    const configJSON = await window.ddgGetAutofillConfig.postMessage('');
+    const responseOnce = new Promise(resolve => {
+      listener.addEventListener('message', e => {
+        resolve(e.data);
+      });
+    });
+    listener.postMessage('');
+    const configJSON = await responseOnce;
     const config = JSON.parse(configJSON);
     // const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
     console.log('TODO AndroidInterface.getAutofillConfig', config);

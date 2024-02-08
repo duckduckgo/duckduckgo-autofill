@@ -1,3 +1,4 @@
+// @ts-nocheck
 import InterfacePrototype from './InterfacePrototype.js'
 import {autofillEnabled, sendAndWaitForAnswer} from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
@@ -19,8 +20,16 @@ class AndroidInterface extends InterfacePrototype {
 
     async getAutofillConfig () {
         console.log('AndroidInterface.getAutofillConfig')
+        // @ts-expect-error - missing global
+        const listener = window.ddgGetAutofillConfig
         // TODO fix this up to match the new pattern
-        const configJSON = await window.ddgGetAutofillConfig.postMessage('')
+        const responseOnce = new Promise((resolve) => {
+            listener.addEventListener('message', (e) => {
+                resolve(e.data)
+            })
+        })
+        listener.postMessage('')
+        const configJSON = await responseOnce
         const config = JSON.parse(configJSON)
         // const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
         console.log('TODO AndroidInterface.getAutofillConfig', config)
