@@ -7512,18 +7512,7 @@ class AndroidInterface extends _InterfacePrototype.default {
   }
   async getAutofillConfig() {
     console.log('AndroidInterface.getAutofillConfig');
-    // @ts-expect-error - missing global
-    const listener = window.ddgGetAutofillConfig;
-    // TODO fix this up to match the new pattern
-    const responseOnce = new Promise(resolve => {
-      listener.addEventListener('message', e => {
-        resolve(e.data);
-      });
-    });
-    listener.postMessage('');
-    const configJSON = await responseOnce;
-    const config = JSON.parse(configJSON);
-    // const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
+    const config = await this.deviceApi.request(new _deviceApiCalls.GetAutofillConfigCall({}));
     console.log('TODO AndroidInterface.getAutofillConfig', config);
     this.globalConfig.contentScope = config.contentScope;
     this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains || [];
@@ -18020,8 +18009,17 @@ class AndroidTransport extends _index.DeviceApiTransport {
       return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
     }
     if (deviceApiCall instanceof _deviceApiCalls.GetAutofillConfigCall) {
-      window.BrowserAutofill.getAutofillConfig();
-      return waitForResponse(deviceApiCall.id, this.config);
+      // @ts-expect-error - missing global
+      const listener = window.ddgGetAutofillConfig;
+      // TODO fix this up to match the new pattern
+      const responseOnce = new Promise(resolve => {
+        listener.addEventListener('message', e => {
+          resolve(e.data);
+        });
+      });
+      listener.postMessage('');
+      const configJSON = await responseOnce;
+      return JSON.parse(configJSON);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
   }

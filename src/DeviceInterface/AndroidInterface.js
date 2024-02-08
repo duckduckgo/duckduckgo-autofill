@@ -20,18 +20,7 @@ class AndroidInterface extends InterfacePrototype {
 
     async getAutofillConfig () {
         console.log('AndroidInterface.getAutofillConfig')
-        // @ts-expect-error - missing global
-        const listener = window.ddgGetAutofillConfig
-        // TODO fix this up to match the new pattern
-        const responseOnce = new Promise((resolve) => {
-            listener.addEventListener('message', (e) => {
-                resolve(e.data)
-            })
-        })
-        listener.postMessage('')
-        const configJSON = await responseOnce
-        const config = JSON.parse(configJSON)
-        // const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
+        const config = await this.deviceApi.request(new GetAutofillConfigCall({}))
         console.log('TODO AndroidInterface.getAutofillConfig', config)
         this.globalConfig.contentScope = config.contentScope
         this.globalConfig.userUnprotectedDomains = config.userUnprotectedDomains || []

@@ -75,8 +75,17 @@ export class AndroidTransport extends DeviceApiTransport {
         }
 
         if (deviceApiCall instanceof GetAutofillConfigCall) {
-            window.BrowserAutofill.getAutofillConfig()
-            return waitForResponse(deviceApiCall.id, this.config)
+            // @ts-expect-error - missing global
+            const listener = window.ddgGetAutofillConfig
+            // TODO fix this up to match the new pattern
+            const responseOnce = new Promise((resolve) => {
+                listener.addEventListener('message', (e) => {
+                    resolve(e.data)
+                })
+            })
+            listener.postMessage('')
+            const configJSON = await responseOnce
+            return JSON.parse(configJSON)
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method)
