@@ -43,24 +43,11 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config)
         }
 
-        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
-            return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof StartEmailProtectionSignupCall) {
-            return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof CloseEmailProtectionTabCall) {
-            return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall) {
-            window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof StoreFormDataCall ||
+        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+            deviceApiCall instanceof StartEmailProtectionSignupCall ||
+            deviceApiCall instanceof CloseEmailProtectionTabCall ||
+            deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall ||
+            deviceApiCall instanceof StoreFormDataCall ||
             deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
             deviceApiCall instanceof GetAutofillConfigCall ||
             deviceApiCall instanceof GetAutofillDataCall) {
