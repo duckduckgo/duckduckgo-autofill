@@ -6759,6 +6759,9 @@ module.exports={
   "fuelrewards.com": {
     "password-rules": "minlength: 8; maxlength: 16; allowed: upper,lower,digit,[!#$%@];"
   },
+  "garmin.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
+  },
   "gamestop.com": {
     "password-rules": "minlength: 8; maxlength: 225; required: lower; required: upper; required: digit; required: [!@#$%];"
   },
