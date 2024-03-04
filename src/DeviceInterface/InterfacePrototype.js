@@ -313,7 +313,12 @@ class InterfacePrototype {
         return autofillEnabled(this.globalConfig)
     }
 
+    async preInit () {
+        // noop overriden for Android
+    }
+
     async init () {
+        await this.preInit()
         const isEnabled = await this.isEnabled()
         if (!isEnabled) return
 

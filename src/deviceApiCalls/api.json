@@ -12,6 +12,17 @@
         "paramsValidator": { "$ref":  "./schemas/addDebugFlag.params.json" }
       }
     },
+    "getAutofillConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getAutofillConfigResponse"
+        },
+        "paramsValidator": { "$ref":  "./schemas/getAutofillConfig.params.json" },
+        "resultValidator": { "$ref":  "./schemas/getAutofillConfig.result.json" }
+      }
+    },
     "getAutofillData": {
       "type": "object",
       "properties": {

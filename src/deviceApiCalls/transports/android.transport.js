@@ -1,6 +1,7 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
     CloseEmailProtectionTabCall,
+    GetAutofillConfigCall,
     GetAutofillDataCall,
     GetAvailableInputTypesCall,
     GetIncontextSignupDismissedAtCall,
@@ -42,39 +43,35 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config)
         }
 
-        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
-            window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
-            return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof StartEmailProtectionSignupCall) {
-            return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof CloseEmailProtectionTabCall) {
-            return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall) {
-            window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof GetAutofillDataCall) {
-            window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof StoreFormDataCall) {
-            return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
+        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+            deviceApiCall instanceof StartEmailProtectionSignupCall ||
+            deviceApiCall instanceof CloseEmailProtectionTabCall ||
+            deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall ||
+            deviceApiCall instanceof StoreFormDataCall ||
+            deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
+            deviceApiCall instanceof GetAutofillConfigCall ||
+            deviceApiCall instanceof GetAutofillDataCall) {
+            return listenForWebListener(deviceApiCall)
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method)
     }
+}
+
+async function listenForWebListener (request) {
+    const method = request.method
+    const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1)
+    const listener = window[listenerName]
+    // TODO fix this up to match the new pattern
+    const responseOnce = new Promise((resolve) => {
+        listener.addEventListener('message', (e) => {
+            resolve(e.data)
+        })
+    })
+    const message = JSON.stringify(request?.params) || ''
+    listener.postMessage(message)
+    const configJSON = await responseOnce
+    return JSON.parse(configJSON)
 }
 
 /**

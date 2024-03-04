@@ -37,6 +37,7 @@ interface Window {
 
     // Used in the Android app
     BrowserAutofill: {
+        getAutofillConfig(): string;
         getAutofillData(data: string): void;
         storeFormData(data: string): void;
         getIncontextSignupDismissedAt(data: string): void;

@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GetAutofillConfigResult",
+    "type": "object",
+    "description": "This describes return values for `getAutofillConfig`",
+    "additionalProperties": false,
+    "examples": [
+      {
+        "contentScope" : {
+            "features": {
+                "autofill": {
+                    "state": "enabled",
+                    "exceptions": []
+                }
+            },
+            "unprotectedTemporary": []
+        },
+        "userPreferences" : {
+            "debug": false,
+            "platform": {
+                "name": "android"
+            },
+            "features": {
+                "autofill": {
+                    "settings": {
+                        "featureToggles": {
+                            "inputType_credentials": true,
+                            "inputType_identities": false,
+                            "inputType_creditCards": false,
+                            "emailProtection": true,
+                            "password_generation": true,
+                            "credentials_saving": true,
+                            "inlineIcon_credentials": true,
+                            "emailProtection_incontext_signup": true
+                        }
+                    }
+                }
+            }
+        },
+        "availableInputTypes" : {
+            "credentials": {
+                "password": false,
+                "username": false
+            },
+            "email": false
+        },
+        "userUnprotectedDomains" : []
+      }
+    ],
+    "properties": {
+      "type": {
+        "description": "Required on Android + Windows devices, optional on iOS/macos",
+        "type": "string",
+        "const": "getAutofillConfigResponse"
+      },
+      "success": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contentScope": {
+            "type": "object"
+          },
+          "userUnprotectedDomains": {
+            "type": "array"
+          },
+          "userPreferences": {
+            "type": "object"
+          },
+          "availableInputTypes": {
+            "type": "object"
+          }
+        },
+        "required": ["contentScope", "userUnprotectedDomains", "userPreferences", "availableInputTypes"]
+      },
+      "error": {
+        "$ref": "./error.json"
+      }
+    }
+  }
+  

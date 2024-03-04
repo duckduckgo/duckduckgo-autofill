@@ -50,6 +50,12 @@ export interface API {
     paramsValidator?: AddDebugFlagParams;
     [k: string]: unknown;
   };
+  getAutofillConfig?: {
+    id?: "getAutofillConfigResponse";
+    paramsValidator?: GetAutofillConfigParams;
+    resultValidator?: GetAutofillConfigResult;
+    [k: string]: unknown;
+  };
   getAutofillData?: {
     id?: "getAutofillDataResponse";
     paramsValidator?: GetAutofillDataRequest;
@@ -241,6 +247,35 @@ export interface AddDebugFlagParams {
   flag: string;
 }
 /**
+ * This describes the argument given to `GetAutofillConfig`
+ */
+export interface GetAutofillConfigParams {}
+/**
+ * This describes return values for `getAutofillConfig`
+ */
+export interface GetAutofillConfigResult {
+  /**
+   * Required on Android + Windows devices, optional on iOS/macos
+   */
+  type?: "getAutofillConfigResponse";
+  success?: {
+    contentScope: {
+      [k: string]: unknown;
+    };
+    userUnprotectedDomains: unknown[];
+    userPreferences: {
+      [k: string]: unknown;
+    };
+    availableInputTypes: {
+      [k: string]: unknown;
+    };
+  };
+  error?: GenericError;
+}
+export interface GenericError {
+  message: string;
+}
+/**
  * This describes the argument given to `getAutofillData(data)`
  */
 export interface GetAutofillDataRequest {
@@ -310,9 +345,6 @@ export interface Credentials {
   };
   credentialsProvider?: "duckduckgo" | "bitwarden";
   providerStatus?: "locked" | "unlocked";
-}
-export interface GenericError {
-  message: string;
 }
 /**
  * Data that can be understood by @duckduckgo/content-scope-scripts

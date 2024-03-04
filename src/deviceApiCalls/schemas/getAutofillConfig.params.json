@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "GetAutofillConfigParams",
+    "type": "object",
+    "description": "This describes the argument given to `GetAutofillConfig`",
+    "additionalProperties": false,
+    "properties": {
+    },
+    "required": [
+    ]
+  }
+  
