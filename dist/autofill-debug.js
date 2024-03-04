@@ -6618,6 +6618,9 @@ module.exports={
   "clien.net": {
     "password-rules": "minlength: 5; required: lower, upper; required: digit;"
   },
+  "cogmembers.org": {
+    "password-rules": "minlength: 8; maxlength: 14; required: upper; required: digit, allowed: lower;"
+  },
   "collectivehealth.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
   },
@@ -6708,6 +6711,9 @@ module.exports={
   "eddservices.edd.ca.gov": {
     "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&*()];"
   },
+  "edistrict.kerala.gov.in": {
+    "password-rules": "minlength: 5; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$];"
+  },
   "empower-retirement.com": {
     "password-rules": "minlength: 8; maxlength: 16;"
   },
@@ -6761,6 +6767,9 @@ module.exports={
   },
   "gamestop.com": {
     "password-rules": "minlength: 8; maxlength: 225; required: lower; required: upper; required: digit; required: [!@#$%];"
+  },
+  "garmin.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
   },
   "getflywheel.com": {
     "password-rules": "minlength: 7; maxlength: 72;"
@@ -7307,6 +7316,9 @@ module.exports={
   },
   "target.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: lower, upper; required: digit, [-!\"#$%&'()*+,./:;=?@[\\^_`{|}~];"
+  },
+  "tdscpc.gov.in": {
+    "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [ &',;\"];"
   },
   "telekom-dienste.de": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [#$%&()*+,./<=>?@_{|}~];"
