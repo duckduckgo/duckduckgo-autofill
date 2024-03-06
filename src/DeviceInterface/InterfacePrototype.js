@@ -23,7 +23,6 @@ import {
     SendJSPixelCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
-import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 import {EmailProtection} from '../EmailProtection.js'
 
 /**

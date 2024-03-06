@@ -8360,7 +8360,6 @@ var _Settings = require("../Settings.js");
 var _index = require("../../packages/device-api/index.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
-var _validatorsZod = require("../deviceApiCalls/__generated__/validators.zod.js");
 var _EmailProtection = require("../EmailProtection.js");
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -9189,7 +9188,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":12,"../EmailProtection.js":32,"../Form/formatters.js":36,"../Form/matching.js":43,"../InputTypes/Credentials.js":45,"../PasswordGenerator.js":48,"../Scanner.js":49,"../Settings.js":50,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../config.js":64,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/__generated__/validators.zod.js":67,"../deviceApiCalls/transports/transports.js":72,"./initFormSubmissionsApi.js":30}],28:[function(require,module,exports){
+},{"../../packages/device-api/index.js":12,"../EmailProtection.js":32,"../Form/formatters.js":36,"../Form/matching.js":43,"../InputTypes/Credentials.js":45,"../PasswordGenerator.js":48,"../Scanner.js":49,"../Settings.js":50,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../config.js":64,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/transports/transports.js":72,"./initFormSubmissionsApi.js":30}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
