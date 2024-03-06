@@ -20,7 +20,7 @@
 										.prechecked{background-color:#fff; text-align: center; font-size: 16px;}
                                     </style>
                                     <div id="isgiftholder" style="pointer-events: none;">
-									<div id="isGiftCheck" aria-labelledby="isGiftCheckText" data-isgift="false" role="button" tabindex="0"><img id="nextgen-gift-check" src="https://subscribe.wired.com/circulation/wired/images/ng-radio-check-new.png" alt=""></div>
+									<div id="isGiftCheck" aria-labelledby="isGiftCheckText" data-isgift="false" role="button" tabindex="0"></div>
 									<div id="isGiftCheckText">This is a gift</div> <div class="nextgen-gift-icon"></div>
 									<div id="isGiftCheckinfocopy" class="gift-on">
 
@@ -33,64 +33,6 @@
 						<div id="wheregoing" class="sectionheadfont" tabindex="-1"><h2>Step 1. Location</h2></div>
 						<div class="space15"></div>
 						<div id="wheregoselect">
-							<script>
-								jQuery.fn.filterByText = function(textbox) {
-									return this.each(function() {
-										var select = this;
-										var options = [];
-										$(select).find('option').each(function() {
-											options.push( {
-												value: $(this).val(), text: $(this).text()
-											});
-										});
-										$(select).data('options', options);
-										$(textbox).bind('change keyup', function(e) {
-											if (e.keyCode == '40') {
-												$("#ship-country-selector").focus();
-											}
-											$(select).css("display", "inherit");
-											var options = $(select).empty().data('options');
-											var search = $.trim($(this).val());
-											var regex = new RegExp(search, "gi");
-											$.each(options, function(i) {
-												var option = options[i];
-												if (option.text.toUpperCase().startsWith(search.toUpperCase()) == true) {
-													$(select).append($('<option>').text(option.text).val(option.value));
-												}
-											});
-											$(select).attr("size", $(select).find('option').length);
-											if ($(select).find('option').length > 5) {
-												var size = (5 * 37) + 'px';
-												$(select).css("height", size);
-											} else {
-												var size = ($(select).find('option').length * 37) + 'px';
-												$(select).css("height", size);
-												$(select).css("padding", "0px");
-											}
-											if ($(select).find('option').length == 1) {
-												$(select).attr("size", 2);
-											}
-											if ($(select).find('option').length == 0) {
-												// $("#ship-country-selector").hide();
-											}
-											if (e.keyCode != '32' && e.keyCode != '8' && e.keyCode != '13' && e.keyCode != '9' ) {
-												if ($(select).find('option').length == 1) {
-													$(select).attr("size", 2);
-													$("#ship-country-selector-input").val($("#ship-country-selector > option:first").text());
-												}
-												if ($("#ship-country-selector").val() == '' || $("#ship-country-selector").val() == null ) {
-													$("#ship-country-selector-error").addClass("error");
-													$("#ship-country-selector-input").addClass("errorinput");
-													$("#ship-country-selector-input").focus();
-												} else {
-													$("#ship-country-selector-error").removeClass("error");
-													$("#ship-country-selector-input").removeClass("errorinput");
-												}
-											}
-										});
-									});
-								};
-							</script>
 
 							<style>
 								#nextgen-international-selector {display:none; width:100%;}
@@ -108,7 +50,7 @@
 
     								<span id="ship-country-selector-error" class="output-message">Select a location.</span>
     							</label>
-    							<select id="ship-country-selector" name="country_code" data-location="domestic" data-shipname="ship_country_code" data-billname="country_code" class="ui search selection dropdown" autocomplete="country-name" data-manual-scoring="addressCountryCode">
+    							<select id="ship-country-selector" name="country_code" data-location="domestic" data-shipname="ship_country_code" data-billname="country_code" class="ui search selection dropdown" autocomplete="country-name">
     								<option value="" style="color: #979797">Choose Location</option><option value="AF" style="color: rgb(151, 151, 151);">Afghanistan</option>
     								<option value="AL" style="color: rgb(151, 151, 151);">Albania</option>
     								<option value="DZ" style="color: rgb(151, 151, 151);">Algeria</option>
@@ -346,19 +288,19 @@
 <div class="space5"></div>
 <div style="width:100%">
 <ul class="body01 nosudo" style="height: 63px;">
-<li><span><img class="list-tick-icon" src="https://subscribe.wired.com/circulation/wired/images/ng-bullet-new.png" alt="tick"></span><p>Unlimited access to WIRED.com</p></li>
-<li><span><img class="list-tick-icon" src="https://subscribe.wired.com/circulation/wired/images/ng-bullet-new.png" alt="tick"></span><p>Print subscription</p></li>
-<li><span><img class="list-tick-icon" src="https://subscribe.wired.com/circulation/wired/images/ng-bullet-new.png" alt="tick"></span><p>Digital edition of the magazine</p></li>
+<li><span></span><p>Unlimited access to WIRED.com</p></li>
+<li><span></span><p>Print subscription</p></li>
+<li><span></span><p>Digital edition of the magazine</p></li>
 </ul>
 </div>
-<div class="panel-arrow-down"><img src="https://subscribe.wired.com/circulation/wired/images/wir-triangle-down-nextgen.png" alt=""></div>
+<div class="panel-arrow-down"></div>
 
 <div class="panel-image">
 
-<div class="auto-cover"><img class="update-cover" src="https://www.wired.com/wp-content/uploads/2014/08/cover_wired_190.jpg" alt="Wired Cover" width="75"></div>
+<div class="auto-cover"></div>
 
-<img class="panel-shot" src="https://subscribe.wired.com/circulation/wired/images/WIR_600X305_DIG-CONTROL.png" alt="Print + Digital Access"><img class="panel-shot-selected" src="https://subscribe.wired.com/circulation/wired/images/WIR_600X305_DIG-CONTROL-Selected.png" alt="Print + Digital Access"></div>
-<div class="panel-arrow-up"><img src="https://subscribe.wired.com/circulation/wired/images/wir-triangle-up-nextgen.png" alt=""></div>
+</div>
+<div class="panel-arrow-up"></div>
 </div>
 <div class="panel-image-spacer"></div>
 </div>
@@ -380,14 +322,14 @@ Digital Only Access
 <div class="space5"></div>
 <div style="width:100%">
 <ul class="body01 nosudo" style="height: 63px;">
-<li><span><img class="list-tick-icon" src="https://subscribe.wired.com/circulation/wired/images/ng-bullet-new.png" alt="tick"></span><p>Unlimited access to WIRED.com</p></li>
-<li><span><img class="list-tick-icon" src="https://subscribe.wired.com/circulation/wired/images/ng-bullet-new.png" alt="tick"></span><p>Digital edition of the magazine</p></li>
+<li><span></span><p>Unlimited access to WIRED.com</p></li>
+<li><span></span><p>Digital edition of the magazine</p></li>
 
 </ul>
 </div>
-<div class="panel-arrow-down"><img src="https://subscribe.wired.com/circulation/wired/images/wir-triangle-down-nextgen.png" alt=""></div>
-<div class="panel-image"><img class="panel-shot" style="margin-left:0px" src="https://subscribe.wired.com/circulation/wired/images/WIR_600X305_DIG-CONTROL.png" alt="Print + Digital Access"><img class="panel-shot-selected" style="margin-left:0px" src="https://subscribe.wired.com/circulation/wired/images/WIR_600X305_DIG-CONTROL-Selected.png" alt="Print + Digital Access"></div>
-<div class="panel-arrow-up"><img src="https://subscribe.wired.com/circulation/wired/images/wir-triangle-up-nextgen.png" alt=""></div>
+<div class="panel-arrow-down"></div>
+<div class="panel-image"></div>
+<div class="panel-arrow-up"></div>
 </div>
 <div class="panel-image-spacer"></div>
 </div>
@@ -505,8 +447,8 @@ Digital Only Access
 		</div>
                     <div class="nextgen-payment-links">
                         <div class="nextgen-payment-buttons nextgen-payment-buttons-selected" data-ngtab="1" role="button" tabindex="0">Credit Card</div>
-                        <div class="nextgen-payment-buttons" data-ngtab="2" role="button" tabindex="0"><img src="https://subscribe.wired.com/circulation/wired/images/Nextgen-Amazon-Pay.png" alt="Amazon pay" width="66px" height="13px" style="margin-top:5px;"></div>
-                        <div class="nextgen-payment-buttons" data-ngtab="3" role="button" tabindex="0"><img src="https://subscribe.wired.com/circulation/wired/images/Nextgen-Paypal-Pay.png" alt="Paypal pay" width="58px" height="15px"></div>
+                        <div class="nextgen-payment-buttons" data-ngtab="2" role="button" tabindex="0"></div>
+                        <div class="nextgen-payment-buttons" data-ngtab="3" role="button" tabindex="0"></div>
 
                     </div>
                     <div class="nextgen-payment-tab nextgen-payment-selected" id="nextgen-tab-1">
@@ -983,7 +925,7 @@ Digital Only Access
 
 
     <div id="ng_amazon_review"></div>
-	<div id="AmazonPayButton" role="button" tabindex="0" style="display: block;" data-treatment="{&quot;treatment&quot;:&quot;T6&quot;,&quot;abtestName&quot;:&quot;BUTTON_REBRANDING&quot;}"><img class="amazonpay-button-inner-image" style="cursor:pointer; max-height:90px;" alt="AmazonPay" id="OffAmazonPaymentsWidgets0" tabindex="0" src="https://d2ldlvi1yef00y.cloudfront.net/us/live/en_us/amazonpay/darkgray/x-large/button_T6.png" data-metric-tags="highres" srcset="https://d2ldlvi1yef00y.cloudfront.net/us/live/en_us/amazonpay/darkgray/x-large/button_T6_2x.png 2x"></div>
+	<div id="AmazonPayButton" role="button" tabindex="0" style="display: block;" data-treatment="{&quot;treatment&quot;:&quot;T6&quot;,&quot;abtestName&quot;:&quot;BUTTON_REBRANDING&quot;}"></div>
 
 	<div id="AmzPayRenew">
 
@@ -1007,10 +949,10 @@ Digital Only Access
 	<div id="amazon_submit" class="sectionbox" role="button" tabindex="0">
 		<div id="amazon_submit_mob">Subscribe</div>
             <div id="ssl">
-                <p><img id="sslimage" src="https://subscribe.wired.com/circulation/wired/images/NextGen-ssl-icon.png" alt="Padlock"> This transaction is secured with SSL encryption</p>
+                <p>This transaction is secured with SSL encryption</p>
             </div>
 	</div>
-	<div id="amazon_processing"><img src="/circulation/shared/images/omn_processing.gif" alt="processing"></div>
+	<div id="amazon_processing"></div>
 </div></div>
                     <div class="nextgen-payment-tab" id="nextgen-tab-3">
 
@@ -1328,7 +1270,7 @@ Digital Only Access
 			}
 </script>
 
-                    <div id="ppcheckoutexpbutton" role="button" tabindex="0" class="haspaypalon"><span id="paypaldecription">Check out with</span><img src="/circulation/architecturaldigest/images/paypal-checkout_ADA_Style.png" alt="paypal" aria-describedby="paypaldecription"></div></div>
+                    <div id="ppcheckoutexpbutton" role="button" tabindex="0" class="haspaypalon"><span id="paypaldecription">Check out with</span></div></div>
 
                 </div>
 				<script>
@@ -1360,7 +1302,7 @@ Digital Only Access
                     <input type="hidden" name="add_offer_term" id="impulseofferterm" data-ngimptype="bundle" value="167247_1" disabled="" style="display: none;">
 
 					<div id="isImpulseholder">
-						<div id="isImpulseCheck" aria-labelledby="isImpulseCheckText" data-isimpulse="false" role="button" tabindex="0" aria-pressed="false"><img id="nextgen-gift-impulse-check" src="https://subscribe.wired.com/circulation/wired/images/ng-radio-check-new.png" alt="" style="display: none;"></div>
+						<div id="isImpulseCheck" aria-labelledby="isImpulseCheckText" data-isimpulse="false" role="button" tabindex="0" aria-pressed="false"></div>
 						<div id="isImpulseCheckText">
 
 
@@ -3807,9 +3749,9 @@ jQuery("#placeorder.button").on("click.validatestate, keypress.validatestate", f
         </div>
 		<div class="space5"></div>
 		<div id="ssl">
-			<p><img id="sslimage" src="https://subscribe.wired.com/circulation/wired/images/ng-ssl-lock-new.png" alt="Padlock"> This transaction is secured with SSL encryption</p>
+			<p>This transaction is secured with SSL encryption</p>
 		</div>
 		</div>
-		<img id="btn_processing" style="display:none;" src="/circulation/shared/images/omn_processing.gif" alt="One moment please.">
+
 			<div class="space10"></div>
 		</div>

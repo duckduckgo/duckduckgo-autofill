@@ -2,9 +2,13 @@
 const genericTextField = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`
 
-const formInputsSelector = [
+const formInputsSelectorWithoutSelect = [
     genericTextField,
-    '[autocomplete=username]',
+    '[autocomplete=username]'
+]
+
+const formInputsSelector = [
+    ...formInputsSelectorWithoutSelect,
     'select'
 ]
 
@@ -249,6 +253,7 @@ const addressCountryCode = [
 ]
 
 const birthdayDay = `
+[autocomplete=bday-day i],
 [name=bday-day i],
 [name*=birthday_day i], [name*=birthday-day i],
 [name=date_of_birth_day i], [name=date-of-birth-day i],
@@ -256,6 +261,7 @@ const birthdayDay = `
 [aria-label="birthday" i][placeholder="day" i]`
 
 const birthdayMonth = `
+[autocomplete=bday-month i],
 [name=bday-month i],
 [name*=birthday_month i], [name*=birthday-month i],
 [name=date_of_birth_month i], [name=date-of-birth-month i],
@@ -263,6 +269,7 @@ const birthdayMonth = `
 select[name="mm" i]`
 
 const birthdayYear = `
+[autocomplete=bday-year i],
 [name=bday-year i],
 [name*=birthday_year i], [name*=birthday-year i],
 [name=date_of_birth_year i], [name=date-of-birth-year i],
@@ -273,6 +280,7 @@ const selectors = {
     // Generic
     genericTextField,
     submitButtonSelector,
+    formInputsSelectorWithoutSelect,
     formInputsSelector,
     safeUniversalSelector,
 

@@ -532,5 +532,6 @@
   { "html": "nytedu_login.html" },
   { "html": "usaa_login.html" },
   { "html": "wallstreetjournal_login.html", "expectedSubmitFalsePositives": 1 },
-  { "html": "flytap_login.html" }
+  { "html": "flytap_login.html" },
+  { "html": "single-select-form.html" }
 ]

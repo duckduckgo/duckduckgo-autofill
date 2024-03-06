@@ -6784,13 +6784,17 @@ class FormAnalyzer {
     this.evaluateElAttributes(this.form);
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-    this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
+    const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
+    for (let i = 0; i < formElements.length; i++) {
+      // Safety cutoff to avoid huge DOMs freezing the browser
+      if (i >= 200) break;
+      const element = formElements[i];
       // Check if element is not hidden. Note that we can't use offsetHeight
       // nor intersectionObserver, because the element could be outside the
       // viewport or its parent hidden
-      const displayValue = window.getComputedStyle(el, null).getPropertyValue('display');
-      if (displayValue !== 'none') this.evaluateElement(el);
-    });
+      const displayValue = window.getComputedStyle(element, null).getPropertyValue('display');
+      if (displayValue !== 'none') this.evaluateElement(element);
+    }
 
     // A form with many fields is unlikely to be a login form
     const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
@@ -8360,6 +8364,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
       selectors: {
         genericTextField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
         submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
+        formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
         formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
         safeUniversalSelector: '*:not(select):not(option):not(script):not(noscript):not(style):not(br)',
         emailAddress: 'input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]), input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]), input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=email], input[type=text][aria-label*=email i]:not([aria-label*=search i]), input:not([type])[aria-label*=email i]:not([aria-label*=search i]), input[name=username][type=email], input[autocomplete=username][type=email], input[autocomplete=username][placeholder*=email i], input[autocomplete=email],input[name="mail_tel" i],input[value=email i]',
@@ -8382,9 +8387,9 @@ const matchingConfiguration = exports.matchingConfiguration = {
         addressProvince: '[name=province i], [name=state i], [autocomplete=address-level1 i]',
         addressPostalCode: '[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i], [name*=postalCode i], [name*=zipcode i]',
         addressCountryCode: '[name=country i], [autocomplete=country i], [name*=countryCode i], [name*=country-code i], [name*=countryName i], [name*=country-name i],select.idms-address-country',
-        birthdayDay: '[name=bday-day i], [name*=birthday_day i], [name*=birthday-day i], [name=date_of_birth_day i], [name=date-of-birth-day i], [name^=birthdate_d i], [name^=birthdate-d i], [aria-label="birthday" i][placeholder="day" i]',
-        birthdayMonth: '[name=bday-month i], [name*=birthday_month i], [name*=birthday-month i], [name=date_of_birth_month i], [name=date-of-birth-month i], [name^=birthdate_m i], [name^=birthdate-m i], select[name="mm" i]',
-        birthdayYear: '[name=bday-year i], [name*=birthday_year i], [name*=birthday-year i], [name=date_of_birth_year i], [name=date-of-birth-year i], [name^=birthdate_y i], [name^=birthdate-y i], [aria-label="birthday" i][placeholder="year" i]'
+        birthdayDay: '[autocomplete=bday-day i], [name=bday-day i], [name*=birthday_day i], [name*=birthday-day i], [name=date_of_birth_day i], [name=date-of-birth-day i], [name^=birthdate_d i], [name^=birthdate-d i], [aria-label="birthday" i][placeholder="day" i]',
+        birthdayMonth: '[autocomplete=bday-month i], [name=bday-month i], [name*=birthday_month i], [name*=birthday-month i], [name=date_of_birth_month i], [name=date-of-birth-month i], [name^=birthdate_m i], [name^=birthdate-m i], select[name="mm" i]',
+        birthdayYear: '[autocomplete=bday-year i], [name=bday-year i], [name*=birthday_year i], [name*=birthday-year i], [name=date_of_birth_year i], [name=date-of-birth-year i], [name^=birthdate_y i], [name^=birthdate-y i], [aria-label="birthday" i][placeholder="year" i]'
       }
     },
     ddgMatcher: {
@@ -10204,10 +10209,10 @@ class DefaultScanner {
     if (this.device.globalConfig.isDDGDomain) {
       return this;
     }
-    if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelector'))) {
+    if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
       this.addInput(context);
     } else {
-      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'));
       if (inputs.length > this.options.maxInputsPerPage) {
         this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;

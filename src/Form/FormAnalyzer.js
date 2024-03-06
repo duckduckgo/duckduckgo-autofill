@@ -291,13 +291,18 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-        this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
+        const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'))
+        for (let i = 0; i < formElements.length; i++) {
+            // Safety cutoff to avoid huge DOMs freezing the browser
+            if (i >= 200) break
+
+            const element = formElements[i]
             // Check if element is not hidden. Note that we can't use offsetHeight
             // nor intersectionObserver, because the element could be outside the
             // viewport or its parent hidden
-            const displayValue = window.getComputedStyle(el, null).getPropertyValue('display')
-            if (displayValue !== 'none') this.evaluateElement(el)
-        })
+            const displayValue = window.getComputedStyle(element, null).getPropertyValue('display')
+            if (displayValue !== 'none') this.evaluateElement(element)
+        }
 
         // A form with many fields is unlikely to be a login form
         const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'))
