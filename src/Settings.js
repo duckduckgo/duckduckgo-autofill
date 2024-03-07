@@ -2,7 +2,6 @@ import {validate} from '../packages/device-api/index.js'
 import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
 import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
 import {autofillEnabled} from './autofill-utils.js'
-import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
 /**
  * Some Type helpers to prevent duplication
@@ -80,7 +79,7 @@ export class Settings {
     async getEnabled () {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration()
-            const enabled = autofillEnabled(runtimeConfig, processConfig)
+            const enabled = autofillEnabled(runtimeConfig)
             return enabled
         } catch (e) {
             // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)

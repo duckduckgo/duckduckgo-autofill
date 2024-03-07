@@ -5,7 +5,6 @@ import {
     sendAndWaitForAnswer,
     setValue,
     formatDuckAddress,
-    isAutofillEnabledFromProcessedConfig,
     notifyWebApp
 } from '../autofill-utils.js'
 import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
@@ -66,22 +65,6 @@ class ExtensionInterface extends InterfacePrototype {
 
         this.uiController = this.createUIController()
         await this.postInit()
-    }
-
-    async isEnabled () {
-        return new Promise(resolve => {
-            chrome?.runtime?.sendMessage(
-                {
-                    registeredTempAutofillContentScript: true,
-                    documentUrl: window.location.href
-                },
-                (response) => {
-                    if (response && 'site' in response) {
-                        resolve(isAutofillEnabledFromProcessedConfig(response))
-                    }
-                }
-            )
-        })
     }
 
     isDeviceSignedIn () {

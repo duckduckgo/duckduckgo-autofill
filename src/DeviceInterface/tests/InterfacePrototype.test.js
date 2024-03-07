@@ -16,7 +16,11 @@ describe('InterfacePrototype', function () {
         const mockedDoc = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
 
         const device = InterfacePrototype.default()
-        jest.spyOn(device, 'refreshSettings').mockImplementation(() => Promise.resolve())
+        jest.spyOn(device.settings, 'refresh').mockImplementation(() => Promise.resolve({
+            enabled: true,
+            featureToggles: {},
+            availableInputTypes: {}
+        }))
         await device.init()
 
         const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController)

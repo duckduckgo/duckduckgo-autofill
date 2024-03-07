@@ -1,6 +1,5 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import { formatDuckAddress, autofillEnabled } from '../autofill-utils.js'
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import { formatDuckAddress } from '../autofill-utils.js'
 import { defaultOptions } from '../UI/HTMLTooltip.js'
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
 import { OverlayUIController } from '../UI/controllers/OverlayUIController.js'
@@ -23,10 +22,6 @@ class AppleDeviceInterface extends InterfacePrototype {
     initialSetupDelayMs = 300
 
     thirdPartyProvider = new ThirdPartyProvider(this)
-
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig, processConfig)
-    }
 
     /**
      * The default functionality of this class is to operate as an 'overlay controller' -
