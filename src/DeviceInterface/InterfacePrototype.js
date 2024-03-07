@@ -261,7 +261,7 @@ class InterfacePrototype {
 
         this.alreadyInitialized = true
 
-        await this.refreshSettings()
+        await this.settings.refresh()
 
         this.addDeviceListeners()
 
@@ -271,7 +271,7 @@ class InterfacePrototype {
 
         // this is the temporary measure to support windows whilst we still have 'setupAutofill'
         // eventually all interfaces will use this
-        if (!this.isEnabledViaSettings()) {
+        if (!this.settings.enabled) {
             return
         }
 
@@ -283,40 +283,12 @@ class InterfacePrototype {
         }
     }
 
-    /**
-     * This is to aid the migration to all platforms using Settings.enabled.
-     *
-     * For now, Windows is the only platform that can be 'enabled' or 'disabled' via
-     * the new Settings - which is why in that interface it has `return this.settings.enabled`
-     *
-     * Whilst we wait for other platforms to catch up, we offer this default implementation
-     * of just returning true.
-     *
-     * @returns {boolean}
-     */
-    isEnabledViaSettings () {
-        return true
-    }
-
-    /**
-     * This is a fall-back situation for macOS since it was the only
-     * platform to support anything none-email based in the past.
-     *
-     * Once macOS fully supports 'getAvailableInputTypes' this can be removed
-     *
-     * @returns {Promise<void>}
-     */
-    async refreshSettings () {
-        await this.settings.refresh()
-    }
-
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig)
-    }
-
     async init () {
-        const isEnabled = await this.isEnabled()
-        if (!isEnabled) return
+        // bail very early if we can
+        const isEnabledInitiallyViaConfig = autofillEnabled(this.globalConfig)
+        if (!isEnabledInitiallyViaConfig) {
+            return
+        }
 
         const handler = async () => {
             if (document.readyState === 'complete') {
@@ -684,7 +656,7 @@ class InterfacePrototype {
                 this.storeUserData(data)
 
                 await this.setupAutofill()
-                await this.refreshSettings()
+                await this.settings.refresh()
                 await this.setupSettingsPage({shouldLog: true})
                 await this.postInit()
             } else {

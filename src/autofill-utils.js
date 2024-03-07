@@ -1,5 +1,6 @@
 import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
 import {constants} from './constants.js'
+import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -34,13 +35,17 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
 /**
  * @param {Pick<GlobalConfig, 'contentScope' | 'userUnprotectedDomains' | 'userPreferences'>} globalConfig
- * @param [processConfig]
  * @return {boolean}
  */
-const autofillEnabled = (globalConfig, processConfig) => {
+const autofillEnabled = (globalConfig) => {
     if (!globalConfig.contentScope) {
         // Return enabled for platforms that haven't implemented the config yet
         return true
+    }
+    // already processed? this handles an edgecase in the extension where the config is already processed
+    if ('site' in globalConfig.contentScope) {
+        const enabled = isAutofillEnabledFromProcessedConfig(globalConfig.contentScope)
+        return enabled
     }
 
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig

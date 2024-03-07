@@ -1,16 +1,11 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {autofillEnabled, sendAndWaitForAnswer} from '../autofill-utils.js'
+import {sendAndWaitForAnswer} from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
-import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
 import { InContextSignup } from '../InContextSignup.js'
 import { CloseEmailProtectionTabCall, ShowInContextEmailProtectionSignupPromptCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 class AndroidInterface extends InterfacePrototype {
     inContextSignup = new InContextSignup(this)
-
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig, processConfig)
-    }
 
     /**
      * @returns {Promise<string|undefined>}

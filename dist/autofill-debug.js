@@ -7507,15 +7507,11 @@ exports.AndroidInterface = void 0;
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 var _autofillUtils = require("../autofill-utils.js");
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 var _InContextSignup = require("../InContextSignup.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class AndroidInterface extends _InterfacePrototype.default {
   inContextSignup = new _InContextSignup.InContextSignup(this);
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
-  }
 
   /**
    * @returns {Promise<string|undefined>}
@@ -7649,7 +7645,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 }
 exports.AndroidInterface = AndroidInterface;
 
-},{"../InContextSignup.js":44,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"./InterfacePrototype.js":27,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],24:[function(require,module,exports){
+},{"../InContextSignup.js":44,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"./InterfacePrototype.js":27}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7658,7 +7654,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.AppleDeviceInterface = void 0;
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 var _autofillUtils = require("../autofill-utils.js");
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 var _OverlayUIController = require("../UI/controllers/OverlayUIController.js");
@@ -7680,9 +7675,6 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   /** @override */
   initialSetupDelayMs = 300;
   thirdPartyProvider = new _ThirdPartyProvider.ThirdPartyProvider(this);
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig, _appleUtils.processConfig);
-  }
 
   /**
    * The default functionality of this class is to operate as an 'overlay controller' -
@@ -7994,7 +7986,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 }
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":12,"../Form/matching.js":43,"../InContextSignup.js":44,"../ThirdPartyProvider.js":51,"../UI/HTMLTooltip.js":55,"../UI/controllers/HTMLTooltipUIController.js":56,"../UI/controllers/NativeUIController.js":57,"../UI/controllers/OverlayUIController.js":58,"../autofill-utils.js":62,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/additionalDeviceApiCalls.js":68,"./InterfacePrototype.js":27,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],25:[function(require,module,exports){
+},{"../../packages/device-api/index.js":12,"../Form/matching.js":43,"../InContextSignup.js":44,"../ThirdPartyProvider.js":51,"../UI/HTMLTooltip.js":55,"../UI/controllers/HTMLTooltipUIController.js":56,"../UI/controllers/NativeUIController.js":57,"../UI/controllers/OverlayUIController.js":58,"../autofill-utils.js":62,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/additionalDeviceApiCalls.js":68,"./InterfacePrototype.js":27}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8170,18 +8162,6 @@ class ExtensionInterface extends _InterfacePrototype.default {
     if (callback) await callback();
     this.uiController = this.createUIController();
     await this.postInit();
-  }
-  async isEnabled() {
-    return new Promise(resolve => {
-      chrome?.runtime?.sendMessage({
-        registeredTempAutofillContentScript: true,
-        documentUrl: window.location.href
-      }, response => {
-        if (response && 'site' in response) {
-          resolve((0, _autofillUtils.isAutofillEnabledFromProcessedConfig)(response));
-        }
-      });
-    });
   }
   isDeviceSignedIn() {
     return this.hasLocalAddresses;
@@ -8599,14 +8579,14 @@ class InterfacePrototype {
   async startInit() {
     if (this.isInitializationStarted) return;
     this.alreadyInitialized = true;
-    await this.refreshSettings();
+    await this.settings.refresh();
     this.addDeviceListeners();
     await this.setupAutofill();
     this.uiController = this.createUIController();
 
     // this is the temporary measure to support windows whilst we still have 'setupAutofill'
     // eventually all interfaces will use this
-    if (!this.isEnabledViaSettings()) {
+    if (!this.settings.enabled) {
       return;
     }
     await this.setupSettingsPage();
@@ -8615,39 +8595,12 @@ class InterfacePrototype {
       (0, _initFormSubmissionsApi.initFormSubmissionsApi)(this.scanner.forms, this.scanner.matching);
     }
   }
-
-  /**
-   * This is to aid the migration to all platforms using Settings.enabled.
-   *
-   * For now, Windows is the only platform that can be 'enabled' or 'disabled' via
-   * the new Settings - which is why in that interface it has `return this.settings.enabled`
-   *
-   * Whilst we wait for other platforms to catch up, we offer this default implementation
-   * of just returning true.
-   *
-   * @returns {boolean}
-   */
-  isEnabledViaSettings() {
-    return true;
-  }
-
-  /**
-   * This is a fall-back situation for macOS since it was the only
-   * platform to support anything none-email based in the past.
-   *
-   * Once macOS fully supports 'getAvailableInputTypes' this can be removed
-   *
-   * @returns {Promise<void>}
-   */
-  async refreshSettings() {
-    await this.settings.refresh();
-  }
-  async isEnabled() {
-    return (0, _autofillUtils.autofillEnabled)(this.globalConfig);
-  }
   async init() {
-    const isEnabled = await this.isEnabled();
-    if (!isEnabled) return;
+    // bail very early if we can
+    const isEnabledInitiallyViaConfig = (0, _autofillUtils.autofillEnabled)(this.globalConfig);
+    if (!isEnabledInitiallyViaConfig) {
+      return;
+    }
     const handler = async () => {
       if (document.readyState === 'complete') {
         window.removeEventListener('load', handler);
@@ -9022,7 +8975,7 @@ class InterfacePrototype {
         // This call doesn't send a response, so we can't know if it succeeded
         this.storeUserData(data);
         await this.setupAutofill();
-        await this.refreshSettings();
+        await this.settings.refresh();
         await this.setupSettingsPage({
           shouldLog: true
         });
@@ -9208,21 +9161,11 @@ class WindowsInterface extends _InterfacePrototype.default {
   ready = false;
   /** @type {AbortController|null} */
   _abortController = null;
-  /**
-   * @deprecated This runs too early, and will be removed eventually.
-   * @returns {Promise<boolean>}
-   */
-  async isEnabled() {
-    return true;
-  }
   async setupAutofill() {
     const loggedIn = await this._getIsLoggedIn();
     if (loggedIn) {
       await this.getAddresses();
     }
-  }
-  isEnabledViaSettings() {
-    return Boolean(this.settings.enabled);
   }
   postInit() {
     super.postInit();
@@ -14542,7 +14485,6 @@ var _index = require("../packages/device-api/index.js");
 var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js");
 var _validatorsZod = require("./deviceApiCalls/__generated__/validators.zod.js");
 var _autofillUtils = require("./autofill-utils.js");
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 /**
  * Some Type helpers to prevent duplication
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
@@ -14619,7 +14561,7 @@ class Settings {
   async getEnabled() {
     try {
       const runtimeConfig = await this._getRuntimeConfiguration();
-      const enabled = (0, _autofillUtils.autofillEnabled)(runtimeConfig, _appleUtils.processConfig);
+      const enabled = (0, _autofillUtils.autofillEnabled)(runtimeConfig);
       return enabled;
     } catch (e) {
       // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
@@ -14880,7 +14822,7 @@ class Settings {
 }
 exports.Settings = Settings;
 
-},{"../packages/device-api/index.js":12,"./autofill-utils.js":62,"./deviceApiCalls/__generated__/deviceApiCalls.js":66,"./deviceApiCalls/__generated__/validators.zod.js":67,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],51:[function(require,module,exports){
+},{"../packages/device-api/index.js":12,"./autofill-utils.js":62,"./deviceApiCalls/__generated__/deviceApiCalls.js":66,"./deviceApiCalls/__generated__/validators.zod.js":67}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16515,6 +16457,7 @@ exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
 var _matching = require("./Form/matching.js");
 var _constants = require("./constants.js");
+var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
 const SIGN_IN_MSG = exports.SIGN_IN_MSG = {
   signMeIn: true
 };
@@ -16549,14 +16492,18 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 
 /**
  * @param {Pick<GlobalConfig, 'contentScope' | 'userUnprotectedDomains' | 'userPreferences'>} globalConfig
- * @param [processConfig]
  * @return {boolean}
  */
 exports.sendAndWaitForAnswer = sendAndWaitForAnswer;
-const autofillEnabled = (globalConfig, processConfig) => {
+const autofillEnabled = globalConfig => {
   if (!globalConfig.contentScope) {
     // Return enabled for platforms that haven't implemented the config yet
     return true;
+  }
+  // already processed? this handles an edgecase in the extension where the config is already processed
+  if ('site' in globalConfig.contentScope) {
+    const enabled = isAutofillEnabledFromProcessedConfig(globalConfig.contentScope);
+    return enabled;
   }
   const {
     contentScope,
@@ -16565,7 +16512,7 @@ const autofillEnabled = (globalConfig, processConfig) => {
   } = globalConfig;
 
   // Check config on Apple platforms
-  const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+  const processedConfig = (0, _appleUtils.processConfig)(contentScope, userUnprotectedDomains, userPreferences);
   return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
 exports.autofillEnabled = autofillEnabled;
@@ -17100,7 +17047,7 @@ function getActiveElement() {
   return innerActiveElement;
 }
 
-},{"./Form/matching.js":43,"./constants.js":65}],63:[function(require,module,exports){
+},{"./Form/matching.js":43,"./constants.js":65,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],63:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -18167,7 +18114,7 @@ async function extensionSpecificRuntimeConfiguration(deviceApi) {
         }
       },
       // @ts-ignore
-      userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains
+      userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains || []
     }
   };
 }
