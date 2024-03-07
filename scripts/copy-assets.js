@@ -1,4 +1,3 @@
-
 const {readFileSync, writeFileSync, copyFileSync} = require('fs')
 const {join} = require('path')
 const cwd = join(__dirname, '..')
