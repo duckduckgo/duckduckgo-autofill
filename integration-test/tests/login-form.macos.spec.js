@@ -138,7 +138,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await login.assertFocusMessage()
             })
         })
-        test('by clicking a label', async ({page}) => {
+        test('by clicking a label @flaky', async ({page}) => {
             await testLoginPage(page, {clickLabel: true, pageType: 'loginWithText'})
         })
         test('selecting an item inside an overlay', async ({page}) => {
@@ -314,7 +314,7 @@ test.describe('Auto-fill a login form on macOS', () => {
     })
 
     test.describe('When the form is in a modal', () => {
-        test('Filling the form should not close the modal', async ({page}) => {
+        test('Filling the form should not close the modal @flaky', async ({page}) => {
             const login = await createLoginFormInModalPage(page)
             await login.openDialog()
             await login.fieldsContainIcons()

@@ -121,7 +121,7 @@ test.describe('macos', () => {
                 username: constants.fields.email.privateAddress0
             })
         })
-        test('using a private address, but then editing it', async ({page}) => {
+        test('using a private address, but then editing it @flaky', async ({page}) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 

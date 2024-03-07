@@ -14,7 +14,7 @@ import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 const test = testContext(base)
 
 test.describe('chrome extension', () => {
-    test('should autofill the selected email', async ({page}) => {
+    test('should autofill the selected email @flaky', async ({page}) => {
         const {personalAddress, privateAddress0, privateAddress1} = constants.fields.email
 
         forwardConsoleMessages(page)
@@ -68,7 +68,7 @@ test.describe('chrome extension', () => {
         ])
     })
 
-    test('should not close the modal when autofilling', async ({page}) => {
+    test('should not close the modal when autofilling @flaky', async ({page}) => {
         const {personalAddress} = constants.fields.email
 
         forwardConsoleMessages(page)

@@ -73,6 +73,18 @@ await emailPage.clickIntoInput()
 npm run test:integration
 ```
 
+## Running only flaky tests
+
+```shell
+npm run test:integration -- --grep '@flaky' 
+```
+
+## Running everything BUT flaky tests
+
+```shell
+npm run test:integration -- --grep-invert '@flaky' 
+```
+
 ---
 
 # Workflows
