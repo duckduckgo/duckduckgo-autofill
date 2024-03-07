@@ -285,7 +285,7 @@ class InterfacePrototype {
     async init () {
         // bail very early if we can
         const settings = await this.settings.refresh()
-        if (!settings.enabled) return;
+        if (!settings.enabled) return
 
         const handler = async () => {
             if (document.readyState === 'complete') {
