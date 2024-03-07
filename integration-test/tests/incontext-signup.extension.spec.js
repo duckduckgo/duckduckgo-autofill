@@ -62,7 +62,7 @@ test.describe('chrome extension', () => {
         await emailPage.assertExtensionPixelsCaptured(['incontext_show', 'incontext_dismiss_persisted'])
     })
 
-    test('should allow tooltip to be closed', async ({page}) => {
+    test('should allow tooltip to be closed @flaky', async ({page}) => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 

@@ -236,7 +236,7 @@ test.describe('Auto-fill a login form on macOS', () => {
     })
     test.describe('When availableInputTypes API is available', () => {
         test.describe('and I have saved credentials', () => {
-            test('I should be able to use my saved credentials by clicking', async ({page}) => {
+            test('I should be able to use my saved credentials by clicking @flaky', async ({page}) => {
                 await forwardConsoleMessages(page)
                 const {personalAddress, password} = await mocks(page)
 
