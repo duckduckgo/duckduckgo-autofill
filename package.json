@@ -30,7 +30,7 @@
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
     "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration",
-    "serve": "http-server -c-1 --port 3210 integration-test"
+    "serve": "http-server -c-1 --port 3210 ./"
   },
   "license": "Apache-2.0",
   "devDependencies": {
