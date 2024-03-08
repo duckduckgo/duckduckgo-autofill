@@ -47,6 +47,11 @@ export function testContext (test) {
                     dataDir,
                     launchOptions
                 )
+
+                // don't allow tests to run until the background page is ready
+                if (context.backgroundPages().length === 0) {
+                    await new Promise((resolve) => context.on('backgroundpage', resolve))
+                }
             }
             }
 
