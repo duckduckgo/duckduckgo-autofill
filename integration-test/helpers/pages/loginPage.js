@@ -80,15 +80,15 @@ export function loginPage (page, opts = {}) {
         async selectFirstCredential (username) {
             if (clickLabel) {
                 const label = page.locator('label[for="email"]')
-                await label.click()
+                await label.click({force: true})
             } else {
                 const email = page.locator('#email')
-                await email.click()
+                await email.click({force: true})
             }
 
             if (!overlay) {
                 const button = await page.waitForSelector(`button:has-text("${username}")`)
-                await button.click()
+                await button.click({force: true})
             }
         }
 
