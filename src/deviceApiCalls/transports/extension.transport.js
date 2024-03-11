@@ -82,7 +82,7 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
                 }
             },
             // @ts-ignore
-            userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains
+            userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains || []
         }
     }
 }

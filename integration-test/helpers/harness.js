@@ -25,7 +25,7 @@ export async function setupMockedDomain (page, domain) {
 }
 
 export async function withEmailProtectionExtensionSignedInAs (page, username) {
-    const [backgroundPage] = await page.context().backgroundPages()
+    const [backgroundPage] = page.context().backgroundPages()
     await backgroundPage.evaluateHandle((personalAddress) => {
         // eslint-disable-next-line no-undef
         globalThis.setEmailProtectionUserData(personalAddress)

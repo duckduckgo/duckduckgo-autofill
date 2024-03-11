@@ -22,23 +22,12 @@ export class WindowsInterface extends InterfacePrototype {
     ready = false
     /** @type {AbortController|null} */
     _abortController = null
-    /**
-     * @deprecated This runs too early, and will be removed eventually.
-     * @returns {Promise<boolean>}
-     */
-    async isEnabled () {
-        return true
-    }
 
     async setupAutofill () {
         const loggedIn = await this._getIsLoggedIn()
         if (loggedIn) {
             await this.getAddresses()
         }
-    }
-
-    isEnabledViaSettings () {
-        return Boolean(this.settings.enabled)
     }
 
     postInit () {

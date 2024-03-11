@@ -3,7 +3,6 @@ import {
     SIGN_IN_MSG,
     sendAndWaitForAnswer,
     formatDuckAddress,
-    autofillEnabled,
     notifyWebApp, getDaxBoundingBox
 } from '../autofill-utils.js'
 
@@ -16,14 +15,13 @@ import { createGlobalConfig } from '../config.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import {createTransport} from '../deviceApiCalls/transports/transports.js'
 import {Settings} from '../Settings.js'
-import {DeviceApi, validate} from '../../packages/device-api/index.js'
+import {DeviceApi} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall,
-    AskToUnlockProviderCall, SendJSPixelCall
+    SendJSPixelCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
-import {providerStatusUpdatedSchema} from '../deviceApiCalls/__generated__/validators.zod.js'
 import {EmailProtection} from '../EmailProtection.js'
 
 /**
@@ -51,6 +49,8 @@ class InterfacePrototype {
 
     /** @type {import("../InContextSignup.js").InContextSignup | null} */
     inContextSignup = null
+    /** @type {import("../ThirdPartyProvider.js").ThirdPartyProvider | null} */
+    thirdPartyProvider = null
 
     /** @type {{privateAddress: string, personalAddress: string}} */
     #addresses = {
@@ -260,7 +260,7 @@ class InterfacePrototype {
 
         this.alreadyInitialized = true
 
-        await this.refreshSettings()
+        await this.settings.refresh()
 
         this.addDeviceListeners()
 
@@ -270,7 +270,7 @@ class InterfacePrototype {
 
         // this is the temporary measure to support windows whilst we still have 'setupAutofill'
         // eventually all interfaces will use this
-        if (!this.isEnabledViaSettings()) {
+        if (!this.settings.enabled) {
             return
         }
 
@@ -282,40 +282,10 @@ class InterfacePrototype {
         }
     }
 
-    /**
-     * This is to aid the migration to all platforms using Settings.enabled.
-     *
-     * For now, Windows is the only platform that can be 'enabled' or 'disabled' via
-     * the new Settings - which is why in that interface it has `return this.settings.enabled`
-     *
-     * Whilst we wait for other platforms to catch up, we offer this default implementation
-     * of just returning true.
-     *
-     * @returns {boolean}
-     */
-    isEnabledViaSettings () {
-        return true
-    }
-
-    /**
-     * This is a fall-back situation for macOS since it was the only
-     * platform to support anything none-email based in the past.
-     *
-     * Once macOS fully supports 'getAvailableInputTypes' this can be removed
-     *
-     * @returns {Promise<void>}
-     */
-    async refreshSettings () {
-        await this.settings.refresh()
-    }
-
-    async isEnabled () {
-        return autofillEnabled(this.globalConfig)
-    }
-
     async init () {
-        const isEnabled = await this.isEnabled()
-        if (!isEnabled) return
+        // bail very early if we can
+        const settings = await this.settings.refresh()
+        if (!settings.enabled) return
 
         const handler = async () => {
             if (document.readyState === 'complete') {
@@ -522,7 +492,7 @@ class InterfacePrototype {
         const subtype = getSubtypeFromType(inputType)
 
         if (id === PROVIDER_LOCKED) {
-            return this.askToUnlockProvider()
+            return this.thirdPartyProvider?.askToUnlockProvider()
         }
 
         const matchingData = items.find(item => String(item.id) === id)
@@ -578,11 +548,6 @@ class InterfacePrototype {
             console.error(e)
             return this.removeTooltip()
         })
-    }
-
-    async askToUnlockProvider () {
-        const response = await this.deviceApi.request(new AskToUnlockProviderCall(null))
-        this.providerStatusUpdated(response)
     }
 
     isTooltipActive () {
@@ -688,7 +653,7 @@ class InterfacePrototype {
                 this.storeUserData(data)
 
                 await this.setupAutofill()
-                await this.refreshSettings()
+                await this.settings.refresh()
                 await this.setupSettingsPage({shouldLog: true})
                 await this.postInit()
             } else {
@@ -699,34 +664,6 @@ class InterfacePrototype {
     storeUserData (_data) {}
 
     addDeviceListeners () {}
-
-    /**
-     * Called by the native layer on all tabs when the provider status is updated
-     * @param {import("../deviceApiCalls/__generated__/validators-ts").ProviderStatusUpdated} data
-     */
-    providerStatusUpdated (data) {
-        try {
-            const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-            // Update local settings and data
-            this.settings.setAvailableInputTypes(availableInputTypes)
-            this.storeLocalCredentials(credentials)
-
-            // rerender the tooltip
-            this.uiController?.updateItems(credentials)
-            // If the tooltip is open on an autofill type that's not available, close it
-            const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
-            if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                this.removeTooltip()
-            }
-            // Redecorate fields according to the new types
-            this.scanner.forms.forEach(form => form.recategorizeAllInputs())
-        } catch (e) {
-            if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
-            }
-        }
-    }
 
     /** @param {() => void} _fn */
     addLogoutListener (_fn) {}
