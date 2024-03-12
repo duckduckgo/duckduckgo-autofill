@@ -34,8 +34,16 @@ class FormAnalyzer {
          */
         this.signals = []
 
+        // Analyse the input that was passed. This is pretty arbitrary, but historically it's been working nicely.
         this.evaluateElAttributes(input, 1, true)
-        form ? this.evaluateForm() : this.evaluatePage()
+
+        // If we have a meaningful container (a form), check that, otherwise check the whole page
+        if (form !== input) {
+            this.evaluateForm()
+        } else {
+            this.evaluatePage()
+        }
+
         return this
     }
 
@@ -205,6 +213,7 @@ class FormAnalyzer {
     }
 
     evaluatePage () {
+        this.evaluateUrl()
         this.evaluatePageTitle()
         this.evaluatePageHeadings()
         // Check for submit buttons
