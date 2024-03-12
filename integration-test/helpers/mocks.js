@@ -21,7 +21,7 @@ export const constants = {
         'loginWithFormInModal': `${privacyTestPagesPrefix}/autoprompt/2-form-in-modal.html`,
         'signupWithFormInModal': `${localPagesPrefix}/signup-in-modal.html`,
         'loginCovered': `${localPagesPrefix}/login-covered.html`,
-        'loginMultistep': `${localPagesPrefix}/login-multistep.html`,
+        'loginMultistep': `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
         'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`
     },
     fields: {
