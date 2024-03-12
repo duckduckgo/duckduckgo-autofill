@@ -10334,6 +10334,7 @@ class Form {
     if ((0, _autofillUtils.isEventWithinDax)(e, input)) return true;
     if (this.device.globalConfig.isWindows) return true;
     const subtype = (0, _matching.getInputSubtype)(input);
+    const variant = (0, _matching.getInputVariant)(input);
     const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
     if (this.device.globalConfig.isApp) {
       const mainType = (0, _matching.getInputMainType)(input);
@@ -10342,7 +10343,8 @@ class Form {
       // just showing in-context signup, or with other autofill items.
       const hasSavedDetails = this.device.settings.canAutofillType({
         mainType,
-        subtype
+        subtype,
+        variant
       }, null);
 
       // Don't open the tooltip on input focus whenever it'll only show in-context signup
@@ -10467,13 +10469,15 @@ class Form {
     if (!input) return;
     const mainType = (0, _matching.getInputMainType)(input);
     const subtype = (0, _matching.getInputSubtype)(input);
+    const variant = (0, _matching.getInputVariant)(input);
     await this.device.settings.populateDataIfNeeded({
       mainType,
       subtype
     });
     if (this.device.settings.canAutofillType({
       mainType,
-      subtype
+      subtype,
+      variant
     }, this.device.inContextSignup)) {
       // The timeout is needed in case the page shows a cookie prompt with a slight delay
       setTimeout(() => {
