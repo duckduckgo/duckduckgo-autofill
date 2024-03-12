@@ -533,5 +533,6 @@
   { "html": "usaa_login.html" },
   { "html": "wallstreetjournal_login.html", "expectedSubmitFalsePositives": 1 },
   { "html": "flytap_login.html" },
+  { "html": "twitter_access-settings.html" },
   { "html": "single-select-form.html" }
 ]
