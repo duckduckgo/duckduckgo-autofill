@@ -8,7 +8,7 @@ import {createWebkitMocks} from '../helpers/mocks.webkit.js'
 import {createAvailableInputTypes} from '../helpers/utils.js'
 import {testContext} from '../helpers/test-context.js'
 import {loginPage} from '../helpers/pages/loginPage.js'
-import {genericPage} from "../helpers/pages/genericPage.js";
+import {genericPage} from '../helpers/pages/genericPage.js'
 
 /**
  *  Tests for email autofill on android tooltipHandler
