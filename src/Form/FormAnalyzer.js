@@ -34,8 +34,16 @@ class FormAnalyzer {
          */
         this.signals = []
 
+        // Analyse the input that was passed. This is pretty arbitrary, but historically it's been working nicely.
         this.evaluateElAttributes(input, 1, true)
-        form ? this.evaluateForm() : this.evaluatePage()
+
+        // If we have a meaningful container (a form), check that, otherwise check the whole page
+        if (form !== input) {
+            this.evaluateForm()
+        } else {
+            this.evaluatePage()
+        }
+
         return this
     }
 
@@ -205,6 +213,7 @@ class FormAnalyzer {
     }
 
     evaluatePage () {
+        this.evaluateUrl()
         this.evaluatePageTitle()
         this.evaluatePageHeadings()
         // Check for submit buttons
@@ -291,13 +300,18 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-        this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
+        const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'))
+        for (let i = 0; i < formElements.length; i++) {
+            // Safety cutoff to avoid huge DOMs freezing the browser
+            if (i >= 200) break
+
+            const element = formElements[i]
             // Check if element is not hidden. Note that we can't use offsetHeight
             // nor intersectionObserver, because the element could be outside the
             // viewport or its parent hidden
-            const displayValue = window.getComputedStyle(el, null).getPropertyValue('display')
-            if (displayValue !== 'none') this.evaluateElement(el)
-        })
+            const displayValue = window.getComputedStyle(element, null).getPropertyValue('display')
+            if (displayValue !== 'none') this.evaluateElement(element)
+        }
 
         // A form with many fields is unlikely to be a login form
         const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'))

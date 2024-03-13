@@ -180,7 +180,8 @@ interface DDGMatcherInternal {
 }
 
 type RequiredCssSelectors =
-    "formInputsSelector"
+    "formInputsSelectorWithoutSelect"
+    | "formInputsSelector"
     | "submitButtonSelector"
     | "genericTextField"
     | "safeUniversalSelector"

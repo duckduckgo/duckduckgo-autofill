@@ -39,7 +39,7 @@
   { "html": "netflix_signup.html" },
   { "html": "apple_login.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "apple_login_spanish.html", "expectedSubmitFalseNegatives": 1 },
-  { "html": "apple_signup.html", "expectedFailures": ["birthday", "unknown"], "expectedSubmitFalseNegatives": 1 },
+  { "html": "apple_signup.html", "expectedFailures": ["birthday"], "expectedSubmitFalseNegatives": 1 },
   { "html": "apple_checkout.html", "expectedSubmitFalseNegatives": 2 },
   { "html": "homedepot_login.html" },
   { "html": "homedepot_signup.html" },
@@ -532,5 +532,7 @@
   { "html": "nytedu_login.html" },
   { "html": "usaa_login.html" },
   { "html": "wallstreetjournal_login.html", "expectedSubmitFalsePositives": 1 },
-  { "html": "flytap_login.html" }
+  { "html": "flytap_login.html" },
+  { "html": "twitter_access-settings.html" },
+  { "html": "single-select-form.html" }
 ]

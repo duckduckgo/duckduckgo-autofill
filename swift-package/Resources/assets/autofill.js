@@ -6168,6 +6168,7 @@ class Form {
     if ((0, _autofillUtils.isEventWithinDax)(e, input)) return true;
     if (this.device.globalConfig.isWindows) return true;
     const subtype = (0, _matching.getInputSubtype)(input);
+    const variant = (0, _matching.getInputVariant)(input);
     const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
     if (this.device.globalConfig.isApp) {
       const mainType = (0, _matching.getInputMainType)(input);
@@ -6176,7 +6177,8 @@ class Form {
       // just showing in-context signup, or with other autofill items.
       const hasSavedDetails = this.device.settings.canAutofillType({
         mainType,
-        subtype
+        subtype,
+        variant
       }, null);
 
       // Don't open the tooltip on input focus whenever it'll only show in-context signup
@@ -6301,13 +6303,15 @@ class Form {
     if (!input) return;
     const mainType = (0, _matching.getInputMainType)(input);
     const subtype = (0, _matching.getInputSubtype)(input);
+    const variant = (0, _matching.getInputVariant)(input);
     await this.device.settings.populateDataIfNeeded({
       mainType,
       subtype
     });
     if (this.device.settings.canAutofillType({
       mainType,
-      subtype
+      subtype,
+      variant
     }, this.device.inContextSignup)) {
       // The timeout is needed in case the page shows a cookie prompt with a slight delay
       setTimeout(() => {
@@ -6387,8 +6391,16 @@ class FormAnalyzer {
      * @type {string[]}
      */
     this.signals = [];
+
+    // Analyse the input that was passed. This is pretty arbitrary, but historically it's been working nicely.
     this.evaluateElAttributes(input, 1, true);
-    form ? this.evaluateForm() : this.evaluatePage();
+
+    // If we have a meaningful container (a form), check that, otherwise check the whole page
+    if (form !== input) {
+      this.evaluateForm();
+    } else {
+      this.evaluatePage();
+    }
     return this;
   }
 
@@ -6539,6 +6551,7 @@ class FormAnalyzer {
     });
   }
   evaluatePage() {
+    this.evaluateUrl();
     this.evaluatePageTitle();
     this.evaluatePageHeadings();
     // Check for submit buttons
@@ -6631,13 +6644,17 @@ class FormAnalyzer {
     this.evaluateElAttributes(this.form);
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-    this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector')).forEach(el => {
+    const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
+    for (let i = 0; i < formElements.length; i++) {
+      // Safety cutoff to avoid huge DOMs freezing the browser
+      if (i >= 200) break;
+      const element = formElements[i];
       // Check if element is not hidden. Note that we can't use offsetHeight
       // nor intersectionObserver, because the element could be outside the
       // viewport or its parent hidden
-      const displayValue = window.getComputedStyle(el, null).getPropertyValue('display');
-      if (displayValue !== 'none') this.evaluateElement(el);
-    });
+      const displayValue = window.getComputedStyle(element, null).getPropertyValue('display');
+      if (displayValue !== 'none') this.evaluateElement(element);
+    }
 
     // A form with many fields is unlikely to be a login form
     const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
@@ -7757,16 +7774,18 @@ const canBeInteractedWith = input => !input.readOnly && !input.disabled;
  */
 exports.canBeInteractedWith = canBeInteractedWith;
 const canBeAutofilled = async (input, device) => {
-  if (!canBeInteractedWith(input)) return false;
   const mainType = (0, _matching.getInputMainType)(input);
+  if (mainType === 'unknown') return false;
   const subtype = (0, _matching.getInputSubtype)(input);
+  const variant = (0, _matching.getInputVariant)(input);
   await device.settings.populateDataIfNeeded({
     mainType,
     subtype
   });
   const canAutofill = device.settings.canAutofillType({
     mainType,
-    subtype
+    subtype,
+    variant
   }, device.inContextSignup);
   return Boolean(canAutofill);
 };
@@ -7818,16 +7837,11 @@ const inputTypeConfig = {
       } = _ref5;
       const subtype = (0, _matching.getInputSubtype)(input);
       const variant = (0, _matching.getInputVariant)(input);
-
-      // Check first for password generation and the password.new scoring
-      if (device.settings.featureToggles.password_generation) {
-        if (subtype === 'password' && variant === 'new') {
-          return canBeInteractedWith(input);
-        }
-      }
-
-      // if we are on a 'login' page, check if we have data to autofill the field
-      if (isLogin || isHybrid || variant === 'current') {
+      if (subtype === 'password' && variant === 'new' ||
+      // New passord field
+      isLogin || isHybrid || variant === 'current' // Current password field
+      ) {
+        // Check feature flags and available input types
         return canBeAutofilled(input, device);
       }
       return false;
@@ -8207,6 +8221,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
       selectors: {
         genericTextField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
         submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
+        formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
         formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
         safeUniversalSelector: '*:not(select):not(option):not(script):not(noscript):not(style):not(br)',
         emailAddress: 'input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]), input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]), input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=email], input[type=text][aria-label*=email i]:not([aria-label*=search i]), input:not([type])[aria-label*=email i]:not([aria-label*=search i]), input[name=username][type=email], input[autocomplete=username][type=email], input[autocomplete=username][placeholder*=email i], input[autocomplete=email],input[name="mail_tel" i],input[value=email i]',
@@ -8229,9 +8244,9 @@ const matchingConfiguration = exports.matchingConfiguration = {
         addressProvince: '[name=province i], [name=state i], [autocomplete=address-level1 i]',
         addressPostalCode: '[name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i], [name*=postalCode i], [name*=zipcode i]',
         addressCountryCode: '[name=country i], [autocomplete=country i], [name*=countryCode i], [name*=country-code i], [name*=countryName i], [name*=country-name i],select.idms-address-country',
-        birthdayDay: '[name=bday-day i], [name*=birthday_day i], [name*=birthday-day i], [name=date_of_birth_day i], [name=date-of-birth-day i], [name^=birthdate_d i], [name^=birthdate-d i], [aria-label="birthday" i][placeholder="day" i]',
-        birthdayMonth: '[name=bday-month i], [name*=birthday_month i], [name*=birthday-month i], [name=date_of_birth_month i], [name=date-of-birth-month i], [name^=birthdate_m i], [name^=birthdate-m i], select[name="mm" i]',
-        birthdayYear: '[name=bday-year i], [name*=birthday_year i], [name*=birthday-year i], [name=date_of_birth_year i], [name=date-of-birth-year i], [name^=birthdate_y i], [name^=birthdate-y i], [aria-label="birthday" i][placeholder="year" i]'
+        birthdayDay: '[autocomplete=bday-day i], [name=bday-day i], [name*=birthday_day i], [name*=birthday-day i], [name=date_of_birth_day i], [name=date-of-birth-day i], [name^=birthdate_d i], [name^=birthdate-d i], [aria-label="birthday" i][placeholder="day" i]',
+        birthdayMonth: '[autocomplete=bday-month i], [name=bday-month i], [name*=birthday_month i], [name*=birthday-month i], [name=date_of_birth_month i], [name=date-of-birth-month i], [name^=birthdate_m i], [name^=birthdate-m i], select[name="mm" i]',
+        birthdayYear: '[autocomplete=bday-year i], [name=bday-year i], [name*=birthday_year i], [name*=birthday-year i], [name=date_of_birth_year i], [name=date-of-birth-year i], [name^=birthdate_y i], [name^=birthdate-y i], [aria-label="birthday" i][placeholder="year" i]'
       }
     },
     ddgMatcher: {
@@ -8345,7 +8360,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           match: /sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|mfa-submit-form|unlock|logged in as|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl|inloggen|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord/iu
         },
         signupRegex: {
-          match: /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite|nieuwsbrief|aanmaken|profiel|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord/iu
+          match: /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite|nieuwsbrief|aanmaken|profiel|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord/iu
         },
         conservativeSignupRegex: {
           match: /sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)|registreren|eigenschappen|profiel|bijwerken|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera/iu
@@ -10051,10 +10066,10 @@ class DefaultScanner {
     if (this.device.globalConfig.isDDGDomain) {
       return this;
     }
-    if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelector'))) {
+    if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
       this.addInput(context);
     } else {
-      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'));
       if (inputs.length > this.options.maxInputsPerPage) {
         this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
@@ -10532,6 +10547,7 @@ class Settings {
    * @param {{
    *   mainType: SupportedMainTypes
    *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+   *   variant: import('./Form/matching.js').SupportedVariants | ""
    * }} types
    * @param {import("./InContextSignup.js").InContextSignup?} inContextSignup
    * @returns {boolean}
@@ -10539,7 +10555,8 @@ class Settings {
   canAutofillType(_ref3, inContextSignup) {
     let {
       mainType,
-      subtype
+      subtype,
+      variant
     } = _ref3;
     if (this.isTypeUnavailable({
       mainType,
@@ -10552,6 +10569,11 @@ class Settings {
       return true;
     }
     if (inContextSignup?.isAvailable(subtype)) {
+      return true;
+    }
+
+    // Check for password generation and the password.new scoring
+    if (subtype === 'password' && variant === 'new' && this.featureToggles.password_generation) {
       return true;
     }
     if (subtype === 'fullName') {

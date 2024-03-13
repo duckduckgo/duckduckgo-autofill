@@ -150,10 +150,10 @@ class DefaultScanner {
             return this
         }
 
-        if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelector'))) {
+        if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
             this.addInput(context)
         } else {
-            const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelector'))
+            const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'))
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context)
                 return this

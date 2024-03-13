@@ -711,6 +711,7 @@ class Form {
         if (this.device.globalConfig.isWindows) return true
 
         const subtype = getInputSubtype(input)
+        const variant = getInputVariant(input)
         const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype)
 
         if (this.device.globalConfig.isApp) {
@@ -718,7 +719,7 @@ class Form {
             // Check if, without in-context signup (passed as `null` below),
             // we'd have any other items to show. This lets us know if we're
             // just showing in-context signup, or with other autofill items.
-            const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype }, null)
+            const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype, variant }, null)
 
             // Don't open the tooltip on input focus whenever it'll only show in-context signup
             if (!hasSavedDetails && isIncontextSignupAvailable) return false
@@ -863,8 +864,9 @@ class Form {
 
         const mainType = getInputMainType(input)
         const subtype = getInputSubtype(input)
+        const variant = getInputVariant(input)
         await this.device.settings.populateDataIfNeeded({ mainType, subtype })
-        if (this.device.settings.canAutofillType({ mainType, subtype }, this.device.inContextSignup)) {
+        if (this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup)) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {
                 // safeExecute checks that the element is on screen according to IntersectionObserver

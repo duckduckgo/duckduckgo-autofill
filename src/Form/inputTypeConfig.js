@@ -78,12 +78,13 @@ const canBeInteractedWith = (input) => !input.readOnly && !input.disabled
  * @returns {Promise<boolean>}
  */
 const canBeAutofilled = async (input, device) => {
-    if (!canBeInteractedWith(input)) return false
-
     const mainType = getInputMainType(input)
+    if (mainType === 'unknown') return false
+
     const subtype = getInputSubtype(input)
+    const variant = getInputVariant(input)
     await device.settings.populateDataIfNeeded({ mainType, subtype })
-    const canAutofill = device.settings.canAutofillType({ mainType, subtype }, device.inContextSignup)
+    const canAutofill = device.settings.canAutofillType({ mainType, subtype, variant }, device.inContextSignup)
     return Boolean(canAutofill)
 }
 
@@ -129,15 +130,11 @@ const inputTypeConfig = {
             const subtype = getInputSubtype(input)
             const variant = getInputVariant(input)
 
-            // Check first for password generation and the password.new scoring
-            if (device.settings.featureToggles.password_generation) {
-                if (subtype === 'password' && variant === 'new') {
-                    return canBeInteractedWith(input)
-                }
-            }
-
-            // if we are on a 'login' page, check if we have data to autofill the field
-            if (isLogin || isHybrid || variant === 'current') {
+            if (
+                (subtype === 'password' && variant === 'new') || // New passord field
+                (isLogin || isHybrid || variant === 'current') // Current password field
+            ) {
+                // Check feature flags and available input types
                 return canBeAutofilled(input, device)
             }
 

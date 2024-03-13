@@ -36,7 +36,7 @@ describe('Settings', () => {
                     })
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password' }, null)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(true)
                 }
             ],
             [
@@ -47,7 +47,7 @@ describe('Settings', () => {
                     })
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(false)
                 }
             ],
             [
@@ -58,7 +58,7 @@ describe('Settings', () => {
                     })
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(false)
                 }
             ],
             [
@@ -69,7 +69,7 @@ describe('Settings', () => {
                     })
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName' }, null)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName', variant: '' }, null)).toBe(true)
                 }
             ],
             [
@@ -80,7 +80,7 @@ describe('Settings', () => {
                     })
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName', variant: '' }, null)).toBe(false)
                 }
             ],
             [
@@ -91,7 +91,7 @@ describe('Settings', () => {
                     })
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress' }, null)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress', variant: '' }, null)).toBe(true)
                 }
             ],
             [
@@ -102,7 +102,7 @@ describe('Settings', () => {
                 (settings) => {
                     // @ts-ignore
                     inContextSignupMock.isAvailable.mockReturnValue(true)
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress' }, inContextSignupMock)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress', variant: '' }, inContextSignupMock)).toBe(true)
                 }
             ]
         ]

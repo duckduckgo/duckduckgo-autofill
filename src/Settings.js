@@ -208,11 +208,12 @@ export class Settings {
      * @param {{
      *   mainType: SupportedMainTypes
      *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+     *   variant: import('./Form/matching.js').SupportedVariants | ""
      * }} types
      * @param {import("./InContextSignup.js").InContextSignup?} inContextSignup
      * @returns {boolean}
      */
-    canAutofillType ({mainType, subtype}, inContextSignup) {
+    canAutofillType ({mainType, subtype, variant}, inContextSignup) {
         if (this.isTypeUnavailable({ mainType, subtype })) return false
 
         // If it's an email field and Email Protection is enabled, return true regardless of other options
@@ -222,6 +223,11 @@ export class Settings {
         }
 
         if (inContextSignup?.isAvailable(subtype)) {
+            return true
+        }
+
+        // Check for password generation and the password.new scoring
+        if (subtype === 'password' && variant === 'new' && this.featureToggles.password_generation) {
             return true
         }
 
