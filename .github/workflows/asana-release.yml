@@ -75,7 +75,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       # --- Effect ---
       - name: Create PR for Android
-        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
+        uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
         id: create-pr
         with:
           path: android/
@@ -127,7 +127,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       # --- Effect ---
       - name: Create PR for BSK
-        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
+        uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
         id: create-pr
         with:
           path: bsk/
@@ -178,7 +178,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       # --- Effect ---
       - name: Create PR for iOS
-        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
+        uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
         id: create-pr
         with:
           path: ios/
@@ -229,7 +229,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       # --- Effect ---
       - name: Create PR for macOS
-        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
+        uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
         id: create-pr
         with:
           path: macos/
@@ -282,7 +282,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       # --- Effect ---
       - name: Create PR for Extensions
-        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
+        uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
         id: create-pr
         with:
           path: extensions/
@@ -336,7 +336,7 @@ jobs:
           echo "$DELIMITER" >> $GITHUB_ENV
       # --- Effect ---
       - name: Create PR for Windows
-        uses: peter-evans/create-pull-request@88bf0de51c7487d91e1abbb4899332e602c58bbf
+        uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
         id: create-pr
         with:
           path: windows/
