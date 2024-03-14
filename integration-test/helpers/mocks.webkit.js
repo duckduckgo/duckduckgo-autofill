@@ -247,8 +247,7 @@ export function createWebkitMocks (platform = 'macos') {
                             }
                         }
                     }
-                },
-                availableInputTypes: constants.availableInputTypes
+                }
             }
         },
         storeFormData: null,

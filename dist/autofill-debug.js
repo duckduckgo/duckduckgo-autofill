@@ -14602,6 +14602,11 @@ class Settings {
     if (this._runtimeConfiguration) return this._runtimeConfiguration;
     const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
     this._runtimeConfiguration = runtimeConfig;
+
+    // If the platform sends availableInputTypes here, store them
+    if (runtimeConfig.availableInputTypes) {
+      this.setAvailableInputTypes(runtimeConfig.availableInputTypes);
+    }
     return this._runtimeConfiguration;
   }
 
@@ -14616,6 +14621,11 @@ class Settings {
       // This info is not needed in the topFrame, so we avoid calling the native app
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
+      }
+
+      // TODO: are we ok with this?
+      if (this._availableInputTypes) {
+        return this.availableInputTypes;
       }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
@@ -17564,10 +17574,6 @@ const userPreferencesSchema = exports.userPreferencesSchema = _zod.z.object({
     settings: _zod.z.record(_zod.z.unknown())
   }))
 });
-const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = _zod.z.object({
-  username: _zod.z.string().optional(),
-  password: _zod.z.string().optional()
-});
 const availableInputTypesSchema = exports.availableInputTypesSchema = _zod.z.object({
   credentials: _zod.z.object({
     username: _zod.z.boolean().optional(),
@@ -17599,6 +17605,10 @@ const availableInputTypesSchema = exports.availableInputTypesSchema = _zod.z.obj
   email: _zod.z.boolean().optional(),
   credentialsProviderStatus: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]).optional()
 });
+const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = _zod.z.object({
+  username: _zod.z.string().optional(),
+  password: _zod.z.string().optional()
+});
 const availableInputTypes1Schema = exports.availableInputTypes1Schema = _zod.z.object({
   credentials: _zod.z.object({
     username: _zod.z.boolean().optional(),
@@ -17629,6 +17639,11 @@ const availableInputTypes1Schema = exports.availableInputTypes1Schema = _zod.z.o
   }).optional(),
   email: _zod.z.boolean().optional(),
   credentialsProviderStatus: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]).optional()
+});
+const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = _zod.z.object({
+  status: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]),
+  credentials: _zod.z.array(credentialsSchema),
+  availableInputTypes: availableInputTypesSchema
 });
 const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = _zod.z.object({
   inputType_credentials: _zod.z.boolean().optional(),
@@ -17664,7 +17679,7 @@ const storeFormDataSchema = exports.storeFormDataSchema = _zod.z.object({
 });
 const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = _zod.z.object({
   type: _zod.z.literal("getAvailableInputTypesResponse").optional(),
-  success: availableInputTypesSchema,
+  success: availableInputTypes1Schema,
   error: genericErrorSchema.optional()
 });
 const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = _zod.z.object({
@@ -17685,6 +17700,16 @@ const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultS
     username: _zod.z.string(),
     password: _zod.z.string().optional()
   }).optional(),
+  error: genericErrorSchema.optional()
+});
+const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = _zod.z.object({
+  type: _zod.z.literal("askToUnlockProviderResponse").optional(),
+  success: providerStatusUpdatedSchema,
+  error: genericErrorSchema.optional()
+});
+const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = _zod.z.object({
+  type: _zod.z.literal("checkCredentialsProviderStatusResponse").optional(),
+  success: providerStatusUpdatedSchema,
   error: genericErrorSchema.optional()
 });
 const autofillSettingsSchema = exports.autofillSettingsSchema = _zod.z.object({
@@ -17727,26 +17752,12 @@ const emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtection
 const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = _zod.z.object({
   contentScope: contentScopeSchema,
   userUnprotectedDomains: _zod.z.array(_zod.z.string()),
-  userPreferences: userPreferencesSchema
-});
-const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = _zod.z.object({
-  status: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]),
-  credentials: _zod.z.array(credentialsSchema),
-  availableInputTypes: availableInputTypes1Schema
+  userPreferences: userPreferencesSchema,
+  availableInputTypes: availableInputTypesSchema.optional()
 });
 const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = _zod.z.object({
   type: _zod.z.literal("getRuntimeConfigurationResponse").optional(),
   success: runtimeConfigurationSchema.optional(),
-  error: genericErrorSchema.optional()
-});
-const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = _zod.z.object({
-  type: _zod.z.literal("askToUnlockProviderResponse").optional(),
-  success: providerStatusUpdatedSchema,
-  error: genericErrorSchema.optional()
-});
-const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = _zod.z.object({
-  type: _zod.z.literal("checkCredentialsProviderStatusResponse").optional(),
-  success: providerStatusUpdatedSchema,
   error: genericErrorSchema.optional()
 });
 const apiSchema = exports.apiSchema = _zod.z.object({
@@ -17905,104 +17916,97 @@ class AndroidTransport extends _index.DeviceApiTransport {
    * @returns {Promise<any>}
    */
   async send(deviceApiCall) {
-    if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
-      return androidSpecificRuntimeConfiguration(this.config);
-    }
     if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
       return androidSpecificAvailableInputTypes(this.config);
     }
-    if (deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall) {
-      window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params));
-      return waitForResponse(deviceApiCall.id, this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall) {
-      return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
-      return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall) {
-      return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall) {
-      window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
-      return waitForResponse(deviceApiCall.id, this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
-      window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params));
-      return waitForResponse(deviceApiCall.id, this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall) {
-      return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
+    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall || deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall || deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall || deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall || deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
+      return listenForWebListener(deviceApiCall);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
   }
 }
-
-/**
- * @param {string} expectedResponse - the name/id of the response
- * @param {GlobalConfig} config
- * @returns {Promise<*>}
- */
 exports.AndroidTransport = AndroidTransport;
-function waitForResponse(expectedResponse, config) {
-  return new Promise(resolve => {
-    const handler = e => {
-      if (!config.isDDGTestMode) {
-        if (e.origin !== '') {
-          return;
-        }
-      }
-      if (!e.data) {
-        return;
-      }
-      if (typeof e.data !== 'string') {
-        if (config.isDDGTestMode) {
-          console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed');
-        }
-        return;
-      }
-      try {
-        let data = JSON.parse(e.data);
-        if (data.type === expectedResponse) {
-          window.removeEventListener('message', handler);
-          return resolve(data);
-        }
-        if (config.isDDGTestMode) {
-          console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data));
-        }
-      } catch (e) {
-        window.removeEventListener('message', handler);
-        if (config.isDDGTestMode) {
-          console.log('❌ Could not JSON.parse the response');
-        }
-      }
-    };
-    window.addEventListener('message', handler);
+async function listenForWebListener(request) {
+  const method = request.method;
+  const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1);
+  const listener = window[listenerName];
+  // TODO fix this up to match the new pattern
+  const responseOnce = new Promise(resolve => {
+    listener.addEventListener('message', e => {
+      resolve(e.data);
+    });
   });
+  const message = JSON.stringify(request?.params) || '';
+  listener.postMessage(message);
+  const configJSON = await responseOnce;
+  return JSON.parse(configJSON);
 }
 
-/**
- * @param {GlobalConfig} globalConfig
- * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
- */
-function androidSpecificRuntimeConfiguration(globalConfig) {
-  if (!globalConfig.userPreferences) {
-    throw new Error('globalConfig.userPreferences not supported yet on Android');
-  }
-  return {
-    success: {
-      // @ts-ignore
-      contentScope: globalConfig.contentScope,
-      // @ts-ignore
-      userPreferences: globalConfig.userPreferences,
-      // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-      // @ts-ignore
-      availableInputTypes: globalConfig.availableInputTypes
-    }
-  };
-}
+// /**
+//  * @param {string} expectedResponse - the name/id of the response
+//  * @param {GlobalConfig} config
+//  * @returns {Promise<*>}
+//  */
+// function waitForResponse (expectedResponse, config) {
+//     return new Promise((resolve) => {
+//         const handler = e => {
+//             if (!config.isDDGTestMode) {
+//                 if (e.origin !== '') {
+//                     return
+//                 }
+//             }
+//             if (!e.data) {
+//                 return
+//             }
+//             if (typeof e.data !== 'string') {
+//                 if (config.isDDGTestMode) {
+//                     console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
+//                 }
+//                 return
+//             }
+//             try {
+//                 let data = JSON.parse(e.data)
+//                 if (data.type === expectedResponse) {
+//                     window.removeEventListener('message', handler)
+//                     return resolve(data)
+//                 }
+//                 if (config.isDDGTestMode) {
+//                     console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
+//                 }
+//             } catch (e) {
+//                 window.removeEventListener('message', handler)
+//                 if (config.isDDGTestMode) {
+//                     console.log('❌ Could not JSON.parse the response')
+//                 }
+//             }
+//         }
+//         window.addEventListener('message', handler)
+//     })
+// }
+
+// /**
+//  * @param {GlobalConfig} globalConfig
+//  * @returns {Promise<{success: import('../__generated__/validators-ts').RuntimeConfiguration}>}
+//  */
+// function androidSpecificRuntimeConfiguration (globalConfig, deviceApiCall) {
+//     return listenForWebListener(new GetAutofillConfigCall({}))
+//
+//     if (!globalConfig.userPreferences) {
+//         throw new Error('globalConfig.userPreferences not supported yet on Android')
+//     }
+//     return {
+//         success: {
+//             // @ts-ignore
+//             contentScope: globalConfig.contentScope,
+//             // @ts-ignore
+//             userPreferences: globalConfig.userPreferences,
+//             // @ts-ignore
+//             userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+//             // @ts-ignore
+//             availableInputTypes: globalConfig.availableInputTypes
+//         }
+//     }
+// }
 
 /**
  * @param {GlobalConfig} globalConfig

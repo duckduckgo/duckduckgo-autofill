@@ -10436,6 +10436,11 @@ class Settings {
     if (this._runtimeConfiguration) return this._runtimeConfiguration;
     const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
     this._runtimeConfiguration = runtimeConfig;
+
+    // If the platform sends availableInputTypes here, store them
+    if (runtimeConfig.availableInputTypes) {
+      this.setAvailableInputTypes(runtimeConfig.availableInputTypes);
+    }
     return this._runtimeConfiguration;
   }
 
@@ -10450,6 +10455,11 @@ class Settings {
       // This info is not needed in the topFrame, so we avoid calling the native app
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
+      }
+
+      // TODO: are we ok with this?
+      if (this._availableInputTypes) {
+        return this.availableInputTypes;
       }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
@@ -13305,9 +13315,10 @@ const credentialsSchema = exports.credentialsSchema = null;
 const genericErrorSchema = exports.genericErrorSchema = null;
 const contentScopeSchema = exports.contentScopeSchema = null;
 const userPreferencesSchema = exports.userPreferencesSchema = null;
-const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = null;
 const availableInputTypesSchema = exports.availableInputTypesSchema = null;
+const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = null;
 const availableInputTypes1Schema = exports.availableInputTypes1Schema = null;
+const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
 const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = null;
 const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = null;
 const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = null;
@@ -13315,6 +13326,8 @@ const storeFormDataSchema = exports.storeFormDataSchema = null;
 const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = null;
 const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = null;
 const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = null;
+const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = null;
+const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = null;
 const autofillSettingsSchema = exports.autofillSettingsSchema = null;
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = null;
 const emailProtectionGetUserDataResultSchema = exports.emailProtectionGetUserDataResultSchema = null;
@@ -13322,10 +13335,7 @@ const emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetCap
 const emailProtectionGetAddressesResultSchema = exports.emailProtectionGetAddressesResultSchema = null;
 const emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = null;
 const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
-const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
 const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
-const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = null;
-const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = null;
 const apiSchema = exports.apiSchema = null;
 
 },{}],58:[function(require,module,exports){
@@ -13385,104 +13395,97 @@ class AndroidTransport extends _index.DeviceApiTransport {
    * @returns {Promise<any>}
    */
   async send(deviceApiCall) {
-    if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
-      return androidSpecificRuntimeConfiguration(this.config);
-    }
     if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
       return androidSpecificAvailableInputTypes(this.config);
     }
-    if (deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall) {
-      window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params));
-      return waitForResponse(deviceApiCall.id, this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall) {
-      return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
-      return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall) {
-      return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params));
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall) {
-      window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
-      return waitForResponse(deviceApiCall.id, this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
-      window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params));
-      return waitForResponse(deviceApiCall.id, this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall) {
-      return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
+    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall || deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall || deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall || deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall || deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
+      return listenForWebListener(deviceApiCall);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
   }
 }
-
-/**
- * @param {string} expectedResponse - the name/id of the response
- * @param {GlobalConfig} config
- * @returns {Promise<*>}
- */
 exports.AndroidTransport = AndroidTransport;
-function waitForResponse(expectedResponse, config) {
-  return new Promise(resolve => {
-    const handler = e => {
-      if (!config.isDDGTestMode) {
-        if (e.origin !== '') {
-          return;
-        }
-      }
-      if (!e.data) {
-        return;
-      }
-      if (typeof e.data !== 'string') {
-        if (config.isDDGTestMode) {
-          console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed');
-        }
-        return;
-      }
-      try {
-        let data = JSON.parse(e.data);
-        if (data.type === expectedResponse) {
-          window.removeEventListener('message', handler);
-          return resolve(data);
-        }
-        if (config.isDDGTestMode) {
-          console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data));
-        }
-      } catch (e) {
-        window.removeEventListener('message', handler);
-        if (config.isDDGTestMode) {
-          console.log('❌ Could not JSON.parse the response');
-        }
-      }
-    };
-    window.addEventListener('message', handler);
+async function listenForWebListener(request) {
+  const method = request.method;
+  const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1);
+  const listener = window[listenerName];
+  // TODO fix this up to match the new pattern
+  const responseOnce = new Promise(resolve => {
+    listener.addEventListener('message', e => {
+      resolve(e.data);
+    });
   });
+  const message = JSON.stringify(request?.params) || '';
+  listener.postMessage(message);
+  const configJSON = await responseOnce;
+  return JSON.parse(configJSON);
 }
 
-/**
- * @param {GlobalConfig} globalConfig
- * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
- */
-function androidSpecificRuntimeConfiguration(globalConfig) {
-  if (!globalConfig.userPreferences) {
-    throw new Error('globalConfig.userPreferences not supported yet on Android');
-  }
-  return {
-    success: {
-      // @ts-ignore
-      contentScope: globalConfig.contentScope,
-      // @ts-ignore
-      userPreferences: globalConfig.userPreferences,
-      // @ts-ignore
-      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-      // @ts-ignore
-      availableInputTypes: globalConfig.availableInputTypes
-    }
-  };
-}
+// /**
+//  * @param {string} expectedResponse - the name/id of the response
+//  * @param {GlobalConfig} config
+//  * @returns {Promise<*>}
+//  */
+// function waitForResponse (expectedResponse, config) {
+//     return new Promise((resolve) => {
+//         const handler = e => {
+//             if (!config.isDDGTestMode) {
+//                 if (e.origin !== '') {
+//                     return
+//                 }
+//             }
+//             if (!e.data) {
+//                 return
+//             }
+//             if (typeof e.data !== 'string') {
+//                 if (config.isDDGTestMode) {
+//                     console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
+//                 }
+//                 return
+//             }
+//             try {
+//                 let data = JSON.parse(e.data)
+//                 if (data.type === expectedResponse) {
+//                     window.removeEventListener('message', handler)
+//                     return resolve(data)
+//                 }
+//                 if (config.isDDGTestMode) {
+//                     console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
+//                 }
+//             } catch (e) {
+//                 window.removeEventListener('message', handler)
+//                 if (config.isDDGTestMode) {
+//                     console.log('❌ Could not JSON.parse the response')
+//                 }
+//             }
+//         }
+//         window.addEventListener('message', handler)
+//     })
+// }
+
+// /**
+//  * @param {GlobalConfig} globalConfig
+//  * @returns {Promise<{success: import('../__generated__/validators-ts').RuntimeConfiguration}>}
+//  */
+// function androidSpecificRuntimeConfiguration (globalConfig, deviceApiCall) {
+//     return listenForWebListener(new GetAutofillConfigCall({}))
+//
+//     if (!globalConfig.userPreferences) {
+//         throw new Error('globalConfig.userPreferences not supported yet on Android')
+//     }
+//     return {
+//         success: {
+//             // @ts-ignore
+//             contentScope: globalConfig.contentScope,
+//             // @ts-ignore
+//             userPreferences: globalConfig.userPreferences,
+//             // @ts-ignore
+//             userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+//             // @ts-ignore
+//             availableInputTypes: globalConfig.availableInputTypes
+//         }
+//     }
+// }
 
 /**
  * @param {GlobalConfig} globalConfig

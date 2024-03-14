@@ -34,112 +34,106 @@ export class AndroidTransport extends DeviceApiTransport {
      * @returns {Promise<any>}
      */
     async send (deviceApiCall) {
-        if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
-            return androidSpecificRuntimeConfiguration(this.config)
-        }
-
         if (deviceApiCall instanceof GetAvailableInputTypesCall) {
             return androidSpecificAvailableInputTypes(this.config)
         }
 
-        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
-            window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
-            return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof StartEmailProtectionSignupCall) {
-            return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof CloseEmailProtectionTabCall) {
-            return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params))
-        }
-
-        if (deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall) {
-            window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof GetAutofillDataCall) {
-            window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params))
-            return waitForResponse(deviceApiCall.id, this.config)
-        }
-
-        if (deviceApiCall instanceof StoreFormDataCall) {
-            return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
+        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+            deviceApiCall instanceof StartEmailProtectionSignupCall ||
+            deviceApiCall instanceof CloseEmailProtectionTabCall ||
+            deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall ||
+            deviceApiCall instanceof StoreFormDataCall ||
+            deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
+            deviceApiCall instanceof GetRuntimeConfigurationCall ||
+            deviceApiCall instanceof GetAutofillDataCall) {
+            return listenForWebListener(deviceApiCall)
         }
 
         throw new Error('android: not implemented: ' + deviceApiCall.method)
     }
 }
 
-/**
- * @param {string} expectedResponse - the name/id of the response
- * @param {GlobalConfig} config
- * @returns {Promise<*>}
- */
-function waitForResponse (expectedResponse, config) {
-    return new Promise((resolve) => {
-        const handler = e => {
-            if (!config.isDDGTestMode) {
-                if (e.origin !== '') {
-                    return
-                }
-            }
-            if (!e.data) {
-                return
-            }
-            if (typeof e.data !== 'string') {
-                if (config.isDDGTestMode) {
-                    console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
-                }
-                return
-            }
-            try {
-                let data = JSON.parse(e.data)
-                if (data.type === expectedResponse) {
-                    window.removeEventListener('message', handler)
-                    return resolve(data)
-                }
-                if (config.isDDGTestMode) {
-                    console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
-                }
-            } catch (e) {
-                window.removeEventListener('message', handler)
-                if (config.isDDGTestMode) {
-                    console.log('❌ Could not JSON.parse the response')
-                }
-            }
-        }
-        window.addEventListener('message', handler)
+async function listenForWebListener (request) {
+    const method = request.method
+    const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1)
+    const listener = window[listenerName]
+    // TODO fix this up to match the new pattern
+    const responseOnce = new Promise((resolve) => {
+        listener.addEventListener('message', (e) => {
+            resolve(e.data)
+        })
     })
+    const message = JSON.stringify(request?.params) || ''
+    listener.postMessage(message)
+    const configJSON = await responseOnce
+    return JSON.parse(configJSON)
 }
 
-/**
- * @param {GlobalConfig} globalConfig
- * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
- */
-function androidSpecificRuntimeConfiguration (globalConfig) {
-    if (!globalConfig.userPreferences) {
-        throw new Error('globalConfig.userPreferences not supported yet on Android')
-    }
-    return {
-        success: {
-            // @ts-ignore
-            contentScope: globalConfig.contentScope,
-            // @ts-ignore
-            userPreferences: globalConfig.userPreferences,
-            // @ts-ignore
-            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-            // @ts-ignore
-            availableInputTypes: globalConfig.availableInputTypes
-        }
-    }
-}
+// /**
+//  * @param {string} expectedResponse - the name/id of the response
+//  * @param {GlobalConfig} config
+//  * @returns {Promise<*>}
+//  */
+// function waitForResponse (expectedResponse, config) {
+//     return new Promise((resolve) => {
+//         const handler = e => {
+//             if (!config.isDDGTestMode) {
+//                 if (e.origin !== '') {
+//                     return
+//                 }
+//             }
+//             if (!e.data) {
+//                 return
+//             }
+//             if (typeof e.data !== 'string') {
+//                 if (config.isDDGTestMode) {
+//                     console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
+//                 }
+//                 return
+//             }
+//             try {
+//                 let data = JSON.parse(e.data)
+//                 if (data.type === expectedResponse) {
+//                     window.removeEventListener('message', handler)
+//                     return resolve(data)
+//                 }
+//                 if (config.isDDGTestMode) {
+//                     console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
+//                 }
+//             } catch (e) {
+//                 window.removeEventListener('message', handler)
+//                 if (config.isDDGTestMode) {
+//                     console.log('❌ Could not JSON.parse the response')
+//                 }
+//             }
+//         }
+//         window.addEventListener('message', handler)
+//     })
+// }
+
+// /**
+//  * @param {GlobalConfig} globalConfig
+//  * @returns {Promise<{success: import('../__generated__/validators-ts').RuntimeConfiguration}>}
+//  */
+// function androidSpecificRuntimeConfiguration (globalConfig, deviceApiCall) {
+//     return listenForWebListener(new GetAutofillConfigCall({}))
+//
+//     if (!globalConfig.userPreferences) {
+//         throw new Error('globalConfig.userPreferences not supported yet on Android')
+//     }
+//     return {
+//         success: {
+//             // @ts-ignore
+//             contentScope: globalConfig.contentScope,
+//             // @ts-ignore
+//             userPreferences: globalConfig.userPreferences,
+//             // @ts-ignore
+//             userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+//             // @ts-ignore
+//             availableInputTypes: globalConfig.availableInputTypes
+//         }
+//     }
+// }
 
 /**
  * @param {GlobalConfig} globalConfig
