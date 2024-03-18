@@ -7527,8 +7527,8 @@ class AndroidInterface extends _InterfacePrototype.default {
         // On Android we can't get the input type data again without
         // refreshing the page, so instead we can mutate it now that we
         // know the user has Email Protection available.
-        if (this.globalConfig.availableInputTypes) {
-          this.globalConfig.availableInputTypes.email = isSignedIn;
+        if (this.settings.availableInputTypes) {
+          this.settings.availableInputTypes.email = isSignedIn;
         }
         this.updateForStateChange();
         this.onFinishedAutofill();
@@ -7552,12 +7552,13 @@ class AndroidInterface extends _InterfacePrototype.default {
   isDeviceSignedIn() {
     // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
     if (this.globalConfig.isDDGDomain) {
+      // await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
       return window.EmailInterface.isSignedIn() === 'true';
     }
 
     // on non-DDG domains, where `availableInputTypes.email` is present, use it
-    if (typeof this.globalConfig.availableInputTypes?.email === 'boolean') {
-      return this.globalConfig.availableInputTypes.email;
+    if (typeof this.settings.availableInputTypes?.email === 'boolean') {
+      return this.settings.availableInputTypes.email;
     }
 
     // ...on other domains we assume true because the script wouldn't exist otherwise

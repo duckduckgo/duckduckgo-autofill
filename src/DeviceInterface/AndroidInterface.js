@@ -2,7 +2,11 @@ import InterfacePrototype from './InterfacePrototype.js'
 import {sendAndWaitForAnswer} from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import { InContextSignup } from '../InContextSignup.js'
-import { CloseEmailProtectionTabCall, ShowInContextEmailProtectionSignupPromptCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {
+    CloseEmailProtectionTabCall,
+    EmailProtectionGetIsLoggedInCall,
+    ShowInContextEmailProtectionSignupPromptCall
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 class AndroidInterface extends InterfacePrototype {
     inContextSignup = new InContextSignup(this)
@@ -17,8 +21,8 @@ class AndroidInterface extends InterfacePrototype {
                 // On Android we can't get the input type data again without
                 // refreshing the page, so instead we can mutate it now that we
                 // know the user has Email Protection available.
-                if (this.globalConfig.availableInputTypes) {
-                    this.globalConfig.availableInputTypes.email = isSignedIn
+                if (this.settings.availableInputTypes) {
+                    this.settings.availableInputTypes.email = isSignedIn
                 }
                 this.updateForStateChange()
                 this.onFinishedAutofill()
@@ -46,8 +50,8 @@ class AndroidInterface extends InterfacePrototype {
         }
 
         // on non-DDG domains, where `availableInputTypes.email` is present, use it
-        if (typeof this.globalConfig.availableInputTypes?.email === 'boolean') {
-            return this.globalConfig.availableInputTypes.email
+        if (typeof this.settings.availableInputTypes?.email === 'boolean') {
+            return this.settings.availableInputTypes.email
         }
 
         // ...on other domains we assume true because the script wouldn't exist otherwise
