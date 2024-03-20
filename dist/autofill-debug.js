@@ -7509,6 +7509,7 @@ var _autofillUtils = require("../autofill-utils.js");
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
+var _additionalDeviceApiCalls = require("../deviceApiCalls/additionalDeviceApiCalls.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 class AndroidInterface extends _InterfacePrototype.default {
   inContextSignup = new _InContextSignup.InContextSignup(this);
@@ -7517,25 +7518,29 @@ class AndroidInterface extends _InterfacePrototype.default {
    * @returns {Promise<string|undefined>}
    */
   async getAlias() {
+    if (this.inContextSignup.isAvailable()) {
+      const {
+        isSignedIn
+      } = await this.deviceApi.request(new _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall(null));
+      // On Android we can't get the input type data again without
+      // refreshing the page, so instead we can mutate it now that we
+      // know the user has Email Protection available.
+      if (this.settings.availableInputTypes) {
+        this.settings.setAvailableInputTypes({
+          email: isSignedIn
+        });
+      }
+      this.updateForStateChange();
+      this.onFinishedAutofill();
+    }
     const {
       alias
-    } = await (0, _autofillUtils.sendAndWaitForAnswer)(async () => {
-      if (this.inContextSignup.isAvailable()) {
-        const {
-          isSignedIn
-        } = await this.deviceApi.request(new _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall(null));
-        // On Android we can't get the input type data again without
-        // refreshing the page, so instead we can mutate it now that we
-        // know the user has Email Protection available.
-        if (this.settings.availableInputTypes) {
-          this.settings.availableInputTypes.email = isSignedIn;
-        }
-        this.updateForStateChange();
-        this.onFinishedAutofill();
-      }
-      return window.EmailInterface.showTooltip();
-    }, 'getAliasResponse');
-    return alias;
+    } = await this.deviceApi.request(new _additionalDeviceApiCalls.GetAlias({
+      requiresUserPermission: !this.globalConfig.isApp,
+      shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
+      isIncontextSignupAvailable: this.inContextSignup.isAvailable()
+    }));
+    return alias ? (0, _autofillUtils.formatDuckAddress)(alias) : alias;
   }
 
   /**
@@ -7550,12 +7555,6 @@ class AndroidInterface extends _InterfacePrototype.default {
    * @returns {boolean}
    */
   isDeviceSignedIn() {
-    // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
-    if (this.globalConfig.isDDGDomain) {
-      // await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
-      return window.EmailInterface.isSignedIn() === 'true';
-    }
-
     // on non-DDG domains, where `availableInputTypes.email` is present, use it
     if (typeof this.settings.availableInputTypes?.email === 'boolean') {
       return this.settings.availableInputTypes.email;
@@ -7573,15 +7572,18 @@ class AndroidInterface extends _InterfacePrototype.default {
    * Settings page displays data of the logged in user data
    */
   getUserData() {
-    let userData = null;
-    try {
-      userData = JSON.parse(window.EmailInterface.getUserData());
-    } catch (e) {
-      if (this.globalConfig.isDDGTestMode) {
-        console.error(e);
-      }
-    }
-    return Promise.resolve(userData);
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetUserDataCall({}));
+    // let userData = null
+    //
+    // try {
+    //     userData = JSON.parse(window.EmailInterface.getUserData())
+    // } catch (e) {
+    //     if (this.globalConfig.isDDGTestMode) {
+    //         console.error(e)
+    //     }
+    // }
+    //
+    // return Promise.resolve(userData)
   }
 
   /**
@@ -7589,25 +7591,26 @@ class AndroidInterface extends _InterfacePrototype.default {
    * Device capabilities determine which functionality is available to the user
    */
   getEmailProtectionCapabilities() {
-    let deviceCapabilities = null;
-    try {
-      deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities());
-    } catch (e) {
-      if (this.globalConfig.isDDGTestMode) {
-        console.error(e);
-      }
-    }
-    return Promise.resolve(deviceCapabilities);
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetCapabilitiesCall({}));
+    // let deviceCapabilities = null
+    //
+    // try {
+    //     deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities())
+    // } catch (e) {
+    //     if (this.globalConfig.isDDGTestMode) {
+    //         console.error(e)
+    //     }
+    // }
+    //
+    // return Promise.resolve(deviceCapabilities)
   }
+
   storeUserData(_ref) {
     let {
-      addUserData: {
-        token,
-        userName,
-        cohort
-      }
+      addUserData
     } = _ref;
-    return window.EmailInterface.storeCredentials(token, userName, cohort);
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionStoreUserDataCall(addUserData));
+    // return window.EmailInterface.storeCredentials(token, userName, cohort)
   }
 
   /**
@@ -7615,13 +7618,14 @@ class AndroidInterface extends _InterfacePrototype.default {
     * Provides functionality to log the user out
     */
   removeUserData() {
-    try {
-      return window.EmailInterface.removeCredentials();
-    } catch (e) {
-      if (this.globalConfig.isDDGTestMode) {
-        console.error(e);
-      }
-    }
+    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionRemoveUserDataCall({}));
+    // try {
+    //     return window.EmailInterface.removeCredentials()
+    // } catch (e) {
+    //     if (this.globalConfig.isDDGTestMode) {
+    //         console.error(e)
+    //     }
+    // }
   }
 
   /**
@@ -7646,7 +7650,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 }
 exports.AndroidInterface = AndroidInterface;
 
-},{"../InContextSignup.js":44,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"./InterfacePrototype.js":27}],24:[function(require,module,exports){
+},{"../InContextSignup.js":44,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/additionalDeviceApiCalls.js":68,"./InterfacePrototype.js":27}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16052,6 +16056,12 @@ class NativeUIController extends _UIController.UIController {
             form.activeInput?.focus();
             break;
           }
+        case 'none':
+          {
+            // No-op. This just means that the user dismissed the prompt without choosing anything
+            // form.touchAllInputs('credentials')
+            break;
+          }
         default:
           {
             if (args.device.isTestMode()) {
@@ -17126,6 +17136,10 @@ const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-
  * @returns {GlobalConfig}
  */
 function createGlobalConfig(overrides) {
+  /**
+   * Defines whether it's one of our desktop app
+   * @type {boolean}
+   */
   let isApp = false;
   let isTopFrame = false;
   let supportsTopFrame = false;

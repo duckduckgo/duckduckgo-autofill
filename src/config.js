@@ -7,6 +7,10 @@ const DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.c
  * @returns {GlobalConfig}
  */
 function createGlobalConfig (overrides) {
+    /**
+     * Defines whether it's one of our desktop app
+     * @type {boolean}
+     */
     let isApp = false
     let isTopFrame = false
     let supportsTopFrame = false

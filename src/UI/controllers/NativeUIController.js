@@ -87,6 +87,11 @@ export class NativeUIController extends UIController {
                     form.activeInput?.focus()
                     break
                 }
+                case 'none': {
+                    // No-op. This just means that the user dismissed the prompt without choosing anything
+                    // form.touchAllInputs('credentials')
+                    break
+                }
                 default: {
                     if (args.device.isTestMode()) {
                         console.warn('response not handled', resp)
