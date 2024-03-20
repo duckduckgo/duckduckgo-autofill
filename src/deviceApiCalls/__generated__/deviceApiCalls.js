@@ -16,6 +16,8 @@ import {
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
     getIncontextSignupDismissedAtSchema,
+    emailProtectionGetAliasParamsSchema,
+    emailProtectionGetAliasResultSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
     emailProtectionGetUserDataResultSchema,
@@ -157,6 +159,15 @@ export class OpenManageCreditCardsCall extends DeviceApiCall {
  */
 export class OpenManageIdentitiesCall extends DeviceApiCall {
   method = "openManageIdentities"
+}
+/**
+ * @extends {DeviceApiCall<emailProtectionGetAliasParamsSchema, emailProtectionGetAliasResultSchema>} 
+ */
+export class EmailProtectionGetAliasCall extends DeviceApiCall {
+  method = "emailProtectionGetAlias"
+  id = "emailProtectionGetAliasResponse"
+  paramsValidator = emailProtectionGetAliasParamsSchema
+  resultValidator = emailProtectionGetAliasResultSchema
 }
 /**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 

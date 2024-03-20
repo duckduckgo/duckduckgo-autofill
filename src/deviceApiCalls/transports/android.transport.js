@@ -1,5 +1,6 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
+    EmailProtectionGetAliasCall,
     EmailProtectionStoreUserDataCall,
     EmailProtectionRemoveUserDataCall,
     EmailProtectionGetUserDataCall,
@@ -14,7 +15,6 @@ import {
     StartEmailProtectionSignupCall,
     StoreFormDataCall
 } from '../__generated__/deviceApiCalls.js'
-import {GetAlias} from '../additionalDeviceApiCalls.js'
 
 export class AndroidTransport extends DeviceApiTransport {
     /** @type {GlobalConfig} */
@@ -24,15 +24,6 @@ export class AndroidTransport extends DeviceApiTransport {
     constructor (globalConfig) {
         super()
         this.config = globalConfig
-
-        if (this.config.isDDGTestMode) {
-            if (typeof window.BrowserAutofill?.getAutofillData !== 'function') {
-                console.warn('window.BrowserAutofill.getAutofillData missing')
-            }
-            if (typeof window.BrowserAutofill?.storeFormData !== 'function') {
-                console.warn('window.BrowserAutofill.storeFormData missing')
-            }
-        }
     }
     /**
      * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
@@ -47,8 +38,7 @@ export class AndroidTransport extends DeviceApiTransport {
             deviceApiCall instanceof EmailProtectionRemoveUserDataCall ||
             deviceApiCall instanceof EmailProtectionGetUserDataCall ||
             deviceApiCall instanceof EmailProtectionGetCapabilitiesCall ||
-            deviceApiCall instanceof GetAlias ||
-            deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+            deviceApiCall instanceof EmailProtectionGetAliasCall ||
             deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
             deviceApiCall instanceof StartEmailProtectionSignupCall ||
             deviceApiCall instanceof CloseEmailProtectionTabCall ||

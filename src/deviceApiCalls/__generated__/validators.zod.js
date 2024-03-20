@@ -64,6 +64,12 @@ export const getAliasResultSchema = z.object({
     })
 });
 
+export const emailProtectionGetAliasParamsSchema = z.object({
+    requiresUserPermission: z.boolean(),
+    shouldConsumeAliasIfProvided: z.boolean(),
+    isIncontextSignupAvailable: z.boolean().optional()
+});
+
 export const emailProtectionStoreUserDataParamsSchema = z.object({
     token: z.string(),
     userName: z.string(),
@@ -280,6 +286,13 @@ export const autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
 });
 
+export const emailProtectionGetAliasResultSchema = z.object({
+    success: z.object({
+        alias: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
 export const emailProtectionGetIsLoggedInResultSchema = z.object({
     success: z.boolean().optional(),
     error: genericErrorSchema.optional()
@@ -398,6 +411,11 @@ export const apiSchema = z.object({
     openManagePasswords: z.record(z.unknown()).optional(),
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
+    emailProtectionGetAlias: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionGetAliasResponse").optional(),
+        paramsValidator: emailProtectionGetAliasParamsSchema.optional(),
+        resultValidator: emailProtectionGetAliasResultSchema.optional()
+    })).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionStoreUserDataResponse").optional(),
         paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()

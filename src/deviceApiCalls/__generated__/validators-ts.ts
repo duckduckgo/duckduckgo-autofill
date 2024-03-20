@@ -160,6 +160,15 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * Used to prompt email protection autofill on mobile.
+   */
+  emailProtectionGetAlias?: {
+    id?: "emailProtectionGetAliasResponse";
+    paramsValidator?: EmailProtectionGetAliasParams;
+    resultValidator?: EmailProtectionGetAliasResult;
+    [k: string]: unknown;
+  };
+  /**
    * Used to store Email Protection auth credentials (logging in)
    */
   emailProtectionStoreUserData?: {
@@ -612,6 +621,17 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
+}
+export interface EmailProtectionGetAliasParams {
+  requiresUserPermission: boolean;
+  shouldConsumeAliasIfProvided: boolean;
+  isIncontextSignupAvailable?: boolean;
+}
+export interface EmailProtectionGetAliasResult {
+  success?: {
+    alias: string;
+  };
+  error?: GenericError;
 }
 /**
  * Used to store Email Protection auth credentials.

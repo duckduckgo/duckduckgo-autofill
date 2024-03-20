@@ -3,13 +3,12 @@ import {formatDuckAddress} from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import { InContextSignup } from '../InContextSignup.js'
 import {
-    CloseEmailProtectionTabCall,
+    CloseEmailProtectionTabCall, EmailProtectionGetAliasCall,
     EmailProtectionGetCapabilitiesCall,
     EmailProtectionGetUserDataCall, EmailProtectionRemoveUserDataCall,
     EmailProtectionStoreUserDataCall,
     ShowInContextEmailProtectionSignupPromptCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import {GetAlias} from '../deviceApiCalls/additionalDeviceApiCalls.js'
 
 class AndroidInterface extends InterfacePrototype {
     inContextSignup = new InContextSignup(this)
@@ -29,7 +28,7 @@ class AndroidInterface extends InterfacePrototype {
             this.updateForStateChange()
             this.onFinishedAutofill()
         }
-        const {alias} = await this.deviceApi.request(new GetAlias({
+        const {alias} = await this.deviceApi.request(new EmailProtectionGetAliasCall({
             requiresUserPermission: !this.globalConfig.isApp,
             shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
             isIncontextSignupAvailable: this.inContextSignup.isAvailable()
