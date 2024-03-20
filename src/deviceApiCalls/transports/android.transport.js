@@ -1,5 +1,9 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
 import {
+    EmailProtectionStoreUserDataCall,
+    EmailProtectionRemoveUserDataCall,
+    EmailProtectionGetUserDataCall,
+    EmailProtectionGetCapabilitiesCall,
     CloseEmailProtectionTabCall,
     GetAutofillDataCall,
     GetAvailableInputTypesCall,
@@ -10,6 +14,7 @@ import {
     StartEmailProtectionSignupCall,
     StoreFormDataCall
 } from '../__generated__/deviceApiCalls.js'
+import {GetAlias} from '../additionalDeviceApiCalls.js'
 
 export class AndroidTransport extends DeviceApiTransport {
     /** @type {GlobalConfig} */
@@ -38,7 +43,13 @@ export class AndroidTransport extends DeviceApiTransport {
             return androidSpecificAvailableInputTypes(this.config)
         }
 
-        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+        if (deviceApiCall instanceof EmailProtectionStoreUserDataCall ||
+            deviceApiCall instanceof EmailProtectionRemoveUserDataCall ||
+            deviceApiCall instanceof EmailProtectionGetUserDataCall ||
+            deviceApiCall instanceof EmailProtectionGetCapabilitiesCall ||
+            deviceApiCall instanceof GetAlias ||
+            deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+            deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
             deviceApiCall instanceof StartEmailProtectionSignupCall ||
             deviceApiCall instanceof CloseEmailProtectionTabCall ||
             deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall ||

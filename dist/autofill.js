@@ -13388,6 +13388,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.AndroidTransport = void 0;
 var _index = require("../../../packages/device-api/index.js");
 var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
+var _additionalDeviceApiCalls = require("../additionalDeviceApiCalls.js");
 class AndroidTransport extends _index.DeviceApiTransport {
   /** @type {GlobalConfig} */
   config;
@@ -13413,7 +13414,7 @@ class AndroidTransport extends _index.DeviceApiTransport {
     if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
       return androidSpecificAvailableInputTypes(this.config);
     }
-    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall || deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall || deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall || deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall || deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
+    if (deviceApiCall instanceof _deviceApiCalls.EmailProtectionStoreUserDataCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionRemoveUserDataCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionGetUserDataCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionGetCapabilitiesCall || deviceApiCall instanceof _additionalDeviceApiCalls.GetAlias || deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall || deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall || deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall || deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall || deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
       return listenForWebListener(deviceApiCall);
     }
     throw new Error('android: not implemented: ' + deviceApiCall.method);
@@ -13515,7 +13516,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":2,"../__generated__/deviceApiCalls.js":56}],60:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../__generated__/deviceApiCalls.js":56,"../additionalDeviceApiCalls.js":58}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
