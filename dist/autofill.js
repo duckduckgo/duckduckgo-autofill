@@ -433,32 +433,7 @@ var _messaging = require("./messaging.js");
 /**
  * @module Android Messaging
  *
- * @description
- *
- * A wrapper for messaging on WebKit platforms. It supports modern WebKit messageHandlers
- * along with encryption for older versions (like macOS Catalina)
- *
- * Note: If you wish to support Catalina then you'll need to implement the native
- * part of the message handling, see {@link WebkitMessagingTransport} for details.
- *
- * ```js
- * import { Messaging, WebkitMessagingConfig } from "@duckduckgo/content-scope-scripts/lib/messaging.js"
- *
- * // This config would be injected into the UserScript
- * const injectedConfig = {
- *   hasModernWebkitAPI: true,
- *   webkitMessageHandlerNames: ["foo", "bar", "baz"],
- *   secret: "dax",
- * };
- *
- * // Then use that config to construct platform-specific configuration
- * const config = new WebkitMessagingConfig(injectedConfig);
- *
- * // finally, get an instance of Messaging and start sending messages in a unified way 🚀
- * const messaging = new Messaging(config);
- * messaging.notify("hello world!", {foo: "bar"})
- *
- * ```
+ * @description A wrapper for messaging on Android. See example usage in android.transport.js
  */
 
 /**
@@ -527,7 +502,7 @@ class AndroidMessagingTransport {
   /**
    * Given the method name, returns the related Android handler
    * @param {string} methodName
-   * @returns {*}
+   * @returns {AndroidHandler}
    * @private
    */
   _getHandler(methodName) {
@@ -537,6 +512,13 @@ class AndroidMessagingTransport {
     }
     return window[androidSpecificName];
   }
+
+  /**
+   * Given the autofill method name, it returns the Android-specific handler name
+   * @param {string} internalName
+   * @returns {string}
+   * @private
+   */
   _getHandlerName(internalName) {
     return 'ddg' + internalName[0].toUpperCase() + internalName.slice(1);
   }
@@ -551,21 +533,26 @@ class AndroidMessagingTransport {
     const message = data ? JSON.stringify(data) : '';
     handler.postMessage(message);
   }
+
   /**
    * @param {string} name
    * @param {Record<string, any>} [data]
    */
   async request(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    // Then send the message
-    this.notify(name, data);
     // Set up the listener first
     const handler = this._getHandler(name);
     const responseOnce = new Promise(resolve => {
-      handler.addEventListener('message', e => {
+      const responseHandler = e => {
+        console.count('ratto');
+        handler.removeEventListener('message', responseHandler);
         resolve(e.data);
-      });
+      };
+      handler.addEventListener('message', responseHandler);
     });
+
+    // Then send the message
+    this.notify(name, data);
 
     // And return once the promise resolves
     const responseJSON = await responseOnce;
