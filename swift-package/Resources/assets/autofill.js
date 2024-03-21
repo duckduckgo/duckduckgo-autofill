@@ -514,13 +514,14 @@ var _messaging = require("./messaging.js");
 class AndroidMessagingTransport {
   /** @type {AndroidMessagingConfig} */
   config;
-  globals;
+  globals = {
+    capturedHandlers: {}
+  };
   /**
    * @param {AndroidMessagingConfig} config
    */
   constructor(config) {
     this.config = config;
-    this._captureAndroidHandlers();
   }
 
   /**
@@ -530,27 +531,14 @@ class AndroidMessagingTransport {
    * @private
    */
   _getHandler(methodName) {
-    return this.globals[this._getHandlerName(methodName)];
+    const androidSpecificName = this._getHandlerName(methodName);
+    if (!(androidSpecificName in window)) {
+      throw new _messaging.MissingHandler(`Missing android handler: '${methodName}'`, methodName);
+    }
+    return window[androidSpecificName];
   }
   _getHandlerName(internalName) {
     return 'ddg' + internalName[0].toUpperCase() + internalName.slice(1);
-  }
-  _captureAndroidHandlers(handlerNames) {
-    for (let androidMessageHandlerName of handlerNames) {
-      const androidSpecificName = this._getHandlerName(androidMessageHandlerName);
-      if (typeof window[androidSpecificName]?.postMessage === 'function') {
-        /**
-         * `bind` is used here to ensure future calls to the captured
-         * `postMessage` have the correct `this` context
-         */
-        const original = window[androidSpecificName];
-        const bound = window[androidSpecificName].postMessage?.bind(original);
-        this.globals.capturedWebkitHandlers[androidSpecificName] = bound;
-        delete window[androidSpecificName];
-      } else {
-        throw new _messaging.MissingHandler(`Missing Android handler: '${androidSpecificName}'`, androidSpecificName);
-      }
-    }
   }
 
   /**
@@ -569,16 +557,18 @@ class AndroidMessagingTransport {
    */
   async request(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    // Then send the message
+    this.notify(name, data);
+    // Set up the listener first
     const handler = this._getHandler(name);
-    const message = data ? JSON.stringify(data) : '';
-    handler.postMessage(message);
     const responseOnce = new Promise(resolve => {
       handler.addEventListener('message', e => {
         resolve(e.data);
       });
     });
+
+    // And return once the promise resolves
     const responseJSON = await responseOnce;
-    console.log('raw json response', responseJSON);
     return JSON.parse(responseJSON);
   }
 }
@@ -13573,7 +13563,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AndroidTransport = void 0;
 var _index = require("../../../packages/device-api/index.js");
-var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 var _messaging = require("../../../packages/messaging/messaging.js");
 var _android = require("../../../packages/messaging/android.js");
 class AndroidTransport extends _index.DeviceApiTransport {
@@ -13588,137 +13577,57 @@ class AndroidTransport extends _index.DeviceApiTransport {
     const androidMessagingConfig = new _android.AndroidMessagingConfig({
       messageHandlerNames
     });
-    // this.messaging = new Messaging(androidMessagingConfig)
+    this.messaging = new _messaging.Messaging(androidMessagingConfig);
   }
   /**
    * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
    * @returns {Promise<any>}
    */
   async send(deviceApiCall) {
-    // try {
-    //     // if the call has an `id`, it means that it expects a response
-    //     if (deviceApiCall.id) {
-    //         return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || undefined)
-    //     } else {
-    //         return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined)
-    //     }
-    // } catch (e) {
-    //     if (e instanceof MissingHandler) {
-    //         if (this.config.isDDGTestMode) {
-    //             console.log('MissingAndroidHandler error for:', deviceApiCall.method)
-    //         }
-    //         throw new Error('unimplemented handler: ' + deviceApiCall.method)
-    //     } else {
-    //         throw e
-    //     }
+    try {
+      // if the call has an `id`, it means that it expects a response
+      if (deviceApiCall.id) {
+        return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || undefined);
+      } else {
+        return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined);
+      }
+    } catch (e) {
+      if (e instanceof _messaging.MissingHandler) {
+        if (this.config.isDDGTestMode) {
+          console.log('MissingAndroidHandler error for:', deviceApiCall.method);
+        }
+        throw new Error('unimplemented handler: ' + deviceApiCall.method);
+      } else {
+        throw e;
+      }
+    }
+
+    // if (deviceApiCall instanceof GetAvailableInputTypesCall) {
+    //     return androidSpecificAvailableInputTypes(this.config)
+    // }
+    //
+    // if (deviceApiCall instanceof EmailProtectionStoreUserDataCall ||
+    //     deviceApiCall instanceof EmailProtectionRemoveUserDataCall ||
+    //     deviceApiCall instanceof EmailProtectionGetUserDataCall ||
+    //     deviceApiCall instanceof EmailProtectionGetCapabilitiesCall ||
+    //     deviceApiCall instanceof EmailProtectionGetAliasCall ||
+    //     deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
+    //     deviceApiCall instanceof StartEmailProtectionSignupCall ||
+    //     deviceApiCall instanceof CloseEmailProtectionTabCall ||
+    //     deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall ||
+    //     deviceApiCall instanceof StoreFormDataCall ||
+    //     deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
+    //     deviceApiCall instanceof GetRuntimeConfigurationCall ||
+    //     deviceApiCall instanceof GetAutofillDataCall) {
+    //     return listenForWebListener(deviceApiCall)
     // }
 
-    if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
-      return androidSpecificAvailableInputTypes(this.config);
-    }
-    if (deviceApiCall instanceof _deviceApiCalls.EmailProtectionStoreUserDataCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionRemoveUserDataCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionGetUserDataCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionGetCapabilitiesCall || deviceApiCall instanceof _deviceApiCalls.EmailProtectionGetAliasCall || deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall || deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall || deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall || deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall || deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall || deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall || deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
-      return listenForWebListener(deviceApiCall);
-    }
-    throw new Error('android: not implemented: ' + deviceApiCall.method);
+    // throw new Error('android: not implemented: ' + deviceApiCall.method)
   }
 }
 exports.AndroidTransport = AndroidTransport;
-async function listenForWebListener(request) {
-  const method = request.method;
-  const listenerName = 'ddg' + method[0].toUpperCase() + method.slice(1);
-  const listener = window[listenerName];
-  // TODO fix this up to match the new pattern
-  const responseOnce = new Promise(resolve => {
-    listener.addEventListener('message', e => {
-      resolve(e.data);
-    });
-  });
-  const message = JSON.stringify(request?.params) || '';
-  listener.postMessage(message);
-  const configJSON = await responseOnce;
-  return JSON.parse(configJSON);
-}
 
-// /**
-//  * @param {string} expectedResponse - the name/id of the response
-//  * @param {GlobalConfig} config
-//  * @returns {Promise<*>}
-//  */
-// function waitForResponse (expectedResponse, config) {
-//     return new Promise((resolve) => {
-//         const handler = e => {
-//             if (!config.isDDGTestMode) {
-//                 if (e.origin !== '') {
-//                     return
-//                 }
-//             }
-//             if (!e.data) {
-//                 return
-//             }
-//             if (typeof e.data !== 'string') {
-//                 if (config.isDDGTestMode) {
-//                     console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
-//                 }
-//                 return
-//             }
-//             try {
-//                 let data = JSON.parse(e.data)
-//                 if (data.type === expectedResponse) {
-//                     window.removeEventListener('message', handler)
-//                     return resolve(data)
-//                 }
-//                 if (config.isDDGTestMode) {
-//                     console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
-//                 }
-//             } catch (e) {
-//                 window.removeEventListener('message', handler)
-//                 if (config.isDDGTestMode) {
-//                     console.log('❌ Could not JSON.parse the response')
-//                 }
-//             }
-//         }
-//         window.addEventListener('message', handler)
-//     })
-// }
-
-// /**
-//  * @param {GlobalConfig} globalConfig
-//  * @returns {Promise<{success: import('../__generated__/validators-ts').RuntimeConfiguration}>}
-//  */
-// function androidSpecificRuntimeConfiguration (globalConfig, deviceApiCall) {
-//     return listenForWebListener(new GetAutofillConfigCall({}))
-//
-//     if (!globalConfig.userPreferences) {
-//         throw new Error('globalConfig.userPreferences not supported yet on Android')
-//     }
-//     return {
-//         success: {
-//             // @ts-ignore
-//             contentScope: globalConfig.contentScope,
-//             // @ts-ignore
-//             userPreferences: globalConfig.userPreferences,
-//             // @ts-ignore
-//             userUnprotectedDomains: globalConfig.userUnprotectedDomains,
-//             // @ts-ignore
-//             availableInputTypes: globalConfig.availableInputTypes
-//         }
-//     }
-// }
-
-/**
- * @param {GlobalConfig} globalConfig
- * @returns {{success: import('../__generated__/validators-ts').AvailableInputTypes}}
- */
-function androidSpecificAvailableInputTypes(globalConfig) {
-  if (!globalConfig.availableInputTypes) {
-    throw new Error('globalConfig.availableInputTypes not supported yet on Android');
-  }
-  return {
-    success: globalConfig.availableInputTypes
-  };
-}
-
-},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/android.js":5,"../../../packages/messaging/messaging.js":6,"../__generated__/deviceApiCalls.js":57}],61:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/android.js":5,"../../../packages/messaging/messaging.js":6}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
