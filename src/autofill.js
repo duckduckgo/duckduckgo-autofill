@@ -5,7 +5,7 @@ import {shouldLog} from './autofill-utils.js';
 
 (() => {
     if (shouldLog()) {
-        console.log('DuckDuckGo Autofill Active')
+        console.log('TEST')
     }
 
     if (!window.isSecureContext) return false
