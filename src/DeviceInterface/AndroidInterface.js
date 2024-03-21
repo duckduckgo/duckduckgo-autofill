@@ -67,17 +67,6 @@ class AndroidInterface extends InterfacePrototype {
      */
     getUserData () {
         return this.deviceApi.request(new EmailProtectionGetUserDataCall({}))
-        // let userData = null
-        //
-        // try {
-        //     userData = JSON.parse(window.EmailInterface.getUserData())
-        // } catch (e) {
-        //     if (this.globalConfig.isDDGTestMode) {
-        //         console.error(e)
-        //     }
-        // }
-        //
-        // return Promise.resolve(userData)
     }
 
     /**
@@ -86,22 +75,10 @@ class AndroidInterface extends InterfacePrototype {
      */
     getEmailProtectionCapabilities () {
         return this.deviceApi.request(new EmailProtectionGetCapabilitiesCall({}))
-        // let deviceCapabilities = null
-        //
-        // try {
-        //     deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities())
-        // } catch (e) {
-        //     if (this.globalConfig.isDDGTestMode) {
-        //         console.error(e)
-        //     }
-        // }
-        //
-        // return Promise.resolve(deviceCapabilities)
     }
 
     storeUserData ({addUserData}) {
         return this.deviceApi.request(new EmailProtectionStoreUserDataCall(addUserData))
-        // return window.EmailInterface.storeCredentials(token, userName, cohort)
     }
 
     /**
@@ -110,13 +87,6 @@ class AndroidInterface extends InterfacePrototype {
       */
     removeUserData () {
         return this.deviceApi.request(new EmailProtectionRemoveUserDataCall({}))
-        // try {
-        //     return window.EmailInterface.removeCredentials()
-        // } catch (e) {
-        //     if (this.globalConfig.isDDGTestMode) {
-        //         console.error(e)
-        //     }
-        // }
     }
 
     /**

@@ -652,6 +652,11 @@ class InterfacePrototype {
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
 
+                // Assuming the previous call succeeded, let's update availableInputTypes
+                if (this.settings.availableInputTypes) {
+                    this.settings.setAvailableInputTypes({email: true})
+                }
+
                 await this.setupAutofill()
                 await this.settings.refresh()
                 await this.setupSettingsPage({shouldLog: true})
