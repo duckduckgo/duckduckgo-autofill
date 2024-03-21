@@ -12911,7 +12911,7 @@ var _autofillUtils = require("./autofill-utils.js");
 
 (() => {
   if ((0, _autofillUtils.shouldLog)()) {
-    console.log('DuckDuckGo Autofill Active');
+    console.log('TEST');
   }
   if (!window.isSecureContext) return false;
   try {
