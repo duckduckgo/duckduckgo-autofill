@@ -9056,16 +9056,18 @@ class InterfacePrototype {
       try {
         userData = await this.getUserData();
       } catch (e) {
-        console.log('getUserData failed with', e);
+        if (this.isTestMode()) {
+          console.log('getUserData failed with', e);
+        }
       }
-      console.log('userData', userData);
       let capabilities;
       try {
         capabilities = await this.getEmailProtectionCapabilities();
       } catch (e) {
-        console.log('capabilities fetching failed with', e);
+        if (this.isTestMode()) {
+          console.log('capabilities fetching failed with', e);
+        }
       }
-      console.log('capabilities', capabilities);
 
       // Set up listener for web app actions
       if (this.globalConfig.isDDGDomain) {
@@ -9375,14 +9377,14 @@ class WindowsInterface extends _InterfacePrototype.default {
           }
         default:
           {
-            if (this.globalConfig.isDDGTestMode) {
+            if (this.isTestMode()) {
               console.warn('unhandled response', resp);
             }
           }
       }
       return this._closeAutofillParent();
     }).catch(e => {
-      if (this.globalConfig.isDDGTestMode) {
+      if (this.isTestMode()) {
         if (e.name === 'AbortError') {
           console.log('Promise Aborted');
         } else {
@@ -9965,7 +9967,7 @@ class Form {
   }
   submitHandler() {
     let via = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unknown';
-    if (this.device.globalConfig.isDDGTestMode) {
+    if (this.device.isTestMode()) {
       console.log('Form.submitHandler via:', via, this);
     }
     if (this.submitHandlerExecuted) return;
@@ -15075,7 +15077,7 @@ class ThirdPartyProvider {
         this.device.scanner.forms.forEach(form => form.recategorizeAllInputs());
       }
     } catch (e) {
-      if (this.device.globalConfig.isDDGTestMode) {
+      if (this.device.isTestMode()) {
         console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
       }
     }
@@ -15090,7 +15092,7 @@ class ThirdPartyProvider {
       }
       setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
     } catch (e) {
-      if (this.device.globalConfig.isDDGTestMode) {
+      if (this.device.isTestMode()) {
         console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e);
       }
     }
@@ -18123,28 +18125,6 @@ class AndroidTransport extends _index.DeviceApiTransport {
         throw e;
       }
     }
-
-    // if (deviceApiCall instanceof GetAvailableInputTypesCall) {
-    //     return androidSpecificAvailableInputTypes(this.config)
-    // }
-    //
-    // if (deviceApiCall instanceof EmailProtectionStoreUserDataCall ||
-    //     deviceApiCall instanceof EmailProtectionRemoveUserDataCall ||
-    //     deviceApiCall instanceof EmailProtectionGetUserDataCall ||
-    //     deviceApiCall instanceof EmailProtectionGetCapabilitiesCall ||
-    //     deviceApiCall instanceof EmailProtectionGetAliasCall ||
-    //     deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall ||
-    //     deviceApiCall instanceof StartEmailProtectionSignupCall ||
-    //     deviceApiCall instanceof CloseEmailProtectionTabCall ||
-    //     deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall ||
-    //     deviceApiCall instanceof StoreFormDataCall ||
-    //     deviceApiCall instanceof GetIncontextSignupDismissedAtCall ||
-    //     deviceApiCall instanceof GetRuntimeConfigurationCall ||
-    //     deviceApiCall instanceof GetAutofillDataCall) {
-    //     return listenForWebListener(deviceApiCall)
-    // }
-
-    // throw new Error('android: not implemented: ' + deviceApiCall.method)
   }
 }
 exports.AndroidTransport = AndroidTransport;
