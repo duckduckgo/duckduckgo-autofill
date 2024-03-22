@@ -268,6 +268,9 @@ export function createWebkitMocks (platform = 'macos') {
 
     /** @type {MockBuilder<any, webkitBase>} */
     const builder = {
+        withRuntimeConfigOverrides: function () {
+            throw new Error('Function not implemented.')
+        },
         withPrivateEmail (email) {
             webkitBase.emailHandlerCheckAppSignedInStatus.isAppSignedIn = true
             if (platform === 'ios') {

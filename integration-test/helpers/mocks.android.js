@@ -1,4 +1,5 @@
 /**
+ * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').RuntimeConfiguration} RuntimeConfiguration
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
@@ -9,8 +10,9 @@ import {createAvailableInputTypes, withDataType} from './utils.js'
  * @param {object} [overrides]
  * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
  * @param {Partial<AvailableInputTypes>} [overrides.availableInputTypes]
+ * @return {RuntimeConfiguration}
  */
-export function androidStringReplacements (overrides = {}) {
+export function createRuntimeConfiguration (overrides = {}) {
     return {
         /** @type {AvailableInputTypes} */
         availableInputTypes: {
@@ -60,13 +62,12 @@ export function androidStringReplacements (overrides = {}) {
 /**
  * Use this to mock android message handlers.
  *
- * For example, the following would mock interactions with window.postMessage
+ * For example, the following would mock interactions with Android handlers
  * to ensure that it returns { alias: "x" }
  *
  * ```js
  * await createWebkitMocks()
  *     .withPrivateEmail("x")
- *     .withPersonalEmail("y")
  *     .applyTo(page)
  * ```
  * @public
@@ -74,23 +75,30 @@ export function androidStringReplacements (overrides = {}) {
  */
 export function createAndroidMocks () {
     const mocks = {
+        getRuntimeConfiguration: createRuntimeConfiguration(),
         /** @type {GetAutofillDataResponse['success']|null} */
         getAutofillData: null,
         showInContextEmailProtectionSignupPrompt: { isSignedIn: true },
         incontextSignupDismissedAt: {},
-        /** @type {string|null} */
+        /** @type {{alias: string}|null} */
         address: null,
         isSignedIn: ''
     }
     /** @type {MockBuilder} */
     const builder = {
+        withRuntimeConfigOverrides (overrides) {
+            mocks.getRuntimeConfiguration = createRuntimeConfiguration(overrides)
+            return this
+        },
         withPrivateEmail (email) {
-            mocks.address = email
+            email = email.replace('@duck.com', '')
+            mocks.address = {alias: email}
             mocks.isSignedIn = 'true'
             return this
         },
         withPersonalEmail (email) {
-            mocks.address = email
+            email = email.replace('@duck.com', '')
+            mocks.address = {alias: email}
             mocks.isSignedIn = 'true'
             return this
         },
@@ -154,92 +162,71 @@ export function createAndroidMocks () {
         async applyTo (page) {
             return page.evaluate(mocks => {
                 window.__playwright_autofill = {mocks: {calls: []}}
-                window.EmailInterface = {
-                    showTooltip () {
-                        window.postMessage({
-                            type: 'getAliasResponse',
-                            alias: mocks.address
-                        }, window.origin)
-                    },
-                    getUserData () {
-                        return ''
-                    },
-                    storeCredentials () {
-                        return ''
-                    },
-                    isSignedIn () {
-                        return mocks.isSignedIn
-                    },
-                    getDeviceCapabilities () {
-                        return ''
-                    },
-                    removeCredentials () {
-                        window.postMessage({
-                            emailProtectionSignedOut: true
-                        }, window.origin)
+
+                class AndroidHandlerMock {
+                    constructor (name, response) {
+                        this.name = name
+                        this.request = null
+                        this.response = response
+                        this._eventHandlers = new Set()
+                    }
+                    postMessage (passedRequest) {
+                        this.request = passedRequest
+                        const call = [this.name, JSON.parse(passedRequest), this.response]
+                        if (this.response) {
+                            this.onMessage()
+                        } else {
+                            // If we're not waiting for a response, add the call right away
+                            window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                        }
+                    }
+                    onMessage () {
+                        this._eventHandlers.forEach((fn) => {
+                            const call = [this.name, this.request, this.response]
+                            window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                            fn({data: JSON.stringify({success: this.response})})
+                        })
+                    }
+                    addEventListener (_eventName, fn) {
+                        this._eventHandlers.add(fn)
+                    }
+                    removeEventListener (_eventName, fn) {
+                        this._eventHandlers.delete(fn)
                     }
                 }
 
-                /**
-                 * @param {string} name
-                 * @param {any} request
-                 * @param {any} response
-                 */
-                function respond (name, request, response) {
-                    const call = [name, request, response]
-                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    window.postMessage(JSON.stringify({
-                        type: name + 'Response',
-                        success: response
-                    }), window.origin)
-                }
-
-                window.BrowserAutofill = {
-                    getAutofillData (request) {
-                        return respond('getAutofillData', request, mocks.getAutofillData)
+                /** @type {{ callName: string, response?: any }[]} */
+                const androidHandlersMocksConfig = [
+                    {
+                        callName: 'getRuntimeConfiguration',
+                        response: mocks.getRuntimeConfiguration
                     },
-                    storeFormData (request) {
-                        /** @type {MockCall} */
-                        const call = ['storeFormData', request, mocks.getAutofillData]
-                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    {callName: 'emailProtectionStoreUserData'},
+                    {callName: 'emailProtectionGetUserData'},
+                    {callName: 'emailProtectionGetCapabilities'},
+                    {
+                        callName: 'emailProtectionGetAlias',
+                        response: mocks.address
                     },
-                    showInContextEmailProtectionSignupPrompt (request) {
-                        return respond('ShowInContextEmailProtectionSignupPrompt', request, mocks.showInContextEmailProtectionSignupPrompt)
+                    {
+                        callName: 'getAutofillData',
+                        response: mocks.getAutofillData
                     },
-                    getIncontextSignupDismissedAt (request) {
-                        const call = ['getIncontextSignupDismissedAt', request, mocks.incontextSignupDismissedAt]
-                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                        window.postMessage(JSON.stringify({
-                            type: 'getIncontextSignupDismissedAt',
-                            success: mocks.incontextSignupDismissedAt
-                        }), window.origin)
+                    {callName: 'storeFormData'},
+                    {
+                        callName: 'getIncontextSignupDismissedAt',
+                        response: mocks.incontextSignupDismissedAt
                     },
-                    setIncontextSignupPermanentlyDismissedAt (request) {
-                        const call = ['setIncontextSignupPermanentlyDismissedAt', request]
-                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    },
-                    startEmailProtectionSignup (request) {
-                        const call = ['startEmailProtectionSignup', request]
-                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    },
-                    closeEmailProtectionTab (request) {
-                        const call = ['closeEmailProtectionTab', request]
-                        window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    }
-                }
+                    {callName: 'setIncontextSignupPermanentlyDismissedAt'},
+                    {callName: 'ShowInContextEmailProtectionSignupPrompt'},
+                    {callName: 'closeEmailProtectionTab'}
+                ]
+                // Attach the mocks to the window object
+                androidHandlersMocksConfig.forEach((call) => {
+                    const androidSpecificName = 'ddg' + call.callName[0].toUpperCase() + call.callName.slice(1)
+                    window[androidSpecificName] = new AndroidHandlerMock(call.callName, call.response)
+                })
             }, mocks)
-        },
-        removeHandlers: function (handlers) {
-            const keys = Object.keys(mocks)
-            for (let handler of handlers) {
-                // @ts-ignore
-                if (!keys.includes(handler)) {
-                    // @ts-ignore
-                    throw new Error('android mock did not exist for ' + handler)
-                }
-                delete mocks[handler]
-            }
-            return this
         }
     }
     return builder
