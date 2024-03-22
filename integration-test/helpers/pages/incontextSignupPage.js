@@ -1,18 +1,31 @@
 import {constants} from '../mocks.js'
 import {expect} from '@playwright/test'
 import {clickOnIcon} from '../utils.js'
+import { withEmailProtectionExtensionSignedInAs } from '../harness.js'
 
 /**
  * @param {import("@playwright/test").Page} page
+ * @param {object} [opts]
+ * @param {string} [opts.platform]
+ * @param {string} [opts.username]
  */
-export function incontextSignupPage (page, {platform} = {platform: 'extension'}) {
+export async function incontextSignupPage (page, opts) {
+    const { platform, username } = { platform: 'extension', username: '', ...opts }
     const isExtension = platform === 'extension'
     const {selectors} = constants.fields.email
     const getCallToAction = () => {
+        if (username) {
+            return page.locator(`text=${username}`)
+        }
+
         const text = isExtension ? 'Protect My Email' : 'Hide your email and block trackers'
         return page.locator(`text=${text}`)
     }
     const getTooltip = () => page.locator('.tooltip--email, .tooltip--incontext-signup')
+
+    if (username) {
+        await withEmailProtectionExtensionSignedInAs(page, username)
+    }
 
     class IncontextSignupPage {
         /**
@@ -43,6 +56,10 @@ export function incontextSignupPage (page, {platform} = {platform: 'extension'})
         }
 
         async closeTooltip () {
+            if (username) {
+                await page.keyboard.press('Escape')
+                return
+            }
             const dismissTooltipButton = await page.locator(`[aria-label=Close]`)
             await dismissTooltipButton.click({timeout: 500})
         }

@@ -16,7 +16,7 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = await incontextSignupPage(page)
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
         const newPageOpening = new Promise(resolve => context.once('page', resolve))
@@ -45,7 +45,7 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = await incontextSignupPage(page)
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
@@ -66,7 +66,7 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = await incontextSignupPage(page)
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
@@ -87,7 +87,7 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = await incontextSignupPage(page)
         await incontextSignup.navigate('https://example.com', 'iframeContainer')
 
         await incontextSignup.clickDirectlyOnDaxInIframe()
@@ -98,7 +98,7 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = await incontextSignupPage(page)
         await incontextSignup.navigate('https://example.com', 'emailAtBottom')
 
         await incontextSignup.clickDirectlyOnDax()
@@ -110,7 +110,7 @@ test.describe('chrome extension', () => {
         forwardConsoleMessages(page)
         await setupMockedDomain(page, 'https://example.com')
 
-        const incontextSignup = incontextSignupPage(page)
+        const incontextSignup = await incontextSignupPage(page)
         await incontextSignup.navigate('https://example.com', 'emailAtTopLeft')
 
         await incontextSignup.clickDirectlyOnDax()

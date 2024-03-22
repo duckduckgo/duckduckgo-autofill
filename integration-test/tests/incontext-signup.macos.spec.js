@@ -23,7 +23,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const incontextSignup = incontextSignupPage(page, { platform: 'macos' })
+        const incontextSignup = await incontextSignupPage(page, { platform: 'macos' })
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
@@ -64,7 +64,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const incontextSignup = incontextSignupPage(page, { platform: 'macos' })
+        const incontextSignup = await incontextSignupPage(page, { platform: 'macos' })
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 
@@ -87,7 +87,7 @@ test.describe('macos', () => {
             .platform('macos')
             .applyTo(page)
 
-        const incontextSignup = incontextSignupPage(page, { platform: 'macos' })
+        const incontextSignup = await incontextSignupPage(page, { platform: 'macos' })
         const emailPage = emailAutofillPage(page)
         await emailPage.navigate('https://example.com')
 

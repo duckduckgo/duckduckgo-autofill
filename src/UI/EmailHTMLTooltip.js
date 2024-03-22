@@ -1,6 +1,10 @@
 import { formatDuckAddress, escapeXML } from '../autofill-utils.js'
 import HTMLTooltip from './HTMLTooltip.js'
 
+function useDuckAddrCta (username) {
+    return `Use ${formatDuckAddress(escapeXML(username))}`
+}
+
 class EmailHTMLTooltip extends HTMLTooltip {
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
@@ -15,7 +19,7 @@ ${this.options.css}
     <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                Use <span class="js-address">${formatDuckAddress(escapeXML(this.addresses.personalAddress))}</span>
+                ${useDuckAddrCta(this.addresses.personalAddress)}
             </span>
             <span class="tooltip__button--email__secondary-text">Block email trackers</span>
         </button>
@@ -30,12 +34,12 @@ ${this.options.css}
         this.tooltip = this.shadow.querySelector('.tooltip')
         this.usePersonalButton = this.shadow.querySelector('.js-use-personal')
         this.usePrivateButton = this.shadow.querySelector('.js-use-private')
-        this.addressEl = this.shadow.querySelector('.js-address')
+        this.usePersonalCta = this.shadow.querySelector('.js-use-personal .tooltip__button--email__primary-text')
 
         this.updateAddresses = (addresses) => {
-            if (addresses && this.addressEl) {
+            if (addresses && this.usePersonalCta) {
                 this.addresses = addresses
-                this.addressEl.textContent = formatDuckAddress(addresses.personalAddress)
+                this.usePersonalCta.textContent = useDuckAddrCta(addresses.personalAddress)
             }
         }
 
