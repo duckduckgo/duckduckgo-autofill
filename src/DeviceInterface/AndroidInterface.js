@@ -19,21 +19,25 @@ class AndroidInterface extends InterfacePrototype {
     async getAlias () {
         if (this.inContextSignup.isAvailable()) {
             const { isSignedIn } = await this.deviceApi.request(new ShowInContextEmailProtectionSignupPromptCall(null))
-            // On Android we can't get the input type data again without
-            // refreshing the page, so instead we can mutate it now that we
-            // know the user has Email Protection available.
-            if (this.settings.availableInputTypes) {
-                this.settings.setAvailableInputTypes({email: isSignedIn})
+            if (isSignedIn) {
+                // On Android we can't get the input type data again without
+                // refreshing the page, so instead we can mutate it now that we
+                // know the user has Email Protection available.
+                if (this.settings.availableInputTypes) {
+                    this.settings.setAvailableInputTypes({email: isSignedIn})
+                }
+                this.updateForStateChange()
+                this.onFinishedAutofill()
             }
-            this.updateForStateChange()
-            this.onFinishedAutofill()
         }
-        const {alias} = await this.deviceApi.request(new EmailProtectionGetAliasCall({
-            requiresUserPermission: !this.globalConfig.isApp,
-            shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
-            isIncontextSignupAvailable: this.inContextSignup.isAvailable()
-        }))
-        return alias ? formatDuckAddress(alias) : alias
+        if (this.settings.availableInputTypes.email) {
+            const {alias} = await this.deviceApi.request(new EmailProtectionGetAliasCall({
+                requiresUserPermission: !this.globalConfig.isApp,
+                shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
+                isIncontextSignupAvailable: this.inContextSignup.isAvailable()
+            }))
+            return alias ? formatDuckAddress(alias) : alias
+        }
     }
 
     /**
