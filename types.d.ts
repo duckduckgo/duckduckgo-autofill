@@ -23,6 +23,7 @@ declare const windowsInteropPostMessage: (message: WindowsMessageFormat|WindowsR
 declare const windowsInteropAddEventListener: Window['addEventListener'];
 declare const windowsInteropRemoveEventListener: Window['removeEventListener'];
 
+// Injected handlers on the Android app.
 interface AndroidHandler {
     onMessage: undefined,
     postMessage: (message) => void,

@@ -4607,49 +4607,21 @@ var _messaging = require("./messaging.js");
  */
 
 /**
- * @example
- * On macOS 11+, this will just call through to `window.webkit.messageHandlers.x.postMessage`
+ * On Android, handlers are added to the window object and are prefixed with `ddg`. The object looks like this:
  *
- * Eg: for a `foo` message defined in Swift that accepted the payload `{"bar": "baz"}`, the following
- * would occur:
- *
- * ```js
- * const json = await window.webkit.messageHandlers.foo.postMessage({ bar: "baz" });
- * const response = JSON.parse(json)
+ * ```typescript
+ * {
+ *     onMessage: undefined,
+ *     postMessage: (message) => void,
+ *     addEventListener: (eventType: string, Function) => void,
+ *     removeEventListener: (eventType: string, Function) => void
+ * }
  * ```
  *
- * @example
- * On macOS 10 however, the process is a little more involved. A method will be appended to `window`
- * that allows the response to be delivered there instead. It's not exactly this, but you can visualize the flow
- * as being something along the lines of:
+ * You send messages to `postMessage` and listen with `addEventListener`. Once the event is received,
+ * we also remove the listener with `removeEventListener`.
  *
- * ```js
- * // add the window method
- * window["_0123456"] = (response) => {
- *    // decrypt `response` and deliver the result to the caller here
- *    // then remove the temporary method
- *    delete window["_0123456"]
- * };
- *
- * // send the data + `messageHanding` values
- * window.webkit.messageHandlers.foo.postMessage({
- *   bar: "baz",
- *   messagingHandling: {
- *     methodName: "_0123456",
- *     secret: "super-secret",
- *     key: [1, 2, 45, 2],
- *     iv: [34, 4, 43],
- *   }
- * });
- *
- * // later in swift, the following JavaScript snippet will be executed
- * (() => {
- *   window["_0123456"]({
- *     ciphertext: [12, 13, 4],
- *     tag: [3, 5, 67, 56]
- *   })
- * })()
- * ```
+ * @link https://developer.android.com/reference/androidx/webkit/WebViewCompat#addWebMessageListener(android.webkit.WebView,java.lang.String,java.util.Set%3Cjava.lang.String%3E,androidx.webkit.WebViewCompat.WebMessageListener)
  * @implements {MessagingTransport}
  */
 class AndroidMessagingTransport {
@@ -4710,7 +4682,6 @@ class AndroidMessagingTransport {
     const handler = this._getHandler(name);
     const responseOnce = new Promise(resolve => {
       const responseHandler = e => {
-        console.count('ratto');
         handler.removeEventListener('message', responseHandler);
         resolve(e.data);
       };
@@ -4727,20 +4698,7 @@ class AndroidMessagingTransport {
 }
 
 /**
- * Use this configuration to create an instance of {@link Messaging} for WebKit
- *
- * ```js
- * import { fromConfig, WebkitMessagingConfig } from "@duckduckgo/content-scope-scripts/lib/messaging.js"
- *
- * const config = new WebkitMessagingConfig({
- *   hasModernWebkitAPI: true,
- *   webkitMessageHandlerNames: ["foo", "bar", "baz"],
- *   secret: "dax",
- * });
- *
- * const messaging = new Messaging(config)
- * const resp = await messaging.request("debugConfig")
- * ```
+ * Use this configuration to create an instance of {@link Messaging} for Android
  */
 exports.AndroidMessagingTransport = AndroidMessagingTransport;
 class AndroidMessagingConfig {
@@ -14780,8 +14738,6 @@ class Settings {
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
       }
-
-      // TODO: are we ok with this?
       if (this._availableInputTypes) {
         return this.availableInputTypes;
       }
@@ -16211,8 +16167,7 @@ class NativeUIController extends _UIController.UIController {
           }
         case 'none':
           {
-            // No-op. This just means that the user dismissed the prompt without choosing anything
-            // form.touchAllInputs('credentials')
+            // do nothing
             break;
           }
         default:
@@ -17290,7 +17245,7 @@ const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-
  */
 function createGlobalConfig(overrides) {
   /**
-   * Defines whether it's one of our desktop app
+   * Defines whether it's one of our desktop apps
    * @type {boolean}
    */
   let isApp = false;

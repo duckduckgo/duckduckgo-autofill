@@ -88,8 +88,7 @@ export class NativeUIController extends UIController {
                     break
                 }
                 case 'none': {
-                    // No-op. This just means that the user dismissed the prompt without choosing anything
-                    // form.touchAllInputs('credentials')
+                    // do nothing
                     break
                 }
                 default: {

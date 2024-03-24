@@ -10,6 +10,21 @@ import { MissingHandler } from './messaging.js'
  */
 
 /**
+ * On Android, handlers are added to the window object and are prefixed with `ddg`. The object looks like this:
+ *
+ * ```typescript
+ * {
+ *     onMessage: undefined,
+ *     postMessage: (message) => void,
+ *     addEventListener: (eventType: string, Function) => void,
+ *     removeEventListener: (eventType: string, Function) => void
+ * }
+ * ```
+ *
+ * You send messages to `postMessage` and listen with `addEventListener`. Once the event is received,
+ * we also remove the listener with `removeEventListener`.
+ *
+ * @link https://developer.android.com/reference/androidx/webkit/WebViewCompat#addWebMessageListener(android.webkit.WebView,java.lang.String,java.util.Set%3Cjava.lang.String%3E,androidx.webkit.WebViewCompat.WebMessageListener)
  * @implements {MessagingTransport}
  */
 export class AndroidMessagingTransport {
@@ -67,7 +82,6 @@ export class AndroidMessagingTransport {
 
         const responseOnce = new Promise((resolve) => {
             const responseHandler = (e) => {
-                console.count('ratto')
                 handler.removeEventListener('message', responseHandler)
                 resolve(e.data)
             }
@@ -84,7 +98,7 @@ export class AndroidMessagingTransport {
 }
 
 /**
- * Use this configuration to create an instance of {@link Messaging} for WebKit
+ * Use this configuration to create an instance of {@link Messaging} for Android
  */
 export class AndroidMessagingConfig {
     /**

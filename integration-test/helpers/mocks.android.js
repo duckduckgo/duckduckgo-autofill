@@ -176,7 +176,7 @@ export function createAndroidMocks () {
                         if (this.response) {
                             this.onMessage()
                         } else {
-                            // If we're not waiting for a response, add the call right away
+                            // If we're not waiting for a response, add the call here, otherwise it's added in onMessage
                             window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                         }
                     }
@@ -221,6 +221,7 @@ export function createAndroidMocks () {
                     {callName: 'ShowInContextEmailProtectionSignupPrompt'},
                     {callName: 'closeEmailProtectionTab'}
                 ]
+
                 // Attach the mocks to the window object
                 androidHandlersMocksConfig.forEach((call) => {
                     const androidSpecificName = 'ddg' + call.callName[0].toUpperCase() + call.callName.slice(1)

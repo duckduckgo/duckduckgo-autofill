@@ -129,7 +129,6 @@ export class Settings {
                 return Settings.defaults.availableInputTypes
             }
 
-            // TODO: are we ok with this?
             if (this._availableInputTypes) {
                 return this.availableInputTypes
             }
