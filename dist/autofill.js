@@ -3479,6 +3479,7 @@ class AndroidInterface extends _InterfacePrototype.default {
    * @returns {Promise<string|undefined>}
    */
   async getAlias() {
+    // If in-context signup is available, do that first
     if (this.inContextSignup.isAvailable()) {
       const {
         isSignedIn
@@ -3496,6 +3497,7 @@ class AndroidInterface extends _InterfacePrototype.default {
         this.onFinishedAutofill();
       }
     }
+    // Then, if successful actually prompt to fill
     if (this.settings.availableInputTypes.email) {
       const {
         alias

@@ -17,6 +17,7 @@ class AndroidInterface extends InterfacePrototype {
      * @returns {Promise<string|undefined>}
      */
     async getAlias () {
+        // If in-context signup is available, do that first
         if (this.inContextSignup.isAvailable()) {
             const { isSignedIn } = await this.deviceApi.request(new ShowInContextEmailProtectionSignupPromptCall(null))
             if (isSignedIn) {
@@ -30,6 +31,7 @@ class AndroidInterface extends InterfacePrototype {
                 this.onFinishedAutofill()
             }
         }
+        // Then, if successful actually prompt to fill
         if (this.settings.availableInputTypes.email) {
             const {alias} = await this.deviceApi.request(new EmailProtectionGetAliasCall({
                 requiresUserPermission: !this.globalConfig.isApp,
