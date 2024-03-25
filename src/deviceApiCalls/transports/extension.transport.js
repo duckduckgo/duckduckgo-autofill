@@ -69,6 +69,8 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
             contentScope: contentScope,
             // @ts-ignore
             userPreferences: {
+                // Copy to user preferences to match schema from CSS
+                locale: contentScope.locale,
                 features: {
                     autofill: {
                         settings: {

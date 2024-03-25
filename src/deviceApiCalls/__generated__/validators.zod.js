@@ -117,6 +117,7 @@ export const userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
     sessionKey: z.string().optional(),
     debug: z.boolean(),
+    locale: z.string().optional(),
     platform: z.object({
         name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android"), z.literal("unknown")])
     }),

@@ -34,6 +34,8 @@ export class Settings {
     _runtimeConfiguration = null
     /** @type {boolean | null} */
     _enabled = null
+    /** @type {string | null} */
+    _locale = null
 
     /**
      * @param {GlobalConfig} config
@@ -87,6 +89,23 @@ export class Settings {
                 console.log('isDDGTestMode: getEnabled: ❌', e)
             }
             return null
+        }
+    }
+
+    async getLocale() {
+        console.log('[Settings::getLocale]')
+        try {
+            const conf = await this._getRuntimeConfiguration()
+            const out = conf.userPreferences.locale
+            if (out == null) {
+                console.error('[Settings::getLocale] no locale in runtime config.userPreferences :(', conf)
+            }
+            return out
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getLocale: ❌', e)
+            }
+            return 'en'
         }
     }
 
@@ -145,6 +164,7 @@ export class Settings {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
+        this.setLocale(await this.getLocale())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -262,6 +282,15 @@ export class Settings {
     /** @param {AvailableInputTypes} value */
     setAvailableInputTypes (value) {
         this._availableInputTypes = {...this._availableInputTypes, ...value}
+    }
+
+    get locale () {
+        if (this._locale === null) throw new Error('locale accessed before being set')
+        return this._locale
+    }
+
+    setLocale (locale) {
+        this._locale = locale
     }
 
     static defaults = {

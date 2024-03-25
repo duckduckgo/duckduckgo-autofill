@@ -23,6 +23,7 @@ import {
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {EmailProtection} from '../EmailProtection.js'
+import { getTranslator } from '../locales/strings.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -69,6 +70,9 @@ class InterfacePrototype {
 
     /** @type {import("../../packages/device-api").DeviceApi} */
     deviceApi
+
+    /** @type {ReturnType<import("../locales/strings").getTranslator>} */
+    t = () => {}
 
     /** @type {boolean} */
     isInitializationStarted
@@ -166,7 +170,7 @@ class InterfacePrototype {
             newIdentities.push({
                 id: 'personalAddress',
                 emailAddress: personalAddress,
-                title: 'Block email trackers'
+                title: this.t('blockEmailTrackers')
             })
         }
 
@@ -262,6 +266,8 @@ class InterfacePrototype {
 
         await this.settings.refresh()
 
+        console.warn("[InterfacePrototype::startInit] DBG: this.settings.locale", this.settings.locale)
+        this.t = getTranslator(this.settings.locale)
         this.addDeviceListeners()
 
         await this.setupAutofill()

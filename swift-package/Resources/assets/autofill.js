@@ -4175,6 +4175,7 @@ var _index = require("../../packages/device-api/index.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
 var _EmailProtection = require("../EmailProtection.js");
+var _strings = require("../locales/strings.js");
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
  */
@@ -4219,6 +4220,9 @@ class InterfacePrototype {
 
   /** @type {import("../../packages/device-api").DeviceApi} */
   deviceApi;
+
+  /** @type {ReturnType<import("../locales/strings").getTranslator>} */
+  t = () => {};
 
   /** @type {boolean} */
   isInitializationStarted;
@@ -4322,7 +4326,7 @@ class InterfacePrototype {
       newIdentities.push({
         id: 'personalAddress',
         emailAddress: personalAddress,
-        title: 'Block email trackers'
+        title: this.t('blockEmailTrackers')
       });
     }
     newIdentities.push({
@@ -4414,6 +4418,8 @@ class InterfacePrototype {
     if (this.isInitializationStarted) return;
     this.alreadyInitialized = true;
     await this.settings.refresh();
+    console.warn("[InterfacePrototype::startInit] DBG: this.settings.locale", this.settings.locale);
+    this.t = (0, _strings.getTranslator)(this.settings.locale);
     this.addDeviceListeners();
     await this.setupAutofill();
     this.uiController = this.createUIController();
@@ -4973,7 +4979,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":2,"../EmailProtection.js":22,"../Form/formatters.js":26,"../Form/matching.js":33,"../InputTypes/Credentials.js":35,"../PasswordGenerator.js":38,"../Scanner.js":39,"../Settings.js":40,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":52,"../config.js":54,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"../deviceApiCalls/transports/transports.js":62,"./initFormSubmissionsApi.js":20}],18:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../EmailProtection.js":22,"../Form/formatters.js":26,"../Form/matching.js":33,"../InputTypes/Credentials.js":35,"../PasswordGenerator.js":38,"../Scanner.js":39,"../Settings.js":40,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":52,"../config.js":54,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"../deviceApiCalls/transports/transports.js":62,"../locales/strings.js":64,"./initFormSubmissionsApi.js":20}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10363,6 +10369,8 @@ class Settings {
   _runtimeConfiguration = null;
   /** @type {boolean | null} */
   _enabled = null;
+  /** @type {string | null} */
+  _locale = null;
 
   /**
    * @param {GlobalConfig} config
@@ -10416,6 +10424,22 @@ class Settings {
         console.log('isDDGTestMode: getEnabled: ❌', e);
       }
       return null;
+    }
+  }
+  async getLocale() {
+    console.log('[Settings::getLocale]');
+    try {
+      const conf = await this._getRuntimeConfiguration();
+      const out = conf.userPreferences.locale;
+      if (out == null) {
+        console.error('[Settings::getLocale] no locale in runtime config.userPreferences :(', conf);
+      }
+      return out;
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: getLocale: ❌', e);
+      }
+      return 'en';
     }
   }
 
@@ -10474,6 +10498,7 @@ class Settings {
     this.setEnabled(await this.getEnabled());
     this.setFeatureToggles(await this.getFeatureToggles());
     this.setAvailableInputTypes(await this.getAvailableInputTypes());
+    this.setLocale(await this.getLocale());
 
     // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
     if (typeof this.enabled === 'boolean') {
@@ -10608,6 +10633,13 @@ class Settings {
       ...this._availableInputTypes,
       ...value
     };
+  }
+  get locale() {
+    if (this._locale === null) throw new Error('locale accessed before being set');
+    return this._locale;
+  }
+  setLocale(locale) {
+    this._locale = locale;
   }
   static defaults = {
     /** @type {AutofillFeatureToggles} */
@@ -10917,7 +10949,9 @@ ${this.options.css}
     <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                Use <span class="js-address">${(0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress))}</span>
+                ${this.device.t("usePersonalDuckAddr", {
+      email: (0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress))
+    })}
             </span>
             <span class="tooltip__button--email__secondary-text">Block email trackers</span>
         </button>
@@ -10932,11 +10966,13 @@ ${this.options.css}
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
     this.usePrivateButton = this.shadow.querySelector('.js-use-private');
-    this.addressEl = this.shadow.querySelector('.js-address');
+    this.usePersonalCta = this.shadow.querySelector('.js-use-personal > span:first-of-type');
     this.updateAddresses = addresses => {
-      if (addresses && this.addressEl) {
+      if (addresses && this.usePersonalCta) {
         this.addresses = addresses;
-        this.addressEl.textContent = (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress);
+        this.usePersonalCta.textContent = this.device.t("usePersonalDuckAddr", {
+          email: (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress)
+        });
       }
     };
     const firePixel = this.device.firePixel.bind(this.device);
@@ -12932,7 +12968,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":12,"./autofill-utils.js":52,"./requestIdleCallback.js":64}],54:[function(require,module,exports){
+},{"./DeviceInterface.js":12,"./autofill-utils.js":52,"./requestIdleCallback.js":65}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13601,6 +13637,8 @@ async function extensionSpecificRuntimeConfiguration(deviceApi) {
       contentScope: contentScope,
       // @ts-ignore
       userPreferences: {
+        // Copy to user preferences to match schema from CSS
+        locale: contentScope.locale,
         features: {
           autofill: {
             settings: {
@@ -13822,6 +13860,75 @@ function waitForWindowsResponse(responseId, options) {
 }
 
 },{"../../../packages/device-api/index.js":2}],64:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getTranslator = getTranslator;
+// TODO(sjbarag): read from JS module generated from JSON files, probably.
+const translations = {
+  en: {
+    "hello": {
+      title: "hello, {name}",
+      note: "Says hi to a person."
+    },
+    "usePersonalDuckAddr": {
+      title: "Use {email}",
+      note: "Shown when a user can choose their personal @duck.com address."
+    },
+    "blockEmailTrackers": {
+      title: "Block email trackers",
+      note: "Shown when a user can choose their personal @duck.com address on native platforms."
+    }
+  },
+  xa: {
+    "hello": {
+      title: "h33llllo, {name}",
+      note: "Says hi to a person."
+    },
+    "usePersonalDuckAddr": {
+      title: "Ü55££ {email}",
+      note: "Shown when a user can choose their personal @duck.com address."
+    },
+    "blockEmailTrackers": {
+      title: "Bl000ck €m@@@i1il1l träáåck33rr55",
+      note: "Shown when a user can choose their personal @duck.com address on native platforms."
+    }
+  }
+};
+function getTranslator(locale) {
+  let library = translations[locale];
+  if (library == null) {
+    console.warn(`Received unsupported locale '${locale}'. Falling back to 'en'.`);
+    library = translations.en;
+  }
+  return function t(id, opts) {
+    return translateImpl(library, id, opts);
+  };
+}
+;
+function translateImpl(library, id, opts) {
+  const msg = library[id];
+  // Fall back to the message ID if an unsupported message is provided.
+  if (!msg) {
+    return id;
+  }
+
+  // Fast path: return the translated string directly if no replacements are provided.
+  if (opts == null) {
+    return msg.title;
+  }
+
+  // Repeatedly replace all instances of '{ SOME_REPLACEMENT_NAME }' with the corresponding value.
+  let out = msg.title;
+  for (const [name, value] of Object.entries(opts)) {
+    out = out.replaceAll(`{${name}}`, value);
+  }
+  return out;
+}
+
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
