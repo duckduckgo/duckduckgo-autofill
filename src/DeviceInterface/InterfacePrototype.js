@@ -592,12 +592,19 @@ class InterfacePrototype {
             try {
                 userData = await this.getUserData()
             } catch (e) {
+                if (this.isTestMode()) {
+                    console.log('getUserData failed with', e)
+                }
             }
 
             let capabilities
             try {
                 capabilities = await this.getEmailProtectionCapabilities()
-            } catch (e) {}
+            } catch (e) {
+                if (this.isTestMode()) {
+                    console.log('capabilities fetching failed with', e)
+                }
+            }
 
             // Set up listener for web app actions
             if (this.globalConfig.isDDGDomain) {
@@ -651,6 +658,11 @@ class InterfacePrototype {
                 const data = await sendAndWaitForAnswer(SIGN_IN_MSG, 'addUserData')
                 // This call doesn't send a response, so we can't know if it succeeded
                 this.storeUserData(data)
+
+                // Assuming the previous call succeeded, let's update availableInputTypes
+                if (this.settings.availableInputTypes) {
+                    this.settings.setAvailableInputTypes({email: true})
+                }
 
                 await this.setupAutofill()
                 await this.settings.refresh()

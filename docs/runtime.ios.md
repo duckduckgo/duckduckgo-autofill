@@ -1,74 +1,72 @@
+## String replacement
+On iOS and macOS, we string-replace these variables:
+
+```js
+// INJECT userPreferences HERE
+// INJECT isApp HERE
+// INJECT isTopFrame HERE
+// INJECT supportsTopFrame HERE
+// INJECT hasModernWebkitAPI HERE
+// INJECT webkitMessageHandlerNames HERE
+```
+
+- `userPreferences`: sets the platform name
+- `isApp`: true when is macOS
+- `isTopFrame`: true when the script is being rendered in the overlay webview
+- `supportsTopFrame`: true on macOS when the overlay webview is supported (now on all versions)
+- `hasModernWebkitAPI`: now true on all versions, since we've dropped macOS Catalina
+- `webkitMessageHandlerNames`: an array of all the expected call names, if we attempt a call that's not in the list, the script will error
+
 ## ~`getRuntimeConfiguration()`~
 
-on Apple devices, this data is retrieved from the following string-replacements
+See: [../src/schema/runtimeConfiguration.json](../src/deviceApiCalls/schemas/runtimeConfiguration.json).
 
-- [BrowserServices Kit String replacements](https://github.com/duckduckgo/BrowserServicesKit/blob/main/Sources/BrowserServicesKit/Autofill/AutofillUserScript+SourceProvider.swift#L54-L56)
+This includes the configurations needed for autofill to know what options are available on the specific page we're on, for example whether the domain is blocklisted by remote config, or whether a specific feature is turned on/off either remotely or by the user.
 
-Internally, we force it into the following shape in order to conform to the following schema definition:
-- [Runtime Configuration Schema](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)
+**Example:**
 
-**strings to replace**
-```
-// INJECT contentScope HERE
-// INJECT userUnprotectedDomains HERE
-// INJECT userPreferences HERE
-```
-
-Directly replace the lines above in the following way:
-
-`str.replace('// INJECT contentScope HERE', 'contentScope = {JSON_HERE}') + ';'`
-
-For example, the 3 variables should look like this (don't forget the semicolon at the end of each!)
-
-```javascript
-// INJECT contentScope HERE
-contentScope = {
-  "features": {
-    "autofill": {
-      "state": "enabled",
-      "exceptions": []
-    }
-  },
-  "unprotectedTemporary": []
-};
-```
-
-```javascript
-// INJECT userUnprotectedDomains HERE
-userUnprotectedDomains = [];
-```
-
-```javascript
-// INJECT userPreferences HERE
-userPreferences = {
-  "debug": false,
-  "platform": {
-    "name": "android"
-  },
-  "features": {
-    "autofill": {
-      "settings": {
-        "featureToggles": {
-          "inputType_credentials": true,
-          "inputType_identities": false,
-          "inputType_creditCards": false,
-          "emailProtection": true,
-          "password_generation": false,
-          "credentials_saving": true
+```json
+{
+  "success": {
+    "contentScope": {
+      "features": {
+        "autofill": {
+          "state": "enabled",
+          "exceptions": []
+        }
+      },
+      "unprotectedTemporary": []
+    },
+    "userUnprotectedDomains": [],
+    "userPreferences": {
+      "debug": false,
+      "platform": {
+        "name": "ios"
+      },
+      "features": {
+        "autofill": {
+          "settings": {
+            "featureToggles": {
+              "inputType_credentials": true,
+              "inputType_identities": false,
+              "inputType_creditCards": false,
+              "emailProtection": true,
+              "password_generation": true,
+              "credentials_saving": true
+            }
+          }
         }
       }
     }
   }
-};
+}
 ```
 
 ---
 
 ## `getAvailableInputTypes()`
 
-see:
-
-- [../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json](../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json)
+see: [../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json](../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json)
 
 This represents which input types we can autofill for the current user. Values are `true` if we can autofill the
 field type with at least one item. For example, if we have two credential items and the first only has a username

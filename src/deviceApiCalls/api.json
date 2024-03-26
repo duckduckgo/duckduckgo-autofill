@@ -144,6 +144,15 @@
       "type": "object",
       "description": "Opens the native identities management UI from the autofill popup"
     },
+    "emailProtectionGetAlias": {
+      "type": "object",
+      "description": "Used to prompt email protection autofill on mobile.",
+      "properties": {
+        "id": { "type": "string", "const":  "emailProtectionGetAliasResponse"},
+        "paramsValidator": { "$ref": "./schemas/emailProtectionGetAlias.params.json" },
+        "resultValidator": { "$ref": "./schemas/emailProtectionGetAlias.result.json" }
+      }
+    },
     "emailProtectionStoreUserData": {
       "type": "object",
       "description": "Used to store Email Protection auth credentials (logging in)",

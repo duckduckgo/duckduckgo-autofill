@@ -51,13 +51,14 @@
  * ```
  */
 import { WebkitMessagingConfig, WebkitMessagingTransport } from './webkit.js'
+import { AndroidMessagingConfig, AndroidMessagingTransport } from './android.js'
 
 /**
  * @implements {MessagingTransport}
  */
 export class Messaging {
     /**
-   * @param {WebkitMessagingConfig} config
+   * @param {WebkitMessagingConfig | AndroidMessagingConfig} config
    */
     constructor (config) {
         this.transport = getTransport(config)
@@ -124,12 +125,15 @@ export class MessagingTransport {
 }
 
 /**
- * @param {WebkitMessagingConfig} config
+ * @param {WebkitMessagingConfig | AndroidMessagingConfig} config
  * @returns {MessagingTransport}
  */
 function getTransport (config) {
     if (config instanceof WebkitMessagingConfig) {
         return new WebkitMessagingTransport(config)
+    }
+    if (config instanceof AndroidMessagingConfig) {
+        return new AndroidMessagingTransport(config)
     }
     throw new Error('unreachable')
 }

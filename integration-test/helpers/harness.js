@@ -174,6 +174,20 @@ export async function defaultIOSScript (page) {
 /**
  * @param {import("@playwright/test").Page} page
  */
+export async function defaultAndroidScript (page) {
+    return createAutofillScript()
+        .replaceAll({
+            userPreferences: {
+                platform: {name: 'android'}
+            }
+        })
+        .platform('android')
+        .applyTo(page)
+}
+
+/**
+ * @param {import("@playwright/test").Page} page
+ */
 export async function createIOSAutofillScript (page) {
     return createAutofillScript()
         .replaceAll(iosContentScopeReplacements())
@@ -313,7 +327,7 @@ export async function addMocksAsAttachments (page, test, testInfo) {
         const lines = [`name: ${name}`]
         if (platform === 'android') {
             lines.push('sent as json string: \n\n' + JSON.stringify(params))
-            params = JSON.parse(/** @type {any} */(params))
+            params = typeof params === 'string' ? JSON.parse(/** @type {any} */(params)) : params
         }
         lines.push(`\n\nparams: \n\n` + JSON.stringify(params, null, 2))
         lines.push(`\n\nresponse: \n\n` + JSON.stringify(response, null, 2))

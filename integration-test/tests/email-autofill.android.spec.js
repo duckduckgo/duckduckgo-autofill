@@ -1,10 +1,7 @@
-import {
-    createAutofillScript,
-    forwardConsoleMessages
-} from '../helpers/harness.js'
+import {defaultAndroidScript, forwardConsoleMessages} from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
 import {constants} from '../helpers/mocks.js'
-import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
+import {createAndroidMocks} from '../helpers/mocks.android.js'
 import {testContext} from '../helpers/test-context.js'
 import {signupPage} from '../helpers/pages/signupPage.js'
 import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
@@ -30,10 +27,7 @@ test.describe('android', () => {
                 .applyTo(page)
 
             // create + inject the script
-            await createAutofillScript()
-                .replaceAll(androidStringReplacements())
-                .platform('android')
-                .applyTo(page)
+            await defaultAndroidScript(page)
 
             // if this works, the tooltipHandler must have loaded and added the field decorations
             await emailPage.clickIntoInput()
@@ -48,18 +42,16 @@ test.describe('android', () => {
 
             const {personalAddress, privateAddress0} = constants.fields.email
             await createAndroidMocks()
+                .withRuntimeConfigOverrides({
+                    featureToggles: {
+                        credentials_saving: true
+                    }
+                })
                 .withPersonalEmail(personalAddress)
                 .withPrivateEmail(privateAddress0)
                 .applyTo(page)
 
-            await createAutofillScript()
-                .replaceAll(androidStringReplacements({
-                    featureToggles: {
-                        credentials_saving: true
-                    }
-                }))
-                .platform('android')
-                .applyTo(page)
+            await defaultAndroidScript(page)
 
             await signup.clickIntoEmailField()
             await signup.enterPassword('abcd')
@@ -78,19 +70,17 @@ test.describe('android', () => {
             await emailPage.navigate()
             const {personalAddress} = constants.fields.email
             await createAndroidMocks()
+                .withRuntimeConfigOverrides({
+                    availableInputTypes: {
+                        email: true
+                    }
+                })
                 .withPersonalEmail(personalAddress)
                 .withPrivateEmail(personalAddress)
                 .applyTo(page)
 
             // create + inject the script
-            await createAutofillScript()
-                .replaceAll(androidStringReplacements({
-                    availableInputTypes: {
-                        email: true
-                    }
-                }))
-                .platform('android')
-                .applyTo(page)
+            await defaultAndroidScript(page)
 
             await emailPage.clickIntoInput()
             await emailPage.assertEmailValue(personalAddress)
@@ -107,33 +97,29 @@ test.describe('android', () => {
 
             // android specific mocks
             await createAndroidMocks()
-                .applyTo(page)
-
-            // create + inject the script
-            await createAutofillScript()
-                .replaceAll(androidStringReplacements({
+                .withRuntimeConfigOverrides({
                     availableInputTypes: {
                         email: false
                     }
-                }))
-                .platform('android')
+                })
                 .applyTo(page)
+
+            // create + inject the script
+            await defaultAndroidScript(page)
 
             await signup.assertEmailHasNoDaxIcon()
         })
     })
     test.describe('password generation', () => {
-        const script = createAutofillScript()
-            .replaceAll(androidStringReplacements({
-                availableInputTypes: {},
-                featureToggles: {
-                    password_generation: true,
-                    inputType_credentials: true,
-                    inlineIcon_credentials: true,
-                    credentials_saving: true
-                }
-            }))
-            .platform('android')
+        const overrides = {
+            availableInputTypes: {},
+            featureToggles: {
+                password_generation: true,
+                inputType_credentials: true,
+                inlineIcon_credentials: true,
+                credentials_saving: true
+            }
+        }
 
         test('should autofill with generated password + private email', async ({page}) => {
             // enable in-terminal exceptions
@@ -143,12 +129,13 @@ test.describe('android', () => {
 
             const {personalAddress, privateAddress0} = constants.fields.email
             await createAndroidMocks()
+                .withRuntimeConfigOverrides(overrides)
                 .withPersonalEmail(personalAddress)
                 .withPrivateEmail(privateAddress0)
                 .withPasswordDecision?.('accept')
                 .applyTo(page)
 
-            await script.applyTo(page)
+            await defaultAndroidScript(page)
 
             // simulate the email modal
             await signup.clickIntoEmailField()
@@ -171,11 +158,12 @@ test.describe('android', () => {
 
             // android specific mocks
             await createAndroidMocks()
+                .withRuntimeConfigOverrides(overrides)
                 .withPasswordDecision?.('reject')
                 .applyTo(page)
 
             // create + inject the script
-            await script.applyTo(page)
+            await defaultAndroidScript(page)
 
             await signup.clickIntoPasswordField()
             await signup.assertPasswordWasNotAutofilled()

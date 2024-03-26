@@ -1,6 +1,11 @@
-import {createAutofillScript, forwardConsoleMessages, mockedCalls, setupMockedDomain} from '../helpers/harness.js'
+import {
+    defaultAndroidScript,
+    forwardConsoleMessages,
+    mockedCalls,
+    setupMockedDomain
+} from '../helpers/harness.js'
 import {expect, test as base} from '@playwright/test'
-import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
+import {createAndroidMocks} from '../helpers/mocks.android.js'
 import {testContext} from '../helpers/test-context.js'
 import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
 
@@ -18,17 +23,15 @@ test.describe('android', () => {
         await emailPage.navigate('https://example.com')
 
         await createAndroidMocks()
-            .applyTo(page)
-
-        // create + inject the script
-        await createAutofillScript()
-            .replaceAll(androidStringReplacements({
+            .withRuntimeConfigOverrides({
                 availableInputTypes: {
                     email: false
                 }
-            }))
-            .platform('android')
+            })
             .applyTo(page)
+
+        // create + inject the script
+        await defaultAndroidScript(page)
 
         // Checks if in-context signup has already been dismissed
         const checkCall = await mockedCalls(page, {names: ['getIncontextSignupDismissedAt']})
