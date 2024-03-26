@@ -91,6 +91,35 @@ export class Settings {
     }
 
     /**
+     * Retrieves the user's language from the current platform's `RuntimeConfiguration`. If the
+     * platform doesn't include a two-character `.userPreferences.language` property in its runtime
+     * configuration, or if an error occurs, 'en' is used as a fallback.
+     *
+     * NOTE: This function returns the two-character 'language' code of a typical POSIX locale
+     * (e.g. 'en', 'de', 'fr') listed in ISO 639-1[1].
+     *
+     * [1] https://en.wikipedia.org/wiki/ISO_639-1
+     *
+     * @returns {Promise<string>} the device's current language code, or 'en' if something goes wrong
+     */
+    async getLanguage () {
+        try {
+            const conf = await this._getRuntimeConfiguration()
+            const language = conf.userPreferences.language ?? 'en'
+            if (language.length !== 2) {
+                console.warn(`config.userPreferences.language must be two characters, but received '${language}'`)
+                return 'en'
+            }
+            return language
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getLanguage: ❌', e)
+            }
+            return 'en'
+        }
+    }
+
+    /**
      * Get runtime configuration, but only once.
      *
      * Some platforms may be reading this directly from inlined variables, whilst others
