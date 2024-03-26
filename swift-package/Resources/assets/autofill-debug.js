@@ -8341,6 +8341,7 @@ var _index = require("../../packages/device-api/index.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 var _initFormSubmissionsApi = require("./initFormSubmissionsApi.js");
 var _EmailProtection = require("../EmailProtection.js");
+var _strings = require("../locales/strings.js");
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
  */
@@ -8386,6 +8387,13 @@ class InterfacePrototype {
   /** @type {import("../../packages/device-api").DeviceApi} */
   deviceApi;
 
+  /**
+   * Translates a string to the current language, replacing each placeholder
+   * with a key present in `opts` with the corresponding value.
+   * @type {import('../locales/strings').TranslateFn}
+   */
+  t;
+
   /** @type {boolean} */
   isInitializationStarted;
 
@@ -8401,6 +8409,7 @@ class InterfacePrototype {
     this.globalConfig = config;
     this.deviceApi = deviceApi;
     this.settings = settings;
+    this.t = (0, _strings.getTranslator)(settings);
     this.uiController = null;
     this.scanner = (0, _Scanner.createScanner)(this, {
       initialDelay: this.initialSetupDelayMs
@@ -9139,7 +9148,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":12,"../EmailProtection.js":32,"../Form/formatters.js":36,"../Form/matching.js":43,"../InputTypes/Credentials.js":45,"../PasswordGenerator.js":48,"../Scanner.js":49,"../Settings.js":50,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../config.js":64,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/transports/transports.js":72,"./initFormSubmissionsApi.js":30}],28:[function(require,module,exports){
+},{"../../packages/device-api/index.js":12,"../EmailProtection.js":32,"../Form/formatters.js":36,"../Form/matching.js":43,"../InputTypes/Credentials.js":45,"../PasswordGenerator.js":48,"../Scanner.js":49,"../Settings.js":50,"../UI/controllers/NativeUIController.js":57,"../autofill-utils.js":62,"../config.js":64,"../deviceApiCalls/__generated__/deviceApiCalls.js":66,"../deviceApiCalls/transports/transports.js":72,"../locales/strings.js":74,"./initFormSubmissionsApi.js":30}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14529,6 +14538,8 @@ class Settings {
   _runtimeConfiguration = null;
   /** @type {boolean | null} */
   _enabled = null;
+  /** @type {string} */
+  _language = 'en';
 
   /**
    * @param {GlobalConfig} config
@@ -14586,6 +14597,35 @@ class Settings {
   }
 
   /**
+   * Retrieves the user's language from the current platform's `RuntimeConfiguration`. If the
+   * platform doesn't include a two-character `.userPreferences.language` property in its runtime
+   * configuration, or if an error occurs, 'en' is used as a fallback.
+   *
+   * NOTE: This function returns the two-character 'language' code of a typical POSIX locale
+   * (e.g. 'en', 'de', 'fr') listed in ISO 639-1[1].
+   *
+   * [1] https://en.wikipedia.org/wiki/ISO_639-1
+   *
+   * @returns {Promise<string>} the device's current language code, or 'en' if something goe wrong
+   */
+  async getLanguage() {
+    try {
+      const conf = await this._getRuntimeConfiguration();
+      const language = conf.userPreferences.language ?? 'en';
+      if (language.length !== 2) {
+        console.warn(`config.userPreferences.lang must be two characters, but received '${language}'`);
+        return 'en';
+      }
+      return language;
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.log('isDDGTestMode: getLanguage: ❌', e);
+      }
+      return 'en';
+    }
+  }
+
+  /**
    * Get runtime configuration, but only once.
    *
    * Some platforms may be reading this directly from inlined variables, whilst others
@@ -14628,7 +14668,8 @@ class Settings {
 
   /**
    * To 'refresh' settings means to re-call APIs to determine new state. This may
-   * only occur once per page, but it must be done before any page scanning/decorating can happen
+   * only occur once per page, but it must be done before any page scanning/decorating
+   * or translation can happen.
    *
    * @returns {Promise<{
    *      availableInputTypes: AvailableInputTypes,
@@ -14640,6 +14681,7 @@ class Settings {
     this.setEnabled(await this.getEnabled());
     this.setFeatureToggles(await this.getFeatureToggles());
     this.setAvailableInputTypes(await this.getAvailableInputTypes());
+    this.setLanguage(await this.getLanguage());
 
     // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
     if (typeof this.enabled === 'boolean') {
@@ -14774,6 +14816,19 @@ class Settings {
       ...this._availableInputTypes,
       ...value
     };
+  }
+
+  /** @returns {string} the user's current two-character language code, as provided by the platform */
+  get language() {
+    return this._language;
+  }
+
+  /**
+   * Sets the current two-character language code.
+   * @param {string} language - the language
+   */
+  setLanguage(language) {
+    this._language = language;
   }
   static defaults = {
     /** @type {AutofillFeatureToggles} */
@@ -17098,7 +17153,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":22,"./autofill-utils.js":62,"./requestIdleCallback.js":74}],64:[function(require,module,exports){
+},{"./DeviceInterface.js":22,"./autofill-utils.js":62,"./requestIdleCallback.js":75}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18343,6 +18398,127 @@ function waitForWindowsResponse(responseId, options) {
 }
 
 },{"../../../packages/device-api/index.js":12}],74:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getTranslator = getTranslator;
+// TODO(sjbarag): read from JS module generated from JSON files, probably.
+const translations = {
+  en: {
+    'hello': {
+      title: 'Hello world',
+      note: 'Static text for testing.'
+    },
+    'lipsum': {
+      title: 'Lorem ipsum dolor sit amet, {foo} {bar}',
+      note: 'Placeholder text.'
+    },
+    'usePersonalDuckAddr': {
+      title: 'Use {email}',
+      note: 'Shown when a user can choose their personal @duck.com address.'
+    },
+    'blockEmailTrackers': {
+      title: 'Block email trackers',
+      note: 'Shown when a user can choose their personal @duck.com address on native platforms.'
+    }
+  },
+  xa: {
+    'hello': {
+      title: 'H33ll00 wºrrld',
+      note: 'Static text for testing.'
+    },
+    'lipsum': {
+      title: 'Lºrr3e3m 1p$$$um d00l1loor s!t @@mett, {foo} {bar}',
+      note: 'Placeholder text.'
+    },
+    'usePersonalDuckAddr': {
+      title: 'Ü55££ {email}',
+      note: 'Shown when a user can choose their personal @duck.com address.'
+    },
+    'blockEmailTrackers': {
+      title: 'Bl000ck €m@@@i1il1l träáåck33rr55',
+      note: 'Shown when a user can choose their personal @duck.com address on native platforms.'
+    }
+  }
+};
+
+/**
+ * @callback TranslateFn
+ * Translates a string with the provided ID to the current language, replacing
+ * each placeholder with a key present in `opts` with the corresponding value.
+ *
+ * @param {string} id - the string ID to look up
+ * @param {Record<string, string>} [opts] - a set of optional replacements to perform
+ * @returns {string} the string with ID `id`, translated to the current language
+ */
+
+/**
+ * Builds a reusable translation function bound to the language provided by
+ * `settings`. That language isn't read until the first translation is
+ * requested, so it's safe to use this statically and assign `settings.language`
+ * later.
+ *
+ * @param {{ language: string }} settings - a settings object containing the current language
+ * @returns {TranslateFn} a translation function
+ */
+function getTranslator(settings) {
+  let library;
+  return function t(id, opts) {
+    // Retrieve the library when the first string is translated, to allow
+    // InterfacePrototype.t() to be statically initialized.
+    if (!library) {
+      const {
+        language
+      } = settings;
+      library = translations[language];
+      if (!library) {
+        console.warn(`Received unsupported locale '${language}'. Falling back to 'en'.`);
+        library = translations.en;
+      }
+    }
+    return translateImpl(library, id, opts);
+  };
+}
+
+/**
+ * @typedef {object} Translation
+ * @prop {string} title - the translated string
+ * @prop {string} note - a description of `title` used to aid translators
+ */
+
+/**
+ * Looks up the string with the provided `id` in a `library`, performing
+ * key-value replacements on the translated string. If no string with ID `id` is
+ * found, `id` is returned unmodified.
+ * @param {Record<string, Translation>} library - a map of string IDs to translation
+ * @param {string} id - the string ID to translate
+ * @param {Record<string, string>} [opts] - a set of optional replacements to perform
+ * @returns {string} the string with ID `id`, translated to the current language
+ */
+function translateImpl(library, id, opts) {
+  const msg = library[id];
+  // Fall back to the message ID if an unsupported message is provided.
+  if (!msg) {
+    return id;
+  }
+
+  // Fast path: don't loop over opts if no replacements are provided.
+  if (!opts) {
+    return msg.title;
+  }
+
+  // Repeatedly replace all instances of '{SOME_REPLACEMENT_NAME}' with the
+  // corresponding value.
+  let out = msg.title;
+  for (const [name, value] of Object.entries(opts)) {
+    out = out.replaceAll(`{${name}}`, value);
+  }
+  return out;
+}
+
+},{}],75:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
