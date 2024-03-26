@@ -8618,7 +8618,7 @@ class InterfacePrototype {
       newIdentities.push({
         id: 'personalAddress',
         emailAddress: personalAddress,
-        title: 'Block email trackers'
+        title: this.t('blockEmailTrackers')
       });
     }
     newIdentities.push({
@@ -15293,9 +15293,11 @@ ${this.options.css}
     <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                Use <span class="js-address">${(0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress))}</span>
+                ${this.device.t('usePersonalDuckAddr', {
+      email: (0, _autofillUtils.formatDuckAddress)((0, _autofillUtils.escapeXML)(this.addresses.personalAddress))
+    })}
             </span>
-            <span class="tooltip__button--email__secondary-text">Block email trackers</span>
+            <span class="tooltip__button--email__secondary-text">${this.device.t('blockEmailTrackers')}</span>
         </button>
         <button class="tooltip__button tooltip__button--email js-use-private">
             <span class="tooltip__button--email__primary-text">Generate a Private Duck Address</span>
@@ -15308,11 +15310,13 @@ ${this.options.css}
     this.tooltip = this.shadow.querySelector('.tooltip');
     this.usePersonalButton = this.shadow.querySelector('.js-use-personal');
     this.usePrivateButton = this.shadow.querySelector('.js-use-private');
-    this.addressEl = this.shadow.querySelector('.js-address');
+    this.usePersonalCta = this.shadow.querySelector('.js-use-personal > span:first-of-type');
     this.updateAddresses = addresses => {
-      if (addresses && this.addressEl) {
+      if (addresses && this.usePersonalCta) {
         this.addresses = addresses;
-        this.addressEl.textContent = (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress);
+        this.usePersonalCta.textContent = this.device.t('usePersonalDuckAddr', {
+          email: (0, _autofillUtils.formatDuckAddress)(addresses.personalAddress)
+        });
       }
     };
     const firePixel = this.device.firePixel.bind(this.device);
