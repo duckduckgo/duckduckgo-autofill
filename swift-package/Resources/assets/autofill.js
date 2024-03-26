@@ -13656,6 +13656,8 @@ async function extensionSpecificRuntimeConfiguration(deviceApi) {
       contentScope: contentScope,
       // @ts-ignore
       userPreferences: {
+        // Copy locale to user preferences as 'language' to match expected payload
+        language: contentScope.locale,
         features: {
           autofill: {
             settings: {
