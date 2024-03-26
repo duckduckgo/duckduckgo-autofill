@@ -7672,7 +7672,7 @@ class AndroidInterface extends _InterfacePrototype.default {
         shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
         isIncontextSignupAvailable: this.inContextSignup.isAvailable()
       }));
-      return alias ? (0, _autofillUtils.formatDuckAddress)(alias) : alias;
+      return alias ? (0, _autofillUtils.formatDuckAddress)(alias) : undefined;
     }
   }
 

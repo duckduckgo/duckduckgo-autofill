@@ -38,7 +38,7 @@ class AndroidInterface extends InterfacePrototype {
                 shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
                 isIncontextSignupAvailable: this.inContextSignup.isAvailable()
             }))
-            return alias ? formatDuckAddress(alias) : alias
+            return alias ? formatDuckAddress(alias) : undefined
         }
     }
 
