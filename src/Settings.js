@@ -34,6 +34,8 @@ export class Settings {
     _runtimeConfiguration = null
     /** @type {boolean | null} */
     _enabled = null
+    /** @type {string} */
+    _language = 'en'
 
     /**
      * @param {GlobalConfig} config
@@ -91,6 +93,35 @@ export class Settings {
     }
 
     /**
+     * Retrieves the user's language from the current platform's `RuntimeConfiguration`. If the
+     * platform doesn't include a two-character `.userPreferences.language` property in its runtime
+     * configuration, or if an error occurs, 'en' is used as a fallback.
+     *
+     * NOTE: This function returns the two-character 'language' code of a typical POSIX locale
+     * (e.g. 'en', 'de', 'fr') listed in ISO 639-1[1].
+     *
+     * [1] https://en.wikipedia.org/wiki/ISO_639-1
+     *
+     * @returns {Promise<string>} the device's current language code, or 'en' if something goes wrong
+     */
+    async getLanguage () {
+        try {
+            const conf = await this._getRuntimeConfiguration()
+            const language = conf.userPreferences.language ?? 'en'
+            if (language.length !== 2) {
+                console.warn(`config.userPreferences.lang must be two characters, but received '${language}'`)
+                return 'en'
+            }
+            return language
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getLanguage: ❌', e)
+            }
+            return 'en'
+        }
+    }
+
+    /**
      * Get runtime configuration, but only once.
      *
      * Some platforms may be reading this directly from inlined variables, whilst others
@@ -144,7 +175,8 @@ export class Settings {
 
     /**
      * To 'refresh' settings means to re-call APIs to determine new state. This may
-     * only occur once per page, but it must be done before any page scanning/decorating can happen
+     * only occur once per page, but it must be done before any page scanning/decorating
+     * or translation can happen.
      *
      * @returns {Promise<{
      *      availableInputTypes: AvailableInputTypes,
@@ -156,6 +188,7 @@ export class Settings {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
+        this.setLanguage(await this.getLanguage())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -281,6 +314,19 @@ export class Settings {
     /** @param {AvailableInputTypes} value */
     setAvailableInputTypes (value) {
         this._availableInputTypes = {...this._availableInputTypes, ...value}
+    }
+
+    /** @returns {string} the user's current two-character language code, as provided by the platform */
+    get language () {
+        return this._language
+    }
+
+    /**
+     * Sets the current two-character language code.
+     * @param {string} language - the language
+     */
+    setLanguage (language) {
+        this._language = language
     }
 
     static defaults = {
