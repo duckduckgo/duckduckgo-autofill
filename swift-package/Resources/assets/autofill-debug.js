@@ -17736,6 +17736,7 @@ const userPreferencesSchema = exports.userPreferencesSchema = _zod.z.object({
   globalPrivacyControlValue: _zod.z.boolean().optional(),
   sessionKey: _zod.z.string().optional(),
   debug: _zod.z.boolean(),
+  language: _zod.z.string().optional(),
   platform: _zod.z.object({
     name: _zod.z.union([_zod.z.literal("ios"), _zod.z.literal("macos"), _zod.z.literal("windows"), _zod.z.literal("extension"), _zod.z.literal("android"), _zod.z.literal("unknown")])
   }),

@@ -359,6 +359,7 @@ export interface UserPreferences {
   globalPrivacyControlValue?: boolean;
   sessionKey?: string;
   debug: boolean;
+  language?: string;
   platform: {
     name: "ios" | "macos" | "windows" | "extension" | "android" | "unknown";
   };
