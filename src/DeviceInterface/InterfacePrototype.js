@@ -175,7 +175,7 @@ class InterfacePrototype {
             newIdentities.push({
                 id: 'personalAddress',
                 emailAddress: personalAddress,
-                title: 'Block email trackers'
+                title: this.t('blockEmailTrackers')
             })
         }
 
