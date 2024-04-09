@@ -355,18 +355,21 @@ test.describe('Auto-fill a login form on macOS', () => {
                     username: personalAddress,
                     password
                 },
-                expectedLabel: 'Manage passwords…'
+                expectedLabel: 'Manage passwords…',
+                expectedCall: 'pmHandlerOpenManagePasswords'
             },
             {
                 description: 'with identities',
                 identity: constants.fields.identity,
-                expectedLabel: 'Manage identities…'
+                expectedLabel: 'Manage identities…',
+                expectedCall: 'pmHandlerOpenManageIdentities'
             },
             {
                 description: 'with identities and Email Protection',
                 identity: constants.fields.identity,
                 emailProtection: {personalAddress, privateAddress},
-                expectedLabel: 'Manage identities…'
+                expectedLabel: 'Manage identities…',
+                expectedCall: 'pmHandlerOpenManageIdentities'
             },
             {
                 description: 'with Email Protection and no identities should not show',
@@ -376,12 +379,20 @@ test.describe('Auto-fill a login form on macOS', () => {
             {
                 description: 'with credit card',
                 creditCard: constants.fields.creditCard,
-                expectedLabel: 'Manage credit cards…'
+                expectedLabel: 'Manage credit cards…',
+                expectedCall: 'pmHandlerOpenManageCreditCards'
             }
         ]
 
         for (const testCase of testCases) {
-            const {description, credentials, identity, creditCard, expectedLabel} = testCase
+            const {
+                description,
+                credentials,
+                identity,
+                creditCard,
+                expectedLabel,
+                expectedCall
+            } = testCase
             test(description, async ({page}) => {
                 await forwardConsoleMessages(page)
                 await createWebkitMocks()
@@ -401,6 +412,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 if (expectedLabel) {
                     await overlay.clickButtonWithText(expectedLabel)
                     await overlay.assertCloseAutofillParent()
+                    await overlay.assertCallHappenedTimes(expectedCall, 1)
                 } else {
                     await overlay.assertTextNotPresent('Manage')
                 }

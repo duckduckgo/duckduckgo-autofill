@@ -52,6 +52,11 @@ export function overlayPage (page) {
             const button = await page.locator(`button:has-text("${text}")`)
             await expect(button).toHaveCount(0)
         }
+
+        async assertCallHappenedTimes (callName, times) {
+            const calls = await mockedCalls(page, {names: [callName]})
+            expect(calls.length).toBe(times)
+        }
     }
 
     return new OverlayPage()
