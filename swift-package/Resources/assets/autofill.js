@@ -3819,6 +3819,20 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   }
 
   /**
+   * Opens the native UI for managing identities
+   */
+  openManageIdentities() {
+    return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManageIdentities'));
+  }
+
+  /**
+   * Opens the native UI for managing credit cards
+   */
+  openManageCreditCards() {
+    return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManageCreditCards'));
+  }
+
+  /**
    * Gets a single identity obj once the user requests it
    * @param {IdentityObject['id']} id
    * @returns {Promise<{success: IdentityObject|undefined}>}
