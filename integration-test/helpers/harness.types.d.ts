@@ -28,6 +28,7 @@ interface CredentialsMock {
  * ```
  */
 interface MockBuilder<State, Mocks extends Record<string, any>> {
+    withRuntimeConfigOverrides(overrides: RuntimeConfiguration): MockBuilder<State, Mocks>
     // Set the private email address
     withPrivateEmail(email: string): MockBuilder<State, Mocks>
     // Set the personal email address
