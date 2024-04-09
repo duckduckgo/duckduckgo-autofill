@@ -107,6 +107,12 @@ export class Settings {
         if (this._runtimeConfiguration) return this._runtimeConfiguration
         const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
         this._runtimeConfiguration = runtimeConfig
+
+        // If the platform sends availableInputTypes here, store them
+        if (runtimeConfig.availableInputTypes) {
+            this.setAvailableInputTypes(runtimeConfig.availableInputTypes)
+        }
+
         return this._runtimeConfiguration
     }
 
@@ -122,6 +128,11 @@ export class Settings {
             if (this.globalConfig.isTopFrame) {
                 return Settings.defaults.availableInputTypes
             }
+
+            if (this._availableInputTypes) {
+                return this.availableInputTypes
+            }
+
             return await this.deviceApi.request(new GetAvailableInputTypesCall(null))
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
@@ -165,11 +176,18 @@ export class Settings {
      * @param {{
      *   mainType: SupportedMainTypes
      *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+     *   variant?: import('./Form/matching.js').SupportedVariants | ""
      * }} types
      * @returns {boolean}
      */
-    isTypeUnavailable ({mainType, subtype}) {
+    isTypeUnavailable ({mainType, subtype, variant}) {
         if (mainType === 'unknown') return true
+
+        // Ensure password generation feature flag is respected
+        if (subtype === 'password' && variant === 'new') {
+            return !this.featureToggles.password_generation
+        }
+
         if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
             return true
         }
@@ -190,11 +208,12 @@ export class Settings {
      * @param {{
      *   mainType: SupportedMainTypes
      *   subtype: import('./Form/matching.js').SupportedSubTypes | "unknown"
+     *   variant?: import('./Form/matching.js').SupportedVariants | ""
      * }} types
      * @returns {Promise<boolean>}
      */
-    async populateDataIfNeeded ({mainType, subtype}) {
-        if (this.isTypeUnavailable({mainType, subtype})) return false
+    async populateDataIfNeeded ({mainType, subtype, variant}) {
+        if (this.isTypeUnavailable({mainType, subtype, variant})) return false
         if (this.availableInputTypes?.[mainType] === undefined) {
             await this.populateData()
             return true
@@ -214,7 +233,7 @@ export class Settings {
      * @returns {boolean}
      */
     canAutofillType ({mainType, subtype, variant}, inContextSignup) {
-        if (this.isTypeUnavailable({ mainType, subtype })) return false
+        if (this.isTypeUnavailable({ mainType, subtype, variant })) return false
 
         // If it's an email field and Email Protection is enabled, return true regardless of other options
         const isEmailProtectionEnabled = this.featureToggles.emailProtection && this.availableInputTypes.email

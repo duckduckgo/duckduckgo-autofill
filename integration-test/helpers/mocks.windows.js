@@ -75,6 +75,9 @@ export function createWindowsMocks () {
     }
     /** @type {MockBuilder} */
     const builder = {
+        withRuntimeConfigOverrides: function () {
+            throw new Error('Function not implemented.')
+        },
         withPrivateEmail (_email) {
             mocks.emailProtectionGetIsLoggedIn = true
             return this

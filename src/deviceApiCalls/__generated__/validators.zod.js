@@ -64,6 +64,12 @@ export const getAliasResultSchema = z.object({
     })
 });
 
+export const emailProtectionGetAliasParamsSchema = z.object({
+    requiresUserPermission: z.boolean(),
+    shouldConsumeAliasIfProvided: z.boolean(),
+    isIncontextSignupAvailable: z.boolean().optional()
+});
+
 export const emailProtectionStoreUserDataParamsSchema = z.object({
     token: z.string(),
     userName: z.string(),
@@ -125,11 +131,6 @@ export const userPreferencesSchema = z.object({
     }))
 });
 
-export const outgoingCredentialsSchema = z.object({
-    username: z.string().optional(),
-    password: z.string().optional()
-});
-
 export const availableInputTypesSchema = z.object({
     credentials: z.object({
         username: z.boolean().optional(),
@@ -162,6 +163,11 @@ export const availableInputTypesSchema = z.object({
     credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
 });
 
+export const outgoingCredentialsSchema = z.object({
+    username: z.string().optional(),
+    password: z.string().optional()
+});
+
 export const availableInputTypes1Schema = z.object({
     credentials: z.object({
         username: z.boolean().optional(),
@@ -192,6 +198,12 @@ export const availableInputTypes1Schema = z.object({
     }).optional(),
     email: z.boolean().optional(),
     credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
+});
+
+export const providerStatusUpdatedSchema = z.object({
+    status: z.union([z.literal("locked"), z.literal("unlocked")]),
+    credentials: z.array(credentialsSchema),
+    availableInputTypes: availableInputTypesSchema
 });
 
 export const autofillFeatureTogglesSchema = z.object({
@@ -232,7 +244,7 @@ export const storeFormDataSchema = z.object({
 
 export const getAvailableInputTypesResultSchema = z.object({
     type: z.literal("getAvailableInputTypesResponse").optional(),
-    success: availableInputTypesSchema,
+    success: availableInputTypes1Schema,
     error: genericErrorSchema.optional()
 });
 
@@ -258,8 +270,27 @@ export const getAutofillCredentialsResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
+export const askToUnlockProviderResultSchema = z.object({
+    type: z.literal("askToUnlockProviderResponse").optional(),
+    success: providerStatusUpdatedSchema,
+    error: genericErrorSchema.optional()
+});
+
+export const checkCredentialsProviderStatusResultSchema = z.object({
+    type: z.literal("checkCredentialsProviderStatusResponse").optional(),
+    success: providerStatusUpdatedSchema,
+    error: genericErrorSchema.optional()
+});
+
 export const autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
+});
+
+export const emailProtectionGetAliasResultSchema = z.object({
+    success: z.object({
+        alias: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
 });
 
 export const emailProtectionGetIsLoggedInResultSchema = z.object({
@@ -304,30 +335,13 @@ export const emailProtectionRefreshPrivateAddressResultSchema = z.object({
 export const runtimeConfigurationSchema = z.object({
     contentScope: contentScopeSchema,
     userUnprotectedDomains: z.array(z.string()),
-    userPreferences: userPreferencesSchema
-});
-
-export const providerStatusUpdatedSchema = z.object({
-    status: z.union([z.literal("locked"), z.literal("unlocked")]),
-    credentials: z.array(credentialsSchema),
-    availableInputTypes: availableInputTypes1Schema
+    userPreferences: userPreferencesSchema,
+    availableInputTypes: availableInputTypesSchema.optional()
 });
 
 export const getRuntimeConfigurationResponseSchema = z.object({
     type: z.literal("getRuntimeConfigurationResponse").optional(),
     success: runtimeConfigurationSchema.optional(),
-    error: genericErrorSchema.optional()
-});
-
-export const askToUnlockProviderResultSchema = z.object({
-    type: z.literal("askToUnlockProviderResponse").optional(),
-    success: providerStatusUpdatedSchema,
-    error: genericErrorSchema.optional()
-});
-
-export const checkCredentialsProviderStatusResultSchema = z.object({
-    type: z.literal("checkCredentialsProviderStatusResponse").optional(),
-    success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
 });
 
@@ -397,6 +411,11 @@ export const apiSchema = z.object({
     openManagePasswords: z.record(z.unknown()).optional(),
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
+    emailProtectionGetAlias: z.record(z.unknown()).and(z.object({
+        id: z.literal("emailProtectionGetAliasResponse").optional(),
+        paramsValidator: emailProtectionGetAliasParamsSchema.optional(),
+        resultValidator: emailProtectionGetAliasResultSchema.optional()
+    })).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionStoreUserDataResponse").optional(),
         paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()
