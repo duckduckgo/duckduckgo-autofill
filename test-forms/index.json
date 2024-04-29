@@ -534,5 +534,6 @@
   { "html": "wallstreetjournal_login.html", "expectedSubmitFalsePositives": 1 },
   { "html": "flytap_login.html" },
   { "html": "twitter_access-settings.html" },
+  { "html": "relaxbanking_login.html" },
   { "html": "single-select-form.html" }
 ]
