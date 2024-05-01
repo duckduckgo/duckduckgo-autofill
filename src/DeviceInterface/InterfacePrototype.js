@@ -433,7 +433,7 @@ class InterfacePrototype {
         this.activeForm = form
         const inputType = getInputType(input)
 
-        /** @type {PosFn} */
+        /** @type {import('../UI/interfaces.js').PosFn} */
         const getPosition = () => {
             // In extensions, the tooltip is centered on the Dax icon
             const alignLeft = this.globalConfig.isApp || this.globalConfig.isWindows

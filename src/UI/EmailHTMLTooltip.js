@@ -20,8 +20,8 @@ ${this.options.css}
             <span class="tooltip__button--email__secondary-text">${this.device.t('blockEmailTrackers')}</span>
         </button>
         <button class="tooltip__button tooltip__button--email js-use-private">
-            <span class="tooltip__button--email__primary-text">Generate a Private Duck Address</span>
-            <span class="tooltip__button--email__secondary-text">Block email trackers & hide address</span>
+            <span class="tooltip__button--email__primary-text">${this.device.t('generateDuckAddr')}</span>
+            <span class="tooltip__button--email__secondary-text">${this.device.t('blockEmailTrackersAndHideAddress')}</span>
         </button>
     </div>
     <div class="tooltip--email__caret"></div>

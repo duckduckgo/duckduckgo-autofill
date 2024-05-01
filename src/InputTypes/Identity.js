@@ -1,3 +1,5 @@
+/** @typedef {import("../UI/interfaces").TooltipItemRenderer} TooltipItemRenderer */
+
 import { getCountryDisplayName } from '../Form/formatters.js'
 
 /**
@@ -11,16 +13,20 @@ export class IdentityTooltipItem {
         this.#data = data
     }
     id = () => String(this.#data.id)
-    labelMedium = (subtype) => {
+    /**
+     * @param {import('../locales/strings.js').TranslateFn} t
+     * @param {string} subtype
+     */
+    labelMedium = (t, subtype) => {
         if (subtype === 'addressCountryCode') {
             return getCountryDisplayName('en', this.#data.addressCountryCode || '')
         }
         if (this.#data.id === 'privateAddress') {
-            return 'Generate Private Duck Address'
+            return t('generatePrivateDuckAddr')
         }
         return this.#data[subtype]
     }
-    label (subtype) {
+    label (_t, subtype) {
         if (this.#data.id === 'privateAddress') {
             return this.#data[subtype]
         }

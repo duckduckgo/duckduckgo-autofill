@@ -86,7 +86,7 @@ export class HTMLTooltipUIController extends UIController {
 
     /**
      * Actually create the HTML Tooltip
-     * @param {PosFn} getPosition
+     * @param {import('../interfaces.js').PosFn} getPosition
      * @param {TopContextData} topContextData
      * @return {import("../HTMLTooltip").HTMLTooltip}
      */

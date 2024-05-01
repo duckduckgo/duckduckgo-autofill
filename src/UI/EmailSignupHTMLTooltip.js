@@ -6,24 +6,21 @@ class EmailSignupHTMLTooltip extends HTMLTooltip {
      */
     render (device) {
         this.device = device
+        const t = this.device.t
 
         this.shadow.innerHTML = `
 ${this.options.css}
 <div class="wrapper wrapper--email" hidden>
     <div class="tooltip tooltip--email tooltip--email-signup">
         <button class="close-tooltip js-close-email-signup" aria-label="Close"></button>
-        <h1>
-            Hide your email and block trackers
-        </h1>
-        <p>
-            Create a unique, random address that also removes hidden trackers and forwards email to your inbox.
-        </p>
+        <h1>${t('hideEmailAndBlockTrackers')}</h1>
+        <p>${t('createUniqueRandomAddr')}</p>
         <div class="notice-controls">
             <a href="https://duckduckgo.com/email/start-incontext" target="_blank" class="primary js-get-email-signup">
-                Protect My Email
+                ${t('protectMyEmail')}
             </a>
             <button class="ghost js-dismiss-email-signup">
-                Don't Show Again
+                ${t('dontShowAgain')}
             </button>
         </div>
     </div>
