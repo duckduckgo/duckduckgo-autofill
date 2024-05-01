@@ -31,7 +31,7 @@ export class UIController {
      * For example, in an 'overlay' on macOS/Windows this is needed since
      * there's no page information to call 'attach' above.
      *
-     * @param {PosFn} _pos
+     * @param {import("../interfaces").PosFn} _pos
      * @param {TopContextData} _topContextData
      * @returns {any | null}
      */

@@ -1,3 +1,5 @@
+/** @typedef {import("../UI/interfaces").TooltipItemRenderer} TooltipItemRenderer */
+
 /**
  * @implements {TooltipItemRenderer}
  */
@@ -9,6 +11,6 @@ export class CreditCardTooltipItem {
         this.#data = data
     }
     id = () => String(this.#data.id)
-    labelMedium = (_) => this.#data.title
-    labelSmall = (_) => this.#data.displayNumber
+    labelMedium = () => this.#data.title
+    labelSmall = () => this.#data.displayNumber
 }

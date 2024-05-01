@@ -86,7 +86,7 @@ export class HTMLTooltipUIController extends UIController {
 
     /**
      * Actually create the HTML Tooltip
-     * @param {PosFn} getPosition
+     * @param {import('../interfaces.js').PosFn} getPosition
      * @param {TopContextData} topContextData
      * @return {import("../HTMLTooltip").HTMLTooltip}
      */
@@ -128,7 +128,7 @@ export class HTMLTooltipUIController extends UIController {
 
         // construct the autofill
         return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-            .render(config, asRenderers, {
+            .render(this._options.device, config, asRenderers, {
                 onSelect: (id) => {
                     this._onSelect(topContextData.inputType, data, id)
                 },
@@ -154,7 +154,7 @@ export class HTMLTooltipUIController extends UIController {
 
         const activeTooltip = this.getActiveTooltip()
         if (activeTooltip instanceof DataHTMLTooltip) {
-            activeTooltip?.render(config, asRenderers, {
+            activeTooltip?.render(this._options.device, config, asRenderers, {
                 onSelect: (id) => {
                     this._onSelect(this._activeInputType, data, id)
                 },
