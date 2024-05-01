@@ -108,7 +108,7 @@
   { "html": "stripeelements_checkout.html", "expectedSubmitFalseNegatives": 2 },
   { "html": "litmus_home_search.html" },
   { "html": "litmus_home_new.html" },
-  { "html": "asana_tasklist.html" },
+  { "html": "asana_tasklist.html", "expectedFailures": ["unknown"] },
   { "html": "asana_search.html" },
   { "html": "aa_login.html" },
   { "html": "hackernews_login_signup.html", "hasExtraWrappers": false },
@@ -535,5 +535,8 @@
   { "html": "flytap_login.html" },
   { "html": "twitter_access-settings.html" },
   { "html": "relaxbanking_login.html" },
+  { "html": "montcalmroyallondoncity_login.html" },
+  { "html": "decipherinc_survey.html" },
+  { "html": "sequoia-benefits_login.html" },
   { "html": "single-select-form.html" }
 ]

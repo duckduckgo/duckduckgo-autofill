@@ -274,7 +274,7 @@ const matchingConfiguration = {
                     match: 'current|old|previous|expired|existing'
                 },
                 username: {
-                    match: '(user|account|online.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
+                    match: '(user|account|online.?id|membership.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
                         // Italian
                         '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice (cliente|uten)' +
                         // German

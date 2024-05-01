@@ -1,0 +1,27 @@
+<!-- https://secure.bswift.com/login-page/sequoiatech -->
+<form autocomplete="on" id="login" name="login" novalidate="" class="ng-pristine ng-invalid ng-touched"><!---->
+    <div class="row-two">
+        <label class="display-ib-soft mb-smallest" for="username">
+            <span>Username</span>
+        </label>
+        <input aria-describedby="name_error" aria-required="true" class="input-large input-wide-full ng-pristine ng-invalid ng-touched" formcontrolname="username" id="txtUserName" name="txtUserName" style="background-color: rgb(255, 255, 255);" type="text" tabindex="0" data-manual-scoring="username">
+        <!---->
+        <app-form-error class="alert alert-danger ng-star-inserted">
+            <div class="formError"></div>
+        </app-form-error>
+    </div>
+    <div class="row-two">
+        <label class="display-ib-soft mb-smallest" for="password">
+            <span>Password</span>
+        </label>
+        <input aria-describedby="password_error" aria-required="true" class="input-large input-wide-full ng-untouched ng-pristine ng-invalid" formcontrolname="password" id="txtPassword" name="txtPassword" style="background-color: rgb(255, 255, 255);" type="password" tabindex="0" data-manual-scoring="password.current">
+        <!----></div>
+    <div class="flex-row flex-vertical-center"><p class="mb-none mobile-mb-large"><!----><br>
+        <!----><a href="javascript:void(0)" id="forgotPasswordLink" tabindex="0" class="ng-star-inserted">Forgot
+            Password</a></p>
+        <button class="btn btn-recommended btn-large btn-icon-right" role="button" tabindex="0" style="background-color: rgb(139, 207, 36);" data-manual-submit>
+            <span class="btn-label" style="visibility: visible;">Log In</span>
+            <app-loading-spinner class="button-loader" size="small" _nghost-c0=""><!----></app-loading-spinner>
+        </button>
+    </div>
+</form>

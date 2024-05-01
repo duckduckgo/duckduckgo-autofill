@@ -2,7 +2,7 @@ import {constants} from '../constants.js'
 import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
 import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
 import {logMatching, logUnmatched} from './matching-utils.js'
-import {getTextShallow, safeRegexTest, shouldLog} from '../autofill-utils.js'
+import {safeRegexTest, shouldLog} from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
@@ -913,6 +913,8 @@ const recursiveGetPreviousElSibling = (el) => {
 const getRelatedText = (el, form, cssSelector) => {
     let scope = getLargestMeaningfulContainer(el, form, cssSelector)
 
+    // TODO: We should try and simplify this, the logic has become very hard to follow over time
+
     // If we didn't find a container, try looking for an adjacent label
     if (scope === el) {
         let previousEl = recursiveGetPreviousElSibling(el)
@@ -940,7 +942,7 @@ const getRelatedText = (el, form, cssSelector) => {
     const label = scope.querySelector('label')
     if (label) {
         // Try searching for a label first
-        trimmedText = getTextShallow(label)
+        trimmedText = extractElementStrings(label).join(' ')
     } else {
         // If the container has a select element, remove its contents to avoid noise
         trimmedText = extractElementStrings(scope).join(' ')
@@ -968,8 +970,15 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
     const inputsInParentsScope = parentElement.querySelectorAll(cssSelector)
     // To avoid noise, ensure that our input is the only in scope
     if (inputsInParentsScope.length === 1) {
+        // If the parent has only 1 input and a label with text, we've found our meaningful container
+        const labelInParentScope = parentElement.querySelector('label')
+        if (labelInParentScope?.textContent?.trim()) {
+            return parentElement
+        }
+
         return getLargestMeaningfulContainer(parentElement, form, cssSelector)
     }
+
     return el
 }
 
