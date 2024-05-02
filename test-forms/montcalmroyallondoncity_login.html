@@ -1,0 +1,18 @@
+<!-- https://www.montcalmroyallondoncity.co.uk/ -->
+<form method="post" name="frmLogin" id="frmLogin" onsubmit="if (this.Email.value!='' &amp;&amp; this.Password.value!='') return true; else { alert ('Please enter username and password.'); return false; }">
+    <h3>Sign In</h3>
+    <p class="login">
+        <label>Membership ID :</label>
+        <input name="membershipNumber" id="autoMembershipNumber" class="input_number" type="text" data-manual-scoring="username">
+    </p>
+    <p class="login">
+        <label>Password : <br></label>
+        <input name="password" id="autoPassword" class="input_number" type="password" data-manual-scoring="password.current">
+    </p>
+    <div class="form_bottom">
+        <div class="join_now"> <a href="https://www.themontcalmclub.com/index.php?option=registration&amp;task=forgetpassword" target="_blank">Forgot your password?</a>
+            <input type="button" name="Login" alt="login" value="Login" class="login-btn-home" onclick="javascript: autoLoginMRCMembers();" data-manual-submit>
+            <a href="https://www.themontcalmclub.com/join.html" target="_blank" class="join_now_home">Join Now</a>
+        </div>
+    </div>
+</form>
