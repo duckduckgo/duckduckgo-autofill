@@ -1,0 +1,46 @@
+<!-- https://secure.transamerica.com/login/sign-in/login.html?TAM_OP=login -->
+<form id="loginForm" name="loginForm" action="/login/sign-in/login.html;jsessionid=3DE3E4E42FB41DDA984B0C3F30F062CF?TAM_OP=login" method="post">
+    <input type="hidden" name="type" value="normal">
+    <fieldset>
+        <div class="row padding-top-lg">
+            <div class="col-xs-12 col-sm-5">
+                <div class="form-group has-feedback">
+                    <label for="username" class="form-label">Username</label><br>
+                    <input type="text" class="form-control" id="username" name="username" maxlength="50" data-manual-scoring="username">
+                    <span class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-5">
+                <div class="form-group has-feedback">
+                    <label for="username" class="form-label">Password</label><br>
+                    <input type="password" class="form-control" id="password" name="password" data-manual-scoring="password.current">
+                    <span class="glyphicon form-control-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row padding-top-lg">
+            <div class="col-xs-12 col-sm-5">
+                <button id="formLogin" type="submit" class="btn btn-primary" data-manual-submit>Login</button>
+            </div>
+        </div>
+        <div class="row padding-top-lg">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    Forgot your <a class="" href="/login/reset/forgotUsernameSelect.html;jsessionid=3DE3E4E42FB41DDA984B0C3F30F062CF">Username</a>
+                    or <a class="" href="/login/reset/forgotPassword.html;jsessionid=3DE3E4E42FB41DDA984B0C3F30F062CF">Password?</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    Need to register? <a class="" href="/login/enroll/registrationSelect.html;jsessionid=3DE3E4E42FB41DDA984B0C3F30F062CF">Create
+                    an account.</a>
+                </div>
+            </div>
+        </div>
+        <input type="HIDDEN" name="login-form-type" value="pwd">
+    </fieldset>
+</form>

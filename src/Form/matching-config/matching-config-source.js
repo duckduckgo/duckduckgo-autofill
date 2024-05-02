@@ -224,7 +224,7 @@ const matchingConfiguration = {
         ddgMatcher: {
             matchers: {
                 unknown: {
-                    match: 'search|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp' +
+                    match: 'search|find|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp|social security number|ssn' +
                         // Italian
                         '|cerca|filtr|oggetto|titolo|(due|2|più).?fattori' +
                         // German
@@ -264,7 +264,7 @@ const matchingConfiguration = {
                         '|clave|contraseña' +
                         // Swedish
                         '|lösenord',
-                    skip: 'email|one-time|error|hint',
+                    skip: 'email|one-time|error|hint|^username$',
                     forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
                 },
                 newPassword: {

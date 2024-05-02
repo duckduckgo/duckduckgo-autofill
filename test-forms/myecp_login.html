@@ -1,0 +1,62 @@
+<!-- https://www.myecp.com/ -->
+<form action="/" autocomplete="off" id="AccountLoginForm" method="post" novalidate="novalidate"><input name="__RequestVerificationToken" type="hidden" value="kPhKAMri86TA6Zf2uTg1xdsbQQ0X-hvFPcQqboD9b3Tbx39Aq5mT6TnJZADhULLiCeSZCGu92qWyMpE7BLBDyuSRR0tyjkTgrFY4LS5iwrQ1">                        <div class="row login-error login-wrap">
+    <div class="col-md-12">
+
+    </div>
+</div>
+    <div class="row">
+        <div class="col-md-12">
+            <span class="medium-label">User ID</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input autocomplete="off" class="form-control input-sm" data-val="true" data-val-maxlength="User ID cannot be more than 30 characters in length." data-val-maxlength-max="30" data-val-required="Required Field" id="DisplayUserMask" maxlength="30" name="DisplayUserMask" style="width:100%;" tabindex="1" title="User ID Mask" type="text" value="" data-manual-scoring="username">
+
+            <input data-val="true" data-val-maxlength="User ID cannot be more than 30 characters in length." data-val-maxlength-max="30" data-val-required="Required Field" id="UserName" name="UserName" style="display:none;" title="User ID" type="text" value="" data-manual-scoring="username">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6"><span class="field-validation-valid" data-valmsg-for="DisplayUserMask" data-valmsg-replace="true"></span></div>
+        <div class="col-md-6 text-right pt2">
+            <span class="regular-label">
+                Forgot
+                <a class="font-link" href="/Account/ForgotUsername">User ID</a>
+            </span>
+            <span class="preview" data-toggle="popover" data-placement="right" data-content="You may recover your User ID" data-original-title="" title=""><span class="glyphicon glyphicon-question-sign"></span></span>
+        </div>
+    </div>
+    <div class="row pt15">
+        <div class="col-md-12">
+            <span class="medium-label">Password</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <input autocomplete="off" class="form-control input-sm" data-val="true" data-val-maxlength="Password cannot be more than 50 characters in length." data-val-maxlength-max="50" data-val-required="Required Field" id="Password" maxlength="50" name="Password" style="width:100%;" tabindex="2" title="Password" type="password" data-manual-scoring="password.current">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6"><span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span></div>
+        <div class="col-md-6 text-right pt2">
+            <span class="regular-label">
+                Forgot
+                <a class="font-link" href="/SecurityPasswordResetOnline/ResetUserPassword">Password</a>
+            </span>
+            <span class="preview" data-toggle="popover" data-placement="right" data-content="You may reset your Password" data-original-title="" title=""><span class="glyphicon glyphicon-question-sign"></span></span>
+        </div>
+    </div>
+    <div class="row pt15">
+        <div class="col-md-8 text-left">
+            <div class="checkbox-inline">
+                <input id="RememberMe" name="RememberMe" style="" tabindex="3" title="Remember User ID" type="checkbox" value="true"><input name="RememberMe" type="hidden" value="false">
+
+                <label class="regular-label-2" for="RememberMe">Remember User ID</label>
+            </div>
+        </div>
+        <div class="col-md-4 login-button">
+            <button type="submit" id="subLogin" tabindex="4" class="btn ecp-btn" data-manual-submit>Log In</button>
+        </div>
+    </div>
+</form>

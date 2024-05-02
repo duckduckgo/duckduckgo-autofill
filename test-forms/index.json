@@ -538,5 +538,9 @@
   { "html": "montcalmroyallondoncity_login.html" },
   { "html": "decipherinc_survey.html" },
   { "html": "sequoia-benefits_login.html" },
+  { "html": "transamerica_login.html", "expectedFailures": ["username"] },
+  { "html": "myecp_payment.html", "expectedFailures": ["unknown", "unknown", "birthdayMonth", "birthdayDay", "birthdayYear"] },
+  { "html": "myecp_login.html", "expectedFailures": ["username"] },
+  { "html": "fullcolor_login.html" },
   { "html": "single-select-form.html" }
 ]

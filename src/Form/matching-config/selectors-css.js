@@ -104,6 +104,8 @@ const username = [
     `input[id="nw_username" i]`,
     // https://appleid.apple.com/es/sign-in (needed for all languages)
     `input[can-field="accountName"]`,
+    // https://www.fullcolor.com/customer/account/login/
+    `input[name="login[username]"]`,
     `input[placeholder^="username" i]`
 ]
 
