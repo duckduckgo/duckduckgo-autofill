@@ -8,6 +8,11 @@ interface IntersectionObserverInit {
     delay?: number
 }
 
+declare module "*.css" {
+    const content: string;
+    export default content;
+}
+
 interface WindowsMessageFormat {
     Feature: "Autofill"
     Name: string
