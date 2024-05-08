@@ -23,6 +23,7 @@ import {
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {EmailProtection} from '../EmailProtection.js'
+import { getTranslator } from '../locales/strings.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -70,6 +71,13 @@ class InterfacePrototype {
     /** @type {import("../../packages/device-api").DeviceApi} */
     deviceApi
 
+    /**
+     * Translates a string to the current language, replacing each placeholder
+     * with a key present in `opts` with the corresponding value.
+     * @type {import('../locales/strings').TranslateFn}
+     */
+    t
+
     /** @type {boolean} */
     isInitializationStarted
 
@@ -85,6 +93,7 @@ class InterfacePrototype {
         this.globalConfig = config
         this.deviceApi = deviceApi
         this.settings = settings
+        this.t = getTranslator(settings)
         this.uiController = null
         this.scanner = createScanner(this, {
             initialDelay: this.initialSetupDelayMs
@@ -166,14 +175,14 @@ class InterfacePrototype {
             newIdentities.push({
                 id: 'personalAddress',
                 emailAddress: personalAddress,
-                title: 'Block email trackers'
+                title: this.t('blockEmailTrackers')
             })
         }
 
         newIdentities.push({
             id: 'privateAddress',
             emailAddress: privateAddress,
-            title: 'Block email trackers & hide address'
+            title: this.t('blockEmailTrackersAndHideAddress')
         })
 
         return [...identities, ...newIdentities]
@@ -424,7 +433,7 @@ class InterfacePrototype {
         this.activeForm = form
         const inputType = getInputType(input)
 
-        /** @type {PosFn} */
+        /** @type {import('../UI/interfaces.js').PosFn} */
         const getPosition = () => {
             // In extensions, the tooltip is centered on the Dax icon
             const alignLeft = this.globalConfig.isApp || this.globalConfig.isWindows

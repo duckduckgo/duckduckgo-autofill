@@ -3,7 +3,11 @@ import HTMLTooltip from './HTMLTooltip.js'
 import {PROVIDER_LOCKED} from '../InputTypes/Credentials.js'
 
 class DataHTMLTooltip extends HTMLTooltip {
-    renderEmailProtectionIncontextSignup (isOtherItems) {
+    /**
+     * @param {import("../locales/strings").TranslateFn} t
+     * @param {boolean} isOtherItems
+     */
+    renderEmailProtectionIncontextSignup (t, isOtherItems) {
         const dataTypeClass = `tooltip__button--data--identities`
         const providerIconClass = 'tooltip__button--data--duckduckgo'
         return `
@@ -11,10 +15,10 @@ class DataHTMLTooltip extends HTMLTooltip {
             <button id="incontextSignup" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-get-email-signup">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">
-                        Hide your email and block trackers
+                        ${t('hideEmailAndBlockTrackers')}
                     </span>
                     <span class="label label--small">
-                        Create a unique, random address that also removes hidden trackers and forwards email to your inbox.
+                        ${t('createUniqueRandomAddr')}
                     </span>
                 </span>
             </button>
@@ -22,8 +26,9 @@ class DataHTMLTooltip extends HTMLTooltip {
     }
 
     /**
+     * @param {import("../DeviceInterface/InterfacePrototype").default} device
      * @param {InputTypeConfigs} config
-     * @param {TooltipItemRenderer[]} items
+     * @param {import('./interfaces.js').TooltipItemRenderer[]} items
      * @param {{
      *   onSelect(id:string): void
      *   onManage(type:InputTypeConfigs['type']): void
@@ -33,7 +38,8 @@ class DataHTMLTooltip extends HTMLTooltip {
      *   onIncontextSignup?(): void
      * }} callbacks
      */
-    render (config, items, callbacks) {
+    render (device, config, items, callbacks) {
+        const t = device.t
         const {wrapperClass, css} = this.options
         const isTopAutofill = wrapperClass?.includes('top-autofill')
         let hasAddedSeparator = false
@@ -63,14 +69,14 @@ ${css}
         const credentialsProvider = item.credentialsProvider?.()
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : ''
         // these 2 are optional
-        const labelSmall = item.labelSmall?.(this.subtype)
-        const label = item.label?.(this.subtype)
+        const labelSmall = item.labelSmall?.(t, this.subtype)
+        const label = item.label?.(t, this.subtype)
 
         return `
             ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
             <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button">
                 <span class="tooltip__button__text-container">
-                    <span class="label label--medium">${escapeXML(item.labelMedium(this.subtype))}</span>
+                    <span class="label label--medium">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
                     ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
                 </span>
@@ -78,13 +84,15 @@ ${css}
         `
     }).join('')}
         ${this.options.isIncontextSignupAvailable()
-        ? this.renderEmailProtectionIncontextSignup(items.length > 0)
+        ? this.renderEmailProtectionIncontextSignup(t, items.length > 0)
         : ''}
-        ${shouldShowManageButton ? `
+        ${shouldShowManageButton ? /* TODO(barag): extract Manage {config.displayName} */ `
             <hr />
             <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
                 <span class="tooltip__button__text-container">
-                    <span class="label label--medium">Manage ${config.displayName}…</span>
+                    <span class="label label--medium">
+                        ${t('manageFilledItem', { item: config.displayName })}
+                    </span>
                 </span>
             </button>`
         : ''}

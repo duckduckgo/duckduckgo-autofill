@@ -64,6 +64,9 @@
         "debug": {
           "type": "boolean"
         },
+        "language": {
+          "type": "string"
+        },
         "platform": {
           "type": "object",
           "additionalProperties": false,
