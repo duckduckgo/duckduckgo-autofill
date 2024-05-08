@@ -10,6 +10,7 @@
     "postinstall": "cd packages/password && npm install",
     "start": "grunt dev",
     "build": "grunt",
+    "build:translations": "node scripts/bundle-locales.mjs",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "copy-assets": "node scripts/copy-assets.js",

@@ -22,7 +22,7 @@ export class IdentityTooltipItem {
             return getCountryDisplayName('en', this.#data.addressCountryCode || '')
         }
         if (this.#data.id === 'privateAddress') {
-            return t('generatePrivateDuckAddr')
+            return t('autofill:generatePrivateDuckAddr')
         }
         return this.#data[subtype]
     }

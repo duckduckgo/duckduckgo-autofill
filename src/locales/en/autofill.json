@@ -1,0 +1,80 @@
+{
+  "smartling": {
+    "string_format": "icu",
+    "translate_paths": [
+      {
+        "path": "*/title",
+        "key": "{*}/title",
+        "instruction": "*/note"
+      }
+    ]
+  },
+  "hello": {
+    "title": "Hello world",
+    "note": "Static text for testing."
+  },
+  "lipsum": {
+    "title": "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note": "Placeholder text."
+  },
+  "usePersonalDuckAddr": {
+    "title": "Use {email}",
+    "note": "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers": {
+    "title": "Block email trackers",
+    "note": "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl": {
+    "title": "Password for {url}",
+    "note": "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword": {
+    "title": "Generated password",
+    "note": "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved": {
+    "title": "Password will be saved for this website",
+    "note": "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked": {
+    "title": "Bitwarden is locked",
+    "note": "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault": {
+    "title": "Unlock your vault to access credentials or generate passwords",
+    "note": "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr": {
+    "title": "Generate Private Duck Address",
+    "note": "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers": {
+    "title": "Hide your email and block trackers",
+    "note": "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr": {
+    "title": "Create a unique, random address that also removes hidden trackers and forwards email to your inbox.",
+    "note": "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageFilledItem": {
+    "title": "Manage {item}…",
+    "note": "Button that when clicked allows users to add, edit, or delete an item. \"Manage\" is an imperative verb. \"item\" is one of \"identities\", \"passwords\", \"credit cards\"."
+  },
+  "generateDuckAddr": {
+    "title": "Generate a Private Duck Address",
+    "note": "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress": {
+    "title": "Block email trackers & hide address",
+    "note": "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail": {
+    "title": "Protect My Email",
+    "note": "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain": {
+    "title": "Don't Show Again",
+    "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}

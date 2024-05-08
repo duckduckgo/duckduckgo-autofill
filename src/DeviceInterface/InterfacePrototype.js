@@ -175,14 +175,14 @@ class InterfacePrototype {
             newIdentities.push({
                 id: 'personalAddress',
                 emailAddress: personalAddress,
-                title: this.t('blockEmailTrackers')
+                title: this.t('autofill:blockEmailTrackers')
             })
         }
 
         newIdentities.push({
             id: 'privateAddress',
             emailAddress: privateAddress,
-            title: this.t('blockEmailTrackersAndHideAddress')
+            title: this.t('autofill:blockEmailTrackersAndHideAddress')
         })
 
         return [...identities, ...newIdentities]

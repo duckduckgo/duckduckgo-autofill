@@ -15,10 +15,10 @@ class DataHTMLTooltip extends HTMLTooltip {
             <button id="incontextSignup" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-get-email-signup">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">
-                        ${t('hideEmailAndBlockTrackers')}
+                        ${t('autofill:hideEmailAndBlockTrackers')}
                     </span>
                     <span class="label label--small">
-                        ${t('createUniqueRandomAddr')}
+                        ${t('autofill:createUniqueRandomAddr')}
                     </span>
                 </span>
             </button>
@@ -86,12 +86,12 @@ ${css}
         ${this.options.isIncontextSignupAvailable()
         ? this.renderEmailProtectionIncontextSignup(t, items.length > 0)
         : ''}
-        ${shouldShowManageButton ? /* TODO(barag): extract Manage {config.displayName} */ `
+        ${shouldShowManageButton ? `
             <hr />
             <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">
-                        ${t('manageFilledItem', { item: config.displayName })}
+                        ${t('autofill:manageFilledItem', { item: config.displayName })}
                     </span>
                 </span>
             </button>`
