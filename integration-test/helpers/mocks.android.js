@@ -168,65 +168,43 @@ export function createAndroidMocks () {
                         this.name = name
                         this.request = null
                         this.response = response
-                        this._eventHandlers = new Set()
+                        this._calls = {
+                            getRuntimeConfiguration: mocks.getRuntimeConfiguration,
+                            emailProtectionStoreUserData: null,
+                            emailProtectionGetUserData: null,
+                            emailProtectionGetCapabilities: null,
+                            emailProtectionGetAlias: mocks.address,
+                            getAutofillData: mocks.getAutofillData,
+                            storeFormData: null,
+                            getIncontextSignupDismissedAt: mocks.incontextSignupDismissedAt,
+                            setIncontextSignupPermanentlyDismissedAt: null,
+                            ShowInContextEmailProtectionSignupPrompt: null,
+                            closeEmailProtectionTab: null
+                        }
                     }
                     postMessage (passedRequest) {
-                        this.request = passedRequest
-                        const call = [this.name, JSON.parse(passedRequest), this.response]
-                        if (this.response) {
-                            this.onMessage()
+                        const request = JSON.parse(passedRequest)
+
+                        const call = [request.type, request, this._calls[request.type]]
+
+                        if (this._calls[request.type] !== null) {
+                            const preparedResponse = {
+                                type: request.type,
+                                handlerUniqueId: request.handlerUniqueId,
+                                success: this._calls[request.type]
+                            }
+
+                            this.onMessage({data: JSON.stringify(preparedResponse)})
+                            window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                         } else {
+                            // TODO: this conditional is no longer needed.
                             // If we're not waiting for a response, add the call here, otherwise it's added in onMessage
                             window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                         }
                     }
-                    onMessage () {
-                        this._eventHandlers.forEach((fn) => {
-                            const call = [this.name, this.request, this.response]
-                            window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                            fn({data: JSON.stringify({success: this.response})})
-                        })
-                    }
-                    addEventListener (_eventName, fn) {
-                        this._eventHandlers.add(fn)
-                    }
-                    removeEventListener (_eventName, fn) {
-                        this._eventHandlers.delete(fn)
-                    }
                 }
 
-                /** @type {{ callName: string, response?: any }[]} */
-                const androidHandlersMocksConfig = [
-                    {
-                        callName: 'getRuntimeConfiguration',
-                        response: mocks.getRuntimeConfiguration
-                    },
-                    {callName: 'emailProtectionStoreUserData'},
-                    {callName: 'emailProtectionGetUserData'},
-                    {callName: 'emailProtectionGetCapabilities'},
-                    {
-                        callName: 'emailProtectionGetAlias',
-                        response: mocks.address
-                    },
-                    {
-                        callName: 'getAutofillData',
-                        response: mocks.getAutofillData
-                    },
-                    {callName: 'storeFormData'},
-                    {
-                        callName: 'getIncontextSignupDismissedAt',
-                        response: mocks.incontextSignupDismissedAt
-                    },
-                    {callName: 'setIncontextSignupPermanentlyDismissedAt'},
-                    {callName: 'ShowInContextEmailProtectionSignupPrompt'},
-                    {callName: 'closeEmailProtectionTab'}
-                ]
-
-                // Attach the mocks to the window object
-                androidHandlersMocksConfig.forEach((call) => {
-                    const androidSpecificName = 'ddg' + call.callName[0].toUpperCase() + call.callName.slice(1)
-                    window[androidSpecificName] = new AndroidHandlerMock(call.callName, call.response)
-                })
+                window.ddgAndroidAutofillHandler = new AndroidHandlerMock()
             }, mocks)
         }
     }

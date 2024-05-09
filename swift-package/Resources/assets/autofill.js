@@ -469,40 +469,69 @@ class AndroidMessagingTransport {
    */
   constructor(config) {
     this.config = config;
+    this._eventHandlers = new Map();
+    this._uintArray = new Uint32Array(10);
+    if (!('ddgAndroidAutofillHandler' in window)) {
+      throw new _messaging.MissingHandler(`Missing android handler`, 'ddgAndroidAutofillHandler');
+    }
+    window.ddgAndroidAutofillHandler.onMessage = e => this._onAppResponse(e);
   }
 
   /**
    * Given the method name, returns the related Android handler
-   * @param {string} methodName
+   * @param {string} [methodName]
    * @returns {AndroidHandler}
    * @private
    */
   _getHandler(methodName) {
-    const androidSpecificName = this._getHandlerName(methodName);
-    if (!(androidSpecificName in window)) {
-      throw new _messaging.MissingHandler(`Missing android handler: '${methodName}'`, methodName);
+    if (!('ddgAndroidAutofillHandler' in window)) {
+      throw new _messaging.MissingHandler(`Missing android handler`, 'ddgAndroidAutofillHandler');
     }
-    return window[androidSpecificName];
+    return window.ddgAndroidAutofillHandler;
+  }
+
+  // /**
+  //  * Given the autofill method name, it returns the Android-specific handler name
+  //  * @param {string} internalName
+  //  * @returns {string}
+  //  * @private
+  //  */
+  // _getHandlerName (internalName) {
+  //     return 'ddg' + internalName[0].toUpperCase() + internalName.slice(1)
+  // }
+
+  _getHandlerUniqueId(internalName) {
+    return internalName + '_' + window.crypto.getRandomValues(this._uintArray)[0];
+  }
+  _constructMessage(name, handlerUniqueId, data) {
+    return {
+      type: name,
+      handlerUniqueId: handlerUniqueId || this._getHandlerUniqueId(name),
+      ...data
+    };
+  }
+  _onAppResponse(e) {
+    if (!e.data) return;
+    const responseObj = JSON.parse(e.data);
+    if (!responseObj?.handlerUniqueId) return;
+    const handler = this._eventHandlers.get(responseObj.handlerUniqueId);
+    handler?.(responseObj);
+  }
+  _addEventListener(eventName, fn) {
+    this._eventHandlers.set(eventName, fn);
+  }
+  _removeEventListener(eventName) {
+    this._eventHandlers.delete(eventName);
   }
 
   /**
-   * Given the autofill method name, it returns the Android-specific handler name
-   * @param {string} internalName
-   * @returns {string}
-   * @private
-   */
-  _getHandlerName(internalName) {
-    return 'ddg' + internalName[0].toUpperCase() + internalName.slice(1);
-  }
-
-  /**
-   * @param {string} name
+   * @param name
    * @param {Record<string, any>} [data]
    */
   notify(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    const handler = this._getHandler(name);
-    const message = data ? JSON.stringify(data) : '';
+    const handler = this._getHandler();
+    const message = JSON.stringify(this._constructMessage(name, null, data));
     handler.postMessage(message);
   }
 
@@ -512,22 +541,21 @@ class AndroidMessagingTransport {
    */
   async request(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    // Set up the listener first
-    const handler = this._getHandler(name);
+    const handlerUniqueId = this._getHandlerUniqueId(name);
     const responseOnce = new Promise(resolve => {
-      const responseHandler = e => {
-        handler.removeEventListener('message', responseHandler);
-        resolve(e.data);
+      const responseHandler = response => {
+        this._removeEventListener(handlerUniqueId);
+        resolve(response);
       };
-      handler.addEventListener('message', responseHandler);
+      this._addEventListener(handlerUniqueId, responseHandler);
     });
+    const preparedData = this._constructMessage(name, handlerUniqueId, data);
 
     // Then send the message
-    this.notify(name, data);
+    this.notify(name, preparedData);
 
-    // And return once the promise resolves
-    const responseJSON = await responseOnce;
-    return JSON.parse(responseJSON);
+    // And return the promise
+    return responseOnce;
   }
 }
 
