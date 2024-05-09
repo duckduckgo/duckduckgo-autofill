@@ -13,14 +13,14 @@ ${this.options.css}
 <div class="wrapper wrapper--email" hidden>
     <div class="tooltip tooltip--email tooltip--email-signup">
         <button class="close-tooltip js-close-email-signup" aria-label="Close"></button>
-        <h1>${t('hideEmailAndBlockTrackers')}</h1>
-        <p>${t('createUniqueRandomAddr')}</p>
+        <h1>${t('autofill:hideEmailAndBlockTrackers')}</h1>
+        <p>${t('autofill:createUniqueRandomAddr')}</p>
         <div class="notice-controls">
             <a href="https://duckduckgo.com/email/start-incontext" target="_blank" class="primary js-get-email-signup">
-                ${t('protectMyEmail')}
+                ${t('autofill:protectMyEmail')}
             </a>
             <button class="ghost js-dismiss-email-signup">
-                ${t('dontShowAgain')}
+                ${t('autofill:dontShowAgain')}
             </button>
         </div>
     </div>

@@ -15,13 +15,13 @@ ${this.options.css}
     <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                ${this.device.t('usePersonalDuckAddr', {email: formatDuckAddress(escapeXML(this.addresses.personalAddress))})}
+                ${this.device.t('autofill:usePersonalDuckAddr', {email: formatDuckAddress(escapeXML(this.addresses.personalAddress))})}
             </span>
-            <span class="tooltip__button--email__secondary-text">${this.device.t('blockEmailTrackers')}</span>
+            <span class="tooltip__button--email__secondary-text">${this.device.t('autofill:blockEmailTrackers')}</span>
         </button>
         <button class="tooltip__button tooltip__button--email js-use-private">
-            <span class="tooltip__button--email__primary-text">${this.device.t('generateDuckAddr')}</span>
-            <span class="tooltip__button--email__secondary-text">${this.device.t('blockEmailTrackersAndHideAddress')}</span>
+            <span class="tooltip__button--email__primary-text">${this.device.t('autofill:generateDuckAddr')}</span>
+            <span class="tooltip__button--email__secondary-text">${this.device.t('autofill:blockEmailTrackersAndHideAddress')}</span>
         </button>
     </div>
     <div class="tooltip--email__caret"></div>
@@ -35,7 +35,7 @@ ${this.options.css}
         this.updateAddresses = (addresses) => {
             if (addresses && this.usePersonalCta) {
                 this.addresses = addresses
-                this.usePersonalCta.textContent = this.device.t('usePersonalDuckAddr', {email: formatDuckAddress(addresses.personalAddress)})
+                this.usePersonalCta.textContent = this.device.t('autofill:usePersonalDuckAddr', {email: formatDuckAddress(addresses.personalAddress)})
             }
         }
 
