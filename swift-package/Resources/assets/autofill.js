@@ -11011,6 +11011,21 @@ var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
 var _Credentials = require("../InputTypes/Credentials.js");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+/**
+ * A mapping of main autofill item type to the 'Manage XYZ…' string ID for that
+ * item.
+ * @type {Record<SupportedMainTypes, import('../locales/strings').AutofillKeys>}
+ *
+ * @example
+ * const id = manageItemStringIds['credentials'] // => 'autofill:managePasswords'
+ * const str = t(id);                            // => 'Manage passwords…' in English
+ */
+const manageItemStringIds = {
+  credentials: 'autofill:managePasswords',
+  creditCards: 'autofill:manageCreditCards',
+  identities: 'autofill:manageIdentities',
+  unknown: 'autofill:manageSavedItems'
+};
 class DataHTMLTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../locales/strings").TranslateFn} t
@@ -11096,9 +11111,7 @@ ${css}
             <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">
-                        ${t('autofill:manageFilledItem', {
-      item: config.displayName
-    })}
+                        ${t(manageItemStringIds[config.type] ?? 'autofill:manageSavedItems')}
                     </span>
                 </span>
             </button>` : ''}
@@ -14056,9 +14069,21 @@ module.exports={
     "title": "Create a unique, random address that also removes hidden trackers and forwards email to your inbox.",
     "note": "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
-  "manageFilledItem": {
-    "title": "Manage {item}…",
-    "note": "Button that when clicked allows users to add, edit, or delete an item. \"Manage\" is an imperative verb. \"item\" is one of \"identities\", \"passwords\", \"credit cards\"."
+  "manageSavedItems": {
+    "title": "Manage saved items…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards": {
+    "title": "Manage credit cards…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities": {
+    "title": "Manage identities…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords": {
+    "title": "Manage passwords…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr": {
     "title": "Generate a Private Duck Address",
@@ -14248,9 +14273,21 @@ module.exports={
     "title": "ÇÇr3£ate @ üûún11que, r@@nd0øm ad∂dr3s5s that als0º r3mov3s hidd££n tr@cker$5$ and forwards em@@1l to your 1ñb0x.",
     "note": "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
-  "manageFilledItem": {
-    "title": "Måññág9gé {item}…",
-    "note": "Button that when clicked allows users to add, edit, or delete an item. \"Manage\" is an imperative verb. \"item\" is one of \"identities\", \"passwords\", \"credit cards\"."
+  "manageSavedItems": {
+    "title": "Måanñageé s@@ved 17733m5…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards": {
+    "title": "Måanñageé ¢¢r£d17 ca®®®∂∂s…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities": {
+    "title": "Måanñageé ¡d££nt11ties…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords": {
+    "title": "Måanñageé p@å$$$wººr∂∂s…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr": {
     "title": "Géééner@te a Prîîîvate DDDuck Addréés$s",

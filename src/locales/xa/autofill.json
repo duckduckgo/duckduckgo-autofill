@@ -57,9 +57,21 @@
     "title": "ÇÇr3£ate @ üûún11que, r@@nd0øm ad∂dr3s5s that als0º r3mov3s hidd££n tr@cker$5$ and forwards em@@1l to your 1ñb0x.",
     "note": "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
-  "manageFilledItem": {
-    "title": "Måññág9gé {item}…",
-    "note": "Button that when clicked allows users to add, edit, or delete an item. \"Manage\" is an imperative verb. \"item\" is one of \"identities\", \"passwords\", \"credit cards\"."
+  "manageSavedItems": {
+    "title": "Måanñageé s@@ved 17733m5…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards": {
+    "title": "Måanñageé ¢¢r£d17 ca®®®∂∂s…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities": {
+    "title": "Måanñageé ¡d££nt11ties…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords": {
+    "title": "Måanñageé p@å$$$wººr∂∂s…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr": {
     "title": "Géééner@te a Prîîîvate DDDuck Addréés$s",
