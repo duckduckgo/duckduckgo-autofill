@@ -6768,7 +6768,7 @@ module.exports={
     "password-rules": "minlength: 6; maxlength: 15; allowed: lower, upper, digit, [-.];"
   },
   "costco.com": {
-    "password-rules": "minlength: 8; maxlength: 20; required: lower, upper; allowed: digit, [-!#$%&'()*+/:;=?@[^_`{|}~]];"
+    "password-rules": "minlength: 8; maxlength: 16; required: lower, upper; allowed: digit, [-!#$%&'()*+/:;=?@[^_`{|}~]];"
   },
   "coursera.com": {
     "password-rules": "minlength: 8; maxlength: 72;"
