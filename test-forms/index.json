@@ -335,7 +335,7 @@
   { "html": "www_mcgill_ca_login.html", "generated": true, "title": "User Login", "comment": "rank: 2373" },
   { "html": "www_microfocus_com_signup.html", "generated": true, "title": "Create an Account", "comment": "rank: 2429" },
   { "html": "pacer_login_uscourts_gov_login.html", "generated": true, "title": "PACER: Login", "comment": "rank: 2501" },
-  { "html": "clientssp_fnfis_com_login.html", "generated": true, "title": "Login", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2563" },
+  { "html": "clientssp_fnfis_com_login.html", "generated": true, "title": "Login", "comment": "rank: 2563" },
   { "html": "www_colamanhua_com_login.html", "generated": true, "title": "个人中心 COLAMANHUA", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2670" },
   { "html": "registration_lycos_com_signup.html", "generated": true, "title": "LYCOS Mail: Registration Sign Up", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2693" },
   { "html": "itcdguzman_mindbox_app_login.html", "generated": true, "title": "MindBox®", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2774" },
