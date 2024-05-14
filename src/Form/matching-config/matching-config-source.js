@@ -288,7 +288,10 @@ const matchingConfiguration = {
                             // in Spanish dni and nie stand for id number, often used as username
                             '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
                         // Swedish
-                        '|användarnamn|kontonamn|användar-id',
+                        '|användarnamn|kontonamn|användar-id' +
+                        // Simplified Chinese
+                        // * 账号 translates to "account number"
+                        '|账号',
                     skip: 'phone',
                     forceUnknown: 'search|policy' +
                         // Github assignee picker
