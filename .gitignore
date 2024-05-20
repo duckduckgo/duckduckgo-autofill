@@ -16,6 +16,7 @@ Thumbs.db
 
 # Editor files
 .idea
+.helix
 
 test-results/
 playwright-report/
