@@ -2,6 +2,22 @@ import { escapeXML } from '../autofill-utils.js'
 import HTMLTooltip from './HTMLTooltip.js'
 import {PROVIDER_LOCKED} from '../InputTypes/Credentials.js'
 
+/**
+ * A mapping of main autofill item type to the 'Manage XYZ…' string ID for that
+ * item.
+ * @type {Record<SupportedMainTypes, import('../locales/strings').AutofillKeys>}
+ *
+ * @example
+ * const id = manageItemStringIds['credentials'] // => 'autofill:managePasswords'
+ * const str = t(id);                            // => 'Manage passwords…' in English
+ */
+const manageItemStringIds = {
+    credentials: 'autofill:managePasswords',
+    creditCards: 'autofill:manageCreditCards',
+    identities: 'autofill:manageIdentities',
+    unknown: 'autofill:manageSavedItems'
+}
+
 class DataHTMLTooltip extends HTMLTooltip {
     /**
      * @param {import("../locales/strings").TranslateFn} t
@@ -91,7 +107,7 @@ ${css}
             <button id="manage-button" class="tooltip__button tooltip__button--manage" type="button">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">
-                        ${t('autofill:manageFilledItem', { item: config.displayName })}
+                        ${t(manageItemStringIds[config.type] ?? 'autofill:manageSavedItems')}
                     </span>
                 </span>
             </button>`

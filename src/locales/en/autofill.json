@@ -57,9 +57,21 @@
     "title": "Create a unique, random address that also removes hidden trackers and forwards email to your inbox.",
     "note": "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
-  "manageFilledItem": {
-    "title": "Manage {item}…",
-    "note": "Button that when clicked allows users to add, edit, or delete an item. \"Manage\" is an imperative verb. \"item\" is one of \"identities\", \"passwords\", \"credit cards\"."
+  "manageSavedItems": {
+    "title": "Manage saved items…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards": {
+    "title": "Manage credit cards…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities": {
+    "title": "Manage identities…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords": {
+    "title": "Manage passwords…",
+    "note": "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr": {
     "title": "Generate a Private Duck Address",
