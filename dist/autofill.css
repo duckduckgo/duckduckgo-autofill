@@ -110,6 +110,7 @@
     background: transparent;
     border: none;
     border-radius: 6px;
+    text-align: left;
 }
 .tooltip__button.currentFocus,
 .wrapper:not(.top-autofill) .tooltip__button:hover {
