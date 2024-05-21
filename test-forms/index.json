@@ -342,7 +342,7 @@
   { "html": "www_indiapost_gov_in_login.html", "generated": true, "title": "Welcome to Indiapost", "comment": "rank: 2814" },
   { "html": "ssl_tabelog_com_login.html", "generated": true, "title": "食べログ 店舗管理画面ログイン[食べログ]", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2819" },
   { "html": "freelance_habr_com_signup.html", "generated": true, "title": "Регистрация — Хабр Фриланс", "comment": "rank: 2857" },
-  { "html": "agile_appian_com_login.html", "generated": true, "title": "Log in - Appian", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 2936" },
+  { "html": "agile_appian_com_login.html", "generated": true, "title": "Log in - Appian", "comment": "rank: 2936" },
   { "html": "lk_uminet_ru_login.html", "generated": true, "title": "Личный кабинет пользователя", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3005" },
   { "html": "onehr_ge_com_login.html", "generated": true, "title": "GE Single Sign On", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3031" },
   { "html": "epaper_zaobao_com_login.html", "generated": true, "expectedFailures": ["username OR emailAddress"], "comment": "rank: 3140" },
