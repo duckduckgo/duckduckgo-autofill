@@ -212,12 +212,14 @@ describe.each(testCases)('Test $html fields', (testCase) => {
          */
         const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
 
-        let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button)).length
-        let submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button)).length
+        // False positives are tracked in a Form instance but not marked with 'data-manual-submit' in the DOM.
+        let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button))
+        // False negatives are marked with 'data-manual-submit' in the DOM but not tracked in a Form instance.
+        let submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button))
 
         if (!generated) {
-            expect(submitFalsePositives).toEqual(expectedSubmitFalsePositives)
-            expect(submitFalseNegatives).toEqual(expectedSubmitFalseNegatives)
+            expect(submitFalsePositives).toHaveLength(expectedSubmitFalsePositives)
+            expect(submitFalseNegatives).toHaveLength(expectedSubmitFalseNegatives)
         }
 
         /** @type {Array<HTMLInputElement>} */
@@ -260,8 +262,8 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const submitButtonScores = {
             detected: detectedSubmitButtons.length,
             identified: identifiedSubmitButtons.length,
-            falsePositives: submitFalsePositives,
-            falseNegatives: submitFalseNegatives
+            falsePositives: submitFalsePositives.length,
+            falseNegatives: submitFalseNegatives.length
         }
 
         testResults.push({testCase, scores, submitButtonScores})

@@ -12,8 +12,9 @@ exports[`performance should constrain the buffer size 1`] = `
     <label
       for="input-01"
     >
+      Username
       <input
-        data-ddg-inputtype="unknown"
+        data-ddg-inputtype="credentials.username"
         id="input-01"
         type="text"
       />
@@ -23,10 +24,11 @@ exports[`performance should constrain the buffer size 1`] = `
     <label
       for="input-02"
     >
+      Password
       <input
-        data-ddg-inputtype="unknown"
+        data-ddg-inputtype="credentials.password.new"
         id="input-02"
-        type="text"
+        type="password"
       />
     </label>
     
@@ -80,8 +82,9 @@ exports[`performance should debounce dom lookups 1`] = `
     <label
       for="input-01"
     >
+      Username
       <input
-        data-ddg-inputtype="unknown"
+        data-ddg-inputtype="credentials.username"
         id="input-01"
         type="text"
       />
@@ -91,10 +94,11 @@ exports[`performance should debounce dom lookups 1`] = `
     <label
       for="input-02"
     >
+      Password
       <input
-        data-ddg-inputtype="unknown"
+        data-ddg-inputtype="credentials.password.new"
         id="input-02"
-        type="text"
+        type="password"
       />
     </label>
     
@@ -148,6 +152,7 @@ exports[`performance should not scan if above maximum inputs 1`] = `
     <label
       for="input-01"
     >
+      Username
       <input
         id="input-01"
         type="text"
@@ -158,9 +163,10 @@ exports[`performance should not scan if above maximum inputs 1`] = `
     <label
       for="input-02"
     >
+      Password
       <input
         id="input-02"
-        type="text"
+        type="password"
       />
     </label>
     
@@ -211,6 +217,7 @@ exports[`performance should stop scanning if page grows above maximum forms 1`] 
     <label
       for="input-01"
     >
+      Username
       <input
         id="input-01"
         type="text"
@@ -221,9 +228,10 @@ exports[`performance should stop scanning if page grows above maximum forms 1`] 
     <label
       for="input-02"
     >
+      Password
       <input
         id="input-02"
-        type="text"
+        type="password"
       />
     </label>
     
@@ -267,6 +275,7 @@ exports[`performance should stop scanning if page grows above maximum forms 1`] 
     <label
       for="input-01"
     >
+      Username
       <input
         id="input-01"
         type="text"
@@ -277,9 +286,10 @@ exports[`performance should stop scanning if page grows above maximum forms 1`] 
     <label
       for="input-02"
     >
+      Password
       <input
         id="input-02"
-        type="text"
+        type="password"
       />
     </label>
     
@@ -330,6 +340,7 @@ exports[`performance should stop scanning if page grows above maximum inputs 1`]
     <label
       for="input-01"
     >
+      Username
       <input
         id="input-01"
         type="text"
@@ -340,9 +351,10 @@ exports[`performance should stop scanning if page grows above maximum inputs 1`]
     <label
       for="input-02"
     >
+      Password
       <input
         id="input-02"
-        type="text"
+        type="password"
       />
     </label>
     

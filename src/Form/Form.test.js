@@ -414,4 +414,20 @@ describe('Form bails', () => {
         decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
         expect(decoratedInputs).toHaveLength(0)
     })
+
+    test('when not enough fields have been classified on load', async () => {
+        const formEl = attachAndReturnGenericForm(`
+<form>
+    <!-- A hidden field for the product number -->
+    <input type="hidden" name="sku" value="lorem"/>
+    <!-- A visible field for the number to purchase -->
+    <input type="number" name="qty" title="Qty"/>
+</form>
+        `)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        const formClass = scanner.forms.get(formEl)
+        expect(formClass).not.toBeDefined()
+        const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
+        expect(decoratedInputs).toHaveLength(0)
+    })
 })
