@@ -6,6 +6,7 @@ const DEFAULT_PASSWORD_RULES = [
     `minlength: ${DEFAULT_MIN_LENGTH}`,
     `maxlength: ${DEFAULT_MAX_LENGTH}`,
     `required: [${DEFAULT_REQUIRED_CHARS}]`,
+    `required: digit`,
     `allowed: [${DEFAULT_UNAMBIGUOUS_CHARS}]`
 ].join('; ')
 
