@@ -5118,7 +5118,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":2,"../EmailProtection.js":23,"../Form/formatters.js":27,"../Form/matching.js":34,"../InputTypes/Credentials.js":36,"../PasswordGenerator.js":39,"../Scanner.js":40,"../Settings.js":41,"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"../config.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/transports/transports.js":63,"../locales/strings.js":66,"./initFormSubmissionsApi.js":21}],19:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../EmailProtection.js":23,"../Form/formatters.js":27,"../Form/matching.js":34,"../InputTypes/Credentials.js":36,"../PasswordGenerator.js":39,"../Scanner.js":40,"../Settings.js":41,"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"../config.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/transports/transports.js":63,"../locales/strings.js":88,"./initFormSubmissionsApi.js":21}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13195,7 +13195,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":13,"./autofill-utils.js":53,"./requestIdleCallback.js":69}],55:[function(require,module,exports){
+},{"./DeviceInterface.js":13,"./autofill-utils.js":53,"./requestIdleCallback.js":93}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14011,6 +14011,466 @@ function waitForWindowsResponse(responseId, options) {
 
 },{"../../../packages/device-api/index.js":2}],65:[function(require,module,exports){
 module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Здравей, свят",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Използване на {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Блокиране на имейл тракери",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Парола за {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Генерирана парола",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Паролата за този уебсайт ще бъде запазена",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Приложението Bitwarden е заключено",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Отключете своя трезор, за да получите достъп до идентификационни данни или да генерирате пароли",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Генериране на личен Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Скрийте имейл адреса си и\nблокирайте тракерите",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Създайте уникален, произволен адрес, който премахва скритите тракери и препраща имейлите към пощенската Ви кутия.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Управление на запазените елементи…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Управление на кредитните карти…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Управление на самоличностите…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Управление на пароли…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Генериране на поверителен Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Блокиране на имейл тракерите и скриване на адреса",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Защита на моя имейл",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Не показвай отново",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],66:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Ahoj, světe",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Použít {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokuj e-mailové trackery",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Heslo pro {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Vygenerované heslo",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Heslo pro tenhle web se uloží",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Aplikace Bitwarden je zamčená",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Pro přístup k přihlašovacím údajům a generování hesel je potřeba odemknout trezor",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Vygenerovat soukromou adresu Duck",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Skryj svůj e-mail\na blokuj trackery",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Vytvoř si jedinečnou, náhodnou adresu, která bude odstraňovat skryté trackery a přeposílat e-maily do tvé schránky.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Spravovat uložené položky...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Spravovat platební karty…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Spravovat identity...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Spravovat hesla…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Vygenerovat soukromou adresu Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokuj e-mailové trackery a skryj svou adresu",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Chránit můj e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Už neukazovat",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],67:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hej verden",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Brug {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokerer e-mailtrackere",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Adgangskode til {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Genereret adgangskode",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Adgangskoden bliver gemt for dette websted",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden er låst",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Lås din boks op for at få adgang til legitimationsoplysninger eller generere adgangskoder",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Opret privat Duck-adresse",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Skjul din e-mail og \n bloker trackere",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Opret en unik, tilfældig adresse, der også fjerner skjulte trackere og videresender e-mails til din indbakke.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Administrer gemte elementer ...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Administrer kreditkort ...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Administrer identiteter ...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Administrer adgangskoder...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Opret en privat Duck-adresse",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Bloker e-mailtrackere og skjul adresse",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Beskyt min e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Vis ikke igen",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],68:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hallo Welt",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "{email} verwenden",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "E-Mail-Tracker blockieren",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Passwort für {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Generiertes Passwort",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Passwort wird für diese Website gespeichert",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden ist gesperrt",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Entsperre deinen Tresor, um auf deine Zugangsdaten zuzugreifen oder Passwörter zu generieren",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Private Duck-Adresse generieren",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "E-Mail-Adresse verbergen und Tracker blockieren",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Einmalige, zufällige Adresse erstellen, die versteckte Tracker entfernt und E-Mails an deinen Posteingang weiterleitet.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Gespeicherte Elemente verwalten …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Kreditkarten verwalten …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Identitäten verwalten …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Passwörter verwalten …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Private Duck Address generieren",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "E-Mail-Tracker blockieren & Adresse verbergen",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Meine E-Mail-Adresse schützen",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Nicht erneut anzeigen",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],69:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Γεια σου κόσμε",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Χρησιμοποιήστε τη διεύθυνση {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Αποκλεισμός εφαρμογών παρακολούθησης email",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Κωδικός πρόσβασης για {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Δημιουργήθηκε κωδικός πρόσβασης",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Ο κωδικός πρόσβασης θα αποθηκευτεί για τον ιστότοπο αυτό",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Το Bitwarden είναι κλειδωμένο",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Ξεκλειδώστε το θησαυροφυλάκιό σας για πρόσβαση σε διαπιστευτήρια ή δημιουργία κωδικών πρόσβασης",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Δημιουργήστε ιδιωτική Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Απόκρυψη του email σας και \n αποκλεισμός εφαρμογών παρακολούθησης",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Δημιουργήστε μια μοναδική, τυχαία διεύθυνση η οποία αφαιρεί επίσης κρυφές εφαρμογές παρακολούθησης και προωθεί email στα εισερχόμενά σας.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Διαχείριση αποθηκευμένων στοιχείων…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Διαχείριση πιστωτικών καρτών…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Διαχείριση ταυτοτήτων...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Διαχείριση κωδικών πρόσβασης…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Δημιουργήστε μια ιδιωτική Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Αποκλεισμός εφαρμογών παρακολούθησης email και απόκρυψη διεύθυνσης",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Προστασία του email μου",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Να μην εμφανιστεί ξανά",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],70:[function(require,module,exports){
+module.exports={
   "smartling": {
     "string_format": "icu",
     "translate_paths": [
@@ -14102,7 +14562,1571 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],66:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hola mundo",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Usar {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Bloqueo de rastreadores de correo electrónico",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Contraseña para {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Contraseña generada",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Se guardará la contraseña de este sitio web",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden está bloqueado",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Desbloquea tu caja fuerte para acceder a las credenciales o generar contraseñas",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generar Duck Address privada",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Ocultar tu correo electrónico y\nbloquear rastreadores",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Crea una dirección aleatoria única que también elimine los rastreadores ocultos y reenvíe el correo electrónico a tu bandeja de entrada.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Gestionar elementos guardados...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Gestionar tarjetas de crédito…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Gestionar identidades...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Administrar contraseñas...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generar Duck Address privada",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Bloquear rastreadores de correo electrónico y ocultar dirección",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Proteger mi correo electrónico",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "No volver a mostrar",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],72:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Tere maailm",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Kasutage {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokeeri e-posti jälgijad",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Saidi {url} parool",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Loodud parool",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Parool salvestatakse selle veebilehe jaoks",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden on lukustatud",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Ava mandaatidele juurdepääsuks või paroolide loomiseks oma varamu",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Loo privaatne Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Peida oma e-post ja\nblokeeri jälgijad",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Loo unikaalne, juhuslik aadress, mis eemaldab ka varjatud jäglijad ja edastab e-kirjad sinu postkasti.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Halda salvestatud üksuseid...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Halda krediitkaarte...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Halda identiteete...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Halda paroole…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Loo privaatne Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokeeri e-posti jälgijad ja peida aadress",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Kaitse minu e-posti aadressi",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Ära enam näita",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],73:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hei, maailma",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Käytä {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Estä sähköpostin seurantaohjelmat",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Sivuston {url} salasana",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Luotu salasana",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Salasana tallennetaan tälle verkkosivustolle",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden on lukittu",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Avaa holvin lukitus päästäksesi käsiksi tunnistetietoihin tai luodaksesi salasanoja",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Luo yksityinen Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Piilota sähköpostisi ja\nEstä seurantaohjelmat",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Luo yksilöllinen, satunnainen osoite, joka lisäksi poistaa piilotetut seurantaohjelmat ja välittää sähköpostin omaan postilaatikkoosi.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Hallitse tallennettuja kohteita…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Hallitse luottokortteja…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Hallitse käyttäjätietoja...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Hallitse salasanoja…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Luo yksityinen Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Estä sähköpostin seurantaohjelmat ja piilota osoite",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Suojaa sähköpostini",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Älä näytä enää",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],74:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Bonjour à tous",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Utiliser {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Bloquer les traqueurs d'e-mails",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Mot de passe pour {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Mot de passe généré",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Le mot de passe sera enregistré pour ce site",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden est verrouillé",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Déverrouillez votre coffre-fort pour accéder à vos informations d'identification ou générer des mots de passe",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Générer une Duck Address privée",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Masquez votre adresse e-mail et bloquez les traqueurs",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Créez une adresse unique et aléatoire qui supprime les traqueurs masqués et transfère les e-mails vers votre boîte de réception.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Gérez les éléments enregistrés…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Gérez les cartes bancaires…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Gérez les identités…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Gérer les mots de passe…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Générer une Duck Address privée",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Bloquer les traqueurs d'e-mails et masquer l'adresse",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Protéger mon adresse e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Ne plus afficher",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],75:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Pozdrav svijete",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Upotrijebite {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokiranje alata za praćenje e-pošte",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Lozinka za {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Generirana lozinka",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Lozinka će biti spremljena za ovo web-mjesto",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden je zaključan",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Otključaj svoj trezor za pristup vjerodajnicama ili generiranje lozinki",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generiraj privatnu adresu Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Sakrij svoju e-poštu i \n blokiraj tragače",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Izradi jedinstvenu, nasumičnu adresu koja također uklanja skrivene alate za praćenje (\"tragače\") i prosljeđuje e-poštu u tvoj sandučić za pristiglu poštu.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Upravljanje spremljenim stavkama...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Upravljanje kreditnim karticama...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Upravljanje identitetima...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Upravljanje lozinkama…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generiraj privatnu adresu Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokiraj praćenje e-pošte i sakrij adresu",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Zaštiti moju e-poštu",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Nemoj ponovno prikazivati",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],76:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Helló, világ!",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "{email} használata",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "E-mail-nyomkövetők blokkolása",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "{url} jelszava",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Generált jelszó",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "A webhelyhez tartozó jelszó mentve lesz",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "A Bitwarden zárolva van",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "A hitelesítő adatok eléréséhez vagy a jelszavak generálásához oldd fel a tárolót",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Privát Duck-cím létrehozása",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "E-mail elrejtése és\nnyomkövetők blokkolása",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Hozz létre egy egyedi, véletlenszerű címet, amely eltávolítja a rejtett nyomkövetőket is, és a postafiókodba továbbítja az e-maileket.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Mentett elemek kezelése…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Hitelkártyák kezelése…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Identitások kezelése…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Jelszavak kezelése…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Privát Duck-cím generálása",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "E-mail-nyomkövetők blokkolása, és a cím elrejtése",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "E-mail védelme",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Ne jelenjen meg újra",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],77:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Ciao mondo",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Usa {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blocca i sistemi di tracciamento e-mail",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Password per {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Password generata",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "La password verrà salvata per questo sito web",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden è bloccato",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Sblocca la tua cassaforte per accedere alle credenziali o generare password",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Genera Duck Address privato",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Nascondi il tuo indirizzo e-mail e \n blocca i sistemi di tracciamento",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Crea un indirizzo univoco e casuale che rimuove anche i sistemi di tracciamento nascosti e inoltra le e-mail alla tua casella di posta.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Gestisci gli elementi salvati...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Gestisci carte di credito...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Gestisci identità...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Gestisci password…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Genera un Duck Address privato",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blocca i sistemi di tracciamento e-mail e nascondi il tuo indirizzo",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Proteggi la mia e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Non mostrare più",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],78:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Labas pasauli",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Naudoti {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokuoti el. pašto sekimo priemones",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "„{url}“ slaptažodis",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Sugeneruotas slaptažodis",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Slaptažodis bus išsaugotas šiai svetainei",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "„Bitwarden“ užrakinta",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Atrakinkite saugyklą, kad pasiektumėte prisijungimo duomenis arba sugeneruotumėte slaptažodžius",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generuoti privatų „Duck“ adresą",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Paslėpkite savo el. paštą ir \n blokuokite stebėjimo priemones",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Sukurkite unikalų atsitiktinį adresą, kuriuo taip pat pašalinamos slaptos sekimo priemonės ir el. laiškai persiunčiami į pašto dėžutę.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Tvarkykite išsaugotus elementus...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Tvarkykite kredito korteles…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Tvarkykite tapatybes...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Slaptažodžių valdymas…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generuoti privatų „Duck“ adresą",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokuoti el. pašto stebėjimo priemones ir slėpti adresą",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Apsaugoti mano el. paštą",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Daugiau nerodyti",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],79:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Sveika, pasaule",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Izmantot {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Bloķē e-pasta izsekotājus",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "{url} parole",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Ģenerēta parole",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Parole tiks saglabāta šai vietnei",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden ir bloķēts",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Atbloķē glabātavu, lai piekļūtu pieteikšanās datiem vai ģenerētu paroles",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Ģenerēt privātu Duck adresi",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Paslēp savu e-pastu un\nbloķē izsekotājus",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Izveido unikālu, nejauši izvēlētu adresi, kas arī aizvāc slēptos izsekotājus un pārsūta e-pastus uz tavu pastkastīti.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Pārvaldīt saglabātos vienumus…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Pārvaldīt kredītkartes…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Pārvaldīt identitātes",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Pārvaldīt paroles…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Ģenerēt privātu Duck adresi",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Bloķē e-pasta izsekotājus un paslēp adresi",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Aizsargāt manu e-pastu",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Turpmāk nerādīt",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],80:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hallo verden",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Bruk {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokker e-postsporere",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Passord for {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Generert passord",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Passordet blir lagret for dette nettstedet",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden er låst",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Lås opp hvelvet ditt for å få tilgang til legitimasjon eller generere passord",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generer privat Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Skjul e-postadressen din og\nblokker sporere",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Opprett en unik, tilfeldig adresse som også fjerner skjulte sporere og videresender e-post til innboksen din.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Administrer lagrede elementer …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Administrer kredittkort …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Administrer identiteter …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Administrer passord …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generer en privat Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokker e-postsporere og skjul adresse",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Beskytt e-postadressen min",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Ikke vis igjen",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],81:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hallo wereld",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "{email} gebruiken",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "E-mailtrackers blokkeren",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Wachtwoord voor {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Gegenereerd wachtwoord",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Wachtwoord wordt opgeslagen voor deze website",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden is vergrendeld",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Ontgrendelt je kluis om toegang te krijgen tot inloggegevens of om wachtwoorden te genereren",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Privé-Duck Address genereren",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Je e-mailadres verbergen en\n trackers blokkeren",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Maak een uniek, willekeurig adres dat ook verborgen trackers verwijdert en e-mails doorstuurt naar je inbox.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Opgeslagen items beheren...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Creditcards beheren…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Identiteiten beheren…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Wachtwoorden beheren …",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Privé-Duck Address genereren",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "E-mailtrackers blokkeren en adres verbergen",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Mijn e-mailadres beschermen",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Niet meer weergeven",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],82:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Witajcie",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Użyj {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokuj mechanizmy śledzące pocztę e-mail",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Hasło do witryny {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Wygenerowane hasło",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Hasło zostanie zapisane na potrzeby tej witryny",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Aplikacja Bitwarden jest zablokowana",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Odblokuj sejf, aby uzyskać dostęp do poświadczeń lub generować hasła",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Wygeneruj prywatny adres Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Ukryj swój adres e-mail i\nblokuj skrypty śledzące",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Utwórz unikalny, losowy adres, który usuwa ukryte mechanizmy śledzące i przekazuje wiadomości e-mail do Twojej skrzynki odbiorczej.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Zarządzaj zapisanymi elementami...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Zarządzaj kartami kredytowymi…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Zarządzaj tożsamościami…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Zarządzaj hasłami…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Wygeneruj prywatny adres Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Zablokuj mechanizmy śledzące pocztę e-mail i ukryj adres",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Chroń moją pocztę e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Nie pokazuj więcej",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],83:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Olá, mundo",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Use {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Bloquear rastreadores de e-mail",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Palavra-passe de {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Palavra-passe gerada",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "A palavra-passe deste site será guardada",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "O Bitwarden está bloqueado",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Desbloqueia o teu cofre para aceder a credenciais ou gerar palavras-passe",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Gerar um Duck Address Privado",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Ocultar o teu e-mail e\nbloquear rastreadores",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Cria um endereço aleatório exclusivo que também remove rastreadores escondidos e encaminha o e-mail para a tua caixa de entrada.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Gerir itens guardados...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Gerir cartões de crédito…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Gerir identidades…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Gerir palavras-passe…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Gerar um Duck Address privado",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Bloquear rastreadores de e-mail e ocultar endereço",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Proteger o meu e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Não mostrar novamente",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],84:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Salut!",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Utilizează {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blochează tehnologiile de urmărire din e-mail",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Parola pentru {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Parola generată",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Parola va fi salvată pentru acest site",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden este blocat",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Deblochează seiful pentru a accesa datele de conectare sau pentru a genera parole",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generează o Duck Address privată",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Ascunde-ți e-mailul și blochează tehnologiile de urmărire",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Creează o adresă unică, aleatorie, care elimină și tehnologiile de urmărire ascunse și redirecționează e-mailurile către căsuța ta de inbox.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Gestionează elementele salvate...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Gestionează cardurile de credit...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Gestionează identitățile...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Gestionează parolele…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generează o Duck Address privată",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blochează tehnologiile de urmărire din e-mailuri și ascunde adresa",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Protejează-mi adresa de e-mail",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Nu mai afișa",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],85:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Привет, мир!",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Использовать {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Блокировка почтовых трекеров",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Пароль для {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Сгенерированный пароль",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Пароль будет сохранен для этого сайта",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Приложение Bitwarden заблокировано",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Разблокируйте хранилище, чтобы пользоваться учетными данными и генерировать пароли.",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Создать адрес на Duck",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Скрытие адреса почты\nи блокировка трекеров",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Создайте уникальный случайный адрес, который также удалит скрытые трекеры и перенаправит электронную почту на ваш ящик.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Настроить сохраненные данные…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Настроить платежные карты…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Настроить учетные данные…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Управление паролями...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Создать адрес Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Скрывает ваш адрес и блокирует почтовые трекеры",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Защитить почту",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Больше не показывать",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],86:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Ahoj, svet!",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Použiť {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokuje e-mailové sledovače",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Heslo pre {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Vygenerované heslo",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Heslo pre túto webovú stránku bude uložené",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden je uzamknutý",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Odomknite trezor pre prístup k prihlasovacím údajom alebo generovaniu hesiel",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generovať súkromnú adresu Duck",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Skryte svoj e-mail\na blokujte sledovače",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Vytvorte si náhodnú jedinečnú adresu, ktorá odstráni aj skryté sledovacie prvky a prepošle e-maily do vašej schránky.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Spravovať uložené položky...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Spravovať kreditné karty...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Spravovať identity...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Spravovať heslá…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generovať súkromnú adresu Duck",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokujte sledovače e-mailov a skryte adresu",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Ochrana môjho e-mailu",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Nabudúce už neukazovať",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],87:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Pozdravljen, svet",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Uporabite {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blokirajte sledilnike e-pošte",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Geslo za spletno mesto {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Ustvarjeno geslo",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Geslo bo shranjeno za to spletno mesto",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden je zaklenjen",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Odklenite trezor za dostop do poverilnic ali ustvarjanje gesel",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Ustvarjanje zasebnega naslova Duck",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Skrijte svojo e-pošto in \nblokirajte sledilnike",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Ustvarite edinstven, naključen naslov, ki odstrani tudi skrite sledilnike in posreduje e-pošto v vaš e-poštni predal.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Upravljaj shranjene elemente ...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Upravljaj kreditne kartice ...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Upravljaj identitete ...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Upravljanje gesel…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Ustvari zasebni naslov Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blokirajte sledilnike e-pošte in skrijte naslov",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Zaščiti mojo e-pošto",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Ne prikaži več",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],88:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14190,30 +16214,310 @@ function translateImpl(library, namespacedId, opts) {
   return out;
 }
 
-},{"./translations.js":67}],67:[function(require,module,exports){
+},{"./translations.js":91}],89:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hej världen",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "Använd {email}",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "Blockera e-postspårare",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "Lösenord för {url}",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Genererat lösenord",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Lösenordet sparas för den här webbplatsen",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden är låst",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Lås upp ditt valv för att komma åt inloggningsuppgifter eller generera lösenord",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Generera privat Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "Dölj din e-postadress och\nblockera spårare",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Skapa en unik, slumpmässig adress som också tar bort dolda spårare och vidarebefordrar e-post till din inkorg.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Hantera sparade objekt…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Hantera kreditkort…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Hantera identiteter…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Hantera lösenord…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Generera en privat Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "Blockera e-postspårare och dölj din adress",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "Skydda min e-postadress",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Visa inte igen",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],90:[function(require,module,exports){
+module.exports={
+  "smartling" : {
+    "string_format" : "icu",
+    "translate_paths" : [
+    {
+      "path" : "*/title",
+      "key" : "{*}/title",
+      "instruction" : "*/note"
+    }]
+  },
+  "hello" : {
+    "title" : "Hello world",
+    "note" : "Static text for testing."
+  },
+  "lipsum" : {
+    "title" : "Lorem ipsum dolor sit amet, {foo} {bar}",
+    "note" : "Placeholder text."
+  },
+  "usePersonalDuckAddr" : {
+    "title" : "{email} kullan",
+    "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
+  },
+  "blockEmailTrackers" : {
+    "title" : "E-posta izleyicileri engelleyin",
+    "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
+  },
+  "passwordForUrl" : {
+    "title" : "{url} şifresi",
+    "note" : "Button that fills a form's password field with the saved password for that site. The placeholder 'url' is URL of the matched site, e.g. 'https://example.duckduckgo.com'."
+  },
+  "generatedPassword" : {
+    "title" : "Oluşturulan şifre",
+    "note" : "Label on a button that, when clicked, fills an automatically-created password into a signup form. \"Generated\" is an adjective in past tense."
+  },
+  "passwordWillBeSaved" : {
+    "title" : "Şifre bu web sitesi için kaydedilecek",
+    "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
+  },
+  "bitwardenIsLocked" : {
+    "title" : "Bitwarden kilitlendi",
+    "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
+  },
+  "unlockYourVault" : {
+    "title" : "Kimlik bilgilerine erişmek veya şifre oluşturmak için kasanızın kilidini açın",
+    "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
+  },
+  "generatePrivateDuckAddr" : {
+    "title" : "Özel Duck Address Oluştur",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+  },
+  "hideEmailAndBlockTrackers" : {
+    "title" : "E-postanızı Gizleyin ve \n İzleyicileri Engelleyin",
+    "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
+  },
+  "createUniqueRandomAddr" : {
+    "title" : "Gizli izleyicileri de kaldıran ve e-postaları gelen kutunuza ileten benzersiz, rastgele bir adres oluşturun.",
+    "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
+  },
+  "manageSavedItems" : {
+    "title" : "Kaydedilen öğeleri yönetin...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
+  },
+  "manageCreditCards" : {
+    "title" : "Kredi kartlarını yönetin...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "manageIdentities" : {
+    "title" : "Kimlikleri yönetin...",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
+  },
+  "managePasswords" : {
+    "title" : "Şifreleri yönet…",
+    "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
+  },
+  "generateDuckAddr" : {
+    "title" : "Özel Duck Address Oluştur",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+  },
+  "blockEmailTrackersAndHideAddress" : {
+    "title" : "E-posta izleyicileri engelleyin ve adresi gizleyin",
+    "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
+  },
+  "protectMyEmail" : {
+    "title" : "E-postamı Koru",
+    "note" : "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
+  },
+  "dontShowAgain" : {
+    "title" : "Bir Daha Gösterme",
+    "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  }
+}
+},{}],91:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _autofill = _interopRequireDefault(require("./en/autofill.json"));
-var _autofill2 = _interopRequireDefault(require("./xa/autofill.json"));
+var _autofill = _interopRequireDefault(require("./bg/autofill.json"));
+var _autofill2 = _interopRequireDefault(require("./cs/autofill.json"));
+var _autofill3 = _interopRequireDefault(require("./da/autofill.json"));
+var _autofill4 = _interopRequireDefault(require("./de/autofill.json"));
+var _autofill5 = _interopRequireDefault(require("./el/autofill.json"));
+var _autofill6 = _interopRequireDefault(require("./en/autofill.json"));
+var _autofill7 = _interopRequireDefault(require("./es/autofill.json"));
+var _autofill8 = _interopRequireDefault(require("./et/autofill.json"));
+var _autofill9 = _interopRequireDefault(require("./fi/autofill.json"));
+var _autofill10 = _interopRequireDefault(require("./fr/autofill.json"));
+var _autofill11 = _interopRequireDefault(require("./hr/autofill.json"));
+var _autofill12 = _interopRequireDefault(require("./hu/autofill.json"));
+var _autofill13 = _interopRequireDefault(require("./it/autofill.json"));
+var _autofill14 = _interopRequireDefault(require("./lt/autofill.json"));
+var _autofill15 = _interopRequireDefault(require("./lv/autofill.json"));
+var _autofill16 = _interopRequireDefault(require("./nb/autofill.json"));
+var _autofill17 = _interopRequireDefault(require("./nl/autofill.json"));
+var _autofill18 = _interopRequireDefault(require("./pl/autofill.json"));
+var _autofill19 = _interopRequireDefault(require("./pt/autofill.json"));
+var _autofill20 = _interopRequireDefault(require("./ro/autofill.json"));
+var _autofill21 = _interopRequireDefault(require("./ru/autofill.json"));
+var _autofill22 = _interopRequireDefault(require("./sk/autofill.json"));
+var _autofill23 = _interopRequireDefault(require("./sl/autofill.json"));
+var _autofill24 = _interopRequireDefault(require("./sv/autofill.json"));
+var _autofill25 = _interopRequireDefault(require("./tr/autofill.json"));
+var _autofill26 = _interopRequireDefault(require("./xa/autofill.json"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * This file is auto-generated by scripts/bundle-locales.mjs, based on the contents of the src/locales/ directory.
  * Any manual changes in here will be overwritten on build!
  */
 var _default = exports.default = {
-  en: {
+  bg: {
     autofill: _autofill.default
   },
-  xa: {
+  cs: {
     autofill: _autofill2.default
+  },
+  da: {
+    autofill: _autofill3.default
+  },
+  de: {
+    autofill: _autofill4.default
+  },
+  el: {
+    autofill: _autofill5.default
+  },
+  en: {
+    autofill: _autofill6.default
+  },
+  es: {
+    autofill: _autofill7.default
+  },
+  et: {
+    autofill: _autofill8.default
+  },
+  fi: {
+    autofill: _autofill9.default
+  },
+  fr: {
+    autofill: _autofill10.default
+  },
+  hr: {
+    autofill: _autofill11.default
+  },
+  hu: {
+    autofill: _autofill12.default
+  },
+  it: {
+    autofill: _autofill13.default
+  },
+  lt: {
+    autofill: _autofill14.default
+  },
+  lv: {
+    autofill: _autofill15.default
+  },
+  nb: {
+    autofill: _autofill16.default
+  },
+  nl: {
+    autofill: _autofill17.default
+  },
+  pl: {
+    autofill: _autofill18.default
+  },
+  pt: {
+    autofill: _autofill19.default
+  },
+  ro: {
+    autofill: _autofill20.default
+  },
+  ru: {
+    autofill: _autofill21.default
+  },
+  sk: {
+    autofill: _autofill22.default
+  },
+  sl: {
+    autofill: _autofill23.default
+  },
+  sv: {
+    autofill: _autofill24.default
+  },
+  tr: {
+    autofill: _autofill25.default
+  },
+  xa: {
+    autofill: _autofill26.default
   }
 };
 
-},{"./en/autofill.json":65,"./xa/autofill.json":68}],68:[function(require,module,exports){
+},{"./bg/autofill.json":65,"./cs/autofill.json":66,"./da/autofill.json":67,"./de/autofill.json":68,"./el/autofill.json":69,"./en/autofill.json":70,"./es/autofill.json":71,"./et/autofill.json":72,"./fi/autofill.json":73,"./fr/autofill.json":74,"./hr/autofill.json":75,"./hu/autofill.json":76,"./it/autofill.json":77,"./lt/autofill.json":78,"./lv/autofill.json":79,"./nb/autofill.json":80,"./nl/autofill.json":81,"./pl/autofill.json":82,"./pt/autofill.json":83,"./ro/autofill.json":84,"./ru/autofill.json":85,"./sk/autofill.json":86,"./sl/autofill.json":87,"./sv/autofill.json":89,"./tr/autofill.json":90,"./xa/autofill.json":92}],92:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -14306,7 +16610,7 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],69:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
