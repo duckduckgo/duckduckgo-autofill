@@ -62,7 +62,9 @@ function createPRTemplate (platform, data) {
     return updatedTemplate
 }
 
-// The log is needed to read the value from the bash context
-console.log(createPRTemplate(platform, data))
+// Only log when executed directly via `node scripts/release/create-pr-template.js`
+if (require.main === module) {
+    console.log(createPRTemplate(platform, data))
+}
 
 module.exports = {createPRTemplate}

@@ -77,6 +77,13 @@ describe('vendor-regexes matching', () => {
 })
 
 describe('matching', () => {
+    beforeAll(() => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {})
+    })
+    afterAll(() => {
+        jest.restoreAllMocks()
+    })
+
     it('default config', () => {
         const matching = new Matching(Matching.emptyConfig)
         const {formElement, inputs} = setFormHtml(`<input name=email />`)
