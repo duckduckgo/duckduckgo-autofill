@@ -5673,6 +5673,19 @@ const {
   MAX_INPUTS_PER_FORM,
   MAX_FORM_RESCANS
 } = _constants.constants;
+
+/**
+ * Determines if an element is visible or not.
+ * Uses a simplified version of the heuristic in Element.checkVisibility()
+ * to provide consistent browser support.
+ * @see https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect
+ * @param {Element} el - the element in question
+ * @returns {boolean} true if the element has a bounding client rect with nonzero width and height
+ */
+function elementIsVisible(el) {
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
 class Form {
   /** @type {import("../Form/matching").Matching} */
   matching;
@@ -6015,7 +6028,7 @@ class Form {
     if (this.form.matches(selector)) {
       this.addInput(this.form);
     } else {
-      /** @type {Element[] | NodeList} */
+      /** @type {Element[]} */
       let foundInputs = [];
       if (this.form instanceof HTMLFormElement) {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
@@ -6023,10 +6036,16 @@ class Form {
         // We use .filter to avoid fieldset, button, textarea etc.
         foundInputs = [...this.form.elements].filter(el => el.matches(selector));
       } else {
-        foundInputs = this.form.querySelectorAll(selector);
+        foundInputs = Array.from(this.form.querySelectorAll(selector));
       }
+
+      // Remove elements that aren't visible to users, since they can't be interacted with.
+      foundInputs = foundInputs.filter(el => elementIsVisible(el));
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
-        foundInputs.forEach(input => this.addInput(input));
+        const opts = {
+          checkVisibility: false
+        };
+        foundInputs.forEach(input => this.addInput(input, opts));
       } else {
         // This is rather extreme, but better safe than sorry
         this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`);
@@ -6087,7 +6106,16 @@ class Form {
     }
   }
   addInput(input) {
+    let filterOpts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
+      checkVisibility: true
+    };
     if (this.inputs.all.has(input)) return this;
+
+    // Ignore inputs that aren't visible. This check may have already been
+    // performed as part of a batched scan.
+    if (filterOpts.checkVisibility && !elementIsVisible(input)) {
+      return this;
+    }
 
     // If the form has too many inputs, destroy everything to avoid performance issues
     if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {

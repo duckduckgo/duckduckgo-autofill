@@ -93,6 +93,49 @@ Object.defineProperty(window.HTMLElement.prototype, 'clientHeight', {
         return this._jsdomMockClientHeight || 0
     }
 })
+// Enables querying for getBoundingClientRect based on a few rules:
+//   1. <input type="hidden"/> always returns a zero-width, zero-height DOMRect.
+//   2. Otherwise, return the JSON-parsed object in the element's data-mock-boundingClientRect attribute if it exists and parses.
+//   3. Otherwise, return the element's _jsdomMockBoundingClientRect JavaScript property if it exists.
+//   4. Otherwise, return a DOMRect with width = this.clientWidth (defaulting to 3) and height = this.clientHeight (defaulting to 4)
+Object.defineProperty(window.HTMLElement.prototype, 'getBoundingClientRect', {
+    /**
+     * @this {HTMLElement & { _jsdomMockBoundingClientRect?: DOMRect }}
+     * @returns {DOMRect} the bounding client rect
+     */
+    value: function () {
+        const defaultRect = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            toJSON () { return JSON.stringify(defaultRect) }
+        }
+        // Forms with type="hidden" get 'display: none' styling by most user agents.
+        // Simulate that by returning a zero-width, zero-height DOMRect.
+        if (this instanceof HTMLInputElement && this.type === 'hidden') {
+            return defaultRect
+        }
+
+        const attr = this.getAttribute('data-mock-boundingClientRect')
+        if (attr) {
+            try {
+                const out = { ...defaultRect, ...JSON.parse(attr) }
+                out.toJSON = () => JSON.stringify(out)
+                return out
+            } catch (e) {
+                console.error('data-mock-boundingClientRect must be valid JSON', { cause: e })
+            }
+        }
+        defaultRect.width = this.clientWidth || 3
+        defaultRect.height = this.clientHeight || 4
+        return this._jsdomMockBoundingClientRect || defaultRect
+    }
+})
 // Enables setting offsetWidth by the data-mock-offsetWidth attribute or the property _jsdomMockOffsetWidth
 Object.defineProperty(window.HTMLElement.prototype, 'offsetWidth', {
     get: function () {

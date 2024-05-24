@@ -285,6 +285,27 @@ describe('Test the form class reading values correctly', () => {
                     cardNumber: '4111111111111111'
                 }
             }
+        },
+        {
+            testCase: 'form with more non-visible fields than max',
+            form: (function () {
+                const typeHidden = new Array(50).fill(0).map(
+                    (_, i) => `    <input type="hidden" name="hidden_${i}" value="${i}" />`
+                ).join('\n')
+                const noSize = new Array(80).fill(0).map(
+                    (_, i) => `    <input name="username_${i}" data-mock-boundingClientRect='{"width": 0, "height": 0}' />`
+                ).join('\n')
+                return `
+<form>
+${noSize}
+    <input type="text" value="testUsername" autocomplete="username" />
+${typeHidden}
+    <input type="password" value="testPassword" autocomplete="new-password" />
+    <button type="submit">Sign up</button>
+</form>`
+            }()),
+            expHasValues: true,
+            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
         }
     ]
 
