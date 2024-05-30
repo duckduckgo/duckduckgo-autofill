@@ -2406,6 +2406,9 @@ module.exports={
   "access.service.gov.uk": {
     "password-rules": "minlength: 10; required: lower; required: upper; required: digit; required: special;"
   },
+  "account.samsung.com": {
+    "password-rules": "minlength: 8; maxlength: 15; required: digit; required: special; required: upper,lower;"
+  },
   "admiral.com": {
     "password-rules": "minlength: 8; required: digit; required: [- !\"#$&'()*+,.:;<=>?@[^_`{|}~]]; allowed: lower, upper;"
   },
@@ -2438,6 +2441,9 @@ module.exports={
   },
   "americanexpress.com": {
     "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 4; required: lower, upper; required: digit; allowed: [%&_?#=];"
+  },
+  "ana.co.jp": {
+    "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
   },
   "anatel.gov.br": {
     "password-rules": "minlength: 6; maxlength: 15; allowed: lower, upper, digit;"
