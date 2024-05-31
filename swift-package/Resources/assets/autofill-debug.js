@@ -6824,6 +6824,9 @@ module.exports={
   "dmm.com": {
     "password-rules": "minlength: 4; maxlength: 16; required: lower; required: upper; required: digit;"
   },
+  "dodgeridge.com": {
+    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
+  },
   "dowjones.com": {
     "password-rules": "maxlength: 15;"
   },
@@ -7480,6 +7483,9 @@ module.exports={
   },
   "udel.edu": {
     "password-rules": "minlength: 12; maxlength: 30; required: lower; required: upper; required: digit; required: [!@#$%^&*()+];"
+  },
+  "umterps.evenue.net": {
+    "password-rules": "minlength: 4; maxlength: 12;"
   },
   "user.ornl.gov": {
     "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%./_];"
