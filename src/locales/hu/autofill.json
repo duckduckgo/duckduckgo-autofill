@@ -21,7 +21,7 @@
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
-    "title" : "E-mail-nyomkövetők blokkolása",
+    "title" : "E-mail nyomkövetők blokkolása",
     "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
   },
   "passwordForUrl" : {
@@ -45,11 +45,11 @@
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Privát Duck-cím létrehozása",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Privát Duck Address létrehozása",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "E-mail elrejtése és\nnyomkövetők blokkolása",
+    "title" : "E-mail elrejtése és nyomkövetők blokkolása",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -73,11 +73,11 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Privát Duck-cím generálása",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Privát Duck Address létrehozása",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
-    "title" : "E-mail-nyomkövetők blokkolása, és a cím elrejtése",
+    "title" : "E-mail nyomkövetők blokkolása, és a cím elrejtése",
     "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
   },
   "protectMyEmail" : {

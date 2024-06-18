@@ -17,7 +17,7 @@
     "note" : "Placeholder text."
   },
   "usePersonalDuckAddr" : {
-    "title" : "Use {email}",
+    "title" : "Usar {email}",
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
@@ -45,19 +45,19 @@
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Gerar um Duck Address Privado",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Gerar um Duck Address privado",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Ocultar o teu e-mail e\nbloquear rastreadores",
+    "title" : "Ocultar o teu e-mail e bloquear rastreadores",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
-    "title" : "Cria um endereço aleatório exclusivo que também remove rastreadores escondidos e encaminha o e-mail para a tua caixa de entrada.",
+    "title" : "Criar um endereço aleatório exclusivo que também remove rastreadores escondidos e encaminha o e-mail para a tua caixa de entrada.",
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Gerir itens guardados...",
+    "title" : "Gerir itens guardados…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -73,8 +73,8 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Gerar um Duck Address privado",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Gerar um Duck Address Privado",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloquear rastreadores de e-mail e ocultar endereço",
