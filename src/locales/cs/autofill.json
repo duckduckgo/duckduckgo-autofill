@@ -41,15 +41,15 @@
     "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
   },
   "unlockYourVault" : {
-    "title" : "Pro přístup k přihlašovacím údajům a generování hesel je potřeba odemknout trezor",
+    "title" : "Pro přístup k přihlašovacím údajům a generování hesel je potřeba odemknout aplikaci Bitwarden",
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Vygenerovat soukromou adresu Duck",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Vygenerovat soukromou Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Skryj svůj e-mail\na blokuj trackery",
+    "title" : "Skryj svůj e-mail a blokuj trackery",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -57,7 +57,7 @@
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Spravovat uložené položky...",
+    "title" : "Spravovat uložené položky…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -65,7 +65,7 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Spravovat identity...",
+    "title" : "Spravovat identity…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -73,8 +73,8 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Vygenerovat soukromou adresu Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Vygenerovat soukromou Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokuj e-mailové trackery a skryj svou adresu",

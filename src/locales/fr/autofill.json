@@ -46,7 +46,7 @@
   },
   "generatePrivateDuckAddr" : {
     "title" : "Générer une Duck Address privée",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
     "title" : "Masquez votre adresse e-mail et bloquez les traqueurs",
@@ -74,7 +74,7 @@
   },
   "generateDuckAddr" : {
     "title" : "Générer une Duck Address privée",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloquer les traqueurs d'e-mails et masquer l'adresse",

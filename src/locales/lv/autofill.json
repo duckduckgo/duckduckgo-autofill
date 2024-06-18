@@ -46,10 +46,10 @@
   },
   "generatePrivateDuckAddr" : {
     "title" : "Ģenerēt privātu Duck adresi",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Paslēp savu e-pastu un\nbloķē izsekotājus",
+    "title" : "Paslēp savu e-pastu un bloķē izsekotājus",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -74,7 +74,7 @@
   },
   "generateDuckAddr" : {
     "title" : "Ģenerēt privātu Duck adresi",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloķē e-pasta izsekotājus un paslēp adresi",

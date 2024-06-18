@@ -46,10 +46,10 @@
   },
   "generatePrivateDuckAddr" : {
     "title" : "Wygeneruj prywatny adres Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Ukryj swój adres e-mail i\nblokuj skrypty śledzące",
+    "title" : "Ukryj swój adres e-mail i blokuj skrypty śledzące",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -57,7 +57,7 @@
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Zarządzaj zapisanymi elementami...",
+    "title" : "Zarządzaj zapisanymi elementami…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -74,7 +74,7 @@
   },
   "generateDuckAddr" : {
     "title" : "Wygeneruj prywatny adres Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Zablokuj mechanizmy śledzące pocztę e-mail i ukryj adres",

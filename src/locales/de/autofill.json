@@ -37,16 +37,16 @@
     "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
   },
   "bitwardenIsLocked" : {
-    "title" : "Bitwarden ist gesperrt",
+    "title" : "Bitwarden ist verschlossen",
     "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
   },
   "unlockYourVault" : {
-    "title" : "Entsperre deinen Tresor, um auf deine Zugangsdaten zuzugreifen oder Passwörter zu generieren",
+    "title" : "Entsperre deinen Bitwarden-Datentresor, um auf deine Zugangsdaten zuzugreifen oder Passwörter zu generieren",
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
     "title" : "Private Duck-Adresse generieren",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
     "title" : "E-Mail-Adresse verbergen und Tracker blockieren",
@@ -74,7 +74,7 @@
   },
   "generateDuckAddr" : {
     "title" : "Private Duck Address generieren",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "E-Mail-Tracker blockieren & Adresse verbergen",
