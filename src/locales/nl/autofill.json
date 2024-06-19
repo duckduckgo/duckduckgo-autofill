@@ -46,10 +46,10 @@
   },
   "generatePrivateDuckAddr" : {
     "title" : "Privé-Duck Address genereren",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Je e-mailadres verbergen en\n trackers blokkeren",
+    "title" : "Je e-mailadres verbergen en trackers blokkeren",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -57,7 +57,7 @@
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Opgeslagen items beheren...",
+    "title" : "Opgeslagen items beheren…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -69,12 +69,12 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Wachtwoorden beheren …",
+    "title" : "Wachtwoorden beheren…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
     "title" : "Privé-Duck Address genereren",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "E-mailtrackers blokkeren en adres verbergen",

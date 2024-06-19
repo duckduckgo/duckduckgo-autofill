@@ -21,7 +21,7 @@
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
-    "title" : "Блокировка почтовых трекеров",
+    "title" : "Блокирует почтовые трекеры",
     "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
   },
   "passwordForUrl" : {
@@ -45,11 +45,11 @@
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Создать адрес на Duck",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Сгенерировать Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Скрытие адреса почты\nи блокировка трекеров",
+    "title" : "Скрытие адреса почты и блокировка трекеров",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -69,15 +69,15 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Управление паролями...",
+    "title" : "Управление паролями…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Создать адрес Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Сгенерировать Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
-    "title" : "Скрывает ваш адрес и блокирует почтовые трекеры",
+    "title" : "Скрывает ваш адрес и Блокирует почтовые трекеры",
     "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
   },
   "protectMyEmail" : {
