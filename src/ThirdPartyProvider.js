@@ -61,7 +61,7 @@ export class ThirdPartyProvider {
                 this.device.scanner.forms.forEach(form => form.recategorizeAllInputs())
             }
         } catch (e) {
-            if (this.device.isTestMode()) {
+            if (this.device.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)
             }
         }
@@ -76,7 +76,7 @@ export class ThirdPartyProvider {
             }
             setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000)
         } catch (e) {
-            if (this.device.isTestMode()) {
+            if (this.device.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e)
             }
         }

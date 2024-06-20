@@ -1,9 +1,9 @@
 import {
-    createAutofillScript, defaultAndroidScript,
+    createAutofillScript,
     forwardConsoleMessages
 } from '../helpers/harness.js'
 import {test as base} from '@playwright/test'
-import {createAndroidMocks} from '../helpers/mocks.android.js'
+import {androidStringReplacements, createAndroidMocks} from '../helpers/mocks.android.js'
 import {constants} from '../helpers/mocks.js'
 import {testContext} from '../helpers/test-context.js'
 import {signupPage} from '../helpers/pages/signupPage.js'
@@ -30,10 +30,16 @@ test.describe('Android Save prompts', () => {
             const signup = signupPage(page)
             await signup.navigate()
 
-            await createAndroidMocks()
-                .applyTo(page)
+            await createAndroidMocks().applyTo(page)
 
-            await defaultAndroidScript(page)
+            await createAutofillScript()
+                .replaceAll(androidStringReplacements({
+                    featureToggles: {
+                        credentials_saving: true
+                    }
+                }))
+                .platform('android')
+                .applyTo(page)
 
             await signup.enterCredentials(credentials)
             await signup.assertWasPromptedToSave(credentials)
@@ -46,16 +52,18 @@ test.describe('Android Save prompts', () => {
                 await login.navigate()
 
                 await createAndroidMocks()
-                    .withRuntimeConfigOverrides({
+                    .applyTo(page)
+                await createAutofillScript()
+                    .replaceAll(androidStringReplacements({
                         featureToggles: {
                             credentials_saving: true
                         },
                         availableInputTypes: {
                             credentials: {username: false, password: false}
                         }
-                    })
+                    }))
+                    .platform('android')
                     .applyTo(page)
-                await defaultAndroidScript(page)
                 return { login }
             }
             test('with username+password (should prompt)', async ({page}) => {
@@ -88,19 +96,22 @@ test.describe('Android Save prompts', () => {
             const login = loginPage(page)
             await login.navigate()
 
+            /** @type {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>} */
+            const toggles = {
+                credentials_saving: false
+            }
+
             await createAndroidMocks()
-                .withRuntimeConfigOverrides({
-                    featureToggles: {
-                        credentials_saving: false
-                    },
-                    availableInputTypes: {
-                        credentials: {username: false, password: false}
-                    }
-                })
                 .applyTo(page)
 
             // create + inject the script
             await createAutofillScript()
+                .replaceAll(androidStringReplacements({
+                    featureToggles: toggles,
+                    availableInputTypes: {
+                        credentials: {username: false, password: false}
+                    }
+                }))
                 .platform('android')
                 .applyTo(page)
 
@@ -128,16 +139,18 @@ test.describe('Android Save prompts', () => {
             await login.navigate('loginWithPoorForm')
 
             await createAndroidMocks()
-                .withRuntimeConfigOverrides({
+                .applyTo(page)
+            await createAutofillScript()
+                .replaceAll(androidStringReplacements({
                     featureToggles: {
                         credentials_saving: true
                     },
                     availableInputTypes: {
                         credentials: {username: false, password: false}
                     }
-                })
+                }))
+                .platform('android')
                 .applyTo(page)
-            await defaultAndroidScript(page)
 
             await page.type('#password', credentials.password)
             await page.type('#email', credentials.username)
