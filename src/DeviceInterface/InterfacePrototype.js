@@ -343,6 +343,7 @@ class InterfacePrototype {
      * @param {string} type
      */
     async selectedDetail (data, type) {
+        console.log('DEEP In selectedDetail')
         const form = this.activeForm
         if (!form) {
             return

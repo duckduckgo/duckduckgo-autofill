@@ -375,6 +375,7 @@ class Form {
     initFormListeners () {
         // This ensures we fire the handler again if the form is changed
         this.addListener(this.form, 'input', () => {
+            console.log("DEEP form listener");
             if (!this.isAutofilling) {
                 this.submitHandlerExecuted = false
                 this.resetShouldPromptToStoreData()
@@ -668,6 +669,7 @@ class Form {
                     input.blur()
                 }
 
+                console.log('DEEP adding to touched in decorateInput', this.touched);
                 this.touched.add(input)
                 this.device.attachTooltip({
                     form: this,
@@ -699,6 +701,8 @@ class Form {
                 }
             })
             events.forEach((ev) => this.addListener(input, ev, handler))
+        } else {
+            this.addListener(input, 'change', handler)
         }
         return this
     }
@@ -735,15 +739,17 @@ class Form {
     }
 
     autofillInput (input, string, dataType) {
+        console.log('DEEP autofill called with input: ', input.nodeName, this.touched);
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
         if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return
         // Do not autofill if it's disabled or readonly to avoid potential breakage
         if (!canBeInteractedWith(input)) return
 
         // Don't override values the user provided, unless it's the focused input or we're autofilling creditCards
+        const isTouchedSelect = input.nodeName === 'SELECT' && this.touched.has(input)
         if (
             dataType !== 'creditCards' && // creditCards always override, the others only when we're focusing the input
-            input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
+            isTouchedSelect && input.value !== '' && // if the input is not empty
             this.activeInput !== input // and this is not the active input
         ) return // do not overwrite the value
 
@@ -845,6 +851,7 @@ class Form {
      * @param {'all' | SupportedMainTypes} dataType
      */
     touchAllInputs (dataType = 'all') {
+        console.log('DEEP adding to touched all');
         this.execOnInputs(
             (input) => this.touched.add(input),
             dataType
@@ -879,6 +886,7 @@ class Form {
                     if (this.form.contains(topMostElementFromPoint)) {
                         this.execOnInputs((input) => {
                             if (isPotentiallyViewable(input)) {
+                                console.log('Deep adding to input in promptLoginIfNeeded')
                                 this.touched.add(input)
                             }
                         }, 'credentials')

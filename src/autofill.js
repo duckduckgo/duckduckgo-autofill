@@ -14,6 +14,7 @@ import {shouldLog} from './autofill-utils.js';
         const startupAutofill = () => {
             if (document.visibilityState === 'visible') {
                 const deviceInterface = createDevice()
+                console.log('DEEP in startup')
                 deviceInterface.init()
             } else {
                 document.addEventListener('visibilitychange', startupAutofill, {once: true})
