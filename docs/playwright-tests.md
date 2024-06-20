@@ -71,12 +71,6 @@ await emailPage.clickIntoInput()
 
 ```shell
 npm run test:integration
-# Shows the UI, thus allowing await page.pause()
-npm run test:integration:showui
-# Skips file compilation and uses higher concurrency
-npm run test:integration:fast
-# Skips file compilation and uses higher concurrency, and shows the UI
-npm run test:integration:fast:showui
 ```
 
 ## Running only flaky tests

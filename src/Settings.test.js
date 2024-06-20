@@ -51,17 +51,6 @@ describe('Settings', () => {
                 }
             ],
             [
-                { password_generation: false },
-                {
-                    ...createAvailableInputTypes({
-                        credentials: {username: true, password: true}
-                    })
-                },
-                (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'new' }, null)).toBe(false)
-                }
-            ],
-            [
                 {},
                 {
                     ...createAvailableInputTypes({

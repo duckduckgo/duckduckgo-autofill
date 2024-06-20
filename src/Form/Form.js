@@ -160,7 +160,7 @@ class Form {
     }
 
     submitHandler (via = 'unknown') {
-        if (this.device.isTestMode()) {
+        if (this.device.globalConfig.isDDGTestMode) {
             console.log('Form.submitHandler via:', via, this)
         }
 

@@ -1,6 +1,15 @@
 import {DeviceApiTransport} from '../../../packages/device-api/index.js'
-import {Messaging, MissingHandler} from '../../../packages/messaging/messaging.js'
-import {AndroidMessagingConfig} from '../../../packages/messaging/android.js'
+import {
+    CloseEmailProtectionTabCall,
+    GetAutofillDataCall,
+    GetAvailableInputTypesCall,
+    GetIncontextSignupDismissedAtCall,
+    GetRuntimeConfigurationCall,
+    SetIncontextSignupPermanentlyDismissedAtCall,
+    ShowInContextEmailProtectionSignupPromptCall,
+    StartEmailProtectionSignupCall,
+    StoreFormDataCall
+} from '../__generated__/deviceApiCalls.js'
 
 export class AndroidTransport extends DeviceApiTransport {
     /** @type {GlobalConfig} */
@@ -10,45 +19,137 @@ export class AndroidTransport extends DeviceApiTransport {
     constructor (globalConfig) {
         super()
         this.config = globalConfig
-        const messageHandlerNames = [
-            'EmailProtectionStoreUserData',
-            'EmailProtectionRemoveUserData',
-            'EmailProtectionGetUserData',
-            'EmailProtectionGetCapabilities',
-            'EmailProtectionGetAlias',
-            'SetIncontextSignupPermanentlyDismissedAt',
-            'StartEmailProtectionSignup',
-            'CloseEmailProtectionTab',
-            'ShowInContextEmailProtectionSignupPrompt',
-            'StoreFormData',
-            'GetIncontextSignupDismissedAt',
-            'GetRuntimeConfiguration',
-            'GetAutofillData'
-        ]
-        const androidMessagingConfig = new AndroidMessagingConfig({messageHandlerNames})
-        this.messaging = new Messaging(androidMessagingConfig)
+
+        if (this.config.isDDGTestMode) {
+            if (typeof window.BrowserAutofill?.getAutofillData !== 'function') {
+                console.warn('window.BrowserAutofill.getAutofillData missing')
+            }
+            if (typeof window.BrowserAutofill?.storeFormData !== 'function') {
+                console.warn('window.BrowserAutofill.storeFormData missing')
+            }
+        }
     }
     /**
      * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
      * @returns {Promise<any>}
      */
     async send (deviceApiCall) {
-        try {
-            // if the call has an `id`, it means that it expects a response
-            if (deviceApiCall.id) {
-                return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || undefined)
-            } else {
-                return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined)
-            }
-        } catch (e) {
-            if (e instanceof MissingHandler) {
-                if (this.config.isDDGTestMode) {
-                    console.log('MissingAndroidHandler error for:', deviceApiCall.method)
+        if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
+            return androidSpecificRuntimeConfiguration(this.config)
+        }
+
+        if (deviceApiCall instanceof GetAvailableInputTypesCall) {
+            return androidSpecificAvailableInputTypes(this.config)
+        }
+
+        if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
+            window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params))
+            return waitForResponse(deviceApiCall.id, this.config)
+        }
+
+        if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
+            return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof StartEmailProtectionSignupCall) {
+            return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof CloseEmailProtectionTabCall) {
+            return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params))
+        }
+
+        if (deviceApiCall instanceof ShowInContextEmailProtectionSignupPromptCall) {
+            window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params))
+            return waitForResponse(deviceApiCall.id, this.config)
+        }
+
+        if (deviceApiCall instanceof GetAutofillDataCall) {
+            window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params))
+            return waitForResponse(deviceApiCall.id, this.config)
+        }
+
+        if (deviceApiCall instanceof StoreFormDataCall) {
+            return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params))
+        }
+
+        throw new Error('android: not implemented: ' + deviceApiCall.method)
+    }
+}
+
+/**
+ * @param {string} expectedResponse - the name/id of the response
+ * @param {GlobalConfig} config
+ * @returns {Promise<*>}
+ */
+function waitForResponse (expectedResponse, config) {
+    return new Promise((resolve) => {
+        const handler = e => {
+            if (!config.isDDGTestMode) {
+                if (e.origin !== '') {
+                    return
                 }
-                throw new Error('unimplemented handler: ' + deviceApiCall.method)
-            } else {
-                throw e
+            }
+            if (!e.data) {
+                return
+            }
+            if (typeof e.data !== 'string') {
+                if (config.isDDGTestMode) {
+                    console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed')
+                }
+                return
+            }
+            try {
+                let data = JSON.parse(e.data)
+                if (data.type === expectedResponse) {
+                    window.removeEventListener('message', handler)
+                    return resolve(data)
+                }
+                if (config.isDDGTestMode) {
+                    console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data))
+                }
+            } catch (e) {
+                window.removeEventListener('message', handler)
+                if (config.isDDGTestMode) {
+                    console.log('❌ Could not JSON.parse the response')
+                }
             }
         }
+        window.addEventListener('message', handler)
+    })
+}
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
+ */
+function androidSpecificRuntimeConfiguration (globalConfig) {
+    if (!globalConfig.userPreferences) {
+        throw new Error('globalConfig.userPreferences not supported yet on Android')
+    }
+    return {
+        success: {
+            // @ts-ignore
+            contentScope: globalConfig.contentScope,
+            // @ts-ignore
+            userPreferences: globalConfig.userPreferences,
+            // @ts-ignore
+            userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+            // @ts-ignore
+            availableInputTypes: globalConfig.availableInputTypes
+        }
+    }
+}
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: import('../__generated__/validators-ts').AvailableInputTypes}}
+ */
+function androidSpecificAvailableInputTypes (globalConfig) {
+    if (!globalConfig.availableInputTypes) {
+        throw new Error('globalConfig.availableInputTypes not supported yet on Android')
+    }
+    return {
+        success: globalConfig.availableInputTypes
     }
 }
