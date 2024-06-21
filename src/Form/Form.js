@@ -739,7 +739,7 @@ class Form {
     }
 
     autofillInput (input, string, dataType) {
-        console.log('DEEP autofill called with input: ', input.nodeName, this.touched);
+        // console.log('DEEP autofill called with input: ', input.nodeName, this.touched);
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
         if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return
         // Do not autofill if it's disabled or readonly to avoid potential breakage
@@ -791,6 +791,7 @@ class Form {
         this.isAutofilling = true
 
         this.execOnInputs((input) => {
+            console.log('DEEP executing on inputs: ', input.nodeName)
             const inputSubtype = getInputSubtype(input)
             let autofillData = data[inputSubtype]
 
@@ -807,6 +808,7 @@ class Form {
             }
 
             if (autofillData) {
+                console.log("DEEP autofill data", autofillData)
                 const variant = getInputVariant(input)
                 if (!variant) {
                     return this.autofillInput(input, autofillData, dataType)
@@ -850,7 +852,7 @@ class Form {
      * @param {'all' | SupportedMainTypes} dataType
      */
     touchAllInputs (dataType = 'all') {
-        console.log('DEEP adding to touched all');
+        // console.log('DEEP adding to touched all');
         this.execOnInputs(
             (input) => this.touched.add(input),
             dataType

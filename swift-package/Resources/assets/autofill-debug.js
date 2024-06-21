@@ -10520,7 +10520,7 @@ class Form {
     return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
   }
   autofillInput(input, string, dataType) {
-    console.log('DEEP autofill called with input: ', input.nodeName, this.touched);
+    // console.log('DEEP autofill called with input: ', input.nodeName, this.touched);
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
     if (input instanceof HTMLInputElement && !(0, _autofillUtils.isPotentiallyViewable)(input)) return;
     // Do not autofill if it's disabled or readonly to avoid potential breakage
@@ -10568,6 +10568,7 @@ class Form {
   autofillData(data, dataType) {
     this.isAutofilling = true;
     this.execOnInputs(input => {
+      console.log('DEEP executing on inputs: ', input.nodeName);
       const inputSubtype = (0, _matching.getInputSubtype)(input);
       let autofillData = data[inputSubtype];
       if (inputSubtype === 'expiration' && input instanceof HTMLInputElement) {
@@ -10580,6 +10581,7 @@ class Form {
         autofillData = (0, _formatters.getCountryName)(input, data);
       }
       if (autofillData) {
+        console.log("DEEP autofill data", autofillData);
         const variant = (0, _matching.getInputVariant)(input);
         if (!variant) {
           return this.autofillInput(input, autofillData, dataType);
@@ -10620,7 +10622,7 @@ class Form {
    */
   touchAllInputs() {
     let dataType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'all';
-    console.log('DEEP adding to touched all');
+    // console.log('DEEP adding to touched all');
     this.execOnInputs(input => this.touched.add(input), dataType);
   }
   getFirstViableCredentialsInput() {

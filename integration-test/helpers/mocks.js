@@ -51,10 +51,7 @@ export const constants = {
             firstName: 'First',
             lastName: 'Last',
             phone: '+1234567890',
-            addressProvince: 'option1',
-                selectors: {
-                    address: '[data-ddg-inputtype="identities.addressProvince"]'
-                }
+            addressCity: 'option1',
         },
         creditCard: {
             id: '01',

@@ -38,6 +38,15 @@ export function selectInputPage (page) {
         }
 
         /**
+         * @param {string} option
+         * @return {Promise<void>} 
+         */
+        async assertSelectedValue(option, inLabel) {
+            const selectValue = await page.locator(inLabel ? `form#in-label select#address-city` : 'form#no-label select#address-city').inputValue()
+            expect(selectValue).toBe(option)
+        }
+
+        /**
          * @param {number} times
          * @return {Promise<void>}
          */
