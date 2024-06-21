@@ -10471,21 +10471,19 @@ class Form {
         (0, _autofillUtils.addInlineStyles)(input, activeStyles);
       }
     };
+    const isMobileApp = this.device.globalConfig.isMobileApp;
     if (!(input instanceof HTMLSelectElement)) {
       const events = ['pointerdown'];
-      if (!this.device.globalConfig.isMobileApp) events.push('focus');
+      if (!isMobileApp) events.push('focus');
       input.labels?.forEach(label => {
-        if (this.device.globalConfig.isMobileApp) {
-          // On mobile devices we don't trigger on focus, so we use the click handler here
-          this.addListener(label, 'pointerdown', handler);
-        } else {
-          // Needed to handle label clicks when the form is in an iframe
-          this.addListener(label, 'pointerdown', handlerLabel);
-        }
+        this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
       });
       events.forEach(ev => this.addListener(input, ev, handler));
     } else {
       this.addListener(input, 'change', handlerSelect);
+      input.labels?.forEach(label => {
+        this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+      });
     }
     return this;
   }
