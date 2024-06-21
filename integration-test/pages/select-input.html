@@ -24,7 +24,7 @@
         </fieldset>
     </form>
 
-    <form id="in-label" style="display: none;">
+    <form id="with-label" style="display: none;">
         <h2>Form fields wrapped in label</h2>
         <fieldset>
             <label for="email">Email</label>
@@ -40,12 +40,6 @@
                 <option value="option2">Option 2</option>
                 <option value="option3">Option 3</option>
             </select>
-            <!-- <label for="select-b">Select B</label>
-            <select id="select-b" style="width: 100%">
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
-            </select> -->
         </fieldset>
     </form>
 
@@ -53,9 +47,9 @@
         const urlParams = new URLSearchParams(window.location.search);
         const formType = urlParams.get('form-type');
 
-        if (formType === 'in-label') {
+        if (formType === 'with-label') {
             document.getElementById('no-label').style.display = 'none';
-            document.getElementById('in-label').style.display = 'block';
+            document.getElementById('with-label').style.display = 'block';
         }
     </script>
 
