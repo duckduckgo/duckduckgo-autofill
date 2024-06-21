@@ -18,8 +18,8 @@ export function selectInputPage (page) {
             await page.goto(withLabel ? `${constants.pages[to]}?form-type=in-label` : constants.pages[to])
         }
 
-        async selectOption (option) {
-            await page.selectOption('select', {value: option})
+        async selectOption (option, inLabel) {
+            await page.selectOption(inLabel ? `form#in-label select#address-city` : `form#no-label select#address-city`, {value: option})
         }
 
         async clickIntoEmailField (selector) {
@@ -39,9 +39,9 @@ export function selectInputPage (page) {
 
         /**
          * @param {string} option
-         * @return {Promise<void>} 
+         * @return {Promise<void>}
          */
-        async assertSelectedValue(option, inLabel) {
+        async assertSelectedValue (option, inLabel = false) {
             const selectValue = await page.locator(inLabel ? `form#in-label select#address-city` : 'form#no-label select#address-city').inputValue()
             expect(selectValue).toBe(option)
         }
@@ -98,7 +98,7 @@ export function selectInputPage (page) {
          * @param {string} name
          * @return {Promise<void>}
          */
-        async selectFirstName (name, inLabel) {
+        async selectFirstName (name, inLabel = false) {
             const input = page.locator(inLabel ? `form#in-label input#firstname` : 'form#no-label input#firstname')
             await input.click()
             const button = await page.waitForSelector(`button:has-text("${name}")`)

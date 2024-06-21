@@ -340,7 +340,6 @@ class Matching {
      * @return {MatcherTypeNames|undefined}
      */
     subtypeFromMatchers (listName, el) {
-        console.log("DEEP check this for unknown matchers");
         const matchers = this.matcherList(listName)
 
         /**

@@ -195,7 +195,7 @@ test.describe('macos', () => {
                 {pixelName: 'autofill_identity', params: {fieldType: 'lastName'}}
             ])
         })
-        test.only('with an identity only - filling touched select input', async ({page}) => {
+        test.only('with an identity only - filling touched select input without label', async ({page}) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
@@ -208,9 +208,26 @@ test.describe('macos', () => {
 
             await selectInput.navigate()
             await selectInput.selectOption('option2')
-            await selectInput.selectFirstName(identity.firstName, false)
-            await page.pause()
-            await selectInput.assertSelectedValue('option2', false)
+            await selectInput.selectFirstName(identity.firstName)
+            await page.waitForTimeout(100)
+            await selectInput.assertSelectedValue('option2')
+        })
+        test.only('with an identity only - filling touched select input with label', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const selectInput = selectInputPage(page)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await selectInput.navigate('selectInput', true)
+            await selectInput.selectOption('option2', true)
+            await selectInput.selectFirstName(identity.firstName, true)
+            await page.waitForTimeout(100)
+            await selectInput.assertSelectedValue('option2', true)
         })
         test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
             await forwardConsoleMessages(page)

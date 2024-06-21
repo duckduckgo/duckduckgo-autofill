@@ -23,7 +23,7 @@ export const constants = {
         'loginCovered': `${localPagesPrefix}/login-covered.html`,
         'loginMultistep': `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
         'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`,
-        'selectInput': `${localPagesPrefix}/select-input.html`,
+        'selectInput': `${localPagesPrefix}/select-input.html`
     },
     fields: {
         email: {
@@ -51,7 +51,7 @@ export const constants = {
             firstName: 'First',
             lastName: 'Last',
             phone: '+1234567890',
-            addressCity: 'option1',
+            addressCity: 'option1'
         },
         creditCard: {
             id: '01',
