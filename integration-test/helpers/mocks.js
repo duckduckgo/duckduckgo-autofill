@@ -22,7 +22,8 @@ export const constants = {
         'signupWithFormInModal': `${localPagesPrefix}/signup-in-modal.html`,
         'loginCovered': `${localPagesPrefix}/login-covered.html`,
         'loginMultistep': `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
-        'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`
+        'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`,
+        'selectInput': `${localPagesPrefix}/select-input.html`,
     },
     fields: {
         email: {
@@ -49,7 +50,11 @@ export const constants = {
             emailAddress: 'user@gmail.com',
             firstName: 'First',
             lastName: 'Last',
-            phone: '+1234567890'
+            phone: '+1234567890',
+            addressProvince: 'option1',
+                selectors: {
+                    address: '[data-ddg-inputtype="identities.addressProvince"]'
+                }
         },
         creditCard: {
             id: '01',

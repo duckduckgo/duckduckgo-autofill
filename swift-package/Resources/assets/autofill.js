@@ -6319,7 +6319,7 @@ class Form {
       });
       events.forEach(ev => this.addListener(input, ev, handler));
     } else {
-      this.addListener(input, 'change', handler);
+      // this.addListener(input, 'change', handler)
     }
     return this;
   }
@@ -6361,10 +6361,9 @@ class Form {
     if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return;
 
     // Don't override values the user provided, unless it's the focused input or we're autofilling creditCards
-    const isTouchedSelect = input.nodeName === 'SELECT' && this.touched.has(input);
     if (dataType !== 'creditCards' &&
     // creditCards always override, the others only when we're focusing the input
-    isTouchedSelect && input.value !== '' &&
+    input.nodeName !== 'SELECT' && input.value !== '' &&
     // if the input is not empty
     this.activeInput !== input // and this is not the active input
     ) return; // do not overwrite the value
@@ -9047,6 +9046,7 @@ class Matching {
    * @return {MatcherTypeNames|undefined}
    */
   subtypeFromMatchers(listName, el) {
+    console.log("DEEP check this for unknown matchers");
     const matchers = this.matcherList(listName);
 
     /**

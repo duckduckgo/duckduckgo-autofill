@@ -10,6 +10,7 @@ import {testContext} from '../helpers/test-context.js'
 import {signupPage} from '../helpers/pages/signupPage.js'
 import {scannerPerf} from '../helpers/pages/scannerPerf.js'
 import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
+import { selectInputPage } from '../helpers/pages/selectInputPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -193,6 +194,22 @@ test.describe('macos', () => {
             await signup.assertPixelsFired([
                 {pixelName: 'autofill_identity', params: {fieldType: 'lastName'}}
             ])
+        })
+        test.only('with an identity only - filling select input', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const selectInput = selectInputPage(page)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await selectInput.navigate()
+            await page.pause()
+            await selectInput.selectOption('option2')
+            await selectInput.selectFirstName(identity.firstName, false)
         })
         test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
             await forwardConsoleMessages(page)

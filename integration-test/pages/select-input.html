@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Minimal form with select inputs</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <form id="no-label">
+        <h2>Form: fields not wrapped in labels</h2>
+        <fieldset>
+            <input id="email" type="email">
+            <input id="firstname" type="text">
+            <input id="lastname" type="text">
+            <select id="select-a" style="width: 100%">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <!-- <select id="select-b" style="width: 100%">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select> -->
+        </fieldset>
+    </form>
+
+    <form id="in-label" style="display: none;">
+        <h2>Form fields wrapped in label</h2>
+        <fieldset>
+            <label for="email">Email</label>
+            <input id="email" type="email">
+            <label for="firstname">Firstname</label>
+            <input id="firstname" type="text">
+            <label for="lastname">Lastname</label>
+            <input id="lastname" type="text">
+            <label for="password">Password</label>
+            <label for="select-a">Select A</label>
+            <select id="select-a" style="width: 100%">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <!-- <label for="select-b">Select B</label>
+            <select id="select-b" style="width: 100%">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select> -->
+        </fieldset>
+    </form>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const formType = urlParams.get('form-type');
+
+        if (formType === 'in-label') {
+            document.getElementById('no-label').style.display = 'none';
+            document.getElementById('in-label').style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>
