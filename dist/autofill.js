@@ -6353,10 +6353,10 @@ class Form {
   }
 
   /**
-   * Don't override values the user provided, unless
-   * we're autofilling creditCards or,
-   * it's the focused input or,
-   * it's an untouched select input.
+   * Don't override values the user provided if:
+   * - we're autofilling non credit card type or,
+   * - it's a previously filled input,
+   * - it's a touched select input.
    *  */
   shouldSkipInput(input, dataType) {
     const isTouchedSelect = input.nodeName === 'SELECT' && this.touched.has(input);
