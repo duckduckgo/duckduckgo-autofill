@@ -51,7 +51,7 @@ export const constants = {
             firstName: 'First',
             lastName: 'Last',
             phone: '+1234567890',
-            addressCity: 'option2'
+            addressCity: 'city1'
         },
         creditCard: {
             id: '01',
