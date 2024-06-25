@@ -10521,7 +10521,7 @@ class Form {
   /**
    * Skip overridding values that the user provided if:
    * - we're autofilling non credit card type and,
-   * - it's a previously filled input and,
+   * - it's a previously filled input or,
    * - it's a select input that was already "touched" by the user.
    *  */
   shouldSkipInput(input, dataType) {
@@ -10531,7 +10531,7 @@ class Form {
     const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input;
     // creditCards always override
     const isNotCreditCardType = dataType !== 'creditCards';
-    return isNotCreditCardType && isTouchedSelect && isPreviouslyFilledInput;
+    return isNotCreditCardType && (isTouchedSelect || isPreviouslyFilledInput);
   }
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
