@@ -1,58 +1,58 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Minimal form with select inputs</title>
-    <link rel="stylesheet" href="./style.css">
-</head>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Minimal form with select inputs</title>
+        <link rel="stylesheet" href="./style.css">
+    </head>
 
-<body>
+    <body>
 
-    <form id="no-label">
-        <h2>Form: fields not wrapped in labels</h2>
-        <fieldset>
-            <input id="email" type="email">
-            <input id="firstname" type="text">
-            <input id="lastname" type="text">
-            <select id="address-city" style="width: 100%">
-                <option value="city1">City 1</option>
-                <option value="city2">City 2</option>
-                <option value="city3">City 3</option>
-            </select>
-        </fieldset>
-    </form>
+        <form id="no-label">
+            <h2>Form: fields not wrapped in labels</h2>
+            <fieldset>
+                <input id="email" type="email">
+                <input id="firstname" type="text">
+                <input id="lastname" type="text">
+                <select id="address-city" style="width: 100%">
+                    <option value="city1">City 1</option>
+                    <option value="city2">City 2</option>
+                    <option value="city3">City 3</option>
+                </select>
+            </fieldset>
+        </form>
 
-    <form id="with-label" style="display: none;">
-        <h2>Form fields wrapped in label</h2>
-        <fieldset>
-            <label for="email">Email</label>
-            <input id="email" type="email">
-            <label for="firstname">Firstname</label>
-            <input id="firstname" type="text">
-            <label for="lastname">Lastname</label>
-            <input id="lastname" type="text">
-            <label for="password">Password</label>
-            <label for="address-city">Select A</label>
-            <select id="address-city" style="width: 100%">
-                <option value="city1">City 1</option>
-                <option value="city2">City 2</option>
-                <option value="city3">City 3</option>
-            </select>
-        </fieldset>
-    </form>
+        <form id="with-label" style="display: none;">
+            <h2>Form fields wrapped in label</h2>
+            <fieldset>
+                <label for="email">Email</label>
+                <input id="email" type="email">
+                <label for="firstname">Firstname</label>
+                <input id="firstname" type="text">
+                <label for="lastname">Lastname</label>
+                <input id="lastname" type="text">
+                <label for="password">Password</label>
+                <label for="address-city">Select A</label>
+                <select id="address-city" style="width: 100%">
+                    <option value="city1">City 1</option>
+                    <option value="city2">City 2</option>
+                    <option value="city3">City 3</option>
+                </select>
+            </fieldset>
+        </form>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const formType = urlParams.get('form-type');
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const formType = urlParams.get('form-type');
 
-        if (formType === 'with-label') {
-            document.getElementById('no-label').style.display = 'none';
-            document.getElementById('with-label').style.display = 'block';
-        }
-    </script>
+            if (formType === 'with-label') {
+                document.getElementById('no-label').style.display = 'none';
+                document.getElementById('with-label').style.display = 'block';
+            }
+        </script>
 
-</body>
+    </body>
 
 </html>
