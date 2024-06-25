@@ -206,11 +206,13 @@ test.describe('macos', () => {
 
             await applyScript(page)
 
+            const addressCity = 'city2'
+
             await selectInput.navigate()
-            await selectInput.selectOption('option2')
+            await selectInput.selectOption(addressCity)
             await selectInput.selectFirstName(identity.firstName)
             await page.waitForTimeout(100)
-            await selectInput.assertSelectedValue('option2')
+            await selectInput.assertSelectedValue(addressCity)
         })
         test('with an identity only - filling touched select input with label should not autofill select element', async ({page}) => {
             await forwardConsoleMessages(page)
@@ -224,12 +226,13 @@ test.describe('macos', () => {
             await applyScript(page)
 
             const formWithLabel = true
+            const addressCity = 'city2'
 
             await selectInput.navigate('selectInput', formWithLabel)
-            await selectInput.selectOption('option2', formWithLabel)
+            await selectInput.selectOption(addressCity, formWithLabel)
             await selectInput.selectFirstName(identity.firstName, formWithLabel)
             await page.waitForTimeout(100)
-            await selectInput.assertSelectedValue('option2', formWithLabel)
+            await selectInput.assertSelectedValue(addressCity, formWithLabel)
         })
 
         test('with an identity only - filling touched select input without label should autofill select element', async ({page}) => {
