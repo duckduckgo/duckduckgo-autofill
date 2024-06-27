@@ -19,7 +19,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     inContextSignup = new InContextSignup(this)
 
     /** @override */
-    initialSetupDelayMs = 300
+    initialSetupDelayMs = 'requestIdleCallback' in Window ? 0 : 300
 
     thirdPartyProvider = new ThirdPartyProvider(this)
 

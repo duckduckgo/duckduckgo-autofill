@@ -7685,7 +7685,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
   inContextSignup = new _InContextSignup.InContextSignup(this);
 
   /** @override */
-  initialSetupDelayMs = 300;
+  initialSetupDelayMs = 'requestIdleCallback' in Window ? 0 : 300;
   thirdPartyProvider = new _ThirdPartyProvider.ThirdPartyProvider(this);
 
   /**
