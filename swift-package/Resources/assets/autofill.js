@@ -6310,6 +6310,9 @@ class Form {
       const events = ['pointerdown'];
       if (!isMobileApp) events.push('focus');
       input.labels?.forEach(label => {
+        // On mobile devices: handle click events (instead of focus) for labels,
+        // On desktop devices: handle label clicks which is needed when the form
+        // is in an iframe.
         this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
       });
       events.forEach(ev => this.addListener(input, ev, handler));
@@ -6367,8 +6370,8 @@ class Form {
       return false;
     } else {
       const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input;
-      // if the input select type, then we should skip if it was previously touched
-      // otherwise, we should skip if it was previously filled
+      // if the input select type, then skip if it was previously touched
+      // otherwise, skip if it was previously filled
       return input.nodeName === 'SELECT' ? this.touched.has(input) : isPreviouslyFilledInput;
     }
   }
