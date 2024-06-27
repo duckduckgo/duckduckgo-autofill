@@ -748,14 +748,15 @@ class Form {
      * @returns {boolean}
      **/
     shouldSkipInput (input, dataType) {
-        // input is of select type and has been touched by the user
-        const isTouchedSelect = input.nodeName === 'SELECT' && this.touched.has(input)
-        // input is non-empty or non-active
-        const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input
-        // creditCards always override
-        const isNotCreditCardType = dataType !== 'creditCards'
-
-        return isNotCreditCardType && (isTouchedSelect || isPreviouslyFilledInput)
+        if (dataType === 'creditCards') {
+            // creditCards always override, even if the input is filled
+            return false
+        } else {
+            const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input
+            // if the input select type, then we should skip if it was previously touched
+            // otherwise, we should skip if it was previously filled
+            return input.nodeName === 'SELECT' ? this.touched.has(input) : isPreviouslyFilledInput
+        }
     }
 
     autofillInput (input, string, dataType) {

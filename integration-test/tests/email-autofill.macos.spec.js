@@ -195,7 +195,7 @@ test.describe('macos', () => {
                 {pixelName: 'autofill_identity', params: {fieldType: 'lastName'}}
             ])
         })
-        test('with an identity only - filling touched select input without label should not autofill select element', async ({page}) => {
+        test('with an identity only - filling input should not autofill touched select element without label', async ({page}) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
@@ -214,7 +214,7 @@ test.describe('macos', () => {
             await page.waitForTimeout(100)
             await selectInput.assertSelectedValue(addressCity)
         })
-        test('with an identity only - filling touched select input with label should not autofill select element', async ({page}) => {
+        test('with an identity only - filling input with label should not autofill touched select element with label', async ({page}) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
@@ -235,7 +235,7 @@ test.describe('macos', () => {
             await selectInput.assertSelectedValue(addressCity, formWithLabel)
         })
 
-        test('with an identity only - filling touched select input without label should autofill select element', async ({page}) => {
+        test('with an identity only - filling input without label should autofill select element', async ({page}) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
@@ -248,10 +248,11 @@ test.describe('macos', () => {
 
             await selectInput.navigate()
             await selectInput.selectFirstName(identity.firstName)
+            await page.waitForTimeout(100)
             await selectInput.assertSelectedValue(identity.addressCity)
         })
 
-        test('with an identity only - filling touched select input with label should autofill select element', async ({page}) => {
+        test('with an identity only - filling input should autofill select element with label', async ({page}) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
@@ -266,6 +267,7 @@ test.describe('macos', () => {
 
             await selectInput.navigate('selectInput', formWithLabel)
             await selectInput.selectFirstName(identity.firstName, formWithLabel)
+            await page.waitForTimeout(100)
             await selectInput.assertSelectedValue(identity.addressCity, formWithLabel)
         })
 
