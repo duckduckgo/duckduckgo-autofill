@@ -6357,7 +6357,10 @@ class Form {
    * - we're autofilling non credit card type and,
    * - it's a previously filled input or,
    * - it's a select input that was already "touched" by the user.
-   *  */
+   * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {'all' | SupportedMainTypes} dataType
+   * @returns {boolean}
+   **/
   shouldSkipInput(input, dataType) {
     // input is of select type and has been touched by the user
     const isTouchedSelect = input.nodeName === 'SELECT' && this.touched.has(input);
