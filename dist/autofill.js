@@ -6368,12 +6368,11 @@ class Form {
     if (dataType === 'creditCards') {
       // creditCards always override, even if the input is filled
       return false;
-    } else {
-      const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input;
-      // if the input select type, then skip if it was previously touched
-      // otherwise, skip if it was previously filled
-      return input.nodeName === 'SELECT' ? this.touched.has(input) : isPreviouslyFilledInput;
     }
+    const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input;
+    // if the input select type, then skip if it was previously touched
+    // otherwise, skip if it was previously filled
+    return input.nodeName === 'SELECT' ? this.touched.has(input) : isPreviouslyFilledInput;
   }
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
