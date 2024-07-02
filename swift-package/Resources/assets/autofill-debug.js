@@ -9745,6 +9745,7 @@ class Form {
    */
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    this.destroyed = false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
@@ -9803,9 +9804,25 @@ class Form {
     this.initFormListeners();
     this.categorizeInputs();
     this.logFormInfo();
+    const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size;
+    if (numKnownInputs === 0) {
+      // This form has too few known inputs and likely doesn't make sense
+      // to track for autofill (e.g. a single-input for search or item quantity).
+      // Self-destruct to stop listening and avoid memory leaks.
+      if ((0, _autofillUtils.shouldLog)()) {
+        console.log(`Form discarded: zero inputs are fillable`);
+      }
+      this.destroy();
+      return;
+    }
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
     }
+  }
+
+  /** Whether this form has been destroyed via the `destroy` method or not. */
+  get isDestroyed() {
+    return this.destroyed;
   }
   get isLogin() {
     return this.formAnalyzer.isLogin;
@@ -10039,6 +10056,7 @@ class Form {
   }
   // This removes all listeners to avoid memory leaks and weird behaviours
   destroy() {
+    this.destroyed = true;
     this.mutObs.disconnect();
     this.removeAllDecorations();
     this.removeTooltip();
@@ -14451,7 +14469,11 @@ class DefaultScanner {
 
       // Only add the form if below the limit of forms per page
       if (this.forms.size < this.options.maxFormsPerPage) {
-        this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
+        const f = new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt);
+        // Also only add the form if it hasn't self-destructed due to having too few fields
+        if (!f.isDestroyed) {
+          this.forms.set(parentForm, f);
+        }
       } else {
         this.stopScanner('The page has too many forms, stop adding them.');
       }
