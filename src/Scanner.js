@@ -298,7 +298,11 @@ class DefaultScanner {
 
             // Only add the form if below the limit of forms per page
             if (this.forms.size < this.options.maxFormsPerPage) {
-                this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
+                const f = new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt)
+                // Also only add the form if it hasn't self-destructed due to having too few fields
+                if (!f.isDestroyed) {
+                    this.forms.set(parentForm, f)
+                }
             } else {
                 this.stopScanner('The page has too many forms, stop adding them.')
             }
