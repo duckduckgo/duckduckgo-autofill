@@ -6,8 +6,8 @@ describe('performance', () => {
         require('./requestIdleCallback.js')
         document.body.innerHTML = `
             <form action="">
-                <label for="input-01"><input type="text" id="input-01"></label>
-                <label for="input-02"><input type="text" id="input-02"></label>
+                <label for="input-01">Username<input type="text" id="input-01"></label>
+                <label for="input-02">Password<input type="password" id="input-02"></label>
                 <label for="input-03"><input type="text" id="input-03"></label>
                 <label for="input-04"><input type="text" id="input-04"></label>
                 <label for="input-05"><input type="text" id="input-05"></label>
