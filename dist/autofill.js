@@ -6587,7 +6587,8 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    const path = window.location.pathname;
+    console.log("in evaluateUrl");
+    const path = `${window.location.pathname}${window.location.hash}`;
     const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
     const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
 
@@ -12946,7 +12947,8 @@ const wasAutofilledByChrome = input => {
  */
 exports.wasAutofilledByChrome = wasAutofilledByChrome;
 function shouldLog() {
-  return readDebugSetting('ddg-autofill-debug');
+  return true;
+  // return readDebugSetting('ddg-autofill-debug')
 }
 
 /**
@@ -13038,6 +13040,7 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
  * @returns {boolean}
  */
 function safeRegexTest(regex, string) {
+  console.log('DEEP: safeRegexTest', string, regex);
   if (!string || !regex || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return false;
   return regex.test(string);
 }

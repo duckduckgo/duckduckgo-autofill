@@ -175,7 +175,8 @@ class FormAnalyzer {
     }
 
     evaluateUrl () {
-        const path = window.location.pathname
+        console.log("in evaluateUrl")
+        const path = `${window.location.pathname}${window.location.hash}`
 
         const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), path)
         const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path)
