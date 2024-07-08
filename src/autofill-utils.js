@@ -520,7 +520,6 @@ function isFormLikelyToBeUsedAsPageWrapper (form) {
  * @returns {boolean}
  */
 function safeRegexTest (regex, string) {
-    console.log('DEEP: safeRegexTest', string, regex)
     if (!string || !regex || string.length > constants.TEXT_LENGTH_CUTOFF) return false
 
     return regex.test(string)

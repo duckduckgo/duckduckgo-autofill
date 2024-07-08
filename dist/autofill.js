@@ -6468,6 +6468,7 @@ class FormAnalyzer {
     this.evaluateElAttributes(input, 1, true);
 
     // If we have a meaningful container (a form), check that, otherwise check the whole page
+    console.log("DEEP in formConstructor");
     if (form !== input) {
       this.evaluateForm();
     } else {
@@ -6587,7 +6588,6 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    console.log("in evaluateUrl");
     const path = `${window.location.pathname}${window.location.hash}`;
     const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
     const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
@@ -6718,6 +6718,7 @@ class FormAnalyzer {
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
     const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
+    console.log("DEEP formElements", formElements);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -10155,6 +10156,61 @@ class DefaultScanner {
     });
   }
 
+  // Function to find shadow roots in the document
+  findShadowRoots(node) {
+    const shadowRoots = [];
+
+    // Recursive function to traverse the DOM
+    function traverse(node) {
+      // Check if the node has a shadow root
+      if (node.shadowRoot) {
+        shadowRoots.push(node.shadowRoot);
+      }
+
+      // Traverse child nodes
+      node.childNodes.forEach(child => traverse(child));
+
+      // Traverse shadow DOM if exists
+      if (node.shadowRoot) {
+        node.shadowRoot.childNodes.forEach(child => traverse(child));
+      }
+    }
+
+    // Start traversal from the provided node
+    traverse(node);
+    return shadowRoots;
+  }
+
+  // Function to handle finding shadow hosts in the main document and any iframes
+  findAllShadowHosts() {
+    const shadowHosts = this.findShadowRoots(document);
+
+    // Find all iframes and check their content documents
+    const iframes = document.querySelectorAll('iframe');
+    iframes.forEach(iframe => {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (iframeDoc) {
+          const iframeShadowHosts = this.findShadowRoots(iframeDoc);
+          shadowHosts.push(...iframeShadowHosts);
+        }
+      } catch (e) {
+        console.warn('Cannot access iframe content due to cross-origin restrictions:', iframe);
+      }
+    });
+    return shadowHosts;
+  }
+
+  // Function to find input elements within shadow roots
+  findInputsInShadowRoots(shadowRoots) {
+    const inputs = [];
+    shadowRoots.forEach(shadowRoot => {
+      const shadowInputs = shadowRoot.querySelectorAll('input');
+      shadowInputs.forEach(input => inputs.push(input));
+    });
+    return inputs;
+  }
+
   /**
    * @param context
    */
@@ -10164,9 +10220,14 @@ class DefaultScanner {
       return this;
     }
     if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
+      console.log("DEEP adding whole context as input", context);
       this.addInput(context);
     } else {
-      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'));
+      // const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'))
+      const shadowRoots = this.findAllShadowHosts();
+      console.log("DEEP shadowRoots", shadowRoots);
+      const inputs = this.findInputsInShadowRoots(shadowRoots);
+      console.log("DEEP inputs", inputs);
       if (inputs.length > this.options.maxInputsPerPage) {
         this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
@@ -10255,6 +10316,7 @@ class DefaultScanner {
   addInput(input) {
     if (this.stopped) return;
     const parentForm = this.getParentForm(input);
+    console.log("DEEP parent form", parentForm);
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
       // We've met the form, add the input provided it's below the max input limit
@@ -10349,6 +10411,7 @@ class DefaultScanner {
    */
   processChangedElements() {
     if (this.rescanAll) {
+      console.log('DEEP rescan all');
       this.findEligibleInputs(document);
       return;
     }
@@ -10383,6 +10446,7 @@ class DefaultScanner {
     this.enqueue(outgoing);
   });
   handleEvent(event) {
+    console.log('in handleEvent', event.target);
     switch (event.type) {
       case 'pointerdown':
       case 'focus':
@@ -13040,7 +13104,6 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
  * @returns {boolean}
  */
 function safeRegexTest(regex, string) {
-  console.log('DEEP: safeRegexTest', string, regex);
   if (!string || !regex || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return false;
   return regex.test(string);
 }
