@@ -216,11 +216,11 @@ class DefaultScanner {
             console.log("DEEP adding whole context as input", context)
             this.addInput(context)
         } else {
-            // const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'))
-            const shadowRoots = this.findAllShadowHosts()
-            console.log("DEEP shadowRoots", shadowRoots)
-            const inputs = this.findInputsInShadowRoots(shadowRoots);
-            console.log("DEEP inputs", inputs)
+            const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'))
+            // const shadowRoots = this.findAllShadowHosts()
+            // console.log("DEEP shadowRoots", shadowRoots)
+            // const inputs = this.findInputsInShadowRoots(shadowRoots);
+            // console.log("DEEP inputs", inputs)
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context)
                 return this
@@ -314,7 +314,6 @@ class DefaultScanner {
         if (this.stopped) return
 
         const parentForm = this.getParentForm(input)
-        console.log("DEEP parent form", parentForm);
 
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm)
@@ -412,7 +411,6 @@ class DefaultScanner {
      */
     processChangedElements () {
         if (this.rescanAll) {
-            console.log('DEEP rescan all')
             this.findEligibleInputs(document)
             return
         }
