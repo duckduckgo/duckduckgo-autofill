@@ -38,7 +38,6 @@ class FormAnalyzer {
         this.evaluateElAttributes(input, 1, true)
 
         // If we have a meaningful container (a form), check that, otherwise check the whole page
-        console.log("DEEP in formConstructor")
         if (form !== input) {
             this.evaluateForm()
         } else {
@@ -302,7 +301,6 @@ class FormAnalyzer {
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
         const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'))
-        console.log("DEEP formElements", formElements)
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break

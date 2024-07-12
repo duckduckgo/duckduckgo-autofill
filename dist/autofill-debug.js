@@ -10634,7 +10634,6 @@ class FormAnalyzer {
     this.evaluateElAttributes(input, 1, true);
 
     // If we have a meaningful container (a form), check that, otherwise check the whole page
-    console.log("DEEP in formConstructor");
     if (form !== input) {
       this.evaluateForm();
     } else {
@@ -10884,7 +10883,6 @@ class FormAnalyzer {
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
     const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
-    console.log("DEEP formElements", formElements);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -14376,29 +14374,47 @@ class DefaultScanner {
     });
     return inputs;
   }
+  findShadowFormElements(form) {
+    const shadowElements = [];
+    const walker = document.createTreeWalker(form, NodeFilter.SHOW_ELEMENT);
+    let node = walker.nextNode();
+    while (node) {
+      if (node instanceof HTMLElement && node.shadowRoot) {
+        shadowElements.push(node.shadowRoot.querySelectorAll('input, button'));
+      }
+      node = walker.nextNode();
+    }
+    const elements = [];
+    shadowElements.forEach(shadowElement => {
+      shadowElement.forEach(el => {
+        elements.push(el);
+      });
+    });
+    return elements;
+  }
 
   /**
    * @param context
    */
   findEligibleInputs(context) {
+    let shouldPierceShadow = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     // Avoid autofill on Email Protection web app
     if (this.device.globalConfig.isDDGDomain) {
       return this;
     }
     if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
-      console.log("DEEP adding whole context as input", context);
       this.addInput(context);
     } else {
       const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'));
-      // const shadowRoots = this.findAllShadowHosts()
-      // console.log("DEEP shadowRoots", shadowRoots)
-      // const inputs = this.findInputsInShadowRoots(shadowRoots);
-      // console.log("DEEP inputs", inputs)
       if (inputs.length > this.options.maxInputsPerPage) {
         this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
       }
       inputs.forEach(input => this.addInput(input));
+      if (shouldPierceShadow) {
+        const shadowElements = this.findShadowFormElements(context);
+        shadowElements.forEach(input => this.addInput(input));
+      }
     }
     return this;
   }
@@ -14457,19 +14473,31 @@ class DefaultScanner {
     let traversalLayerCount = 0;
     let element = input;
     // traverse the DOM to search for related inputs
-    while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
+    while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
       // Avoid overlapping containers or forms
       const siblingForm = element.parentElement?.querySelector('form');
       if (siblingForm && siblingForm !== element) {
         return element;
       }
-      element = element.parentElement;
-      const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
-      const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
-      // If we find a button or another input, we assume that's our form
-      if (inputs.length > 1 || buttons.length) {
-        // found related input, return common ancestor
+      if (element instanceof HTMLFormElement) {
         return element;
+      }
+      if (element.parentElement) {
+        element = element.parentElement;
+        const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+        const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+        // If we find a button or another input, we assume that's our form
+        if (inputs.length > 1 || buttons.length) {
+          // found related input, return common ancestor
+          return element;
+        }
+      } else {
+        // possibly a shadow boundary, so traverse through the shadow root and find the form
+        const root = element.getRootNode();
+        if (root instanceof ShadowRoot && root.host) {
+          // @ts-ignore
+          element = root.host;
+        }
       }
       traversalLayerCount++;
     }
@@ -14631,7 +14659,8 @@ class DefaultScanner {
 
     // If it's an input we haven't already scanned, scan the whole shadow tree
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
-      this.findEligibleInputs(realTarget.getRootNode());
+      const form = this.getParentForm(realTarget);
+      this.findEligibleInputs(form, true);
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
