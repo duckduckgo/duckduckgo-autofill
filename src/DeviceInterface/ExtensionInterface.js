@@ -90,7 +90,6 @@ class ExtensionInterface extends InterfacePrototype {
                     notifyWebApp({ deviceSignedIn: {value: false} })
                 }
             })
-
             if (this.activeForm?.activeInput) {
                 this.attachTooltip({
                     form: this.activeForm,

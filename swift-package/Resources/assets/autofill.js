@@ -6587,7 +6587,7 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    const path = window.location.pathname;
+    const path = `${window.location.pathname}${window.location.hash}`;
     const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
     const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
 

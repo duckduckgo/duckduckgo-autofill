@@ -6,6 +6,7 @@ import {createAvailableInputTypes} from '../helpers/utils.js'
 import {loginPage} from '../helpers/pages/loginPage.js'
 import {overlayPage} from '../helpers/pages/overlayPage.js'
 import {genericPage} from '../helpers/pages/genericPage.js'
+import { shadowInputsLoginPage } from '../helpers/pages/shadowInputsLoginPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -81,10 +82,27 @@ async function createLoginFormInModalPage (page) {
 }
 
 test.describe('Auto-fill a login form on macOS', () => {
+    test.describe('when elements are within (open) shadow roots', () => {
+        test.skip('clicking on username should fill the username and password field', async ({page}) => {
+            await forwardConsoleMessages(page)
+            await mocks(page)
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({}))
+                .platform('macos')
+                .applyTo(page)
+            const login = shadowInputsLoginPage(page)
+            await login.navigate()
+            await login.clickTheUsernameField(personalAddress)
+            await page.pause()
+            await login.assertCredentialsFilled(personalAddress, password)
+        })
+    })
+
     test.describe('without getAvailableInputTypes API', () => {
         test('with in-page HTMLTooltip', async ({page}) => {
             await testLoginPage(page)
         })
+
         test.describe('with overlay', () => {
             test('with click', async ({page}) => {
                 const login = await testLoginPage(page, { overlay: true, pageType: 'loginWithText' })
