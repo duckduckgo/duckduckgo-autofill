@@ -4,7 +4,8 @@ import { createMatching } from './Form/matching.js'
 import {
     logPerformance,
     isFormLikelyToBeUsedAsPageWrapper,
-    shouldLog, pierceShadowTree
+    shouldLog, pierceShadowTree,
+    findEnclosedShadowElements
 } from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
@@ -87,6 +88,7 @@ class DefaultScanner {
         this.options = options
         /** @type {number} A timestamp of the  */
         this.initTimeStamp = Date.now()
+        this.elementsInShadow = []
     }
 
     /**
@@ -140,95 +142,11 @@ class DefaultScanner {
         logPerformance('initial_scanner')
         this.mutObs.observe(document.documentElement, { childList: true, subtree: true })
     }
-    
-
-
-    // Function to find shadow roots in the document
-    findShadowRoots(node) {
-        const shadowRoots = [];
-
-        // Recursive function to traverse the DOM
-        function traverse(node) {
-            // Check if the node has a shadow root
-            if (node.shadowRoot) {
-                shadowRoots.push(node.shadowRoot);
-            }
-
-            // Traverse child nodes
-            node.childNodes.forEach(child => traverse(child));
-
-            // Traverse shadow DOM if exists
-            if (node.shadowRoot) {
-                node.shadowRoot.childNodes.forEach(child => traverse(child));
-            }
-        }
-
-        // Start traversal from the provided node
-        traverse(node);
-
-        return shadowRoots;
-    }
-
-        // Function to handle finding shadow hosts in the main document and any iframes
-    findAllShadowHosts() {
-        const shadowHosts = this.findShadowRoots(document);
-
-        // Find all iframes and check their content documents
-        const iframes = document.querySelectorAll('iframe');
-        iframes.forEach(iframe => {
-            try {
-                const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                if (iframeDoc) {
-                    const iframeShadowHosts = this.findShadowRoots(iframeDoc);
-                    shadowHosts.push(...iframeShadowHosts);
-                }
-            } catch (e) {
-                console.warn('Cannot access iframe content due to cross-origin restrictions:', iframe);
-            }
-        });
-
-        return shadowHosts;
-    }
-
-
-    // Function to find input elements within shadow roots
-    findInputsInShadowRoots(shadowRoots) {
-        const inputs = [];
-
-        shadowRoots.forEach(shadowRoot => {
-            const shadowInputs = shadowRoot.querySelectorAll('input');
-            shadowInputs.forEach(input => inputs.push(input));
-        });
-
-        return inputs;
-    }
-
-    findShadowFormElements (form) {
-        const shadowElements = [];
-        const walker = document.createTreeWalker(form, NodeFilter.SHOW_ELEMENT);
-
-        let node = walker.nextNode();
-        while (node) {
-            if (node instanceof HTMLElement && node.shadowRoot) {
-                shadowElements.push(node.shadowRoot.querySelectorAll('input, button'));
-            }
-            node = walker.nextNode();
-        }
-
-        const elements = []
-        shadowElements.forEach((shadowElement) => {
-            shadowElement.forEach((el) => {
-                elements.push(el)
-            })
-        })
-        return elements
-
-    }
 
     /**
      * @param context
      */
-    findEligibleInputs (context, shouldPierceShadow = false) {
+    findEligibleInputs (context) {
         // Avoid autofill on Email Protection web app
         if (this.device.globalConfig.isDDGDomain) {
             return this
@@ -243,8 +161,9 @@ class DefaultScanner {
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
-            if (shouldPierceShadow) {
-                const shadowElements = this.findShadowFormElements(context)
+            if (context instanceof HTMLFormElement) {
+                const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+                const shadowElements = findEnclosedShadowElements(context, selector)
                 shadowElements.forEach((input) => this.addInput(input))
             }
         }
@@ -505,13 +424,14 @@ class DefaultScanner {
 
         const realTarget = pierceShadowTree(event, HTMLInputElement)
 
-        // If it's an input we haven't already scanned, scan the whole shadow tree
+        // If it's an input we haven't already scanned,
+        // find the enclosing parent form, and scan it.
         if (
             realTarget instanceof HTMLInputElement &&
             !realTarget.hasAttribute(ATTR_INPUT_TYPE)
         ) {
             const form = this.getParentForm(realTarget)
-            this.findEligibleInputs(form, true)
+            this.findEligibleInputs(form)
         }
 
         window.performance?.mark?.('scan_shadow:init:end')

@@ -1,7 +1,7 @@
 import { removeExcessWhitespace, Matching } from './matching.js'
 import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
-import {getTextShallow, isLikelyASubmitButton, safeRegexTest} from '../autofill-utils.js'
+import {findEnclosedShadowElements, getTextShallow, isLikelyASubmitButton, safeRegexTest} from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -175,7 +175,7 @@ class FormAnalyzer {
     }
 
     evaluateUrl () {
-        const path = `${window.location.pathname}${window.location.hash}`
+        const path = window.location.href
 
         const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), path)
         const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path)
@@ -300,7 +300,11 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-        const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'))
+        const selector = this.matching.cssSelector('safeUniversalSelector')
+        const formElements = [
+            ...this.form.querySelectorAll(selector),
+            ...findEnclosedShadowElements(this.form, selector)
+        ]
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break

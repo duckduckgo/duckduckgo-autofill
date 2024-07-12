@@ -5911,6 +5911,7 @@ class Form {
     // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
     if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
       this.addListener(this.form, 'submit', () => {
+        console.log('Submit called');
         this.submitHandler('in-form submit handler');
       }, {
         capture: true
@@ -5929,7 +5930,8 @@ class Form {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
         // It also catches all elements when the markup is broken.
         // We use .filter to avoid fieldset, button, textarea etc.
-        foundInputs = [...this.form.elements].filter(el => el.matches(selector));
+        // Additionally, we try to find any shadow elements that might be there in the form.
+        foundInputs = [...this.form.elements, ...(0, _autofillUtils.findEnclosedShadowElements)(this.form, selector)].filter(el => el.matches(selector));
       } else {
         foundInputs = this.form.querySelectorAll(selector);
       }
@@ -6587,7 +6589,7 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    const path = `${window.location.pathname}${window.location.hash}`;
+    const path = window.location.href;
     const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
     const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
 
@@ -6716,7 +6718,8 @@ class FormAnalyzer {
     this.evaluateElAttributes(this.form);
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-    const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
+    const selector = this.matching.cssSelector('safeUniversalSelector');
+    const formElements = [...this.form.querySelectorAll(selector), ...(0, _autofillUtils.findEnclosedShadowElements)(this.form, selector)];
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -10093,6 +10096,7 @@ class DefaultScanner {
     this.options = options;
     /** @type {number} A timestamp of the  */
     this.initTimeStamp = Date.now();
+    this.elementsInShadow = [];
   }
 
   /**
@@ -10154,84 +10158,10 @@ class DefaultScanner {
     });
   }
 
-  // Function to find shadow roots in the document
-  findShadowRoots(node) {
-    const shadowRoots = [];
-
-    // Recursive function to traverse the DOM
-    function traverse(node) {
-      // Check if the node has a shadow root
-      if (node.shadowRoot) {
-        shadowRoots.push(node.shadowRoot);
-      }
-
-      // Traverse child nodes
-      node.childNodes.forEach(child => traverse(child));
-
-      // Traverse shadow DOM if exists
-      if (node.shadowRoot) {
-        node.shadowRoot.childNodes.forEach(child => traverse(child));
-      }
-    }
-
-    // Start traversal from the provided node
-    traverse(node);
-    return shadowRoots;
-  }
-
-  // Function to handle finding shadow hosts in the main document and any iframes
-  findAllShadowHosts() {
-    const shadowHosts = this.findShadowRoots(document);
-
-    // Find all iframes and check their content documents
-    const iframes = document.querySelectorAll('iframe');
-    iframes.forEach(iframe => {
-      try {
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-        if (iframeDoc) {
-          const iframeShadowHosts = this.findShadowRoots(iframeDoc);
-          shadowHosts.push(...iframeShadowHosts);
-        }
-      } catch (e) {
-        console.warn('Cannot access iframe content due to cross-origin restrictions:', iframe);
-      }
-    });
-    return shadowHosts;
-  }
-
-  // Function to find input elements within shadow roots
-  findInputsInShadowRoots(shadowRoots) {
-    const inputs = [];
-    shadowRoots.forEach(shadowRoot => {
-      const shadowInputs = shadowRoot.querySelectorAll('input');
-      shadowInputs.forEach(input => inputs.push(input));
-    });
-    return inputs;
-  }
-  findShadowFormElements(form) {
-    const shadowElements = [];
-    const walker = document.createTreeWalker(form, NodeFilter.SHOW_ELEMENT);
-    let node = walker.nextNode();
-    while (node) {
-      if (node instanceof HTMLElement && node.shadowRoot) {
-        shadowElements.push(node.shadowRoot.querySelectorAll('input, button'));
-      }
-      node = walker.nextNode();
-    }
-    const elements = [];
-    shadowElements.forEach(shadowElement => {
-      shadowElement.forEach(el => {
-        elements.push(el);
-      });
-    });
-    return elements;
-  }
-
   /**
    * @param context
    */
   findEligibleInputs(context) {
-    let shouldPierceShadow = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     // Avoid autofill on Email Protection web app
     if (this.device.globalConfig.isDDGDomain) {
       return this;
@@ -10245,8 +10175,9 @@ class DefaultScanner {
         return this;
       }
       inputs.forEach(input => this.addInput(input));
-      if (shouldPierceShadow) {
-        const shadowElements = this.findShadowFormElements(context);
+      if (context instanceof HTMLFormElement) {
+        const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        const shadowElements = (0, _autofillUtils.findEnclosedShadowElements)(context, selector);
         shadowElements.forEach(input => this.addInput(input));
       }
     }
@@ -10491,10 +10422,11 @@ class DefaultScanner {
     window.performance?.mark?.('scan_shadow:init:start');
     const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
 
-    // If it's an input we haven't already scanned, scan the whole shadow tree
+    // If it's an input we haven't already scanned,
+    // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const form = this.getParentForm(realTarget);
-      this.findEligibleInputs(form, true);
+      this.findEligibleInputs(form);
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
@@ -12563,6 +12495,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
+exports.findEnclosedShadowElements = findEnclosedShadowElements;
 exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
 exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
@@ -13038,8 +12971,7 @@ const wasAutofilledByChrome = input => {
  */
 exports.wasAutofilledByChrome = wasAutofilledByChrome;
 function shouldLog() {
-  return true;
-  // return readDebugSetting('ddg-autofill-debug')
+  return readDebugSetting('ddg-autofill-debug');
 }
 
 /**
@@ -13173,6 +13105,31 @@ function getActiveElement() {
     return getActiveElement(innerActiveElement.shadowRoot);
   }
   return innerActiveElement;
+}
+
+/**
+ * Takes a root, creates a treewalker and finds all shadow elements that match the selector
+ * @param {*} root
+ * @param {*} selector
+ * @returns
+ */
+function findEnclosedShadowElements(root, selector) {
+  const shadowElements = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  let node = walker.nextNode();
+  while (node) {
+    if (node instanceof HTMLElement && node.shadowRoot) {
+      shadowElements.push(node.shadowRoot.querySelectorAll(selector));
+    }
+    node = walker.nextNode();
+  }
+  const elements = [];
+  shadowElements.forEach(shadowElement => {
+    shadowElement.forEach(el => {
+      elements.push(el);
+    });
+  });
+  return elements;
 }
 
 },{"./Form/matching.js":33,"./constants.js":55,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],53:[function(require,module,exports){

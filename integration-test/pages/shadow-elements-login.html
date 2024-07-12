@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Shadow DOM Form</title>
+    <title>Shadow DOM Login Form</title>
 </head>
 <body>
     <p>Replicating secure.chase.com: each of the following form elements are within a shadow root that is open. 
         The form element itself is not in a shadow root
     </p>
-    <form>
+    <form id="login-form">
         <div id="usernameRoot"></div>
         <div id="passwordRoot"></div>
-        <div id="submitRoot" type="submit">Sign up</div>
+        <div id="loginRoot">Log in</div>
     </form>
 
     <script>
         // Create shadow roots for username and password inputs
         const usernameRoot = document.getElementById('usernameRoot').attachShadow({ mode: 'open' });
         const passwordRoot = document.getElementById('passwordRoot').attachShadow({ mode: 'open' });
-        const submitRoot = document.getElementById('submitRoot').attachShadow({ mode: 'open' });
+        const loginRoot = document.getElementById('loginRoot').attachShadow({ mode: 'open' });
 
         // Create username input element
         const usernameInput = document.createElement('input');
@@ -33,8 +33,9 @@
 
        // Create a submit button
         const submitButton = document.createElement('button');
-        submitButton.textContent = 'Submit';
-        submitRoot.appendChild(submitButton);
+        submitButton.textContent = 'Log in';
+        submitButton.type = 'submit';
+        loginRoot.appendChild(submitButton);
 
         // Add event listener to submit button
         submitButton.addEventListener('click', function(event) {

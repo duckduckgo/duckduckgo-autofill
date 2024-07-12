@@ -426,8 +426,7 @@ const wasAutofilledByChrome = (input) => {
  * @returns {boolean}
  */
 function shouldLog () {
-    return true
-    // return readDebugSetting('ddg-autofill-debug')
+    return readDebugSetting('ddg-autofill-debug')
 }
 
 /**
@@ -567,6 +566,33 @@ function getActiveElement (root = document) {
     return innerActiveElement
 }
 
+/**
+ * Takes a root, creates a treewalker and finds all shadow elements that match the selector
+ * @param {*} root
+ * @param {*} selector
+ * @returns
+ */
+function findEnclosedShadowElements (root, selector) {
+    const shadowElements = []
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT)
+
+    let node = walker.nextNode()
+    while (node) {
+        if (node instanceof HTMLElement && node.shadowRoot) {
+            shadowElements.push(node.shadowRoot.querySelectorAll(selector))
+        }
+        node = walker.nextNode()
+    }
+
+    const elements = []
+    shadowElements.forEach((shadowElement) => {
+        shadowElement.forEach((el) => {
+            elements.push(el)
+        })
+    })
+    return elements
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -598,5 +624,6 @@ export {
     isFormLikelyToBeUsedAsPageWrapper,
     safeRegexTest,
     pierceShadowTree,
-    getActiveElement
+    getActiveElement,
+    findEnclosedShadowElements
 }

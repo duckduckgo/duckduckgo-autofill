@@ -13,7 +13,8 @@ import {
     wasAutofilledByChrome,
     shouldLog,
     safeRegexTest,
-    getActiveElement
+    getActiveElement,
+    findEnclosedShadowElements
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -403,11 +404,11 @@ class Form {
         // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
         if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
             this.addListener(this.form, 'submit', () => {
+                console.log('Submit called')
                 this.submitHandler('in-form submit handler')
             }, {capture: true})
         }
     }
-
     categorizeInputs () {
         const selector = this.matching.cssSelector('formInputsSelector')
         // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -421,7 +422,11 @@ class Form {
                 // For form elements we use .elements to catch fields outside the form itself using the form attribute.
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
-                foundInputs = [...this.form.elements].filter(el => el.matches(selector))
+                // Additionally, we try to find any shadow elements that might be there in the form.
+                foundInputs = [
+                    ...this.form.elements,
+                    ...findEnclosedShadowElements(this.form, selector)
+                ].filter(el => el.matches(selector))
             } else {
                 foundInputs = this.form.querySelectorAll(selector)
             }
