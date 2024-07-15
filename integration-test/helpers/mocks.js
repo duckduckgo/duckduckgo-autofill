@@ -23,7 +23,8 @@ export const constants = {
         'loginCovered': `${localPagesPrefix}/login-covered.html`,
         'loginMultistep': `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
         'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`,
-        'selectInput': `${localPagesPrefix}/select-input.html`
+        'selectInput': `${localPagesPrefix}/select-input.html`,
+        'shadowInputsLogin': `${localPagesPrefix}/shadow-inputs-login.html`
     },
     fields: {
         email: {
