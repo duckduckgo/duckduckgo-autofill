@@ -10077,7 +10077,6 @@ class Form {
     // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
     if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
       this.addListener(this.form, 'submit', () => {
-        console.log('Submit called');
         this.submitHandler('in-form submit handler');
       }, {
         capture: true
@@ -14576,7 +14575,6 @@ class DefaultScanner {
     this.enqueue(outgoing);
   });
   handleEvent(event) {
-    console.log('in handleEvent', event.target);
     switch (event.type) {
       case 'pointerdown':
       case 'focus':

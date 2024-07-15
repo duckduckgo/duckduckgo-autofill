@@ -404,11 +404,11 @@ class Form {
         // If it's a form within a shadow tree, attach the submit listener, because it doesn't bubble outside
         if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
             this.addListener(this.form, 'submit', () => {
-                console.log('Submit called')
                 this.submitHandler('in-form submit handler')
             }, {capture: true})
         }
     }
+
     categorizeInputs () {
         const selector = this.matching.cssSelector('formInputsSelector')
         // If there's no form container and it's just a lonely input field (this.form is an input field)

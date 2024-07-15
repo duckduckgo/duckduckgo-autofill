@@ -409,7 +409,6 @@ class DefaultScanner {
     })
 
     handleEvent (event) {
-        console.log('in handleEvent', event.target)
         switch (event.type) {
         case 'pointerdown':
         case 'focus':

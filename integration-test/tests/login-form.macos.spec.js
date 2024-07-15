@@ -93,7 +93,6 @@ test.describe('Auto-fill a login form on macOS', () => {
             const login = shadowInputsLoginPage(page)
             await login.navigate()
             await login.clickTheUsernameField(personalAddress)
-            await page.pause()
             await login.assertCredentialsFilled(personalAddress, password)
         })
     })
