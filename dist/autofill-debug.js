@@ -14251,6 +14251,8 @@ class DefaultScanner {
   stopped = false;
   /** @type {import("./Form/matching").Matching} matching */
   matching;
+  /** @type Map<HTMLInputElement, HTMLFormElement> */
+  shadowInputForm = new Map();
 
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -14345,8 +14347,9 @@ class DefaultScanner {
         const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         const shadowElements = (0, _autofillUtils.findEnclosedShadowElements)(context, selector);
         shadowElements.forEach(input => {
-          // @ts-ignore
-          this.addInput(input);
+          if (input instanceof HTMLInputElement) {
+            this.addInput(input);
+          }
         });
       }
     }
@@ -14443,7 +14446,8 @@ class DefaultScanner {
    */
   addInput(input) {
     if (this.stopped) return;
-    const parentForm = this.getParentForm(input);
+    const parentForm = input instanceof HTMLInputElement && this.shadowInputForm.has(input) ? this.shadowInputForm.get(input) : this.getParentForm(input);
+    if (parentForm === undefined) return;
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
       // We've met the form, add the input provided it's below the max input limit
@@ -14595,7 +14599,10 @@ class DefaultScanner {
     // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const form = this.getParentForm(realTarget);
-      this.findEligibleInputs(form);
+      if (form && form instanceof HTMLFormElement) {
+        this.shadowInputForm.set(realTarget, form);
+        this.findEligibleInputs(form);
+      }
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
