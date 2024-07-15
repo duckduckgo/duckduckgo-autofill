@@ -164,7 +164,10 @@ class DefaultScanner {
             if (context instanceof HTMLFormElement) {
                 const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
                 const shadowElements = findEnclosedShadowElements(context, selector)
-                shadowElements.forEach((input) => this.addInput(input))
+                shadowElements.forEach((input) => {
+                    // @ts-ignore
+                    this.addInput(input)
+                })
             }
         }
         return this

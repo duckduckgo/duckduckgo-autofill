@@ -14344,7 +14344,10 @@ class DefaultScanner {
       if (context instanceof HTMLFormElement) {
         const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         const shadowElements = (0, _autofillUtils.findEnclosedShadowElements)(context, selector);
-        shadowElements.forEach(input => this.addInput(input));
+        shadowElements.forEach(input => {
+          // @ts-ignore
+          this.addInput(input);
+        });
       }
     }
     return this;
@@ -17275,9 +17278,9 @@ function getActiveElement() {
 
 /**
  * Takes a root, creates a treewalker and finds all shadow elements that match the selector
- * @param {*} root
- * @param {*} selector
- * @returns
+ * @param {HTMLElement} root
+ * @param {string} selector
+ * @returns {HTMLElement[]}
  */
 function findEnclosedShadowElements(root, selector) {
   const shadowElements = [];
@@ -17290,9 +17293,11 @@ function findEnclosedShadowElements(root, selector) {
     node = walker.nextNode();
   }
   const elements = [];
-  shadowElements.forEach(shadowElement => {
-    shadowElement.forEach(el => {
-      elements.push(el);
+  shadowElements.forEach(shadowElementList => {
+    shadowElementList.forEach(el => {
+      if (el instanceof HTMLElement) {
+        elements.push(el);
+      }
     });
   });
   return elements;
