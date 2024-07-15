@@ -5952,7 +5952,7 @@ class Form {
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
-    const allButtons = /** @type {HTMLElement[]} */[...this.form.querySelectorAll(selector)];
+    const allButtons = /** @type {HTMLElement[]} */[...this.form.querySelectorAll(selector), ...(0, _autofillUtils.findEnclosedShadowElements)(this.form, selector)];
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {

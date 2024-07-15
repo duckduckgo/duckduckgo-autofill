@@ -449,7 +449,10 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('submitButtonSelector')
-        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+        const allButtons = /** @type {HTMLElement[]} */([
+            ...this.form.querySelectorAll(selector),
+            ...findEnclosedShadowElements(this.form, selector)
+        ])
 
         return allButtons
             .filter((btn) =>
