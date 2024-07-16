@@ -14,7 +14,7 @@ import {
     shouldLog,
     safeRegexTest,
     getActiveElement,
-    findEnclosedShadowElements
+    findEnclosedElements
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -423,10 +423,10 @@ class Form {
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
                 // Additionally, we try to find any shadow elements that might be there in the form.
-                foundInputs = [
-                    ...this.form.elements,
-                    ...findEnclosedShadowElements(this.form, selector)
-                ].filter(el => el.matches(selector))
+                const formElements = [...this.form.elements]
+                foundInputs = formElements.length > 0
+                    ? formElements.filter((el) => el.matches(selector))
+                    : findEnclosedElements(this.form, selector)
             } else {
                 foundInputs = this.form.querySelectorAll(selector)
             }
@@ -450,8 +450,7 @@ class Form {
     get submitButtons () {
         const selector = this.matching.cssSelector('submitButtonSelector')
         const allButtons = /** @type {HTMLElement[]} */([
-            ...this.form.querySelectorAll(selector),
-            ...findEnclosedShadowElements(this.form, selector)
+            ...findEnclosedElements(this.form, selector)
         ])
 
         return allButtons

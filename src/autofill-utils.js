@@ -567,12 +567,20 @@ function getActiveElement (root = document) {
 }
 
 /**
- * Takes a root, creates a treewalker and finds all shadow elements that match the selector
- * @param {HTMLElement} root
+ * Takes a form element, creates a treewalker and finds all shadow elements that match the selector
+ * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
- * @returns {Element[]}
+ * @returns {HTMLElement[]}
  */
-function findEnclosedShadowElements (root, selector) {
+function findEnclosedElements (root, selector) {
+    // Check if there are any normal elements that match the selector
+    const elements = root.querySelectorAll(selector)
+    if (elements.length > 0) {
+        /** @ts-ignore */
+        return elements
+    }
+
+    // Check if there are any shadow elements that match the selector
     const shadowElements = []
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT)
 
@@ -584,6 +592,7 @@ function findEnclosedShadowElements (root, selector) {
         node = walker.nextNode()
     }
 
+    /** @ts-ignore */
     return shadowElements
 }
 
@@ -619,5 +628,5 @@ export {
     safeRegexTest,
     pierceShadowTree,
     getActiveElement,
-    findEnclosedShadowElements
+    findEnclosedElements
 }

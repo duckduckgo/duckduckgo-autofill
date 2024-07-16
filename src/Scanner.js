@@ -5,7 +5,7 @@ import {
     logPerformance,
     isFormLikelyToBeUsedAsPageWrapper,
     shouldLog, pierceShadowTree,
-    findEnclosedShadowElements
+    findEnclosedElements
 } from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
@@ -157,7 +157,8 @@ class DefaultScanner {
         if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
             this.addInput(context)
         } else {
-            const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'))
+            const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+            const inputs = context.querySelectorAll(selector)
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context)
                 return this
@@ -165,7 +166,7 @@ class DefaultScanner {
             inputs.forEach((input) => this.addInput(input))
             if (context instanceof HTMLFormElement) {
                 const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
-                const shadowElements = findEnclosedShadowElements(context, selector)
+                const shadowElements = findEnclosedElements(context, selector)
                 shadowElements.forEach((input) => {
                     if (input instanceof HTMLInputElement) {
                         this.addInput(input)
