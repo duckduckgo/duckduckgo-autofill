@@ -77,8 +77,6 @@ class DefaultScanner {
     stopped = false
     /** @type {import("./Form/matching").Matching} matching */
     matching
-    /** @type Map<HTMLInputElement, HTMLFormElement> */
-    shadowInputForm = new Map()
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -164,12 +162,12 @@ class DefaultScanner {
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
-            if (context instanceof HTMLFormElement) {
+            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowInput) {
                 const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
                 const shadowElements = findEnclosedElements(context, selector)
                 shadowElements.forEach((input) => {
                     if (input instanceof HTMLInputElement) {
-                        this.addInput(input)
+                        this.addInput(input, context)
                     }
                 })
             }
@@ -269,15 +267,12 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {HTMLFormElement|null} form
      */
-    addInput (input) {
+    addInput (input, form = null) {
         if (this.stopped) return
 
-        const parentForm = (input instanceof HTMLInputElement && this.shadowInputForm.has(input))
-            ? this.shadowInputForm.get(input)
-            : this.getParentForm(input)
-
-        if (parentForm === undefined) return
+        const parentForm = form || this.getParentForm(input)
 
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm)
@@ -440,10 +435,11 @@ class DefaultScanner {
             realTarget instanceof HTMLInputElement &&
             !realTarget.hasAttribute(ATTR_INPUT_TYPE)
         ) {
-            const form = this.getParentForm(realTarget)
-            if (form && form instanceof HTMLFormElement) {
-                this.shadowInputForm.set(realTarget, form)
-                this.findEligibleInputs(form)
+            const parentForm = this.getParentForm(realTarget)
+            if (parentForm && parentForm instanceof HTMLFormElement) {
+                const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, true)
+                this.forms.set(parentForm, form)
+                this.findEligibleInputs(parentForm)
             }
         }
 

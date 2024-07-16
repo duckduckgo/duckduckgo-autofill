@@ -9742,14 +9742,17 @@ class Form {
    * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    * @param {import("../Form/matching").Matching} [matching]
    * @param {Boolean} [shouldAutoprompt]
+   * @param {Boolean} [hasShadowInput]
    */
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    let hasShadowInput = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
     this.destroyed = false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.device = deviceInterface;
+    this.hasShadowInput = hasShadowInput;
 
     /** @type Record<'all' | SupportedMainTypes, Set> */
     this.inputs = {
@@ -14256,8 +14259,6 @@ class DefaultScanner {
   stopped = false;
   /** @type {import("./Form/matching").Matching} matching */
   matching;
-  /** @type Map<HTMLInputElement, HTMLFormElement> */
-  shadowInputForm = new Map();
 
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -14349,12 +14350,12 @@ class DefaultScanner {
         return this;
       }
       inputs.forEach(input => this.addInput(input));
-      if (context instanceof HTMLFormElement) {
+      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowInput) {
         const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         const shadowElements = (0, _autofillUtils.findEnclosedElements)(context, selector);
         shadowElements.forEach(input => {
           if (input instanceof HTMLInputElement) {
-            this.addInput(input);
+            this.addInput(input, context);
           }
         });
       }
@@ -14449,11 +14450,12 @@ class DefaultScanner {
 
   /**
    * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {HTMLFormElement|null} form
    */
   addInput(input) {
+    let form = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     if (this.stopped) return;
-    const parentForm = input instanceof HTMLInputElement && this.shadowInputForm.has(input) ? this.shadowInputForm.get(input) : this.getParentForm(input);
-    if (parentForm === undefined) return;
+    const parentForm = form || this.getParentForm(input);
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
       // We've met the form, add the input provided it's below the max input limit
@@ -14603,10 +14605,11 @@ class DefaultScanner {
     // If it's an input we haven't already scanned,
     // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
-      const form = this.getParentForm(realTarget);
-      if (form && form instanceof HTMLFormElement) {
-        this.shadowInputForm.set(realTarget, form);
-        this.findEligibleInputs(form);
+      const parentForm = this.getParentForm(realTarget);
+      if (parentForm && parentForm instanceof HTMLFormElement) {
+        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, true);
+        this.forms.set(parentForm, form);
+        this.findEligibleInputs(parentForm);
       }
     }
     window.performance?.mark?.('scan_shadow:init:end');
