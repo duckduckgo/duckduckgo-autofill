@@ -51,15 +51,15 @@ class Form {
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      * @param {Boolean} [shouldAutoprompt]
-     * @param {Boolean} [hasShadowInput]
+     * @param {Boolean} [hasShadowTree]
      */
-    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowInput = false) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.destroyed = false
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.device = deviceInterface
-        this.hasShadowInput = hasShadowInput
+        this.hasShadowTree = hasShadowTree
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {

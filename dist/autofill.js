@@ -5576,17 +5576,17 @@ class Form {
    * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    * @param {import("../Form/matching").Matching} [matching]
    * @param {Boolean} [shouldAutoprompt]
-   * @param {Boolean} [hasShadowInput]
+   * @param {Boolean} [hasShadowTree]
    */
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
-    let hasShadowInput = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
+    let hasShadowTree = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
     this.destroyed = false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.device = deviceInterface;
-    this.hasShadowInput = hasShadowInput;
+    this.hasShadowTree = hasShadowTree;
 
     /** @type Record<'all' | SupportedMainTypes, Set> */
     this.inputs = {
@@ -10185,7 +10185,7 @@ class DefaultScanner {
         return this;
       }
       inputs.forEach(input => this.addInput(input));
-      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowInput) {
+      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
         const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         (0, _autofillUtils.findEnclosedElements)(context, selector).forEach(input => {
           if (input instanceof HTMLInputElement) {

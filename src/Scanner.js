@@ -162,7 +162,7 @@ class DefaultScanner {
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
-            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowInput) {
+            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
                 const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
                 findEnclosedElements(context, selector).forEach((input) => {
                     if (input instanceof HTMLInputElement) {
