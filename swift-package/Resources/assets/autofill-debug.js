@@ -17292,7 +17292,7 @@ function getActiveElement() {
 }
 
 /**
- * Takes a form element, creates a treewalker and finds all shadow elements that match the selector
+ * Takes a root element, creates a treewalker and finds all shadow elements that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}
