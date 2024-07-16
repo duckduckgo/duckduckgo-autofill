@@ -570,13 +570,12 @@ function getActiveElement (root = document) {
  * Takes a form element, creates a treewalker and finds all shadow elements that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
- * @returns {HTMLElement[]}
+ * @returns {Element[]}
  */
 function findEnclosedElements (root, selector) {
     // Check if there are any normal elements that match the selector
-    const elements = root.querySelectorAll(selector)
+    const elements = [...root.querySelectorAll(selector)]
     if (elements.length > 0) {
-        /** @ts-ignore */
         return elements
     }
 
@@ -592,7 +591,6 @@ function findEnclosedElements (root, selector) {
         node = walker.nextNode()
     }
 
-    /** @ts-ignore */
     return shadowElements
 }
 
