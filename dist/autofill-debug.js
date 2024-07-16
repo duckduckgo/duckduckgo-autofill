@@ -10753,9 +10753,14 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    const path = window.location.href;
-    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
-    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
+    const {
+      pathname,
+      search,
+      hash
+    } = window.location;
+    const pathToMatch = pathname + search + hash.slice(0, 100);
+    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch);
+    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch);
 
     // If the url matches both, do nothing: the signal is probably confounding
     if (matchesLogin && matchesSignup) return;
