@@ -570,7 +570,7 @@ function getActiveElement (root = document) {
  * Takes a root, creates a treewalker and finds all shadow elements that match the selector
  * @param {HTMLElement} root
  * @param {string} selector
- * @returns {HTMLElement[]}
+ * @returns {Element[]}
  */
 function findEnclosedShadowElements (root, selector) {
     const shadowElements = []
@@ -579,20 +579,12 @@ function findEnclosedShadowElements (root, selector) {
     let node = walker.nextNode()
     while (node) {
         if (node instanceof HTMLElement && node.shadowRoot) {
-            shadowElements.push(node.shadowRoot.querySelectorAll(selector))
+            shadowElements.push(...node.shadowRoot.querySelectorAll(selector))
         }
         node = walker.nextNode()
     }
 
-    const elements = []
-    shadowElements.forEach((shadowElementList) => {
-        shadowElementList.forEach((el) => {
-            if (el instanceof HTMLElement) {
-                elements.push(el)
-            }
-        })
-    })
-    return elements
+    return shadowElements
 }
 
 export {
