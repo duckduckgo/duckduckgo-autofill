@@ -6595,10 +6595,9 @@ class FormAnalyzer {
   evaluateUrl() {
     const {
       pathname,
-      search,
       hash
     } = window.location;
-    const pathToMatch = pathname + search + hash.slice(0, 100);
+    const pathToMatch = pathname + hash;
     const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch);
     const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch);
 
