@@ -5956,7 +5956,7 @@ class Form {
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
-    const allButtons = /** @type {HTMLElement[]} */[...(0, _autofillUtils.findEnclosedElements)(this.form, selector)];
+    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.findEnclosedElements)(this.form, selector);
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {
@@ -10104,7 +10104,6 @@ class DefaultScanner {
     this.options = options;
     /** @type {number} A timestamp of the  */
     this.initTimeStamp = Date.now();
-    this.elementsInShadow = [];
   }
 
   /**
@@ -13132,9 +13131,9 @@ function getActiveElement() {
  */
 function findEnclosedElements(root, selector) {
   // Check if there are any normal elements that match the selector
-  const elements = [...root.querySelectorAll(selector)];
+  const elements = root.querySelectorAll(selector);
   if (elements.length > 0) {
-    return elements;
+    return Array.from(elements);
   }
 
   // Check if there are any shadow elements that match the selector

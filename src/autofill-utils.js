@@ -574,9 +574,9 @@ function getActiveElement (root = document) {
  */
 function findEnclosedElements (root, selector) {
     // Check if there are any normal elements that match the selector
-    const elements = [...root.querySelectorAll(selector)]
+    const elements = root.querySelectorAll(selector)
     if (elements.length > 0) {
-        return elements
+        return Array.from(elements)
     }
 
     // Check if there are any shadow elements that match the selector

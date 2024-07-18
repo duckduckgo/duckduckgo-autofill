@@ -88,7 +88,6 @@ class DefaultScanner {
         this.options = options
         /** @type {number} A timestamp of the  */
         this.initTimeStamp = Date.now()
-        this.elementsInShadow = []
     }
 
     /**
