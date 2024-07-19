@@ -15,6 +15,8 @@ module.exports = {
 
     // Indicates whether each individual test should be reported during the run
     verbose: false,
+    
+    // reporters: ['default', ['<rootDir>/reporters/slow-test', { numTests: 3 }]],
 
     // ensure snapshots are in a JSON format
     snapshotFormat: {

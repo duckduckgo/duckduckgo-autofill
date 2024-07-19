@@ -204,7 +204,17 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
         const scanner = createScanner(deviceInterface)
+        // print the whole document befre
+        const startTime = performance.now()
         scanner.findEligibleInputs(document)
+        const endTime = performance.now()
+        const time = endTime - startTime
+            // write document to a new file
+        const fileName = `slow-${html}-${time}`
+        //write 
+        fs.writeFileSync(path.resolve(__dirname, '.', fileName), document.body.innerHTML)
+
+        console.log('DEEP problematic document', time)
 
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
         /**
