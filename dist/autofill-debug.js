@@ -9742,14 +9742,17 @@ class Form {
    * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    * @param {import("../Form/matching").Matching} [matching]
    * @param {Boolean} [shouldAutoprompt]
+   * @param {Boolean} [hasShadowTree]
    */
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    let hasShadowTree = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
     this.destroyed = false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.device = deviceInterface;
+    this.hasShadowTree = hasShadowTree;
 
     /** @type Record<'all' | SupportedMainTypes, Set> */
     this.inputs = {
@@ -10095,7 +10098,10 @@ class Form {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
         // It also catches all elements when the markup is broken.
         // We use .filter to avoid fieldset, button, textarea etc.
-        foundInputs = [...this.form.elements].filter(el => el.matches(selector));
+        const formElements = [...this.form.elements].filter(el => el.matches(selector));
+        // If there are not form elements, we try to look for all
+        // enclosed elements within the form.
+        foundInputs = formElements.length > 0 ? formElements : (0, _autofillUtils.findEnclosedElements)(this.form, selector);
       } else {
         foundInputs = this.form.querySelectorAll(selector);
       }
@@ -10116,7 +10122,7 @@ class Form {
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
-    const allButtons = /** @type {HTMLElement[]} */[...this.form.querySelectorAll(selector)];
+    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.findEnclosedElements)(this.form, selector);
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {
@@ -10753,9 +10759,13 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    const path = window.location.pathname;
-    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
-    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
+    const {
+      pathname,
+      hash
+    } = window.location;
+    const pathToMatch = pathname + hash;
+    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch);
+    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch);
 
     // If the url matches both, do nothing: the signal is probably confounding
     if (matchesLogin && matchesSignup) return;
@@ -10882,7 +10892,8 @@ class FormAnalyzer {
     this.evaluateElAttributes(this.form);
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-    const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
+    const selector = this.matching.cssSelector('safeUniversalSelector');
+    const formElements = (0, _autofillUtils.findEnclosedElements)(this.form, selector);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -14331,12 +14342,21 @@ class DefaultScanner {
     if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
       this.addInput(context);
     } else {
-      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'));
+      const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+      const inputs = context.querySelectorAll(selector);
       if (inputs.length > this.options.maxInputsPerPage) {
         this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
       }
       inputs.forEach(input => this.addInput(input));
+      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
+        const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        (0, _autofillUtils.findEnclosedElements)(context, selector).forEach(input => {
+          if (input instanceof HTMLInputElement) {
+            this.addInput(input, context);
+          }
+        });
+      }
     }
     return this;
   }
@@ -14395,19 +14415,31 @@ class DefaultScanner {
     let traversalLayerCount = 0;
     let element = input;
     // traverse the DOM to search for related inputs
-    while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
+    while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
       // Avoid overlapping containers or forms
       const siblingForm = element.parentElement?.querySelector('form');
       if (siblingForm && siblingForm !== element) {
         return element;
       }
-      element = element.parentElement;
-      const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
-      const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
-      // If we find a button or another input, we assume that's our form
-      if (inputs.length > 1 || buttons.length) {
-        // found related input, return common ancestor
+      if (element instanceof HTMLFormElement) {
         return element;
+      }
+      if (element.parentElement) {
+        element = element.parentElement;
+        const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+        const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+        // If we find a button or another input, we assume that's our form
+        if (inputs.length > 1 || buttons.length) {
+          // found related input, return common ancestor
+          return element;
+        }
+      } else {
+        // possibly a shadow boundary, so traverse through the shadow root and find the form
+        const root = element.getRootNode();
+        if (root instanceof ShadowRoot && root.host) {
+          // @ts-ignore
+          element = root.host;
+        }
       }
       traversalLayerCount++;
     }
@@ -14416,10 +14448,12 @@ class DefaultScanner {
 
   /**
    * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {HTMLFormElement|null} form
    */
   addInput(input) {
+    let form = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     if (this.stopped) return;
-    const parentForm = this.getParentForm(input);
+    const parentForm = form || this.getParentForm(input);
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
       // We've met the form, add the input provided it's below the max input limit
@@ -14566,9 +14600,15 @@ class DefaultScanner {
     window.performance?.mark?.('scan_shadow:init:start');
     const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
 
-    // If it's an input we haven't already scanned, scan the whole shadow tree
+    // If it's an input we haven't already scanned,
+    // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
-      this.findEligibleInputs(realTarget.getRootNode());
+      const parentForm = this.getParentForm(realTarget);
+      if (parentForm && parentForm instanceof HTMLFormElement) {
+        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, true);
+        this.forms.set(parentForm, form);
+        this.findEligibleInputs(parentForm);
+      }
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
@@ -16637,6 +16677,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
+exports.findEnclosedElements = findEnclosedElements;
 exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
 exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
@@ -17246,6 +17287,32 @@ function getActiveElement() {
     return getActiveElement(innerActiveElement.shadowRoot);
   }
   return innerActiveElement;
+}
+
+/**
+ * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * @param {HTMLElement|HTMLFormElement} root
+ * @param {string} selector
+ * @returns {Element[]}
+ */
+function findEnclosedElements(root, selector) {
+  // Check if there are any normal elements that match the selector
+  const elements = root.querySelectorAll(selector);
+  if (elements.length > 0) {
+    return Array.from(elements);
+  }
+
+  // Check if there are any shadow elements that match the selector
+  const shadowElements = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  let node = walker.nextNode();
+  while (node) {
+    if (node instanceof HTMLElement && node.shadowRoot) {
+      shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
+    }
+    node = walker.nextNode();
+  }
+  return shadowElements;
 }
 
 },{"./Form/matching.js":43,"./constants.js":65,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],63:[function(require,module,exports){

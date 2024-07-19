@@ -566,6 +566,34 @@ function getActiveElement (root = document) {
     return innerActiveElement
 }
 
+/**
+ * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * @param {HTMLElement|HTMLFormElement} root
+ * @param {string} selector
+ * @returns {Element[]}
+ */
+function findEnclosedElements (root, selector) {
+    // Check if there are any normal elements that match the selector
+    const elements = root.querySelectorAll(selector)
+    if (elements.length > 0) {
+        return Array.from(elements)
+    }
+
+    // Check if there are any shadow elements that match the selector
+    const shadowElements = []
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT)
+
+    let node = walker.nextNode()
+    while (node) {
+        if (node instanceof HTMLElement && node.shadowRoot) {
+            shadowElements.push(...node.shadowRoot.querySelectorAll(selector))
+        }
+        node = walker.nextNode()
+    }
+
+    return shadowElements
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -597,5 +625,6 @@ export {
     isFormLikelyToBeUsedAsPageWrapper,
     safeRegexTest,
     pierceShadowTree,
-    getActiveElement
+    getActiveElement,
+    findEnclosedElements
 }

@@ -13,7 +13,8 @@ import {
     wasAutofilledByChrome,
     shouldLog,
     safeRegexTest,
-    getActiveElement
+    getActiveElement,
+    findEnclosedElements
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -50,13 +51,15 @@ class Form {
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      * @param {Boolean} [shouldAutoprompt]
+     * @param {Boolean} [hasShadowTree]
      */
-    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.destroyed = false
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.device = deviceInterface
+        this.hasShadowTree = hasShadowTree
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -421,7 +424,12 @@ class Form {
                 // For form elements we use .elements to catch fields outside the form itself using the form attribute.
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
-                foundInputs = [...this.form.elements].filter(el => el.matches(selector))
+                const formElements = [...this.form.elements].filter((el) => el.matches(selector))
+                // If there are not form elements, we try to look for all
+                // enclosed elements within the form.
+                foundInputs = formElements.length > 0
+                    ? formElements
+                    : findEnclosedElements(this.form, selector)
             } else {
                 foundInputs = this.form.querySelectorAll(selector)
             }
@@ -444,7 +452,7 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('submitButtonSelector')
-        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+        const allButtons = /** @type {HTMLElement[]} */(findEnclosedElements(this.form, selector))
 
         return allButtons
             .filter((btn) =>
