@@ -157,6 +157,7 @@ const isThereAMismatch = (score) => {
 }
 
 let testResults = []
+let perfTable = new Map() 
 describe.each(testCases)('Test $html fields', (testCase) => {
     const {
         html,
@@ -204,18 +205,13 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
         const scanner = createScanner(deviceInterface)
-        // print the whole document befre
         const startTime = performance.now()
         scanner.findEligibleInputs(document)
         const endTime = performance.now()
-        const time = endTime - startTime
+        const time = (endTime - startTime)/1000
             // write document to a new file
-        const fileName = `slow-${html}-${time}`
-        //write 
-        fs.writeFileSync(path.resolve(__dirname, '.', fileName), document.body.innerHTML)
 
-        console.log('DEEP problematic document', time)
-
+        perfTable.set(html, time)
         const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
         /**
          * @type {HTMLElement[]}
@@ -320,6 +316,15 @@ afterAll(() => {
             siteHasFailures[siteName] = testHasFailures
         }
     })
+
+    // Convert perfTable to a table format
+    let table = 'HTML\tTime\n';
+    for (let [html, time] of perfTable) {
+        table += `${html}\t${time}\n`;
+    }
+
+    // Write the table to a file
+    fs.writeFileSync('perf-before.txt', table);
 
     const allSites = Object.values(siteHasFailures).length
     const failingSites = Object.values(siteHasFailures).filter(t => t === true).length
