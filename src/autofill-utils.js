@@ -567,7 +567,7 @@ function getActiveElement (root = document) {
 }
 
 /**
- * Takes a root element, creates a treewalker and finds all shadow elements that match the selector
+ * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}

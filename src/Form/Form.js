@@ -424,9 +424,9 @@ class Form {
                 // For form elements we use .elements to catch fields outside the form itself using the form attribute.
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
+                const formElements = [...this.form.elements].filter((el) => el.matches(selector))
                 // If there are not form elements, we try to look for all
                 // enclosed elements within the form.
-                const formElements = [...this.form.elements].filter((el) => el.matches(selector))
                 foundInputs = formElements.length > 0
                     ? formElements
                     : findEnclosedElements(this.form, selector)

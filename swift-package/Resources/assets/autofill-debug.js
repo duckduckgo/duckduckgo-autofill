@@ -10098,9 +10098,9 @@ class Form {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
         // It also catches all elements when the markup is broken.
         // We use .filter to avoid fieldset, button, textarea etc.
+        const formElements = [...this.form.elements].filter(el => el.matches(selector));
         // If there are not form elements, we try to look for all
         // enclosed elements within the form.
-        const formElements = [...this.form.elements].filter(el => el.matches(selector));
         foundInputs = formElements.length > 0 ? formElements : (0, _autofillUtils.findEnclosedElements)(this.form, selector);
       } else {
         foundInputs = this.form.querySelectorAll(selector);
@@ -17290,7 +17290,7 @@ function getActiveElement() {
 }
 
 /**
- * Takes a root element, creates a treewalker and finds all shadow elements that match the selector
+ * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}
