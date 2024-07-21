@@ -4,11 +4,9 @@ import { createMatching } from './Form/matching.js';
 import {
     logPerformance,
     isFormLikelyToBeUsedAsPageWrapper,
-    shouldLog,
-    pierceShadowTree,
-    findElementsInShadowTree,
-} from './autofill-utils.js';
-import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
+    shouldLog, pierceShadowTree,
+    findElementsInShadowTree
+} from './autofill-utils.js'
 
 const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants;
 
@@ -107,10 +105,6 @@ class DefaultScanner {
      * @returns {(reason: string, ...rest) => void}
      */
     init() {
-        if (this.device.globalConfig.isExtension) {
-            this.device.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }));
-        }
-
         // Add the shadow DOM listener. Handlers in handleEvent
         window.addEventListener('pointerdown', this, true);
         // We don't listen for focus events on mobile, they can cause keyboard flashing

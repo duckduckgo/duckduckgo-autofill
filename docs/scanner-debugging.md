@@ -1,28 +1,27 @@
 ## Debugging the Scanner
 
-**On most occasions it's probably easier to debug using the steps outlined at [this page](https://app.asana.com/0/1200930669568058/1204279134793324/f). You can revert to this script for more complex needs.**
+We have snapshots of various forms within [test-forms](..%2Ftest-forms), these can be loaded 
+into `src/scanner-debug.html` for easier debugger.
 
-You can load our `Scanner.debug.js` script into any HTML file to inspect what's happening with the matching algorithms, form analysis etc.
-
-
-The file `src/scanner-debug.html` is there as an example, inside there's this script tag:
-
-```html
-<!-- snip -->
-<script type="module" src="./Scanner.debug.js"></script>
-<!-- snip -->
-```
-
-That will load the Scanner and initialize it on the current document. You then just need to run a local webserver
-to view the code in the browser's debugging tools.
+### Step 1: start the server
 
 ```bash
-# run this to install `serve` globally. This is **not** required if you have other ways of running servers!
-npm i -g serve
-
-# now serve the `src` folder as the root - this is required for the ESM imports to work correctly
-serve src
+npm run server
 ```
 
-You should now be presented with a file-listing of everything in `src` -> just click on `scanner-debug.html` to start
-debugging :)
+### Step 2: open the page
+
+In any browser, load the following URL
+- http://localhost:3210/src/scanner-debug.html
+
+### Step 3: Start debugging
+
+All JS files in this setup are loaded as native ESM modules, so all browser/IDE dev tools will
+work as expected.
+
+Note: The URL will be updated to reflect your selection, so you can share links with your colleagues.
+
+### Step 4: Enable detailed logging
+
+When viewing any HTML form in this setup, you can append a `log` query parameter, this will 
+set `sessionStorage.setItem('ddg-autofill-debug', 'true')` and will output detailed information.
