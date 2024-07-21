@@ -423,9 +423,11 @@ describe('Form bails', () => {
     <!-- A visible field for the number to purchase -->
     <input type="number" name="qty" title="Qty"/>
 </form>
-        `)
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        const formClass = scanner.forms.get(formEl)
+        `);
+        const int = InterfacePrototype.default();
+        int.scanner = createScanner(int);
+        int.scanner.findEligibleInputs(document);
+        const formClass = int.scanner.forms.get(formEl)
         expect(formClass).not.toBeDefined()
         const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
         expect(decoratedInputs).toHaveLength(0)
