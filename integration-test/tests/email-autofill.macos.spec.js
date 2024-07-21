@@ -418,7 +418,7 @@ test.describe('macos', () => {
          * In that case, we want to ensure we don't do any repeated work.
          *
          */
-        test.only('Large form without eligible inputs', async ({page}) => {
+        test('Large form without eligible inputs', async ({page}) => {
             test.setTimeout(5000)
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
