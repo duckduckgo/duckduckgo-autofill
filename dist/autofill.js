@@ -10188,10 +10188,12 @@ class DefaultScanner {
         });
       }
     }
-    for (let [elem, instance] of this.forms) {
-      if (instance.hasOnlyUnknownFields) {
-        instance.destroy();
-        this.forms.delete(elem);
+
+    // Check for forms with too few 'known' inputs
+    // In the case where the only inputs are all 'unknown', we can destroy the form and stop tracking it.
+    for (let formInstance of this.forms.values()) {
+      if (formInstance.hasOnlyUnknownFields) {
+        formInstance.destroy();
       }
     }
     return this;
