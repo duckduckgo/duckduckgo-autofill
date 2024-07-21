@@ -170,6 +170,15 @@ class DefaultScanner {
                 })
             }
         }
+
+        // Check for forms with too few 'known' inputs
+        // In the case where the only inputs are all 'unknown', we can destroy the form and stop tracking it.
+        for (let formInstance of this.forms.values()) {
+            if (formInstance.hasOnlyUnknownFields) {
+                formInstance.destroy()
+            }
+        }
+
         return this
     }
 
@@ -322,11 +331,7 @@ class DefaultScanner {
 
             // Only add the form if below the limit of forms per page
             if (this.forms.size < this.options.maxFormsPerPage) {
-                const f = new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt)
-                // Also only add the form if it hasn't self-destructed due to having too few fields
-                if (!f.isDestroyed) {
-                    this.forms.set(parentForm, f)
-                }
+                this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
             } else {
                 this.stopScanner('The page has too many forms, stop adding them.')
             }

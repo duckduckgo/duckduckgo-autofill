@@ -5641,20 +5641,16 @@ class Form {
     this.initFormListeners();
     this.categorizeInputs();
     this.logFormInfo();
-    const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size;
-    if (numKnownInputs === 0) {
-      // This form has too few known inputs and likely doesn't make sense
-      // to track for autofill (e.g. a single-input for search or item quantity).
-      // Self-destruct to stop listening and avoid memory leaks.
-      if ((0, _autofillUtils.shouldLog)()) {
-        console.log(`Form discarded: zero inputs are fillable`);
-      }
-      this.destroy();
-      return;
-    }
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
     }
+  }
+  get hasOnlyUnknownFields() {
+    const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size;
+    if (numKnownInputs === 0) {
+      return true;
+    }
+    return false;
   }
 
   /** Whether this form has been destroyed via the `destroy` method or not. */
@@ -10192,6 +10188,12 @@ class DefaultScanner {
         });
       }
     }
+    for (let [elem, instance] of this.forms) {
+      if (instance.hasOnlyUnknownFields) {
+        instance.destroy();
+        this.forms.delete(elem);
+      }
+    }
     return this;
   }
 
@@ -10337,11 +10339,7 @@ class DefaultScanner {
 
       // Only add the form if below the limit of forms per page
       if (this.forms.size < this.options.maxFormsPerPage) {
-        const f = new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt);
-        // Also only add the form if it hasn't self-destructed due to having too few fields
-        if (!f.isDestroyed) {
-          this.forms.set(parentForm, f);
-        }
+        this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
       } else {
         this.stopScanner('The page has too many forms, stop adding them.');
       }

@@ -361,7 +361,7 @@ test.describe('macos', () => {
             await defaultMacosScript(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate('pages/usps_signup.html')
+            await perfPage.navigate('pages/usps_signup.html')
 
             await perfPage.validateInitialScanPerf(200)
         })
@@ -371,7 +371,7 @@ test.describe('macos', () => {
             await defaultMacosScript(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate()
+            await perfPage.navigate()
 
             // In production, we expect autofill to bail on such a page
             await perfPage.validateInitialScanPerf(10)
@@ -390,7 +390,7 @@ test.describe('macos', () => {
                 .applyTo(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate()
+            await perfPage.navigate()
 
             await perfPage.validateInitialScanPerf(300)
         })
@@ -406,8 +406,29 @@ test.describe('macos', () => {
                 .applyTo(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate(constants.pages['perf-huge-regex'])
+            await perfPage.navigate(constants.pages['perf-huge-regex'])
 
+            await perfPage.validateInitialScanPerf(80)
+        })
+
+        /**
+         * See: https://app.asana.com/0/0/1207840563867787/f
+         *
+         * This covered a form with about 60 inputs, but none are deemed 'fillable'.
+         * In that case, we want to ensure we don't do any repeated work.
+         *
+         */
+        test.only('Large form without eligible inputs', async ({page}) => {
+            test.setTimeout(5000)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .platform('macos')
+                .applyTo(page)
+
+            const perfPage = scannerPerf(page)
+
+            await perfPage.navigate(constants.forms['www_ulisboa_pt_login.html'])
             await perfPage.validateInitialScanPerf(80)
         })
     })
