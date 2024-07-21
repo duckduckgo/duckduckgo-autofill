@@ -60,8 +60,10 @@ const log = url.searchParams.has('log')
 
 if (log) {
     sessionStorage.setItem('ddg-autofill-debug', 'true')
+    sessionStorage.setItem('ddg-autofill-perf', 'true')
 } else {
     sessionStorage.setItem('ddg-autofill-debug', 'false')
+    sessionStorage.setItem('ddg-autofill-perf', 'false')
 }
 
 loadList()
