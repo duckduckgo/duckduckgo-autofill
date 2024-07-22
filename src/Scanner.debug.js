@@ -77,8 +77,8 @@ async function loadList () {
     const url = new URL(`/test-forms/index.json`, window.location.href)
     fetch(url)
         .then(response => response.json())
-        .then(x => {
-            x.forEach(item => {
+        .then(testForms => {
+            testForms.forEach(item => {
                 const option = document.createElement('option')
                 option.value = item.html
                 option.textContent = item.html
