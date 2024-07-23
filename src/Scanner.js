@@ -160,7 +160,11 @@ class DefaultScanner {
                 this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context)
                 return this
             }
-            inputs.forEach((input) => this.addInput(input))
+            for (let input of inputs) {
+                if (this.addInput(input) === 'stop') {
+                    break
+                }
+            }
             if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
                 const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
                 findEnclosedElements(context, selector).forEach((input) => {
@@ -326,6 +330,9 @@ class DefaultScanner {
                 // Also only add the form if it hasn't self-destructed due to having too few fields
                 if (!f.isDestroyed) {
                     this.forms.set(parentForm, f)
+                } else {
+                    // At this point we know that the scanner doesn't need to continue on other inputs
+                    return 'stop'
                 }
             } else {
                 this.stopScanner('The page has too many forms, stop adding them.')
