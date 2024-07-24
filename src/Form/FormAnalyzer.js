@@ -1,7 +1,7 @@
 import { removeExcessWhitespace, Matching } from './matching.js'
 import { constants } from '../constants.js'
 import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
-import {getTextShallow, isLikelyASubmitButton, safeRegexTest} from '../autofill-utils.js'
+import {findEnclosedElements, getTextShallow, isLikelyASubmitButton, safeRegexTest} from '../autofill-utils.js'
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -175,10 +175,11 @@ class FormAnalyzer {
     }
 
     evaluateUrl () {
-        const path = window.location.pathname
+        const {pathname, hash} = window.location
+        const pathToMatch = pathname + hash
 
-        const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), path)
-        const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path)
+        const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch)
+        const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch)
 
         // If the url matches both, do nothing: the signal is probably confounding
         if (matchesLogin && matchesSignup) return
@@ -300,7 +301,8 @@ class FormAnalyzer {
         this.evaluateElAttributes(this.form)
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-        const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'))
+        const selector = this.matching.cssSelector('safeUniversalSelector')
+        const formElements = findEnclosedElements(this.form, selector)
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break
