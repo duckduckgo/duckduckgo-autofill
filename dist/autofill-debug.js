@@ -7215,6 +7215,9 @@ module.exports={
   "prestocard.ca": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit,[!\"#$%&'()*+,<>?@];"
   },
+  "pret.com": {
+    "password-rules": "minlength: 12; required: lower; required: digit; required: [@$!%*#?&]; allowed: upper;"
+  },
   "propelfuels.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
   },
