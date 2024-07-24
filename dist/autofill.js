@@ -5950,6 +5950,23 @@ class Form {
         return;
       }
     }
+
+    // if we have an unknown input, and only one non-hidden password input, we can assume the unknown input is the username
+    // In that case we move the inputs to the correct category
+    if (this.canCategorizeUnknownUsername() && this.inputs.unknown.size === 1) {
+      const unknownInput = [...this.inputs.unknown][0];
+      const passwordInputs = [...this.inputs.credentials].filter(( /** @type {HTMLInputElement} */input) => {
+        const isPassword = (0, _matching.getInputSubtype)(input) === 'password';
+        const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden';
+        return isPassword && isVisible;
+      });
+      if (passwordInputs.length === 1) {
+        unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
+        this.decorateInput(unknownInput);
+        this.inputs.credentials.add(unknownInput);
+        this.inputs.unknown.delete(unknownInput);
+      }
+    }
     this.initialScanComplete = true;
 
     // Observe only if the container isn't the body, to avoid performance overloads
@@ -5957,6 +5974,11 @@ class Form {
       this.mutObs.observe(this.form, this.mutObsConfig);
     }
   }
+  canCategorizeUnknownUsername() {
+    return true;
+    // return !!this.device.settings.featureToggles.unknown_username_categorization
+  }
+
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
     const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.findEnclosedElements)(this.form, selector);
@@ -10819,7 +10841,8 @@ class Settings {
       inputType_identities: false,
       inputType_credentials: false,
       inputType_creditCards: false,
-      inlineIcon_credentials: false
+      inlineIcon_credentials: false,
+      unknown_username_categorization: true
     },
     /** @type {AvailableInputTypes} */
     availableInputTypes: {

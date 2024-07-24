@@ -204,7 +204,8 @@ export const autofillFeatureTogglesSchema = z.object({
     password_generation: z.boolean().optional(),
     credentials_saving: z.boolean().optional(),
     inlineIcon_credentials: z.boolean().optional(),
-    third_party_credentials_provider: z.boolean().optional()
+    third_party_credentials_provider: z.boolean().optional(),
+    unknown_username_categorization: z.boolean().optional()
 });
 
 export const getAutofillDataRequestSchema = z.object({
