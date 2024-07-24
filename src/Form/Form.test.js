@@ -426,7 +426,7 @@ describe('Form bails', () => {
         `)
         const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
         const formClass = scanner.forms.get(formEl)
-        expect(formClass).not.toBeDefined()
+        expect(formClass).toBeDefined()
         const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
         expect(decoratedInputs).toHaveLength(0)
     })

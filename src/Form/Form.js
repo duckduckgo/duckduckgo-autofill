@@ -118,21 +118,18 @@ class Form {
 
         this.logFormInfo()
 
-        const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size
-        if (numKnownInputs === 0) {
-            // This form has too few known inputs and likely doesn't make sense
-            // to track for autofill (e.g. a single-input for search or item quantity).
-            // Self-destruct to stop listening and avoid memory leaks.
-            if (shouldLog()) {
-                console.log(`Form discarded: zero inputs are fillable`)
-            }
-            this.destroy()
-            return
-        }
-
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
+    }
+
+    get hasOnlyUnknownFields () {
+        const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size
+
+        if (numKnownInputs === 0) {
+            return true
+        }
+        return false
     }
 
     /** Whether this form has been destroyed via the `destroy` method or not. */
