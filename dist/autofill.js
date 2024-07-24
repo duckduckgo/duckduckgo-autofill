@@ -5581,7 +5581,6 @@ class Form {
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
     let hasShadowTree = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
-    this.destroyed = false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
@@ -5641,25 +5640,9 @@ class Form {
     this.initFormListeners();
     this.categorizeInputs();
     this.logFormInfo();
-    const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size;
-    if (numKnownInputs === 0) {
-      // This form has too few known inputs and likely doesn't make sense
-      // to track for autofill (e.g. a single-input for search or item quantity).
-      // Self-destruct to stop listening and avoid memory leaks.
-      if ((0, _autofillUtils.shouldLog)()) {
-        console.log(`Form discarded: zero inputs are fillable`);
-      }
-      this.destroy();
-      return;
-    }
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
     }
-  }
-
-  /** Whether this form has been destroyed via the `destroy` method or not. */
-  get isDestroyed() {
-    return this.destroyed;
   }
   get isLogin() {
     return this.formAnalyzer.isLogin;
@@ -5893,7 +5876,6 @@ class Form {
   }
   // This removes all listeners to avoid memory leaks and weird behaviours
   destroy() {
-    this.destroyed = true;
     this.mutObs.disconnect();
     this.removeAllDecorations();
     this.removeTooltip();
@@ -10197,14 +10179,16 @@ class DefaultScanner {
 
   /**
    * Stops scanning, switches off the mutation observer and clears all forms
+   * Keep the listener for pointerdown to scan on click.
    * @param {string} reason
    * @param {any} rest
    */
   stopScanner(reason) {
-    this.stopped = true;
+    let scanOnClick = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    this.stopped = !scanOnClick;
     if ((0, _autofillUtils.shouldLog)()) {
-      for (var _len2 = arguments.length, rest = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        rest[_key2 - 1] = arguments[_key2];
+      for (var _len2 = arguments.length, rest = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        rest[_key2 - 2] = arguments[_key2];
       }
       console.log(reason, ...rest);
     }
@@ -10214,8 +10198,10 @@ class DefaultScanner {
     clearTimeout(this.debounceTimer);
     this.changedElements.clear();
     this.mutObs.disconnect();
-    window.removeEventListener('pointerdown', this, true);
-    window.removeEventListener('focus', this, true);
+    if (!scanOnClick) {
+      window.removeEventListener('pointerdown', this, true);
+      window.removeEventListener('focus', this, true);
+    }
     this.forms.forEach(form => {
       form.destroy();
     });
@@ -10337,13 +10323,10 @@ class DefaultScanner {
 
       // Only add the form if below the limit of forms per page
       if (this.forms.size < this.options.maxFormsPerPage) {
-        const f = new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt);
+        this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
         // Also only add the form if it hasn't self-destructed due to having too few fields
-        if (!f.isDestroyed) {
-          this.forms.set(parentForm, f);
-        }
       } else {
-        this.stopScanner('The page has too many forms, stop adding them.');
+        this.stopScanner('The page has too many forms, stop adding them.', true);
       }
     }
   }
@@ -10419,7 +10402,7 @@ class DefaultScanner {
     switch (event.type) {
       case 'pointerdown':
       case 'focus':
-        this.scanShadow(event);
+        this.scanOnClick(event);
         break;
     }
   }
@@ -10428,10 +10411,12 @@ class DefaultScanner {
    * Scan clicked input fields, even if they're within a shadow tree
    * @param {FocusEvent | PointerEvent} event
    */
-  scanShadow(event) {
-    // If the scanner is stopped or there's no shadow root, just return
-    if (this.stopped || !(event.target instanceof Element) || !event.target?.shadowRoot) return;
+  scanOnClick(event) {
+    // If the scanner is stopped, just return
+    if (this.stopped || !(event.target instanceof Element)) return;
     window.performance?.mark?.('scan_shadow:init:start');
+
+    // If the target is an input, find the real target in case it's in a shadow tree
     const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
 
     // If it's an input we haven't already scanned,
@@ -10439,7 +10424,8 @@ class DefaultScanner {
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const parentForm = this.getParentForm(realTarget);
       if (parentForm && parentForm instanceof HTMLFormElement) {
-        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, true);
+        const hasShadowTree = event.target?.shadowRoot != null;
+        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
         this.forms.set(parentForm, form);
         this.findEligibleInputs(parentForm);
       }

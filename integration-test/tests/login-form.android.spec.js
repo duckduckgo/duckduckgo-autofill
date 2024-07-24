@@ -69,6 +69,7 @@ test.describe('Feature: auto-filling a login form on Android', () => {
                     },
                     credentials
                 })
+                await page.pause()
                 await login.promptWasShown()
                 await login.fieldsContainIcons()
                 await login.assertFirstCredential(personalAddress, password)
