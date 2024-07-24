@@ -157,7 +157,7 @@ class DefaultScanner {
             const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
             const inputs = context.querySelectorAll(selector)
             if (inputs.length > this.options.maxInputsPerPage) {
-                this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context)
+                this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, false, context)
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
@@ -175,12 +175,12 @@ class DefaultScanner {
 
     /**
      * Stops scanning, switches off the mutation observer and clears all forms
-     * Keep the listener for pointerdown to scan on click.
+     * Keep the listener for pointerdown to scan on click if needed.
      * @param {string} reason
      * @param {any} rest
      */
-    stopScanner (reason, scanOnClick = false, ...rest) {
-        this.stopped = !scanOnClick
+    stopScanner (reason, shouldScanOnClick = false, ...rest) {
+        this.stopped = !shouldScanOnClick
 
         if (shouldLog()) {
             console.log(reason, ...rest)
@@ -192,7 +192,7 @@ class DefaultScanner {
         clearTimeout(this.debounceTimer)
         this.changedElements.clear()
         this.mutObs.disconnect()
-        if (!scanOnClick) {
+        if (!shouldScanOnClick) {
             window.removeEventListener('pointerdown', this, true)
             window.removeEventListener('focus', this, true)
         }
