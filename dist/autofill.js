@@ -5963,7 +5963,8 @@ class Form {
           const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden';
           return isPassword && isVisible;
         });
-        if (passwordInputs.length === 1 && unknownInput.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
+        const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        if (passwordInputs.length === 1 && unknownInput.matches?.(inputSelector)) {
           unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
           this.decorateInput(unknownInput);
           this.inputs.credentials.add(unknownInput);
