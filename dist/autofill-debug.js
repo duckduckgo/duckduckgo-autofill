@@ -9730,7 +9730,8 @@ const {
   ATTR_AUTOFILL,
   ATTR_INPUT_TYPE,
   MAX_INPUTS_PER_FORM,
-  MAX_FORM_RESCANS
+  MAX_FORM_RESCANS,
+  MAX_RETRIABLE_INPUTS
 } = _constants.constants;
 class Form {
   /** @type {import("../Form/matching").Matching} */
@@ -10171,6 +10172,14 @@ class Form {
       }
     });
   }
+  execOnInput(fn, input, shouldCheckForDecorate) {
+    let canExecute = true;
+    // sometimes we want to execute even if we didn't decorate
+    if (shouldCheckForDecorate) {
+      canExecute = (0, _inputTypeConfig.isFieldDecorated)(input);
+    }
+    if (canExecute) fn(input);
+  }
 
   /**
    * Executes a function on input elements. Can be limited to certain element types
@@ -10182,13 +10191,13 @@ class Form {
     let inputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
     let shouldCheckForDecorate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     const inputs = this.inputs[inputType];
+    // If the form has disabled inputs, we will re-try execution later
+    const disabledInputs = [...inputs].filter(input => input.disabled).slice(0, MAX_RETRIABLE_INPUTS);
     for (const input of inputs) {
-      let canExecute = true;
-      // sometimes we want to execute even if we didn't decorate
-      if (shouldCheckForDecorate) {
-        canExecute = (0, _inputTypeConfig.isFieldDecorated)(input);
-      }
-      if (canExecute) fn(input);
+      this.execOnInput(fn, input, shouldCheckForDecorate);
+    }
+    for (const disabledInput of disabledInputs) {
+      this.execOnInput(fn, disabledInput, shouldCheckForDecorate);
     }
   }
   addInput(input) {
@@ -15008,7 +15017,7 @@ class Settings {
       inputType_credentials: false,
       inputType_creditCards: false,
       inlineIcon_credentials: false,
-      unknown_username_categorization: true
+      unknown_username_categorization: false
     },
     /** @type {AvailableInputTypes} */
     availableInputTypes: {
@@ -17472,7 +17481,8 @@ const constants = exports.constants = {
   MAX_INPUTS_PER_PAGE: 100,
   MAX_FORMS_PER_PAGE: 30,
   MAX_INPUTS_PER_FORM: 80,
-  MAX_FORM_RESCANS: 50
+  MAX_FORM_RESCANS: 50,
+  MAX_RETRIABLE_INPUTS: 3
 };
 
 },{}],66:[function(require,module,exports){

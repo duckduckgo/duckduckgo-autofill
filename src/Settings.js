@@ -329,7 +329,7 @@ export class Settings {
             inputType_credentials: false,
             inputType_creditCards: false,
             inlineIcon_credentials: false,
-            unknown_username_categorization: true
+            unknown_username_categorization: false
         },
         /** @type {AvailableInputTypes} */
         availableInputTypes: {

@@ -141,6 +141,7 @@ describe('Settings', () => {
         "inputType_creditCards": false,
         "inputType_identities": false,
         "password_generation": false,
+        "unknown_username_categorization": false,
       }
     `)
     })
