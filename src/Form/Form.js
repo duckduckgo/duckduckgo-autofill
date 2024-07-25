@@ -446,20 +446,24 @@ class Form {
 
         // if we have an unknown input, and only one non-hidden password input, we can assume the unknown input is the username
         // In that case we move the inputs to the correct category
-        if (this.canCategorizeUnknownUsername() && this.inputs.unknown.size === 1) {
-            const unknownInput = [...this.inputs.unknown][0]
+        if (this.canCategorizeUnknownUsername()) {
+            const hasUsername = [...this.inputs.all].some(input => getInputSubtype(input) === 'username')
+            if (this.inputs.unknown.size === 1 && this.isLogin && !hasUsername) {
+                const unknownInput = [...this.inputs.unknown][0]
 
-            const passwordInputs = [...this.inputs.credentials].filter(
-                (/** @type {HTMLInputElement} */ input) => {
-                    const isPassword = getInputSubtype(input) === 'password'
-                    const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden'
-                    return isPassword && isVisible
-                })
-            if (passwordInputs.length === 1) {
-                unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
-                this.decorateInput(unknownInput)
-                this.inputs.credentials.add(unknownInput)
-                this.inputs.unknown.delete(unknownInput)
+                const passwordInputs = [...this.inputs.credentials].filter(
+                    (/** @type {HTMLInputElement} */ input) => {
+                        const isPassword = getInputSubtype(input) === 'password'
+                        const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden'
+                        return isPassword && isVisible
+                    })
+                const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+                if (passwordInputs.length === 1 && unknownInput.matches?.(inputSelector)) {
+                    unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
+                    this.decorateInput(unknownInput)
+                    this.inputs.credentials.add(unknownInput)
+                    this.inputs.unknown.delete(unknownInput)
+                }
             }
         }
 

@@ -5954,18 +5954,21 @@ class Form {
 
     // if we have an unknown input, and only one non-hidden password input, we can assume the unknown input is the username
     // In that case we move the inputs to the correct category
-    if (this.canCategorizeUnknownUsername() && this.inputs.unknown.size === 1) {
-      const unknownInput = [...this.inputs.unknown][0];
-      const passwordInputs = [...this.inputs.credentials].filter(( /** @type {HTMLInputElement} */input) => {
-        const isPassword = (0, _matching.getInputSubtype)(input) === 'password';
-        const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden';
-        return isPassword && isVisible;
-      });
-      if (passwordInputs.length === 1) {
-        unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
-        this.decorateInput(unknownInput);
-        this.inputs.credentials.add(unknownInput);
-        this.inputs.unknown.delete(unknownInput);
+    if (this.canCategorizeUnknownUsername()) {
+      const hasUsername = [...this.inputs.all].some(input => (0, _matching.getInputSubtype)(input) === 'username');
+      if (this.inputs.unknown.size === 1 && this.isLogin && !hasUsername) {
+        const unknownInput = [...this.inputs.unknown][0];
+        const passwordInputs = [...this.inputs.credentials].filter(( /** @type {HTMLInputElement} */input) => {
+          const isPassword = (0, _matching.getInputSubtype)(input) === 'password';
+          const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden';
+          return isPassword && isVisible;
+        });
+        if (passwordInputs.length === 1 && unknownInput.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
+          unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
+          this.decorateInput(unknownInput);
+          this.inputs.credentials.add(unknownInput);
+          this.inputs.unknown.delete(unknownInput);
+        }
       }
     }
     this.initialScanComplete = true;
