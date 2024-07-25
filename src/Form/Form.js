@@ -419,7 +419,7 @@ class Form {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
                 // This is rather extreme, but better safe than sorry
-                this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`)
+                this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`)
                 return
             }
         }
@@ -486,7 +486,7 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            this.device.scanner.stopScanner('The form has too many inputs, bailing.')
+            this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.')
             return this
         }
 
