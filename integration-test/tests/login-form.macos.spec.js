@@ -112,6 +112,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 .applyTo(page)
             const login = unknownUsernameLoginPage(page)
             await login.navigate()
+            await page.waitForTimeout(10)
             await login.assertUnknownFieldIsUsername()
         })
 
