@@ -454,7 +454,7 @@ class Form {
                 const passwordInputs = credentialInputs.filter(
                     (/** @type {HTMLInputElement} */ input) => {
                         const isPassword = getInputSubtype(input) === 'password'
-                        const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden'
+                        const isVisible = input.checkVisibility?.() ?? input.style.display !== 'none'
                         return isPassword && isVisible
                     })
                 const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect')

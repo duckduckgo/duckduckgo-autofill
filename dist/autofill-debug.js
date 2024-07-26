@@ -10125,8 +10125,8 @@ class Form {
         const [unknownInput] = [...this.inputs.unknown];
         const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => {
           const isPassword = (0, _matching.getInputSubtype)(input) === 'password';
-          // const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden'
-          return isPassword;
+          const isVisible = input.checkVisibility?.() ?? input.style.display !== 'none';
+          return isPassword && isVisible;
         });
         const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         if (passwordInputs.length === 1 && unknownInput.matches?.(inputSelector)) {
