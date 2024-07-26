@@ -5564,8 +5564,7 @@ const {
   ATTR_AUTOFILL,
   ATTR_INPUT_TYPE,
   MAX_INPUTS_PER_FORM,
-  MAX_FORM_RESCANS,
-  MAX_RETRIABLE_INPUTS
+  MAX_FORM_RESCANS
 } = _constants.constants;
 class Form {
   /** @type {import("../Form/matching").Matching} */
@@ -5960,8 +5959,8 @@ class Form {
         const [unknownInput] = [...this.inputs.unknown];
         const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => {
           const isPassword = (0, _matching.getInputSubtype)(input) === 'password';
-          const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden';
-          return isPassword && isVisible;
+          // const isVisible = input.style.display !== 'none' && input.style.visibility !== 'hidden'
+          return isPassword;
         });
         const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         if (passwordInputs.length === 1 && unknownInput.matches?.(inputSelector)) {
@@ -6029,13 +6028,8 @@ class Form {
     let inputType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
     let shouldCheckForDecorate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     const inputs = this.inputs[inputType];
-    // If the form has disabled inputs, we will re-try execution later
-    const disabledInputs = [...inputs].filter(input => input.disabled).slice(0, MAX_RETRIABLE_INPUTS);
     for (const input of inputs) {
       this.execOnInput(fn, input, shouldCheckForDecorate);
-    }
-    for (const disabledInput of disabledInputs) {
-      this.execOnInput(fn, disabledInput, shouldCheckForDecorate);
     }
   }
   addInput(input) {
@@ -13319,8 +13313,7 @@ const constants = exports.constants = {
   MAX_INPUTS_PER_PAGE: 100,
   MAX_FORMS_PER_PAGE: 30,
   MAX_INPUTS_PER_FORM: 80,
-  MAX_FORM_RESCANS: 50,
-  MAX_RETRIABLE_INPUTS: 3
+  MAX_FORM_RESCANS: 50
 };
 
 },{}],56:[function(require,module,exports){

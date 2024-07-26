@@ -35,8 +35,7 @@ const {
     ATTR_AUTOFILL,
     ATTR_INPUT_TYPE,
     MAX_INPUTS_PER_FORM,
-    MAX_FORM_RESCANS,
-    MAX_RETRIABLE_INPUTS
+    MAX_FORM_RESCANS
 } = constants
 
 class Form {
@@ -530,14 +529,8 @@ class Form {
      */
     execOnInputs (fn, inputType = 'all', shouldCheckForDecorate = true) {
         const inputs = this.inputs[inputType]
-        // If the form has disabled inputs, we will re-try execution later
-        const disabledInputs = [...inputs].filter((input) => input.disabled).slice(0, MAX_RETRIABLE_INPUTS)
         for (const input of inputs) {
             this.execOnInput(fn, input, shouldCheckForDecorate)
-        }
-
-        for (const disabledInput of disabledInputs) {
-            this.execOnInput(fn, disabledInput, shouldCheckForDecorate)
         }
     }
 
