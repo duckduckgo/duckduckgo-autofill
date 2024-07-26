@@ -230,7 +230,7 @@
     </div>
     <!-- /.question --><div class="survey-buttons">
     <input type="button" id="btn_goback" class="button back" onclick="Survey.postControl('back2'); this.setAttribute('disabled', true); jQuery('input[type=submit]').attr('disabled', true);" value="« Back">
-    <input type="submit" name="continue" id="btn_continue" class="button continue" value="Continue »" onclick="var i = document.createElement('input'); i.setAttribute('type', 'hidden');i.setAttribute('value', '1');i.setAttribute('name', '__has_javascript');document.forms.primary.appendChild(i);">
+    <input type="submit" name="continue" id="btn_continue" class="button continue" value="Continue »" onclick="var i = document.createElement('input'); i.setAttribute('type', 'hidden');i.setAttribute('value', '1');i.setAttribute('name', '__has_javascript');document.forms.primary.appendChild(i);" data-manual-submit>
 
 </div>
     <!-- #surveyButtons --><input type="hidden" name="state" value="c41e87c5-fd4f-4ddc-b426-d7fcca053f70">

@@ -54,7 +54,6 @@ class Form {
      * @param {Boolean} [hasShadowTree]
      */
     constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
-        this.destroyed = false
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
@@ -118,26 +117,9 @@ class Form {
 
         this.logFormInfo()
 
-        const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size
-        if (numKnownInputs === 0) {
-            // This form has too few known inputs and likely doesn't make sense
-            // to track for autofill (e.g. a single-input for search or item quantity).
-            // Self-destruct to stop listening and avoid memory leaks.
-            if (shouldLog()) {
-                console.log(`Form discarded: zero inputs are fillable`)
-            }
-            this.destroy()
-            return
-        }
-
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
-    }
-
-    /** Whether this form has been destroyed via the `destroy` method or not. */
-    get isDestroyed () {
-        return this.destroyed
     }
 
     get isLogin () {
@@ -384,7 +366,6 @@ class Form {
     }
     // This removes all listeners to avoid memory leaks and weird behaviours
     destroy () {
-        this.destroyed = true
         this.mutObs.disconnect()
         this.removeAllDecorations()
         this.removeTooltip()
@@ -438,7 +419,7 @@ class Form {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
                 // This is rather extreme, but better safe than sorry
-                this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`)
+                this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`)
                 return
             }
         }
@@ -539,7 +520,7 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            this.device.scanner.stopScanner('The form has too many inputs, bailing.')
+            this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.')
             return this
         }
 
