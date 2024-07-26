@@ -444,12 +444,12 @@ class Form {
             }
         }
 
-        // if we have an unknown input, and only one non-hidden password input, we can assume the unknown input is the username
-        // In that case we move the inputs to the correct category
         if (this.canCategorizeUnknownUsername()) {
+            // if we have an unknown input, and only one non-hidden password input, we can assume the unknown input is the username
+            // In that case we move the inputs to the correct category
             const hasUsername = [...this.inputs.all].some(input => getInputSubtype(input) === 'username')
             if (this.inputs.unknown.size === 1 && this.isLogin && !hasUsername) {
-                const unknownInput = [...this.inputs.unknown][0]
+                const [unknownInput] = [...this.inputs.unknown]
 
                 const passwordInputs = [...this.inputs.credentials].filter(
                     (/** @type {HTMLInputElement} */ input) => {
@@ -476,8 +476,7 @@ class Form {
     }
 
     canCategorizeUnknownUsername () {
-        return true
-        // return !!this.device.settings.featureToggles.unknown_username_categorization
+        return !!this.device.settings.featureToggles.unknown_username_categorization
     }
 
     get submitButtons () {
