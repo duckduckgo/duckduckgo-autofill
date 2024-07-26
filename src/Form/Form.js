@@ -862,7 +862,9 @@ class Form {
             // reset this to its initial value
             this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
         } else {
-            // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
+            // otherwise reset shouldPromptToStoreData to to initial value
+            this.resetShouldPromptToStoreData()
+            // and do autosubmit because the experience is jarring
             this.shouldAutoSubmit = false
         }
 
