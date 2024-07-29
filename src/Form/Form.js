@@ -13,7 +13,8 @@ import {
     wasAutofilledByChrome,
     shouldLog,
     safeRegexTest,
-    getActiveElement
+    getActiveElement,
+    findEnclosedElements
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -50,12 +51,14 @@ class Form {
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      * @param {Boolean} [shouldAutoprompt]
+     * @param {Boolean} [hasShadowTree]
      */
-    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false) {
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.device = deviceInterface
+        this.hasShadowTree = hasShadowTree
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -160,7 +163,7 @@ class Form {
     }
 
     submitHandler (via = 'unknown') {
-        if (this.device.isTestMode()) {
+        if (this.device.globalConfig.isDDGTestMode) {
             console.log('Form.submitHandler via:', via, this)
         }
 
@@ -402,7 +405,12 @@ class Form {
                 // For form elements we use .elements to catch fields outside the form itself using the form attribute.
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
-                foundInputs = [...this.form.elements].filter(el => el.matches(selector))
+                const formElements = [...this.form.elements].filter((el) => el.matches(selector))
+                // If there are not form elements, we try to look for all
+                // enclosed elements within the form.
+                foundInputs = formElements.length > 0
+                    ? formElements
+                    : findEnclosedElements(this.form, selector)
             } else {
                 foundInputs = this.form.querySelectorAll(selector)
             }
@@ -411,7 +419,7 @@ class Form {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
                 // This is rather extreme, but better safe than sorry
-                this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`)
+                this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`)
                 return
             }
         }
@@ -425,7 +433,7 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('submitButtonSelector')
-        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+        const allButtons = /** @type {HTMLElement[]} */(findEnclosedElements(this.form, selector))
 
         return allButtons
             .filter((btn) =>
@@ -478,7 +486,7 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            this.device.scanner.stopScanner('The form has too many inputs, bailing.')
+            this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.')
             return this
         }
 
@@ -631,6 +639,10 @@ class Form {
             }, 1000)
         }
 
+        const handlerSelect = () => {
+            this.touched.add(input)
+        }
+
         const handler = (e) => {
             // Avoid firing multiple times
             if (this.isAutofilling || this.device.isTooltipActive()) {
@@ -686,19 +698,22 @@ class Form {
             }
         }
 
+        const isMobileApp = this.device.globalConfig.isMobileApp
         if (!(input instanceof HTMLSelectElement)) {
             const events = ['pointerdown']
-            if (!this.device.globalConfig.isMobileApp) events.push('focus')
+            if (!isMobileApp) events.push('focus')
             input.labels?.forEach((label) => {
-                if (this.device.globalConfig.isMobileApp) {
-                    // On mobile devices we don't trigger on focus, so we use the click handler here
-                    this.addListener(label, 'pointerdown', handler)
-                } else {
-                    // Needed to handle label clicks when the form is in an iframe
-                    this.addListener(label, 'pointerdown', handlerLabel)
-                }
+                // On mobile devices: handle click events (instead of focus) for labels,
+                // On desktop devices: handle label clicks which is needed when the form
+                // is in an iframe.
+                this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel)
             })
             events.forEach((ev) => this.addListener(input, ev, handler))
+        } else {
+            this.addListener(input, 'change', handlerSelect)
+            input.labels?.forEach((label) => {
+                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel)
+            })
         }
         return this
     }
@@ -734,18 +749,34 @@ class Form {
         return (!this.touched.has(input) && !input.classList.contains('ddg-autofilled'))
     }
 
+    /**
+     * Skip overridding values that the user provided if:
+     * - we're autofilling non credit card type and,
+     * - it's a previously filled input or,
+     * - it's a select input that was already "touched" by the user.
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {'all' | SupportedMainTypes} dataType
+     * @returns {boolean}
+     **/
+    shouldSkipInput (input, dataType) {
+        if (dataType === 'creditCards') {
+            // creditCards always override, even if the input is filled
+            return false
+        }
+
+        const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input
+        // if the input select type, then skip if it was previously touched
+        // otherwise, skip if it was previously filled
+        return input.nodeName === 'SELECT' ? this.touched.has(input) : isPreviouslyFilledInput
+    }
+
     autofillInput (input, string, dataType) {
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
         if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return
         // Do not autofill if it's disabled or readonly to avoid potential breakage
         if (!canBeInteractedWith(input)) return
 
-        // Don't override values the user provided, unless it's the focused input or we're autofilling creditCards
-        if (
-            dataType !== 'creditCards' && // creditCards always override, the others only when we're focusing the input
-            input.nodeName !== 'SELECT' && input.value !== '' && // if the input is not empty
-            this.activeInput !== input // and this is not the active input
-        ) return // do not overwrite the value
+        if (this.shouldSkipInput(input, dataType)) return
 
         // If the value is already there, just return
         if (input.value === string) return

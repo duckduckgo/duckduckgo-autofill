@@ -428,130 +428,6 @@ exports.DeviceApi = DeviceApi;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AndroidMessagingTransport = exports.AndroidMessagingConfig = void 0;
-var _messaging = require("./messaging.js");
-/**
- * @module Android Messaging
- *
- * @description A wrapper for messaging on Android. See example usage in android.transport.js
- */
-
-/**
- * @typedef {import("./messaging").MessagingTransport} MessagingTransport
- */
-
-/**
- * On Android, handlers are added to the window object and are prefixed with `ddg`. The object looks like this:
- *
- * ```typescript
- * {
- *     onMessage: undefined,
- *     postMessage: (message) => void,
- *     addEventListener: (eventType: string, Function) => void,
- *     removeEventListener: (eventType: string, Function) => void
- * }
- * ```
- *
- * You send messages to `postMessage` and listen with `addEventListener`. Once the event is received,
- * we also remove the listener with `removeEventListener`.
- *
- * @link https://developer.android.com/reference/androidx/webkit/WebViewCompat#addWebMessageListener(android.webkit.WebView,java.lang.String,java.util.Set%3Cjava.lang.String%3E,androidx.webkit.WebViewCompat.WebMessageListener)
- * @implements {MessagingTransport}
- */
-class AndroidMessagingTransport {
-  /** @type {AndroidMessagingConfig} */
-  config;
-  globals = {
-    capturedHandlers: {}
-  };
-  /**
-   * @param {AndroidMessagingConfig} config
-   */
-  constructor(config) {
-    this.config = config;
-  }
-
-  /**
-   * Given the method name, returns the related Android handler
-   * @param {string} methodName
-   * @returns {AndroidHandler}
-   * @private
-   */
-  _getHandler(methodName) {
-    const androidSpecificName = this._getHandlerName(methodName);
-    if (!(androidSpecificName in window)) {
-      throw new _messaging.MissingHandler(`Missing android handler: '${methodName}'`, methodName);
-    }
-    return window[androidSpecificName];
-  }
-
-  /**
-   * Given the autofill method name, it returns the Android-specific handler name
-   * @param {string} internalName
-   * @returns {string}
-   * @private
-   */
-  _getHandlerName(internalName) {
-    return 'ddg' + internalName[0].toUpperCase() + internalName.slice(1);
-  }
-
-  /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   */
-  notify(name) {
-    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    const handler = this._getHandler(name);
-    const message = data ? JSON.stringify(data) : '';
-    handler.postMessage(message);
-  }
-
-  /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   */
-  async request(name) {
-    let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    // Set up the listener first
-    const handler = this._getHandler(name);
-    const responseOnce = new Promise(resolve => {
-      const responseHandler = e => {
-        handler.removeEventListener('message', responseHandler);
-        resolve(e.data);
-      };
-      handler.addEventListener('message', responseHandler);
-    });
-
-    // Then send the message
-    this.notify(name, data);
-
-    // And return once the promise resolves
-    const responseJSON = await responseOnce;
-    return JSON.parse(responseJSON);
-  }
-}
-
-/**
- * Use this configuration to create an instance of {@link Messaging} for Android
- */
-exports.AndroidMessagingTransport = AndroidMessagingTransport;
-class AndroidMessagingConfig {
-  /**
-   * All the expected Android handler names
-   * @param {{messageHandlerNames: string[]}} config
-   */
-  constructor(config) {
-    this.messageHandlerNames = config.messageHandlerNames;
-  }
-}
-exports.AndroidMessagingConfig = AndroidMessagingConfig;
-
-},{"./messaging.js":6}],6:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.MissingHandler = exports.MessagingTransport = exports.Messaging = void 0;
 Object.defineProperty(exports, "WebkitMessagingConfig", {
   enumerable: true,
@@ -560,7 +436,6 @@ Object.defineProperty(exports, "WebkitMessagingConfig", {
   }
 });
 var _webkit = require("./webkit.js");
-var _android = require("./android.js");
 /**
  * @module Messaging
  *
@@ -619,7 +494,7 @@ var _android = require("./android.js");
  */
 class Messaging {
   /**
-  * @param {WebkitMessagingConfig | AndroidMessagingConfig} config
+  * @param {WebkitMessagingConfig} config
   */
   constructor(config) {
     this.transport = getTransport(config);
@@ -691,16 +566,13 @@ class MessagingTransport {
 }
 
 /**
- * @param {WebkitMessagingConfig | AndroidMessagingConfig} config
+ * @param {WebkitMessagingConfig} config
  * @returns {MessagingTransport}
  */
 exports.MessagingTransport = MessagingTransport;
 function getTransport(config) {
   if (config instanceof _webkit.WebkitMessagingConfig) {
     return new _webkit.WebkitMessagingTransport(config);
-  }
-  if (config instanceof _android.AndroidMessagingConfig) {
-    return new _android.AndroidMessagingTransport(config);
   }
   throw new Error('unreachable');
 }
@@ -724,7 +596,7 @@ class MissingHandler extends Error {
  */
 exports.MissingHandler = MissingHandler;
 
-},{"./android.js":5,"./webkit.js":7}],7:[function(require,module,exports){
+},{"./webkit.js":6}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1119,7 +991,7 @@ function captureGlobals() {
   };
 }
 
-},{"./messaging.js":6}],8:[function(require,module,exports){
+},{"./messaging.js":5}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1250,7 +1122,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":9,"./lib/constants.js":10,"./lib/rules-parser.js":11}],9:[function(require,module,exports){
+},{"./lib/apple.password.js":8,"./lib/constants.js":9,"./lib/rules-parser.js":10}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1779,7 +1651,7 @@ class Password {
 }
 exports.Password = Password;
 
-},{"./constants.js":10,"./rules-parser.js":11}],10:[function(require,module,exports){
+},{"./constants.js":9,"./rules-parser.js":10}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1799,7 +1671,7 @@ const constants = exports.constants = {
   DEFAULT_UNAMBIGUOUS_CHARS
 };
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2395,7 +2267,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -2405,6 +2277,9 @@ module.exports={
   },
   "access.service.gov.uk": {
     "password-rules": "minlength: 10; required: lower; required: upper; required: digit; required: special;"
+  },
+  "account.samsung.com": {
+    "password-rules": "minlength: 8; maxlength: 15; required: digit; required: special; required: upper,lower;"
   },
   "admiral.com": {
     "password-rules": "minlength: 8; required: digit; required: [- !\"#$&'()*+,.:;<=>?@[^_`{|}~]]; allowed: lower, upper;"
@@ -2438,6 +2313,9 @@ module.exports={
   },
   "americanexpress.com": {
     "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 4; required: lower, upper; required: digit; allowed: [%&_?#=];"
+  },
+  "ana.co.jp": {
+    "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
   },
   "anatel.gov.br": {
     "password-rules": "minlength: 6; maxlength: 15; allowed: lower, upper, digit;"
@@ -2651,6 +2529,9 @@ module.exports={
   },
   "dmm.com": {
     "password-rules": "minlength: 4; maxlength: 16; required: lower; required: upper; required: digit;"
+  },
+  "dodgeridge.com": {
+    "password-rules": "minlength: 8; maxlength: 12; required: lower; required: upper; required: digit;"
   },
   "dowjones.com": {
     "password-rules": "maxlength: 15;"
@@ -3168,6 +3049,9 @@ module.exports={
   "prestocard.ca": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit,[!\"#$%&'()*+,<>?@];"
   },
+  "pret.com": {
+    "password-rules": "minlength: 12; required: lower; required: digit; required: [@$!%*#?&]; allowed: upper;"
+  },
   "propelfuels.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
   },
@@ -3309,6 +3193,9 @@ module.exports={
   "udel.edu": {
     "password-rules": "minlength: 12; maxlength: 30; required: lower; required: upper; required: digit; required: [!@#$%^&*()+];"
   },
+  "umterps.evenue.net": {
+    "password-rules": "minlength: 4; maxlength: 12;"
+  },
   "user.ornl.gov": {
     "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%./_];"
   },
@@ -3403,7 +3290,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3459,7 +3346,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api/index.js":2,"./DeviceInterface/AndroidInterface.js":14,"./DeviceInterface/AppleDeviceInterface.js":15,"./DeviceInterface/AppleOverlayDeviceInterface.js":16,"./DeviceInterface/ExtensionInterface.js":17,"./DeviceInterface/WindowsInterface.js":19,"./DeviceInterface/WindowsOverlayDeviceInterface.js":20,"./Settings.js":41,"./config.js":55,"./deviceApiCalls/transports/transports.js":63}],14:[function(require,module,exports){
+},{"../packages/device-api/index.js":2,"./DeviceInterface/AndroidInterface.js":13,"./DeviceInterface/AppleDeviceInterface.js":14,"./DeviceInterface/AppleOverlayDeviceInterface.js":15,"./DeviceInterface/ExtensionInterface.js":16,"./DeviceInterface/WindowsInterface.js":18,"./DeviceInterface/WindowsOverlayDeviceInterface.js":19,"./Settings.js":40,"./config.js":54,"./deviceApiCalls/transports/transports.js":62}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3479,35 +3366,25 @@ class AndroidInterface extends _InterfacePrototype.default {
    * @returns {Promise<string|undefined>}
    */
   async getAlias() {
-    // If in-context signup is available, do that first
-    if (this.inContextSignup.isAvailable()) {
-      const {
-        isSignedIn
-      } = await this.deviceApi.request(new _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall(null));
-      if (isSignedIn) {
+    const {
+      alias
+    } = await (0, _autofillUtils.sendAndWaitForAnswer)(async () => {
+      if (this.inContextSignup.isAvailable()) {
+        const {
+          isSignedIn
+        } = await this.deviceApi.request(new _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall(null));
         // On Android we can't get the input type data again without
         // refreshing the page, so instead we can mutate it now that we
         // know the user has Email Protection available.
-        if (this.settings.availableInputTypes) {
-          this.settings.setAvailableInputTypes({
-            email: isSignedIn
-          });
+        if (this.globalConfig.availableInputTypes) {
+          this.globalConfig.availableInputTypes.email = isSignedIn;
         }
         this.updateForStateChange();
         this.onFinishedAutofill();
       }
-    }
-    // Then, if successful actually prompt to fill
-    if (this.settings.availableInputTypes.email) {
-      const {
-        alias
-      } = await this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetAliasCall({
-        requiresUserPermission: !this.globalConfig.isApp,
-        shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
-        isIncontextSignupAvailable: this.inContextSignup.isAvailable()
-      }));
-      return alias ? (0, _autofillUtils.formatDuckAddress)(alias) : undefined;
-    }
+      return window.EmailInterface.showTooltip();
+    }, 'getAliasResponse');
+    return alias;
   }
 
   /**
@@ -3522,9 +3399,14 @@ class AndroidInterface extends _InterfacePrototype.default {
    * @returns {boolean}
    */
   isDeviceSignedIn() {
+    // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
+    if (this.globalConfig.isDDGDomain) {
+      return window.EmailInterface.isSignedIn() === 'true';
+    }
+
     // on non-DDG domains, where `availableInputTypes.email` is present, use it
-    if (typeof this.settings.availableInputTypes?.email === 'boolean') {
-      return this.settings.availableInputTypes.email;
+    if (typeof this.globalConfig.availableInputTypes?.email === 'boolean') {
+      return this.globalConfig.availableInputTypes.email;
     }
 
     // ...on other domains we assume true because the script wouldn't exist otherwise
@@ -3539,7 +3421,15 @@ class AndroidInterface extends _InterfacePrototype.default {
    * Settings page displays data of the logged in user data
    */
   getUserData() {
-    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetUserDataCall({}));
+    let userData = null;
+    try {
+      userData = JSON.parse(window.EmailInterface.getUserData());
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error(e);
+      }
+    }
+    return Promise.resolve(userData);
   }
 
   /**
@@ -3547,13 +3437,25 @@ class AndroidInterface extends _InterfacePrototype.default {
    * Device capabilities determine which functionality is available to the user
    */
   getEmailProtectionCapabilities() {
-    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionGetCapabilitiesCall({}));
+    let deviceCapabilities = null;
+    try {
+      deviceCapabilities = JSON.parse(window.EmailInterface.getDeviceCapabilities());
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error(e);
+      }
+    }
+    return Promise.resolve(deviceCapabilities);
   }
   storeUserData(_ref) {
     let {
-      addUserData
+      addUserData: {
+        token,
+        userName,
+        cohort
+      }
     } = _ref;
-    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionStoreUserDataCall(addUserData));
+    return window.EmailInterface.storeCredentials(token, userName, cohort);
   }
 
   /**
@@ -3561,7 +3463,13 @@ class AndroidInterface extends _InterfacePrototype.default {
     * Provides functionality to log the user out
     */
   removeUserData() {
-    return this.deviceApi.request(new _deviceApiCalls.EmailProtectionRemoveUserDataCall({}));
+    try {
+      return window.EmailInterface.removeCredentials();
+    } catch (e) {
+      if (this.globalConfig.isDDGTestMode) {
+        console.error(e);
+      }
+    }
   }
 
   /**
@@ -3586,7 +3494,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 }
 exports.AndroidInterface = AndroidInterface;
 
-},{"../InContextSignup.js":35,"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":18}],15:[function(require,module,exports){
+},{"../InContextSignup.js":34,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":52,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"./InterfacePrototype.js":17}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3941,7 +3849,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 }
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../Form/matching.js":34,"../InContextSignup.js":35,"../ThirdPartyProvider.js":42,"../UI/HTMLTooltip.js":46,"../UI/controllers/HTMLTooltipUIController.js":47,"../UI/controllers/NativeUIController.js":48,"../UI/controllers/OverlayUIController.js":49,"../autofill-utils.js":53,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/additionalDeviceApiCalls.js":59,"./InterfacePrototype.js":18}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../Form/matching.js":33,"../InContextSignup.js":34,"../ThirdPartyProvider.js":41,"../UI/HTMLTooltip.js":45,"../UI/controllers/HTMLTooltipUIController.js":46,"../UI/controllers/NativeUIController.js":47,"../UI/controllers/OverlayUIController.js":48,"../autofill-utils.js":52,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"../deviceApiCalls/additionalDeviceApiCalls.js":58,"./InterfacePrototype.js":17}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4056,7 +3964,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 }
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":47,"./AppleDeviceInterface.js":15,"./overlayApi.js":22}],17:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":46,"./AppleDeviceInterface.js":14,"./overlayApi.js":21}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4275,7 +4183,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 }
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../Form/matching.js":34,"../InContextSignup.js":35,"../UI/HTMLTooltip.js":46,"../UI/controllers/HTMLTooltipUIController.js":47,"../autofill-utils.js":53,"./InterfacePrototype.js":18}],18:[function(require,module,exports){
+},{"../Form/matching.js":33,"../InContextSignup.js":34,"../UI/HTMLTooltip.js":45,"../UI/controllers/HTMLTooltipUIController.js":46,"../autofill-utils.js":52,"./InterfacePrototype.js":17}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4876,19 +4784,11 @@ class InterfacePrototype {
       let userData;
       try {
         userData = await this.getUserData();
-      } catch (e) {
-        if (this.isTestMode()) {
-          console.log('getUserData failed with', e);
-        }
-      }
+      } catch (e) {}
       let capabilities;
       try {
         capabilities = await this.getEmailProtectionCapabilities();
-      } catch (e) {
-        if (this.isTestMode()) {
-          console.log('capabilities fetching failed with', e);
-        }
-      }
+      } catch (e) {}
 
       // Set up listener for web app actions
       if (this.globalConfig.isDDGDomain) {
@@ -4944,13 +4844,6 @@ class InterfacePrototype {
         const data = await (0, _autofillUtils.sendAndWaitForAnswer)(_autofillUtils.SIGN_IN_MSG, 'addUserData');
         // This call doesn't send a response, so we can't know if it succeeded
         this.storeUserData(data);
-
-        // Assuming the previous call succeeded, let's update availableInputTypes
-        if (this.settings.availableInputTypes) {
-          this.settings.setAvailableInputTypes({
-            email: true
-          });
-        }
         await this.setupAutofill();
         await this.settings.refresh();
         await this.setupSettingsPage({
@@ -5118,7 +5011,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":2,"../EmailProtection.js":23,"../Form/formatters.js":27,"../Form/matching.js":34,"../InputTypes/Credentials.js":36,"../PasswordGenerator.js":39,"../Scanner.js":40,"../Settings.js":41,"../UI/controllers/NativeUIController.js":48,"../autofill-utils.js":53,"../config.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"../deviceApiCalls/transports/transports.js":63,"../locales/strings.js":88,"./initFormSubmissionsApi.js":21}],19:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"../EmailProtection.js":22,"../Form/formatters.js":26,"../Form/matching.js":33,"../InputTypes/Credentials.js":35,"../PasswordGenerator.js":38,"../Scanner.js":39,"../Settings.js":40,"../UI/controllers/NativeUIController.js":47,"../autofill-utils.js":52,"../config.js":54,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"../deviceApiCalls/transports/transports.js":62,"../locales/strings.js":87,"./initFormSubmissionsApi.js":20}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5198,14 +5091,14 @@ class WindowsInterface extends _InterfacePrototype.default {
           }
         default:
           {
-            if (this.isTestMode()) {
+            if (this.globalConfig.isDDGTestMode) {
               console.warn('unhandled response', resp);
             }
           }
       }
       return this._closeAutofillParent();
     }).catch(e => {
-      if (this.isTestMode()) {
+      if (this.globalConfig.isDDGTestMode) {
         if (e.name === 'AbortError') {
           console.log('Promise Aborted');
         } else {
@@ -5280,7 +5173,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 }
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/controllers/OverlayUIController.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":18}],20:[function(require,module,exports){
+},{"../UI/controllers/OverlayUIController.js":48,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"./InterfacePrototype.js":17}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5459,7 +5352,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 }
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController.js":47,"../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./InterfacePrototype.js":18,"./overlayApi.js":22}],21:[function(require,module,exports){
+},{"../UI/controllers/HTMLTooltipUIController.js":46,"../deviceApiCalls/__generated__/deviceApiCalls.js":56,"./InterfacePrototype.js":17,"./overlayApi.js":21}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5558,7 +5451,7 @@ function initFormSubmissionsApi(forms, matching) {
   });
 }
 
-},{"../Form/label-util.js":30,"../autofill-utils.js":53}],22:[function(require,module,exports){
+},{"../Form/label-util.js":29,"../autofill-utils.js":52}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5616,7 +5509,7 @@ function overlayApi(device) {
   };
 }
 
-},{"../deviceApiCalls/__generated__/deviceApiCalls.js":57}],23:[function(require,module,exports){
+},{"../deviceApiCalls/__generated__/deviceApiCalls.js":56}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5651,7 +5544,7 @@ class EmailProtection {
 }
 exports.EmailProtection = EmailProtection;
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5686,13 +5579,16 @@ class Form {
    * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
    * @param {import("../Form/matching").Matching} [matching]
    * @param {Boolean} [shouldAutoprompt]
+   * @param {Boolean} [hasShadowTree]
    */
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    let hasShadowTree = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
     this.device = deviceInterface;
+    this.hasShadowTree = hasShadowTree;
 
     /** @type Record<'all' | SupportedMainTypes, Set> */
     this.inputs = {
@@ -5788,7 +5684,7 @@ class Form {
   }
   submitHandler() {
     let via = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unknown';
-    if (this.device.isTestMode()) {
+    if (this.device.globalConfig.isDDGTestMode) {
       console.log('Form.submitHandler via:', via, this);
     }
     if (this.submitHandlerExecuted) return;
@@ -6021,7 +5917,10 @@ class Form {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
         // It also catches all elements when the markup is broken.
         // We use .filter to avoid fieldset, button, textarea etc.
-        foundInputs = [...this.form.elements].filter(el => el.matches(selector));
+        const formElements = [...this.form.elements].filter(el => el.matches(selector));
+        // If there are not form elements, we try to look for all
+        // enclosed elements within the form.
+        foundInputs = formElements.length > 0 ? formElements : (0, _autofillUtils.findEnclosedElements)(this.form, selector);
       } else {
         foundInputs = this.form.querySelectorAll(selector);
       }
@@ -6029,7 +5928,7 @@ class Form {
         foundInputs.forEach(input => this.addInput(input));
       } else {
         // This is rather extreme, but better safe than sorry
-        this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`);
+        this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`);
         return;
       }
     }
@@ -6042,7 +5941,7 @@ class Form {
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
-    const allButtons = /** @type {HTMLElement[]} */[...this.form.querySelectorAll(selector)];
+    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.findEnclosedElements)(this.form, selector);
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {
@@ -6091,7 +5990,7 @@ class Form {
 
     // If the form has too many inputs, destroy everything to avoid performance issues
     if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-      this.device.scanner.stopScanner('The form has too many inputs, bailing.');
+      this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.');
       return this;
     }
 
@@ -6246,6 +6145,9 @@ class Form {
         storedClickCoords = new WeakMap();
       }, 1000);
     };
+    const handlerSelect = () => {
+      this.touched.add(input);
+    };
     const handler = e => {
       // Avoid firing multiple times
       if (this.isAutofilling || this.device.isTooltipActive()) {
@@ -6290,19 +6192,22 @@ class Form {
         (0, _autofillUtils.addInlineStyles)(input, activeStyles);
       }
     };
+    const isMobileApp = this.device.globalConfig.isMobileApp;
     if (!(input instanceof HTMLSelectElement)) {
       const events = ['pointerdown'];
-      if (!this.device.globalConfig.isMobileApp) events.push('focus');
+      if (!isMobileApp) events.push('focus');
       input.labels?.forEach(label => {
-        if (this.device.globalConfig.isMobileApp) {
-          // On mobile devices we don't trigger on focus, so we use the click handler here
-          this.addListener(label, 'pointerdown', handler);
-        } else {
-          // Needed to handle label clicks when the form is in an iframe
-          this.addListener(label, 'pointerdown', handlerLabel);
-        }
+        // On mobile devices: handle click events (instead of focus) for labels,
+        // On desktop devices: handle label clicks which is needed when the form
+        // is in an iframe.
+        this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
       });
       events.forEach(ev => this.addListener(input, ev, handler));
+    } else {
+      this.addListener(input, 'change', handlerSelect);
+      input.labels?.forEach(label => {
+        this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+      });
     }
     return this;
   }
@@ -6336,19 +6241,32 @@ class Form {
     }
     return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
   }
+
+  /**
+   * Skip overridding values that the user provided if:
+   * - we're autofilling non credit card type and,
+   * - it's a previously filled input or,
+   * - it's a select input that was already "touched" by the user.
+   * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {'all' | SupportedMainTypes} dataType
+   * @returns {boolean}
+   **/
+  shouldSkipInput(input, dataType) {
+    if (dataType === 'creditCards') {
+      // creditCards always override, even if the input is filled
+      return false;
+    }
+    const isPreviouslyFilledInput = input.value !== '' && this.activeInput !== input;
+    // if the input select type, then skip if it was previously touched
+    // otherwise, skip if it was previously filled
+    return input.nodeName === 'SELECT' ? this.touched.has(input) : isPreviouslyFilledInput;
+  }
   autofillInput(input, string, dataType) {
     // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
     if (input instanceof HTMLInputElement && !(0, _autofillUtils.isPotentiallyViewable)(input)) return;
     // Do not autofill if it's disabled or readonly to avoid potential breakage
     if (!(0, _inputTypeConfig.canBeInteractedWith)(input)) return;
-
-    // Don't override values the user provided, unless it's the focused input or we're autofilling creditCards
-    if (dataType !== 'creditCards' &&
-    // creditCards always override, the others only when we're focusing the input
-    input.nodeName !== 'SELECT' && input.value !== '' &&
-    // if the input is not empty
-    this.activeInput !== input // and this is not the active input
-    ) return; // do not overwrite the value
+    if (this.shouldSkipInput(input, dataType)) return;
 
     // If the value is already there, just return
     if (input.value === string) return;
@@ -6495,7 +6413,7 @@ class Form {
 }
 exports.Form = Form;
 
-},{"../InputTypes/Credentials.js":36,"../autofill-utils.js":53,"../constants.js":56,"./FormAnalyzer.js":25,"./formatters.js":27,"./inputStyles.js":28,"./inputTypeConfig.js":29,"./matching.js":34}],25:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":35,"../autofill-utils.js":52,"../constants.js":55,"./FormAnalyzer.js":24,"./formatters.js":26,"./inputStyles.js":27,"./inputTypeConfig.js":28,"./matching.js":33}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6660,9 +6578,13 @@ class FormAnalyzer {
     });
   }
   evaluateUrl() {
-    const path = window.location.pathname;
-    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), path);
-    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), path);
+    const {
+      pathname,
+      hash
+    } = window.location;
+    const pathToMatch = pathname + hash;
+    const matchesLogin = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch);
+    const matchesSignup = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch);
 
     // If the url matches both, do nothing: the signal is probably confounding
     if (matchesLogin && matchesSignup) return;
@@ -6789,7 +6711,8 @@ class FormAnalyzer {
     this.evaluateElAttributes(this.form);
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-    const formElements = this.form.querySelectorAll(this.matching.cssSelector('safeUniversalSelector'));
+    const selector = this.matching.cssSelector('safeUniversalSelector');
+    const formElements = (0, _autofillUtils.findEnclosedElements)(this.form, selector);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -6860,7 +6783,7 @@ class FormAnalyzer {
 }
 var _default = exports.default = FormAnalyzer;
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./matching-config/__generated__/compiled-matching-config.js":32,"./matching.js":34}],26:[function(require,module,exports){
+},{"../autofill-utils.js":52,"../constants.js":55,"./matching-config/__generated__/compiled-matching-config.js":31,"./matching.js":33}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7425,7 +7348,7 @@ const COUNTRY_NAMES_TO_CODES = exports.COUNTRY_NAMES_TO_CODES = {
   'Unknown Region': 'ZZ'
 };
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7730,7 +7653,7 @@ const prepareFormValuesForStorage = formValues => {
 };
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames.js":26,"./matching.js":34}],28:[function(require,module,exports){
+},{"./countryNames.js":25,"./matching.js":33}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7821,7 +7744,7 @@ const getIconStylesAutofilled = (input, form) => {
 };
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":29}],29:[function(require,module,exports){
+},{"./inputTypeConfig.js":28}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8073,7 +7996,7 @@ const isFieldDecorated = input => {
 };
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":36,"../InputTypes/CreditCard.js":37,"../InputTypes/Identity.js":38,"../UI/img/ddgPasswordIcon.js":51,"../constants.js":56,"./logo-svg.js":31,"./matching.js":34}],30:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":35,"../InputTypes/CreditCard.js":36,"../InputTypes/Identity.js":37,"../UI/img/ddgPasswordIcon.js":50,"../constants.js":55,"./logo-svg.js":30,"./matching.js":33}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8121,7 +8044,7 @@ const extractElementStrings = element => {
 };
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching.js":34}],31:[function(require,module,exports){
+},{"./matching.js":33}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8154,7 +8077,7 @@ const daxGrayscaleSvg = `
 `.trim();
 const daxGrayscaleBase64 = exports.daxGrayscaleBase64 = `data:image/svg+xml;base64,${window.btoa(daxGrayscaleSvg)}`;
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8607,7 +8530,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
   }
 };
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8682,7 +8605,7 @@ function logUnmatched(el, allStrings) {
   console.groupEnd();
 }
 
-},{"../autofill-utils.js":53,"./matching.js":34}],34:[function(require,module,exports){
+},{"../autofill-utils.js":52,"./matching.js":33}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9674,7 +9597,7 @@ function createMatching() {
   return new Matching(_compiledMatchingConfig.matchingConfiguration);
 }
 
-},{"../autofill-utils.js":53,"../constants.js":56,"./label-util.js":30,"./matching-config/__generated__/compiled-matching-config.js":32,"./matching-utils.js":33}],35:[function(require,module,exports){
+},{"../autofill-utils.js":52,"../constants.js":55,"./label-util.js":29,"./matching-config/__generated__/compiled-matching-config.js":31,"./matching-utils.js":32}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9806,7 +9729,7 @@ class InContextSignup {
 }
 exports.InContextSignup = InContextSignup;
 
-},{"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],36:[function(require,module,exports){
+},{"./autofill-utils.js":52,"./deviceApiCalls/__generated__/deviceApiCalls.js":56}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9962,7 +9885,7 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-},{"../autofill-utils.js":53}],37:[function(require,module,exports){
+},{"../autofill-utils.js":52}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9987,7 +9910,7 @@ class CreditCardTooltipItem {
 }
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10033,7 +9956,7 @@ class IdentityTooltipItem {
 }
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":27}],39:[function(require,module,exports){
+},{"../Form/formatters.js":26}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10075,7 +9998,7 @@ class PasswordGenerator {
 }
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password/index.js":8,"../packages/password/rules.json":12}],40:[function(require,module,exports){
+},{"../packages/password/index.js":7,"../packages/password/rules.json":11}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10102,7 +10025,7 @@ const {
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
- *     stopScanner: (reason: string, ...rest: any) => void;
+ *     setMode: (mode: Mode, reason: string, ...rest: any) => void;
  * }} Scanner
  *
  * @typedef {{
@@ -10113,6 +10036,8 @@ const {
  *     maxFormsPerPage: number,
  *     maxInputsPerForm: number
  * }} ScannerOptions
+ *
+ * @typedef {'scanning'|'on-click'|'stopped'} Mode
  */
 
 /** @type {ScannerOptions} */
@@ -10151,8 +10076,8 @@ class DefaultScanner {
   activeInput = null;
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
   rescanAll = false;
-  /** @type {boolean} Indicates whether we called stopScanning */
-  stopped = false;
+  /** @type {Mode} Indicates the mode in which the scanner is operating */
+  mode = 'scanning';
   /** @type {import("./Form/matching").Matching} matching */
   matching;
 
@@ -10209,7 +10134,7 @@ class DefaultScanner {
       for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         rest[_key - 1] = arguments[_key];
       }
-      _this.stopScanner(reason, ...rest);
+      _this.setMode('stopped', reason, ...rest);
     };
   }
 
@@ -10238,44 +10163,64 @@ class DefaultScanner {
     if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
       this.addInput(context);
     } else {
-      const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'));
+      const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+      const inputs = context.querySelectorAll(selector);
       if (inputs.length > this.options.maxInputsPerPage) {
-        this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
+        this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
       }
       inputs.forEach(input => this.addInput(input));
+      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
+        const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        (0, _autofillUtils.findEnclosedElements)(context, selector).forEach(input => {
+          if (input instanceof HTMLInputElement) {
+            this.addInput(input, context);
+          }
+        });
+      }
     }
     return this;
   }
 
   /**
-   * Stops scanning, switches off the mutation observer and clears all forms
+   * Sets the scanner mode, logging the reason and any additional arguments.
+   * 'stopped', switches off the mutation observer and clears all forms and listeners,
+   * 'on-click', keeps event listeners so that scanning can continue on clicking,
+   * 'scanning', default operation triggered in normal conditions
+   * Keep the listener for pointerdown to scan on click if needed.
+   * @param {Mode} mode
    * @param {string} reason
    * @param {any} rest
    */
-  stopScanner(reason) {
-    this.stopped = true;
+  setMode(mode, reason) {
+    this.mode = mode;
     if ((0, _autofillUtils.shouldLog)()) {
-      for (var _len2 = arguments.length, rest = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        rest[_key2 - 1] = arguments[_key2];
+      for (var _len2 = arguments.length, rest = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        rest[_key2 - 2] = arguments[_key2];
       }
-      console.log(reason, ...rest);
+      console.log(mode, reason, ...rest);
     }
-    const activeInput = this.device.activeForm?.activeInput;
+    if (mode === 'scanning') return;
+    if (mode === 'stopped') {
+      window.removeEventListener('pointerdown', this, true);
+      window.removeEventListener('focus', this, true);
+    }
 
     // remove Dax, listeners, timers, and observers
     clearTimeout(this.debounceTimer);
     this.changedElements.clear();
     this.mutObs.disconnect();
-    window.removeEventListener('pointerdown', this, true);
-    window.removeEventListener('focus', this, true);
     this.forms.forEach(form => {
       form.destroy();
     });
     this.forms.clear();
 
     // Bring the user back to the input they were interacting with
+    const activeInput = this.device.activeForm?.activeInput;
     activeInput?.focus();
+  }
+  get isStopped() {
+    return this.mode === 'stopped';
   }
 
   /**
@@ -10302,19 +10247,31 @@ class DefaultScanner {
     let traversalLayerCount = 0;
     let element = input;
     // traverse the DOM to search for related inputs
-    while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
+    while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
       // Avoid overlapping containers or forms
       const siblingForm = element.parentElement?.querySelector('form');
       if (siblingForm && siblingForm !== element) {
         return element;
       }
-      element = element.parentElement;
-      const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
-      const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
-      // If we find a button or another input, we assume that's our form
-      if (inputs.length > 1 || buttons.length) {
-        // found related input, return common ancestor
+      if (element instanceof HTMLFormElement) {
         return element;
+      }
+      if (element.parentElement) {
+        element = element.parentElement;
+        const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+        const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+        // If we find a button or another input, we assume that's our form
+        if (inputs.length > 1 || buttons.length) {
+          // found related input, return common ancestor
+          return element;
+        }
+      } else {
+        // possibly a shadow boundary, so traverse through the shadow root and find the form
+        const root = element.getRootNode();
+        if (root instanceof ShadowRoot && root.host) {
+          // @ts-ignore
+          element = root.host;
+        }
       }
       traversalLayerCount++;
     }
@@ -10323,17 +10280,19 @@ class DefaultScanner {
 
   /**
    * @param {HTMLInputElement|HTMLSelectElement} input
+   * @param {HTMLFormElement|null} form
    */
   addInput(input) {
-    if (this.stopped) return;
-    const parentForm = this.getParentForm(input);
+    let form = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+    if (this.isStopped) return;
+    const parentForm = form || this.getParentForm(input);
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
       // We've met the form, add the input provided it's below the max input limit
       if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
         foundForm.addInput(input);
       } else {
-        this.stopScanner('The form has too many inputs, destroying.');
+        this.setMode('stopped', 'The form has too many inputs, destroying.');
       }
       return;
     }
@@ -10377,8 +10336,9 @@ class DefaultScanner {
       // Only add the form if below the limit of forms per page
       if (this.forms.size < this.options.maxFormsPerPage) {
         this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
+        // Also only add the form if it hasn't self-destructed due to having too few fields
       } else {
-        this.stopScanner('The page has too many forms, stop adding them.');
+        this.setMode('on-click', 'The page has too many forms, stop adding them.');
       }
     }
   }
@@ -10454,7 +10414,7 @@ class DefaultScanner {
     switch (event.type) {
       case 'pointerdown':
       case 'focus':
-        this.scanShadow(event);
+        this.scanOnClick(event);
         break;
     }
   }
@@ -10463,15 +10423,24 @@ class DefaultScanner {
    * Scan clicked input fields, even if they're within a shadow tree
    * @param {FocusEvent | PointerEvent} event
    */
-  scanShadow(event) {
-    // If the scanner is stopped or there's no shadow root, just return
-    if (this.stopped || !(event.target instanceof Element) || !event.target?.shadowRoot) return;
+  scanOnClick(event) {
+    // If the scanner is stopped, just return
+    if (this.isStopped || !(event.target instanceof Element)) return;
     window.performance?.mark?.('scan_shadow:init:start');
+
+    // If the target is an input, find the real target in case it's in a shadow tree
     const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
 
-    // If it's an input we haven't already scanned, scan the whole shadow tree
+    // If it's an input we haven't already scanned,
+    // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
-      this.findEligibleInputs(realTarget.getRootNode());
+      const parentForm = this.getParentForm(realTarget);
+      if (parentForm && parentForm instanceof HTMLFormElement) {
+        const hasShadowTree = event.target?.shadowRoot != null;
+        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
+        this.forms.set(parentForm, form);
+        this.findEligibleInputs(parentForm);
+      }
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
@@ -10490,7 +10459,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":24,"./Form/matching.js":34,"./autofill-utils.js":53,"./constants.js":56,"./deviceApiCalls/__generated__/deviceApiCalls.js":57}],41:[function(require,module,exports){
+},{"./Form/Form.js":23,"./Form/matching.js":33,"./autofill-utils.js":52,"./constants.js":55,"./deviceApiCalls/__generated__/deviceApiCalls.js":56}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10636,11 +10605,6 @@ class Settings {
     if (this._runtimeConfiguration) return this._runtimeConfiguration;
     const runtimeConfig = await this.deviceApi.request(new _deviceApiCalls.GetRuntimeConfigurationCall(null));
     this._runtimeConfiguration = runtimeConfig;
-
-    // If the platform sends availableInputTypes here, store them
-    if (runtimeConfig.availableInputTypes) {
-      this.setAvailableInputTypes(runtimeConfig.availableInputTypes);
-    }
     return this._runtimeConfiguration;
   }
 
@@ -10655,9 +10619,6 @@ class Settings {
       // This info is not needed in the topFrame, so we avoid calling the native app
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
-      }
-      if (this._availableInputTypes) {
-        return this.availableInputTypes;
       }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
@@ -10910,7 +10871,7 @@ class Settings {
 }
 exports.Settings = Settings;
 
-},{"../packages/device-api/index.js":2,"./autofill-utils.js":53,"./deviceApiCalls/__generated__/deviceApiCalls.js":57,"./deviceApiCalls/__generated__/validators.zod.js":58}],42:[function(require,module,exports){
+},{"../packages/device-api/index.js":2,"./autofill-utils.js":52,"./deviceApiCalls/__generated__/deviceApiCalls.js":56,"./deviceApiCalls/__generated__/validators.zod.js":57}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10977,7 +10938,7 @@ class ThirdPartyProvider {
         this.device.scanner.forms.forEach(form => form.recategorizeAllInputs());
       }
     } catch (e) {
-      if (this.device.isTestMode()) {
+      if (this.device.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
       }
     }
@@ -10992,7 +10953,7 @@ class ThirdPartyProvider {
       }
       setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
     } catch (e) {
-      if (this.device.isTestMode()) {
+      if (this.device.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: _pollForUpdatesToCredentialsProvider: ❌', e);
       }
     }
@@ -11000,7 +10961,7 @@ class ThirdPartyProvider {
 }
 exports.ThirdPartyProvider = ThirdPartyProvider;
 
-},{"../packages/device-api/index.js":2,"./Form/matching.js":34,"./deviceApiCalls/__generated__/deviceApiCalls.js":57,"./deviceApiCalls/__generated__/validators.zod.js":58}],43:[function(require,module,exports){
+},{"../packages/device-api/index.js":2,"./Form/matching.js":33,"./deviceApiCalls/__generated__/deviceApiCalls.js":56,"./deviceApiCalls/__generated__/validators.zod.js":57}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11151,7 +11112,7 @@ ${css}
 }
 var _default = exports.default = DataHTMLTooltip;
 
-},{"../InputTypes/Credentials.js":36,"../autofill-utils.js":53,"./HTMLTooltip.js":46}],44:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":35,"../autofill-utils.js":52,"./HTMLTooltip.js":45}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11233,7 +11194,7 @@ ${this.options.css}
 }
 var _default = exports.default = EmailHTMLTooltip;
 
-},{"../autofill-utils.js":53,"./HTMLTooltip.js":46}],45:[function(require,module,exports){
+},{"../autofill-utils.js":52,"./HTMLTooltip.js":45}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11286,7 +11247,7 @@ ${this.options.css}
 }
 var _default = exports.default = EmailSignupHTMLTooltip;
 
-},{"./HTMLTooltip.js":46}],46:[function(require,module,exports){
+},{"./HTMLTooltip.js":45}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11674,7 +11635,7 @@ class HTMLTooltip {
 exports.HTMLTooltip = HTMLTooltip;
 var _default = exports.default = HTMLTooltip;
 
-},{"../Form/matching.js":34,"../autofill-utils.js":53,"./styles/styles.js":52}],47:[function(require,module,exports){
+},{"../Form/matching.js":33,"../autofill-utils.js":52,"./styles/styles.js":51}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12031,7 +11992,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 }
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":29,"../../Form/matching.js":34,"../../autofill-utils.js":53,"../DataHTMLTooltip.js":43,"../EmailHTMLTooltip.js":44,"../EmailSignupHTMLTooltip.js":45,"../HTMLTooltip.js":46,"./UIController.js":50}],48:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":28,"../../Form/matching.js":33,"../../autofill-utils.js":52,"../DataHTMLTooltip.js":42,"../EmailHTMLTooltip.js":43,"../EmailSignupHTMLTooltip.js":44,"../HTMLTooltip.js":45,"./UIController.js":49}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12133,11 +12094,6 @@ class NativeUIController extends _UIController.UIController {
             form.activeInput?.focus();
             break;
           }
-        case 'none':
-          {
-            // do nothing
-            break;
-          }
         default:
           {
             if (args.device.isTestMode()) {
@@ -12198,7 +12154,7 @@ class NativeUIController extends _UIController.UIController {
 }
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":34,"../../InputTypes/Credentials.js":36,"../../deviceApiCalls/__generated__/deviceApiCalls.js":57,"./UIController.js":50}],49:[function(require,module,exports){
+},{"../../Form/matching.js":33,"../../InputTypes/Credentials.js":35,"../../deviceApiCalls/__generated__/deviceApiCalls.js":56,"./UIController.js":49}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12435,7 +12391,7 @@ class OverlayUIController extends _UIController.UIController {
 }
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":34,"./UIController.js":50}],50:[function(require,module,exports){
+},{"../../Form/matching.js":33,"./UIController.js":49}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12519,7 +12475,7 @@ class UIController {
 }
 exports.UIController = UIController;
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12536,7 +12492,7 @@ const ddgCcIconBase = exports.ddgCcIconBase = 'data:image/svg+xml;base64,PD94bWw
 const ddgCcIconFilled = exports.ddgCcIconFilled = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzc2NDMxMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjNzY0MzEwIi8+Cjwvc3ZnPgo=';
 const ddgIdentityIconBase = exports.ddgIdentityIconBase = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==`;
 
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12545,7 +12501,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.CSS_STYLES = void 0;
 const CSS_STYLES = exports.CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n.wrapper:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n    max-height: 290px;\n    overflow-y: auto;\n}\n.top-autofill .tooltip--data {\n    min-height: 100vh;\n}\n.tooltip--data.tooltip--incontext-signup {\n    width: 360px;\n}\n.wrapper:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    .wrapper:not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n.wrapper:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 48px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email__caret {\n    position: absolute;\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--email__caret::before,\n.tooltip--email__caret::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: -28px;\n}\n.tooltip--email__caret::before {\n    border-bottom-color: #D0D0D0;\n    top: -1px;\n}\n.tooltip--email__caret::after {\n    border-bottom-color: #FFFFFF;\n    top: 0px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 8px 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n    text-align: left;\n}\n.tooltip__button.currentFocus,\n.wrapper:not(.top-autofill) .tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n    border-radius: 3px;\n}\n.tooltip--data__item-container {\n    max-height: 220px;\n    overflow: auto;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 20px 20px;\n    background-repeat: no-repeat;\n    background-position: center center;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    font-size: 13px;\n    line-height: 1;\n}\n.label + .label {\n    margin-top: 2px;\n}\n.label.label--medium {\n    font-weight: 500;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9);\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.wrapper:not(.top-autofill) .tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n.tooltip__button--manage {\n    font-size: 13px;\n    padding: 5px 9px;\n    border-radius: 3px;\n    margin: 0;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before,\n.tooltip__button--data--credentials__current::before {\n    background-size: 28px 28px;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4zMzQgNi42NjdhMiAyIDAgMSAwIDAgNCAyIDIgMCAwIDAgMC00Wm0tLjY2NyAyYS42NjcuNjY3IDAgMSAxIDEuMzMzIDAgLjY2Ny42NjcgMCAwIDEtMS4zMzMgMFoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuNjY3IDRhNS4zMzMgNS4zMzMgMCAwIDAtNS4xODggNi41NzhsLTUuMjg0IDUuMjg0YS42NjcuNjY3IDAgMCAwLS4xOTUuNDcxdjNjMCAuMzY5LjI5OC42NjcuNjY3LjY2N2gyLjY2NmMuNzM3IDAgMS4zMzQtLjU5NyAxLjMzNC0xLjMzM1YxOGguNjY2Yy43MzcgMCAxLjMzNC0uNTk3IDEuMzM0LTEuMzMzdi0xLjMzNEgxMmMuMTc3IDAgLjM0Ni0uMDcuNDcxLS4xOTVsLjY4OC0uNjg4QTUuMzMzIDUuMzMzIDAgMSAwIDE0LjY2NyA0Wm0tNCA1LjMzM2E0IDQgMCAxIDEgMi41NTUgMy43MzIuNjY3LjY2NyAwIDAgMC0uNzEzLjE1bC0uNzg1Ljc4NUgxMGEuNjY3LjY2NyAwIDAgMC0uNjY3LjY2N3YySDhhLjY2Ny42NjcgMCAwIDAtLjY2Ny42NjZ2MS4zMzRoLTJ2LTIuMDU4bDUuMzY1LTUuMzY0YS42NjcuNjY3IDAgMCAwIC4xNjMtLjY3NyAzLjk5NiAzLjk5NiAwIDAgMS0uMTk0LTEuMjM1WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--credentials__new::before {\n    background-size: 28px 28px;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOC0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODQtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjMtLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM5LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMS0yLjA5My41NzhhLjYzNi42MzYgMCAwIDEtLjY1NS0xLjA5IDUuMzQgNS4zNCAwIDEgMSAxLjMwMiA5LjcyMmwtLjc3NS43NzZhLjYzNi42MzYgMCAwIDEtLjQ1LjE4NmgtMS4zOTh2MS42NWMwIC40OTMtLjQuODkzLS44OTMuODkzSDguNTc4djEuMTQxYzAgLjQ5NC0uNC44OTMtLjg5NC44OTNINC42MzZBLjYzNi42MzYgMCAwIDEgNCAxOS4zMTNWMTYuMjZjMC0uMTY5LjA2Ny0uMzMuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUxLjI4NC0uNjM2LjYzNS0uNjM2aDEuNzcxbC44NjQtLjg2M2EuNjM2LjYzNiAwIDAgMSAuNjY4LS4xNDcgNC4wNjkgNC4wNjkgMCAxIDAgMS40MDItNy44OVoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEzLjYyNSA4LjQ5OWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI1YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,\n.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 9px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#incontextSignup::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    /* This is the same icon as `daxBase64` in `src/Form/logo-svg.js` */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTY0IDEyOGMzNS4zNDYgMCA2NC0yOC42NTQgNjQtNjRzLTI4LjY1NC02NC02NC02NC02NCAyOC42NTQtNjQgNjQgMjguNjU0IDY0IDY0IDY0eiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im03MyAxMTEuNzVjMC0uNS4xMjMtLjYxNC0xLjQ2Ni0zLjc4Mi00LjIyNC04LjQ1OS04LjQ3LTIwLjM4NC02LjU0LTI4LjA3NS4zNTMtMS4zOTctMy45NzgtNTEuNzQ0LTcuMDQtNTMuMzY1LTMuNDAyLTEuODEzLTcuNTg4LTQuNjktMTEuNDE4LTUuMzMtMS45NDMtLjMxLTQuNDktLjE2NC02LjQ4Mi4xMDUtLjM1My4wNDctLjM2OC42ODMtLjAzLjc5OCAxLjMwOC40NDMgMi44OTUgMS4yMTIgMy44MyAyLjM3NS4xNzguMjItLjA2LjU2Ni0uMzQyLjU3Ny0uODgyLjAzMi0yLjQ4Mi40MDItNC41OTMgMi4xOTUtLjI0NC4yMDctLjA0MS41OTIuMjczLjUzIDQuNTM2LS44OTcgOS4xNy0uNDU1IDExLjkgMi4wMjcuMTc3LjE2LjA4NC40NS0uMTQ3LjUxMi0yMy42OTQgNi40NC0xOS4wMDMgMjcuMDUtMTIuNjk2IDUyLjM0NCA1LjYxOSAyMi41MyA3LjczMyAyOS43OTIgOC40IDMyLjAwNGEuNzE4LjcxOCAwIDAgMCAuNDIzLjQ2N2M4LjE1NiAzLjI0OCAyNS45MjggMy4zOTIgMjUuOTI4LTIuMTMyeiIgZmlsbD0iI2RkZCIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBkPSJtNzYuMjUgMTE2LjVjLTIuODc1IDEuMTI1LTguNSAxLjYyNS0xMS43NSAxLjYyNS00Ljc2NCAwLTExLjYyNS0uNzUtMTQuMTI1LTEuODc1LTEuNTQ0LTQuNzUxLTYuMTY0LTE5LjQ4LTEwLjcyNy0zOC4xODVsLS40NDctMS44MjctLjAwNC0uMDE1Yy01LjQyNC0yMi4xNTctOS44NTUtNDAuMjUzIDE0LjQyNy00NS45MzguMjIyLS4wNTIuMzMtLjMxNy4xODQtLjQ5Mi0yLjc4Ni0zLjMwNS04LjAwNS00LjM4OC0xNC42MDUtMi4xMTEtLjI3LjA5My0uNTA2LS4xOC0uMzM3LS40MTIgMS4yOTQtMS43ODMgMy44MjMtMy4xNTUgNS4wNzEtMy43NTYuMjU4LS4xMjQuMjQyLS41MDItLjAzLS41ODhhMjcuODc3IDI3Ljg3NyAwIDAgMCAtMy43NzItLjljLS4zNy0uMDU5LS40MDMtLjY5My0uMDMyLS43NDMgOS4zNTYtMS4yNTkgMTkuMTI1IDEuNTUgMjQuMDI4IDcuNzI2YS4zMjYuMzI2IDAgMCAwIC4xODYuMTE0YzE3Ljk1MiAzLjg1NiAxOS4yMzggMzIuMjM1IDE3LjE3IDMzLjUyOC0uNDA4LjI1NS0xLjcxNS4xMDgtMy40MzgtLjA4NS02Ljk4Ni0uNzgxLTIwLjgxOC0yLjMyOS05LjQwMiAxOC45NDguMTEzLjIxLS4wMzYuNDg4LS4yNzIuNTI1LTYuNDM4IDEgMS44MTIgMjEuMTczIDcuODc1IDM0LjQ2MXoiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Im04NC4yOCA5MC42OThjLTEuMzY3LS42MzMtNi42MjEgMy4xMzUtMTAuMTEgNi4wMjgtLjcyOC0xLjAzMS0yLjEwMy0xLjc4LTUuMjAzLTEuMjQyLTIuNzEzLjQ3Mi00LjIxMSAxLjEyNi00Ljg4IDIuMjU0LTQuMjgzLTEuNjIzLTExLjQ4OC00LjEzLTEzLjIyOS0xLjcxLTEuOTAyIDIuNjQ2LjQ3NiAxNS4xNjEgMy4wMDMgMTYuNzg2IDEuMzIuODQ5IDcuNjMtMy4yMDggMTAuOTI2LTYuMDA1LjUzMi43NDkgMS4zODggMS4xNzggMy4xNDggMS4xMzcgMi42NjItLjA2MiA2Ljk3OS0uNjgxIDcuNjQ5LTEuOTIxLjA0LS4wNzUuMDc1LS4xNjQuMTA1LS4yNjYgMy4zODggMS4yNjYgOS4zNSAyLjYwNiAxMC42ODIgMi40MDYgMy40Ny0uNTIxLS40ODQtMTYuNzIzLTIuMDktMTcuNDY3eiIgZmlsbD0iIzNjYTgyYiIvPgogICAgPHBhdGggZD0ibTc0LjQ5IDk3LjA5N2MuMTQ0LjI1Ni4yNi41MjYuMzU4LjguNDgzIDEuMzUyIDEuMjcgNS42NDguNjc0IDYuNzA5LS41OTUgMS4wNjItNC40NTkgMS41NzQtNi44NDMgMS42MTVzLTIuOTItLjgzMS0zLjQwMy0yLjE4MWMtLjM4Ny0xLjA4MS0uNTc3LTMuNjIxLS41NzItNS4wNzUtLjA5OC0yLjE1OC42OS0yLjkxNiA0LjMzNC0zLjUwNiAyLjY5Ni0uNDM2IDQuMTIxLjA3MSA0Ljk0NC45NCAzLjgyOC0yLjg1NyAxMC4yMTUtNi44ODkgMTAuODM4LTYuMTUyIDMuMTA2IDMuNjc0IDMuNDk5IDEyLjQyIDIuODI2IDE1LjkzOS0uMjIgMS4xNTEtMTAuNTA1LTEuMTM5LTEwLjUwNS0yLjM4IDAtNS4xNTItMS4zMzctNi41NjUtMi42NS02Ljcxem0tMjIuNTMtMS42MDljLjg0My0xLjMzMyA3LjY3NC4zMjUgMTEuNDI0IDEuOTkzIDAgMC0uNzcgMy40OTEuNDU2IDcuNjA0LjM1OSAxLjIwMy04LjYyNyA2LjU1OC05LjggNS42MzctMS4zNTUtMS4wNjUtMy44NS0xMi40MzItMi4wOC0xNS4yMzR6IiBmaWxsPSIjNGNiYTNjIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im01NS4yNjkgNjguNDA2Yy41NTMtMi40MDMgMy4xMjctNi45MzIgMTIuMzIxLTYuODIyIDQuNjQ4LS4wMTkgMTAuNDIyLS4wMDIgMTQuMjUtLjQzNmE1MS4zMTIgNTEuMzEyIDAgMCAwIDEyLjcyNi0zLjA5NWMzLjk4LTEuNTE5IDUuMzkyLTEuMTggNS44ODctLjI3Mi41NDQuOTk5LS4wOTcgMi43MjItMS40ODggNC4zMDktMi42NTYgMy4wMy03LjQzMSA1LjM4LTE1Ljg2NSA2LjA3Ni04LjQzMy42OTgtMTQuMDItMS41NjUtMTYuNDI1IDIuMTE4LTEuMDM4IDEuNTg5LS4yMzYgNS4zMzMgNy45MiA2LjUxMiAxMS4wMiAxLjU5IDIwLjA3Mi0xLjkxNyAyMS4xOS4yMDEgMS4xMTkgMi4xMTgtNS4zMjMgNi40MjgtMTYuMzYyIDYuNTE4cy0xNy45MzQtMy44NjUtMjAuMzc5LTUuODNjLTMuMTAyLTIuNDk1LTQuNDktNi4xMzMtMy43NzUtOS4yNzl6IiBmaWxsPSIjZmMzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxnIGZpbGw9IiMxNDMwN2UiIG9wYWNpdHk9Ii44Ij4KICAgICAgPHBhdGggZD0ibTY5LjMyNyA0Mi4xMjdjLjYxNi0xLjAwOCAxLjk4MS0xLjc4NiA0LjIxNi0xLjc4NiAyLjIzNCAwIDMuMjg1Ljg4OSA0LjAxMyAxLjg4LjE0OC4yMDItLjA3Ni40NC0uMzA2LjM0YTU5Ljg2OSA1OS44NjkgMCAwIDEgLS4xNjgtLjA3M2MtLjgxNy0uMzU3LTEuODItLjc5NS0zLjU0LS44Mi0xLjgzOC0uMDI2LTIuOTk3LjQzNS0zLjcyNy44MzEtLjI0Ni4xMzQtLjYzNC0uMTMzLS40ODgtLjM3MnptLTI1LjE1NyAxLjI5YzIuMTctLjkwNyAzLjg3Ni0uNzkgNS4wODEtLjUwNC4yNTQuMDYuNDMtLjIxMy4yMjctLjM3Ny0uOTM1LS43NTUtMy4wMy0xLjY5Mi01Ljc2LS42NzQtMi40MzcuOTA5LTMuNTg1IDIuNzk2LTMuNTkyIDQuMDM4LS4wMDIuMjkyLjYuMzE3Ljc1Ni4wNy40Mi0uNjcgMS4xMi0xLjY0NiAzLjI4OS0yLjU1M3oiLz4KICAgICAgPHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtNzUuNDQgNTUuOTJhMy40NyAzLjQ3IDAgMCAxIC0zLjQ3NC0zLjQ2MiAzLjQ3IDMuNDcgMCAwIDEgMy40NzUtMy40NiAzLjQ3IDMuNDcgMCAwIDEgMy40NzQgMy40NiAzLjQ3IDMuNDcgMCAwIDEgLTMuNDc1IDMuNDYyem0yLjQ0Ny00LjYwOGEuODk5Ljg5OSAwIDAgMCAtMS43OTkgMGMwIC40OTQuNDA1Ljg5NS45Ljg5NS40OTkgMCAuOS0uNC45LS44OTV6bS0yNS40NjQgMy41NDJhNC4wNDIgNC4wNDIgMCAwIDEgLTQuMDQ5IDQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIC00LjA1LTQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIDQuMDUtNC4wMzcgNC4wNDUgNC4wNDUgMCAwIDEgNC4wNSA0LjAzN3ptLTEuMTkzLTEuMzM4YTEuMDUgMS4wNSAwIDAgMCAtMi4wOTcgMCAxLjA0OCAxLjA0OCAwIDAgMCAyLjA5NyAweiIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8L2c+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im02NCAxMTcuNzVjMjkuNjg1IDAgNTMuNzUtMjQuMDY1IDUzLjc1LTUzLjc1cy0yNC4wNjUtNTMuNzUtNTMuNzUtNTMuNzUtNTMuNzUgMjQuMDY1LTUzLjc1IDUzLjc1IDI0LjA2NSA1My43NSA1My43NSA1My43NXptMCA1YzMyLjQ0NyAwIDU4Ljc1LTI2LjMwMyA1OC43NS01OC43NXMtMjYuMzAzLTU4Ljc1LTU4Ljc1LTU4Ljc1LTU4Ljc1IDI2LjMwMy01OC43NSA1OC43NSAyNi4zMDMgNTguNzUgNTguNzUgNTguNzV6IiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n\n/* Email Protection signup notice */\n:not(.top-autofill) .tooltip--email-signup {\n    text-align: left;\n    color: #222222;\n    padding: 16px 20px;\n    width: 380px;\n}\n\n.tooltip--email-signup h1 {\n    font-weight: 700;\n    font-size: 16px;\n    line-height: 1.5;\n    margin: 0;\n}\n\n.tooltip--email-signup p {\n    font-weight: 400;\n    font-size: 14px;\n    line-height: 1.4;\n}\n\n.notice-controls {\n    display: flex;\n}\n\n.tooltip--email-signup .notice-controls > * {\n    border-radius: 8px;\n    border: 0;\n    cursor: pointer;\n    display: inline-block;\n    font-family: inherit;\n    font-style: normal;\n    font-weight: bold;\n    padding: 8px 12px;\n    text-decoration: none;\n}\n\n.notice-controls .ghost {\n    margin-left: 1rem;\n}\n\n.tooltip--email-signup a.primary {\n    background: #3969EF;\n    color: #fff;\n}\n\n.tooltip--email-signup a.primary:hover,\n.tooltip--email-signup a.primary:focus {\n    background: #2b55ca;\n}\n\n.tooltip--email-signup a.primary:active {\n    background: #1e42a4;\n}\n\n.tooltip--email-signup button.ghost {\n    background: transparent;\n    color: #3969EF;\n}\n\n.tooltip--email-signup button.ghost:hover,\n.tooltip--email-signup button.ghost:focus {\n    background-color: rgba(0, 0, 0, 0.06);\n    color: #2b55ca;\n}\n\n.tooltip--email-signup button.ghost:active {\n    background-color: rgba(0, 0, 0, 0.12);\n    color: #1e42a4;\n}\n\n.tooltip--email-signup button.close-tooltip {\n    background-color: transparent;\n    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMiAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5NCAwLjY1NjkwN0MwLjY4MzQxOCAwLjI2NjM4MyAxLjMxNjU4IDAuMjY2MzgzIDEuNzA3MTEgMC42NTY5MDdMNiA0Ljk0OThMMTAuMjkyOSAwLjY1NjkwN0MxMC42ODM0IDAuMjY2MzgzIDExLjMxNjYgMC4yNjYzODMgMTEuNzA3MSAwLjY1NjkwN0MxMi4wOTc2IDEuMDQ3NDMgMTIuMDk3NiAxLjY4MDYgMTEuNzA3MSAyLjA3MTEyTDcuNDE0MjEgNi4zNjQwMUwxMS43MDcxIDEwLjY1NjlDMTIuMDk3NiAxMS4wNDc0IDEyLjA5NzYgMTEuNjgwNiAxMS43MDcxIDEyLjA3MTFDMTEuMzE2NiAxMi40NjE2IDEwLjY4MzQgMTIuNDYxNiAxMC4yOTI5IDEyLjA3MTFMNiA3Ljc3ODIzTDEuNzA3MTEgMTIuMDcxMUMxLjMxNjU4IDEyLjQ2MTYgMC42ODM0MTcgMTIuNDYxNiAwLjI5Mjg5MyAxMi4wNzExQy0wLjA5NzYzMTEgMTEuNjgwNiAtMC4wOTc2MzExIDExLjA0NzQgMC4yOTI4OTMgMTAuNjU2OUw0LjU4NTc5IDYuMzY0MDFMMC4yOTI4OTQgMi4wNzExMkMtMC4wOTc2MzA2IDEuNjgwNiAtMC4wOTc2MzA2IDEuMDQ3NDMgMC4yOTI4OTQgMC42NTY5MDdaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0Ii8+Cjwvc3ZnPgo=);\n    background-position: center center;\n    background-repeat: no-repeat;\n    border: 0;\n    cursor: pointer;\n    padding: 16px;\n    position: absolute;\n    right: 12px;\n    top: 12px;\n}\n";
 
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12553,6 +12509,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
+exports.findEnclosedElements = findEnclosedElements;
 exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
 exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
@@ -13164,7 +13121,33 @@ function getActiveElement() {
   return innerActiveElement;
 }
 
-},{"./Form/matching.js":34,"./constants.js":56,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],54:[function(require,module,exports){
+/**
+ * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * @param {HTMLElement|HTMLFormElement} root
+ * @param {string} selector
+ * @returns {Element[]}
+ */
+function findEnclosedElements(root, selector) {
+  // Check if there are any normal elements that match the selector
+  const elements = root.querySelectorAll(selector);
+  if (elements.length > 0) {
+    return Array.from(elements);
+  }
+
+  // Check if there are any shadow elements that match the selector
+  const shadowElements = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  let node = walker.nextNode();
+  while (node) {
+    if (node instanceof HTMLElement && node.shadowRoot) {
+      shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
+    }
+    node = walker.nextNode();
+  }
+  return shadowElements;
+}
+
+},{"./Form/matching.js":33,"./constants.js":55,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],53:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -13195,7 +13178,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":13,"./autofill-utils.js":53,"./requestIdleCallback.js":93}],55:[function(require,module,exports){
+},{"./DeviceInterface.js":12,"./autofill-utils.js":52,"./requestIdleCallback.js":92}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13212,10 +13195,6 @@ const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-
  * @returns {GlobalConfig}
  */
 function createGlobalConfig(overrides) {
-  /**
-   * Defines whether it's one of our desktop apps
-   * @type {boolean}
-   */
   let isApp = false;
   let isTopFrame = false;
   let supportsTopFrame = false;
@@ -13285,7 +13264,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],56:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13302,13 +13281,13 @@ const constants = exports.constants = {
   MAX_FORM_RESCANS: 50
 };
 
-},{}],57:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StoreFormDataCall = exports.StartEmailProtectionSignupCall = exports.ShowInContextEmailProtectionSignupPromptCall = exports.SetSizeCall = exports.SetIncontextSignupPermanentlyDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.OpenManagePasswordsCall = exports.OpenManageIdentitiesCall = exports.OpenManageCreditCardsCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAliasCall = exports.EmailProtectionGetAddressesCall = exports.CloseEmailProtectionTabCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = exports.AddDebugFlagCall = void 0;
+exports.StoreFormDataCall = exports.StartEmailProtectionSignupCall = exports.ShowInContextEmailProtectionSignupPromptCall = exports.SetSizeCall = exports.SetIncontextSignupPermanentlyDismissedAtCall = exports.SendJSPixelCall = exports.SelectedDetailCall = exports.OpenManagePasswordsCall = exports.OpenManageIdentitiesCall = exports.OpenManageCreditCardsCall = exports.GetRuntimeConfigurationCall = exports.GetIncontextSignupDismissedAtCall = exports.GetAvailableInputTypesCall = exports.GetAutofillInitDataCall = exports.GetAutofillDataCall = exports.GetAutofillCredentialsCall = exports.EmailProtectionStoreUserDataCall = exports.EmailProtectionRemoveUserDataCall = exports.EmailProtectionRefreshPrivateAddressCall = exports.EmailProtectionGetUserDataCall = exports.EmailProtectionGetIsLoggedInCall = exports.EmailProtectionGetCapabilitiesCall = exports.EmailProtectionGetAddressesCall = exports.CloseEmailProtectionTabCall = exports.CloseAutofillParentCall = exports.CheckCredentialsProviderStatusCall = exports.AskToUnlockProviderCall = exports.AddDebugFlagCall = void 0;
 var _validatorsZod = require("./validators.zod.js");
 var _deviceApi = require("../../../packages/device-api");
 /* DO NOT EDIT, this file was generated by scripts/api-call-generator.js */
@@ -13463,19 +13442,9 @@ class OpenManageIdentitiesCall extends _deviceApi.DeviceApiCall {
   method = "openManageIdentities";
 }
 /**
- * @extends {DeviceApiCall<emailProtectionGetAliasParamsSchema, emailProtectionGetAliasResultSchema>} 
- */
-exports.OpenManageIdentitiesCall = OpenManageIdentitiesCall;
-class EmailProtectionGetAliasCall extends _deviceApi.DeviceApiCall {
-  method = "emailProtectionGetAlias";
-  id = "emailProtectionGetAliasResponse";
-  paramsValidator = _validatorsZod.emailProtectionGetAliasParamsSchema;
-  resultValidator = _validatorsZod.emailProtectionGetAliasResultSchema;
-}
-/**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
  */
-exports.EmailProtectionGetAliasCall = EmailProtectionGetAliasCall;
+exports.OpenManageIdentitiesCall = OpenManageIdentitiesCall;
 class EmailProtectionStoreUserDataCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionStoreUserData";
   id = "emailProtectionStoreUserDataResponse";
@@ -13558,13 +13527,13 @@ class ShowInContextEmailProtectionSignupPromptCall extends _deviceApi.DeviceApiC
 }
 exports.ShowInContextEmailProtectionSignupPromptCall = ShowInContextEmailProtectionSignupPromptCall;
 
-},{"../../../packages/device-api":2,"./validators.zod.js":58}],58:[function(require,module,exports){
+},{"../../../packages/device-api":2,"./validators.zod.js":57}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.showInContextEmailProtectionSignupPromptSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.generatedPasswordSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAliasResultSchema = exports.emailProtectionGetAliasParamsSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = exports.addDebugFlagParamsSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.showInContextEmailProtectionSignupPromptSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.generatedPasswordSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = exports.addDebugFlagParamsSchema = void 0;
 const sendJSPixelParamsSchema = exports.sendJSPixelParamsSchema = null;
 const addDebugFlagParamsSchema = exports.addDebugFlagParamsSchema = null;
 const getAutofillCredentialsParamsSchema = exports.getAutofillCredentialsParamsSchema = null;
@@ -13574,7 +13543,6 @@ const setIncontextSignupPermanentlyDismissedAtSchema = exports.setIncontextSignu
 const getIncontextSignupDismissedAtSchema = exports.getIncontextSignupDismissedAtSchema = null;
 const getAliasParamsSchema = exports.getAliasParamsSchema = null;
 const getAliasResultSchema = exports.getAliasResultSchema = null;
-const emailProtectionGetAliasParamsSchema = exports.emailProtectionGetAliasParamsSchema = null;
 const emailProtectionStoreUserDataParamsSchema = exports.emailProtectionStoreUserDataParamsSchema = null;
 const showInContextEmailProtectionSignupPromptSchema = exports.showInContextEmailProtectionSignupPromptSchema = null;
 const generatedPasswordSchema = exports.generatedPasswordSchema = null;
@@ -13583,10 +13551,9 @@ const credentialsSchema = exports.credentialsSchema = null;
 const genericErrorSchema = exports.genericErrorSchema = null;
 const contentScopeSchema = exports.contentScopeSchema = null;
 const userPreferencesSchema = exports.userPreferencesSchema = null;
-const availableInputTypesSchema = exports.availableInputTypesSchema = null;
 const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = null;
+const availableInputTypesSchema = exports.availableInputTypesSchema = null;
 const availableInputTypes1Schema = exports.availableInputTypes1Schema = null;
-const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
 const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = null;
 const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = null;
 const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = null;
@@ -13594,20 +13561,20 @@ const storeFormDataSchema = exports.storeFormDataSchema = null;
 const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = null;
 const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = null;
 const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = null;
-const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = null;
-const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = null;
 const autofillSettingsSchema = exports.autofillSettingsSchema = null;
-const emailProtectionGetAliasResultSchema = exports.emailProtectionGetAliasResultSchema = null;
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = null;
 const emailProtectionGetUserDataResultSchema = exports.emailProtectionGetUserDataResultSchema = null;
 const emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = null;
 const emailProtectionGetAddressesResultSchema = exports.emailProtectionGetAddressesResultSchema = null;
 const emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = null;
 const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
+const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
 const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
+const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = null;
+const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = null;
 const apiSchema = exports.apiSchema = null;
 
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13633,7 +13600,7 @@ class GetAlias extends _index.DeviceApiCall {
 }
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":2,"./__generated__/validators.zod.js":58}],60:[function(require,module,exports){
+},{"../../packages/device-api/index.js":2,"./__generated__/validators.zod.js":57}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13641,8 +13608,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.AndroidTransport = void 0;
 var _index = require("../../../packages/device-api/index.js");
-var _messaging = require("../../../packages/messaging/messaging.js");
-var _android = require("../../../packages/messaging/android.js");
+var _deviceApiCalls = require("../__generated__/deviceApiCalls.js");
 class AndroidTransport extends _index.DeviceApiTransport {
   /** @type {GlobalConfig} */
   config;
@@ -13651,39 +13617,133 @@ class AndroidTransport extends _index.DeviceApiTransport {
   constructor(globalConfig) {
     super();
     this.config = globalConfig;
-    const messageHandlerNames = ['EmailProtectionStoreUserData', 'EmailProtectionRemoveUserData', 'EmailProtectionGetUserData', 'EmailProtectionGetCapabilities', 'EmailProtectionGetAlias', 'SetIncontextSignupPermanentlyDismissedAt', 'StartEmailProtectionSignup', 'CloseEmailProtectionTab', 'ShowInContextEmailProtectionSignupPrompt', 'StoreFormData', 'GetIncontextSignupDismissedAt', 'GetRuntimeConfiguration', 'GetAutofillData'];
-    const androidMessagingConfig = new _android.AndroidMessagingConfig({
-      messageHandlerNames
-    });
-    this.messaging = new _messaging.Messaging(androidMessagingConfig);
+    if (this.config.isDDGTestMode) {
+      if (typeof window.BrowserAutofill?.getAutofillData !== 'function') {
+        console.warn('window.BrowserAutofill.getAutofillData missing');
+      }
+      if (typeof window.BrowserAutofill?.storeFormData !== 'function') {
+        console.warn('window.BrowserAutofill.storeFormData missing');
+      }
+    }
   }
   /**
    * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
    * @returns {Promise<any>}
    */
   async send(deviceApiCall) {
-    try {
-      // if the call has an `id`, it means that it expects a response
-      if (deviceApiCall.id) {
-        return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || undefined);
-      } else {
-        return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || undefined);
-      }
-    } catch (e) {
-      if (e instanceof _messaging.MissingHandler) {
-        if (this.config.isDDGTestMode) {
-          console.log('MissingAndroidHandler error for:', deviceApiCall.method);
-        }
-        throw new Error('unimplemented handler: ' + deviceApiCall.method);
-      } else {
-        throw e;
-      }
+    if (deviceApiCall instanceof _deviceApiCalls.GetRuntimeConfigurationCall) {
+      return androidSpecificRuntimeConfiguration(this.config);
     }
+    if (deviceApiCall instanceof _deviceApiCalls.GetAvailableInputTypesCall) {
+      return androidSpecificAvailableInputTypes(this.config);
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.GetIncontextSignupDismissedAtCall) {
+      window.BrowserAutofill.getIncontextSignupDismissedAt(JSON.stringify(deviceApiCall.params));
+      return waitForResponse(deviceApiCall.id, this.config);
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.SetIncontextSignupPermanentlyDismissedAtCall) {
+      return window.BrowserAutofill.setIncontextSignupPermanentlyDismissedAt(JSON.stringify(deviceApiCall.params));
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
+      return window.BrowserAutofill.startEmailProtectionSignup(JSON.stringify(deviceApiCall.params));
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.CloseEmailProtectionTabCall) {
+      return window.BrowserAutofill.closeEmailProtectionTab(JSON.stringify(deviceApiCall.params));
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.ShowInContextEmailProtectionSignupPromptCall) {
+      window.BrowserAutofill.showInContextEmailProtectionSignupPrompt(JSON.stringify(deviceApiCall.params));
+      return waitForResponse(deviceApiCall.id, this.config);
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.GetAutofillDataCall) {
+      window.BrowserAutofill.getAutofillData(JSON.stringify(deviceApiCall.params));
+      return waitForResponse(deviceApiCall.id, this.config);
+    }
+    if (deviceApiCall instanceof _deviceApiCalls.StoreFormDataCall) {
+      return window.BrowserAutofill.storeFormData(JSON.stringify(deviceApiCall.params));
+    }
+    throw new Error('android: not implemented: ' + deviceApiCall.method);
   }
 }
-exports.AndroidTransport = AndroidTransport;
 
-},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/android.js":5,"../../../packages/messaging/messaging.js":6}],61:[function(require,module,exports){
+/**
+ * @param {string} expectedResponse - the name/id of the response
+ * @param {GlobalConfig} config
+ * @returns {Promise<*>}
+ */
+exports.AndroidTransport = AndroidTransport;
+function waitForResponse(expectedResponse, config) {
+  return new Promise(resolve => {
+    const handler = e => {
+      if (!config.isDDGTestMode) {
+        if (e.origin !== '') {
+          return;
+        }
+      }
+      if (!e.data) {
+        return;
+      }
+      if (typeof e.data !== 'string') {
+        if (config.isDDGTestMode) {
+          console.log('❌ event.data was not a string. Expected a string so that it can be JSON parsed');
+        }
+        return;
+      }
+      try {
+        let data = JSON.parse(e.data);
+        if (data.type === expectedResponse) {
+          window.removeEventListener('message', handler);
+          return resolve(data);
+        }
+        if (config.isDDGTestMode) {
+          console.log(`❌ event.data.type was '${data.type}', which didnt match '${expectedResponse}'`, JSON.stringify(data));
+        }
+      } catch (e) {
+        window.removeEventListener('message', handler);
+        if (config.isDDGTestMode) {
+          console.log('❌ Could not JSON.parse the response');
+        }
+      }
+    };
+    window.addEventListener('message', handler);
+  });
+}
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
+ */
+function androidSpecificRuntimeConfiguration(globalConfig) {
+  if (!globalConfig.userPreferences) {
+    throw new Error('globalConfig.userPreferences not supported yet on Android');
+  }
+  return {
+    success: {
+      // @ts-ignore
+      contentScope: globalConfig.contentScope,
+      // @ts-ignore
+      userPreferences: globalConfig.userPreferences,
+      // @ts-ignore
+      userUnprotectedDomains: globalConfig.userUnprotectedDomains,
+      // @ts-ignore
+      availableInputTypes: globalConfig.availableInputTypes
+    }
+  };
+}
+
+/**
+ * @param {GlobalConfig} globalConfig
+ * @returns {{success: import('../__generated__/validators-ts').AvailableInputTypes}}
+ */
+function androidSpecificAvailableInputTypes(globalConfig) {
+  if (!globalConfig.availableInputTypes) {
+    throw new Error('globalConfig.availableInputTypes not supported yet on Android');
+  }
+  return {
+    success: globalConfig.availableInputTypes
+  };
+}
+
+},{"../../../packages/device-api/index.js":2,"../__generated__/deviceApiCalls.js":56}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13726,7 +13786,7 @@ class AppleTransport extends _index.DeviceApiTransport {
 }
 exports.AppleTransport = AppleTransport;
 
-},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/messaging.js":6}],62:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/messaging.js":5}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13880,7 +13940,7 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
   });
 }
 
-},{"../../../packages/device-api/index.js":2,"../../Settings.js":41,"../../autofill-utils.js":53,"../__generated__/deviceApiCalls.js":57}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2,"../../Settings.js":40,"../../autofill-utils.js":52,"../__generated__/deviceApiCalls.js":56}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13924,7 +13984,7 @@ function createTransport(globalConfig) {
   return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
-},{"./android.transport.js":60,"./apple.transport.js":61,"./extension.transport.js":62,"./windows.transport.js":64}],64:[function(require,module,exports){
+},{"./android.transport.js":59,"./apple.transport.js":60,"./extension.transport.js":61,"./windows.transport.js":63}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14009,7 +14069,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":2}],65:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":2}],64:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14058,10 +14118,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Генериране на личен Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Скрийте имейл адреса си и\nблокирайте тракерите",
+    "title" : "Скрийте имейл адреса си и блокирайте тракерите",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14086,7 +14146,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Генериране на поверителен Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Блокиране на имейл тракерите и скриване на адреса",
@@ -14101,7 +14161,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],66:[function(require,module,exports){
+
+},{}],65:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14145,15 +14206,15 @@ module.exports={
     "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
   },
   "unlockYourVault" : {
-    "title" : "Pro přístup k přihlašovacím údajům a generování hesel je potřeba odemknout trezor",
+    "title" : "Pro přístup k přihlašovacím údajům a generování hesel je potřeba odemknout aplikaci Bitwarden",
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Vygenerovat soukromou adresu Duck",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Vygenerovat soukromou Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Skryj svůj e-mail\na blokuj trackery",
+    "title" : "Skryj svůj e-mail a blokuj trackery",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14161,7 +14222,7 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Spravovat uložené položky...",
+    "title" : "Spravovat uložené položky…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -14169,7 +14230,7 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Spravovat identity...",
+    "title" : "Spravovat identity…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -14177,8 +14238,8 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Vygenerovat soukromou adresu Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Vygenerovat soukromou Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokuj e-mailové trackery a skryj svou adresu",
@@ -14193,7 +14254,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],67:[function(require,module,exports){
+
+},{}],66:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14242,10 +14304,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Opret privat Duck-adresse",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Skjul din e-mail og \n bloker trackere",
+    "title" : "Skjul din e-mail og bloker trackere",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14253,24 +14315,24 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Administrer gemte elementer ...",
+    "title" : "Administrer gemte elementer…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Administrer kreditkort ...",
+    "title" : "Administrer kreditkort…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Administrer identiteter ...",
+    "title" : "Administrer identiteter…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Administrer adgangskoder...",
+    "title" : "Administrer adgangskoder…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
     "title" : "Opret en privat Duck-adresse",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloker e-mailtrackere og skjul adresse",
@@ -14285,7 +14347,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],68:[function(require,module,exports){
+
+},{}],67:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14325,16 +14388,16 @@ module.exports={
     "note" : "Label explaining that the associated automatically-created password will be persisted for the current site when the form is submitted"
   },
   "bitwardenIsLocked" : {
-    "title" : "Bitwarden ist gesperrt",
+    "title" : "Bitwarden ist verschlossen",
     "note" : "Label explaining that passwords are not available because the vault provided by third-party application Bitwarden has not been unlocked"
   },
   "unlockYourVault" : {
-    "title" : "Entsperre deinen Tresor, um auf deine Zugangsdaten zuzugreifen oder Passwörter zu generieren",
+    "title" : "Entsperre deinen Bitwarden-Datentresor, um auf deine Zugangsdaten zuzugreifen oder Passwörter zu generieren",
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
     "title" : "Private Duck-Adresse generieren",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
     "title" : "E-Mail-Adresse verbergen und Tracker blockieren",
@@ -14362,7 +14425,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Private Duck Address generieren",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "E-Mail-Tracker blockieren & Adresse verbergen",
@@ -14377,7 +14440,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],69:[function(require,module,exports){
+
+},{}],68:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14426,10 +14490,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Δημιουργήστε ιδιωτική Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Απόκρυψη του email σας και \n αποκλεισμός εφαρμογών παρακολούθησης",
+    "title" : "Απόκρυψη του email σας και αποκλεισμός εφαρμογών παρακολούθησης",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14445,7 +14509,7 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Διαχείριση ταυτοτήτων...",
+    "title" : "Διαχείριση ταυτοτήτων…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -14454,7 +14518,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Δημιουργήστε μια ιδιωτική Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Αποκλεισμός εφαρμογών παρακολούθησης email και απόκρυψη διεύθυνσης",
@@ -14469,7 +14533,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],70:[function(require,module,exports){
+
+},{}],69:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -14519,7 +14584,7 @@ module.exports={
   },
   "generatePrivateDuckAddr": {
     "title": "Generate Private Duck Address",
-    "note": "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note": "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers": {
     "title": "Hide your email and block trackers",
@@ -14547,7 +14612,7 @@ module.exports={
   },
   "generateDuckAddr": {
     "title": "Generate a Private Duck Address",
-    "note": "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note": "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress": {
     "title": "Block email trackers & hide address",
@@ -14562,7 +14627,8 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],71:[function(require,module,exports){
+
+},{}],70:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14586,7 +14652,7 @@ module.exports={
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
-    "title" : "Bloqueo de rastreadores de correo electrónico",
+    "title" : "Bloquea de rastreadores de correo electrónico",
     "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
   },
   "passwordForUrl" : {
@@ -14611,10 +14677,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Generar Duck Address privada",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Ocultar tu correo electrónico y\nbloquear rastreadores",
+    "title" : "Ocultar tu correo electrónico y bloquear rastreadores",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14622,7 +14688,7 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Gestionar elementos guardados...",
+    "title" : "Gestionar elementos guardados…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -14630,19 +14696,19 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Gestionar identidades...",
+    "title" : "Gestionar identidades…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Administrar contraseñas...",
+    "title" : "Administrar contraseñas…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
     "title" : "Generar Duck Address privada",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
-    "title" : "Bloquear rastreadores de correo electrónico y ocultar dirección",
+    "title" : "Bloquea rastreadores de correo electrónico y oculta la dirección",
     "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
   },
   "protectMyEmail" : {
@@ -14654,7 +14720,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],72:[function(require,module,exports){
+
+},{}],71:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14703,10 +14770,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Loo privaatne Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Peida oma e-post ja\nblokeeri jälgijad",
+    "title" : "Peida oma e-post ja blokeeri jälgijad",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14714,15 +14781,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Halda salvestatud üksuseid...",
+    "title" : "Halda salvestatud üksuseid…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Halda krediitkaarte...",
+    "title" : "Halda krediitkaarte…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Halda identiteete...",
+    "title" : "Halda identiteete…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -14731,7 +14798,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Loo privaatne Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokeeri e-posti jälgijad ja peida aadress",
@@ -14746,7 +14813,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],73:[function(require,module,exports){
+
+},{}],72:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14795,10 +14863,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Luo yksityinen Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Piilota sähköpostisi ja\nEstä seurantaohjelmat",
+    "title" : "Piilota sähköpostisi ja Estä seurantaohjelmat",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14814,7 +14882,7 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Hallitse käyttäjätietoja...",
+    "title" : "Hallitse käyttäjätietoja…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -14823,7 +14891,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Luo yksityinen Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Estä sähköpostin seurantaohjelmat ja piilota osoite",
@@ -14838,7 +14906,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],74:[function(require,module,exports){
+
+},{}],73:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14887,7 +14956,7 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Générer une Duck Address privée",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
     "title" : "Masquez votre adresse e-mail et bloquez les traqueurs",
@@ -14915,7 +14984,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Générer une Duck Address privée",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloquer les traqueurs d'e-mails et masquer l'adresse",
@@ -14930,7 +14999,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],75:[function(require,module,exports){
+
+},{}],74:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14979,10 +15049,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Generiraj privatnu adresu Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Sakrij svoju e-poštu i \n blokiraj tragače",
+    "title" : "Sakrij svoju e-poštu i blokiraj tragače",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -14990,15 +15060,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Upravljanje spremljenim stavkama...",
+    "title" : "Upravljanje spremljenim stavkama…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Upravljanje kreditnim karticama...",
+    "title" : "Upravljanje kreditnim karticama…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Upravljanje identitetima...",
+    "title" : "Upravljanje identitetima…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -15007,7 +15077,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Generiraj privatnu adresu Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokiraj praćenje e-pošte i sakrij adresu",
@@ -15022,7 +15092,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],76:[function(require,module,exports){
+
+},{}],75:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15046,7 +15117,7 @@ module.exports={
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
-    "title" : "E-mail-nyomkövetők blokkolása",
+    "title" : "E-mail nyomkövetők blokkolása",
     "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
   },
   "passwordForUrl" : {
@@ -15070,11 +15141,11 @@ module.exports={
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Privát Duck-cím létrehozása",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Privát Duck Address létrehozása",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "E-mail elrejtése és\nnyomkövetők blokkolása",
+    "title" : "E-mail elrejtése és nyomkövetők blokkolása",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15098,11 +15169,11 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Privát Duck-cím generálása",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Privát Duck Address létrehozása",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
-    "title" : "E-mail-nyomkövetők blokkolása, és a cím elrejtése",
+    "title" : "E-mail nyomkövetők blokkolása, és a cím elrejtése",
     "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
   },
   "protectMyEmail" : {
@@ -15114,7 +15185,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],77:[function(require,module,exports){
+
+},{}],76:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15163,10 +15235,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Genera Duck Address privato",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Nascondi il tuo indirizzo e-mail e \n blocca i sistemi di tracciamento",
+    "title" : "Nascondi il tuo indirizzo e-mail e blocca i sistemi di tracciamento",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15174,15 +15246,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Gestisci gli elementi salvati...",
+    "title" : "Gestisci gli elementi salvati…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Gestisci carte di credito...",
+    "title" : "Gestisci carte di credito…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Gestisci identità...",
+    "title" : "Gestisci identità…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -15191,7 +15263,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Genera un Duck Address privato",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blocca i sistemi di tracciamento e-mail e nascondi il tuo indirizzo",
@@ -15206,7 +15278,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],78:[function(require,module,exports){
+
+},{}],77:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15254,11 +15327,11 @@ module.exports={
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Generuoti privatų „Duck“ adresą",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Generuoti privatų „Duck Address“",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Paslėpkite savo el. paštą ir \n blokuokite stebėjimo priemones",
+    "title" : "Paslėpkite savo el. paštą ir blokuokite stebėjimo priemones",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15266,7 +15339,7 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Tvarkykite išsaugotus elementus...",
+    "title" : "Tvarkykite išsaugotus elementus…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -15274,7 +15347,7 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Tvarkykite tapatybes...",
+    "title" : "Tvarkykite tapatybes…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -15282,8 +15355,8 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Generuoti privatų „Duck“ adresą",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Generuoti privatų „Duck Address“",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokuoti el. pašto stebėjimo priemones ir slėpti adresą",
@@ -15298,7 +15371,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],79:[function(require,module,exports){
+
+},{}],78:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15347,10 +15421,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Ģenerēt privātu Duck adresi",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Paslēp savu e-pastu un\nbloķē izsekotājus",
+    "title" : "Paslēp savu e-pastu un bloķē izsekotājus",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15375,7 +15449,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Ģenerēt privātu Duck adresi",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloķē e-pasta izsekotājus un paslēp adresi",
@@ -15390,7 +15464,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],80:[function(require,module,exports){
+
+},{}],79:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15439,10 +15514,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Generer privat Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Skjul e-postadressen din og\nblokker sporere",
+    "title" : "Skjul e-postadressen din og blokker sporere",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15450,24 +15525,24 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Administrer lagrede elementer …",
+    "title" : "Administrer lagrede elementer…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Administrer kredittkort …",
+    "title" : "Administrer kredittkort…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Administrer identiteter …",
+    "title" : "Administrer identiteter…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Administrer passord …",
+    "title" : "Administrer passord…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
     "title" : "Generer en privat Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokker e-postsporere og skjul adresse",
@@ -15482,7 +15557,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],81:[function(require,module,exports){
+
+},{}],80:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15531,10 +15607,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Privé-Duck Address genereren",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Je e-mailadres verbergen en\n trackers blokkeren",
+    "title" : "Je e-mailadres verbergen en trackers blokkeren",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15542,7 +15618,7 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Opgeslagen items beheren...",
+    "title" : "Opgeslagen items beheren…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -15554,12 +15630,12 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Wachtwoorden beheren …",
+    "title" : "Wachtwoorden beheren…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
     "title" : "Privé-Duck Address genereren",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "E-mailtrackers blokkeren en adres verbergen",
@@ -15574,7 +15650,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],82:[function(require,module,exports){
+
+},{}],81:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15623,10 +15700,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Wygeneruj prywatny adres Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Ukryj swój adres e-mail i\nblokuj skrypty śledzące",
+    "title" : "Ukryj swój adres e-mail i blokuj skrypty śledzące",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15634,7 +15711,7 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Zarządzaj zapisanymi elementami...",
+    "title" : "Zarządzaj zapisanymi elementami…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -15651,7 +15728,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Wygeneruj prywatny adres Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Zablokuj mechanizmy śledzące pocztę e-mail i ukryj adres",
@@ -15666,7 +15743,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],83:[function(require,module,exports){
+
+},{}],82:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15686,7 +15764,7 @@ module.exports={
     "note" : "Placeholder text."
   },
   "usePersonalDuckAddr" : {
-    "title" : "Use {email}",
+    "title" : "Usar {email}",
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
@@ -15714,19 +15792,19 @@ module.exports={
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Gerar um Duck Address Privado",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Gerar um Duck Address privado",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Ocultar o teu e-mail e\nbloquear rastreadores",
+    "title" : "Ocultar o teu e-mail e bloquear rastreadores",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
-    "title" : "Cria um endereço aleatório exclusivo que também remove rastreadores escondidos e encaminha o e-mail para a tua caixa de entrada.",
+    "title" : "Criar um endereço aleatório exclusivo que também remove rastreadores escondidos e encaminha o e-mail para a tua caixa de entrada.",
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Gerir itens guardados...",
+    "title" : "Gerir itens guardados…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
@@ -15742,8 +15820,8 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Gerar um Duck Address privado",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Gerar um Duck Address Privado",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Bloquear rastreadores de e-mail e ocultar endereço",
@@ -15758,7 +15836,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],84:[function(require,module,exports){
+
+},{}],83:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15807,7 +15886,7 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Generează o Duck Address privată",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
     "title" : "Ascunde-ți e-mailul și blochează tehnologiile de urmărire",
@@ -15818,15 +15897,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Gestionează elementele salvate...",
+    "title" : "Gestionează elementele salvate…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Gestionează cardurile de credit...",
+    "title" : "Gestionează cardurile de credit…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Gestionează identitățile...",
+    "title" : "Gestionează identitățile…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -15835,7 +15914,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Generează o Duck Address privată",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blochează tehnologiile de urmărire din e-mailuri și ascunde adresa",
@@ -15850,7 +15929,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],85:[function(require,module,exports){
+
+},{}],84:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15874,7 +15954,7 @@ module.exports={
     "note" : "Button that fills a form using a specific email address. The placeholder is the email address, e.g. \"Use test@duck.com\"."
   },
   "blockEmailTrackers" : {
-    "title" : "Блокировка почтовых трекеров",
+    "title" : "Блокирует почтовые трекеры",
     "note" : "Label explaining that by using a duck.com address, email trackers will be blocked. \"Block\" is a verb in imperative form."
   },
   "passwordForUrl" : {
@@ -15898,11 +15978,11 @@ module.exports={
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Создать адрес на Duck",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Сгенерировать Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Скрытие адреса почты\nи блокировка трекеров",
+    "title" : "Скрытие адреса почты и блокировка трекеров",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -15922,15 +16002,15 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
-    "title" : "Управление паролями...",
+    "title" : "Управление паролями…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Создать адрес Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Сгенерировать Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
-    "title" : "Скрывает ваш адрес и блокирует почтовые трекеры",
+    "title" : "Скрывает ваш адрес и Блокирует почтовые трекеры",
     "note" : "Label (paired with \"generateDuckAddr\") explaining the benefits of creating a private DuckDuckGo email address. \"Block\" and \"hide\" are imperative verbs."
   },
   "protectMyEmail" : {
@@ -15942,7 +16022,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],86:[function(require,module,exports){
+
+},{}],85:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15990,11 +16071,11 @@ module.exports={
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Generovať súkromnú adresu Duck",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Generovať súkromnú Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Skryte svoj e-mail\na blokujte sledovače",
+    "title" : "Skryte svoj e-mail a blokujte sledovače",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -16002,15 +16083,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Spravovať uložené položky...",
+    "title" : "Spravovať uložené položky…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Spravovať kreditné karty...",
+    "title" : "Spravovať kreditné karty…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Spravovať identity...",
+    "title" : "Spravovať identity…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -16018,8 +16099,8 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "generateDuckAddr" : {
-    "title" : "Generovať súkromnú adresu Duck",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "title" : "Generovať súkromnú Duck Address",
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokujte sledovače e-mailov a skryte adresu",
@@ -16034,7 +16115,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],87:[function(require,module,exports){
+
+},{}],86:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16082,11 +16164,11 @@ module.exports={
     "note" : "Label explaining that users must unlock the third-party password manager Bitwarden before they can use passwords stored there or create new passwords"
   },
   "generatePrivateDuckAddr" : {
-    "title" : "Ustvarjanje zasebnega naslova Duck",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "title" : "Ustvarjanje zasebnega naslova Duck Address",
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Skrijte svojo e-pošto in \nblokirajte sledilnike",
+    "title" : "Skrijte svojo e-pošto in blokirajte sledilnike",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -16094,15 +16176,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Upravljaj shranjene elemente ...",
+    "title" : "Upravljaj shranjene elemente…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Upravljaj kreditne kartice ...",
+    "title" : "Upravljaj kreditne kartice…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Upravljaj identitete ...",
+    "title" : "Upravljaj identitete…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -16111,7 +16193,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Ustvari zasebni naslov Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blokirajte sledilnike e-pošte in skrijte naslov",
@@ -16126,7 +16208,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],88:[function(require,module,exports){
+
+},{}],87:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16214,7 +16297,7 @@ function translateImpl(library, namespacedId, opts) {
   return out;
 }
 
-},{"./translations.js":91}],89:[function(require,module,exports){
+},{"./translations.js":90}],88:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16263,10 +16346,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Generera privat Duck Address",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "Dölj din e-postadress och\nblockera spårare",
+    "title" : "Dölj din e-postadress och blockera spårare",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -16291,7 +16374,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Generera en privat Duck Address",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "Blockera e-postspårare och dölj din adress",
@@ -16306,7 +16389,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],90:[function(require,module,exports){
+
+},{}],89:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16355,10 +16439,10 @@ module.exports={
   },
   "generatePrivateDuckAddr" : {
     "title" : "Özel Duck Address Oluştur",
-    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form."
+    "note" : "Button that creates a new single-use email address and fills a form with that address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "hideEmailAndBlockTrackers" : {
-    "title" : "E-postanızı Gizleyin ve \n İzleyicileri Engelleyin",
+    "title" : "E-postanızı Gizleyin ve İzleyicileri Engelleyin",
     "note" : "Button title prompting users to use an randomly-generated email address. \"Hide\" and \"block\" are imperative verbs."
   },
   "createUniqueRandomAddr" : {
@@ -16366,15 +16450,15 @@ module.exports={
     "note" : "Button subtitle (paired with \"hideEmailAndBlockTrackers\") explaining that by creating a randomly-generated address, trackers within emails will also be blocked."
   },
   "manageSavedItems" : {
-    "title" : "Kaydedilen öğeleri yönetin...",
+    "title" : "Kaydedilen öğeleri yönetin…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Kredi kartlarını yönetin...",
+    "title" : "Kredi kartlarını yönetin…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Kimlikleri yönetin...",
+    "title" : "Kimlikleri yönetin…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -16383,7 +16467,7 @@ module.exports={
   },
   "generateDuckAddr" : {
     "title" : "Özel Duck Address Oluştur",
-    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address."
+    "note" : "Button that when clicked creates a new private email address and fills the corresponding field with the generated address. \"Generate\" is a verb in imperative form, and \"Duck Address\" is a proper noun that should not be translated."
   },
   "blockEmailTrackersAndHideAddress" : {
     "title" : "E-posta izleyicileri engelleyin ve adresi gizleyin",
@@ -16398,7 +16482,8 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],91:[function(require,module,exports){
+
+},{}],90:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16517,7 +16602,7 @@ var _default = exports.default = {
   }
 };
 
-},{"./bg/autofill.json":65,"./cs/autofill.json":66,"./da/autofill.json":67,"./de/autofill.json":68,"./el/autofill.json":69,"./en/autofill.json":70,"./es/autofill.json":71,"./et/autofill.json":72,"./fi/autofill.json":73,"./fr/autofill.json":74,"./hr/autofill.json":75,"./hu/autofill.json":76,"./it/autofill.json":77,"./lt/autofill.json":78,"./lv/autofill.json":79,"./nb/autofill.json":80,"./nl/autofill.json":81,"./pl/autofill.json":82,"./pt/autofill.json":83,"./ro/autofill.json":84,"./ru/autofill.json":85,"./sk/autofill.json":86,"./sl/autofill.json":87,"./sv/autofill.json":89,"./tr/autofill.json":90,"./xa/autofill.json":92}],92:[function(require,module,exports){
+},{"./bg/autofill.json":64,"./cs/autofill.json":65,"./da/autofill.json":66,"./de/autofill.json":67,"./el/autofill.json":68,"./en/autofill.json":69,"./es/autofill.json":70,"./et/autofill.json":71,"./fi/autofill.json":72,"./fr/autofill.json":73,"./hr/autofill.json":74,"./hu/autofill.json":75,"./it/autofill.json":76,"./lt/autofill.json":77,"./lv/autofill.json":78,"./nb/autofill.json":79,"./nl/autofill.json":80,"./pl/autofill.json":81,"./pt/autofill.json":82,"./ro/autofill.json":83,"./ru/autofill.json":84,"./sk/autofill.json":85,"./sl/autofill.json":86,"./sv/autofill.json":88,"./tr/autofill.json":89,"./xa/autofill.json":91}],91:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -16610,7 +16695,7 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],93:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16653,4 +16738,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 };
 var _default = exports.default = {};
 
-},{}]},{},[54]);
+},{}]},{},[53]);

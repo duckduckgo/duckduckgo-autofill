@@ -138,12 +138,6 @@ export class Settings {
         if (this._runtimeConfiguration) return this._runtimeConfiguration
         const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
         this._runtimeConfiguration = runtimeConfig
-
-        // If the platform sends availableInputTypes here, store them
-        if (runtimeConfig.availableInputTypes) {
-            this.setAvailableInputTypes(runtimeConfig.availableInputTypes)
-        }
-
         return this._runtimeConfiguration
     }
 
@@ -159,11 +153,6 @@ export class Settings {
             if (this.globalConfig.isTopFrame) {
                 return Settings.defaults.availableInputTypes
             }
-
-            if (this._availableInputTypes) {
-                return this.availableInputTypes
-            }
-
             return await this.deviceApi.request(new GetAvailableInputTypesCall(null))
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {

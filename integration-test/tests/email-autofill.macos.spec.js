@@ -10,6 +10,7 @@ import {testContext} from '../helpers/test-context.js'
 import {signupPage} from '../helpers/pages/signupPage.js'
 import {scannerPerf} from '../helpers/pages/scannerPerf.js'
 import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
+import { selectInputPage } from '../helpers/pages/selectInputPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -194,6 +195,82 @@ test.describe('macos', () => {
                 {pixelName: 'autofill_identity', params: {fieldType: 'lastName'}}
             ])
         })
+        test('with an identity only - filling input should not autofill touched select element without label', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const selectInput = selectInputPage(page)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            const addressCity = 'city2'
+
+            await selectInput.navigate()
+            await selectInput.selectOption(addressCity)
+            await selectInput.selectFirstName(identity.firstName)
+            await page.waitForTimeout(100)
+            await selectInput.assertSelectedValue(addressCity)
+        })
+        test('with an identity only - filling input with label should not autofill touched select element with label', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const selectInput = selectInputPage(page)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            const formWithLabel = true
+            const addressCity = 'city2'
+
+            await selectInput.navigate('selectInput', formWithLabel)
+            await selectInput.selectOption(addressCity, formWithLabel)
+            await selectInput.selectFirstName(identity.firstName, formWithLabel)
+            await page.waitForTimeout(100)
+            await selectInput.assertSelectedValue(addressCity, formWithLabel)
+        })
+
+        test('with an identity only - filling input without label should autofill select element', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const selectInput = selectInputPage(page)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            await selectInput.navigate()
+            await selectInput.selectFirstName(identity.firstName)
+            await page.waitForTimeout(100)
+            await selectInput.assertSelectedValue(identity.addressCity)
+        })
+
+        test('with an identity only - filling input should autofill select element with label', async ({page}) => {
+            await forwardConsoleMessages(page)
+            const selectInput = selectInputPage(page)
+
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withIdentity(identity)
+                .applyTo(page)
+
+            await applyScript(page)
+
+            const formWithLabel = true
+
+            await selectInput.navigate('selectInput', formWithLabel)
+            await selectInput.selectFirstName(identity.firstName, formWithLabel)
+            await page.waitForTimeout(100)
+            await selectInput.assertSelectedValue(identity.addressCity, formWithLabel)
+        })
+
         test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
@@ -284,7 +361,7 @@ test.describe('macos', () => {
             await defaultMacosScript(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate('pages/usps_signup.html')
+            await perfPage.navigate('pages/usps_signup.html')
 
             await perfPage.validateInitialScanPerf(200)
         })
@@ -294,7 +371,7 @@ test.describe('macos', () => {
             await defaultMacosScript(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate()
+            await perfPage.navigate()
 
             // In production, we expect autofill to bail on such a page
             await perfPage.validateInitialScanPerf(10)
@@ -313,7 +390,7 @@ test.describe('macos', () => {
                 .applyTo(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate()
+            await perfPage.navigate()
 
             await perfPage.validateInitialScanPerf(300)
         })
@@ -329,8 +406,29 @@ test.describe('macos', () => {
                 .applyTo(page)
 
             const perfPage = scannerPerf(page)
-            perfPage.navigate(constants.pages['perf-huge-regex'])
+            await perfPage.navigate(constants.pages['perf-huge-regex'])
 
+            await perfPage.validateInitialScanPerf(80)
+        })
+
+        /**
+         * See: https://app.asana.com/0/0/1207840563867787/f
+         *
+         * This covered a form with about 60 inputs, but none are deemed 'fillable'.
+         * In that case, we want to ensure we don't do any repeated work.
+         *
+         */
+        test('Large form without eligible inputs', async ({page}) => {
+            test.setTimeout(5000)
+            await createWebkitMocks().applyTo(page)
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .platform('macos')
+                .applyTo(page)
+
+            const perfPage = scannerPerf(page)
+
+            await perfPage.navigate(constants.forms['www_ulisboa_pt_login.html'])
             await perfPage.validateInitialScanPerf(80)
         })
     })
