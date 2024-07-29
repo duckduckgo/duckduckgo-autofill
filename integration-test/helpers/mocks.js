@@ -1,4 +1,5 @@
 const localPagesPrefix = 'integration-test/pages'
+const testFormsPrefix = 'test-forms'
 const privacyTestPagesPrefix = 'node_modules/@duckduckgo/privacy-test-pages/autofill'
 /**
  * Try to use this a place to store re-used values across the integration tests.
@@ -23,7 +24,11 @@ export const constants = {
         'loginCovered': `${localPagesPrefix}/login-covered.html`,
         'loginMultistep': `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
         'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`,
-        'selectInput': `${localPagesPrefix}/select-input.html`
+        'selectInput': `${localPagesPrefix}/select-input.html`,
+        'shadowInputsLogin': `${localPagesPrefix}/shadow-inputs-login.html`
+    },
+    forms: {
+        'www_ulisboa_pt_login.html': `${testFormsPrefix}/www_ulisboa_pt_login.html`
     },
     fields: {
         email: {

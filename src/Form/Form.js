@@ -13,7 +13,8 @@ import {
     wasAutofilledByChrome,
     shouldLog,
     safeRegexTest,
-    getActiveElement
+    getActiveElement,
+    findEnclosedElements
 } from '../autofill-utils.js'
 
 import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
@@ -50,13 +51,14 @@ class Form {
      * @param {import("../DeviceInterface/InterfacePrototype").default} deviceInterface
      * @param {import("../Form/matching").Matching} [matching]
      * @param {Boolean} [shouldAutoprompt]
+     * @param {Boolean} [hasShadowTree]
      */
-    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false) {
-        this.destroyed = false
+    constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
         this.device = deviceInterface
+        this.hasShadowTree = hasShadowTree
 
         /** @type Record<'all' | SupportedMainTypes, Set> */
         this.inputs = {
@@ -115,26 +117,9 @@ class Form {
 
         this.logFormInfo()
 
-        const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size
-        if (numKnownInputs === 0) {
-            // This form has too few known inputs and likely doesn't make sense
-            // to track for autofill (e.g. a single-input for search or item quantity).
-            // Self-destruct to stop listening and avoid memory leaks.
-            if (shouldLog()) {
-                console.log(`Form discarded: zero inputs are fillable`)
-            }
-            this.destroy()
-            return
-        }
-
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
-    }
-
-    /** Whether this form has been destroyed via the `destroy` method or not. */
-    get isDestroyed () {
-        return this.destroyed
     }
 
     get isLogin () {
@@ -381,7 +366,6 @@ class Form {
     }
     // This removes all listeners to avoid memory leaks and weird behaviours
     destroy () {
-        this.destroyed = true
         this.mutObs.disconnect()
         this.removeAllDecorations()
         this.removeTooltip()
@@ -421,7 +405,12 @@ class Form {
                 // For form elements we use .elements to catch fields outside the form itself using the form attribute.
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
-                foundInputs = [...this.form.elements].filter(el => el.matches(selector))
+                const formElements = [...this.form.elements].filter((el) => el.matches(selector))
+                // If there are not form elements, we try to look for all
+                // enclosed elements within the form.
+                foundInputs = formElements.length > 0
+                    ? formElements
+                    : findEnclosedElements(this.form, selector)
             } else {
                 foundInputs = this.form.querySelectorAll(selector)
             }
@@ -430,7 +419,7 @@ class Form {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
                 // This is rather extreme, but better safe than sorry
-                this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`)
+                this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`)
                 return
             }
         }
@@ -444,7 +433,7 @@ class Form {
 
     get submitButtons () {
         const selector = this.matching.cssSelector('submitButtonSelector')
-        const allButtons = /** @type {HTMLElement[]} */([...this.form.querySelectorAll(selector)])
+        const allButtons = /** @type {HTMLElement[]} */(findEnclosedElements(this.form, selector))
 
         return allButtons
             .filter((btn) =>
@@ -497,7 +486,7 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            this.device.scanner.stopScanner('The form has too many inputs, bailing.')
+            this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.')
             return this
         }
 

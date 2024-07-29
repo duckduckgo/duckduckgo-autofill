@@ -4,7 +4,8 @@ import { createMatching } from './Form/matching.js'
 import {
     logPerformance,
     isFormLikelyToBeUsedAsPageWrapper,
-    shouldLog, pierceShadowTree
+    shouldLog, pierceShadowTree,
+    findEnclosedElements
 } from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
@@ -23,7 +24,7 @@ const {
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
- *     stopScanner: (reason: string, ...rest: any) => void;
+ *     setMode: (mode: Mode, reason: string, ...rest: any) => void;
  * }} Scanner
  *
  * @typedef {{
@@ -34,6 +35,8 @@ const {
  *     maxFormsPerPage: number,
  *     maxInputsPerForm: number
  * }} ScannerOptions
+ *
+ * @typedef {'scanning'|'on-click'|'stopped'} Mode
  */
 
 /** @type {ScannerOptions} */
@@ -72,8 +75,8 @@ class DefaultScanner {
     activeInput = null
     /** @type {boolean} A flag to indicate the whole page will be re-scanned */
     rescanAll = false
-    /** @type {boolean} Indicates whether we called stopScanning */
-    stopped = false
+    /** @type {Mode} Indicates the mode in which the scanner is operating */
+    mode = 'scanning'
     /** @type {import("./Form/matching").Matching} matching */
     matching
 
@@ -126,7 +129,7 @@ class DefaultScanner {
         }
 
         return (reason, ...rest) => {
-            this.stopScanner(reason, ...rest)
+            this.setMode('stopped', reason, ...rest)
         }
     }
 
@@ -153,36 +156,53 @@ class DefaultScanner {
         if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
             this.addInput(context)
         } else {
-            const inputs = context.querySelectorAll(this.matching.cssSelector('formInputsSelectorWithoutSelect'))
+            const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+            const inputs = context.querySelectorAll(selector)
             if (inputs.length > this.options.maxInputsPerPage) {
-                this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context)
+                this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context)
                 return this
             }
             inputs.forEach((input) => this.addInput(input))
+            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
+                const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+                findEnclosedElements(context, selector).forEach((input) => {
+                    if (input instanceof HTMLInputElement) {
+                        this.addInput(input, context)
+                    }
+                })
+            }
         }
         return this
     }
 
     /**
-     * Stops scanning, switches off the mutation observer and clears all forms
+     * Sets the scanner mode, logging the reason and any additional arguments.
+     * 'stopped', switches off the mutation observer and clears all forms and listeners,
+     * 'on-click', keeps event listeners so that scanning can continue on clicking,
+     * 'scanning', default operation triggered in normal conditions
+     * Keep the listener for pointerdown to scan on click if needed.
+     * @param {Mode} mode
      * @param {string} reason
      * @param {any} rest
      */
-    stopScanner (reason, ...rest) {
-        this.stopped = true
+    setMode (mode, reason, ...rest) {
+        this.mode = mode
 
         if (shouldLog()) {
-            console.log(reason, ...rest)
+            console.log(mode, reason, ...rest)
         }
 
-        const activeInput = this.device.activeForm?.activeInput
+        if (mode === 'scanning') return
+
+        if (mode === 'stopped') {
+            window.removeEventListener('pointerdown', this, true)
+            window.removeEventListener('focus', this, true)
+        }
 
         // remove Dax, listeners, timers, and observers
         clearTimeout(this.debounceTimer)
         this.changedElements.clear()
         this.mutObs.disconnect()
-        window.removeEventListener('pointerdown', this, true)
-        window.removeEventListener('focus', this, true)
 
         this.forms.forEach(form => {
             form.destroy()
@@ -190,7 +210,12 @@ class DefaultScanner {
         this.forms.clear()
 
         // Bring the user back to the input they were interacting with
+        const activeInput = this.device.activeForm?.activeInput
         activeInput?.focus()
+    }
+
+    get isStopped () {
+        return this.mode === 'stopped'
     }
 
     /**
@@ -218,22 +243,35 @@ class DefaultScanner {
         let traversalLayerCount = 0
         let element = input
         // traverse the DOM to search for related inputs
-        while (traversalLayerCount <= 5 && element.parentElement && element.parentElement !== document.documentElement) {
+        while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
             // Avoid overlapping containers or forms
             const siblingForm = element.parentElement?.querySelector('form')
             if (siblingForm && siblingForm !== element) {
                 return element
             }
 
-            element = element.parentElement
-
-            const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'))
-            const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'))
-            // If we find a button or another input, we assume that's our form
-            if (inputs.length > 1 || buttons.length) {
-                // found related input, return common ancestor
+            if (element instanceof HTMLFormElement) {
                 return element
             }
+
+            if (element.parentElement) {
+                element = element.parentElement
+                const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'))
+                const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'))
+                // If we find a button or another input, we assume that's our form
+                if (inputs.length > 1 || buttons.length) {
+                    // found related input, return common ancestor
+                    return element
+                }
+            } else {
+                // possibly a shadow boundary, so traverse through the shadow root and find the form
+                const root = element.getRootNode()
+                if (root instanceof ShadowRoot && root.host) {
+                    // @ts-ignore
+                    element = root.host
+                }
+            }
+
             traversalLayerCount++
         }
 
@@ -242,11 +280,12 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {HTMLFormElement|null} form
      */
-    addInput (input) {
-        if (this.stopped) return
+    addInput (input, form = null) {
+        if (this.isStopped) return
 
-        const parentForm = this.getParentForm(input)
+        const parentForm = form || this.getParentForm(input)
 
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm)
@@ -254,7 +293,7 @@ class DefaultScanner {
             if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
                 foundForm.addInput(input)
             } else {
-                this.stopScanner('The form has too many inputs, destroying.')
+                this.setMode('stopped', 'The form has too many inputs, destroying.')
             }
             return
         }
@@ -298,13 +337,10 @@ class DefaultScanner {
 
             // Only add the form if below the limit of forms per page
             if (this.forms.size < this.options.maxFormsPerPage) {
-                const f = new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt)
+                this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt))
                 // Also only add the form if it hasn't self-destructed due to having too few fields
-                if (!f.isDestroyed) {
-                    this.forms.set(parentForm, f)
-                }
             } else {
-                this.stopScanner('The page has too many forms, stop adding them.')
+                this.setMode('on-click', 'The page has too many forms, stop adding them.')
             }
         }
     }
@@ -382,7 +418,7 @@ class DefaultScanner {
         switch (event.type) {
         case 'pointerdown':
         case 'focus':
-            this.scanShadow(event)
+            this.scanOnClick(event)
             break
         }
     }
@@ -391,24 +427,28 @@ class DefaultScanner {
      * Scan clicked input fields, even if they're within a shadow tree
      * @param {FocusEvent | PointerEvent} event
      */
-    scanShadow (event) {
-        // If the scanner is stopped or there's no shadow root, just return
-        if (
-            this.stopped ||
-            !(event.target instanceof Element) ||
-            !event.target?.shadowRoot
-        ) return
+    scanOnClick (event) {
+        // If the scanner is stopped, just return
+        if (this.isStopped || !(event.target instanceof Element)) return
 
         window.performance?.mark?.('scan_shadow:init:start')
 
+        // If the target is an input, find the real target in case it's in a shadow tree
         const realTarget = pierceShadowTree(event, HTMLInputElement)
 
-        // If it's an input we haven't already scanned, scan the whole shadow tree
+        // If it's an input we haven't already scanned,
+        // find the enclosing parent form, and scan it.
         if (
             realTarget instanceof HTMLInputElement &&
             !realTarget.hasAttribute(ATTR_INPUT_TYPE)
         ) {
-            this.findEligibleInputs(realTarget.getRootNode())
+            const parentForm = this.getParentForm(realTarget)
+            if (parentForm && parentForm instanceof HTMLFormElement) {
+                const hasShadowTree = event.target?.shadowRoot != null
+                const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
+                this.forms.set(parentForm, form)
+                this.findEligibleInputs(parentForm)
+            }
         }
 
         window.performance?.mark?.('scan_shadow:init:end')
