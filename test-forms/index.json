@@ -542,5 +542,6 @@
   { "html": "myecp_payment.html", "expectedFailures": ["unknown", "unknown", "birthdayMonth", "birthdayDay", "birthdayYear"] },
   { "html": "myecp_login.html", "expectedFailures": ["username"] },
   { "html": "fullcolor_login.html" },
+  { "html": "malta-taxes-payment-form.html", "expectedFailures": ["expirationMonth", "expirationYear", "cardSecurityCode"] },
   { "html": "single-select-form.html" }
 ]
