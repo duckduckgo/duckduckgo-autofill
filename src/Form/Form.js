@@ -457,8 +457,7 @@ class Form {
     }
 
     canCategorizeUnknownUsername () {
-        return true
-        // return !!this.device.settings.featureToggles.unknown_username_categorization
+        return !!this.device.settings.featureToggles.unknown_username_categorization
     }
 
     get submitButtons () {

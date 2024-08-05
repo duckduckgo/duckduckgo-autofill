@@ -10127,10 +10127,8 @@ class Form {
     }
   }
   canCategorizeUnknownUsername() {
-    return true;
-    // return !!this.device.settings.featureToggles.unknown_username_categorization
+    return !!this.device.settings.featureToggles.unknown_username_categorization;
   }
-
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
     const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.findEnclosedElements)(this.form, selector);
