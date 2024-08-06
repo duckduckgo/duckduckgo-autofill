@@ -5939,13 +5939,9 @@ class Form {
       const hasUsername = credentialInputs.some(input => (0, _matching.getInputSubtype)(input) === 'username');
       if (this.inputs.unknown.size === 1 && this.isLogin && !hasUsername) {
         const [unknownInput] = [...this.inputs.unknown];
-        const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => {
-          const isPassword = (0, _matching.getInputSubtype)(input) === 'password';
-          const isVisible = input.checkVisibility?.() ?? input.style.display !== 'none';
-          return isPassword && isVisible;
-        });
+        const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password');
         const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-        if (passwordInputs.length === 1 && unknownInput.matches?.(inputSelector)) {
+        if (passwordInputs.length > 0 && unknownInput.matches?.(inputSelector)) {
           unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
           this.decorateInput(unknownInput);
           this.inputs.credentials.add(unknownInput);
@@ -5961,7 +5957,7 @@ class Form {
     }
   }
   canCategorizeUnknownUsername() {
-    return !!this.device.settings.featureToggles.unknown_username_categorization;
+    return this.device.settings.featureToggles.unknown_username_categorization;
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
