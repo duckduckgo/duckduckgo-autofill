@@ -40,7 +40,8 @@ export function unknownUsernameLoginPage (page) {
 
         async assertUnknownFieldIsUsername () {
             const input = await page.locator('#unknown')
-            expect(await input.getAttribute('data-ddg-inputtype')).toBe('credentials.username')
+            const inputType = await input.getAttribute('data-ddg-inputtype')
+            await expect(inputType).toBe('credentials.username')
         }
 
         /**
