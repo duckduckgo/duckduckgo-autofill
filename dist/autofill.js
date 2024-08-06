@@ -5932,12 +5932,20 @@ class Form {
         return;
       }
     }
+
+    // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
     if (this.canCategorizeUnknownUsername()) {
-      // if we have an unknown input, and only one non-hidden password input, we can assume the unknown input is the username
-      // In that case we move the inputs to the correct category
       const credentialInputs = [...this.inputs.credentials];
       const hasUsername = credentialInputs.some(input => (0, _matching.getInputSubtype)(input) === 'username');
-      if (this.inputs.unknown.size === 1 && this.isLogin && !hasUsername) {
+      const hasIdentitiesOrCreditCards = this.inputs.identities.size > 0 || this.inputs.creditCards.size > 0;
+      const hasLoneUnknownInput = this.inputs.unknown.size === 1;
+
+      // Categorise if the form:
+      // 1. doesn't have a username field,
+      // 2. doesn't have identities or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
+      // 3. has exactly one unknown input, and
+      // 4. the form is a login form.
+      if (!hasUsername && !hasIdentitiesOrCreditCards && hasLoneUnknownInput && this.isLogin) {
         const [unknownInput] = [...this.inputs.unknown];
         const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password');
         const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');

@@ -528,7 +528,7 @@
   { "html": "leafly_login.html" },
   { "html": "etsy_security-step.html", "expectedSubmitFalsePositives": 1 },
   { "html": "github_assign-reviewer.html" },
-  { "html": "simplii_login.html", "expectedFailures": ["unknown"] },
+  { "html": "simplii_login.html" },
   { "html": "nytedu_login.html" },
   { "html": "usaa_login.html" },
   { "html": "wallstreetjournal_login.html", "expectedSubmitFalsePositives": 1 },
