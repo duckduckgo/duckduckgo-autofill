@@ -7,6 +7,7 @@ import {loginPage} from '../helpers/pages/loginPage.js'
 import {overlayPage} from '../helpers/pages/overlayPage.js'
 import {genericPage} from '../helpers/pages/genericPage.js'
 import { shadowInputsLoginPage } from '../helpers/pages/shadowInputsLoginPage.js'
+import { loginWithPasswordResetPage } from '../helpers/pages/loginWithPasswordReset.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -34,6 +35,22 @@ async function mocks (page) {
 
 /**
  * @param {import("@playwright/test").Page} page
+ * @param {{
+ *  overlay?: boolean,
+ *  clickLabel?: boolean,
+ *  pageType?: keyof typeof constants.pages,
+ *  availableInputTypes?: import('./login-form.android.spec.js').AvailableInputTypes
+ * }} [opts]
+ */
+async function loadAutofillWithReplacements (page, opts) {
+    await createAutofillScript()
+        .replaceAll(macosContentScopeReplacements(opts))
+        .platform('macos')
+        .applyTo(page)
+}
+
+/**
+ * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean, pageType?: keyof typeof constants.pages}} [opts]
  */
 async function testLoginPage (page, opts = {}) {
@@ -45,10 +62,7 @@ async function testLoginPage (page, opts = {}) {
     const {personalAddress, password} = await mocks(page)
 
     // Load the autofill.js script with replacements
-    await createAutofillScript()
-        .replaceAll(macosContentScopeReplacements({overlay}))
-        .platform('macos')
-        .applyTo(page)
+    await loadAutofillWithReplacements(page, {overlay})
 
     const login = loginPage(page, {overlay, clickLabel})
     await login.navigate(pageType)
@@ -67,10 +81,7 @@ async function createLoginFormInModalPage (page) {
     await mocks(page)
 
     // Pretend we're running in a top-frame scenario
-    await createAutofillScript()
-        .replaceAll(macosContentScopeReplacements())
-        .platform('macos')
-        .applyTo(page)
+    await loadAutofillWithReplacements(page)
 
     const login = loginPage(page)
     await login.navigate('loginWithFormInModal')
@@ -81,19 +92,43 @@ async function createLoginFormInModalPage (page) {
     return login
 }
 
+/**
+ * @param {import("@playwright/test").Page} page
+ */
+async function createLoginFormWithPasswordResetPage (page) {
+    await forwardConsoleMessages(page)
+    await mocks(page)
+
+    await loadAutofillWithReplacements(page, {})
+    const login = loginWithPasswordResetPage(page)
+
+    await login.navigate()
+    return login
+}
+
 test.describe('Auto-fill a login form on macOS', () => {
     test.describe('when elements are within (open) shadow roots', () => {
         test('clicking on username should fill the username and password field', async ({page}) => {
             await forwardConsoleMessages(page)
             await mocks(page)
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({}))
-                .platform('macos')
-                .applyTo(page)
+            await loadAutofillWithReplacements(page, {})
+
             const login = shadowInputsLoginPage(page)
             await login.navigate()
             await login.clickTheUsernameField(personalAddress)
             await login.assertCredentialsFilled(personalAddress, password)
+        })
+    })
+
+    test.describe('when a login form has a password reset label', () => {
+        test('password field shows the fill icon', async ({page}) => {
+            const login = await createLoginFormWithPasswordResetPage(page)
+            await login.passwordFieldShowsFillIcon()
+        })
+        test('clicking on username should fill the username and password field', async ({page}) => {
+            const login = await createLoginFormWithPasswordResetPage(page)
+            await login.selectUsernameField(personalAddress)
+            await login.credentialsFilled(personalAddress, password)
         })
     })
 
@@ -118,10 +153,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await mocks(page)
 
                 // Load the autofill.js script with replacements
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements({overlay: true}))
-                    .platform('macos')
-                    .applyTo(page)
+                await loadAutofillWithReplacements(page, {overlay: true})
 
                 const login = loginPage(page, {overlay: true})
 
@@ -139,10 +171,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await mocks(page)
 
                 // Load the autofill.js script with replacements
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements({overlay: true}))
-                    .platform('macos')
-                    .applyTo(page)
+                await loadAutofillWithReplacements(page, {overlay: true})
 
                 const login = loginPage(page, {overlay: true})
 
@@ -257,10 +286,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await forwardConsoleMessages(page)
                 const {personalAddress, password} = await mocks(page)
 
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements())
-                    .platform('macos')
-                    .applyTo(page)
+                await loadAutofillWithReplacements(page)
 
                 const login = loginPage(page)
                 await login.navigate('loginWithText')
@@ -292,14 +318,11 @@ test.describe('Auto-fill a login form on macOS', () => {
                 await createWebkitMocks()
                     .applyTo(page)
 
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements({
-                        availableInputTypes: {
-                            credentials: {username: false, password: false}
-                        }
-                    }))
-                    .platform('macos')
-                    .applyTo(page)
+                await loadAutofillWithReplacements(page, {
+                    availableInputTypes: {
+                        credentials: {username: false, password: false}
+                    }
+                })
 
                 const login = loginPage(page)
                 await login.navigate()
@@ -317,10 +340,7 @@ test.describe('Auto-fill a login form on macOS', () => {
                     .withPrivateEmail('random123@duck.com')
                     .applyTo(page)
 
-                await createAutofillScript()
-                    .replaceAll(macosContentScopeReplacements())
-                    .platform('macos')
-                    .applyTo(page)
+                await loadAutofillWithReplacements(page)
 
                 const login = loginPage(page)
                 await login.navigate()
