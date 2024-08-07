@@ -5913,12 +5913,13 @@ class Form {
     } else {
       /** @type {Element[] | NodeList} */
       let foundInputs = [];
-      if (this.form instanceof HTMLFormElement) {
+      // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+      if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
         // It also catches all elements when the markup is broken.
         // We use .filter to avoid fieldset, button, textarea etc.
         const formElements = [...this.form.elements].filter(el => el.matches(selector));
-        // If there are not form elements, we try to look for all
+        // If there are no form elements, we try to look for all
         // enclosed elements within the form.
         foundInputs = formElements.length > 0 ? formElements : (0, _autofillUtils.findEnclosedElements)(this.form, selector);
       } else {
