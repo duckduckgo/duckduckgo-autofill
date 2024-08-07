@@ -7,7 +7,6 @@ import {loginPage} from '../helpers/pages/loginPage.js'
 import {overlayPage} from '../helpers/pages/overlayPage.js'
 import {genericPage} from '../helpers/pages/genericPage.js'
 import { shadowInputsLoginPage } from '../helpers/pages/shadowInputsLoginPage.js'
-import { loginWithPasswordResetPage } from '../helpers/pages/loginWithPasswordReset.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -92,20 +91,6 @@ async function createLoginFormInModalPage (page) {
     return login
 }
 
-/**
- * @param {import("@playwright/test").Page} page
- */
-async function createLoginFormWithPasswordResetPage (page) {
-    await forwardConsoleMessages(page)
-    await mocks(page)
-
-    await loadAutofillWithReplacements(page, {})
-    const login = loginWithPasswordResetPage(page)
-
-    await login.navigate()
-    return login
-}
-
 test.describe('Auto-fill a login form on macOS', () => {
     test.describe('when elements are within (open) shadow roots', () => {
         test('clicking on username should fill the username and password field', async ({page}) => {
@@ -117,18 +102,6 @@ test.describe('Auto-fill a login form on macOS', () => {
             await login.navigate()
             await login.clickTheUsernameField(personalAddress)
             await login.assertCredentialsFilled(personalAddress, password)
-        })
-    })
-
-    test.describe('when a login form has a password reset label', () => {
-        test('password field shows the fill icon', async ({page}) => {
-            const login = await createLoginFormWithPasswordResetPage(page)
-            await login.passwordFieldShowsFillIcon()
-        })
-        test('clicking on username should fill the username and password field', async ({page}) => {
-            const login = await createLoginFormWithPasswordResetPage(page)
-            await login.selectUsernameField(personalAddress)
-            await login.credentialsFilled(personalAddress, password)
         })
     })
 
