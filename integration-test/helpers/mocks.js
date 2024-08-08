@@ -26,7 +26,7 @@ export const constants = {
         'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`,
         'selectInput': `${localPagesPrefix}/select-input.html`,
         'shadowInputsLogin': `${localPagesPrefix}/shadow-inputs-login.html`,
-        'loginWithPasswordReset': `${localPagesPrefix}/login-with-password-reset.html`
+        'unknownUsernameLogin': `${localPagesPrefix}/unknown-username-login.html`
     },
     forms: {
         'www_ulisboa_pt_login.html': `${testFormsPrefix}/www_ulisboa_pt_login.html`

@@ -602,6 +602,10 @@ export interface AutofillFeatureToggles {
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
   third_party_credentials_provider?: boolean;
+  /**
+   * If true, we will attempt categorizaing username, based on the rest of the input fields in the form
+   */
+  unknown_username_categorization?: boolean;
 }
 export interface GetAliasParams {
   requiresUserPermission: boolean;

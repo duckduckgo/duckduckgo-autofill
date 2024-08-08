@@ -427,12 +427,44 @@ class Form {
                 return
             }
         }
+
+        // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
+        if (this.canCategorizeUnknownUsername()) {
+            const credentialInputs = [...this.inputs.credentials]
+            const hasUsername = credentialInputs.some(input => getInputSubtype(input) === 'username')
+            const hasIdentitiesOrCreditCards = this.inputs.identities.size > 0 || this.inputs.creditCards.size > 0
+            const hasLoneUnknownInput = this.inputs.unknown.size === 1
+
+            // Categorise if the form:
+            // 1. doesn't have a username field,
+            // 2. doesn't have identities or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
+            // 3. has exactly one unknown input, and
+            // 4. the form is a login form.
+            if (!hasUsername && !hasIdentitiesOrCreditCards && hasLoneUnknownInput && this.isLogin) {
+                const [unknownInput] = [...this.inputs.unknown]
+                const passwordInputs = credentialInputs.filter(
+                    (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password'
+                )
+                const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+                if (passwordInputs.length > 0 && unknownInput.matches?.(inputSelector)) {
+                    unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
+                    this.decorateInput(unknownInput)
+                    this.inputs.credentials.add(unknownInput)
+                    this.inputs.unknown.delete(unknownInput)
+                }
+            }
+        }
+
         this.initialScanComplete = true
 
         // Observe only if the container isn't the body, to avoid performance overloads
         if (this.form !== document.body) {
             this.mutObs.observe(this.form, this.mutObsConfig)
         }
+    }
+
+    canCategorizeUnknownUsername () {
+        return this.device.settings.featureToggles.unknown_username_categorization
     }
 
     get submitButtons () {
