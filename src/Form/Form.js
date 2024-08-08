@@ -499,15 +499,6 @@ class Form {
         })
     }
 
-    execOnInput (fn, input, shouldCheckForDecorate) {
-        let canExecute = true
-        // sometimes we want to execute even if we didn't decorate
-        if (shouldCheckForDecorate) {
-            canExecute = isFieldDecorated(input)
-        }
-        if (canExecute) fn(input)
-    }
-
     /**
      * Executes a function on input elements. Can be limited to certain element types
      * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
@@ -517,7 +508,12 @@ class Form {
     execOnInputs (fn, inputType = 'all', shouldCheckForDecorate = true) {
         const inputs = this.inputs[inputType]
         for (const input of inputs) {
-            this.execOnInput(fn, input, shouldCheckForDecorate)
+            let canExecute = true
+            // sometimes we want to execute even if we didn't decorate
+            if (shouldCheckForDecorate) {
+                canExecute = isFieldDecorated(input)
+            }
+            if (canExecute) fn(input)
         }
     }
 

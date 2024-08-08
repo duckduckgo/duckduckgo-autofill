@@ -10160,14 +10160,6 @@ class Form {
       }
     });
   }
-  execOnInput(fn, input, shouldCheckForDecorate) {
-    let canExecute = true;
-    // sometimes we want to execute even if we didn't decorate
-    if (shouldCheckForDecorate) {
-      canExecute = (0, _inputTypeConfig.isFieldDecorated)(input);
-    }
-    if (canExecute) fn(input);
-  }
 
   /**
    * Executes a function on input elements. Can be limited to certain element types
@@ -10180,7 +10172,12 @@ class Form {
     let shouldCheckForDecorate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     const inputs = this.inputs[inputType];
     for (const input of inputs) {
-      this.execOnInput(fn, input, shouldCheckForDecorate);
+      let canExecute = true;
+      // sometimes we want to execute even if we didn't decorate
+      if (shouldCheckForDecorate) {
+        canExecute = (0, _inputTypeConfig.isFieldDecorated)(input);
+      }
+      if (canExecute) fn(input);
     }
   }
   addInput(input) {
