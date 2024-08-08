@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Replicating camelcamelcamel.com's login page, which has a password reset message in a label, linked to the password field</title>
+    </head>
+    <body>
+        <form method="post" action="/sessions/create" target="_parent" id="loginform">
+            <input type="hidden" name="return_to" value="">
+            <input type="hidden" name="remember_me" value="1">
+            <label class="first" for="login">Username or Email</label>
+            <input type="text" name="login" id="login" value="" tabindex="1" data-manual-scoring="username">
+            <label for="password">Password (Forgot your password? <a href="/forgot_password" tabindex="3">Reset it.</a>)</label>
+            <input type="password" name="password" id="password" tabindex="2" data-manual-scoring="password.current">
+            <input class="button large expanded" type="submit" value="Log in" data-manual-submit>
+        </form>
+    </body>
+</html>

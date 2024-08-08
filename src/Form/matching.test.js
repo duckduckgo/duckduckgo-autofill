@@ -172,6 +172,12 @@ describe('matching', () => {
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
             opts: {isHybrid: true, hasCredentials: true, supportsIdentitiesAutofill: true}
+        },
+        {
+            // a login form's password input with 'reset' in the label should be a current subtype
+            html: `<label for="password">Password (Forgot your password? Reset it)</label><input id="password" name></input>`,
+            subtype: 'credentials.password.current',
+            opts: {isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true}
         }
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args

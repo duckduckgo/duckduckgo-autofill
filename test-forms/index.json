@@ -543,5 +543,6 @@
   { "html": "myecp_login.html", "expectedFailures": ["username"] },
   { "html": "fullcolor_login.html" },
   { "html": "malta-taxes-payment-form.html", "expectedFailures": ["expirationMonth", "expirationYear", "cardSecurityCode"] },
-  { "html": "single-select-form.html" }
+  { "html": "single-select-form.html" },
+  { "html": "camelcamelcamel_login.html" }
 ]
