@@ -25,7 +25,8 @@ export const constants = {
         'loginMultistep': `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
         'shadowDom': `${privacyTestPagesPrefix}/shadow-dom.html`,
         'selectInput': `${localPagesPrefix}/select-input.html`,
-        'shadowInputsLogin': `${localPagesPrefix}/shadow-inputs-login.html`
+        'shadowInputsLogin': `${localPagesPrefix}/shadow-inputs-login.html`,
+        'loginWithPasswordReset': `${localPagesPrefix}/login-with-password-reset.html`
     },
     forms: {
         'www_ulisboa_pt_login.html': `${testFormsPrefix}/www_ulisboa_pt_login.html`

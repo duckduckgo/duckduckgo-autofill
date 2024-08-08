@@ -12503,7 +12503,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         newPassword: {
-          match: /new|re.?(enter|type)|repeat|update|reset\b/iu
+          match: /new|re.?(enter|type)|repeat|update\b/iu
         },
         currentPassword: {
           match: /current|old|previous|expired|existing/iu

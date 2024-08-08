@@ -121,8 +121,8 @@ export function loginPage (page, opts = {}) {
          * @param {string} username
          * @return {Promise<void>}
          */
-        async assertUsernameFilled (username) {
-            const emailField = page.locator('#email')
+        async assertUsernameFilled (username, locator = '#email') {
+            const emailField = page.locator(locator)
             await expect(emailField).toHaveValue(username)
         }
 
