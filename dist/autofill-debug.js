@@ -7215,6 +7215,9 @@ module.exports={
   "prestocard.ca": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit,[!\"#$%&'()*+,<>?@];"
   },
+  "pret.com": {
+    "password-rules": "minlength: 12; required: lower; required: digit; required: [@$!%*#?&]; allowed: upper;"
+  },
   "propelfuels.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
   },
@@ -9752,7 +9755,6 @@ class Form {
   constructor(form, input, deviceInterface, matching) {
     let shouldAutoprompt = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
     let hasShadowTree = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
-    this.destroyed = false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
     this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
@@ -9812,25 +9814,9 @@ class Form {
     this.initFormListeners();
     this.categorizeInputs();
     this.logFormInfo();
-    const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size;
-    if (numKnownInputs === 0) {
-      // This form has too few known inputs and likely doesn't make sense
-      // to track for autofill (e.g. a single-input for search or item quantity).
-      // Self-destruct to stop listening and avoid memory leaks.
-      if ((0, _autofillUtils.shouldLog)()) {
-        console.log(`Form discarded: zero inputs are fillable`);
-      }
-      this.destroy();
-      return;
-    }
     if (shouldAutoprompt) {
       this.promptLoginIfNeeded();
     }
-  }
-
-  /** Whether this form has been destroyed via the `destroy` method or not. */
-  get isDestroyed() {
-    return this.destroyed;
   }
   get isLogin() {
     return this.formAnalyzer.isLogin;
@@ -10064,7 +10050,6 @@ class Form {
   }
   // This removes all listeners to avoid memory leaks and weird behaviours
   destroy() {
-    this.destroyed = true;
     this.mutObs.disconnect();
     this.removeAllDecorations();
     this.removeTooltip();
@@ -10099,12 +10084,13 @@ class Form {
     } else {
       /** @type {Element[] | NodeList} */
       let foundInputs = [];
-      if (this.form instanceof HTMLFormElement) {
+      // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+      if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
         // For form elements we use .elements to catch fields outside the form itself using the form attribute.
         // It also catches all elements when the markup is broken.
         // We use .filter to avoid fieldset, button, textarea etc.
         const formElements = [...this.form.elements].filter(el => el.matches(selector));
-        // If there are not form elements, we try to look for all
+        // If there are no form elements, we try to look for all
         // enclosed elements within the form.
         foundInputs = formElements.length > 0 ? formElements : (0, _autofillUtils.findEnclosedElements)(this.form, selector);
       } else {
@@ -10114,8 +10100,33 @@ class Form {
         foundInputs.forEach(input => this.addInput(input));
       } else {
         // This is rather extreme, but better safe than sorry
-        this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`);
+        this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`);
         return;
+      }
+    }
+
+    // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
+    if (this.canCategorizeUnknownUsername()) {
+      const credentialInputs = [...this.inputs.credentials];
+      const hasUsername = credentialInputs.some(input => (0, _matching.getInputSubtype)(input) === 'username');
+      const hasIdentitiesOrCreditCards = this.inputs.identities.size > 0 || this.inputs.creditCards.size > 0;
+      const hasLoneUnknownInput = this.inputs.unknown.size === 1;
+
+      // Categorise if the form:
+      // 1. doesn't have a username field,
+      // 2. doesn't have identities or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
+      // 3. has exactly one unknown input, and
+      // 4. the form is a login form.
+      if (!hasUsername && !hasIdentitiesOrCreditCards && hasLoneUnknownInput && this.isLogin) {
+        const [unknownInput] = [...this.inputs.unknown];
+        const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password');
+        const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        if (passwordInputs.length > 0 && unknownInput.matches?.(inputSelector)) {
+          unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
+          this.decorateInput(unknownInput);
+          this.inputs.credentials.add(unknownInput);
+          this.inputs.unknown.delete(unknownInput);
+        }
       }
     }
     this.initialScanComplete = true;
@@ -10124,6 +10135,9 @@ class Form {
     if (this.form !== document.body) {
       this.mutObs.observe(this.form, this.mutObsConfig);
     }
+  }
+  canCategorizeUnknownUsername() {
+    return this.device.settings.featureToggles.unknown_username_categorization;
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
@@ -10176,7 +10190,7 @@ class Form {
 
     // If the form has too many inputs, destroy everything to avoid performance issues
     if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-      this.device.scanner.stopScanner('The form has too many inputs, bailing.');
+      this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.');
       return this;
     }
 
@@ -10527,7 +10541,9 @@ class Form {
       // reset this to its initial value
       this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
     } else {
-      // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
+      // otherwise reset shouldPromptToStoreData to to initial value
+      this.resetShouldPromptToStoreData();
+      // and do autosubmit because the experience is jarring
       this.shouldAutoSubmit = false;
     }
     this.device.postAutofill?.(data, dataType, this);
@@ -12520,7 +12536,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
         },
         newPassword: {
-          match: /new|re.?(enter|type)|repeat|update|reset\b/iu
+          match: /new|re.?(enter|type)|repeat|update\b/iu
         },
         currentPassword: {
           match: /current|old|previous|expired|existing/iu
@@ -14210,7 +14226,7 @@ const {
  *     findEligibleInputs(context): Scanner;
  *     matching: import("./Form/matching").Matching;
  *     options: ScannerOptions;
- *     stopScanner: (reason: string, ...rest: any) => void;
+ *     setMode: (mode: Mode, reason: string, ...rest: any) => void;
  * }} Scanner
  *
  * @typedef {{
@@ -14221,6 +14237,8 @@ const {
  *     maxFormsPerPage: number,
  *     maxInputsPerForm: number
  * }} ScannerOptions
+ *
+ * @typedef {'scanning'|'on-click'|'stopped'} Mode
  */
 
 /** @type {ScannerOptions} */
@@ -14259,8 +14277,8 @@ class DefaultScanner {
   activeInput = null;
   /** @type {boolean} A flag to indicate the whole page will be re-scanned */
   rescanAll = false;
-  /** @type {boolean} Indicates whether we called stopScanning */
-  stopped = false;
+  /** @type {Mode} Indicates the mode in which the scanner is operating */
+  mode = 'scanning';
   /** @type {import("./Form/matching").Matching} matching */
   matching;
 
@@ -14311,7 +14329,7 @@ class DefaultScanner {
       for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         rest[_key - 1] = arguments[_key];
       }
-      _this.stopScanner(reason, ...rest);
+      _this.setMode('stopped', reason, ...rest);
     };
   }
 
@@ -14343,7 +14361,7 @@ class DefaultScanner {
       const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
       const inputs = context.querySelectorAll(selector);
       if (inputs.length > this.options.maxInputsPerPage) {
-        this.stopScanner(`Too many input fields in the given context (${inputs.length}), stop scanning`, context);
+        this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
       }
       inputs.forEach(input => this.addInput(input));
@@ -14360,33 +14378,44 @@ class DefaultScanner {
   }
 
   /**
-   * Stops scanning, switches off the mutation observer and clears all forms
+   * Sets the scanner mode, logging the reason and any additional arguments.
+   * 'stopped', switches off the mutation observer and clears all forms and listeners,
+   * 'on-click', keeps event listeners so that scanning can continue on clicking,
+   * 'scanning', default operation triggered in normal conditions
+   * Keep the listener for pointerdown to scan on click if needed.
+   * @param {Mode} mode
    * @param {string} reason
    * @param {any} rest
    */
-  stopScanner(reason) {
-    this.stopped = true;
+  setMode(mode, reason) {
+    this.mode = mode;
     if ((0, _autofillUtils.shouldLog)()) {
-      for (var _len2 = arguments.length, rest = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        rest[_key2 - 1] = arguments[_key2];
+      for (var _len2 = arguments.length, rest = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        rest[_key2 - 2] = arguments[_key2];
       }
-      console.log(reason, ...rest);
+      console.log(mode, reason, ...rest);
     }
-    const activeInput = this.device.activeForm?.activeInput;
+    if (mode === 'scanning') return;
+    if (mode === 'stopped') {
+      window.removeEventListener('pointerdown', this, true);
+      window.removeEventListener('focus', this, true);
+    }
 
     // remove Dax, listeners, timers, and observers
     clearTimeout(this.debounceTimer);
     this.changedElements.clear();
     this.mutObs.disconnect();
-    window.removeEventListener('pointerdown', this, true);
-    window.removeEventListener('focus', this, true);
     this.forms.forEach(form => {
       form.destroy();
     });
     this.forms.clear();
 
     // Bring the user back to the input they were interacting with
+    const activeInput = this.device.activeForm?.activeInput;
     activeInput?.focus();
+  }
+  get isStopped() {
+    return this.mode === 'stopped';
   }
 
   /**
@@ -14450,7 +14479,7 @@ class DefaultScanner {
    */
   addInput(input) {
     let form = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    if (this.stopped) return;
+    if (this.isStopped) return;
     const parentForm = form || this.getParentForm(input);
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
@@ -14458,7 +14487,7 @@ class DefaultScanner {
       if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
         foundForm.addInput(input);
       } else {
-        this.stopScanner('The form has too many inputs, destroying.');
+        this.setMode('stopped', 'The form has too many inputs, destroying.');
       }
       return;
     }
@@ -14501,13 +14530,10 @@ class DefaultScanner {
 
       // Only add the form if below the limit of forms per page
       if (this.forms.size < this.options.maxFormsPerPage) {
-        const f = new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt);
+        this.forms.set(parentForm, new _Form.Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
         // Also only add the form if it hasn't self-destructed due to having too few fields
-        if (!f.isDestroyed) {
-          this.forms.set(parentForm, f);
-        }
       } else {
-        this.stopScanner('The page has too many forms, stop adding them.');
+        this.setMode('on-click', 'The page has too many forms, stop adding them.');
       }
     }
   }
@@ -14583,7 +14609,7 @@ class DefaultScanner {
     switch (event.type) {
       case 'pointerdown':
       case 'focus':
-        this.scanShadow(event);
+        this.scanOnClick(event);
         break;
     }
   }
@@ -14592,10 +14618,12 @@ class DefaultScanner {
    * Scan clicked input fields, even if they're within a shadow tree
    * @param {FocusEvent | PointerEvent} event
    */
-  scanShadow(event) {
-    // If the scanner is stopped or there's no shadow root, just return
-    if (this.stopped || !(event.target instanceof Element) || !event.target?.shadowRoot) return;
+  scanOnClick(event) {
+    // If the scanner is stopped, just return
+    if (this.isStopped || !(event.target instanceof Element)) return;
     window.performance?.mark?.('scan_shadow:init:start');
+
+    // If the target is an input, find the real target in case it's in a shadow tree
     const realTarget = (0, _autofillUtils.pierceShadowTree)(event, HTMLInputElement);
 
     // If it's an input we haven't already scanned,
@@ -14603,7 +14631,8 @@ class DefaultScanner {
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const parentForm = this.getParentForm(realTarget);
       if (parentForm && parentForm instanceof HTMLFormElement) {
-        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, true);
+        const hasShadowTree = event.target?.shadowRoot != null;
+        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
         this.forms.set(parentForm, form);
         this.findEligibleInputs(parentForm);
       }
@@ -14980,7 +15009,8 @@ class Settings {
       inputType_identities: false,
       inputType_credentials: false,
       inputType_creditCards: false,
-      inlineIcon_credentials: false
+      inlineIcon_credentials: false,
+      unknown_username_categorization: false
     },
     /** @type {AvailableInputTypes} */
     availableInputTypes: {
@@ -17886,7 +17916,8 @@ const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = _zod
   password_generation: _zod.z.boolean().optional(),
   credentials_saving: _zod.z.boolean().optional(),
   inlineIcon_credentials: _zod.z.boolean().optional(),
-  third_party_credentials_provider: _zod.z.boolean().optional()
+  third_party_credentials_provider: _zod.z.boolean().optional(),
+  unknown_username_categorization: _zod.z.boolean().optional()
 });
 const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = _zod.z.object({
   generatedPassword: generatedPasswordSchema.optional(),

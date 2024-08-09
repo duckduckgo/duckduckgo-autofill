@@ -15,7 +15,7 @@ export function genericPage (page) {
             await expect(field).toHaveAttribute('data-ddg-inputtype')
 
             const passwordStyle = await page.locator(selector).getAttribute('style')
-            expect(passwordStyle).toContain(constants.iconMatchers.keyFill)
+            await expect(passwordStyle).toContain(constants.iconMatchers.keyFill)
         }
 
         async passwordFieldShowsGenKey (selector = '#password') {
@@ -24,17 +24,25 @@ export function genericPage (page) {
             await expect(field).toHaveAttribute('data-ddg-inputtype')
 
             const passwordStyle = await page.locator(selector).getAttribute('style')
-            expect(passwordStyle).toContain(constants.iconMatchers.keyGen)
+            await expect(passwordStyle).toContain(constants.iconMatchers.keyGen)
         }
 
         async passwordHasNoIcon (selector = '#password') {
             const passwordStyle = await page.locator(selector).getAttribute('style')
-            expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
+            await expect(passwordStyle || '').not.toContain('data:image/svg+xml;base64,')
+        }
+
+        async locateAndClick (selector) {
+            const input = page.locator(selector)
+            await input.click({force: true})
         }
 
         async clickThePasswordField (selector = '#password') {
-            const input = page.locator(selector)
-            await input.click({force: true})
+            await this.locateAndClick(selector)
+        }
+
+        async clickTheUsernameField (selector = '#username') {
+            await this.locateAndClick(selector)
         }
 
         async selectGeneratedPassword (selector = '#password') {

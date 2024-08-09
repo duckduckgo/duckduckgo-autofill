@@ -54,7 +54,6 @@ class Form {
      * @param {Boolean} [hasShadowTree]
      */
     constructor (form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
-        this.destroyed = false
         this.form = form
         this.matching = matching || createMatching()
         this.formAnalyzer = new FormAnalyzer(form, input, matching)
@@ -118,26 +117,9 @@ class Form {
 
         this.logFormInfo()
 
-        const numKnownInputs = this.inputs.all.size - this.inputs.unknown.size
-        if (numKnownInputs === 0) {
-            // This form has too few known inputs and likely doesn't make sense
-            // to track for autofill (e.g. a single-input for search or item quantity).
-            // Self-destruct to stop listening and avoid memory leaks.
-            if (shouldLog()) {
-                console.log(`Form discarded: zero inputs are fillable`)
-            }
-            this.destroy()
-            return
-        }
-
         if (shouldAutoprompt) {
             this.promptLoginIfNeeded()
         }
-    }
-
-    /** Whether this form has been destroyed via the `destroy` method or not. */
-    get isDestroyed () {
-        return this.destroyed
     }
 
     get isLogin () {
@@ -384,7 +366,6 @@ class Form {
     }
     // This removes all listeners to avoid memory leaks and weird behaviours
     destroy () {
-        this.destroyed = true
         this.mutObs.disconnect()
         this.removeAllDecorations()
         this.removeTooltip()
@@ -419,13 +400,17 @@ class Form {
         } else {
             /** @type {Element[] | NodeList} */
             let foundInputs = []
-
-            if (this.form instanceof HTMLFormElement) {
+            // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+            if (
+                this.form instanceof HTMLFormElement &&
+                this.form.elements != null &&
+                Symbol.iterator in Object(this.form.elements)
+            ) {
                 // For form elements we use .elements to catch fields outside the form itself using the form attribute.
                 // It also catches all elements when the markup is broken.
                 // We use .filter to avoid fieldset, button, textarea etc.
                 const formElements = [...this.form.elements].filter((el) => el.matches(selector))
-                // If there are not form elements, we try to look for all
+                // If there are no form elements, we try to look for all
                 // enclosed elements within the form.
                 foundInputs = formElements.length > 0
                     ? formElements
@@ -438,16 +423,48 @@ class Form {
                 foundInputs.forEach(input => this.addInput(input))
             } else {
                 // This is rather extreme, but better safe than sorry
-                this.device.scanner.stopScanner(`The form has too many inputs (${foundInputs.length}), bailing.`)
+                this.device.scanner.setMode('stopped', `The form has too many inputs (${foundInputs.length}), bailing.`)
                 return
             }
         }
+
+        // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
+        if (this.canCategorizeUnknownUsername()) {
+            const credentialInputs = [...this.inputs.credentials]
+            const hasUsername = credentialInputs.some(input => getInputSubtype(input) === 'username')
+            const hasIdentitiesOrCreditCards = this.inputs.identities.size > 0 || this.inputs.creditCards.size > 0
+            const hasLoneUnknownInput = this.inputs.unknown.size === 1
+
+            // Categorise if the form:
+            // 1. doesn't have a username field,
+            // 2. doesn't have identities or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
+            // 3. has exactly one unknown input, and
+            // 4. the form is a login form.
+            if (!hasUsername && !hasIdentitiesOrCreditCards && hasLoneUnknownInput && this.isLogin) {
+                const [unknownInput] = [...this.inputs.unknown]
+                const passwordInputs = credentialInputs.filter(
+                    (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password'
+                )
+                const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
+                if (passwordInputs.length > 0 && unknownInput.matches?.(inputSelector)) {
+                    unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
+                    this.decorateInput(unknownInput)
+                    this.inputs.credentials.add(unknownInput)
+                    this.inputs.unknown.delete(unknownInput)
+                }
+            }
+        }
+
         this.initialScanComplete = true
 
         // Observe only if the container isn't the body, to avoid performance overloads
         if (this.form !== document.body) {
             this.mutObs.observe(this.form, this.mutObsConfig)
         }
+    }
+
+    canCategorizeUnknownUsername () {
+        return this.device.settings.featureToggles.unknown_username_categorization
     }
 
     get submitButtons () {
@@ -505,7 +522,7 @@ class Form {
 
         // If the form has too many inputs, destroy everything to avoid performance issues
         if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
-            this.device.scanner.stopScanner('The form has too many inputs, bailing.')
+            this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.')
             return this
         }
 
@@ -881,7 +898,9 @@ class Form {
             // reset this to its initial value
             this.shouldAutoSubmit = this.device.globalConfig.isMobileApp
         } else {
-            // …otherwise we will prompt and do not want to autosubmit because the experience is jarring
+            // otherwise reset shouldPromptToStoreData to to initial value
+            this.resetShouldPromptToStoreData()
+            // and do autosubmit because the experience is jarring
             this.shouldAutoSubmit = false
         }
 

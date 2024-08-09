@@ -14,6 +14,13 @@ function testIo () {
 }
 
 describe('device-api', () => {
+    beforeAll(() => {
+        jest.spyOn(console, 'log').mockImplementation(() => {})
+    })
+    afterAll(() => {
+        jest.restoreAllMocks()
+    })
+
     it('can send notification messages in old format', async () => {
         const { handler, transport } = testIo()
         await handler.notify(createDeviceApiCall('hello-world', { id: 1 }))

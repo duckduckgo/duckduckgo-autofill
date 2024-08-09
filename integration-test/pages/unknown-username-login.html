@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ambiguous username field</title>
+    <p>
+        This login form has one vague username field, and a non-ambiguous password field. 
+        Based on the presence of a password field, the unknown field should be classified
+        as a username field.
+    </p>
+</head>
+<body>
+    <form name="logon" style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+        <label for="unknown">Random input field:</label>
+        <input type="text" id="unknown" name="dummy">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

@@ -37,6 +37,10 @@
         },
         "third_party_credentials_provider": {
           "type": "boolean"
+        },
+        "unknown_username_categorization": {
+          "type": "boolean",
+          "description": "If true, we will attempt categorizaing username, based on the rest of the input fields in the form"
         }
       },
       "required": []

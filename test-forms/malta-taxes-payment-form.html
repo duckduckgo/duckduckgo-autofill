@@ -1,0 +1,274 @@
+<!-- https://taxation.gov.mt/taxation.web/Payments/ -->
+<form method="post" action="./NewCheckout.aspx?SessionId=" onkeypress="javascript:return WebForm_FireDefaultButton(event, 'btnContinue')" id="form1">
+    <div class="aspNetHidden">
+        <input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+        <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+        <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+        <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="">
+    </div>
+
+    <div class="aspNetHidden">
+
+        <input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="">
+        <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="">
+    </div>
+    <a id="LinkButton1" href="javascript:__doPostBack('LinkButton1','')" style="display: none;">btn</a>
+    <a id="LinkButton2" href="javascript:__doPostBack('LinkButton2','')" style="display: none;">btn</a>
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-padding">
+        <div class="container center-block" style="text-align: center; width: 100%">
+            <div class="panel panel-default">
+                <div class="panel panel-heading">
+                    <div id="banner" class="row">
+                        <div class="pull-left" style="padding-left: 10px">
+                            <h3>
+                                <span id="PaymentTitle">Payment Details</span></h3>
+                        </div>
+                        <div class="pull-right" style="padding-right: 10px">
+                            <br>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="pull-left" style="font-weight: bold; padding-left: 15px">
+                            <span id="lblRequired">Fields with an ' * ' are required.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-body" style="background-color: #ffffff">
+                    <div class="row">
+
+                    </div>
+
+                    <div class="row">
+                        <div id="divCardType" class="col-lg-6 col-md-6 col-sm-6 xol-xs-12" style="display:block;">
+                            <span id="lblType" class="pull-left" style="font-weight: bold">Card Type *</span>
+                            <br>
+                            <select name="ddlType" id="ddlType" class="form-control" data-manual-scoring="unknown">
+                                <option selected="selected" value="">--- Select Card Type ---</option>
+                                <option value="CASHLINK">CASHLINK</option>
+                                <option value="MASTERCARD">MASTERCARD</option>
+                                <option value="VISA">VISA</option>
+
+                            </select>
+                            <br>
+                        </div>
+                        <div id="divCardNum" class="col-lg-6 col-md-6 col-sm-6 xol-xs-12" style="display:block;">
+                            <span id="lblCardNum" class="pull-left" style="font-weight: bold">Card Number * </span>
+                            <br>
+                            <input name="txtCardNum" maxlength="20" id="txtCardNum" class="form-control" type="Text" onkeypress="return isKeyPressNumeric(event)" onfocusout="LuhnCheck()" data-manual-scoring="cardNumber">
+                            <br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="divExpiry" class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <span id="lblExpiry" class="pull-left" style="font-weight: bold">Expiry * </span>
+                            <br>
+                            <div style="float: left; width: 50%; padding-right: 5px;">
+                                <select name="ddlMonth" id="ddlMonth" class="form-control" data-manual-scoring="expirationMonth">
+                                    <option selected="selected" value="">--- Month ---</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+
+                                </select>
+                            </div>
+                            <div style="float: right; width: 50%; padding-left: 5px">
+                                <select name="ddlYear" id="ddlYear" class="form-control" data-manual-scoring="expirationYear">
+                                    <option selected="selected" value="">--- Year ---</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>
+
+                                </select>
+                            </div>
+                            <br>
+                            <br>
+                            <br>
+                        </div>
+                        <div id="divCVV" class="col-lg-6 col-md-6 col-sm-6 col-xs-12" style="display: none;">
+                            <span id="lblCVV" class="pull-left" style="font-weight: bold">CVV *</span>
+                            <span class="glyphicon glyphicon-info-sign pull-left" style="padding-left: 10px; padding-top: 2px" onclick="toggleCVVinfo();" onmouseover="this.style.cursor='pointer'"></span>
+                            <br>
+                            <input name="txtCVV" type="password" maxlength="4" id="txtCVV" class="form-control" data-manual-scoring="cardSecurityCode">
+                            <br>
+                            <div id="divCVVinfo" style="display: none" class="popupinfowindow">
+                                <div class="PopUpInfoWindow" id="divCVVInfo" style="display: block;">
+                                    <table class="NoCellSpacing PopUpWindowTable WidthHeight100">
+                                        <tbody>
+                                        <tr>
+                                            <td class="PopUpInfoWindowImgTD">
+                                                <div>
+                                                </div>
+                                            </td>
+                                            <td class="CloseButtonTD">
+                                                <span class="glyphicon glyphicon-remove" onclick="closeWindowsCVV()"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="title2">CVV</div>
+                                                <div>
+                                                    <span id="lblCVVDesc">
+                                                        <span id="lblCVVDesc2">'CVV' stands for 'card verification value'. It is a three- or four-digit number located at the end of the series of numbers on the back of your card, or in case of American Express cards on the front at the top right.<br> <br> Please enter the number in order to help us be sure that your credit card is not being used fraudulently.</span></span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <input type="hidden" name="hdnCVV" id="hdnCVV" value="hide">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 xol-xs-12">
+                            <span id="lblCardHolder" class="pull-left" style="font-weight: bold">Card Holder Name *</span>
+                            <br>
+                            <input name="txtCardHolder" type="text" id="txtCardHolder" class="form-control" onkeyup="filterCardHolder(this)" data-manual-scoring="cardName">
+                            <br>
+                        </div>
+
+
+
+                        <div class="col-lg-6 col-md-6 col-sm-6 xol-xs-12">
+                            <span id="lblEmail" class="pull-left" style="font-weight: bold">E-mail *</span>
+                            <br>
+                            <input name="txtEmail" type="text" id="txtEmail" class="form-control" data-manual-scoring="emailAddress">
+                            <br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 no-padding" style="font-weight: bold">
+                            <div class="col-lg-7 col-md-7 col-sm-6 col-xs-6 text-left">
+                                <div style="padding-top: 10px">
+                                    <span id="lblAmountInfo">Total amount that will be charged to your card is</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-5 col-sm-6 col-xs-6 text-right">
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 no-padding">
+                                    <div style="padding-top: 8px">
+                                        <span id="lblCurr">€</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 no-padding"></div>
+                                <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 no-padding">
+                                    <input name="txtAmount" type="text" value="195.52" id="txtAmount" disabled="disabled" class="aspNetDisabled form-control" onkeyup="filterAmountVal(this)" data-manual-scoring="unknown">
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+
+                        </div>
+                        <!--OPT IN-->
+
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 no-padding">
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-left" style="padding-top: 10px">
+                                <input id="chkTerms" type="checkbox" name="chkTerms">
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 text-right" style="position: relative">
+                                <br>
+                                <span id="lblIAgree" style="font-weight: bold; padding-top: 8px">I have read and accept terms and conditions</span>
+                                &nbsp;&nbsp;&nbsp;
+                                <span id="spnTerms" class="glyphicon glyphicon-file" onclick="toggleTermsWindow()" onmouseover="this.style.cursor='pointer'"></span>
+                                <div id="divTermsConditions" class="PopUpInfoWindow">
+                                    <table class="NoCellSpacing PopUpWindowTable WidthHeight100">
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="strongField">
+                                                    Terms &amp; Conditions
+                                                </div>
+                                            </td>
+                                            <td class="CloseButtonTD">
+                                                <span class="glyphicon glyphicon-remove" onclick="closeWindows()"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="PopUpDivStyle">
+                                                    <span id="lblPutHere"><p>IRD – Terms and Conditions of Use (TCU)</p>
+                                                        <p>These TCU will regulate the payments effected by You using this website. These TCU are not to the exclusion of any Terms and Conditions of Use issued by the issuing banks, or published by Us on our website, the government portal and the Laws of Malta:</p>
+                                                        <p>1.0 "Card" means an HSBC Quikcash, BOV Cashlink, APS Premier, Visa and Mastercard, as agreed for the time being to be processed by the Bank for the Cardholder. "Cardholder" means the person to whom a Card is issued or who is authorised to use the Card. "Issuing Banks" means those banks that have reached an agreement with the Government of Malta for the use of the electronic Payment Gateway. "Us/We" means the Public Service or Public Sector Entity, hereinafter referred to as Us/We and to whom the payment is payable. Payment could be for the service being rendered by the Entity or for tax payable to Government or for Social Security Contributions. "You" means the Cardholder. "Electronic Payment Gateway" means any service designated by Government of Malta as its payment gateway</p>
+                                                        <p>2.0 The following terms and conditions shall apply in respect of each and every electronic payment by means of a Card (henceforth Electronic Card (EC) Transaction).</p>
+                                                        <p>3.0 You shall not complete an EC Transaction if You are, or should on exercising reasonable care, be aware that the Card has expired or is not yet valid, without prejudice to any obligations by You with Us.</p>
+                                                        <p>4.0 Neither the acceptance by Us of the submission of any EC Transaction nor any payment by You or other act or omission of ours (other than an express written acknowledgement or waiver thereof by Us) shall constitute or be deemed to constitute any acknowledgement or waiver of compliance by You to warrant and agree that all transaction details so submitted are, within your knowledge, true and complete.</p>
+                                                        <p>5.0 Payment shall be without prejudice to any claims or rights which We may have against You and shall not constitute any admission by Us as to the performance by You of your obligations under this Agreement and the amount payable to You.</p>
+                                                        <p>6.0 Without prejudice to any statutory rights or obligations which either party may have, We shall be entitled at any time to refuse total or partial payment in respect of an EC Transaction in any of the following situations: &nbsp;</p>
+                                                        <p>1. The EC transaction is for any reason unlawful or unenforceable.</p>
+                                                        <p>2. When the web services are not available.</p>
+                                                        <p>3. There has been a breach by You of this Agreement, other than the breaches more specifically provided in this Clause 6, in connection with the EC Transaction.</p>
+                                                        <p>7.0 In respect of an EC Transaction, You shall be provided with a record of the EC Transaction (by electronic means, surface mail or other methods acceptable to Us) and such record shall include: a. a description of services provided or the type of tax payable: b. your name and our name: c. the transaction amount and currency.</p>
+                                                        <p>8.0 We shall be under no liability to You (whether for loss of profit or otherwise) for any suspension, interruption, error or failure in our computer systems for performing or processing EC Transactions (or any part thereof). We shall however, endeavour to provide an alternative method of payment in addition to the ePayment Gateway method without prejudice to the Terms and Conditions governing the provision of this service or the claims by the Government for taxation. 8.1 Except as expressly provided to the contrary in this Agreement all terms, conditions, warranties, undertakings inducements or representations whether express, implied, statutory or otherwise (including without limitation any terms about merchantability or satisfactory quality or fitness for any particular purpose) are excluded.</p>
+                                                        <p>9.0 You will indemnify Us on demand in respect of any actions, claims, costs, damages, demands, expenses and charges, losses and liabilities, suffered or incurred by Us arising directly from or in connection with any failure by You to comply with the provisions of this Agreement.</p>
+                                                        <p>10.0 Both parties expressly exclude liability for consequential loss or damage which may arise in connection with this Agreement, or for loss of profit, business, revenue, goodwill, anticipated savings or otherwise.</p>
+                                                        <p>11.0 You acknowledge and agree that You have not entered into this Agreement in reliance on any representation statement or warranty (whether written or oral and whether express or implied) made by or on our behalf other than such as are expressly set out herein.</p>
+                                                        <p>12.0 Our failure to enforce at any time or for any period any one or more of the terms or conditions of this Agreement shall not be a waiver of them or of the right at any time subsequently to enforce all terms and conditions of this Agreement.</p>
+                                                        <p><br></p>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                <div class="center-block">
+                                    <br>
+                                    <input type="submit" name="btnContinue" value="Continue" onclick="shouldWarnBeforeUnload=false;doRefresh=false;javascript:btnContinue.disabled=true;btnClear.style.visibility='hidden';btnCancel.style.visibility='hidden';this.value='Please Wait...';__doPostBack('btnContinue','');" id="btnContinue" class="form-control btn btn-primary" data-manual-submit>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                <div class="center-block">
+                                    <br>
+                                    <input name="btnClear" value="Clear" onclick="resetForm($('#form1'));" id="btnClear" class="form-control btn btn-primary">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                <div class="center-block">
+                                    <br>
+                                    <input name="btnCancel" value="Cancel" onclick="shouldWarnBeforeUnload=false;doRefresh=false;javascript:btnCancel.disabled=true;btnClear.style.visibility='hidden';btnContinue.style.visibility='hidden';this.value='Cancel';__doPostBack('btnCancel','');" id="btnCancel" class="form-control btn btn-primary">
+                                </div>
+                            </div>
+                            <span id="lblError"></span>
+                        </div>
+                        <div class="col-lg-1 col-md-1 col-sm-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hiddenControls">
+        <input type="hidden" name="VersionNumber" id="VersionNumber" value="0.0.2">
+        <input type="hidden" name="hdnLanguage" id="hdnLanguage" value="EN">
+    </div>
+</form>
