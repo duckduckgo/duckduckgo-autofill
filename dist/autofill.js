@@ -4487,6 +4487,11 @@ class InterfacePrototype {
   }
   postInit() {
     const cleanup = this.scanner.init();
+    if (this.globalConfig.isExtension) {
+      this.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
+        flag: 'autofill'
+      }));
+    }
     this.addLogoutListener(() => {
       cleanup('Logged out');
       if (this.globalConfig.isDDGDomain) {
@@ -5590,7 +5595,7 @@ class Form {
     this.device = deviceInterface;
     this.hasShadowTree = hasShadowTree;
 
-    /** @type Record<'all' | SupportedMainTypes, Set> */
+    /** @type {Record<'all' | SupportedMainTypes, Set>} */
     this.inputs = {
       all: new Set(),
       credentials: new Set(),
@@ -10040,7 +10045,6 @@ var _Form = require("./Form/Form.js");
 var _constants = require("./constants.js");
 var _matching = require("./Form/matching.js");
 var _autofillUtils = require("./autofill-utils.js");
-var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js");
 const {
   MAX_INPUTS_PER_PAGE,
   MAX_FORMS_PER_PAGE,
@@ -10141,12 +10145,6 @@ class DefaultScanner {
    */
   init() {
     var _this = this;
-    if (this.device.globalConfig.isExtension) {
-      this.device.deviceApi.notify(new _deviceApiCalls.AddDebugFlagCall({
-        flag: 'autofill'
-      }));
-    }
-
     // Add the shadow DOM listener. Handlers in handleEvent
     window.addEventListener('pointerdown', this, true);
     // We don't listen for focus events on mobile, they can cause keyboard flashing
@@ -10490,7 +10488,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":23,"./Form/matching.js":33,"./autofill-utils.js":52,"./constants.js":55,"./deviceApiCalls/__generated__/deviceApiCalls.js":56}],40:[function(require,module,exports){
+},{"./Form/Form.js":23,"./Form/matching.js":33,"./autofill-utils.js":52,"./constants.js":55}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
