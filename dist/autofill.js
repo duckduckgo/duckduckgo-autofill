@@ -2426,7 +2426,7 @@ module.exports={
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
   },
   "cb2.com": {
-    "password-rules": "minlength: 7; maxlength: 18; required: lower, upper; required: digit;"
+    "password-rules": "minlength: 9; required: lower, upper; required: digit; required: [!#*_%.$];"
   },
   "ccs-grp.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower; allowed: [-!#$%&'+./=?\\^_`{|}~];"
@@ -3194,7 +3194,7 @@ module.exports={
     "password-rules": "minlength: 12; maxlength: 30; required: lower; required: upper; required: digit; required: [!@#$%^&*()+];"
   },
   "umterps.evenue.net": {
-    "password-rules": "minlength: 4; maxlength: 12;"
+    "password-rules": "minlength: 14; required: digit; required: upper; required: lower; required: [-~!@#$%^&*_+=`|(){}:;];"
   },
   "user.ornl.gov": {
     "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%./_];"
