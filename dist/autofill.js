@@ -2821,6 +2821,9 @@ module.exports={
   "id.sonyentertainmentnetwork.com": {
     "password-rules": "minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
   },
+  "identity.codesignal.com": {
+    "password-rules": "minlength: 14; required: digit; required: lower, upper; required: [!#$%&*@^]"
+  },
   "identitytheft.gov": {
     "password-rules": "allowed: lower, upper, digit, [!#%&*@^];"
   },
