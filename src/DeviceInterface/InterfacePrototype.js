@@ -19,7 +19,8 @@ import {DeviceApi} from '../../packages/device-api/index.js'
 import {
     GetAutofillCredentialsCall,
     StoreFormDataCall,
-    SendJSPixelCall
+    SendJSPixelCall,
+    AddDebugFlagCall
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {EmailProtection} from '../EmailProtection.js'
@@ -313,6 +314,9 @@ class InterfacePrototype {
 
     postInit () {
         const cleanup = this.scanner.init()
+        if (this.globalConfig.isExtension) {
+            this.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }))
+        }
         this.addLogoutListener(() => {
             cleanup('Logged out')
             if (this.globalConfig.isDDGDomain) {
