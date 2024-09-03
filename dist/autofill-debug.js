@@ -6453,6 +6453,9 @@ module.exports={
   "ae.com": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
   },
+  "aeromexico.com": {
+    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
+  },
   "aetna.com": {
     "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 2; required: upper; required: digit; allowed: lower, [-_&#@];"
   },
