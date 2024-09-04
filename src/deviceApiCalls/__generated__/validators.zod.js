@@ -10,6 +10,8 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     }), z.object({
         pixelName: z.literal("autofill_show")
     }), z.object({
+        pixelName: z.literal("autofill_credentials_import_prompt_shown")
+    }), z.object({
         pixelName: z.literal("autofill_personal_address")
     }), z.object({
         pixelName: z.literal("autofill_private_address")
@@ -160,7 +162,8 @@ export const availableInputTypesSchema = z.object({
         cardNumber: z.boolean().optional()
     }).optional(),
     email: z.boolean().optional(),
-    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
+    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
+    credentialsImport: z.boolean().optional()
 });
 
 export const availableInputTypes1Schema = z.object({
@@ -192,7 +195,8 @@ export const availableInputTypes1Schema = z.object({
         cardNumber: z.boolean().optional()
     }).optional(),
     email: z.boolean().optional(),
-    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
+    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
+    credentialsImport: z.boolean().optional()
 });
 
 export const autofillFeatureTogglesSchema = z.object({
@@ -222,7 +226,7 @@ export const getAutofillDataResponseSchema = z.object({
     type: z.literal("getAutofillDataResponse").optional(),
     success: z.object({
         credentials: credentialsSchema.optional(),
-        action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
+        action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("refreshAvailableInputTypes"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
 });
@@ -262,6 +266,15 @@ export const getAutofillCredentialsResultSchema = z.object({
 
 export const autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
+});
+
+export const startCredentialsImportFlowResponseSchema = z.object({
+    type: z.literal("startCredentialsImportFlowResponse").optional(),
+    success: z.object({
+        credentials: z.array(credentialsSchema),
+        availableInputTypes: availableInputTypes1Schema
+    }).optional(),
+    error: genericErrorSchema.optional()
 });
 
 export const emailProtectionGetIsLoggedInResultSchema = z.object({
@@ -399,6 +412,10 @@ export const apiSchema = z.object({
     openManagePasswords: z.record(z.unknown()).optional(),
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
+    startCredentialsImportFlow: z.record(z.unknown()).and(z.object({
+        id: z.literal("startCredentialsImportFlowResponse").optional(),
+        resultValidator: startCredentialsImportFlowResponseSchema.optional()
+    })).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionStoreUserDataResponse").optional(),
         paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()

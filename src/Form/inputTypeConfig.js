@@ -97,8 +97,11 @@ const inputTypeConfig = {
     credentials: {
         type: 'credentials',
         displayName: 'passwords',
-        getIconBase: (input, {device}) => {
+        getIconBase: (input, form) => {
+            const {device} = form
             if (!canBeInteractedWith(input)) return ''
+
+            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return ''
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 const subtype = getInputSubtype(input)
@@ -126,7 +129,7 @@ const inputTypeConfig = {
             return ''
         },
         getIconAlternate: () => '',
-        shouldDecorate: async (input, {isLogin, isHybrid, device}) => {
+        shouldDecorate: async (input, {isLogin, isHybrid, device, isCredentialsImoprtAvailable}) => {
             const subtype = getInputSubtype(input)
             const variant = getInputVariant(input)
 
@@ -135,7 +138,7 @@ const inputTypeConfig = {
                 (isLogin || isHybrid || variant === 'current') // Current password field
             ) {
                 // Check feature flags and available input types
-                return canBeAutofilled(input, device)
+                return isCredentialsImoprtAvailable || canBeAutofilled(input, device)
             }
 
             return false

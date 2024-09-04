@@ -77,6 +77,11 @@ export class WindowsInterface extends InterfacePrototype {
                     // do nothing
                     break
                 }
+
+                case 'refreshAvailableInputTypes':
+                    this.credentialsImport.refresh()
+                    break
+
                 default: {
                     if (this.globalConfig.isDDGTestMode) {
                         console.warn('unhandled response', resp)

@@ -3,6 +3,7 @@ import {expect} from '@playwright/test'
 import {mockedCalls, payloadsOnly} from '../harness.js'
 
 import {genericPage} from './genericPage.js'
+import { addTopAutofillMouseFocus } from '../utils.js'
 
 /**
  * A wrapper around interactions for `integration-test/pages/login.html`
@@ -66,11 +67,19 @@ export function loginPage (page, opts = {}) {
         }
 
         /**
-         * @param {string} username
+         * @param {string} text
          * @return {Promise<void>}
          */
-        async assertTooltipNotOpen (username) {
-            await expect(page.locator(`button:has-text("${username}")`)).not.toBeVisible()
+        async assertTooltipNotOpen (text) {
+            return genericPage(page).assertTooltipNotOpen(text)
+        }
+
+        /**
+         * @param {string} text
+         * @return {Promise<void>}
+         */
+        async assertTooltipOpen (text) {
+            return genericPage(page).assertTooltipOpen(text)
         }
 
         /**
@@ -241,6 +250,17 @@ export function loginPage (page, opts = {}) {
             expect(payloads[0].trigger).toEqual('formSubmission')
         }
 
+        async assertPasswordImportFlowWasStarted () {
+            const calls = await mockedCalls(page, {names: ['startCredentialsImportFlow']})
+            expect(calls.length).toBe(1)
+        }
+
+        async clickOnPasswordImportButton () {
+            const button = await page.locator(`button:has-text("Import password to DuckDuckGo...")`)
+            await addTopAutofillMouseFocus(page, button)
+            await button.click()
+        }
+
         /**
          * @returns {Promise<void>}
          */
@@ -282,9 +302,16 @@ export function loginPage (page, opts = {}) {
             expect(count).toBe(0)
         }
 
+        /**
+         * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
+         */
+        async assertPixelsFired (pixels) {
+            await genericPage(page).assertPixelsFired(pixels)
+        }
+
         async assertNoPixelFired () {
             const mockCalls = await mockedCalls(page, {names: ['sendJSPixel'], minCount: 0})
-            expect(mockCalls).toHaveLength(0)
+            await expect(mockCalls).toHaveLength(0)
         }
 
         async openDialog () {

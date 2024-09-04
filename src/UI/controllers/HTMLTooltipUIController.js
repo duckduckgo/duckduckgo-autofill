@@ -5,6 +5,7 @@ import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
 import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js'
 import {defaultOptions} from '../HTMLTooltip.js'
+import CredentialsImportTooltip from '../CredentialsImportTooltip.js'
 import {UIController} from './UIController.js'
 
 /**
@@ -108,6 +109,16 @@ export class HTMLTooltipUIController extends UIController {
 
         }
 
+        if (topContextData.credentialsImport) {
+            this._options.device.firePixel({pixelName: 'autofill_credentials_import_prompt_shown'})
+            return new CredentialsImportTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
+                .render(this._options.device, {
+                    onStarted: () => {
+                        this._options.device.credentialsImport.started()
+                    }
+                })
+        }
+
         if (this._options.tooltipKind === 'legacy') {
             this._options.device.firePixel({pixelName: 'autofill_show'})
             return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
@@ -122,7 +133,6 @@ export class HTMLTooltipUIController extends UIController {
 
         // collect the data for each item to display
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData)
-
         // convert the data into tool tip item renderers
         const asRenderers = data.map(d => config.tooltipItem(d))
 

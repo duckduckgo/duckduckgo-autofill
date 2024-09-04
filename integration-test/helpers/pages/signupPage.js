@@ -2,6 +2,7 @@ import {constants} from '../mocks.js'
 import {mockedCalls, payloadsOnly} from '../harness.js'
 import {expect} from '@playwright/test'
 import {clickOnIcon} from '../utils.js'
+import { genericPage } from './genericPage.js'
 
 /**
  * A wrapper around interactions for `integration-test/pages/signup.html`
@@ -145,10 +146,7 @@ export function signupPage (page) {
          * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
         async assertPixelsFired (pixels) {
-            const calls = await mockedCalls(page, {names: ['sendJSPixel']})
-            expect(calls.length).toBeGreaterThanOrEqual(1)
-            const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
-            expect(firedPixels).toEqual(pixels)
+            await genericPage(page).assertPixelsFired(pixels)
         }
 
         async addNewForm () {
@@ -254,6 +252,10 @@ export function signupPage (page) {
 
         async assertEmailHasNoDaxIcon () {
             expect(await emailStyleAttr()).toBeFalsy()
+        }
+
+        async assertTooltipNotOpen (text) {
+            return genericPage(page).assertTooltipNotOpen(text)
         }
     }
 

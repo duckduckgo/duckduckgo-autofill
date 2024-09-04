@@ -313,13 +313,18 @@ class Form {
         this.execOnInputs((input) => this.removeInputDecoration(input))
         this.listeners.forEach(({el, type, fn, opts}) => el.removeEventListener(type, fn, opts))
     }
-    redecorateAllInputs () {
+
+    /**
+     *
+     * @param {boolean} shouldCheckForDecorate
+     */
+    redecorateAllInputs (shouldCheckForDecorate = true) {
         this.removeAllDecorations()
         this.execOnInputs((input) => {
             if (input instanceof HTMLInputElement) {
                 this.decorateInput(input)
             }
-        })
+        }, 'all', shouldCheckForDecorate)
     }
 
     /**
@@ -772,6 +777,8 @@ class Form {
             // just showing in-context signup, or with other autofill items.
             const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype, variant }, null)
 
+            if (this.isCredentialsImoprtAvailable) return true
+
             // Don't open the tooltip on input focus whenever it'll only show in-context signup
             if (!hasSavedDetails && isIncontextSignupAvailable) return false
             return true
@@ -920,6 +927,11 @@ class Form {
         )
     }
 
+    get isCredentialsImoprtAvailable () {
+        const isLoginOrHybrid = this.isLogin || this.isHybrid
+        return isLoginOrHybrid && this.device.credentialsImport.isAvailable()
+    }
+
     getFirstViableCredentialsInput () {
         return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input))
     }
@@ -935,7 +947,7 @@ class Form {
         const subtype = getInputSubtype(input)
         const variant = getInputVariant(input)
         await this.device.settings.populateDataIfNeeded({ mainType, subtype })
-        if (this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup)) {
+        if (this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) || this.isCredentialsImoprtAvailable) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {
                 // safeExecute checks that the element is on screen according to IntersectionObserver

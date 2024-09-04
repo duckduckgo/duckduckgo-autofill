@@ -3,7 +3,6 @@ import {
     CheckCredentialsProviderStatusCall
 } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 import {providerStatusUpdatedSchema} from './deviceApiCalls/__generated__/validators.zod.js'
-import {getSubtypeFromType} from './Form/matching.js'
 import { validate } from '../packages/device-api/index.js'
 
 export class ThirdPartyProvider {
@@ -42,24 +41,8 @@ export class ThirdPartyProvider {
      */
     providerStatusUpdated (data) {
         try {
-            const {credentials, availableInputTypes} = validate(data, providerStatusUpdatedSchema)
-
-            // Update local settings and data
-            this.device.settings.setAvailableInputTypes(availableInputTypes)
-            this.device.storeLocalCredentials(credentials)
-
-            // rerender the tooltip
-            this.device.uiController?.updateItems(credentials)
-
-            if (!this.device.globalConfig.isTopFrame) {
-                // If the tooltip is open on an autofill type that's not available, close it
-                const currentInputSubtype = getSubtypeFromType(this.device.getCurrentInputType())
-                if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                    this.device.removeTooltip()
-                }
-                // Redecorate fields according to the new types
-                this.device.scanner.forms.forEach(form => form.recategorizeAllInputs())
-            }
+            const { availableInputTypes, credentials } = validate(data, providerStatusUpdatedSchema)
+            this.device.updateAutofillInputs(availableInputTypes, credentials)
         } catch (e) {
             if (this.device.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: providerStatusUpdated error: ❌', e)

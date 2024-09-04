@@ -20,6 +20,9 @@ export type SendJSPixelParams =
       pixelName: "autofill_show";
     }
   | {
+      pixelName: "autofill_credentials_import_prompt_shown";
+    }
+  | {
       pixelName: "autofill_personal_address";
     }
   | {
@@ -160,6 +163,14 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * (macOS/Windows) Opens the native password import flow UI
+   */
+  startCredentialsImportFlow?: {
+    id?: "startCredentialsImportFlowResponse";
+    resultValidator?: StartCredentialsImportFlowResponse;
+    [k: string]: unknown;
+  };
+  /**
    * Used to store Email Protection auth credentials (logging in)
    */
   emailProtectionStoreUserData?: {
@@ -291,7 +302,13 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
-    action: "fill" | "focus" | "none" | "acceptGeneratedPassword" | "rejectGeneratedPassword";
+    action:
+      | "fill"
+      | "focus"
+      | "none"
+      | "refreshAvailableInputTypes"
+      | "acceptGeneratedPassword"
+      | "rejectGeneratedPassword";
   };
   error?: GenericError;
 }
@@ -433,6 +450,7 @@ export interface AvailableInputTypes {
    */
   email?: boolean;
   credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
 }
 export interface GetAutofillInitDataResponse {
   /**
@@ -556,6 +574,7 @@ export interface AvailableInputTypes1 {
    */
   email?: boolean;
   credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
 }
 /**
  * This is only used in macOS 10.15 Catalina
@@ -616,6 +635,20 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
+}
+export interface StartCredentialsImportFlowResponse {
+  /**
+   * Required on Windows and MacOS
+   */
+  type?: "startCredentialsImportFlowResponse";
+  /**
+   * New `availableInputTypes` and `credentials` if import had credentials during import
+   */
+  success?: {
+    credentials: Credentials[];
+    availableInputTypes: AvailableInputTypes1;
+  };
+  error?: GenericError;
 }
 /**
  * Used to store Email Protection auth credentials.
