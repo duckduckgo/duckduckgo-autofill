@@ -2287,6 +2287,9 @@ module.exports={
   "ae.com": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
   },
+  "aeromexico.com": {
+    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
+  },
   "aetna.com": {
     "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 2; required: upper; required: digit; allowed: lower, [-_&#@];"
   },
@@ -2433,6 +2436,9 @@ module.exports={
   },
   "cecredentialtrust.com": {
     "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&*@^];"
+  },
+  "charlie.mbta.com": {
+    "password-rules": "minlength: 10; required: lower; required: upper; required: digit; required: [!#$%@^];"
   },
   "chase.com": {
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 2; required: lower, upper; required: digit; required: [!#$%+/=@~];"
