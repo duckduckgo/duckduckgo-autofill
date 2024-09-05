@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Больше не показывать",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Импорт паролей в DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Быстрый и безопасный способ перенести пароли из другого браузера или менеджера.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }

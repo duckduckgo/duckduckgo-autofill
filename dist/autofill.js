@@ -14344,6 +14344,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Не показвай отново",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Импортиране на парола в DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Прехвърляйте паролите си от друг браузър или мениджър на пароли бързо и сигурно.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -14437,6 +14445,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Už neukazovat",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Import hesla do DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Rychle a bezpečně přenes svoje hesla z jiného prohlížeče nebo správce hesel.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -14530,6 +14546,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Vis ikke igen",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importér adgangskode til DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Overfør hurtigt og sikkert dine adgangskoder fra en anden browser eller adgangskodeadministrator.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -14623,6 +14647,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Nicht erneut anzeigen",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Passwort in DuckDuckGo importieren",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Übertrage deine Passwörter schnell und sicher von einem anderen Browser oder Passwort-Manager.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -14716,6 +14748,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Να μην εμφανιστεί ξανά",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Εισαγωγή κωδικού πρόσβασης στο DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Μεταφέρετε γρήγορα και με ασφάλεια τους κωδικούς πρόσβασής σας από άλλο πρόγραμμα περιήγησης ή πρόγραμμα διαχείρισης κωδικών πρόσβασης.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -14885,11 +14925,11 @@ module.exports={
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Gestionar tarjetas de crédito…",
+    "title" : "Administrar tarjetas de crédito…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Gestionar identidades…",
+    "title" : "Administrar identidades…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -14911,6 +14951,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "No volver a mostrar",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importar contraseña a DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Transfiere tus contraseñas de forma rápida y segura desde otro navegador o administrador de contraseñas.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15004,6 +15052,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Ära enam näita",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Impordi parool DuckDuckGosse",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Vii oma paroolid kiiresti ja turvaliselt üle teisest brauserist või paroolihaldurist.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15097,6 +15153,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Älä näytä enää",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Tuo salasana DuckDuckGoon",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Siirrä salasanasi nopeasti ja turvallisesti toisesta selaimesta tai salasanojen hallintaohjelmasta.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15190,6 +15254,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Ne plus afficher",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importez votre mot de passe sur DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Transférez vos mots de passe rapidement et en toute sécurité à partir d’un autre navigateur ou d’un autre gestionnaire de mots de passe.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15283,6 +15355,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Nemoj ponovno prikazivati",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Uvezi lozinku u DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Brzo i sigurno prenesi svoje lozinke iz drugog preglednika ili upravitelja lozinkama.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15376,6 +15456,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Ne jelenjen meg újra",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Jelszó importálása a DuckDuckGóba",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Gyorsan és biztonságosan áthozhatod a jelszavaid egy másik böngészőből vagy jelszókezelőből.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15469,6 +15557,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Non mostrare più",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importa la password in DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Trasferisci in modo rapido e sicuro le tue password da un altro browser o gestore di password.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15562,6 +15658,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Daugiau nerodyti",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importuoti slaptažodį į „DuckDuckGo“",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Greitai ir saugiai perkelkite slaptažodžius iš kitos naršyklės ar slaptažodžių tvarkyklės.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15655,6 +15759,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Turpmāk nerādīt",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importēt paroli DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Ātri un droši pārnes savas paroles no citas pārlūkprogrammas vai paroļu pārvaldnieka.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15748,6 +15860,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Ikke vis igjen",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importer passord til DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Overfør passordene dine raskt og sikkert fra en annen nettleser eller passordbehandling.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15841,6 +15961,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Niet meer weergeven",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Wachtwoord importeren naar DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Snel en veilig je wachtwoorden overzetten vanuit een andere browser of wachtwoordmanager.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -15934,6 +16062,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Nie pokazuj więcej",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Zaimportuj hasło do DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Szybko i bezpiecznie przenieś hasła z innej przeglądarki lub menedżera haseł.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16027,6 +16163,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Não mostrar novamente",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importar palavra-passe para o DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Transfere de forma rápida e segura as tuas palavras-passe a partir de outro navegador ou gestor de palavras-passe.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16120,6 +16264,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Nu mai afișa",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importă parola în DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Transferă rapid și sigur parolele dintr-un alt browser sau manager de parole.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16213,6 +16365,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Больше не показывать",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Импорт паролей в DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Быстрый и безопасный способ перенести пароли из другого браузера или менеджера.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16306,6 +16466,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Nabudúce už neukazovať",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importovať heslo do služby DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Rýchlo a bezpečne preneste svoje heslá z iného prehliadača alebo správcu hesiel.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16399,6 +16567,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Ne prikaži več",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Uvoz gesla v DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Hitro in varno prenesite gesla iz drugega brskalnika ali upravitelja gesel.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16580,6 +16756,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Visa inte igen",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importera lösenord till DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Överför snabbt och säkert dina lösenord från en annan webbläsare eller lösenordshanterare.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 
@@ -16673,6 +16857,14 @@ module.exports={
   "dontShowAgain" : {
     "title" : "Bir Daha Gösterme",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Şifreyi DuckDuckGo'ya aktar",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Şifrelerinizi başka bir tarayıcıdan veya şifre yöneticisinden hızlı ve güvenli bir şekilde aktarın.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
 

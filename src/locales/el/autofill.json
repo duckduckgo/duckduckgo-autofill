@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Να μην εμφανιστεί ξανά",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Εισαγωγή κωδικού πρόσβασης στο DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Μεταφέρετε γρήγορα και με ασφάλεια τους κωδικούς πρόσβασής σας από άλλο πρόγραμμα περιήγησης ή πρόγραμμα διαχείρισης κωδικών πρόσβασης.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
