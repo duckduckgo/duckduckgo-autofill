@@ -707,31 +707,6 @@ class InterfacePrototype {
     openManageIdentities () {}
 
     /**
-     * This method takes availableInputTypes and credentials (from the native side),
-     * and updates autofill UI and data.
-     * @param {import('../Settings.js').AvailableInputTypes} availableInputTypes
-     * @param {CredentialsObject[]} credentials
-     */
-    updateAutofillInputs (availableInputTypes, credentials) {
-        // Update local settings and data
-        this.settings.setAvailableInputTypes(availableInputTypes)
-        this.storeLocalCredentials(credentials)
-
-        // rerender the tooltip
-        this.uiController?.updateItems(credentials)
-
-        if (!this.globalConfig.isTopFrame) {
-            // If the tooltip is open on an autofill type that's not available, close it
-            const currentInputSubtype = getSubtypeFromType(this.getCurrentInputType())
-            if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-                this.removeTooltip()
-            }
-            // Redecorate fields according to the new types
-            this.scanner.forms.forEach(form => form.recategorizeAllInputs())
-        }
-    }
-
-    /**
      * @param {StoreFormData} values
      * @param {StoreFormData['trigger']} trigger
      */

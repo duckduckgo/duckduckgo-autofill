@@ -311,7 +311,7 @@ export function loginPage (page, opts = {}) {
 
         async assertNoPixelFired () {
             const mockCalls = await mockedCalls(page, {names: ['sendJSPixel'], minCount: 0})
-            await expect(mockCalls).toHaveLength(0)
+            expect(mockCalls).toHaveLength(0)
         }
 
         async openDialog () {

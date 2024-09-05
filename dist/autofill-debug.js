@@ -7487,7 +7487,7 @@ class CredentialsImport {
    */
   isAvailable() {
     // Ideally we should also be checking activeForm?.isLogin or activeForm?.isHybrid, however
-    // in some instance activeForm is not yet initialise (when decorating the page).
+    // in some instance activeForm is not yet initialized (when decorating the page).
     return this.device.settings.availableInputTypes.credentialsImport;
   }
   init() {
@@ -9140,30 +9140,6 @@ class InterfacePrototype {
   openManagePasswords() {}
   openManageCreditCards() {}
   openManageIdentities() {}
-
-  /**
-   * This method takes availableInputTypes and credentials (from the native side),
-   * and updates autofill UI and data.
-   * @param {import('../Settings.js').AvailableInputTypes} availableInputTypes
-   * @param {CredentialsObject[]} credentials
-   */
-  updateAutofillInputs(availableInputTypes, credentials) {
-    // Update local settings and data
-    this.settings.setAvailableInputTypes(availableInputTypes);
-    this.storeLocalCredentials(credentials);
-
-    // rerender the tooltip
-    this.uiController?.updateItems(credentials);
-    if (!this.globalConfig.isTopFrame) {
-      // If the tooltip is open on an autofill type that's not available, close it
-      const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.getCurrentInputType());
-      if (!availableInputTypes.credentials?.[currentInputSubtype]) {
-        this.removeTooltip();
-      }
-      // Redecorate fields according to the new types
-      this.scanner.forms.forEach(form => form.recategorizeAllInputs());
-    }
-  }
 
   /**
    * @param {StoreFormData} values
@@ -15195,6 +15171,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.ThirdPartyProvider = void 0;
 var _deviceApiCalls = require("./deviceApiCalls/__generated__/deviceApiCalls.js");
 var _validatorsZod = require("./deviceApiCalls/__generated__/validators.zod.js");
+var _matching = require("./Form/matching.js");
 var _index = require("../packages/device-api/index.js");
 class ThirdPartyProvider {
   /**
@@ -15232,10 +15209,25 @@ class ThirdPartyProvider {
   providerStatusUpdated(data) {
     try {
       const {
-        availableInputTypes,
-        credentials
+        credentials,
+        availableInputTypes
       } = (0, _index.validate)(data, _validatorsZod.providerStatusUpdatedSchema);
-      this.device.updateAutofillInputs(availableInputTypes, credentials);
+
+      // Update local settings and data
+      this.device.settings.setAvailableInputTypes(availableInputTypes);
+      this.device.storeLocalCredentials(credentials);
+
+      // rerender the tooltip
+      this.device.uiController?.updateItems(credentials);
+      if (!this.device.globalConfig.isTopFrame) {
+        // If the tooltip is open on an autofill type that's not available, close it
+        const currentInputSubtype = (0, _matching.getSubtypeFromType)(this.device.getCurrentInputType());
+        if (!availableInputTypes.credentials?.[currentInputSubtype]) {
+          this.device.removeTooltip();
+        }
+        // Redecorate fields according to the new types
+        this.device.scanner.forms.forEach(form => form.recategorizeAllInputs());
+      }
     } catch (e) {
       if (this.device.globalConfig.isDDGTestMode) {
         console.log('isDDGTestMode: providerStatusUpdated error: ❌', e);
@@ -15260,7 +15252,7 @@ class ThirdPartyProvider {
 }
 exports.ThirdPartyProvider = ThirdPartyProvider;
 
-},{"../packages/device-api/index.js":12,"./deviceApiCalls/__generated__/deviceApiCalls.js":68,"./deviceApiCalls/__generated__/validators.zod.js":69}],53:[function(require,module,exports){
+},{"../packages/device-api/index.js":12,"./Form/matching.js":44,"./deviceApiCalls/__generated__/deviceApiCalls.js":68,"./deviceApiCalls/__generated__/validators.zod.js":69}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
