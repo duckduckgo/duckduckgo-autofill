@@ -314,17 +314,12 @@ class Form {
         this.listeners.forEach(({el, type, fn, opts}) => el.removeEventListener(type, fn, opts))
     }
 
-    /**
-     *
-     * @param {boolean} shouldCheckForDecorate
-     */
-    redecorateAllInputs (shouldCheckForDecorate = true) {
-        this.removeAllDecorations()
+    redecorateAllInputs () {
         this.execOnInputs((input) => {
             if (input instanceof HTMLInputElement) {
                 this.decorateInput(input)
             }
-        }, 'all', shouldCheckForDecorate)
+        })
     }
 
     /**

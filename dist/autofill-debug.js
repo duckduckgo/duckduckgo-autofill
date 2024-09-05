@@ -7511,11 +7511,15 @@ class CredentialsImport {
     await this.device.settings.refresh();
 
     // Re-decorate all inputs to show the input decorations
-    this.device.activeForm?.redecorateAllInputs(false);
+    this.device.activeForm?.redecorateAllInputs();
 
     // Make sure the tooltip is closed before we try to open it
     this.device.uiController?.removeTooltip('interface');
     const activeInput = this.device.activeForm?.activeInput;
+    // First blur to make sure we're not already in focus
+    activeInput?.blur();
+
+    // Then focus to open the tooltip
     activeInput?.focus();
   }
   async started() {
@@ -9331,9 +9335,10 @@ class WindowsInterface extends _InterfacePrototype.default {
       this._abortController.abort();
     }
     this._abortController = new AbortController();
-    this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
-      signal: this._abortController.signal
-    }).then(resp => {
+    try {
+      const resp = await this.deviceApi.request(new _deviceApiCalls.GetAutofillDataCall(details), {
+        signal: this._abortController.signal
+      });
       if (!this.activeForm) {
         throw new Error('this.currentAttached was absent');
       }
@@ -9358,25 +9363,26 @@ class WindowsInterface extends _InterfacePrototype.default {
             break;
           }
         case 'refreshAvailableInputTypes':
-          this.credentialsImport.refresh();
-          break;
-        default:
           {
-            if (this.globalConfig.isDDGTestMode) {
-              console.warn('unhandled response', resp);
-            }
+            await this.removeTooltip();
+            return await this.credentialsImport.refresh();
           }
+        default:
+          if (this.globalConfig.isDDGTestMode) {
+            console.warn('unhandled response', resp);
+          }
+          return this._closeAutofillParent();
       }
-      return this._closeAutofillParent();
-    }).catch(e => {
+    } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
-        if (e.name === 'AbortError') {
+        /** @type {any} */
+        if (e instanceof DOMException && e.name === 'AbortError') {
           console.log('Promise Aborted');
         } else {
           console.error('Promise Rejected', e);
         }
       }
-    });
+    }
   }
 
   /**
@@ -10098,19 +10104,12 @@ class Form {
       return el.removeEventListener(type, fn, opts);
     });
   }
-
-  /**
-   *
-   * @param {boolean} shouldCheckForDecorate
-   */
   redecorateAllInputs() {
-    let shouldCheckForDecorate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-    this.removeAllDecorations();
     this.execOnInputs(input => {
       if (input instanceof HTMLInputElement) {
         this.decorateInput(input);
       }
-    }, 'all', shouldCheckForDecorate);
+    });
   }
 
   /**

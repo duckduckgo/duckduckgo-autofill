@@ -41,12 +41,16 @@ class CredentialsImport {
         await this.device.settings.refresh()
 
         // Re-decorate all inputs to show the input decorations
-        this.device.activeForm?.redecorateAllInputs(false)
+        this.device.activeForm?.redecorateAllInputs()
 
         // Make sure the tooltip is closed before we try to open it
         this.device.uiController?.removeTooltip('interface')
 
         const activeInput = this.device.activeForm?.activeInput
+        // First blur to make sure we're not already in focus
+        activeInput?.blur()
+
+        // Then focus to open the tooltip
         activeInput?.focus()
     }
 
