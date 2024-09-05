@@ -5185,7 +5185,6 @@ class WindowsInterface extends _InterfacePrototype.default {
       }
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
-        /** @type {any} */
         if (e instanceof DOMException && e.name === 'AbortError') {
           console.log('Promise Aborted');
         } else {

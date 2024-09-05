@@ -92,7 +92,6 @@ export class WindowsInterface extends InterfacePrototype {
             }
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
-                /** @type {any} */
                 if (e instanceof DOMException && e.name === 'AbortError') {
                     console.log('Promise Aborted')
                 } else {
