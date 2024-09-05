@@ -45,6 +45,11 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         })
     }
 
+    async startCredentialsImportFlow () {
+        this._closeAutofillParent()
+        await this.deviceApi.notify(createNotification('startCredentialsImportFlow'))
+    }
+
     addDeviceListeners () {
         /**
          * The native side will send a custom event 'mouseMove' to indicate

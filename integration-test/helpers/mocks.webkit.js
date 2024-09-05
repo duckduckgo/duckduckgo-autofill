@@ -151,7 +151,8 @@ export const macosWithoutOverlay = () => {
             'getIncontextSignupDismissedAt',
             'setIncontextSignupPermanentlyDismissedAt',
             'startEmailProtectionSignup',
-            'closeEmailProtectionTab'
+            'closeEmailProtectionTab',
+            'startCredentialsImportFlow'
         ]
     }
 }
@@ -264,7 +265,8 @@ export function createWebkitMocks (platform = 'macos') {
         getIncontextSignupDismissedAt: { success: {} },
         setIncontextSignupPermanentlyDismissedAt: null,
         startEmailProtectionSignup: null,
-        closeEmailProtectionTab: null
+        closeEmailProtectionTab: null,
+        startCredentialsImportFlow: {}
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
@@ -305,6 +307,14 @@ export function createWebkitMocks (platform = 'macos') {
         withCreditCard (creditCard, inputType = 'creditCards.cardNumber') {
             webkitBase.pmHandlerGetAutofillInitData.success.creditCards.push(creditCard)
             const topContextData = {inputType}
+            webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
+            return this
+        },
+        withCredentialsImport (inputType) {
+            const topContextData = {
+                inputType,
+                credentialsImport: true
+            }
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             return this
         },

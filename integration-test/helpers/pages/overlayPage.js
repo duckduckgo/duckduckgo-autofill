@@ -2,6 +2,7 @@ import {constants} from '../mocks.js'
 import {addTopAutofillMouseFocus} from '../utils.js'
 import {mockedCalls} from '../harness.js'
 import {expect} from '@playwright/test'
+import { genericPage } from './genericPage.js'
 
 /**
  * @param {import("@playwright/test").Page} page
@@ -36,6 +37,10 @@ export function overlayPage (page) {
         async assertCloseAutofillParent () {
             const closeAutofillParentCalls = await mockedCalls(page, {names: ['closeAutofillParent']})
             expect(closeAutofillParentCalls.length).toBe(1)
+        }
+
+        async assertPixelsFired (pixels) {
+            await genericPage(page).assertPixelsFired(pixels)
         }
 
         /**

@@ -24,6 +24,7 @@ import {
 import {initFormSubmissionsApi} from './initFormSubmissionsApi.js'
 import {EmailProtection} from '../EmailProtection.js'
 import { getTranslator } from '../locales/strings.js'
+import { CredentialsImport } from '../CredentialsImport.js'
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
@@ -47,6 +48,7 @@ class InterfacePrototype {
     /** @type {PasswordGenerator} */
     passwordGenerator = new PasswordGenerator()
     emailProtection = new EmailProtection(this)
+    credentialsImport = new CredentialsImport(this)
 
     /** @type {import("../InContextSignup.js").InContextSignup | null} */
     inContextSignup = null
@@ -464,7 +466,8 @@ class InterfacePrototype {
 
         /** @type {TopContextData} */
         const topContextData = {
-            inputType
+            inputType,
+            credentialsImport: this.credentialsImport.isAvailable() && (this.activeForm.isLogin || this.activeForm.isHybrid)
         }
 
         // Allow features to append/change top context data
@@ -693,6 +696,7 @@ class InterfacePrototype {
     async getAutofillCredentials (id) {
         return this.deviceApi.request(new GetAutofillCredentialsCall({id: String(id)}))
     }
+
     /** @returns {APIResponse<CreditCardObject>} */
     async getAutofillCreditCard (_id) { throw new Error('getAutofillCreditCard unimplemented') }
     /** @returns {Promise<{success: IdentityObject|undefined}>} */

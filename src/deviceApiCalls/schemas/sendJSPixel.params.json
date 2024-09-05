@@ -41,6 +41,18 @@
       "properties": {
         "pixelName": {
           "type": "string",
+          "const": "autofill_credentials_import_prompt_shown"
+        }
+      },
+      "required": [
+        "pixelName"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "pixelName": {
+          "type": "string",
           "const": "autofill_personal_address"
         }
       },

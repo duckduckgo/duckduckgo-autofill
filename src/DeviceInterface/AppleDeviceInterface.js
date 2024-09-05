@@ -282,6 +282,7 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     async addDeviceListeners () {
         this.thirdPartyProvider.init()
+        this.credentialsImport.init()
     }
 
     /** @type {any} */

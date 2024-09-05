@@ -2,6 +2,7 @@ import {constants} from '../mocks.js'
 import {clickOnIcon} from '../utils.js'
 import {expect} from '@playwright/test'
 import {mockedCalls} from '../harness.js'
+import { genericPage } from './genericPage.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
 
@@ -59,10 +60,7 @@ export function emailAutofillPage (page) {
          * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
         async assertPixelsFired (pixels) {
-            const calls = await mockedCalls(page, {names: ['sendJSPixel']})
-            expect(calls.length).toBeGreaterThanOrEqual(1)
-            const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
-            expect(firedPixels).toEqual(pixels)
+            await genericPage(page).assertPixelsFired(pixels)
         }
 
         async assertNoPixelsFired () {

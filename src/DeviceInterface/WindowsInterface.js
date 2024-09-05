@@ -55,45 +55,50 @@ export class WindowsInterface extends InterfacePrototype {
             this._abortController.abort()
         }
         this._abortController = new AbortController()
-        this.deviceApi.request(new GetAutofillDataCall(details), { signal: this._abortController.signal })
-            .then(resp => {
-                if (!this.activeForm) {
-                    throw new Error('this.currentAttached was absent')
+        try {
+            const resp = await this.deviceApi.request(new GetAutofillDataCall(details), { signal: this._abortController.signal })
+
+            if (!this.activeForm) {
+                throw new Error('this.currentAttached was absent')
+            }
+            switch (resp.action) {
+            case 'fill': {
+                if (mainType in resp) {
+                    this.activeForm?.autofillData(resp[mainType], mainType)
+                } else {
+                    throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
                 }
-                switch (resp.action) {
-                case 'fill': {
-                    if (mainType in resp) {
-                        this.activeForm?.autofillData(resp[mainType], mainType)
-                    } else {
-                        throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
-                    }
-                    break
-                }
-                case 'focus': {
-                    this.activeForm?.activeInput?.focus()
-                    break
-                }
-                case 'none': {
-                    // do nothing
-                    break
-                }
-                default: {
-                    if (this.globalConfig.isDDGTestMode) {
-                        console.warn('unhandled response', resp)
-                    }
-                }
+                break
+            }
+            case 'focus': {
+                this.activeForm?.activeInput?.focus()
+                break
+            }
+            case 'none': {
+                // do nothing
+                break
+            }
+
+            case 'refreshAvailableInputTypes': {
+                await this.removeTooltip()
+                return await this.credentialsImport.refresh()
+            }
+
+            default:
+                if (this.globalConfig.isDDGTestMode) {
+                    console.warn('unhandled response', resp)
                 }
                 return this._closeAutofillParent()
-            })
-            .catch(e => {
-                if (this.globalConfig.isDDGTestMode) {
-                    if (e.name === 'AbortError') {
-                        console.log('Promise Aborted')
-                    } else {
-                        console.error('Promise Rejected', e)
-                    }
+            }
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                if (e instanceof DOMException && e.name === 'AbortError') {
+                    console.log('Promise Aborted')
+                } else {
+                    console.error('Promise Rejected', e)
                 }
-            })
+            }
+        }
     }
 
     /**

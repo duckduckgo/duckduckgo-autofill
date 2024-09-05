@@ -1,5 +1,6 @@
 import {expect} from '@playwright/test'
 import {constants} from '../mocks.js'
+import { mockedCalls } from '../harness.js'
 
 /**
  * Use this to contain generic functions that can be re-used across pages
@@ -16,6 +17,16 @@ export function genericPage (page) {
 
             const passwordStyle = await page.locator(selector).getAttribute('style')
             await expect(passwordStyle).toContain(constants.iconMatchers.keyFill)
+        }
+
+        /**
+         * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
+         */
+        async assertPixelsFired (pixels) {
+            const calls = await mockedCalls(page, {names: ['sendJSPixel']})
+            expect(calls.length).toBeGreaterThanOrEqual(1)
+            const firedPixels = calls.map(([_, {pixelName, params}]) => params ? ({pixelName, params}) : ({pixelName}))
+            expect(firedPixels).toEqual(pixels)
         }
 
         async passwordFieldShowsGenKey (selector = '#password') {
@@ -62,6 +73,22 @@ export function genericPage (page) {
             await passwordBtn.click({force: true})
             await expect(input).toHaveValue(generatedPassword)
             return generatedPassword
+        }
+
+        /**
+         * @param {string} text
+         * @return {Promise<void>}
+         */
+        async assertTooltipNotOpen (text) {
+            await expect(page.locator(`button:has-text("${text}")`)).not.toBeVisible()
+        }
+
+        /**
+         * @param {string} text
+         * @return {Promise<void>}
+         */
+        async assertTooltipOpen (text) {
+            await expect(page.locator(`button:has-text("${text}")`)).toBeVisible()
         }
     }
 
