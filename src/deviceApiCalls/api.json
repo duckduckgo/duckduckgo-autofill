@@ -146,11 +146,7 @@
     },
     "startCredentialsImportFlow": {
       "type": "object",
-      "description": "(macOS/Windows) Opens the native password import flow UI",
-      "properties": {
-        "id": { "type": "string", "const":  "startCredentialsImportFlowResponse"},
-        "resultValidator": { "$ref":  "./schemas/startCredentialsImportFlow.result.json" }
-      }
+      "description": "(macOS/Windows) Opens the native password import flow UI"
     },
     "emailProtectionStoreUserData": {
       "type": "object",

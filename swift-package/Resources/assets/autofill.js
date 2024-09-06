@@ -11921,7 +11921,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     };
     if (topContextData.credentialsImport) {
       this._options.device.firePixel({
-        pixelName: 'autofill_credentials_import_prompt_shown'
+        pixelName: 'autofill_import_credentials_prompt_shown'
       });
       return new _CredentialsImportTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
         onStarted: () => {
@@ -13617,13 +13617,11 @@ class OpenManageIdentitiesCall extends _deviceApi.DeviceApiCall {
   method = "openManageIdentities";
 }
 /**
- * @extends {DeviceApiCall<any, startCredentialsImportFlowResponseSchema>} 
+ * @extends {DeviceApiCall<any, any>} 
  */
 exports.OpenManageIdentitiesCall = OpenManageIdentitiesCall;
 class StartCredentialsImportFlowCall extends _deviceApi.DeviceApiCall {
   method = "startCredentialsImportFlow";
-  id = "startCredentialsImportFlowResponse";
-  resultValidator = _validatorsZod.startCredentialsImportFlowResponseSchema;
 }
 /**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
@@ -13717,7 +13715,7 @@ exports.ShowInContextEmailProtectionSignupPromptCall = ShowInContextEmailProtect
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.startCredentialsImportFlowResponseSchema = exports.showInContextEmailProtectionSignupPromptSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.generatedPasswordSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = exports.addDebugFlagParamsSchema = void 0;
+exports.userPreferencesSchema = exports.triggerContextSchema = exports.storeFormDataSchema = exports.showInContextEmailProtectionSignupPromptSchema = exports.setSizeParamsSchema = exports.setIncontextSignupPermanentlyDismissedAtSchema = exports.sendJSPixelParamsSchema = exports.selectedDetailParamsSchema = exports.runtimeConfigurationSchema = exports.providerStatusUpdatedSchema = exports.outgoingCredentialsSchema = exports.getRuntimeConfigurationResponseSchema = exports.getIncontextSignupDismissedAtSchema = exports.getAvailableInputTypesResultSchema = exports.getAutofillInitDataResponseSchema = exports.getAutofillDataResponseSchema = exports.getAutofillDataRequestSchema = exports.getAutofillCredentialsResultSchema = exports.getAutofillCredentialsParamsSchema = exports.getAliasResultSchema = exports.getAliasParamsSchema = exports.genericErrorSchema = exports.generatedPasswordSchema = exports.emailProtectionStoreUserDataParamsSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionGetUserDataResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetAddressesResultSchema = exports.credentialsSchema = exports.contentScopeSchema = exports.checkCredentialsProviderStatusResultSchema = exports.availableInputTypesSchema = exports.availableInputTypes1Schema = exports.autofillSettingsSchema = exports.autofillFeatureTogglesSchema = exports.askToUnlockProviderResultSchema = exports.apiSchema = exports.addDebugFlagParamsSchema = void 0;
 const sendJSPixelParamsSchema = exports.sendJSPixelParamsSchema = null;
 const addDebugFlagParamsSchema = exports.addDebugFlagParamsSchema = null;
 const getAutofillCredentialsParamsSchema = exports.getAutofillCredentialsParamsSchema = null;
@@ -13746,7 +13744,6 @@ const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultS
 const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = null;
 const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = null;
 const autofillSettingsSchema = exports.autofillSettingsSchema = null;
-const startCredentialsImportFlowResponseSchema = exports.startCredentialsImportFlowResponseSchema = null;
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = null;
 const emailProtectionGetUserDataResultSchema = exports.emailProtectionGetUserDataResultSchema = null;
 const emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = null;
@@ -14852,7 +14849,7 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading": {
-    "title": "Import password to DuckDuckGo",
+    "title": "Import passwords to DuckDuckGo",
     "note": "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText": {
@@ -14953,7 +14950,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importar contraseña a DuckDuckGo",
+    "title" : "Importar contraseñas a DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -15256,7 +15253,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importez votre mot de passe sur DuckDuckGo",
+    "title" : "Importer des mots de passe sur DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -15559,7 +15556,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importa la password in DuckDuckGo",
+    "title" : "Importa le tue password in DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -15963,7 +15960,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Wachtwoord importeren naar DuckDuckGo",
+    "title" : "Wachtwoorden importeren naar DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -16064,7 +16061,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Zaimportuj hasło do DuckDuckGo",
+    "title" : "Importuj hasła do DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -16165,7 +16162,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importar palavra-passe para o DuckDuckGo",
+    "title" : "Importar palavras-passe para o DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -16367,7 +16364,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Импорт паролей в DuckDuckGo",
+    "title" : "Импортируйте пароли в DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
