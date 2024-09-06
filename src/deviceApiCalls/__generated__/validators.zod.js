@@ -10,7 +10,7 @@ export const sendJSPixelParamsSchema = z.union([z.object({
     }), z.object({
         pixelName: z.literal("autofill_show")
     }), z.object({
-        pixelName: z.literal("autofill_credentials_import_prompt_shown")
+        pixelName: z.literal("autofill_import_credentials_prompt_shown")
     }), z.object({
         pixelName: z.literal("autofill_personal_address")
     }), z.object({

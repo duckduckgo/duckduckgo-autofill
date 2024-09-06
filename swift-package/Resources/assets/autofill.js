@@ -11921,7 +11921,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     };
     if (topContextData.credentialsImport) {
       this._options.device.firePixel({
-        pixelName: 'autofill_credentials_import_prompt_shown'
+        pixelName: 'autofill_import_credentials_prompt_shown'
       });
       return new _CredentialsImportTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
         onStarted: () => {

@@ -16087,7 +16087,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
     };
     if (topContextData.credentialsImport) {
       this._options.device.firePixel({
-        pixelName: 'autofill_credentials_import_prompt_shown'
+        pixelName: 'autofill_import_credentials_prompt_shown'
       });
       return new _CredentialsImportTooltip.default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
         onStarted: () => {
@@ -17894,7 +17894,7 @@ const sendJSPixelParamsSchema = exports.sendJSPixelParamsSchema = _zod.z.union([
 }), _zod.z.object({
   pixelName: _zod.z.literal("autofill_show")
 }), _zod.z.object({
-  pixelName: _zod.z.literal("autofill_credentials_import_prompt_shown")
+  pixelName: _zod.z.literal("autofill_import_credentials_prompt_shown")
 }), _zod.z.object({
   pixelName: _zod.z.literal("autofill_personal_address")
 }), _zod.z.object({

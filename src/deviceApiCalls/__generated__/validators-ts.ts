@@ -20,7 +20,7 @@ export type SendJSPixelParams =
       pixelName: "autofill_show";
     }
   | {
-      pixelName: "autofill_credentials_import_prompt_shown";
+      pixelName: "autofill_import_credentials_prompt_shown";
     }
   | {
       pixelName: "autofill_personal_address";

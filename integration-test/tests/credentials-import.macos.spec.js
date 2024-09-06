@@ -36,7 +36,7 @@ test.describe('Import credentials prompt', () => {
         await login.navigate()
         await login.clickIntoPasswordInput()
         await login.assertTooltipOpen('Import password to DuckDuckGo')
-        await login.assertPixelsFired([{pixelName: 'autofill_credentials_import_prompt_shown'}])
+        await login.assertPixelsFired([{pixelName: 'autofill_import_credentials_prompt_shown'}])
     })
 
     test('when credentialsImport in availableInputTypes is false, credentials import prompt is not shown', async ({page}) => {
