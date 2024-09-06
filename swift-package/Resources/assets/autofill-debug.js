@@ -19376,7 +19376,7 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading": {
-    "title": "Import password to DuckDuckGo",
+    "title": "Import passwords to DuckDuckGo",
     "note": "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText": {
