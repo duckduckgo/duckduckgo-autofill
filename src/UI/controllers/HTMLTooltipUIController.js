@@ -110,7 +110,7 @@ export class HTMLTooltipUIController extends UIController {
         }
 
         if (topContextData.credentialsImport) {
-            this._options.device.firePixel({pixelName: 'autofill_credentials_import_prompt_shown'})
+            this._options.device.firePixel({pixelName: 'autofill_import_credentials_prompt_shown'})
             return new CredentialsImportTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
                 .render(this._options.device, {
                     onStarted: () => {

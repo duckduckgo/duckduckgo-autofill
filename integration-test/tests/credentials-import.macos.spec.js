@@ -35,8 +35,8 @@ test.describe('Import credentials prompt', () => {
         const login = loginPage(page)
         await login.navigate()
         await login.clickIntoPasswordInput()
-        await login.assertTooltipOpen('Import password to DuckDuckGo')
-        await login.assertPixelsFired([{pixelName: 'autofill_credentials_import_prompt_shown'}])
+        await login.assertTooltipOpen('Import passwords to DuckDuckGo')
+        await login.assertPixelsFired([{pixelName: 'autofill_import_credentials_prompt_shown'}])
     })
 
     test('when credentialsImport in availableInputTypes is false, credentials import prompt is not shown', async ({page}) => {
@@ -58,7 +58,7 @@ test.describe('Import credentials prompt', () => {
         const login = loginPage(page)
         await login.navigate()
         await login.clickIntoPasswordInput()
-        await login.assertTooltipNotOpen('Import password to DuckDuckGo')
+        await login.assertTooltipNotOpen('Import passwords to DuckDuckGo')
     })
 
     test('when credentialsImport in availableInputTypes is true, and the form is of type signup credentials import prompt is not shown', async ({page}) => {
@@ -82,7 +82,7 @@ test.describe('Import credentials prompt', () => {
         const signup = signupPage(page)
         await signup.navigate()
         await signup.clickIntoEmailField()
-        await signup.assertTooltipNotOpen('Import password to DuckDuckGo')
+        await signup.assertTooltipNotOpen('Import passwords to DuckDuckGo')
     })
 
     test.describe('in overlay', async () => {
@@ -109,7 +109,7 @@ test.describe('Import credentials prompt', () => {
 
             const overlay = overlayPage(page)
             await overlay.navigate()
-            await overlay.clickButtonWithText('Import password to DuckDuckGo')
+            await overlay.clickButtonWithText('Import passwords to DuckDuckGo')
 
             const webkitCalls = await mockedCalls(page, { names: ['startCredentialsImportFlow'], minCount: 1 })
             await expect(webkitCalls.length).toBeGreaterThanOrEqual(1)

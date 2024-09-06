@@ -41,7 +41,7 @@
       "properties": {
         "pixelName": {
           "type": "string",
-          "const": "autofill_credentials_import_prompt_shown"
+          "const": "autofill_import_credentials_prompt_shown"
         }
       },
       "required": [
