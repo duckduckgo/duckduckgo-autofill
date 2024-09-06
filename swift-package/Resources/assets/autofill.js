@@ -11919,7 +11919,8 @@ class HTMLTooltipUIController extends _UIController.UIController {
         return !!this._options.device.inContextSignup?.isAvailable(subtype);
       }
     };
-    if (topContextData.credentialsImport) {
+    const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0;
+    if (topContextData.credentialsImport && hasNoCredentialsData) {
       this._options.device.firePixel({
         pixelName: 'autofill_import_credentials_prompt_shown'
       });
