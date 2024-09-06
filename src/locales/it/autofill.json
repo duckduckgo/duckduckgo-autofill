@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Non mostrare più",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importa la password in DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Trasferisci in modo rapido e sicuro le tue password da un altro browser o gestore di password.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }

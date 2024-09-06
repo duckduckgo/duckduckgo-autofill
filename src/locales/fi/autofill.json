@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Älä näytä enää",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Tuo salasana DuckDuckGoon",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Siirrä salasanasi nopeasti ja turvallisesti toisesta selaimesta tai salasanojen hallintaohjelmasta.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }
