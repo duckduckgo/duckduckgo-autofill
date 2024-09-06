@@ -166,8 +166,6 @@ export interface API {
    * (macOS/Windows) Opens the native password import flow UI
    */
   startCredentialsImportFlow?: {
-    id?: "startCredentialsImportFlowResponse";
-    resultValidator?: StartCredentialsImportFlowResponse;
     [k: string]: unknown;
   };
   /**
@@ -635,20 +633,6 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
-}
-export interface StartCredentialsImportFlowResponse {
-  /**
-   * Required on Windows and MacOS
-   */
-  type?: "startCredentialsImportFlowResponse";
-  /**
-   * New `availableInputTypes` and `credentials` if import had credentials during import
-   */
-  success?: {
-    credentials: Credentials[];
-    availableInputTypes: AvailableInputTypes1;
-  };
-  error?: GenericError;
 }
 /**
  * Used to store Email Protection auth credentials.
