@@ -89,7 +89,7 @@
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Zaimportuj hasło do DuckDuckGo",
+    "title" : "Importuj hasła do DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {

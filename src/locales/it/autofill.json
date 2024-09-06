@@ -89,7 +89,7 @@
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importa la password in DuckDuckGo",
+    "title" : "Importa le tue password in DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {

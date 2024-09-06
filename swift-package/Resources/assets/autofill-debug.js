@@ -19477,7 +19477,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importar contraseña a DuckDuckGo",
+    "title" : "Importar contraseñas a DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -19780,7 +19780,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importez votre mot de passe sur DuckDuckGo",
+    "title" : "Importer des mots de passe sur DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -20083,7 +20083,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importa la password in DuckDuckGo",
+    "title" : "Importa le tue password in DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -20487,7 +20487,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Wachtwoord importeren naar DuckDuckGo",
+    "title" : "Wachtwoorden importeren naar DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -20588,7 +20588,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Zaimportuj hasło do DuckDuckGo",
+    "title" : "Importuj hasła do DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -20689,7 +20689,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Importar palavra-passe para o DuckDuckGo",
+    "title" : "Importar palavras-passe para o DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
@@ -20891,7 +20891,7 @@ module.exports={
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   },
   "credentialsImportHeading" : {
-    "title" : "Импорт паролей в DuckDuckGo",
+    "title" : "Импортируйте пароли в DuckDuckGo",
     "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
   },
   "credentialsImportText" : {
