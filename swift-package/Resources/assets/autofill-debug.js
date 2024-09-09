@@ -10510,11 +10510,14 @@ class Form {
         subtype,
         variant
       }, null);
-      if (this.isCredentialsImoprtAvailable) return true;
-
-      // Don't open the tooltip on input focus whenever it'll only show in-context signup
-      if (!hasSavedDetails && isIncontextSignupAvailable) return false;
-      return true;
+      if (hasSavedDetails) {
+        return true;
+      } else if (isIncontextSignupAvailable) {
+        // Don't open the tooltip on input focus whenever it'll only show in-context signup
+        return false;
+      } else {
+        return this.isCredentialsImoprtAvailable;
+      }
     }
     if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
       // Don't open the tooltip on input focus whenever it's showing in-context signup

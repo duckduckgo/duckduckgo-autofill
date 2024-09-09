@@ -771,12 +771,14 @@ class Form {
             // we'd have any other items to show. This lets us know if we're
             // just showing in-context signup, or with other autofill items.
             const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype, variant }, null)
-
-            if (this.isCredentialsImoprtAvailable) return true
-
-            // Don't open the tooltip on input focus whenever it'll only show in-context signup
-            if (!hasSavedDetails && isIncontextSignupAvailable) return false
-            return true
+            if (hasSavedDetails) {
+                return true
+            } else if (isIncontextSignupAvailable) {
+                // Don't open the tooltip on input focus whenever it'll only show in-context signup
+                return false
+            } else {
+                return this.isCredentialsImoprtAvailable
+            }
         }
 
         if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
