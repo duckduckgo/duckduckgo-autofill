@@ -269,9 +269,7 @@ class InterfacePrototype {
     async startInit () {
         if (this.isInitializationStarted) return
 
-        this.alreadyInitialized = true
-
-        await this.settings.refresh()
+        this.isInitializationStarted = true
 
         this.addDeviceListeners()
 
