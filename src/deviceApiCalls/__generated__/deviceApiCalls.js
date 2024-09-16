@@ -16,6 +16,8 @@ import {
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
     getIncontextSignupDismissedAtSchema,
+    emailProtectionGetAliasParamsSchema,
+    emailProtectionGetAliasResultSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
     emailProtectionGetUserDataResultSchema,
@@ -163,6 +165,15 @@ export class OpenManageIdentitiesCall extends DeviceApiCall {
  */
 export class StartCredentialsImportFlowCall extends DeviceApiCall {
   method = "startCredentialsImportFlow"
+}
+/**
+ * @extends {DeviceApiCall<emailProtectionGetAliasParamsSchema, emailProtectionGetAliasResultSchema>} 
+ */
+export class EmailProtectionGetAliasCall extends DeviceApiCall {
+  method = "emailProtectionGetAlias"
+  id = "emailProtectionGetAliasResponse"
+  paramsValidator = emailProtectionGetAliasParamsSchema
+  resultValidator = emailProtectionGetAliasResultSchema
 }
 /**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 

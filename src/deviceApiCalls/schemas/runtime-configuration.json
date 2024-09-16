@@ -109,6 +109,9 @@
         "features",
         "platform"
       ]
+    },
+    "availableInputTypes": {
+      "$ref": "availableInputTypes.json"
     }
   },
   "required": [
