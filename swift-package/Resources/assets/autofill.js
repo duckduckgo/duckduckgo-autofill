@@ -2469,6 +2469,9 @@ module.exports={
   "apple.com": {
     "password-rules": "minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;"
   },
+  "appleloan.citizensbank.com": {
+    "password-rules": "minlength: 10; maxlength: 20; max-consecutive: 2; required: lower; required: upper; required: digit; required: [!#$%@^_];"
+  },
   "areariservata.bancaetica.it": {
     "password-rules": "minlength: 8; maxlength: 10; required: lower; required: upper; required: digit; required: [!#&*+/=@_];"
   },
