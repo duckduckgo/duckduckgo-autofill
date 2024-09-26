@@ -2415,6 +2415,9 @@ module.exports={
   "ae.com": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
   },
+  "aeon.co.jp": {
+    "password-rules": "minlength: 8; maxlength: 8; max-consecutive: 3; required: digit; required: upper,lower,[#$+./:=?@[^_|~]];"
+  },
   "aeromexico.com": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit;"
   },
@@ -2468,6 +2471,9 @@ module.exports={
   },
   "apple.com": {
     "password-rules": "minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;"
+  },
+  "appleloan.citizensbank.com": {
+    "password-rules": "minlength: 10; maxlength: 20; max-consecutive: 2; required: lower; required: upper; required: digit; required: [!#$%@^_];"
   },
   "areariservata.bancaetica.it": {
     "password-rules": "minlength: 8; maxlength: 10; required: lower; required: upper; required: digit; required: [!#&*+/=@_];"
