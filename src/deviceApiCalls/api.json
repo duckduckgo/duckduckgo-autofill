@@ -98,6 +98,7 @@
         "paramsValidator": { "$ref":  "./schemas/sendJSPixel.params.json" }
       }
     },
+
     "setIncontextSignupPermanentlyDismissedAt": {
       "type": "object",
       "properties": {
@@ -147,6 +148,10 @@
     "startCredentialsImportFlow": {
       "type": "object",
       "description": "(macOS/Windows) Opens the native password import flow UI"
+    },
+    "credentialsImportFlowPermanentlyDismissed": {
+      "type": "object",
+      "description": "(macOS/Windows) User clicked on the password import flow prompt"
     },
     "emailProtectionGetAlias": {
       "type": "object",

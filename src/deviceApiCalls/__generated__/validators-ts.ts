@@ -169,6 +169,12 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * (macOS/Windows) User clicked on the password import flow prompt
+   */
+  credentialsImportFlowPermanentlyDismissed?: {
+    [k: string]: unknown;
+  };
+  /**
    * Used to prompt email protection autofill on mobile.
    */
   emailProtectionGetAlias?: {
