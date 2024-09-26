@@ -8863,7 +8863,8 @@ class InterfacePrototype {
     throw new Error('`getSelectedCredentials` not implemented');
   }
   isTestMode() {
-    return this.globalConfig.isDDGTestMode;
+    return true;
+    // return this.globalConfig.isDDGTestMode
   }
 
   /**
@@ -15413,13 +15414,13 @@ ${this.options.css}
                 <span class="label label--medium">${t('autofill:credentialsImportHeading')}</span>
                 <span class="label label--small">${t('autofill:credentialsImportText')}</span>
             </span>
-            </button>
-            <hr />
-            <button class="tooltip__button tooltip__button--data>
-                <span class="js-dismiss">
-                    <span class="label label--medium tooltip__button__dismiss_text">${t('autofill:dontShowAgain')}</span>
-                </span>
-            </button>
+        </button>
+        <hr />
+        <button class="tooltip__button tooltip__button--data js-dismiss">
+            <span>
+                <span class="label label--medium tooltip__button__dismiss_text">${t('autofill:dontShowAgain')}</span>
+            </span>
+        </button>
     </div>
 </div>
 `;

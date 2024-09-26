@@ -20,15 +20,14 @@ ${this.options.css}
             </span>
         </button>
         <hr />
-        <button class="tooltip__button tooltip__button--data>
-            <span class="js-dismiss">
+        <button class="tooltip__button tooltip__button--data js-dismiss">
+            <span>
                 <span class="label label--medium tooltip__button__dismiss_text">${t('autofill:dontShowAgain')}</span>
             </span>
         </button>
     </div>
 </div>
 `
-
         this.tooltip = this.shadow.querySelector('.tooltip')
 
         this.buttonWrapper = this.shadow.querySelector('.js-promo-wrapper')

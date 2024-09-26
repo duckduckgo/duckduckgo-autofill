@@ -330,7 +330,8 @@ class InterfacePrototype {
     }
 
     isTestMode () {
-        return this.globalConfig.isDDGTestMode
+        return true
+        // return this.globalConfig.isDDGTestMode
     }
 
     /**
