@@ -8863,8 +8863,7 @@ class InterfacePrototype {
     throw new Error('`getSelectedCredentials` not implemented');
   }
   isTestMode() {
-    return true;
-    // return this.globalConfig.isDDGTestMode
+    return this.globalConfig.isDDGTestMode;
   }
 
   /**
@@ -15043,9 +15042,6 @@ class Settings {
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
       }
-      if (this._availableInputTypes) {
-        return this.availableInputTypes;
-      }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
@@ -15417,7 +15413,7 @@ ${this.options.css}
         </button>
         <hr />
         <button class="tooltip__button tooltip__button--data js-dismiss">
-            <span>
+            <span class="tooltip__button__text-container">
                 <span class="label label--medium tooltip__button__dismiss_text">${t('autofill:dontShowAgain')}</span>
             </span>
         </button>

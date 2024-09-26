@@ -160,10 +160,6 @@ export class Settings {
                 return Settings.defaults.availableInputTypes
             }
 
-            if (this._availableInputTypes) {
-                return this.availableInputTypes
-            }
-
             return await this.deviceApi.request(new GetAvailableInputTypesCall(null))
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
