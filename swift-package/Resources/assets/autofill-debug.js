@@ -6629,6 +6629,9 @@ module.exports={
   "anthem.com": {
     "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!$*?@|];"
   },
+  "app.digiboxx.com": {
+    "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; required: [@$!%*?&];"
+  },
   "app.digio.in": {
     "password-rules": "minlength: 8; maxlength: 15;"
   },
@@ -6701,6 +6704,9 @@ module.exports={
   "bitly.com": {
     "password-rules": "minlength: 6; required: lower; required: upper; required: digit; required: [`!@#$%^&*()+~{}'\";:<>?]];"
   },
+  "blackwells.co.uk": {
+    "password-rules": "minlength: 8; maxlength: 30; allowed: upper,lower,digit;"
+  },
   "bloomingdales.com": {
     "password-rules": "minlength: 7; maxlength: 16; required: lower, upper; required: digit; required: [`!@#$%^&*()+~{}'\";:<>?]];"
   },
@@ -6712,6 +6718,9 @@ module.exports={
   },
   "box.com": {
     "password-rules": "minlength: 6; maxlength: 20; required: lower; required: upper; required: digit; required: digit;"
+  },
+  "bpl.bibliocommons.com": {
+    "password-rules": "minlength: 4; maxlength: 4; required: digit;"
   },
   "brighthorizons.com": {
     "password-rules": "minlength: 8; maxlength: 16;"
@@ -6751,6 +6760,9 @@ module.exports={
   },
   "claimlookup.com": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [@#$%^&+=!];"
+  },
+  "clarksoneyecare.com": {
+    "password-rules": "minlength: 9; allowed: lower; required: upper; required: digit; required: [~!@#$%^&*()_+{}|;,.<>?[]];"
   },
   "claro.com.br": {
     "password-rules": "minlength: 8; required: lower; allowed: upper, digit, [-!@#$%&*_+=<>];"
@@ -6916,6 +6928,9 @@ module.exports={
   },
   "gamestop.com": {
     "password-rules": "minlength: 8; maxlength: 225; required: lower; required: upper; required: digit; required: [!@#$%];"
+  },
+  "gap.com": {
+    "password-rules": "minlength: 8; maxlength: 24; required: lower; required: upper; required: digit; required: [-!@#$%^&*()_+];"
   },
   "garmin.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
@@ -7172,6 +7187,9 @@ module.exports={
   "kfc.ca": {
     "password-rules": "minlength: 6; maxlength: 15; required: lower; required: upper; required: digit; required: [!@#$%&?*];"
   },
+  "kiehls.com": {
+    "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!#$%&?@];"
+  },
   "klm.com": {
     "password-rules": "minlength: 8; maxlength: 12;"
   },
@@ -7273,6 +7291,9 @@ module.exports={
   },
   "myhealthrecord.com": {
     "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
+  },
+  "mypay.dfas.mil": {
+    "password-rules": "minlength: 9; maxlength: 30; required: lower; required: upper; required: digit; required: [#@$%^!*+=_];"
   },
   "mysavings.breadfinancial.com": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [+_%@!$*~];"
@@ -7457,6 +7478,9 @@ module.exports={
   "store.steampowered.com": {
     "password-rules": "minlength: 6; required: lower; required: upper; required: digit; allowed: [~!@#$%^&*];"
   },
+  "subscribe.free.fr": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!#&()*+/@[_]];"
+  },
   "successfactors.eu": {
     "password-rules": "minlength: 8; maxlength: 18; required: lower; required: upper; required: digit,[-!\"#$%&'()*+,.:;<=>?@[^_`{|}~]];"
   },
@@ -7490,6 +7514,9 @@ module.exports={
   "treasurer.mo.gov": {
     "password-rules": "minlength: 8; maxlength: 26; required: lower; required: upper; required: digit; required: [!#$&];"
   },
+  "turkishairlines.com": {
+    "password-rules": "minlength: 6; maxlength: 6; required: digit; max-consecutive: 3;"
+  },
   "twitch.tv": {
     "password-rules": "minlength: 8; maxlength: 71;"
   },
@@ -7504,6 +7531,9 @@ module.exports={
   },
   "umterps.evenue.net": {
     "password-rules": "minlength: 14; required: digit; required: upper; required: lower; required: [-~!@#$%^&*_+=`|(){}:;];"
+  },
+  "unito.it": {
+    "password-rules": "minlength: 8; required: upper; required: lower; required: digit; required: [-!?+*/:;'\"{}()@£$%&=^#[]];"
   },
   "user.ornl.gov": {
     "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower, upper; required: digit; allowed: [!#$%./_];"
