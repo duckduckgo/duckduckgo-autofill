@@ -2436,6 +2436,9 @@ module.exports={
   "ajisushionline.com": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; allowed: [ !#$%&*?@];"
   },
+  "alelo.com.br": {
+    "password-rules": "minlength: 6; maxlength: 10; required: lower; required: upper; required: digit;"
+  },
   "aliexpress.com": {
     "password-rules": "minlength: 6; maxlength: 20; allowed: lower, upper, digit;"
   },
@@ -3071,6 +3074,9 @@ module.exports={
   },
   "lufthansa.com": {
     "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
+  },
+  "lufthansagroup.careers": {
+    "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&*?@];"
   },
   "macys.com": {
     "password-rules": "minlength: 7; maxlength: 16; allowed: lower, upper, digit, [~!@#$%^&*+`(){}[:;\"'<>?]];"
