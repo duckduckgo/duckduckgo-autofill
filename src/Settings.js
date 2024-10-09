@@ -151,17 +151,16 @@ export class Settings {
      * Available Input Types are boolean indicators to represent which input types the
      * current **user** has data available for.
      *
-     * @param {boolean} shouldForce - if true, will always call the native app. If false, will return the cached value.
      * @returns {Promise<AvailableInputTypes>}
      */
-    async getAvailableInputTypes (shouldForce = false) {
+    async getAvailableInputTypes () {
         try {
             // This info is not needed in the topFrame, so we avoid calling the native app
             if (this.globalConfig.isTopFrame) {
                 return Settings.defaults.availableInputTypes
             }
 
-            if (this._availableInputTypes && !shouldForce) {
+            if (this._availableInputTypes) {
                 return this.availableInputTypes
             }
 
@@ -185,10 +184,10 @@ export class Settings {
      *      enabled: boolean | null
      * }>}
      */
-    async refresh (shouldForceAvailalbeInputTypes = false) {
+    async refresh () {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
-        this.setAvailableInputTypes(await this.getAvailableInputTypes(shouldForceAvailalbeInputTypes))
+        this.setAvailableInputTypes(await this.getAvailableInputTypes())
         this.setLanguage(await this.getLanguage())
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
