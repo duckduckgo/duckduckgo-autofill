@@ -37,8 +37,8 @@ class CredentialsImport {
     }
 
     async refresh () {
-        // Refresh all settings (e.g availableInputTypes)
-        await this.device.settings.refresh()
+        // Force refresh all settings (e.g availableInputTypes)
+        await this.device.settings.refresh(true)
 
         // Re-decorate all inputs to show the input decorations
         this.device.activeForm?.redecorateAllInputs()

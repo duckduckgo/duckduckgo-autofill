@@ -7671,8 +7671,8 @@ class CredentialsImport {
     }
   }
   async refresh() {
-    // Refresh all settings (e.g availableInputTypes)
-    await this.device.settings.refresh();
+    // Force refresh all settings (e.g availableInputTypes)
+    await this.device.settings.refresh(true);
 
     // Re-decorate all inputs to show the input decorations
     this.device.activeForm?.redecorateAllInputs();
@@ -15070,13 +15070,18 @@ class Settings {
    * Available Input Types are boolean indicators to represent which input types the
    * current **user** has data available for.
    *
+   * @param {boolean} shouldForce - if true, will always call the native app. If false, will return the cached value.
    * @returns {Promise<AvailableInputTypes>}
    */
   async getAvailableInputTypes() {
+    let shouldForce = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     try {
       // This info is not needed in the topFrame, so we avoid calling the native app
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
+      }
+      if (this._availableInputTypes && !shouldForce) {
+        return this.availableInputTypes;
       }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
@@ -15099,9 +15104,10 @@ class Settings {
    * }>}
    */
   async refresh() {
+    let shouldForceAvailalbeInputTypes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     this.setEnabled(await this.getEnabled());
     this.setFeatureToggles(await this.getFeatureToggles());
-    this.setAvailableInputTypes(await this.getAvailableInputTypes());
+    this.setAvailableInputTypes(await this.getAvailableInputTypes(shouldForceAvailalbeInputTypes));
     this.setLanguage(await this.getLanguage());
 
     // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
