@@ -385,12 +385,6 @@ hr:first-child {
     background-repeat: no-repeat;
 }
 
-.tooltip__button--credentials-import--dismiss::before {
-    content: "";
-    height: 0;
-    width: 0;
-}
-
 .tooltip__button__dismiss_text {
     margin-left: 15px;
 }
