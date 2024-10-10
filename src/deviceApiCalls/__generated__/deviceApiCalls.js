@@ -167,6 +167,12 @@ export class StartCredentialsImportFlowCall extends DeviceApiCall {
   method = "startCredentialsImportFlow"
 }
 /**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class CredentialsImportFlowPermanentlyDismissedCall extends DeviceApiCall {
+  method = "credentialsImportFlowPermanentlyDismissed"
+}
+/**
  * @extends {DeviceApiCall<emailProtectionGetAliasParamsSchema, emailProtectionGetAliasResultSchema>} 
  */
 export class EmailProtectionGetAliasCall extends DeviceApiCall {

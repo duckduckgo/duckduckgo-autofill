@@ -1,4 +1,4 @@
-import { CloseAutofillParentCall, StartCredentialsImportFlowCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import { CloseAutofillParentCall, CredentialsImportFlowPermanentlyDismissedCall, StartCredentialsImportFlowCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * Use this as place to store any state or functionality related to password import promotion
@@ -57,6 +57,11 @@ class CredentialsImport {
     async started () {
         this.device.deviceApi.notify(new CloseAutofillParentCall(null))
         this.device.deviceApi.notify(new StartCredentialsImportFlowCall({}))
+    }
+
+    async dismissed () {
+        this.device.deviceApi.notify(new CloseAutofillParentCall(null))
+        this.device.deviceApi.notify(new CredentialsImportFlowPermanentlyDismissedCall(null))
     }
 }
 

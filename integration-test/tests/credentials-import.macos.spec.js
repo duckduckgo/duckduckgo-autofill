@@ -115,5 +115,35 @@ test.describe('Import credentials prompt', () => {
             await expect(webkitCalls.length).toBeGreaterThanOrEqual(1)
             await overlay.assertCloseAutofillParent()
         })
+
+        test('when dismiss prompt is clicked, native API call is made', async ({ page }) => {
+            await forwardConsoleMessages(page)
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes({
+                    credentials: {
+                        username: false,
+                        password: false
+                    },
+                    credentialsImport: true
+                }))
+                .withCredentialsImport?.('credentials.username')
+                .applyTo(page)
+
+            // Pretend we're running in a top-frame scenario
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements())
+                .replace('isTopFrame', true)
+                .replace('supportsTopFrame', true)
+                .platform('macos')
+                .applyTo(page)
+
+            const overlay = overlayPage(page)
+            await overlay.navigate()
+            await overlay.clickButtonWithText("Don't Show Again")
+
+            const webkitCalls = await mockedCalls(page, { names: ['credentialsImportFlowPermanentlyDismissed'], minCount: 1 })
+            await expect(webkitCalls.length).toBeGreaterThanOrEqual(1)
+            await overlay.assertCloseAutofillParent()
+        })
     })
 })

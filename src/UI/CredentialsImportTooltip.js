@@ -3,7 +3,7 @@ import HTMLTooltip from './HTMLTooltip.js'
 class CredentialsImportTooltip extends HTMLTooltip {
     /**
      * @param {import("../DeviceInterface/InterfacePrototype.js").default} device
-     * @param {{ onStarted(): void }} callbacks
+     * @param {{ onStarted(): void, onDismissed(): void }} callbacks
      */
     render (device, callbacks) {
         this.device = device
@@ -19,15 +19,25 @@ ${this.options.css}
                 <span class="label label--small">${t('autofill:credentialsImportText')}</span>
             </span>
         </button>
+        <hr />
+        <button class="tooltip__button tooltip__button--secondary js-dismiss">
+            <span class="tooltip__button__text-container">
+                <span class="label label--medium">${t('autofill:dontShowAgain')}</span>
+            </span>
+        </button>
     </div>
 </div>
 `
-
         this.tooltip = this.shadow.querySelector('.tooltip')
 
         this.buttonWrapper = this.shadow.querySelector('.js-promo-wrapper')
+        this.dismissWrapper = this.shadow.querySelector('.js-dismiss')
+
         this.registerClickableButton(this.buttonWrapper, () => {
             callbacks.onStarted()
+        })
+        this.registerClickableButton(this.dismissWrapper, () => {
+            callbacks.onDismissed()
         })
 
         this.init()

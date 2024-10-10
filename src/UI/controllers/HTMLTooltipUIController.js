@@ -116,6 +116,9 @@ export class HTMLTooltipUIController extends UIController {
                 .render(this._options.device, {
                     onStarted: () => {
                         this._options.device.credentialsImport.started()
+                    },
+                    onDismissed: () => {
+                        this._options.device.credentialsImport.dismissed()
                     }
                 })
         }
