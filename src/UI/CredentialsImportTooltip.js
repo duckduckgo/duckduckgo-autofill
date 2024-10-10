@@ -20,9 +20,9 @@ ${this.options.css}
             </span>
         </button>
         <hr />
-        <button class="tooltip__button js-dismiss">
+        <button class="tooltip__button tooltip__button--secondary js-dismiss">
             <span class="tooltip__button__text-container">
-                <span class="label label--medium tooltip__button__dismiss_text">${t('autofill:dontShowAgain')}</span>
+                <span class="label label--medium">${t('autofill:dontShowAgain')}</span>
             </span>
         </button>
     </div>
