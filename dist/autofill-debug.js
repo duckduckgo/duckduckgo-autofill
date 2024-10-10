@@ -17750,7 +17750,7 @@ function createGlobalConfig(overrides) {
   // INJECT webkitMessageHandlerNames HERE
 
   let isDDGTestMode = false;
-  // INJECT isDDGTestMode HERE
+  isDDGTestMode = true;
 
   let contentScope = null;
   let userUnprotectedDomains = null;
