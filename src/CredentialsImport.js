@@ -60,8 +60,8 @@ class CredentialsImport {
     }
 
     async dismissed () {
-        this.device.deviceApi.notify(new CloseAutofillParentCall(null))
         this.device.deviceApi.notify(new CredentialsImportFlowPermanentlyDismissedCall(null))
+        this.device.deviceApi.notify(new CloseAutofillParentCall(null))
     }
 }
 

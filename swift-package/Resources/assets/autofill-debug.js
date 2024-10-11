@@ -7694,8 +7694,8 @@ class CredentialsImport {
     this.device.deviceApi.notify(new _deviceApiCalls.StartCredentialsImportFlowCall({}));
   }
   async dismissed() {
-    this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
     this.device.deviceApi.notify(new _deviceApiCalls.CredentialsImportFlowPermanentlyDismissedCall(null));
+    this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
   }
 }
 exports.CredentialsImport = CredentialsImport;
