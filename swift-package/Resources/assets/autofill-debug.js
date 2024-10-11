@@ -6740,6 +6740,9 @@ module.exports={
   "carrefour.it": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
   },
+  "cathaypacific.com": {
+    "password-rules": "minlength: 8; maxlength: 20; required: upper; required: digit; required: [!#$*^]; allowed: lower;"
+  },
   "cb2.com": {
     "password-rules": "minlength: 9; required: lower, upper; required: digit; required: [!#*_%.$];"
   },
@@ -6811,6 +6814,9 @@ module.exports={
   },
   "crateandbarrel.com": {
     "password-rules": "minlength: 9; maxlength: 64; required: lower; required: upper; required: digit; required: [!\"#$%&()*,.:<>?@^_{|}];"
+  },
+  "crowdgen.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!#$%&()*+=@^_];"
   },
   "cvs.com": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower, upper; required: digit; allowed: [!@#$%^&*()];"
@@ -7240,6 +7246,9 @@ module.exports={
   },
   "lufthansa.com": {
     "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit; required: [!#$%&()*+,./:;<>?@\"_];"
+  },
+  "lufthansagroup.careers": {
+    "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!#$%&*?@];"
   },
   "macys.com": {
     "password-rules": "minlength: 7; maxlength: 16; allowed: lower, upper, digit, [~!@#$%^&*+`(){}[:;\"'<>?]];"
