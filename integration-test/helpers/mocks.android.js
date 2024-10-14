@@ -80,6 +80,7 @@ export function createAndroidMocks () {
         getAutofillData: null,
         showInContextEmailProtectionSignupPrompt: { isSignedIn: true },
         incontextSignupDismissedAt: {},
+        getAvailableInputTypes: {},
         /** @type {{alias: string}|null} */
         address: null,
         isSignedIn: ''
@@ -213,6 +214,10 @@ export function createAndroidMocks () {
                         response: mocks.getAutofillData
                     },
                     {callName: 'storeFormData'},
+                    {
+                        callName: 'getAvailableInputTypes',
+                        response: mocks.getAvailableInputTypes
+                    },
                     {
                         callName: 'getIncontextSignupDismissedAt',
                         response: mocks.incontextSignupDismissedAt

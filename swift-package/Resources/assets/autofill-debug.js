@@ -15081,9 +15081,6 @@ class Settings {
       if (this.globalConfig.isTopFrame) {
         return Settings.defaults.availableInputTypes;
       }
-      if (this._availableInputTypes) {
-        return this.availableInputTypes;
-      }
       return await this.deviceApi.request(new _deviceApiCalls.GetAvailableInputTypesCall(null));
     } catch (e) {
       if (this.globalConfig.isDDGTestMode) {
