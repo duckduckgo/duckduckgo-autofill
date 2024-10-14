@@ -152,7 +152,8 @@ export const macosWithoutOverlay = () => {
             'setIncontextSignupPermanentlyDismissedAt',
             'startEmailProtectionSignup',
             'closeEmailProtectionTab',
-            'startCredentialsImportFlow'
+            'startCredentialsImportFlow',
+            'credentialsImportFlowPermanentlyDismissed'
         ]
     }
 }
@@ -265,7 +266,8 @@ export function createWebkitMocks (platform = 'macos') {
         setIncontextSignupPermanentlyDismissedAt: null,
         startEmailProtectionSignup: null,
         closeEmailProtectionTab: null,
-        startCredentialsImportFlow: {}
+        startCredentialsImportFlow: {},
+        credentialsImportFlowPermanentlyDismissed: null
     }
 
     /** @type {MockBuilder<any, webkitBase>} */

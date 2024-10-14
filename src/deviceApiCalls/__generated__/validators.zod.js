@@ -418,6 +418,7 @@ export const apiSchema = z.object({
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
     emailProtectionGetAlias: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionGetAliasResponse").optional(),
         paramsValidator: emailProtectionGetAliasParamsSchema.optional(),
