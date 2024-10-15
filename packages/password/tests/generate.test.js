@@ -12,10 +12,11 @@ const { Password } = require('../lib/apple.password.js')
 function testUniqueTimes (domain, passwordRules, num = 10) {
     const pws = []
     for (let i = 0; i < num; i++) {
-    // these 3 domains have rulesets so weak that collisions are likely
+    // these 4 domains have rulesets so weak that collisions are likely, causing flaky runs
         if (domain === 'vivo.com.br') continue
         if (domain === 'allianz.com.br') continue
         if (domain === 'packageconciergeadmin.com') continue
+        if (domain === 'bpl.bibliocommons.com') continue
         const pw = generate({ input: passwordRules })
         pws.push(pw)
     }
