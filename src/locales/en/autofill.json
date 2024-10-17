@@ -86,8 +86,8 @@
     "note": "Link that takes users to \"https://duckduckgo.com/email/start-incontext\", where they can sign up for DuckDuckGo email protection."
   },
   "dontShowAgain": {
-    "title": "Don't Show Again",
-    "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+    "title": "Don't show again",
+    "note": "Button that prevents the DuckDuckGo email protection signup prompt and credentials import prompt from appearing again."
   },
   "credentialsImportHeading": {
     "title": "Import passwords to DuckDuckGo",
