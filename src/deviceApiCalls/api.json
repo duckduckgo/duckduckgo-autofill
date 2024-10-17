@@ -152,15 +152,6 @@
       "type": "object",
       "description": "(macOS/Windows) User clicked on the password import flow prompt"
     },
-    "emailProtectionGetAlias": {
-      "type": "object",
-      "description": "Used to prompt email protection autofill on mobile.",
-      "properties": {
-        "id": { "type": "string", "const":  "emailProtectionGetAliasResponse"},
-        "paramsValidator": { "$ref": "./schemas/emailProtectionGetAlias.params.json" },
-        "resultValidator": { "$ref": "./schemas/emailProtectionGetAlias.result.json" }
-      }
-    },
     "emailProtectionStoreUserData": {
       "type": "object",
       "description": "Used to store Email Protection auth credentials (logging in)",

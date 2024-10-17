@@ -85,13 +85,13 @@ export class WindowsInterface extends InterfacePrototype {
             }
 
             default:
-                if (this.isTestMode()) {
+                if (this.globalConfig.isDDGTestMode) {
                     console.warn('unhandled response', resp)
                 }
                 return this._closeAutofillParent()
             }
         } catch (e) {
-            if (this.isTestMode()) {
+            if (this.globalConfig.isDDGTestMode) {
                 if (e instanceof DOMException && e.name === 'AbortError') {
                     console.log('Promise Aborted')
                 } else {

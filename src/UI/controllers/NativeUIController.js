@@ -87,10 +87,6 @@ export class NativeUIController extends UIController {
                     form.activeInput?.focus()
                     break
                 }
-                case 'none': {
-                    // do nothing
-                    break
-                }
                 default: {
                     if (args.device.isTestMode()) {
                         console.warn('response not handled', resp)
