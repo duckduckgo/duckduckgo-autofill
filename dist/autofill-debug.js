@@ -19452,7 +19452,7 @@ module.exports={
   },
   "dontShowAgain": {
     "title": "Don't Show Again",
-    "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+    "note": "Button that prevents the DuckDuckGo email protection signup prompt and credentials import prompt from appearing again."
   },
   "credentialsImportHeading": {
     "title": "Import passwords to DuckDuckGo",
