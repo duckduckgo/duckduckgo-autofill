@@ -7,10 +7,25 @@
         Based on the presence of a password field, the unknown field should be classified
         as a username field.
     </p>
+    <script>
+        function updateLabelFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fieldType = urlParams.get('fieldType');
+        const label = document.getElementById('unknown-label');
+        const input = document.getElementById('unknown');
+        if (fieldType === 'phone') {
+            label.textContent = 'Phone number:';
+            label.id = 'phone'
+        } else {
+            label.textContent = 'Random input field:';
+        }
+        }
+        window.onload = updateLabelFromURL;
+    </script>
 </head>
 <body>
     <form name="logon" style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
-        <label for="unknown">Random input field:</label>
+        <label for="unknown" id="unknown-label">Random input field:</label>
         <input type="text" id="unknown" name="dummy">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password">

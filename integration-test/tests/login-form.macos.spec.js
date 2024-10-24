@@ -108,49 +108,68 @@ test.describe('Auto-fill a login form on macOS', () => {
         })
     })
 
-    test.describe('when there is a single unknown username field, and one password field', () => {
-        test('the unknown field is a username', async ({page}) => {
-            await forwardConsoleMessages(page)
-            await mocks(page, {
-                unknown_username_categorization: true
+    test.describe('when there is a single ambiguous field, and one password field', () => {
+        test.describe('and the input type is unknown', async () => {
+            test('the ambiguous field is a username', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await mocks(page, {
+                    unknown_username_categorization: true
+                })
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({}))
+                    .platform('macos')
+                    .applyTo(page)
+                const login = unknownUsernameLoginPage(page)
+                await login.navigate()
+                await page.waitForTimeout(10)
+                await login.assertUnknownFieldIsUsername()
             })
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({}))
-                .platform('macos')
-                .applyTo(page)
-            const login = unknownUsernameLoginPage(page)
-            await login.navigate()
-            await page.waitForTimeout(10)
-            await login.assertUnknownFieldIsUsername()
+
+            test('unknown field is autofilled when clicking into password', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await mocks(page, {
+                    unknown_username_categorization: true
+                })
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({}))
+                    .platform('macos')
+                    .applyTo(page)
+                const login = unknownUsernameLoginPage(page)
+                await login.navigate()
+                await login.autofillWithPasswordField(personalAddress)
+                await login.assertCredentialsFilled(personalAddress, password)
+            })
+            test('password field is autofilled when clicking into unknown field', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await mocks(page, {
+                    unknown_username_categorization: true
+                })
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({}))
+                    .platform('macos')
+                    .applyTo(page)
+                const login = unknownUsernameLoginPage(page)
+                await login.navigate()
+                await login.autofillWithPasswordField(personalAddress)
+                await login.assertCredentialsFilled(personalAddress, password)
+            })
         })
 
-        test('unknown field is autofilled when clicking into password', async ({page}) => {
-            await forwardConsoleMessages(page)
-            await mocks(page, {
-                unknown_username_categorization: true
+        test.describe('and the input type is phone number', () => {
+            test('phone field is a username', async ({page}) => {
+                await forwardConsoleMessages(page)
+                await mocks(page, {
+                    unknown_username_categorization: true
+                })
+                await createAutofillScript()
+                    .replaceAll(macosContentScopeReplacements({}))
+                    .platform('macos')
+                    .applyTo(page)
+                const login = unknownUsernameLoginPage(page)
+                await login.navigate(true)
+                await login.autofillWithPasswordField(personalAddress)
+                await login.assertCredentialsFilled(personalAddress, password)
             })
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({}))
-                .platform('macos')
-                .applyTo(page)
-            const login = unknownUsernameLoginPage(page)
-            await login.navigate()
-            await login.autofillWithPasswordField(personalAddress)
-            await login.assertCredentialsFilled(personalAddress, password)
-        })
-        test('password field is autofilled when clicking into unknown field', async ({page}) => {
-            await forwardConsoleMessages(page)
-            await mocks(page, {
-                unknown_username_categorization: true
-            })
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({}))
-                .platform('macos')
-                .applyTo(page)
-            const login = unknownUsernameLoginPage(page)
-            await login.navigate()
-            await login.autofillWithPasswordField(personalAddress)
-            await login.assertCredentialsFilled(personalAddress, password)
         })
     })
 

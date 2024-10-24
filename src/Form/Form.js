@@ -17,7 +17,7 @@ import {
     findEnclosedElements
 } from '../autofill-utils.js'
 
-import {getInputSubtype, getInputMainType, createMatching, getInputVariant} from './matching.js'
+import { getInputSubtype, getInputMainType, createMatching, getInputVariant } from './matching.js'
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js'
 import {canBeInteractedWith, getInputConfig, isFieldDecorated} from './inputTypeConfig.js'
 
@@ -431,26 +431,32 @@ class Form {
         // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
         if (this.canCategorizeUnknownUsername()) {
             const credentialInputs = [...this.inputs.credentials]
+            const unknownInputs = [...this.inputs.unknown]
+            const identityInputs = [...this.inputs.identities]
+            const creditCards = [...this.inputs.creditCards]
+
             const hasUsername = credentialInputs.some(input => getInputSubtype(input) === 'username')
-            const hasIdentitiesOrCreditCards = this.inputs.identities.size > 0 || this.inputs.creditCards.size > 0
-            const hasLoneUnknownInput = this.inputs.unknown.size === 1
+            const hasIdentitiesExceptPhone = identityInputs.filter(input => getInputSubtype(input) !== 'phone').length > 0
+
+            const hasIdentitiesOrCreditCards = hasIdentitiesExceptPhone || creditCards.length > 0
+
+            const phoneInputs = identityInputs.filter(input => getInputSubtype(input) === 'phone')
 
             // Categorise if the form:
             // 1. doesn't have a username field,
-            // 2. doesn't have identities or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
-            // 3. has exactly one unknown input, and
+            // 2. doesn't have identities (except phone) or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
+            // 3. has exactly one unknown input or one phone input, and
             // 4. the form is a login form.
-            if (!hasUsername && !hasIdentitiesOrCreditCards && hasLoneUnknownInput && this.isLogin) {
-                const [unknownInput] = [...this.inputs.unknown]
+            const ambiguousInputs = [...unknownInputs, ...phoneInputs]
+            if (!hasUsername && !hasIdentitiesOrCreditCards && this.isLogin && ambiguousInputs.length === 1) {
                 const passwordInputs = credentialInputs.filter(
                     (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password'
                 )
+                const ambiguousInput = ambiguousInputs[0]
                 const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect')
-                if (passwordInputs.length > 0 && unknownInput.matches?.(inputSelector)) {
-                    unknownInput.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
-                    this.decorateInput(unknownInput)
-                    this.inputs.credentials.add(unknownInput)
-                    this.inputs.unknown.delete(unknownInput)
+                if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
+                    const ambiguousInputType = getInputMainType(ambiguousInput)
+                    this.recategorizeInputToUsername(ambiguousInput, ambiguousInputType)
                 }
             }
         }
@@ -461,6 +467,13 @@ class Form {
         if (this.form !== document.body) {
             this.mutObs.observe(this.form, this.mutObsConfig)
         }
+    }
+
+    recategorizeInputToUsername (input, type) {
+        input.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
+        this.decorateInput(input)
+        this.inputs.credentials.add(input)
+        this.inputs[type].delete(input)
     }
 
     canCategorizeUnknownUsername () {
