@@ -469,6 +469,11 @@ class Form {
         }
     }
 
+    /**
+     * Recategorizes input's attribute to username, decorates it and also updates the input set.
+     * @param {HTMLInputElement} input
+     * @param {SupportedMainTypes} type
+     */
     recategorizeInputToUsername (input, type) {
         input.setAttribute(ATTR_INPUT_TYPE, 'credentials.username')
         this.decorateInput(input)
