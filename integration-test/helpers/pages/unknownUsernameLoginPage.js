@@ -9,12 +9,10 @@ import {expect} from '@playwright/test'
 export function unknownUsernameLoginPage (page) {
     class UnknownUsernameLoginPage {
         /**
-         * @param {boolean} isPhone
          * @return {Promise<void>}
          */
-        async navigate (isPhone = false) {
-            const path = `${constants.pages['unknownUsernameLogin']}/?fieldType=${isPhone ? 'phone' : 'unknown'}`
-            await page.goto(path)
+        async navigate (to = 'unknownUsernameLogin') {
+            await page.goto(constants.pages[to])
         }
 
         /**
