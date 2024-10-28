@@ -545,5 +545,7 @@
   { "html": "malta-taxes-payment-form.html", "expectedFailures": ["expirationMonth", "expirationYear", "cardSecurityCode"] },
   { "html": "single-select-form.html" },
   { "html": "camelcamelcamel_login.html" },
-  { "html": "accounts_oneplus_login.html"}
+  { "html": "accounts_oneplus_login.html"},
+  { "html": "google_password_manager_search.html"}
+
 ]
