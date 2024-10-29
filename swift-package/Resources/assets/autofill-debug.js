@@ -12692,7 +12692,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
         password: {
           match: /password|passwort|kennwort|wachtwoord|mot de passe|clave|contraseña|lösenord/iu,
           skip: /email|one-time|error|hint|^username$/iu,
-          forceUnknown: /captcha|mfa|2fa|two factor|otp|pin/iu
+          forceUnknown: /search|captcha|mfa|2fa|two factor|otp|pin/iu
         },
         newPassword: {
           match: /new|re.?(enter|type)|repeat|update\b/iu

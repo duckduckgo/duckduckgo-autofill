@@ -265,7 +265,7 @@ const matchingConfiguration = {
                         // Swedish
                         '|lösenord',
                     skip: 'email|one-time|error|hint|^username$',
-                    forceUnknown: 'captcha|mfa|2fa|two factor|otp|pin'
+                    forceUnknown: 'search|captcha|mfa|2fa|two factor|otp|pin'
                 },
                 newPassword: {
                     match: 'new|re.?(enter|type)|repeat|update\\b'
