@@ -374,7 +374,7 @@ const matchingConfiguration = {
                         '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
                 },
                 signupRegex: {
-                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm' +
+                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|guest|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' +
                         // German
@@ -389,7 +389,7 @@ const matchingConfiguration = {
                         '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
                 },
                 conservativeSignupRegex: {
-                    match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                    match: 'sign.?up|join|register|enroll|(create|new).+account|guest|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' +
                         // German
