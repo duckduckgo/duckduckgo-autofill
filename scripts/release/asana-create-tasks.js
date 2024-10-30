@@ -67,23 +67,32 @@ const duplicateTemplateTask = (templateTaskGid) => {
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
 }
 
-const waitForJobSuccess = async (job_gid, attempts = 1) => {
-    const interval = 500
+const waitForJobSuccess = async (job_gid) => {
+    const interval = 1000
     const maxAttempts = 20
 
     return new Promise(async (resolve, reject) => {
-        const { status } = await asana.jobs.getJob(job_gid)
-        if (status === 'succeeded') {
-            return resolve(status)
-        }
-        attempts += 1
+        const innerFn = async function (job_gid, attempts) {
+            console.error(`Waiting for job ${job_gid} to complete...`)
+            const { status } = await asana.jobs.getJob(job_gid)
+            console.error(`Job ${job_gid} status: ${status}`)
+            if (status === 'succeeded') {
+                return resolve(status)
+            }
+            attempts += 1
 
-        if (attempts > maxAttempts) {
-            return reject(new Error(`The job ${job_gid} took too long to execute`))
-        }
+            if (attempts > maxAttempts) {
+                const errMsg = `The job ${job_gid} took too long to execute`
+                console.error(errMsg)
+                return reject(new Error(errMsg))
+            }
 
-        await timersPromises.setTimeout(interval)
-        return waitForJobSuccess(job_gid, attempts)
+            console.error(`Retrying in ${interval}ms...`)
+            await timersPromises.setTimeout(interval)
+            console.error(`Attempt ${attempts}`)
+            return innerFn(job_gid, attempts)
+        }
+        return innerFn(job_gid, 1)
     })
 }
 
@@ -101,6 +110,8 @@ const asanaCreateTasks = async () => {
             .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
             .replace('[[notes]]', releaseNotes)
             .replace(/<\/?p>/ig, '\n')
+            // Asana supports only h1 and h2
+            .replace(/<(h3|h4)>/ig, '<h2>').replace(/<\/(h3|h4)>/ig, '</h2>')
 
     // Updating task and moving to Release section...
     await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
@@ -136,7 +147,7 @@ const asanaCreateTasks = async () => {
         await asana.tasks.updateTask(gid, { name: newName, html_notes: subtaskNotes })
 
         for (const projectGid of projectGids) {
-            await asana.tasks.addProjectForTask(gid, { project: projectGid, insert_after: null })
+            await asana.tasks.addProjectForTask(gid, { project: projectGid })
         }
     }
 
