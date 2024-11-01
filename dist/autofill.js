@@ -13451,6 +13451,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.DDG_DOMAIN_REGEX = void 0;
 exports.createGlobalConfig = createGlobalConfig;
+/* eslint-disable prefer-const */
 const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = /^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/;
 
 /**
@@ -13460,41 +13461,41 @@ const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = /^https:\/\/(([a-z0-9-_]+?)\
  * @returns {GlobalConfig}
  */
 function createGlobalConfig(overrides) {
-  const isApp = false;
-  const isTopFrame = false;
-  const supportsTopFrame = false;
+  let isApp = false;
+  let isTopFrame = false;
+  let supportsTopFrame = false;
   // Do not remove -- Apple devices change this when they support modern webkit messaging
-  const hasModernWebkitAPI = false;
+  let hasModernWebkitAPI = false;
   // INJECT isApp HERE
   // INJECT isTopFrame HERE
   // INJECT supportsTopFrame HERE
   // INJECT hasModernWebkitAPI HERE
 
-  const isWindows = false;
+  let isWindows = false;
   // INJECT isWindows HERE
 
   // This will be used when 'hasModernWebkitAPI' is false
   /** @type {string[]} */
-  const webkitMessageHandlerNames = [];
+  let webkitMessageHandlerNames = [];
   // INJECT webkitMessageHandlerNames HERE
 
-  const isDDGTestMode = false;
+  let isDDGTestMode = false;
   // INJECT isDDGTestMode HERE
 
-  const contentScope = null;
-  const userUnprotectedDomains = null;
+  let contentScope = null;
+  let userUnprotectedDomains = null;
   /** @type {Record<string, any> | null} */
-  const userPreferences = null;
+  let userPreferences = null;
   // INJECT contentScope HERE
   // INJECT userUnprotectedDomains HERE
   // INJECT userPreferences HERE
 
   /** @type {Record<string, any> | null} */
-  const availableInputTypes = null;
+  let availableInputTypes = null;
   // INJECT availableInputTypes HERE
 
   // The native layer will inject a randomised secret here and use it to verify the origin
-  const secret = 'PLACEHOLDER_SECRET';
+  let secret = 'PLACEHOLDER_SECRET';
 
   // @ts-ignore
   const isAndroid = userPreferences?.platform.name === 'android';
