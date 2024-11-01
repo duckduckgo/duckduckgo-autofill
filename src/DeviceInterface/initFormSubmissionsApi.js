@@ -47,6 +47,7 @@ export function initFormSubmissionsApi (forms, matching) {
 
                 // @ts-ignore
                 if (btns.find((btn) => btn.contains(realTarget))) return true
+                return false
             }
         )
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /* eslint-disable camelcase */
 const timersPromises = require('node:timers/promises')
 const Asana = require('asana')
@@ -71,7 +70,7 @@ const waitForJobSuccess = async (job_gid) => {
     const interval = 1000
     const maxAttempts = 20
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const innerFn = async function (job_gid, attempts) {
             console.error(`Waiting for job ${job_gid} to complete...`)
             const { status } = await asana.jobs.getJob(job_gid)

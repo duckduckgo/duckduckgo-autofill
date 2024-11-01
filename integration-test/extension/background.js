@@ -1,5 +1,3 @@
-/* global globalThis */
-
 let emailProtectionUserData = null
 let privateEmailAliasIndex = 0
 let incontextSignupPermanentlyDismissedAt

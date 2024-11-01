@@ -60,10 +60,7 @@ function wrapInLi (content) {
  * @returns {string}
  */
 function updateProjectPbxproj (projectPbxprojContent, commit) {
-    const bskPackageRegex = new RegExp(
-        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/,
-        'i'
-    )
+    const bskPackageRegex = /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/i
 
     return replaceInString(
         projectPbxprojContent,
@@ -79,10 +76,7 @@ function updateProjectPbxproj (projectPbxprojContent, commit) {
  * @returns {string}
  */
 function updatePackageSwift (packageSwiftContent, version) {
-    const autofillPackageSwiftRegex = new RegExp(
-        /(\.package\(url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", exact: ")(.+)("\),)/,
-        'i'
-    )
+    const autofillPackageSwiftRegex = /(\.package\(url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", exact: ")(.+)("\),)/i
 
     return replaceInString(
         packageSwiftContent,
@@ -109,10 +103,7 @@ function updatePackageResolved (packageResolvedContent, substitutions) {
     let updatedContent = packageResolvedContent
 
     if (substitutions.autofill) {
-        const autofillRegex = new RegExp(
-            /("location" : "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : ")([\d.]+)("\s+})/,
-            'i'
-        )
+        const autofillRegex = /("location" : "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : ")([\d.]+)("\s+})/i
 
         updatedContent = replaceInString(
             updatedContent,
@@ -122,10 +113,7 @@ function updatePackageResolved (packageResolvedContent, substitutions) {
     }
 
     if (substitutions.bsk) {
-        const bskRegex = new RegExp(
-            /("location" : "https:\/\/github.com\/duckduckgo\/BrowserServicesKit",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/,
-            'i'
-        )
+        const bskRegex = /("location" : "https:\/\/github.com\/duckduckgo\/BrowserServicesKit",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/i
 
         updatedContent = replaceInString(
             updatedContent,

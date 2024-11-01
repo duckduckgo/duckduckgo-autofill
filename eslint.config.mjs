@@ -22,6 +22,7 @@ export default [{
             ...globals.browser,
             ...globals.jasmine,
             ...globals.jest,
+            ...globals.node,
             windowsInteropPostMessage: "readonly",
             windowsInteropAddEventListener: "readonly",
             windowsInteropRemoveEventListener: "readonly",

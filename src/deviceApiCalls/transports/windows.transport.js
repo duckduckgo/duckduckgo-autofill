@@ -46,6 +46,7 @@ function waitForWindowsResponse (responseId, options) {
         if (options?.signal?.aborted) {
             return reject(new DOMException('Aborted', 'AbortError'))
         }
+        // eslint-disable-next-line prefer-const
         let teardown
 
         // The event handler

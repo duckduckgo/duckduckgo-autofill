@@ -536,7 +536,7 @@ class InterfacePrototype {
                     case 'privateAddress':
                         this.firePixel({pixelName: 'autofill_private_address'})
                         break
-                    default:
+                    default: {
                         // Also fire pixel when filling an identity with the personal duck address from an email field
                         const checks = [
                             subtype === 'emailAddress',
@@ -547,6 +547,7 @@ class InterfacePrototype {
                             this.firePixel({pixelName: 'autofill_personal_address'})
                         }
                         break
+                    }
                     }
                 }
                 // some platforms do not include a `success` object, why?

@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 // Copyright (c) 2019 - 2020 Apple Inc. Licensed under MIT License.
 
 /*
