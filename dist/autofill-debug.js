@@ -4435,8 +4435,8 @@ class SchemaValidationError extends Error {
           }
         case 'invalid_union':
           {
-            for (let unionError of issue.unionErrors) {
-              for (let issue1 of unionError.issues) {
+            for (const unionError of issue.unionErrors) {
+              for (const issue1 of unionError.issues) {
                 log(issue1);
               }
             }
@@ -4448,7 +4448,7 @@ class SchemaValidationError extends Error {
           }
       }
     }
-    for (let error of errors) {
+    for (const error of errors) {
       log(error);
     }
     const message = [heading, 'please see the details above'].join('\n    ');
@@ -4571,8 +4571,8 @@ class DeviceApi {
    */
   async request(deviceApiCall, options) {
     deviceApiCall.validateParams();
-    let result = await this.transport.send(deviceApiCall, options);
-    let processed = deviceApiCall.preResultValidation(result);
+    const result = await this.transport.send(deviceApiCall, options);
+    const processed = deviceApiCall.preResultValidation(result);
     return deviceApiCall.validateResult(processed);
   }
   /**
@@ -5021,8 +5021,8 @@ class WebkitMessagingTransport {
       name: 'AES-GCM',
       iv
     };
-    let decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext);
-    let dec = new this.globals.TextDecoder();
+    const decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext);
+    const dec = new this.globals.TextDecoder();
     return dec.decode(decrypted);
   }
 
@@ -5035,7 +5035,7 @@ class WebkitMessagingTransport {
   captureWebkitHandlers(handlerNames) {
     const handlers = window.webkit.messageHandlers;
     if (!handlers) throw new _messaging.MissingHandler('window.webkit.messageHandlers was absent', 'all');
-    for (let webkitMessageHandlerName of handlerNames) {
+    for (const webkitMessageHandlerName of handlerNames) {
       if (typeof handlers[webkitMessageHandlerName]?.postMessage === 'function') {
         /**
         * `bind` is used here to ensure future calls to the captured
@@ -5458,7 +5458,7 @@ class Password {
   _requirementsFromRules(passwordRules) {
     /** @type {Requirements} */
     const requirements = {};
-    for (let rule of passwordRules) {
+    for (const rule of passwordRules) {
       if (rule.name === parser.RuleName.ALLOWED) {
         console.assert(!('PasswordAllowedCharacters' in requirements));
         const chars = this._charactersFromCharactersClasses(rule.value);
@@ -5789,7 +5789,7 @@ class Password {
    */
   _charactersFromCharactersClasses(characterClasses) {
     const output = [];
-    for (let characterClass of characterClasses) {
+    for (const characterClass of characterClasses) {
       output.push(...this._scanSetFromCharacterClass(characterClass));
     }
     return output;
@@ -5803,9 +5803,9 @@ class Password {
     if (!characters.length) {
       return '';
     }
-    let shadowCharacters = Array.prototype.slice.call(characters);
+    const shadowCharacters = Array.prototype.slice.call(characters);
     shadowCharacters.sort((a, b) => this.options.SCAN_SET_ORDER.indexOf(a) - this.options.SCAN_SET_ORDER.indexOf(b));
-    let uniqueCharacters = [shadowCharacters[0]];
+    const uniqueCharacters = [shadowCharacters[0]];
     for (let i = 1, length = shadowCharacters.length; i < length; ++i) {
       if (shadowCharacters[i] === shadowCharacters[i - 1]) {
         continue;
@@ -5845,6 +5845,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.SHOULD_NOT_BE_REACHED = exports.RuleName = exports.Rule = exports.ParserError = exports.NamedCharacterClass = exports.Identifier = exports.CustomCharacterClass = void 0;
 exports.parsePasswordRules = parsePasswordRules;
+/* eslint-disable no-var */
 // Copyright (c) 2019 - 2020 Apple Inc. Licensed under MIT License.
 
 /*
@@ -5986,14 +5987,14 @@ function _markBitsForNamedCharacterClass(bitSet, namedCharacterClass) {
   }
 }
 function _markBitsForCustomCharacterClass(bitSet, customCharacterClass) {
-  for (let character of customCharacterClass.characters) {
+  for (const character of customCharacterClass.characters) {
     bitSet[_bitSetIndexForCharacter(character)] = true;
   }
 }
 function _canonicalizedPropertyValues(propertyValues, keepCustomCharacterClassFormatCompliant) {
   // @ts-ignore
-  let asciiPrintableBitSet = new Array('~'.codePointAt(0) - ' '.codePointAt(0) + 1);
-  for (let propertyValue of propertyValues) {
+  const asciiPrintableBitSet = new Array('~'.codePointAt(0) - ' '.codePointAt(0) + 1);
+  for (const propertyValue of propertyValues) {
     if (propertyValue instanceof NamedCharacterClass) {
       if (propertyValue.name === Identifier.UNICODE) {
         return [new NamedCharacterClass(Identifier.UNICODE)];
@@ -6008,32 +6009,32 @@ function _canonicalizedPropertyValues(propertyValues, keepCustomCharacterClassFo
   }
   let charactersSeen = [];
   function checkRange(start, end) {
-    let temp = [];
+    const temp = [];
     for (let i = _bitSetIndexForCharacter(start); i <= _bitSetIndexForCharacter(end); ++i) {
       if (asciiPrintableBitSet[i]) {
         temp.push(_characterAtBitSetIndex(i));
       }
     }
-    let result = temp.length === _bitSetIndexForCharacter(end) - _bitSetIndexForCharacter(start) + 1;
+    const result = temp.length === _bitSetIndexForCharacter(end) - _bitSetIndexForCharacter(start) + 1;
     if (!result) {
       charactersSeen = charactersSeen.concat(temp);
     }
     return result;
   }
-  let hasAllUpper = checkRange('A', 'Z');
-  let hasAllLower = checkRange('a', 'z');
-  let hasAllDigits = checkRange('0', '9');
+  const hasAllUpper = checkRange('A', 'Z');
+  const hasAllLower = checkRange('a', 'z');
+  const hasAllDigits = checkRange('0', '9');
 
   // Check for special characters, accounting for characters that are given special treatment (i.e. '-' and ']')
   let hasAllSpecial = false;
   let hasDash = false;
   let hasRightSquareBracket = false;
-  let temp = [];
+  const temp = [];
   for (let i = _bitSetIndexForCharacter(' '); i <= _bitSetIndexForCharacter('/'); ++i) {
     if (!asciiPrintableBitSet[i]) {
       continue;
     }
-    let character = _characterAtBitSetIndex(i);
+    const character = _characterAtBitSetIndex(i);
     if (keepCustomCharacterClassFormatCompliant && character === '-') {
       hasDash = true;
     } else {
@@ -6049,7 +6050,7 @@ function _canonicalizedPropertyValues(propertyValues, keepCustomCharacterClassFo
     if (!asciiPrintableBitSet[i]) {
       continue;
     }
-    let character = _characterAtBitSetIndex(i);
+    const character = _characterAtBitSetIndex(i);
     if (keepCustomCharacterClassFormatCompliant && character === ']') {
       hasRightSquareBracket = true;
     } else {
@@ -6067,12 +6068,12 @@ function _canonicalizedPropertyValues(propertyValues, keepCustomCharacterClassFo
   if (hasRightSquareBracket) {
     temp.push(']');
   }
-  let numberOfSpecialCharacters = _bitSetIndexForCharacter('/') - _bitSetIndexForCharacter(' ') + 1 + (_bitSetIndexForCharacter('@') - _bitSetIndexForCharacter(':') + 1) + (_bitSetIndexForCharacter('`') - _bitSetIndexForCharacter('[') + 1) + (_bitSetIndexForCharacter('~') - _bitSetIndexForCharacter('{') + 1);
+  const numberOfSpecialCharacters = _bitSetIndexForCharacter('/') - _bitSetIndexForCharacter(' ') + 1 + (_bitSetIndexForCharacter('@') - _bitSetIndexForCharacter(':') + 1) + (_bitSetIndexForCharacter('`') - _bitSetIndexForCharacter('[') + 1) + (_bitSetIndexForCharacter('~') - _bitSetIndexForCharacter('{') + 1);
   hasAllSpecial = temp.length === numberOfSpecialCharacters;
   if (!hasAllSpecial) {
     charactersSeen = charactersSeen.concat(temp);
   }
-  let result = [];
+  const result = [];
   if (hasAllUpper && hasAllLower && hasAllDigits && hasAllSpecial) {
     return [new NamedCharacterClass(Identifier.ASCII_PRINTABLE)];
   }
@@ -6100,7 +6101,7 @@ function _indexOfNonWhitespaceCharacter(input) {
   let position = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   console.assert(position >= 0);
   console.assert(position <= input.length);
-  let length = input.length;
+  const length = input.length;
   while (position < length && _isASCIIWhitespace(input[position])) {
     ++position;
   }
@@ -6110,10 +6111,10 @@ function _parseIdentifier(input, position) {
   console.assert(position >= 0);
   console.assert(position < input.length);
   console.assert(_isIdentifierCharacter(input[position]));
-  let length = input.length;
-  let seenIdentifiers = [];
+  const length = input.length;
+  const seenIdentifiers = [];
   do {
-    let c = input[position];
+    const c = input[position];
     if (!_isIdentifierCharacter(c)) {
       break;
     }
@@ -6129,16 +6130,16 @@ function _parseCustomCharacterClass(input, position) {
   console.assert(position >= 0);
   console.assert(position < input.length);
   console.assert(input[position] === CHARACTER_CLASS_START_SENTINEL);
-  let length = input.length;
+  const length = input.length;
   ++position;
   if (position >= length) {
     // console.error('Found end-of-line instead of character class character')
     return [null, position];
   }
-  let initialPosition = position;
-  let result = [];
+  const initialPosition = position;
+  const result = [];
   do {
-    let c = input[position];
+    const c = input[position];
     if (!_isASCIIPrintableCharacter(c)) {
       ++position;
       continue;
@@ -6174,11 +6175,11 @@ function _parseCustomCharacterClass(input, position) {
 function _parsePasswordRequiredOrAllowedPropertyValue(input, position) {
   console.assert(position >= 0);
   console.assert(position < input.length);
-  let length = input.length;
-  let propertyValues = [];
+  const length = input.length;
+  const propertyValues = [];
   while (true) {
     if (_isIdentifierCharacter(input[position])) {
-      let identifierStartPosition = position;
+      const identifierStartPosition = position;
       // eslint-disable-next-line no-redeclare
       var [propertyValue, position] = _parseIdentifier(input, position);
       if (!_isValidRequiredOrAllowedPropertyValueIdentifier(propertyValue)) {
@@ -6225,8 +6226,8 @@ function _parsePasswordRule(input, position) {
   console.assert(position >= 0);
   console.assert(position < input.length);
   console.assert(_isIdentifierCharacter(input[position]));
-  let length = input.length;
-  var mayBeIdentifierStartPosition = position;
+  const length = input.length;
+  const mayBeIdentifierStartPosition = position;
   // eslint-disable-next-line no-redeclare
   var [identifier, position] = _parseIdentifier(input, position);
   if (!Object.values(RuleName).includes(identifier)) {
@@ -6241,7 +6242,7 @@ function _parsePasswordRule(input, position) {
     // console.error('Failed to find start of property value: ' + input.substr(position))
     return [null, position, undefined];
   }
-  let property = {
+  const property = {
     name: identifier,
     value: null
   };
@@ -6297,7 +6298,7 @@ function _parseInteger(input, position) {
     // console.error('Failed to parse value of type integer; not a number: ' + input.substr(position))
     return [null, position];
   }
-  let length = input.length;
+  const length = input.length;
   // let initialPosition = position
   let result = 0;
   do {
@@ -6318,8 +6319,8 @@ function _parseInteger(input, position) {
  * @private
  */
 function _parsePasswordRulesInternal(input) {
-  let parsedProperties = [];
-  let length = input.length;
+  const parsedProperties = [];
+  const length = input.length;
   var position = _indexOfNonWhitespaceCharacter(input);
   while (position < length) {
     if (!_isIdentifierCharacter(input[position])) {
@@ -6356,7 +6357,7 @@ function _parsePasswordRulesInternal(input) {
  * @returns {Rule[]}
  */
 function parsePasswordRules(input, formatRulesForMinifiedVersion) {
-  let [passwordRules, maybeMessage] = _parsePasswordRulesInternal(input);
+  const [passwordRules, maybeMessage] = _parsePasswordRulesInternal(input);
   if (!passwordRules) {
     throw new ParserError(maybeMessage);
   }
@@ -6366,13 +6367,13 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
 
   // When formatting rules for minified version, we should keep the formatted rules
   // as similar to the input as possible. Avoid copying required rules to allowed rules.
-  let suppressCopyingRequiredToAllowed = formatRulesForMinifiedVersion;
-  let requiredRules = [];
+  const suppressCopyingRequiredToAllowed = formatRulesForMinifiedVersion;
+  const requiredRules = [];
   let newAllowedValues = [];
   let minimumMaximumConsecutiveCharacters = null;
   let maximumMinLength = 0;
   let minimumMaxLength = null;
-  for (let rule of passwordRules) {
+  for (const rule of passwordRules) {
     switch (rule.name) {
       case RuleName.MAX_CONSECUTIVE:
         minimumMaximumConsecutiveCharacters = minimumMaximumConsecutiveCharacters ? Math.min(rule.value, minimumMaximumConsecutiveCharacters) : rule.value;
@@ -6405,10 +6406,10 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   if (minimumMaximumConsecutiveCharacters !== null) {
     newPasswordRules.push(new Rule(RuleName.MAX_CONSECUTIVE, minimumMaximumConsecutiveCharacters));
   }
-  let sortedRequiredRules = requiredRules.sort(function (a, b) {
+  const sortedRequiredRules = requiredRules.sort(function (a, b) {
     const namedCharacterClassOrder = [Identifier.LOWER, Identifier.UPPER, Identifier.DIGIT, Identifier.SPECIAL, Identifier.ASCII_PRINTABLE, Identifier.UNICODE];
-    let aIsJustOneNamedCharacterClass = a.value.length === 1 && a.value[0] instanceof NamedCharacterClass;
-    let bIsJustOneNamedCharacterClass = b.value.length === 1 && b.value[0] instanceof NamedCharacterClass;
+    const aIsJustOneNamedCharacterClass = a.value.length === 1 && a.value[0] instanceof NamedCharacterClass;
+    const bIsJustOneNamedCharacterClass = b.value.length === 1 && b.value[0] instanceof NamedCharacterClass;
     if (aIsJustOneNamedCharacterClass && !bIsJustOneNamedCharacterClass) {
       return -1;
     }
@@ -6416,8 +6417,8 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
       return 1;
     }
     if (aIsJustOneNamedCharacterClass && bIsJustOneNamedCharacterClass) {
-      let aIndex = namedCharacterClassOrder.indexOf(a.value[0].name);
-      let bIndex = namedCharacterClassOrder.indexOf(b.value[0].name);
+      const aIndex = namedCharacterClassOrder.indexOf(a.value[0].name);
+      const bIndex = namedCharacterClassOrder.indexOf(b.value[0].name);
       return aIndex - bIndex;
     }
     return 0;
@@ -7619,7 +7620,7 @@ function createDevice() {
   };
 
   // Create the DeviceAPI + Setting
-  let deviceApi = new _index.DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
+  const deviceApi = new _index.DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
   const settings = new _Settings.Settings(globalConfig, deviceApi);
   if (globalConfig.isWindows) {
     if (globalConfig.isTopFrame) {
@@ -9024,14 +9025,16 @@ class InterfacePrototype {
               });
               break;
             default:
-              // Also fire pixel when filling an identity with the personal duck address from an email field
-              const checks = [subtype === 'emailAddress', this.hasLocalAddresses, data?.emailAddress === (0, _autofillUtils.formatDuckAddress)(this.#addresses.personalAddress)];
-              if (checks.every(Boolean)) {
-                this.firePixel({
-                  pixelName: 'autofill_personal_address'
-                });
+              {
+                // Also fire pixel when filling an identity with the personal duck address from an email field
+                const checks = [subtype === 'emailAddress', this.hasLocalAddresses, data?.emailAddress === (0, _autofillUtils.formatDuckAddress)(this.#addresses.personalAddress)];
+                if (checks.every(Boolean)) {
+                  this.firePixel({
+                    pixelName: 'autofill_personal_address'
+                  });
+                }
+                break;
               }
-              break;
           }
         }
         // some platforms do not include a `success` object, why?
@@ -9706,6 +9709,7 @@ function initFormSubmissionsApi(forms, matching) {
 
       // @ts-ignore
       if (btns.find(btn => btn.contains(realTarget))) return true;
+      return false;
     });
     matchingForm?.submitHandler('global pointerdown event + matching form');
     if (!matchingForm) {
@@ -9801,7 +9805,7 @@ function overlayApi(device) {
      * @returns {Promise<void>}
      */
     async selectedDetail(data, type) {
-      let detailsEntries = Object.entries(data).map(_ref => {
+      const detailsEntries = Object.entries(data).map(_ref => {
         let [key, value] = _ref;
         return [key, String(value)];
       });
@@ -10095,7 +10099,7 @@ class Form {
     if (!input.classList.contains('ddg-autofilled')) return;
     (0, _autofillUtils.removeInlineStyles)(input, (0, _inputStyles.getIconStylesAutofilled)(input, this));
     (0, _autofillUtils.removeInlineStyles)(input, {
-      'cursor': 'pointer'
+      cursor: 'pointer'
     });
     input.classList.remove('ddg-autofilled');
     this.addAutofillStyles(input);
@@ -10413,12 +10417,12 @@ class Form {
         if ((0, _autofillUtils.wasAutofilledByChrome)(input)) return;
         if ((0, _autofillUtils.isEventWithinDax)(e, e.target)) {
           (0, _autofillUtils.addInlineStyles)(e.target, {
-            'cursor': 'pointer',
+            cursor: 'pointer',
             ...onMouseMove
           });
         } else {
           (0, _autofillUtils.removeInlineStyles)(e.target, {
-            'cursor': 'pointer'
+            cursor: 'pointer'
           });
           // Only overwrite active icon styles if tooltip is closed
           if (!this.device.isTooltipActive()) {
@@ -10430,7 +10434,7 @@ class Form {
       });
       this.addListener(input, 'mouseleave', e => {
         (0, _autofillUtils.removeInlineStyles)(e.target, {
-          'cursor': 'pointer'
+          cursor: 'pointer'
         });
         // Only overwrite active icon styles if tooltip is closed
         if (!this.device.isTooltipActive()) {
@@ -10528,7 +10532,7 @@ class Form {
         this.touched.add(input);
         this.device.attachTooltip({
           form: this,
-          input: input,
+          input,
           click: clickCoords,
           trigger: 'userInitiated',
           triggerMetaData: {
@@ -10757,7 +10761,7 @@ class Form {
             }, 'credentials');
             this.device.attachTooltip({
               form: this,
-              input: input,
+              input,
               click: null,
               trigger: 'autoprompt',
               triggerMetaData: {
@@ -11450,7 +11454,7 @@ const COUNTRY_NAMES_TO_CODES = exports.COUNTRY_NAMES_TO_CODES = {
   Anguilla: 'AI',
   Albania: 'AL',
   Armenia: 'AM',
-  'Curaçao': 'CW',
+  Curaçao: 'CW',
   Angola: 'AO',
   Antarctica: 'AQ',
   Argentina: 'AR',
@@ -11639,7 +11643,7 @@ const COUNTRY_NAMES_TO_CODES = exports.COUNTRY_NAMES_TO_CODES = {
   Paraguay: 'PY',
   Qatar: 'QA',
   'Outlying Oceania': 'QO',
-  'Réunion': 'RE',
+  Réunion: 'RE',
   Zimbabwe: 'ZW',
   Romania: 'RO',
   Russia: 'SU',
@@ -12055,7 +12059,7 @@ const getBasicStyles = (input, icon) => ({
   'background-repeat': 'no-repeat',
   'background-origin': 'content-box',
   'background-image': `url(${icon})`,
-  'transition': 'background 0s'
+  transition: 'background 0s'
 });
 
 /**
@@ -12098,7 +12102,7 @@ const getIconStylesAutofilled = (input, form) => {
   return {
     ...iconStyle,
     'background-color': '#F8F498',
-    'color': '#333333'
+    color: '#333333'
   };
 };
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
@@ -12386,14 +12390,14 @@ const extractElementStrings = element => {
 
     // only take the string when it's an explicit text node
     if (el.nodeType === el.TEXT_NODE || !el.childNodes.length) {
-      let trimmedText = (0, _matching.removeExcessWhitespace)(el.textContent);
+      const trimmedText = (0, _matching.removeExcessWhitespace)(el.textContent);
       if (trimmedText) {
         strings.add(trimmedText);
       }
       return;
     }
-    for (let node of el.childNodes) {
-      let nodeType = node.nodeType;
+    for (const node of el.childNodes) {
+      const nodeType = node.nodeType;
       if (nodeType !== node.ELEMENT_NODE && nodeType !== node.TEXT_NODE) {
         continue;
       }
@@ -13060,8 +13064,8 @@ class Matching {
      *
      * `email: [{type: "email", strategies: {cssSelector: "email", ... etc}]`
      */
-    for (let [listName, matcherNames] of Object.entries(this.#config.matchers.lists)) {
-      for (let fieldName of matcherNames) {
+    for (const [listName, matcherNames] of Object.entries(this.#config.matchers.lists)) {
+      for (const fieldName of matcherNames) {
         if (!this.#matcherLists[listName]) {
           this.#matcherLists[listName] = [];
         }
@@ -13178,7 +13182,7 @@ class Matching {
      * @type {string[]}
      */
     const selectors = [];
-    for (let matcher of matcherList) {
+    for (const matcher of matcherList) {
       if (matcher.strategies.cssSelector) {
         const css = this.cssSelector(matcher.strategies.cssSelector);
         if (css) {
@@ -13315,12 +13319,12 @@ class Matching {
     /**
      * Loop through each strategy in order
      */
-    for (let strategyName of this.#defaultStrategyOrder) {
+    for (const strategyName of this.#defaultStrategyOrder) {
       let result;
       /**
        * Now loop through each matcher in the list.
        */
-      for (let matcher of matchers) {
+      for (const matcher of matchers) {
         /**
          * for each `strategyName` (such as cssSelector), check
          * if the current matcher implements it.
@@ -13445,16 +13449,16 @@ class Matching {
     if (!ddgMatcher || !ddgMatcher.match) {
       return defaultResult;
     }
-    let matchRexExp = this.getDDGMatcherRegex(lookup);
+    const matchRexExp = this.getDDGMatcherRegex(lookup);
     if (!matchRexExp) {
       return defaultResult;
     }
-    let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length;
+    const requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length;
 
     /** @type {MatchableStrings[]} */
     const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText'];
-    for (let stringName of matchableStrings) {
-      let elementString = this.activeElementStrings[stringName];
+    for (const stringName of matchableStrings) {
+      const elementString = this.activeElementStrings[stringName];
       if (!elementString) continue;
 
       // Scoring to ensure all DDG tests are valid
@@ -13470,7 +13474,7 @@ class Matching {
       // If a negated regex was provided, ensure it does not match
       // If it DOES match - then we need to prevent any future strategies from continuing
       if (ddgMatcher.forceUnknown) {
-        let notRegex = ddgMatcher.forceUnknown;
+        const notRegex = ddgMatcher.forceUnknown;
         if (!notRegex) {
           return {
             ...result,
@@ -13489,7 +13493,7 @@ class Matching {
         }
       }
       if (ddgMatcher.skip) {
-        let skipRegex = ddgMatcher.skip;
+        const skipRegex = ddgMatcher.skip;
         if (!skipRegex) {
           return {
             ...result,
@@ -13554,8 +13558,8 @@ class Matching {
     }
     /** @type {MatchableStrings[]} */
     const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText'];
-    for (let stringName of stringsToMatch) {
-      let elementString = this.activeElementStrings[stringName];
+    for (const stringName of stringsToMatch) {
+      const elementString = this.activeElementStrings[stringName];
       if (!elementString) continue;
       if ((0, _autofillUtils.safeRegexTest)(regex, elementString)) {
         return {
@@ -13629,14 +13633,14 @@ class Matching {
       fields: {}
     },
     strategies: {
-      'vendorRegex': {
+      vendorRegex: {
         rules: {},
         ruleSets: []
       },
-      'ddgMatcher': {
+      ddgMatcher: {
         matchers: {}
       },
-      'cssSelector': {
+      cssSelector: {
         selectors: {}
       }
     }
@@ -13807,7 +13811,7 @@ const removeExcessWhitespace = function () {
 exports.removeExcessWhitespace = removeExcessWhitespace;
 const getExplicitLabelsText = el => {
   const labelTextCandidates = [];
-  for (let label of el.labels || []) {
+  for (const label of el.labels || []) {
     labelTextCandidates.push(...(0, _labelUtil.extractElementStrings)(label));
   }
   if (el.hasAttribute('aria-label')) {
@@ -13862,7 +13866,7 @@ const getRelatedText = (el, form, cssSelector) => {
 
   // If we didn't find a container, try looking for an adjacent label
   if (scope === el) {
-    let previousEl = recursiveGetPreviousElSibling(el);
+    const previousEl = recursiveGetPreviousElSibling(el);
     if (previousEl instanceof HTMLElement) {
       scope = previousEl;
     }
@@ -14717,7 +14721,7 @@ class DefaultScanner {
       this.changedElements.clear();
     } else if (!this.rescanAll) {
       // otherwise keep adding each element to the queue
-      for (let element of htmlElements) {
+      for (const element of htmlElements) {
         this.changedElements.add(element);
       }
     }
@@ -14741,7 +14745,7 @@ class DefaultScanner {
       this.findEligibleInputs(document);
       return;
     }
-    for (let element of this.changedElements) {
+    for (const element of this.changedElements) {
       if (element.isConnected) {
         this.findEligibleInputs(element);
       }
@@ -14762,7 +14766,7 @@ class DefaultScanner {
     const outgoing = [];
     for (const mutationRecord of mutationList) {
       if (mutationRecord.type === 'childList') {
-        for (let addedNode of mutationRecord.addedNodes) {
+        for (const addedNode of mutationRecord.addedNodes) {
           if (!(addedNode instanceof HTMLElement)) continue;
           if (addedNode.nodeName === 'DDG-AUTOFILL') continue;
           outgoing.push(addedNode);
@@ -15732,9 +15736,9 @@ class HTMLTooltip {
     this.tooltip = null;
     this.getPosition = getPosition;
     const forcedVisibilityStyles = {
-      'display': 'block',
-      'visibility': 'visible',
-      'opacity': '1'
+      display: 'block',
+      visibility: 'visible',
+      opacity: '1'
     };
     // @ts-ignore how to narrow this.host to HTMLElement?
     (0, _autofillUtils.addInlineStyles)(this.host, forcedVisibilityStyles);
@@ -17613,7 +17617,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.DDG_DOMAIN_REGEX = void 0;
 exports.createGlobalConfig = createGlobalConfig;
-const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/);
+const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = /^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/;
 
 /**
  * This is a centralised place to contain all string/variable replacements
@@ -17622,41 +17626,41 @@ const DDG_DOMAIN_REGEX = exports.DDG_DOMAIN_REGEX = new RegExp(/^https:\/\/(([a-
  * @returns {GlobalConfig}
  */
 function createGlobalConfig(overrides) {
-  let isApp = false;
-  let isTopFrame = false;
-  let supportsTopFrame = false;
+  const isApp = false;
+  const isTopFrame = false;
+  const supportsTopFrame = false;
   // Do not remove -- Apple devices change this when they support modern webkit messaging
-  let hasModernWebkitAPI = false;
+  const hasModernWebkitAPI = false;
   // INJECT isApp HERE
   // INJECT isTopFrame HERE
   // INJECT supportsTopFrame HERE
   // INJECT hasModernWebkitAPI HERE
 
-  let isWindows = false;
+  const isWindows = false;
   // INJECT isWindows HERE
 
   // This will be used when 'hasModernWebkitAPI' is false
   /** @type {string[]} */
-  let webkitMessageHandlerNames = [];
+  const webkitMessageHandlerNames = [];
   // INJECT webkitMessageHandlerNames HERE
 
-  let isDDGTestMode = false;
+  const isDDGTestMode = false;
   isDDGTestMode = true;
 
-  let contentScope = null;
-  let userUnprotectedDomains = null;
+  const contentScope = null;
+  const userUnprotectedDomains = null;
   /** @type {Record<string, any> | null} */
-  let userPreferences = null;
+  const userPreferences = null;
   // INJECT contentScope HERE
   // INJECT userUnprotectedDomains HERE
   // INJECT userPreferences HERE
 
   /** @type {Record<string, any> | null} */
-  let availableInputTypes = null;
+  const availableInputTypes = null;
   // INJECT availableInputTypes HERE
 
   // The native layer will inject a randomised secret here and use it to verify the origin
-  let secret = 'PLACEHOLDER_SECRET';
+  const secret = 'PLACEHOLDER_SECRET';
 
   // @ts-ignore
   const isAndroid = userPreferences?.platform.name === 'android';
@@ -18492,7 +18496,7 @@ function waitForResponse(expectedResponse, config) {
         return;
       }
       try {
-        let data = JSON.parse(e.data);
+        const data = JSON.parse(e.data);
         if (data.type === expectedResponse) {
           window.removeEventListener('message', handler);
           return resolve(data);
@@ -18647,7 +18651,7 @@ async function extensionSpecificRuntimeConfiguration(deviceApi) {
   return {
     success: {
       // @ts-ignore
-      contentScope: contentScope,
+      contentScope,
       // @ts-ignore
       userPreferences: {
         // Copy locale to user preferences as 'language' to match expected payload
@@ -18841,6 +18845,7 @@ function waitForWindowsResponse(responseId, options) {
     if (options?.signal?.aborted) {
       return reject(new DOMException('Aborted', 'AbortError'));
     }
+    // eslint-disable-next-line prefer-const
     let teardown;
 
     // The event handler
@@ -21727,7 +21732,6 @@ exports.default = void 0;
 window.requestIdleCallback = window.requestIdleCallback || function (cb) {
   return setTimeout(function () {
     const start = Date.now();
-    // eslint-disable-next-line standard/no-callback-literal
     cb({
       didTimeout: false,
       timeRemaining: function () {
