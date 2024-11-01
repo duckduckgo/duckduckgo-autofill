@@ -7,7 +7,7 @@ import {expect} from '@playwright/test'
 export function shadowInputsLoginPage (page) {
     class ShadowInputsLoginPage {
         async navigate () {
-            await page.goto(constants.pages['shadowInputsLogin'])
+            await page.goto(constants.pages.shadowInputsLogin)
         }
 
         async clickTheUsernameField (text) {

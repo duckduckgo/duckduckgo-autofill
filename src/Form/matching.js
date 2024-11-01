@@ -73,8 +73,8 @@ class Matching {
          *
          * `email: [{type: "email", strategies: {cssSelector: "email", ... etc}]`
          */
-        for (let [listName, matcherNames] of Object.entries(this.#config.matchers.lists)) {
-            for (let fieldName of matcherNames) {
+        for (const [listName, matcherNames] of Object.entries(this.#config.matchers.lists)) {
+            for (const fieldName of matcherNames) {
                 if (!this.#matcherLists[listName]) {
                     this.#matcherLists[listName] = []
                 }
@@ -192,7 +192,7 @@ class Matching {
          */
         const selectors = []
 
-        for (let matcher of matcherList) {
+        for (const matcher of matcherList) {
             if (matcher.strategies.cssSelector) {
                 const css = this.cssSelector(matcher.strategies.cssSelector)
                 if (css) {
@@ -345,12 +345,12 @@ class Matching {
         /**
          * Loop through each strategy in order
          */
-        for (let strategyName of this.#defaultStrategyOrder) {
+        for (const strategyName of this.#defaultStrategyOrder) {
             let result
             /**
              * Now loop through each matcher in the list.
              */
-            for (let matcher of matchers) {
+            for (const matcher of matchers) {
                 /**
                  * for each `strategyName` (such as cssSelector), check
                  * if the current matcher implements it.
@@ -479,18 +479,18 @@ class Matching {
         if (!ddgMatcher || !ddgMatcher.match) {
             return defaultResult
         }
-        let matchRexExp = this.getDDGMatcherRegex(lookup)
+        const matchRexExp = this.getDDGMatcherRegex(lookup)
         if (!matchRexExp) {
             return defaultResult
         }
 
-        let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
+        const requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
 
         /** @type {MatchableStrings[]} */
         const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText']
 
-        for (let stringName of matchableStrings) {
-            let elementString = this.activeElementStrings[stringName]
+        for (const stringName of matchableStrings) {
+            const elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
 
             // Scoring to ensure all DDG tests are valid
@@ -506,7 +506,7 @@ class Matching {
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
             if (ddgMatcher.forceUnknown) {
-                let notRegex = ddgMatcher.forceUnknown
+                const notRegex = ddgMatcher.forceUnknown
                 if (!notRegex) {
                     return { ...result, matched: false }
                 }
@@ -519,7 +519,7 @@ class Matching {
             }
 
             if (ddgMatcher.skip) {
-                let skipRegex = ddgMatcher.skip
+                const skipRegex = ddgMatcher.skip
                 if (!skipRegex) {
                     return { ...result, matched: false }
                 }
@@ -569,8 +569,8 @@ class Matching {
         }
         /** @type {MatchableStrings[]} */
         const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText']
-        for (let stringName of stringsToMatch) {
-            let elementString = this.activeElementStrings[stringName]
+        for (const stringName of stringsToMatch) {
+            const elementString = this.activeElementStrings[stringName]
             if (!elementString) continue
             if (safeRegexTest(regex, elementString)) {
                 return {
@@ -645,14 +645,14 @@ class Matching {
             fields: {}
         },
         strategies: {
-            'vendorRegex': {
+            vendorRegex: {
                 rules: {},
                 ruleSets: []
             },
-            'ddgMatcher': {
+            ddgMatcher: {
                 matchers: {}
             },
-            'cssSelector': {
+            cssSelector: {
                 selectors: {}
             }
         }
@@ -860,7 +860,7 @@ const removeExcessWhitespace = (string = '') => {
  */
 const getExplicitLabelsText = (el) => {
     const labelTextCandidates = []
-    for (let label of el.labels || []) {
+    for (const label of el.labels || []) {
         labelTextCandidates.push(...extractElementStrings(label))
     }
     if (el.hasAttribute('aria-label')) {
@@ -917,7 +917,7 @@ const getRelatedText = (el, form, cssSelector) => {
 
     // If we didn't find a container, try looking for an adjacent label
     if (scope === el) {
-        let previousEl = recursiveGetPreviousElSibling(el)
+        const previousEl = recursiveGetPreviousElSibling(el)
         if (previousEl instanceof HTMLElement) {
             scope = previousEl
         }

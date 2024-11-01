@@ -8,7 +8,7 @@ import {genericPage} from './genericPage.js'
 export function mutatingFormPage (page) {
     class MutatingFormPage {
         async navigate () {
-            await page.goto(constants.pages['mutatingForm'])
+            await page.goto(constants.pages.mutatingForm)
         }
 
         async toggleLoginOrSignup () {

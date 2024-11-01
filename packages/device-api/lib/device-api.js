@@ -35,8 +35,8 @@ export class DeviceApi {
      */
     async request (deviceApiCall, options) {
         deviceApiCall.validateParams()
-        let result = await this.transport.send(deviceApiCall, options)
-        let processed = deviceApiCall.preResultValidation(result)
+        const result = await this.transport.send(deviceApiCall, options)
+        const processed = deviceApiCall.preResultValidation(result)
         return deviceApiCall.validateResult(processed)
     }
     /**

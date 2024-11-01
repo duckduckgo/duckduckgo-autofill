@@ -43,7 +43,7 @@ Object.entries(matchingConfiguration.strategies.cssSelector.selectors).forEach((
  * @return {{RULES: Record<keyof VendorRegexRules, RegExp | undefined>}}
  */
 function mergeVendorRules (ruleName, ruleSets) {
-    let rules = []
+    const rules = []
     ruleSets.forEach(set => {
         if (set[ruleName]) {
             rules.push(`(${set[ruleName]?.toLowerCase()})`.normalize('NFKC'))

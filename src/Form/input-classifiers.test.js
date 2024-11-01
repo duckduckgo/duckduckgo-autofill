@@ -38,7 +38,7 @@ const renderInputWithLabel = () => {
     formElement.append(input, label)
     document.body.append(formElement)
     const form = new Form(formElement, input, InterfacePrototype.default())
-    return { input, label, formElement: formElement, form }
+    return { input, label, formElement, form }
 }
 
 const testRegexForCCLabels = (cases) => {
@@ -156,7 +156,7 @@ const isThereAMismatch = (score) => {
     return Boolean(getMismatchedValue(score))
 }
 
-let testResults = []
+const testResults = []
 describe.each(testCases)('Test $html fields', (testCase) => {
     const {
         html,
@@ -216,9 +216,9 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
 
         // False positives are tracked in a Form instance but not marked with 'data-manual-submit' in the DOM.
-        let submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button))
+        const submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button))
         // False negatives are marked with 'data-manual-submit' in the DOM but not tracked in a Form instance.
-        let submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button))
+        const submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button))
 
         if (!generated) {
             expect(submitFalsePositives).toHaveLength(expectedSubmitFalsePositives)
@@ -271,11 +271,11 @@ describe.each(testCases)('Test $html fields', (testCase) => {
 
         testResults.push({testCase, scores, submitButtonScores})
 
-        let bad = scores.filter(score => isThereAMismatch(score))
-        let failed = bad.map(score => getMismatchedValue(score))
+        const bad = scores.filter(score => isThereAMismatch(score))
+        const failed = bad.map(score => getMismatchedValue(score))
 
         if (bad.length !== expectedFailures.length) {
-            for (let score of bad) {
+            for (const score of bad) {
                 console.log(
                     'file:         ' + html,
                     '\nmanualType:   ' + JSON.stringify(score.manualType),
@@ -304,7 +304,7 @@ afterAll(() => {
     (including expected failures)
      */
 
-    let siteHasFailures = {}
+    const siteHasFailures = {}
 
     testResults.forEach((result) => {
         const siteName = result.testCase.html.split('_')[0]
@@ -324,8 +324,8 @@ afterAll(() => {
     let totalFailedFields = 0
     let totalFalsePositives = 0
 
-    let totalFieldsByType = {}
-    let totalFailuresByFieldType = {}
+    const totalFieldsByType = {}
+    const totalFailuresByFieldType = {}
 
     testResults.forEach((result) => {
         result.scores.forEach((field) => {
@@ -365,10 +365,10 @@ afterAll(() => {
         }).join('') + '\n'
     )
 
-    let totalDetectedButtons = testResults.map(test => test.submitButtonScores.detected).reduce((a, b) => a + b, 0)
-    let totalIdentifiedButtons = testResults.map(test => test.submitButtonScores.identified).reduce((a, b) => a + b, 0)
-    let totalFalsePositiveButtons = testResults.map(test => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0)
-    let totalFalseNegativeButtons = testResults.map(test => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0)
+    const totalDetectedButtons = testResults.map(test => test.submitButtonScores.detected).reduce((a, b) => a + b, 0)
+    const totalIdentifiedButtons = testResults.map(test => test.submitButtonScores.identified).reduce((a, b) => a + b, 0)
+    const totalFalsePositiveButtons = testResults.map(test => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0)
+    const totalFalseNegativeButtons = testResults.map(test => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0)
 
     console.log(
         'Submit button statistics:\n',

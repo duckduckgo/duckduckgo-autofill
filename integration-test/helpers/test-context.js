@@ -61,7 +61,7 @@ export function testContext (test) {
             // collect attachments (like mock calls) and append as attachments
             // note: skipping the extension for now, since it's testing setup has fallen behind
             if (platform !== 'extension') {
-                for (let page of context.pages()) {
+                for (const page of context.pages()) {
                     await addMocksAsAttachments(page, test, testInfo)
                 }
             }

@@ -36,7 +36,7 @@ export function overlayApi (device) {
          * @returns {Promise<void>}
          */
         async selectedDetail (data, type) {
-            let detailsEntries = Object.entries(data).map(([key, value]) => {
+            const detailsEntries = Object.entries(data).map(([key, value]) => {
                 return [key, String(value)]
             })
             const entries = Object.fromEntries(detailsEntries)

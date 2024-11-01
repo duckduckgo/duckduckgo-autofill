@@ -164,7 +164,7 @@ class Password {
     _requirementsFromRules (passwordRules) {
         /** @type {Requirements} */
         const requirements = {}
-        for (let rule of passwordRules) {
+        for (const rule of passwordRules) {
             if (rule.name === parser.RuleName.ALLOWED) {
                 console.assert(!('PasswordAllowedCharacters' in requirements))
                 const chars = this._charactersFromCharactersClasses(rule.value)
@@ -516,7 +516,7 @@ class Password {
      */
     _charactersFromCharactersClasses (characterClasses) {
         const output = []
-        for (let characterClass of characterClasses) {
+        for (const characterClass of characterClasses) {
             output.push(...this._scanSetFromCharacterClass(characterClass))
         }
         return output
@@ -530,9 +530,9 @@ class Password {
         if (!characters.length) {
             return ''
         }
-        let shadowCharacters = Array.prototype.slice.call(characters)
+        const shadowCharacters = Array.prototype.slice.call(characters)
         shadowCharacters.sort((a, b) => this.options.SCAN_SET_ORDER.indexOf(a) - this.options.SCAN_SET_ORDER.indexOf(b))
-        let uniqueCharacters = [shadowCharacters[0]]
+        const uniqueCharacters = [shadowCharacters[0]]
         for (let i = 1, length = shadowCharacters.length; i < length; ++i) {
             if (shadowCharacters[i] === shadowCharacters[i - 1]) {
                 continue

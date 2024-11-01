@@ -159,8 +159,8 @@ export class SchemaValidationError extends Error {
                 break
             }
             case 'invalid_union': {
-                for (let unionError of issue.unionErrors) {
-                    for (let issue1 of unionError.issues) {
+                for (const unionError of issue.unionErrors) {
+                    for (const issue1 of unionError.issues) {
                         log(issue1)
                     }
                 }
@@ -171,7 +171,7 @@ export class SchemaValidationError extends Error {
             }
             }
         }
-        for (let error of errors) {
+        for (const error of errors) {
             log(error)
         }
         const message = [heading, 'please see the details above'].join('\n    ')

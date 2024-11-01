@@ -69,9 +69,9 @@ export function emailAutofillPage (page) {
         }
 
         async assertExtensionPixelsCaptured (expectedPixels) {
-            let [backgroundPage] = page.context().backgroundPages()
+            const [backgroundPage] = page.context().backgroundPages()
             const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
-                // eslint-disable-next-line no-undef
+                 
                 return globalThis.pixels
             })
 

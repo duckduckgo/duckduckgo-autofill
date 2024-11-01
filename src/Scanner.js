@@ -358,7 +358,7 @@ class DefaultScanner {
             this.changedElements.clear()
         } else if (!this.rescanAll) {
             // otherwise keep adding each element to the queue
-            for (let element of htmlElements) {
+            for (const element of htmlElements) {
                 this.changedElements.add(element)
             }
         }
@@ -383,7 +383,7 @@ class DefaultScanner {
             this.findEligibleInputs(document)
             return
         }
-        for (let element of this.changedElements) {
+        for (const element of this.changedElements) {
             if (element.isConnected) {
                 this.findEligibleInputs(element)
             }
@@ -404,7 +404,7 @@ class DefaultScanner {
         const outgoing = []
         for (const mutationRecord of mutationList) {
             if (mutationRecord.type === 'childList') {
-                for (let addedNode of mutationRecord.addedNodes) {
+                for (const addedNode of mutationRecord.addedNodes) {
                     if (!(addedNode instanceof HTMLElement)) continue
                     if (addedNode.nodeName === 'DDG-AUTOFILL') continue
                     outgoing.push(addedNode)

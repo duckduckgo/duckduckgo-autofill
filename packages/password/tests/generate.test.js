@@ -217,7 +217,7 @@ describe('password generation', () => {
     })
     if (process.env.PASSWORD_STRESS_TEST) {
         describe('with valid inputs...', () => {
-            let testCases = Object.entries(vendorRules).map(([domain, value]) => ({
+            const testCases = Object.entries(vendorRules).map(([domain, value]) => ({
                 domain,
                 value
             }))

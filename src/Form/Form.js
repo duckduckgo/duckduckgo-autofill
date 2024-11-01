@@ -280,7 +280,7 @@ class Form {
         if (!input.classList.contains('ddg-autofilled')) return
 
         removeInlineStyles(input, getIconStylesAutofilled(input, this))
-        removeInlineStyles(input, {'cursor': 'pointer'})
+        removeInlineStyles(input, {cursor: 'pointer'})
         input.classList.remove('ddg-autofilled')
         this.addAutofillStyles(input)
     }
@@ -617,11 +617,11 @@ class Form {
 
                 if (isEventWithinDax(e, e.target)) {
                     addInlineStyles(e.target, {
-                        'cursor': 'pointer',
+                        cursor: 'pointer',
                         ...onMouseMove
                     })
                 } else {
-                    removeInlineStyles(e.target, {'cursor': 'pointer'})
+                    removeInlineStyles(e.target, {cursor: 'pointer'})
                     // Only overwrite active icon styles if tooltip is closed
                     if (!this.device.isTooltipActive()) {
                         addInlineStyles(e.target, { ...onMouseLeave })
@@ -629,7 +629,7 @@ class Form {
                 }
             })
             this.addListener(input, 'mouseleave', (e) => {
-                removeInlineStyles(e.target, {'cursor': 'pointer'})
+                removeInlineStyles(e.target, {cursor: 'pointer'})
                 // Only overwrite active icon styles if tooltip is closed
                 if (!this.device.isTooltipActive()) {
                     addInlineStyles(e.target, { ...onMouseLeave })
@@ -737,7 +737,7 @@ class Form {
                 this.touched.add(input)
                 this.device.attachTooltip({
                     form: this,
-                    input: input,
+                    input,
                     click: clickCoords,
                     trigger: 'userInitiated',
                     triggerMetaData: {
@@ -980,7 +980,7 @@ class Form {
                         }, 'credentials')
                         this.device.attachTooltip({
                             form: this,
-                            input: input,
+                            input,
                             click: null,
                             trigger: 'autoprompt',
                             triggerMetaData: {

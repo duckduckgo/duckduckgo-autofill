@@ -27,7 +27,7 @@ function createDevice () {
     }
 
     // Create the DeviceAPI + Setting
-    let deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport)
+    const deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport)
     const settings = new Settings(globalConfig, deviceApi)
 
     if (globalConfig.isWindows) {

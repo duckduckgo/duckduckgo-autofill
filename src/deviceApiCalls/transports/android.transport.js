@@ -100,7 +100,7 @@ function waitForResponse (expectedResponse, config) {
                 return
             }
             try {
-                let data = JSON.parse(e.data)
+                const data = JSON.parse(e.data)
                 if (data.type === expectedResponse) {
                     window.removeEventListener('message', handler)
                     return resolve(data)

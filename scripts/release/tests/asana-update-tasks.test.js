@@ -29,35 +29,35 @@ beforeEach(() => {
     process.env.MACOS_PR_URL = 'https://github.com/duckduckgo/macos-browser/pr/1'
     process.env.WINDOWS_PR_URL = 'https://github.com/duckduckgo/windows-browser/pr/1'
     process.env.ASANA_OUTPUT = JSON.stringify({
-        'android': {
-            'displayName': 'Android',
-            'taskGid': 'android-123',
-            'taskUrl': 'https://example.com/android-task'
+        android: {
+            displayName: 'Android',
+            taskGid: 'android-123',
+            taskUrl: 'https://example.com/android-task'
         },
-        'bsk': {
-            'displayName': 'BrowserServicesKit',
-            'taskGid': 'bsk-123',
-            'taskUrl': 'https://example.com/bsk-task'
+        bsk: {
+            displayName: 'BrowserServicesKit',
+            taskGid: 'bsk-123',
+            taskUrl: 'https://example.com/bsk-task'
         },
-        'ios': {
-            'displayName': 'iOS',
-            'taskGid': 'ios-123',
-            'taskUrl': 'https://example.com/ios-task'
+        ios: {
+            displayName: 'iOS',
+            taskGid: 'ios-123',
+            taskUrl: 'https://example.com/ios-task'
         },
-        'macos': {
-            'displayName': 'macOS',
-            'taskGid': 'macos-123',
-            'taskUrl': 'https://example.com/macos-task'
+        macos: {
+            displayName: 'macOS',
+            taskGid: 'macos-123',
+            taskUrl: 'https://example.com/macos-task'
         },
-        'extensions': {
-            'displayName': 'Extensions',
-            'taskGid': 'extension-123',
-            'taskUrl': 'https://example.com/extension-task'
+        extensions: {
+            displayName: 'Extensions',
+            taskGid: 'extension-123',
+            taskUrl: 'https://example.com/extension-task'
         },
-        'windows': {
-            'displayName': 'Windows',
-            'taskGid': 'windows-123',
-            'taskUrl': 'https://example.com/windows-task'
+        windows: {
+            displayName: 'Windows',
+            taskGid: 'windows-123',
+            taskUrl: 'https://example.com/windows-task'
         }
     })
 })

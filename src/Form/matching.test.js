@@ -205,7 +205,7 @@ describe('matching', () => {
                 }
             },
             strategies: {
-                'vendorRegex': {
+                vendorRegex: {
                     rules: {
                         email: null
                     },
@@ -215,14 +215,14 @@ describe('matching', () => {
                         }
                     ]
                 },
-                'ddgMatcher': {
+                ddgMatcher: {
                     matchers: {
-                        'emailAddress': { match: /emailAddress/ui, forceUnknown: /search/ui }
+                        emailAddress: { match: /emailAddress/ui, forceUnknown: /search/ui }
                     }
                 },
-                'cssSelector': {
+                cssSelector: {
                     selectors: {
-                        'formInputsSelector': 'input'
+                        formInputsSelector: 'input'
                     }
                 }
             }

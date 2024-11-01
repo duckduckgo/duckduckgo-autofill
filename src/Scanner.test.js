@@ -37,8 +37,8 @@ describe('performance', () => {
         const spy = jest.spyOn(scanner, 'findEligibleInputs')
 
         // this will add 5 *different* elements to the queue
-        let inputs = document.querySelectorAll('input')
-        for (let input of inputs) {
+        const inputs = document.querySelectorAll('input')
+        for (const input of inputs) {
             scanner.enqueue([input])
         }
 

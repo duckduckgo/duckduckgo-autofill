@@ -27,7 +27,7 @@ function getAddresses () {
 
 globalThis.pixels = []
 function firePixel ({pixelName}) {
-    // eslint-disable-next-line no-undef
+     
     globalThis.pixels.push(pixelName)
 }
 

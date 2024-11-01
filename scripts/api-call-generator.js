@@ -25,7 +25,7 @@ if (runningAsScript) {
     // Generate the files
     generateFiles(BASE)
         .then((outputs) => {
-            for (let output of outputs) {
+            for (const output of outputs) {
                 writeFileSync(output.filepath, banner + '\n' + output.content)
                 console.log(`✅`, relative(join(__dirname, '..'), output.filepath))
             }
@@ -121,7 +121,7 @@ function createApiCalls (deviceApiCalls, importPaths, baseDir) {
     const classes = []
 
     // For every entry in 'deviceApiCalls.json', try to resolve the schema files that it uses
-    for (let [methodName, entry] of Object.entries(deviceApiCalls)) {
+    for (const [methodName, entry] of Object.entries(deviceApiCalls)) {
         if (entry.properties?.validatorsOnly?.const === true) {
             console.log('generating validators only for ', methodName)
             continue
@@ -216,8 +216,8 @@ const schema = z.record(z.object({
             type: z.literal('boolean'),
             const: z.boolean()
         }).optional(),
-        paramsValidator: z.object({ '$ref': z.string() }).optional(),
-        resultValidator: z.object({ '$ref': z.string() }).optional()
+        paramsValidator: z.object({ $ref: z.string() }).optional(),
+        resultValidator: z.object({ $ref: z.string() }).optional()
     }).optional()
 }))
 

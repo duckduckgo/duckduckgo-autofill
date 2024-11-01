@@ -27,7 +27,7 @@ export async function setupMockedDomain (page, domain) {
 export async function withEmailProtectionExtensionSignedInAs (page, username) {
     const [backgroundPage] = page.context().backgroundPages()
     await backgroundPage.evaluateHandle((personalAddress) => {
-        // eslint-disable-next-line no-undef
+         
         globalThis.setEmailProtectionUserData(personalAddress)
     }, [username])
 }
@@ -48,15 +48,15 @@ export async function withEmailProtectionExtensionSignedInAs (page, username) {
 function withStringReplacements ({page, replacements, platform = 'macos', constants}) {
     const content = readFileSync('./dist/autofill.js', 'utf8')
     let output = content
-    for (let [keyName, value] of Object.entries(replacements)) {
-        let replacement = typeof value === 'boolean' || typeof value === 'string'
+    for (const [keyName, value] of Object.entries(replacements)) {
+        const replacement = typeof value === 'boolean' || typeof value === 'string'
             ? value
             : JSON.stringify(value)
         output = output.replace(`// INJECT ${keyName} HERE`, `${keyName} = ${replacement};`)
     }
 
     if (constants) {
-        for (let [keyName, value] of Object.entries(constants)) {
+        for (const [keyName, value] of Object.entries(constants)) {
             output = output.replace(new RegExp(`${keyName}: \\d+`), `${keyName}: ${value}`)
         }
     }
@@ -142,7 +142,7 @@ export function createAutofillScript () {
         },
         async applyTo (page) {
             if (platform === 'windows') {
-                replacements['isWindows'] = true
+                replacements.isWindows = true
             }
             return withStringReplacements({page, replacements, platform, constants})
         }
@@ -307,7 +307,7 @@ export async function addMocksAsAttachments (page, test, testInfo) {
     const calls = await mockedCalls(page, {minCount: 0})
     const platform = validPlatform(testInfo.project.name)
     let index = 0
-    for (let call of calls) {
+    for (const call of calls) {
         index += 1
         let [name, params, response] = call
         const lines = [`name: ${name}`]

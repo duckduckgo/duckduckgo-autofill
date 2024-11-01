@@ -132,11 +132,11 @@ describe('AppleDeviceInterface: postAutofill', () => {
                 password: 'testPassword',
                 username: 'testUsername'
             },
-            'creditCards': undefined,
-            'identities': undefined,
+            creditCards: undefined,
+            identities: undefined,
             trigger: 'passwordGeneration',
             messageHandling: {
-                'secret': 'PLACEHOLDER_SECRET'
+                secret: 'PLACEHOLDER_SECRET'
             }
         })
     })
@@ -230,7 +230,7 @@ describe('AppleDeviceInterface: postSubmit', () => {
             },
             trigger: 'formSubmission',
             messageHandling: {
-                'secret': 'PLACEHOLDER_SECRET'
+                secret: 'PLACEHOLDER_SECRET'
             }
         }
         device.postSubmit(formValues, form)

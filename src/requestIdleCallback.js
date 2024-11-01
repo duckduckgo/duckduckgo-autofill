@@ -21,7 +21,6 @@ window.requestIdleCallback = window.requestIdleCallback ||
     function (cb) {
         return setTimeout(function () {
             const start = Date.now()
-            // eslint-disable-next-line standard/no-callback-literal
             cb({
                 didTimeout: false,
                 timeRemaining: function () {

@@ -231,7 +231,7 @@ export function createAndroidMocks () {
         },
         removeHandlers: function (handlers) {
             const keys = Object.keys(mocks)
-            for (let handler of handlers) {
+            for (const handler of handlers) {
                 // @ts-ignore
                 if (!keys.includes(handler)) {
                     // @ts-ignore

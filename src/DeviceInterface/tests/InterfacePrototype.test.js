@@ -32,7 +32,7 @@ describe('InterfacePrototype', function () {
 
         device.attachTooltip({
             form: formInstance,
-            input: input,
+            input,
             click: null,
             trigger: 'userInitiated',
             triggerMetaData: {type: 'explicit-opt-in'}

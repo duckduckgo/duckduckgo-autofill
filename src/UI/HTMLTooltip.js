@@ -70,9 +70,9 @@ export class HTMLTooltip {
         this.tooltip = null
         this.getPosition = getPosition
         const forcedVisibilityStyles = {
-            'display': 'block',
-            'visibility': 'visible',
-            'opacity': '1'
+            display: 'block',
+            visibility: 'visible',
+            opacity: '1'
         }
         // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)

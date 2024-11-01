@@ -51,7 +51,7 @@ let asana
 
 const setupAsana = () => {
     asana = Asana.Client.create({
-        'defaultHeaders': {
+        defaultHeaders: {
             'Asana-Enable': 'new_project_templates,new_user_task_lists,new_goal_memberships'
         }
     }).useAccessToken(ASANA_ACCESS_TOKEN)

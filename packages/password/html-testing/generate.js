@@ -26,12 +26,12 @@ const password = new Password({
     getRandomValues: (/** @type {any} */ v) => require('crypto').randomFillSync(v)
 })
 
-for (let [domain, value] of joined) {
+for (const [domain, value] of joined) {
     const rulesString = value['password-rules']
     if (domain && rulesString) {
         const {parameters, generate, entropy} = password.parse(rulesString)
-        let charsetLength = parameters.PasswordAllowedCharacters.length
-        let passwords = new Array(5).fill(0).map((_, i) => i)
+        const charsetLength = parameters.PasswordAllowedCharacters.length
+        const passwords = new Array(5).fill(0).map((_, i) => i)
             .map(() => {
                 const pw = generate()
                 return { pw, length: pw.length }
@@ -52,7 +52,7 @@ for (let [domain, value] of joined) {
 
 outputs.sort((a, b) => a.entropy - b.entropy)
 
-for (let output of outputs) {
+for (const output of outputs) {
     const {averageLength, entropy, passwords, charsetLength, rules, domain, charset} = output
     let entropyScore = 'Very Strong'
     if (entropy >= 60 && entropy <= 127) {

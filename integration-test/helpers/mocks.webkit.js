@@ -21,7 +21,7 @@ export const iosContentScopeReplacements = (overrides = {}) => {
     return {
         contentScope: {
             features: {
-                'autofill': {
+                autofill: {
                     exceptions: [],
                     state: 'enabled'
                 }
@@ -63,7 +63,7 @@ export const macosContentScopeReplacements = (opts = {}) => {
         isApp: true,
         contentScope: {
             features: {
-                'autofill': {
+                autofill: {
                     exceptions: [],
                     state: 'enabled'
                 }
@@ -217,25 +217,25 @@ export function createWebkitMocks (platform = 'macos') {
         getAvailableInputTypes: null,
         getRuntimeConfiguration: {
             success: {
-                'contentScope': {
-                    'features': {
-                        'autofill': {
-                            'state': 'enabled',
-                            'exceptions': []
+                contentScope: {
+                    features: {
+                        autofill: {
+                            state: 'enabled',
+                            exceptions: []
                         }
                     },
-                    'unprotectedTemporary': []
+                    unprotectedTemporary: []
                 },
-                'userUnprotectedDomains': [],
-                'userPreferences': {
-                    'debug': false,
-                    'platform': {
-                        'name': 'macos'
+                userUnprotectedDomains: [],
+                userPreferences: {
+                    debug: false,
+                    platform: {
+                        name: 'macos'
                     },
-                    'features': {
-                        'autofill': {
-                            'settings': {
-                                'featureToggles': {
+                    features: {
+                        autofill: {
+                            settings: {
+                                featureToggles: {
                                     inputType_credentials: true,
                                     inputType_identities: true,
                                     inputType_creditCards: true,
@@ -381,7 +381,7 @@ export function createWebkitMocks (platform = 'macos') {
                     success: {
                         status: 'unlocked',
                         credentials: [
-                            {id: '3', password: password, username: personalAddress, credentialsProvider: 'bitwarden'}
+                            {id: '3', password, username: personalAddress, credentialsProvider: 'bitwarden'}
                         ],
                         availableInputTypes: {credentials: {password: true, username: true}}
                     }
@@ -391,7 +391,7 @@ export function createWebkitMocks (platform = 'macos') {
                     success: {
                         status: 'unlocked',
                         credentials: [
-                            {id: '3', password: password, username: '', credentialsProvider: 'bitwarden'}
+                            {id: '3', password, username: '', credentialsProvider: 'bitwarden'}
                         ],
                         availableInputTypes: {credentials: {password: true, username: false}}
                     }
@@ -425,7 +425,7 @@ export function createWebkitMocks (platform = 'macos') {
          */
         removeHandlers: function (handlers) {
             const keys = Object.keys(webkitBase)
-            for (let handler of handlers) {
+            for (const handler of handlers) {
                 if (!keys.includes(handler)) {
                     throw new Error('webkit mock did not exist for ' + handler)
                 }
@@ -451,7 +451,7 @@ async function withMockedWebkit (page, mocks) {
         window.webkit = {
             messageHandlers: {}
         }
-        for (let [msgName, response] of Object.entries(mocks)) {
+        for (const [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
                 /**
                  * @param {any} data

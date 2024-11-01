@@ -2,8 +2,8 @@ import HTMLTooltip, {defaultOptions} from './HTMLTooltip.js'
 import {getInputConfigFromType} from '../Form/inputTypeConfig.js'
 
 describe('HTMLTooltip', () => {
-    let o1 = global.ResizeObserver
-    let o2 = global.MutationObserver
+    const o1 = global.ResizeObserver
+    const o2 = global.MutationObserver
     beforeEach(() => {
         // @ts-ignore
         global.ResizeObserver = class ResizeObserver {

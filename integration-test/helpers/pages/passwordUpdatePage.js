@@ -8,7 +8,7 @@ import {expect} from '@playwright/test'
 export function passwordUpdatePage (page) {
     class PasswordUpdatePage {
         async navigate () {
-            await page.goto(constants.pages['passwordUpdate'])
+            await page.goto(constants.pages.passwordUpdate)
         }
 
         async currentPasswordHasFillKey () {

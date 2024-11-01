@@ -27,7 +27,7 @@ test.describe('Windows secure messaging', () => {
             // this part ensures that we actually have a `window.chrome.webview.postMessage` initially on page load.
             // We need to prevent the possible false positive in the next assertion - because if
             // we assert that the method is absent then it could pass if it was never present.
-            let res = await page.evaluate(() => typeof window.chrome.webview.postMessage)
+            const res = await page.evaluate(() => typeof window.chrome.webview.postMessage)
             expect(res).toBe('function')
 
             // now we add the script like Windows will, wrapped with access to a couple of vars
@@ -35,8 +35,8 @@ test.describe('Windows secure messaging', () => {
                 .platform('windows')
                 .applyTo(page)
 
-            let prev = await page.evaluate(() => typeof window.chrome.webview.postMessage)
-            let current = await page.evaluate(() => typeof windowsInteropPostMessage)
+            const prev = await page.evaluate(() => typeof window.chrome.webview.postMessage)
+            const current = await page.evaluate(() => typeof windowsInteropPostMessage)
 
             // both should be absent now
             expect(prev).toBe('undefined')

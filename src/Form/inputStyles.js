@@ -34,7 +34,7 @@ const getBasicStyles = (input, icon) => ({
     'background-repeat': 'no-repeat',
     'background-origin': 'content-box',
     'background-image': `url(${icon})`,
-    'transition': 'background 0s'
+    transition: 'background 0s'
 })
 
 /**
@@ -81,7 +81,7 @@ const getIconStylesAutofilled = (input, form) => {
     return {
         ...iconStyle,
         'background-color': '#F8F498',
-        'color': '#333333'
+        color: '#333333'
     }
 }
 

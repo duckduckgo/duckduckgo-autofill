@@ -129,16 +129,16 @@ function _markBitsForNamedCharacterClass (bitSet, namedCharacterClass) {
 }
 
 function _markBitsForCustomCharacterClass (bitSet, customCharacterClass) {
-    for (let character of customCharacterClass.characters) {
+    for (const character of customCharacterClass.characters) {
         bitSet[_bitSetIndexForCharacter(character)] = true
     }
 }
 
 function _canonicalizedPropertyValues (propertyValues, keepCustomCharacterClassFormatCompliant) {
     // @ts-ignore
-    let asciiPrintableBitSet = new Array('~'.codePointAt(0) - ' '.codePointAt(0) + 1)
+    const asciiPrintableBitSet = new Array('~'.codePointAt(0) - ' '.codePointAt(0) + 1)
 
-    for (let propertyValue of propertyValues) {
+    for (const propertyValue of propertyValues) {
         if (propertyValue instanceof NamedCharacterClass) {
             if (propertyValue.name === Identifier.UNICODE) {
                 return [new NamedCharacterClass(Identifier.UNICODE)]
@@ -157,35 +157,35 @@ function _canonicalizedPropertyValues (propertyValues, keepCustomCharacterClassF
     let charactersSeen = []
 
     function checkRange (start, end) {
-        let temp = []
+        const temp = []
         for (let i = _bitSetIndexForCharacter(start); i <= _bitSetIndexForCharacter(end); ++i) {
             if (asciiPrintableBitSet[i]) {
                 temp.push(_characterAtBitSetIndex(i))
             }
         }
 
-        let result = temp.length === (_bitSetIndexForCharacter(end) - _bitSetIndexForCharacter(start) + 1)
+        const result = temp.length === (_bitSetIndexForCharacter(end) - _bitSetIndexForCharacter(start) + 1)
         if (!result) {
             charactersSeen = charactersSeen.concat(temp)
         }
         return result
     }
 
-    let hasAllUpper = checkRange('A', 'Z')
-    let hasAllLower = checkRange('a', 'z')
-    let hasAllDigits = checkRange('0', '9')
+    const hasAllUpper = checkRange('A', 'Z')
+    const hasAllLower = checkRange('a', 'z')
+    const hasAllDigits = checkRange('0', '9')
 
     // Check for special characters, accounting for characters that are given special treatment (i.e. '-' and ']')
     let hasAllSpecial = false
     let hasDash = false
     let hasRightSquareBracket = false
-    let temp = []
+    const temp = []
     for (let i = _bitSetIndexForCharacter(' '); i <= _bitSetIndexForCharacter('/'); ++i) {
         if (!asciiPrintableBitSet[i]) {
             continue
         }
 
-        let character = _characterAtBitSetIndex(i)
+        const character = _characterAtBitSetIndex(i)
         if (keepCustomCharacterClassFormatCompliant && character === '-') {
             hasDash = true
         } else {
@@ -202,7 +202,7 @@ function _canonicalizedPropertyValues (propertyValues, keepCustomCharacterClassF
             continue
         }
 
-        let character = _characterAtBitSetIndex(i)
+        const character = _characterAtBitSetIndex(i)
         if (keepCustomCharacterClassFormatCompliant && character === ']') {
             hasRightSquareBracket = true
         } else {
@@ -222,7 +222,7 @@ function _canonicalizedPropertyValues (propertyValues, keepCustomCharacterClassF
         temp.push(']')
     }
 
-    let numberOfSpecialCharacters = (_bitSetIndexForCharacter('/') - _bitSetIndexForCharacter(' ') + 1) +
+    const numberOfSpecialCharacters = (_bitSetIndexForCharacter('/') - _bitSetIndexForCharacter(' ') + 1) +
         (_bitSetIndexForCharacter('@') - _bitSetIndexForCharacter(':') + 1) +
         (_bitSetIndexForCharacter('`') - _bitSetIndexForCharacter('[') + 1) +
         (_bitSetIndexForCharacter('~') - _bitSetIndexForCharacter('{') + 1)
@@ -231,7 +231,7 @@ function _canonicalizedPropertyValues (propertyValues, keepCustomCharacterClassF
         charactersSeen = charactersSeen.concat(temp)
     }
 
-    let result = []
+    const result = []
     if (hasAllUpper && hasAllLower && hasAllDigits && hasAllSpecial) {
         return [new NamedCharacterClass(Identifier.ASCII_PRINTABLE)]
     }
@@ -259,7 +259,7 @@ function _indexOfNonWhitespaceCharacter (input, position = 0) {
     console.assert(position >= 0)
     console.assert(position <= input.length)
 
-    let length = input.length
+    const length = input.length
     while (position < length && _isASCIIWhitespace(input[position])) { ++position }
 
     return position
@@ -270,10 +270,10 @@ function _parseIdentifier (input, position) {
     console.assert(position < input.length)
     console.assert(_isIdentifierCharacter(input[position]))
 
-    let length = input.length
-    let seenIdentifiers = []
+    const length = input.length
+    const seenIdentifiers = []
     do {
-        let c = input[position]
+        const c = input[position]
         if (!_isIdentifierCharacter(c)) {
             break
         }
@@ -294,17 +294,17 @@ function _parseCustomCharacterClass (input, position) {
     console.assert(position < input.length)
     console.assert(input[position] === CHARACTER_CLASS_START_SENTINEL)
 
-    let length = input.length
+    const length = input.length
     ++position
     if (position >= length) {
         // console.error('Found end-of-line instead of character class character')
         return [null, position]
     }
 
-    let initialPosition = position
-    let result = []
+    const initialPosition = position
+    const result = []
     do {
-        let c = input[position]
+        const c = input[position]
         if (!_isASCIIPrintableCharacter(c)) {
             ++position
             continue
@@ -346,11 +346,11 @@ function _parsePasswordRequiredOrAllowedPropertyValue (input, position) {
     console.assert(position >= 0)
     console.assert(position < input.length)
 
-    let length = input.length
-    let propertyValues = []
+    const length = input.length
+    const propertyValues = []
     while (true) {
         if (_isIdentifierCharacter(input[position])) {
-            let identifierStartPosition = position
+            const identifierStartPosition = position
             // eslint-disable-next-line no-redeclare
             var [propertyValue, position] = _parseIdentifier(input, position)
             if (!_isValidRequiredOrAllowedPropertyValueIdentifier(propertyValue)) {
@@ -400,9 +400,9 @@ function _parsePasswordRule (input, position) {
     console.assert(position < input.length)
     console.assert(_isIdentifierCharacter(input[position]))
 
-    let length = input.length
+    const length = input.length
 
-    var mayBeIdentifierStartPosition = position
+    const mayBeIdentifierStartPosition = position
     // eslint-disable-next-line no-redeclare
     var [identifier, position] = _parseIdentifier(input, position)
     if (!Object.values(RuleName).includes(identifier)) {
@@ -420,7 +420,7 @@ function _parsePasswordRule (input, position) {
         return [null, position, undefined]
     }
 
-    let property = { name: identifier, value: null }
+    const property = { name: identifier, value: null }
 
     position = _indexOfNonWhitespaceCharacter(input, position + 1)
     // Empty value
@@ -477,7 +477,7 @@ function _parseInteger (input, position) {
         return [null, position]
     }
 
-    let length = input.length
+    const length = input.length
     // let initialPosition = position
     let result = 0
     do {
@@ -499,8 +499,8 @@ function _parseInteger (input, position) {
  * @private
  */
 function _parsePasswordRulesInternal (input) {
-    let parsedProperties = []
-    let length = input.length
+    const parsedProperties = []
+    const length = input.length
 
     var position = _indexOfNonWhitespaceCharacter(input)
     while (position < length) {
@@ -542,7 +542,7 @@ function _parsePasswordRulesInternal (input) {
  * @returns {Rule[]}
  */
 function parsePasswordRules (input, formatRulesForMinifiedVersion) {
-    let [passwordRules, maybeMessage] = _parsePasswordRulesInternal(input)
+    const [passwordRules, maybeMessage] = _parsePasswordRulesInternal(input)
 
     if (!passwordRules) {
         throw new ParserError(maybeMessage)
@@ -554,15 +554,15 @@ function parsePasswordRules (input, formatRulesForMinifiedVersion) {
 
     // When formatting rules for minified version, we should keep the formatted rules
     // as similar to the input as possible. Avoid copying required rules to allowed rules.
-    let suppressCopyingRequiredToAllowed = formatRulesForMinifiedVersion
+    const suppressCopyingRequiredToAllowed = formatRulesForMinifiedVersion
 
-    let requiredRules = []
+    const requiredRules = []
     let newAllowedValues = []
     let minimumMaximumConsecutiveCharacters = null
     let maximumMinLength = 0
     let minimumMaxLength = null
 
-    for (let rule of passwordRules) {
+    for (const rule of passwordRules) {
         switch (rule.name) {
         case RuleName.MAX_CONSECUTIVE:
             minimumMaximumConsecutiveCharacters = minimumMaximumConsecutiveCharacters ? Math.min(rule.value, minimumMaximumConsecutiveCharacters) : rule.value
@@ -604,10 +604,10 @@ function parsePasswordRules (input, formatRulesForMinifiedVersion) {
         newPasswordRules.push(new Rule(RuleName.MAX_CONSECUTIVE, minimumMaximumConsecutiveCharacters))
     }
 
-    let sortedRequiredRules = requiredRules.sort(function (a, b) {
+    const sortedRequiredRules = requiredRules.sort(function (a, b) {
         const namedCharacterClassOrder = [Identifier.LOWER, Identifier.UPPER, Identifier.DIGIT, Identifier.SPECIAL, Identifier.ASCII_PRINTABLE, Identifier.UNICODE]
-        let aIsJustOneNamedCharacterClass = (a.value.length === 1 && (a.value[0] instanceof NamedCharacterClass))
-        let bIsJustOneNamedCharacterClass = (b.value.length === 1 && (b.value[0] instanceof NamedCharacterClass))
+        const aIsJustOneNamedCharacterClass = (a.value.length === 1 && (a.value[0] instanceof NamedCharacterClass))
+        const bIsJustOneNamedCharacterClass = (b.value.length === 1 && (b.value[0] instanceof NamedCharacterClass))
         if (aIsJustOneNamedCharacterClass && !bIsJustOneNamedCharacterClass) {
             return -1
         }
@@ -615,8 +615,8 @@ function parsePasswordRules (input, formatRulesForMinifiedVersion) {
             return 1
         }
         if (aIsJustOneNamedCharacterClass && bIsJustOneNamedCharacterClass) {
-            let aIndex = namedCharacterClassOrder.indexOf(a.value[0].name)
-            let bIndex = namedCharacterClassOrder.indexOf(b.value[0].name)
+            const aIndex = namedCharacterClassOrder.indexOf(a.value[0].name)
+            const bIndex = namedCharacterClassOrder.indexOf(b.value[0].name)
             return aIndex - bIndex
         }
         return 0

@@ -237,9 +237,9 @@ export class WebkitMessagingTransport {
         const cryptoKey = await this.globals.importKey('raw', key, 'AES-GCM', false, ['decrypt'])
         const algo = { name: 'AES-GCM', iv }
 
-        let decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext)
+        const decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext)
 
-        let dec = new this.globals.TextDecoder()
+        const dec = new this.globals.TextDecoder()
         return dec.decode(decrypted)
     }
 
@@ -252,7 +252,7 @@ export class WebkitMessagingTransport {
     captureWebkitHandlers (handlerNames) {
         const handlers = window.webkit.messageHandlers
         if (!handlers) throw new MissingHandler('window.webkit.messageHandlers was absent', 'all')
-        for (let webkitMessageHandlerName of handlerNames) {
+        for (const webkitMessageHandlerName of handlerNames) {
             if (typeof handlers[webkitMessageHandlerName]?.postMessage === 'function') {
                 /**
          * `bind` is used here to ensure future calls to the captured

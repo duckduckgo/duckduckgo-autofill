@@ -8,7 +8,7 @@ import {genericPage} from './genericPage.js'
 export function shadowDomPage (page) {
     class ShadowDomPage {
         async navigate () {
-            await page.goto(constants.pages['shadowDom'])
+            await page.goto(constants.pages.shadowDom)
         }
 
         async showTheForm () {

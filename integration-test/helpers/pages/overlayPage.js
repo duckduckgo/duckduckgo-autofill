@@ -10,7 +10,7 @@ import { genericPage } from './genericPage.js'
 export function overlayPage (page) {
     class OverlayPage {
         async navigate () {
-            await page.goto(constants.pages['overlay'])
+            await page.goto(constants.pages.overlay)
         }
 
         /**

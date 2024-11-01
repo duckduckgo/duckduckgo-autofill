@@ -66,7 +66,7 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
     return {
         success: {
             // @ts-ignore
-            contentScope: contentScope,
+            contentScope,
             // @ts-ignore
             userPreferences: {
                 // Copy locale to user preferences as 'language' to match expected payload

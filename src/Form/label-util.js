@@ -20,15 +20,15 @@ const extractElementStrings = (element) => {
 
         // only take the string when it's an explicit text node
         if (el.nodeType === el.TEXT_NODE || !el.childNodes.length) {
-            let trimmedText = removeExcessWhitespace(el.textContent)
+            const trimmedText = removeExcessWhitespace(el.textContent)
             if (trimmedText) {
                 strings.add(trimmedText)
             }
             return
         }
 
-        for (let node of el.childNodes) {
-            let nodeType = node.nodeType
+        for (const node of el.childNodes) {
+            const nodeType = node.nodeType
             if (nodeType !== node.ELEMENT_NODE && nodeType !== node.TEXT_NODE) {
                 continue
             }

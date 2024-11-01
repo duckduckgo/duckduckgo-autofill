@@ -117,7 +117,7 @@ describe('Settings', () => {
                 }
             ]
         ]
-        for (let [toggles, types, fn] of cases) {
+        for (const [toggles, types, fn] of cases) {
             const settings = await settingsFromMockedCalls(toggles, types)
             fn(settings)
         }
@@ -168,7 +168,7 @@ async function settingsFromMockedCalls (featureToggles, availableInputTypes) {
                 platform: { name: 'ios' },
                 debug: true,
                 features: {
-                    autofill: { settings: { featureToggles: featureToggles } }
+                    autofill: { settings: { featureToggles } }
                 }
             }
         }

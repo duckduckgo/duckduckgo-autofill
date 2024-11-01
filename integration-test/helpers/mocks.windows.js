@@ -23,31 +23,31 @@ import {createAvailableInputTypes, withDataType} from './utils.js'
 export function createWindowsMocks () {
     const mocks = {
         getRuntimeConfiguration: {
-            'contentScope': {
-                'features': {
-                    'autofill': {
-                        'state': 'enabled',
-                        'exceptions': []
+            contentScope: {
+                features: {
+                    autofill: {
+                        state: 'enabled',
+                        exceptions: []
                     }
                 },
-                'unprotectedTemporary': []
+                unprotectedTemporary: []
             },
-            'userUnprotectedDomains': [],
-            'userPreferences': {
-                'debug': false,
-                'platform': {
-                    'name': 'windows'
+            userUnprotectedDomains: [],
+            userPreferences: {
+                debug: false,
+                platform: {
+                    name: 'windows'
                 },
-                'features': {
-                    'autofill': {
-                        'settings': {
-                            'featureToggles': {
-                                'inputType_credentials': true,
-                                'inputType_identities': false,
-                                'inputType_creditCards': false,
-                                'emailProtection': false,
-                                'password_generation': false,
-                                'credentials_saving': true
+                features: {
+                    autofill: {
+                        settings: {
+                            featureToggles: {
+                                inputType_credentials: true,
+                                inputType_identities: false,
+                                inputType_creditCards: false,
+                                emailProtection: false,
+                                password_generation: false,
+                                credentials_saving: true
                             }
                         }
                     }
@@ -146,7 +146,7 @@ export function createWindowsMocks () {
                  */
                 function respond (name, _request, response) {
                     setTimeout(() => {
-                        for (let listener of listeners) {
+                        for (const listener of listeners) {
                             listener({
                                 origin: window.origin,
                                 data: {
@@ -223,7 +223,7 @@ export function createWindowsMocks () {
                                 }
                             } else if (typeof input.type === 'string') {
                                 setTimeout(() => {
-                                    for (let listener of listeners) {
+                                    for (const listener of listeners) {
                                         listener({
                                             origin: window.origin,
                                             data: input
