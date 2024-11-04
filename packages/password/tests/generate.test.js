@@ -1,18 +1,12 @@
-const {
-    constants,
-    _selectPasswordRules,
-    HostnameInputError,
-    ParserError,
-    generate
-} = require('../index.js')
+const { constants, _selectPasswordRules, HostnameInputError, ParserError, generate } = require('../index.js')
 const vendorRules = require('../rules.json')
 const fc = require('fast-check')
 const { Password } = require('../lib/apple.password.js')
 
-function testUniqueTimes (domain, passwordRules, num = 10) {
+function testUniqueTimes(domain, passwordRules, num = 10) {
     const pws = []
     for (let i = 0; i < num; i++) {
-    // these 4 domains have rulesets so weak that collisions are likely, causing flaky runs
+        // these 4 domains have rulesets so weak that collisions are likely, causing flaky runs
         if (domain === 'vivo.com.br') continue
         if (domain === 'allianz.com.br') continue
         if (domain === 'packageconciergeadmin.com') continue
@@ -29,30 +23,22 @@ describe('password generation', () => {
     describe('public api', () => {
         it('creates rules with no arguments', () => {
             const defaultPw = generate()
-            expect(defaultPw.length).toBeGreaterThanOrEqual(
-                constants.DEFAULT_MIN_LENGTH
-            )
-            expect(defaultPw.length).toBeLessThanOrEqual(
-                constants.DEFAULT_MAX_LENGTH
-            )
+            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.DEFAULT_MIN_LENGTH)
+            expect(defaultPw.length).toBeLessThanOrEqual(constants.DEFAULT_MAX_LENGTH)
         })
         it('creates from default rules', () => {
             const defaultPw = generate({ input: constants.DEFAULT_PASSWORD_RULES })
-            expect(defaultPw.length).toBeGreaterThanOrEqual(
-                constants.DEFAULT_MIN_LENGTH
-            )
-            expect(defaultPw.length).toBeLessThanOrEqual(
-                constants.DEFAULT_MAX_LENGTH
-            )
+            expect(defaultPw.length).toBeGreaterThanOrEqual(constants.DEFAULT_MIN_LENGTH)
+            expect(defaultPw.length).toBeLessThanOrEqual(constants.DEFAULT_MAX_LENGTH)
         })
         it('creates matches snapshot requirements', () => {
             const pw = new Password()
             const { parameters } = pw.parse(constants.DEFAULT_PASSWORD_RULES)
 
             /**
-       * This snapshot is added as a human-readable check that the internal params
-       * are correct and are not changed by accident.
-       */
+             * This snapshot is added as a human-readable check that the internal params
+             * are correct and are not changed by accident.
+             */
             expect(parameters).toMatchInlineSnapshot(`
         {
           "NumberOfRequiredRandomCharacters": 20,
@@ -70,7 +56,7 @@ describe('password generation', () => {
                     // @ts-ignore - this is deliberate
                     const pw = generate({ input: anything })
                     return typeof pw === 'string'
-                })
+                }),
             )
         })
         it('handles any value for `domain`', () => {
@@ -79,7 +65,7 @@ describe('password generation', () => {
                     // @ts-ignore - this is deliberate
                     const pw = generate({ domain: anything })
                     return typeof pw === 'string'
-                })
+                }),
             )
         })
         it('handles any value for `onError`', () => {
@@ -88,7 +74,7 @@ describe('password generation', () => {
                     // @ts-ignore - this is deliberate
                     const pw = generate({ onError: anything })
                     return typeof pw === 'string'
-                })
+                }),
             )
         })
         it('handles any value for `options`', () => {
@@ -97,7 +83,7 @@ describe('password generation', () => {
                     // @ts-ignore - this is deliberate
                     const pw = generate(anything)
                     return typeof pw === 'string'
-                })
+                }),
             )
         })
         it('creates from vendor rules', () => {
@@ -105,9 +91,9 @@ describe('password generation', () => {
                 domain: 'example.com',
                 rules: {
                     'example.com': {
-                        'password-rules': 'minlength: 4; maxlength: 4;'
-                    }
-                }
+                        'password-rules': 'minlength: 4; maxlength: 4;',
+                    },
+                },
             })
             expect(password.length).toBe(4)
         })
@@ -115,33 +101,31 @@ describe('password generation', () => {
             { args: { input: 'invalid input' }, expectedErrorClass: ParserError },
             {
                 args: { domain: 'localhost:8080' },
-                expectedErrorClass: HostnameInputError
+                expectedErrorClass: HostnameInputError,
             },
             {
                 args: { domain: 'https://example.com' },
-                expectedErrorClass: HostnameInputError
-            }
+                expectedErrorClass: HostnameInputError,
+            },
         ])('can receive errors', ({ args, expectedErrorClass }) => {
             expect.assertions(1)
             generate({
                 ...args,
                 rules: vendorRules,
-                onError (e) {
+                onError(e) {
                     expect(e).toBeInstanceOf(expectedErrorClass)
-                }
+                },
             })
         })
         it.each([
             {
-                input:
-          'minlength: 30; maxlength: 40; required: upper; required: lower; required: [$]',
-                test: (pws) => pws.every((pw) => pw.includes('$'))
+                input: 'minlength: 30; maxlength: 40; required: upper; required: lower; required: [$]',
+                test: (pws) => pws.every((pw) => pw.includes('$')),
             },
             {
-                input:
-          'minlength: 20; maxlength: 30; required: upper; required: lower;'
+                input: 'minlength: 20; maxlength: 30; required: upper; required: lower;',
             },
-            { input: 'required: upper;' }
+            { input: 'required: upper;' },
         ])('generates from known inputs', ({ input, test }) => {
             const pws = testUniqueTimes('none', input)
             if (test) {
@@ -152,13 +136,9 @@ describe('password generation', () => {
             fc.assert(
                 fc.property(fc.string(), (data) => {
                     const pw = generate({ input: data })
-                    return (
-                        typeof pw === 'string' &&
-            pw.length >= constants.DEFAULT_MIN_LENGTH &&
-            pw.length <= constants.DEFAULT_MAX_LENGTH
-                    )
+                    return typeof pw === 'string' && pw.length >= constants.DEFAULT_MIN_LENGTH && pw.length <= constants.DEFAULT_MAX_LENGTH
                 }),
-                { seed: -1660958584, path: '0:0', endOnFailure: true }
+                { seed: -1660958584, path: '0:0', endOnFailure: true },
             )
         })
     })
@@ -193,47 +173,37 @@ describe('password generation', () => {
         it('_selectPasswordRules returns rules when its a direct match', () => {
             const actual = _selectPasswordRules('example.com', {
                 'example.com': {
-                    'password-rules': 'minlength: 20'
-                }
+                    'password-rules': 'minlength: 20',
+                },
             })
 
             expect(actual).toBe('minlength: 20')
         })
-        it.each([
-            'app.example.com',
-            'app.app.app.app.example.com',
-            'www.example.com'
-        ])(
+        it.each(['app.example.com', 'app.app.app.app.example.com', 'www.example.com'])(
             '_selectPasswordRules returns rules when its a subdomain match',
             (input) => {
                 const actual = _selectPasswordRules(input, {
                     'example.com': {
-                        'password-rules': 'minlength: 20'
-                    }
+                        'password-rules': 'minlength: 20',
+                    },
                 })
                 expect(actual).toBe('minlength: 20')
-            }
+            },
         )
     })
     if (process.env.PASSWORD_STRESS_TEST) {
         describe('with valid inputs...', () => {
             const testCases = Object.entries(vendorRules).map(([domain, value]) => ({
                 domain,
-                value
+                value,
             }))
 
-            it.each(testCases)(
-                '100 unique passwords for `$domain` ..',
-                ({ domain, value }) => {
-                    testUniqueTimes(domain, value['password-rules'], 100)
-                }
-            )
-            it.each(testCases.slice(0, 5))(
-                '10_000 unique passwords for `$domain` ..',
-                ({ domain, value }) => {
-                    testUniqueTimes(domain, value['password-rules'], 10_000)
-                }
-            )
+            it.each(testCases)('100 unique passwords for `$domain` ..', ({ domain, value }) => {
+                testUniqueTimes(domain, value['password-rules'], 100)
+            })
+            it.each(testCases.slice(0, 5))('10_000 unique passwords for `$domain` ..', ({ domain, value }) => {
+                testUniqueTimes(domain, value['password-rules'], 10_000)
+            })
         })
     }
 })

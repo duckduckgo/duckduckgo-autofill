@@ -32,18 +32,21 @@ export const defaultOptions = {
     `,
     caretPositionClass: (top, left, isAboveInput) => `
         .tooltip--email__caret {
-            ${isAboveInput
-        ? `transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) rotate(180deg); transform-origin: 18px !important;`
-        : `transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;`
-}
+            ${
+                isAboveInput
+                    ? `transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) rotate(180deg); transform-origin: 18px !important;`
+                    : `transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;`
+            }
         }`,
     css: `<style>${CSS_STYLES}</style>`,
     setSize: undefined,
-    remove: () => { /** noop */ },
+    remove: () => {
+        /** noop */
+    },
     testMode: false,
     checkVisibility: true,
     hasCaret: false,
-    isIncontextSignupAvailable: () => false
+    isIncontextSignupAvailable: () => false,
 }
 
 export class HTMLTooltip {
@@ -56,12 +59,10 @@ export class HTMLTooltip {
      * @param getPosition
      * @param {HTMLTooltipOptions} options
      */
-    constructor (config, inputType, getPosition, options) {
+    constructor(config, inputType, getPosition, options) {
         this.options = options
         this.shadow = document.createElement('ddg-autofill').attachShadow({
-            mode: options.testMode
-                ? 'open'
-                : 'closed'
+            mode: options.testMode ? 'open' : 'closed',
         })
         this.host = this.shadow.host
         this.config = config
@@ -72,7 +73,7 @@ export class HTMLTooltip {
         const forcedVisibilityStyles = {
             display: 'block',
             visibility: 'visible',
-            opacity: '1'
+            opacity: '1',
         }
         // @ts-ignore how to narrow this.host to HTMLElement?
         addInlineStyles(this.host, forcedVisibilityStyles)
@@ -87,49 +88,49 @@ export class HTMLTooltip {
         this.transformRules = {
             caret: {
                 getRuleString: this.options.caretPositionClass,
-                index: null
+                index: null,
             },
             tooltip: {
                 getRuleString: this.options.tooltipPositionClass,
-                index: null
-            }
+                index: null,
+            },
         }
     }
-    get isHidden () {
+    get isHidden() {
         return this.tooltip.parentNode.hidden
     }
-    append () {
+    append() {
         document.body.appendChild(this.host)
     }
-    remove () {
+    remove() {
         this.device?.activeForm.resetIconStylesToInitial()
-        window.removeEventListener('scroll', this, {capture: true})
+        window.removeEventListener('scroll', this, { capture: true })
         this.resObs.disconnect()
         this.mutObs.disconnect()
         this.lift()
     }
-    lift () {
+    lift() {
         this.left = null
         this.top = null
         document.body.removeChild(this.host)
     }
-    handleEvent (event) {
+    handleEvent(event) {
         switch (event.type) {
-        case 'scroll':
-            this.checkPosition()
-            break
+            case 'scroll':
+                this.checkPosition()
+                break
         }
     }
-    focus (x, y) {
+    focus(x, y) {
         const focusableElements = 'button'
         const currentFocusClassName = 'currentFocus'
-        const currentFocused = this.shadow.querySelectorAll(`.${currentFocusClassName}`);
-        [...currentFocused].forEach(el => {
+        const currentFocused = this.shadow.querySelectorAll(`.${currentFocusClassName}`)
+        ;[...currentFocused].forEach((el) => {
             el.classList.remove(currentFocusClassName)
         })
         this.shadow.elementFromPoint(x, y)?.closest(focusableElements)?.classList.add(currentFocusClassName)
     }
-    checkPosition () {
+    checkPosition() {
         if (this.animationFrame) {
             window.cancelAnimationFrame(this.animationFrame)
         }
@@ -137,10 +138,10 @@ export class HTMLTooltip {
         this.animationFrame = window.requestAnimationFrame(() => {
             if (this.isHidden) return
 
-            const {left, bottom, height, top} = this.getPosition()
+            const { left, bottom, height, top } = this.getPosition()
 
             if (left !== this.left || bottom !== this.top) {
-                const coords = {left, top: bottom}
+                const coords = { left, top: bottom }
                 this.updatePosition('tooltip', coords)
                 if (this.options.hasCaret) {
                     // Recalculate tooltip top as it may have changed after update potition above
@@ -156,7 +157,7 @@ export class HTMLTooltip {
         })
     }
 
-    getOverridePosition ({left, top}) {
+    getOverridePosition({ left, top }) {
         const tooltipBoundingBox = this.tooltip.getBoundingClientRect()
         const smallScreenWidth = tooltipBoundingBox.width * 2
         const spacing = 5
@@ -166,7 +167,7 @@ export class HTMLTooltip {
             const inputPosition = this.getPosition()
             const caretHeight = 14
             const overriddenTopPosition = top - tooltipBoundingBox.height - inputPosition.height - caretHeight
-            if (overriddenTopPosition >= 0) return {left, top: overriddenTopPosition}
+            if (overriddenTopPosition >= 0) return { left, top: overriddenTopPosition }
         }
 
         // If overflowing from the left on smaller screen, center in the window
@@ -174,21 +175,21 @@ export class HTMLTooltip {
             const leftOverflow = Math.abs(tooltipBoundingBox.left)
             const leftPosWhenCentered = (window.innerWidth - tooltipBoundingBox.width) / 2
             const overriddenLeftPosition = left + leftOverflow + leftPosWhenCentered
-            return {left: overriddenLeftPosition, top}
+            return { left: overriddenLeftPosition, top }
         }
 
         // If overflowing from the left on larger screen, move so it's just on screen on the left
         if (tooltipBoundingBox.left < 0 && window.innerWidth > smallScreenWidth) {
             const leftOverflow = Math.abs(tooltipBoundingBox.left)
             const overriddenLeftPosition = left + leftOverflow + spacing
-            return {left: overriddenLeftPosition, top}
+            return { left: overriddenLeftPosition, top }
         }
 
         // If overflowing from the right, move so it's just on screen on the right
         if (tooltipBoundingBox.right > window.innerWidth) {
             const rightOverflow = tooltipBoundingBox.right - window.innerWidth
             const overriddenLeftPosition = left - rightOverflow - spacing
-            return {left: overriddenLeftPosition, top}
+            return { left: overriddenLeftPosition, top }
         }
     }
 
@@ -199,7 +200,7 @@ export class HTMLTooltip {
      *     top: number
      * }} coords
      */
-    applyPositionalStyles (element, {left, top}) {
+    applyPositionalStyles(element, { left, top }) {
         const shadow = this.shadow
         const ruleObj = this.transformRules[element]
 
@@ -226,7 +227,7 @@ export class HTMLTooltip {
      *     top: number
      * }} coords
      */
-    updatePosition (element, {left, top}) {
+    updatePosition(element, { left, top }) {
         // If the stylesheet is not loaded wait for load (Chrome bug)
         if (!this.shadow.styleSheets.length) {
             this.stylesheet?.addEventListener('load', () => this.checkPosition())
@@ -236,14 +237,14 @@ export class HTMLTooltip {
         this.left = left
         this.top = top
 
-        this.applyPositionalStyles(element, {left, top})
+        this.applyPositionalStyles(element, { left, top })
 
         if (this.options.hasCaret) {
-            const overridePosition = this.getOverridePosition({left, top})
+            const overridePosition = this.getOverridePosition({ left, top })
             if (overridePosition) this.updatePosition(element, overridePosition)
         }
     }
-    ensureIsLastInDOM () {
+    ensureIsLastInDOM() {
         this.count = this.count || 0
         // If DDG el is not the last in the doc, move it there
         if (document.body.lastElementChild !== this.host) {
@@ -260,13 +261,13 @@ export class HTMLTooltip {
             }
         }
     }
-    resObs = new ResizeObserver(entries => entries.forEach(() => this.checkPosition()))
+    resObs = new ResizeObserver((entries) => entries.forEach(() => this.checkPosition()))
     mutObsCheckPositionWhenIdle = whenIdle.call(this, this.checkPosition)
     mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {
             if (mutationRecord.type === 'childList') {
                 // Only check added nodes
-                mutationRecord.addedNodes.forEach(el => {
+                mutationRecord.addedNodes.forEach((el) => {
                     if (el.nodeName === 'DDG-AUTOFILL') return
 
                     this.ensureIsLastInDOM()
@@ -275,46 +276,46 @@ export class HTMLTooltip {
         }
         this.mutObsCheckPositionWhenIdle()
     })
-    setActiveButton (e) {
+    setActiveButton(e) {
         this.activeButton = e.target
     }
-    unsetActiveButton () {
+    unsetActiveButton() {
         this.activeButton = null
     }
     clickableButtons = new Map()
-    registerClickableButton (btn, handler) {
+    registerClickableButton(btn, handler) {
         this.clickableButtons.set(btn, handler)
         // Needed because clicks within the shadow dom don't provide this info to the outside
         btn.addEventListener('mouseenter', (e) => this.setActiveButton(e))
         btn.addEventListener('mouseleave', () => this.unsetActiveButton())
     }
-    dispatchClick () {
+    dispatchClick() {
         const handler = this.clickableButtons.get(this.activeButton)
         if (handler) {
             if (this.activeButton.matches('.wrapper:not(.top-autofill) button:hover, .wrapper:not(.top-autofill) a:hover, .currentFocus')) {
                 safeExecute(this.activeButton, handler, {
-                    checkVisibility: this.options.checkVisibility
+                    checkVisibility: this.options.checkVisibility,
                 })
             } else {
-                console.warn('The button doesn\'t seem to be hovered. Please check.')
+                console.warn("The button doesn't seem to be hovered. Please check.")
             }
         }
     }
-    setupSizeListener () {
+    setupSizeListener() {
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
             this.setSize()
         })
-        observer.observe({entryTypes: ['layout-shift', 'paint']})
+        observer.observe({ entryTypes: ['layout-shift', 'paint'] })
     }
-    setSize () {
+    setSize() {
         const innerNode = this.shadow.querySelector('.wrapper--data')
         // Shouldn't be possible
         if (!innerNode) return
-        const details = {height: innerNode.clientHeight, width: innerNode.clientWidth}
+        const details = { height: innerNode.clientHeight, width: innerNode.clientWidth }
         this.options.setSize?.(details)
     }
-    init () {
+    init() {
         this.animationFrame = null
         this.top = 0
         this.left = 0
@@ -326,7 +327,7 @@ export class HTMLTooltip {
         this.stylesheet?.addEventListener('load', () => {
             Promise.allSettled([
                 document.fonts.load("normal 13px 'DDG_ProximaNova'"),
-                document.fonts.load("bold 13px 'DDG_ProximaNova'")
+                document.fonts.load("bold 13px 'DDG_ProximaNova'"),
             ]).then(() => {
                 this.tooltip.parentNode.removeAttribute('hidden')
                 this.checkPosition()
@@ -335,8 +336,8 @@ export class HTMLTooltip {
 
         this.append()
         this.resObs.observe(document.body)
-        this.mutObs.observe(document.body, {childList: true, subtree: true, attributes: true})
-        window.addEventListener('scroll', this, {capture: true})
+        this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true })
+        window.addEventListener('scroll', this, { capture: true })
         this.setSize()
 
         if (typeof this.options.setSize === 'function') {

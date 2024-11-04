@@ -1,8 +1,8 @@
-import {constants} from '../mocks.js'
-import {expect} from '@playwright/test'
-import {mockedCalls, payloadsOnly} from '../harness.js'
+import { constants } from '../mocks.js'
+import { expect } from '@playwright/test'
+import { mockedCalls, payloadsOnly } from '../harness.js'
 
-import {genericPage} from './genericPage.js'
+import { genericPage } from './genericPage.js'
 import { addTopAutofillMouseFocus } from '../utils.js'
 
 /**
@@ -11,56 +11,59 @@ import { addTopAutofillMouseFocus } from '../utils.js'
  * @param {import("@playwright/test").Page} page
  * @param {{overlay?: boolean, clickLabel?: boolean}} [opts]
  */
-export function loginPage (page, opts = {}) {
-    const {overlay = false, clickLabel = false} = opts
+export function loginPage(page, opts = {}) {
+    const { overlay = false, clickLabel = false } = opts
 
     class LoginPage {
         /**
          * @param {keyof typeof constants.pages} [to] - any key matching in `constants.pages`
          * @return {Promise<void>}
          */
-        async navigate (to = 'login') {
+        async navigate(to = 'login') {
             await page.goto(constants.pages[to])
         }
 
-        async clickIntoUsernameInput () {
+        async clickIntoUsernameInput() {
             const usernameField = page.locator('#email').first()
             // click the input field (not within Dax icon)
             await usernameField.click()
         }
 
-        async typeIntoUsernameInput (username) {
+        async typeIntoUsernameInput(username) {
             const emailField = await page.locator('#email')
             await emailField.fill(username)
         }
 
-        async clickIntoPasswordInput () {
+        async clickIntoPasswordInput() {
             const passwordField = page.locator('#password').first()
             // click the input field (not within Dax icon)
             await passwordField.click()
         }
 
-        async fieldsDoNotContainIcons (emailSelector = '#email', passwordSelector = '#password') {
+        async fieldsDoNotContainIcons(emailSelector = '#email', passwordSelector = '#password') {
             const emailStyles = await page.locator(emailSelector).getAttribute('style')
             const passwordStyles = await page.locator(passwordSelector).getAttribute('style')
             expect(emailStyles || '').not.toContain('data:image/svg+xml;base64,')
             expect(passwordStyles || '').not.toContain('data:image/svg+xml;base64,')
         }
 
-        async fieldsContainIcons (emailSelector = '#email', passwordSelector = '#password') {
+        async fieldsContainIcons(emailSelector = '#email', passwordSelector = '#password') {
             // don't make assertions until the element is both found + has a none-empty 'style' attribute
-            await page.waitForFunction((emailSelector) => Boolean(document.querySelector(emailSelector)?.getAttribute('style')), emailSelector)
+            await page.waitForFunction(
+                (emailSelector) => Boolean(document.querySelector(emailSelector)?.getAttribute('style')),
+                emailSelector,
+            )
             const emailStyles = await page.locator(emailSelector).getAttribute('style')
             const passwordStyles = await page.locator(passwordSelector).getAttribute('style')
             expect(emailStyles).toContain('data:image/svg+xml;base64,')
             expect(passwordStyles).toContain('data:image/svg+xml;base64,')
         }
 
-        async passwordFieldShowsFillKey () {
+        async passwordFieldShowsFillKey() {
             return genericPage(page).passwordFieldShowsFillKey()
         }
 
-        async onlyPasswordFieldHasIcon () {
+        async onlyPasswordFieldHasIcon() {
             const styles1 = await page.locator('#email').getAttribute('style')
             expect(styles1 || '').not.toContain('data:image/svg+xml;base64,')
             await this.passwordFieldShowsFillKey()
@@ -70,7 +73,7 @@ export function loginPage (page, opts = {}) {
          * @param {string} text
          * @return {Promise<void>}
          */
-        async assertTooltipNotOpen (text) {
+        async assertTooltipNotOpen(text) {
             return genericPage(page).assertTooltipNotOpen(text)
         }
 
@@ -78,7 +81,7 @@ export function loginPage (page, opts = {}) {
          * @param {string} text
          * @return {Promise<void>}
          */
-        async assertTooltipOpen (text) {
+        async assertTooltipOpen(text) {
             return genericPage(page).assertTooltipOpen(text)
         }
 
@@ -86,18 +89,18 @@ export function loginPage (page, opts = {}) {
          * @param {string} username
          * @return {Promise<void>}
          */
-        async selectFirstCredential (username) {
+        async selectFirstCredential(username) {
             if (clickLabel) {
                 const label = page.locator('label[for="email"]')
-                await label.click({force: true})
+                await label.click({ force: true })
             } else {
                 const email = page.locator('#email')
-                await email.click({force: true})
+                await email.click({ force: true })
             }
 
             if (!overlay) {
                 const button = await page.waitForSelector(`button:has-text("${username}")`)
-                await button.click({force: true})
+                await button.click({ force: true })
             }
         }
 
@@ -106,7 +109,7 @@ export function loginPage (page, opts = {}) {
          * @param {string} password
          * @return {Promise<void>}
          */
-        async assertBitwardenTooltipWorking (username, password) {
+        async assertBitwardenTooltipWorking(username, password) {
             await this.clickIntoUsernameInput()
             const button = await page.waitForSelector('.tooltip__button--data--bitwarden')
             expect(button).toBeDefined()
@@ -114,7 +117,7 @@ export function loginPage (page, opts = {}) {
             await this.assertFirstCredential(username, password)
         }
 
-        async assertBitwardenLockedWorking () {
+        async assertBitwardenLockedWorking() {
             await this.clickIntoUsernameInput()
             const button = await page.waitForSelector('button:has-text("Bitwarden is locked")')
             expect(button).toBeDefined()
@@ -122,7 +125,7 @@ export function loginPage (page, opts = {}) {
             const updatedButton = await page.waitForSelector(`button:has-text("${constants.fields.email.personalAddress}")`)
             expect(updatedButton).toBeDefined()
             await updatedButton.click()
-            const autofillCalls = await mockedCalls(page, {names: ['pmHandlerGetAutofillCredentials']})
+            const autofillCalls = await mockedCalls(page, { names: ['pmHandlerGetAutofillCredentials'] })
             expect(autofillCalls).toHaveLength(1)
         }
 
@@ -130,7 +133,7 @@ export function loginPage (page, opts = {}) {
          * @param {string} username
          * @return {Promise<void>}
          */
-        async assertUsernameFilled (username, locator = '#email') {
+        async assertUsernameFilled(username, locator = '#email') {
             const emailField = page.locator(locator)
             await expect(emailField).toHaveValue(username)
         }
@@ -139,7 +142,7 @@ export function loginPage (page, opts = {}) {
          * @param {string} password
          * @return {Promise<void>}
          */
-        async assertPasswordFilled (password) {
+        async assertPasswordFilled(password) {
             const passwordField = page.locator('#password')
             await expect(passwordField).toHaveValue(password)
         }
@@ -149,24 +152,24 @@ export function loginPage (page, opts = {}) {
          * @param {string} password
          * @return {Promise<void>}
          */
-        async assertFirstCredential (username, password) {
+        async assertFirstCredential(username, password) {
             await this.assertUsernameFilled(username)
-            await this.assertPasswordFilled((password))
+            await this.assertPasswordFilled(password)
         }
 
-        async assertPasswordEmpty () {
+        async assertPasswordEmpty() {
             const passwordField = page.locator('#password')
             await expect(passwordField).toHaveValue('')
         }
 
-        async promptWasShown () {
-            const calls = await mockedCalls(page, {names: ['getAutofillData']})
+        async promptWasShown() {
+            const calls = await mockedCalls(page, { names: ['getAutofillData'] })
             expect(calls.length).toBeGreaterThan(0)
             const payloads = payloadsOnly(calls)
             expect(payloads[0].inputType).toBe('credentials.username')
         }
 
-        async promptWasNotShown () {
+        async promptWasNotShown() {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === 'getAutofillData')
             expect(mockCalls.length).toBe(0)
@@ -177,28 +180,28 @@ export function loginPage (page, opts = {}) {
          * false positives.
          * @returns {Promise<void>}
          */
-        async assertParentOpened () {
-            const credsCalls = await mockedCalls(page, {names: ['getSelectedCredentials']})
-            const hasSucceeded = credsCalls.some((call) => call[2]?.some(({type}) => type === 'ok'))
+        async assertParentOpened() {
+            const credsCalls = await mockedCalls(page, { names: ['getSelectedCredentials'] })
+            const hasSucceeded = credsCalls.some((call) => call[2]?.some(({ type }) => type === 'ok'))
             expect(hasSucceeded).toBe(true)
         }
 
         /** @param {{password: string}} data */
-        async submitPasswordOnlyForm (data) {
+        async submitPasswordOnlyForm(data) {
             const passwordField = page.locator('#password-3')
             await passwordField.fill(data.password)
             await page.click('#login-3 button[type="submit"]')
         }
 
         /** @param {string} username */
-        async submitUsernameOnlyForm (username) {
+        async submitUsernameOnlyForm(username) {
             const emailField = page.locator('#email-2')
             await emailField.fill(username)
             await page.click('#login-2 button[type="submit"]')
         }
 
         /** @param {{password: string, username: string}} data */
-        async submitLoginForm (data) {
+        async submitLoginForm(data) {
             const passwordField = page.locator('#password')
             await passwordField.fill(data.password)
             const emailField = page.locator('#email')
@@ -206,9 +209,9 @@ export function loginPage (page, opts = {}) {
             await page.click('#login button[type="submit"]')
         }
 
-        async shouldNotPromptToSave () {
+        async shouldNotPromptToSave() {
             let mockCalls = []
-            mockCalls = await mockedCalls(page, {names: ['storeFormData'], minCount: 0})
+            mockCalls = await mockedCalls(page, { names: ['storeFormData'], minCount: 0 })
             expect(mockCalls.length).toBe(0)
         }
 
@@ -217,13 +220,13 @@ export function loginPage (page, opts = {}) {
          * Basically, you check that a specific call hasn't happened but the rest of the script ran just fine.
          * @returns {Promise<void>}
          */
-        async assertAnyMockCallOccurred () {
+        async assertAnyMockCallOccurred() {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             expect(calls.length).toBeGreaterThan(0)
         }
 
         /** @param {string} mockCallName */
-        async assertMockCallOccurred (mockCallName) {
+        async assertMockCallOccurred(mockCallName) {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCall = calls.find(([name]) => name === mockCallName)
             expect(mockCall).toBeDefined()
@@ -233,7 +236,7 @@ export function loginPage (page, opts = {}) {
          * @param {string} mockCallName
          * @param {number} times
          */
-        async assertMockCallOccurredTimes (mockCallName, times) {
+        async assertMockCallOccurredTimes(mockCallName, times) {
             const calls = await page.evaluate('window.__playwright_autofill.mocks.calls')
             const mockCalls = calls.filter(([name]) => name === mockCallName)
             expect(mockCalls).toHaveLength(times)
@@ -242,20 +245,20 @@ export function loginPage (page, opts = {}) {
         /**
          * @param {Record<string, any>} data
          */
-        async assertWasPromptedToSave (data) {
-            const calls = await mockedCalls(page, {names: ['storeFormData']})
+        async assertWasPromptedToSave(data) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'] })
             const payloads = payloadsOnly(calls)
 
             expect(payloads[0].credentials).toEqual(data)
             expect(payloads[0].trigger).toEqual('formSubmission')
         }
 
-        async assertPasswordImportFlowWasStarted () {
-            const calls = await mockedCalls(page, {names: ['startCredentialsImportFlow']})
+        async assertPasswordImportFlowWasStarted() {
+            const calls = await mockedCalls(page, { names: ['startCredentialsImportFlow'] })
             expect(calls.length).toBe(1)
         }
 
-        async clickOnPasswordImportButton () {
+        async clickOnPasswordImportButton() {
             const button = await page.locator(`button:has-text("Import password to DuckDuckGo...")`)
             await addTopAutofillMouseFocus(page, button)
             await button.click()
@@ -264,8 +267,8 @@ export function loginPage (page, opts = {}) {
         /**
          * @returns {Promise<void>}
          */
-        async assertClickMessage () {
-            const calls = await mockedCalls(page, {names: ['showAutofillParent']})
+        async assertClickMessage() {
+            const calls = await mockedCalls(page, { names: ['showAutofillParent'] })
             expect(calls.length).toBe(1)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
@@ -274,8 +277,8 @@ export function loginPage (page, opts = {}) {
             expect(call1[1].wasFromClick).toBe(true)
         }
 
-        async assertFocusMessage () {
-            const calls = await mockedCalls(page, {names: ['showAutofillParent']})
+        async assertFocusMessage() {
+            const calls = await mockedCalls(page, { names: ['showAutofillParent'] })
             expect(calls.length).toBe(1)
 
             // each call is captured as a tuple like this: [name, params, response], which is why
@@ -284,19 +287,19 @@ export function loginPage (page, opts = {}) {
             expect(call1[1].wasFromClick).toBe(false)
         }
 
-        async assertFormSubmitted () {
+        async assertFormSubmitted() {
             const submittedMsg = await page.locator('h1:has-text("Submitted!")')
             await expect(submittedMsg).toBeVisible()
         }
 
-        async assertFormNotSubmittedAutomatically () {
+        async assertFormNotSubmittedAutomatically() {
             const submitButton = await page.locator('button:has-text("Log in")')
             await expect(submitButton).toBeVisible()
             await submitButton.click()
             await this.assertFormSubmitted()
         }
 
-        async assertNoAttributesWereAdded () {
+        async assertNoAttributesWereAdded() {
             const attrCount = page.locator('[data-ddg-inputtype]')
             const count = await attrCount.count()
             expect(count).toBe(0)
@@ -305,40 +308,40 @@ export function loginPage (page, opts = {}) {
         /**
          * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
-        async assertPixelsFired (pixels) {
+        async assertPixelsFired(pixels) {
             await genericPage(page).assertPixelsFired(pixels)
         }
 
-        async assertNoPixelFired () {
-            const mockCalls = await mockedCalls(page, {names: ['sendJSPixel'], minCount: 0})
+        async assertNoPixelFired() {
+            const mockCalls = await mockedCalls(page, { names: ['sendJSPixel'], minCount: 0 })
             expect(mockCalls).toHaveLength(0)
         }
 
-        async openDialog () {
+        async openDialog() {
             const button = await page.waitForSelector(`button:has-text("Click here to open dialog")`)
-            await button.click({force: true})
+            await button.click({ force: true })
             await this.assertDialogOpen()
         }
 
-        async assertDialogClose () {
+        async assertDialogClose() {
             const form = await page.locator('.dialog')
             await expect(form).toBeHidden()
         }
 
-        async assertDialogOpen () {
+        async assertDialogOpen() {
             const form = await page.locator('.dialog')
             await expect(form).toBeVisible()
         }
 
-        async hitEscapeKey () {
+        async hitEscapeKey() {
             await page.press('#login', 'Escape')
         }
 
-        async clickOutsideTheDialog () {
+        async clickOutsideTheDialog() {
             await page.click('#random-text')
         }
 
-        async closeCookieDialog () {
+        async closeCookieDialog() {
             await page.click('button:has-text("Accept all cookies")')
         }
     }

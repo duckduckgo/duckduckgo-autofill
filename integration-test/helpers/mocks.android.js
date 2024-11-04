@@ -3,37 +3,37 @@
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes
  */
-import {createAvailableInputTypes, withDataType} from './utils.js'
+import { createAvailableInputTypes, withDataType } from './utils.js'
 
 /**
  * @param {object} [overrides]
  * @param {Partial<AutofillFeatureToggles>} [overrides.featureToggles]
  * @param {Partial<AvailableInputTypes>} [overrides.availableInputTypes]
  */
-export function androidStringReplacements (overrides = {}) {
+export function androidStringReplacements(overrides = {}) {
     return {
         /** @type {AvailableInputTypes} */
         availableInputTypes: {
             ...createAvailableInputTypes({
-                credentials: {username: true, password: true},
-                email: true
+                credentials: { username: true, password: true },
+                email: true,
             }),
-            ...overrides.availableInputTypes
+            ...overrides.availableInputTypes,
         },
         contentScope: {
             features: {
                 autofill: {
                     state: 'enabled',
-                    exceptions: []
-                }
+                    exceptions: [],
+                },
             },
-            unprotectedTemporary: []
+            unprotectedTemporary: [],
         },
         userUnprotectedDomains: [],
         userPreferences: {
             debug: false,
             platform: {
-                name: 'android'
+                name: 'android',
             },
             features: {
                 autofill: {
@@ -48,12 +48,12 @@ export function androidStringReplacements (overrides = {}) {
                             password_generation: false,
                             credentials_saving: true,
                             inlineIcon_credentials: true,
-                            ...overrides.featureToggles
-                        }
-                    }
-                }
-            }
-        }
+                            ...overrides.featureToggles,
+                        },
+                    },
+                },
+            },
+        },
     }
 }
 
@@ -72,7 +72,7 @@ export function androidStringReplacements (overrides = {}) {
  * @public
  * @returns {MockBuilder}
  */
-export function createAndroidMocks () {
+export function createAndroidMocks() {
     const mocks = {
         /** @type {GetAutofillDataResponse['success']|null} */
         getAutofillData: null,
@@ -80,29 +80,27 @@ export function createAndroidMocks () {
         incontextSignupDismissedAt: {},
         /** @type {string|null} */
         address: null,
-        isSignedIn: ''
+        isSignedIn: '',
     }
     /** @type {MockBuilder} */
     const builder = {
-        withPrivateEmail (email) {
+        withPrivateEmail(email) {
             mocks.address = email
             mocks.isSignedIn = 'true'
             return this
         },
-        withPersonalEmail (email) {
+        withPersonalEmail(email) {
             mocks.address = email
             mocks.isSignedIn = 'true'
             return this
         },
-        withEmailProtection (emails) {
-            return this
-                .withPrivateEmail(emails.privateAddress)
-                .withPersonalEmail(emails.personalAddress)
+        withEmailProtection(emails) {
+            return this.withPrivateEmail(emails.privateAddress).withPersonalEmail(emails.personalAddress)
         },
-        withIncontextSignipDismissed () {
+        withIncontextSignipDismissed() {
             throw new Error('Function not implemented.')
         },
-        withAvailableInputTypes (_inputTypes) {
+        withAvailableInputTypes(_inputTypes) {
             throw new Error('cannot set mock withAvailableInputTypes on Android, use string replacements instead')
         },
         withIdentity: function () {
@@ -111,7 +109,7 @@ export function createAndroidMocks () {
         withCreditCard: function () {
             throw new Error('Function not implemented.')
         },
-        withFeatureToggles (_featureToggles) {
+        withFeatureToggles(_featureToggles) {
             throw new Error('cannot set mock withFeatureToggles on Android, use string replacements instead')
         },
         /**
@@ -121,7 +119,7 @@ export function createAndroidMocks () {
         withCredentials: function (credentials) {
             mocks.getAutofillData = {
                 action: 'fill',
-                credentials
+                credentials,
             }
             return this
         },
@@ -131,11 +129,11 @@ export function createAndroidMocks () {
         withPasswordDecision: function (choice) {
             if (choice === 'accept') {
                 mocks.getAutofillData = {
-                    action: 'acceptGeneratedPassword'
+                    action: 'acceptGeneratedPassword',
                 }
             } else if (choice === 'reject') {
                 mocks.getAutofillData = {
-                    action: 'rejectGeneratedPassword'
+                    action: 'rejectGeneratedPassword',
                 }
             } else {
                 mocks.getAutofillData = { action: 'none' }
@@ -148,36 +146,42 @@ export function createAndroidMocks () {
         withCheckCredentialsProviderStatus: function () {
             return this
         },
-        tap () {
+        tap() {
             return this
         },
-        async applyTo (page) {
-            return page.evaluate(mocks => {
-                window.__playwright_autofill = {mocks: {calls: []}}
+        async applyTo(page) {
+            return page.evaluate((mocks) => {
+                window.__playwright_autofill = { mocks: { calls: [] } }
                 window.EmailInterface = {
-                    showTooltip () {
-                        window.postMessage({
-                            type: 'getAliasResponse',
-                            alias: mocks.address
-                        }, window.origin)
+                    showTooltip() {
+                        window.postMessage(
+                            {
+                                type: 'getAliasResponse',
+                                alias: mocks.address,
+                            },
+                            window.origin,
+                        )
                     },
-                    getUserData () {
+                    getUserData() {
                         return ''
                     },
-                    storeCredentials () {
+                    storeCredentials() {
                         return ''
                     },
-                    isSignedIn () {
+                    isSignedIn() {
                         return mocks.isSignedIn
                     },
-                    getDeviceCapabilities () {
+                    getDeviceCapabilities() {
                         return ''
                     },
-                    removeCredentials () {
-                        window.postMessage({
-                            emailProtectionSignedOut: true
-                        }, window.origin)
-                    }
+                    removeCredentials() {
+                        window.postMessage(
+                            {
+                                emailProtectionSignedOut: true,
+                            },
+                            window.origin,
+                        )
+                    },
                 }
 
                 /**
@@ -185,47 +189,53 @@ export function createAndroidMocks () {
                  * @param {any} request
                  * @param {any} response
                  */
-                function respond (name, request, response) {
+                function respond(name, request, response) {
                     const call = [name, request, response]
                     window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    window.postMessage(JSON.stringify({
-                        type: name + 'Response',
-                        success: response
-                    }), window.origin)
+                    window.postMessage(
+                        JSON.stringify({
+                            type: name + 'Response',
+                            success: response,
+                        }),
+                        window.origin,
+                    )
                 }
 
                 window.BrowserAutofill = {
-                    getAutofillData (request) {
+                    getAutofillData(request) {
                         return respond('getAutofillData', request, mocks.getAutofillData)
                     },
-                    storeFormData (request) {
+                    storeFormData(request) {
                         /** @type {MockCall} */
                         const call = ['storeFormData', request, mocks.getAutofillData]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     },
-                    showInContextEmailProtectionSignupPrompt (request) {
+                    showInContextEmailProtectionSignupPrompt(request) {
                         return respond('ShowInContextEmailProtectionSignupPrompt', request, mocks.showInContextEmailProtectionSignupPrompt)
                     },
-                    getIncontextSignupDismissedAt (request) {
+                    getIncontextSignupDismissedAt(request) {
                         const call = ['getIncontextSignupDismissedAt', request, mocks.incontextSignupDismissedAt]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                        window.postMessage(JSON.stringify({
-                            type: 'getIncontextSignupDismissedAt',
-                            success: mocks.incontextSignupDismissedAt
-                        }), window.origin)
+                        window.postMessage(
+                            JSON.stringify({
+                                type: 'getIncontextSignupDismissedAt',
+                                success: mocks.incontextSignupDismissedAt,
+                            }),
+                            window.origin,
+                        )
                     },
-                    setIncontextSignupPermanentlyDismissedAt (request) {
+                    setIncontextSignupPermanentlyDismissedAt(request) {
                         const call = ['setIncontextSignupPermanentlyDismissedAt', request]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     },
-                    startEmailProtectionSignup (request) {
+                    startEmailProtectionSignup(request) {
                         const call = ['startEmailProtectionSignup', request]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                     },
-                    closeEmailProtectionTab (request) {
+                    closeEmailProtectionTab(request) {
                         const call = ['closeEmailProtectionTab', request]
                         window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
-                    }
+                    },
                 }
             }, mocks)
         },
@@ -240,7 +250,7 @@ export function createAndroidMocks () {
                 delete mocks[handler]
             }
             return this
-        }
+        },
     }
     return builder
 }

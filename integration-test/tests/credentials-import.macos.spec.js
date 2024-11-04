@@ -1,8 +1,8 @@
-import {createAutofillScript, forwardConsoleMessages, mockedCalls} from '../helpers/harness.js'
-import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAvailableInputTypes} from '../helpers/utils.js'
-import {expect, test as base} from '@playwright/test'
-import {loginPage} from '../helpers/pages/loginPage.js'
+import { createAutofillScript, forwardConsoleMessages, mockedCalls } from '../helpers/harness.js'
+import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js'
+import { createAvailableInputTypes } from '../helpers/utils.js'
+import { expect, test as base } from '@playwright/test'
+import { loginPage } from '../helpers/pages/loginPage.js'
 import { overlayPage } from '../helpers/pages/overlayPage.js'
 import { signupPage } from '../helpers/pages/signupPage.js'
 
@@ -12,48 +12,46 @@ import { signupPage } from '../helpers/pages/signupPage.js'
 const test = base.extend({})
 
 test.describe('Import credentials prompt', () => {
-    test('when availableInputTypes is set for credentials import, credentials import prompt is shown', async ({page}) => {
+    test('when availableInputTypes is set for credentials import, credentials import prompt is shown', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
-            .withAvailableInputTypes(createAvailableInputTypes({
-                credentials: {
-                    username: false,
-                    password: false
-                },
-                credentialsImport: true
-            }))
+            .withAvailableInputTypes(
+                createAvailableInputTypes({
+                    credentials: {
+                        username: false,
+                        password: false,
+                    },
+                    credentialsImport: true,
+                }),
+            )
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
         const login = loginPage(page)
         await login.navigate()
         await login.clickIntoPasswordInput()
         await login.assertTooltipOpen('Import passwords to DuckDuckGo')
-        await login.assertPixelsFired([{pixelName: 'autofill_import_credentials_prompt_shown'}])
+        await login.assertPixelsFired([{ pixelName: 'autofill_import_credentials_prompt_shown' }])
     })
 
-    test('when credentialsImport in availableInputTypes is false, credentials import prompt is not shown', async ({page}) => {
+    test('when credentialsImport in availableInputTypes is false, credentials import prompt is not shown', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
-            .withAvailableInputTypes(createAvailableInputTypes({
-                credentialsImport: false
-            }))
+            .withAvailableInputTypes(
+                createAvailableInputTypes({
+                    credentialsImport: false,
+                }),
+            )
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
         const login = loginPage(page)
         await login.navigate()
@@ -61,23 +59,23 @@ test.describe('Import credentials prompt', () => {
         await login.assertTooltipNotOpen('Import passwords to DuckDuckGo')
     })
 
-    test('when credentialsImport in availableInputTypes is true, and the form is of type signup credentials import prompt is not shown', async ({page}) => {
+    test('when credentialsImport in availableInputTypes is true, and the form is of type signup credentials import prompt is not shown', async ({
+        page,
+    }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
-            .withAvailableInputTypes(createAvailableInputTypes({
-                credentialsImport: false,
-                email: true
-
-            }))
+            .withAvailableInputTypes(
+                createAvailableInputTypes({
+                    credentialsImport: false,
+                    email: true,
+                }),
+            )
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
         const signup = signupPage(page)
         await signup.navigate()
@@ -89,13 +87,15 @@ test.describe('Import credentials prompt', () => {
         test('when credentials import prompt is clicked, native API call is made', async ({ page }) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes({
-                    credentials: {
-                        username: false,
-                        password: false
-                    },
-                    credentialsImport: true
-                }))
+                .withAvailableInputTypes(
+                    createAvailableInputTypes({
+                        credentials: {
+                            username: false,
+                            password: false,
+                        },
+                        credentialsImport: true,
+                    }),
+                )
                 .withCredentialsImport?.('credentials.username')
                 .applyTo(page)
 
@@ -119,13 +119,15 @@ test.describe('Import credentials prompt', () => {
         test('when dismiss prompt is clicked, native API call is made', async ({ page }) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes({
-                    credentials: {
-                        username: false,
-                        password: false
-                    },
-                    credentialsImport: true
-                }))
+                .withAvailableInputTypes(
+                    createAvailableInputTypes({
+                        credentials: {
+                            username: false,
+                            password: false,
+                        },
+                        credentialsImport: true,
+                    }),
+                )
                 .withCredentialsImport?.('credentials.username')
                 .applyTo(page)
 

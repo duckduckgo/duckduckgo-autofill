@@ -15,10 +15,7 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
  */
 const formatCCYear = (input, year, form) => {
     const selector = form.matching.cssSelector('formInputsSelector')
-    if (
-        input.maxLength === 4 ||
-        checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)
-    ) return year
+    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year
 
     return `${Number(year) - 2000}`
 }
@@ -40,7 +37,7 @@ const getUnifiedExpiryDate = (input, month, year, form) => {
     return `${paddedMonth}${separator}${formattedYear}`
 }
 
-const formatFullName = ({firstName = '', middleName = '', lastName = ''}) =>
+const formatFullName = ({ firstName = '', middleName = '', lastName = '' }) =>
     `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim()
 
 /**
@@ -65,8 +62,7 @@ const getCountryDisplayName = (locale, addressCountryCode) => {
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @return {string | 'en'}
  */
-const inferElementLocale = (el) =>
-    el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+const inferElementLocale = (el) => el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
 
 /**
  * Tries to format the country code into a localised country name
@@ -74,7 +70,7 @@ const inferElementLocale = (el) =>
  * @param {{addressCountryCode?: string}} options
  */
 const getCountryName = (el, options = {}) => {
-    const {addressCountryCode} = options
+    const { addressCountryCode } = options
     if (!addressCountryCode) return ''
 
     // Try to infer the field language or fallback to en
@@ -85,11 +81,10 @@ const getCountryName = (el, options = {}) => {
     if (el.nodeName === 'SELECT') {
         const englishCountryName = getCountryDisplayName('en', addressCountryCode)
         // This regex matches both the localised and English country names
-        const countryNameRegex = new RegExp(String.raw`${
-            localisedCountryName.replace(/ /g, '.?')
-        }|${
-            englishCountryName.replace(/ /g, '.?')
-        }`, 'i')
+        const countryNameRegex = new RegExp(
+            String.raw`${localisedCountryName.replace(/ /g, '.?')}|${englishCountryName.replace(/ /g, '.?')}`,
+            'i',
+        )
         const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
 
         // We check the country code first because it's more accurate
@@ -101,10 +96,7 @@ const getCountryName = (el, options = {}) => {
             }
 
             for (const option of el.options) {
-                if (
-                    countryNameRegex.test(option.value) ||
-                    countryNameRegex.test(option.innerText)
-                ) return option.value
+                if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value
             }
         }
     }
@@ -122,10 +114,7 @@ const getLocalisedCountryNamesToCodes = (el) => {
     // Try to infer the field language or fallback to en
     const elLocale = inferElementLocale(el)
 
-    return Object.fromEntries(
-        Object.entries(COUNTRY_CODES_TO_NAMES)
-            .map(([code]) => [getCountryDisplayName(elLocale, code), code])
-    )
+    return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(([code]) => [getCountryDisplayName(elLocale, code), code]))
 }
 
 /**
@@ -157,39 +146,37 @@ const inferCountryCodeFromElement = (el) => {
 const getMMAndYYYYFromString = (expiration) => {
     /** @type {string[]} */
     const values = expiration.match(/(\d+)/g) || []
-    return values?.reduce((output, current) => {
-        if (Number(current) > 12) {
-            output.expirationYear = current.padStart(4, '20')
-        } else {
-            output.expirationMonth = current.padStart(2, '0')
-        }
-        return output
-    }, {expirationYear: '', expirationMonth: ''})
+    return values?.reduce(
+        (output, current) => {
+            if (Number(current) > 12) {
+                output.expirationYear = current.padStart(4, '20')
+            } else {
+                output.expirationMonth = current.padStart(2, '0')
+            }
+            return output
+        },
+        { expirationYear: '', expirationMonth: '' },
+    )
 }
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCredentials = ({credentials}) =>
-    Boolean(credentials.password)
+const shouldStoreCredentials = ({ credentials }) => Boolean(credentials.password)
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreIdentities = ({identities}) =>
-    Boolean(
-        (identities.firstName || identities.fullName) &&
-        identities.addressStreet &&
-        identities.addressCity
-    )
+const shouldStoreIdentities = ({ identities }) =>
+    Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity)
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCreditCards = ({creditCards}) => {
+const shouldStoreCreditCards = ({ creditCards }) => {
     if (!creditCards.cardNumber) return false
     if (creditCards.cardSecurityCode) return true
     // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
@@ -213,7 +200,7 @@ const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '')
  */
 const prepareFormValuesForStorage = (formValues) => {
     /** @type {Partial<InternalDataStorageObject>} */
-    let {credentials, identities, creditCards} = formValues
+    let { credentials, identities, creditCards } = formValues
 
     // If we have an identity name but not a card name, copy it over there
     if (!creditCards.cardName && (identities?.fullName || identities?.firstName)) {
@@ -260,7 +247,7 @@ const prepareFormValuesForStorage = (formValues) => {
     // Don't store if there isn't enough data
     if (shouldStoreCreditCards(formValues)) {
         if (creditCards.expiration) {
-            const {expirationMonth, expirationYear} = getMMAndYYYYFromString(creditCards.expiration)
+            const { expirationMonth, expirationYear } = getMMAndYYYYFromString(creditCards.expiration)
             creditCards.expirationMonth = expirationMonth
             creditCards.expirationYear = expirationYear
             delete creditCards.expiration
@@ -273,7 +260,7 @@ const prepareFormValuesForStorage = (formValues) => {
         creditCards = undefined
     }
 
-    return {credentials, identities, creditCards}
+    return { credentials, identities, creditCards }
 }
 
 export {
@@ -285,5 +272,5 @@ export {
     inferCountryCodeFromElement,
     getMMAndYYYYFromString,
     formatPhoneNumber,
-    prepareFormValuesForStorage
+    prepareFormValuesForStorage,
 }

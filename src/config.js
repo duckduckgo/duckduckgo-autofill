@@ -7,7 +7,7 @@ const DDG_DOMAIN_REGEX = /^https:\/\/(([a-z0-9-_]+?)\.)?duckduckgo\.com\/email/
  * @param {Partial<GlobalConfig>} [overrides]
  * @returns {GlobalConfig}
  */
-function createGlobalConfig (overrides) {
+function createGlobalConfig(overrides) {
     let isApp = false
     let isTopFrame = false
     let supportsTopFrame = false
@@ -73,7 +73,7 @@ function createGlobalConfig (overrides) {
         isDDGDomain,
         availableInputTypes,
         webkitMessageHandlerNames,
-        ...overrides
+        ...overrides,
     }
 
     return config

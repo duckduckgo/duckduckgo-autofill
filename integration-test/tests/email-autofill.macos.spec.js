@@ -1,15 +1,12 @@
-import {
-    createAutofillScript, defaultMacosScript,
-    forwardConsoleMessages
-} from '../helpers/harness.js'
-import {test as base, expect} from '@playwright/test'
-import {constants} from '../helpers/mocks.js'
-import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAvailableInputTypes, stripDuckExtension} from '../helpers/utils.js'
-import {testContext} from '../helpers/test-context.js'
-import {signupPage} from '../helpers/pages/signupPage.js'
-import {scannerPerf} from '../helpers/pages/scannerPerf.js'
-import {emailAutofillPage} from '../helpers/pages/emailAutofillPage.js'
+import { createAutofillScript, defaultMacosScript, forwardConsoleMessages } from '../helpers/harness.js'
+import { test as base, expect } from '@playwright/test'
+import { constants } from '../helpers/mocks.js'
+import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js'
+import { createAvailableInputTypes, stripDuckExtension } from '../helpers/utils.js'
+import { testContext } from '../helpers/test-context.js'
+import { signupPage } from '../helpers/pages/signupPage.js'
+import { scannerPerf } from '../helpers/pages/scannerPerf.js'
+import { emailAutofillPage } from '../helpers/pages/emailAutofillPage.js'
 import { selectInputPage } from '../helpers/pages/selectInputPage.js'
 
 /**
@@ -18,23 +15,20 @@ import { selectInputPage } from '../helpers/pages/selectInputPage.js'
 const test = testContext(base)
 
 test.describe('macos', () => {
-    test('should autofill the selected email', async ({page}) => {
+    test('should autofill the selected email', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
-            .withAvailableInputTypes({email: true})
+            .withAvailableInputTypes({ email: true })
             .withPrivateEmail('0')
             .withPersonalEmail('shane-123')
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
-        const {personalAddress, privateAddress0} = constants.fields.email
+        const { personalAddress, privateAddress0 } = constants.fields.email
 
         // page abstraction
         const emailPage = emailAutofillPage(page)
@@ -49,15 +43,15 @@ test.describe('macos', () => {
 
         // select the first option
         await expect(personalAddressBtn).toBeVisible()
-        await personalAddressBtn.click({force: true})
+        await personalAddressBtn.click({ force: true })
 
         // ensure autofill populates the field
         await emailPage.assertEmailValue(personalAddress)
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
-            {pixelName: 'autofill_personal_address'}
+            { pixelName: 'autofill_identity', params: { fieldType: 'emailAddress' } },
+            { pixelName: 'autofill_personal_address' },
         ])
 
         // ensure the popup DOES show a second time, even though Dax was not clicked (this is mac specific)
@@ -65,34 +59,31 @@ test.describe('macos', () => {
         await expect(personalAddressBtn).toBeVisible()
 
         // now select the second address this time...
-        await privateAddressBtn.click({force: true})
+        await privateAddressBtn.click({ force: true })
 
         // ...and ensure the second value is the private address
         await emailPage.assertEmailValue(privateAddress0)
 
         // ensure pixel was fired
         await emailPage.assertPixelsFired([
-            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
-            {pixelName: 'autofill_personal_address'},
-            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
-            {pixelName: 'autofill_private_address'}
+            { pixelName: 'autofill_identity', params: { fieldType: 'emailAddress' } },
+            { pixelName: 'autofill_personal_address' },
+            { pixelName: 'autofill_identity', params: { fieldType: 'emailAddress' } },
+            { pixelName: 'autofill_private_address' },
         ])
     })
     test.describe('auto filling a signup form', () => {
-        async function applyScript (page) {
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
-                .platform('macos')
-                .applyTo(page)
+        async function applyScript(page) {
+            await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
         }
 
-        const {personalAddress, privateAddress0} = constants.fields.email
+        const { personalAddress, privateAddress0 } = constants.fields.email
         const identity = constants.fields.identity
         const identityWithDuckAddress = {
             ...identity,
-            emailAddress: personalAddress
+            emailAddress: personalAddress,
         }
-        test('using a private address (generated)', async ({page}) => {
+        test('using a private address (generated)', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 
@@ -110,7 +101,7 @@ test.describe('macos', () => {
 
             await signup.assertWasPromptedToSave({
                 autogenerated: true,
-                username: constants.fields.email.privateAddress0
+                username: constants.fields.email.privateAddress0,
             })
 
             await signup.enterPassword('abcd')
@@ -119,10 +110,10 @@ test.describe('macos', () => {
             await signup.assertWasPromptedToSaveAgain({
                 autogenerated: true,
                 password: 'abcd',
-                username: constants.fields.email.privateAddress0
+                username: constants.fields.email.privateAddress0,
             })
         })
-        test('using a private address, but then editing it @flaky', async ({page}) => {
+        test('using a private address, but then editing it @flaky', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 
@@ -140,7 +131,7 @@ test.describe('macos', () => {
 
             await signup.assertWasPromptedToSave({
                 autogenerated: true,
-                username: constants.fields.email.privateAddress0
+                username: constants.fields.email.privateAddress0,
             })
 
             await signup.changeEmailFieldTo('dax@example.com')
@@ -152,17 +143,14 @@ test.describe('macos', () => {
              */
             await signup.assertWasPromptedToSaveAgain({
                 password: 'abcd',
-                username: 'dax@example.com'
+                username: 'dax@example.com',
             })
         })
-        test('with an identity only - filling firstName + generated password', async ({page}) => {
+        test('with an identity only - filling firstName + generated password', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 
-            await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes())
-                .withIdentity(identity)
-                .applyTo(page)
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page)
 
             await applyScript(page)
 
@@ -171,18 +159,13 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectFirstName(identity.firstName + ' Main identity')
             await signup.assertEmailValue(identity.emailAddress)
-            await signup.assertPixelsFired([
-                {pixelName: 'autofill_identity', params: {fieldType: 'firstName'}}
-            ])
+            await signup.assertPixelsFired([{ pixelName: 'autofill_identity', params: { fieldType: 'firstName' } }])
         })
-        test('with an identity only - filling lastName', async ({page}) => {
+        test('with an identity only - filling lastName', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 
-            await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes())
-                .withIdentity(identity)
-                .applyTo(page)
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page)
 
             await applyScript(page)
 
@@ -191,18 +174,13 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectLastName(identity.lastName + ' Main identity')
             await signup.assertEmailValue(identity.emailAddress)
-            await signup.assertPixelsFired([
-                {pixelName: 'autofill_identity', params: {fieldType: 'lastName'}}
-            ])
+            await signup.assertPixelsFired([{ pixelName: 'autofill_identity', params: { fieldType: 'lastName' } }])
         })
-        test('with an identity only - filling input should not autofill touched select element without label', async ({page}) => {
+        test('with an identity only - filling input should not autofill touched select element without label', async ({ page }) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
-            await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes())
-                .withIdentity(identity)
-                .applyTo(page)
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page)
 
             await applyScript(page)
 
@@ -214,14 +192,11 @@ test.describe('macos', () => {
             await page.waitForTimeout(100)
             await selectInput.assertSelectedValue(addressCity)
         })
-        test('with an identity only - filling input with label should not autofill touched select element with label', async ({page}) => {
+        test('with an identity only - filling input with label should not autofill touched select element with label', async ({ page }) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
-            await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes())
-                .withIdentity(identity)
-                .applyTo(page)
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page)
 
             await applyScript(page)
 
@@ -235,14 +210,11 @@ test.describe('macos', () => {
             await selectInput.assertSelectedValue(addressCity, formWithLabel)
         })
 
-        test('with an identity only - filling input without label should autofill select element', async ({page}) => {
+        test('with an identity only - filling input without label should autofill select element', async ({ page }) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
-            await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes())
-                .withIdentity(identity)
-                .applyTo(page)
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page)
 
             await applyScript(page)
 
@@ -252,14 +224,11 @@ test.describe('macos', () => {
             await selectInput.assertSelectedValue(identity.addressCity)
         })
 
-        test('with an identity only - filling input should autofill select element with label', async ({page}) => {
+        test('with an identity only - filling input should autofill select element with label', async ({ page }) => {
             await forwardConsoleMessages(page)
             const selectInput = selectInputPage(page)
 
-            await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes())
-                .withIdentity(identity)
-                .applyTo(page)
+            await createWebkitMocks().withAvailableInputTypes(createAvailableInputTypes()).withIdentity(identity).applyTo(page)
 
             await applyScript(page)
 
@@ -271,7 +240,7 @@ test.describe('macos', () => {
             await selectInput.assertSelectedValue(identity.addressCity, formWithLabel)
         })
 
-        test('with an identity + Email Protection, autofill using duck address in identity', async ({page}) => {
+        test('with an identity + Email Protection, autofill using duck address in identity', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 
@@ -289,11 +258,11 @@ test.describe('macos', () => {
             await signup.selectFirstEmailField(identityWithDuckAddress.emailAddress)
             await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
             await signup.assertPixelsFired([
-                {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
-                {pixelName: 'autofill_personal_address'}
+                { pixelName: 'autofill_identity', params: { fieldType: 'emailAddress' } },
+                { pixelName: 'autofill_personal_address' },
             ])
         })
-        test('with an identity + Email Protection, autofill using duck address in identity triggered from name field', async ({page}) => {
+        test('with an identity + Email Protection, autofill using duck address in identity triggered from name field', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
 
@@ -310,11 +279,9 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
             await signup.selectFirstName(identityWithDuckAddress.firstName)
             await signup.assertEmailValue(identityWithDuckAddress.emailAddress)
-            await signup.assertPixelsFired([
-                {pixelName: 'autofill_identity', params: {fieldType: 'firstName'}}
-            ])
+            await signup.assertPixelsFired([{ pixelName: 'autofill_identity', params: { fieldType: 'firstName' } }])
         })
-        test('with no input types', async ({page}) => {
+        test('with no input types', async ({ page }) => {
             await forwardConsoleMessages(page)
             const signup = signupPage(page)
             await createWebkitMocks().applyTo(page)
@@ -325,24 +292,21 @@ test.describe('macos', () => {
             await signup.selectGeneratedPassword()
         })
     })
-    test('autofill a newly added email form (mutation observer test)', async ({page}) => {
+    test('autofill a newly added email form (mutation observer test)', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
-        const {personalAddress, privateAddress0} = constants.fields.email
+        const { personalAddress, privateAddress0 } = constants.fields.email
 
         await createWebkitMocks()
-            .withAvailableInputTypes({email: true})
+            .withAvailableInputTypes({ email: true })
             .withPersonalEmail(stripDuckExtension(personalAddress))
             .withPrivateEmail(stripDuckExtension(privateAddress0))
             .withIdentity(constants.fields.identity)
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
         const signup = signupPage(page)
         await signup.navigate()
@@ -351,12 +315,12 @@ test.describe('macos', () => {
         await signup.assertSecondEmailValue(personalAddress)
         await signup.assertFirstEmailEmpty()
         await signup.assertPixelsFired([
-            {pixelName: 'autofill_identity', params: {fieldType: 'emailAddress'}},
-            {pixelName: 'autofill_personal_address'}
+            { pixelName: 'autofill_identity', params: { fieldType: 'emailAddress' } },
+            { pixelName: 'autofill_personal_address' },
         ])
     })
     test.describe('matching performance', () => {
-        test('real-world form', async ({page}) => {
+        test('real-world form', async ({ page }) => {
             await createWebkitMocks().applyTo(page)
             await defaultMacosScript(page)
 
@@ -366,7 +330,7 @@ test.describe('macos', () => {
             await perfPage.validateInitialScanPerf(200)
         })
 
-        test('wall of 1000 fields with production settings', async ({page}) => {
+        test('wall of 1000 fields with production settings', async ({ page }) => {
             await createWebkitMocks().applyTo(page)
             await defaultMacosScript(page)
 
@@ -377,7 +341,7 @@ test.describe('macos', () => {
             await perfPage.validateInitialScanPerf(10)
         })
 
-        test('wall of 1000 fields with extreme settings', async ({page}) => {
+        test('wall of 1000 fields with extreme settings', async ({ page }) => {
             await createWebkitMocks().applyTo(page)
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
@@ -385,7 +349,7 @@ test.describe('macos', () => {
                 // Up the failsafe threshold to run the test
                 .withConstants({
                     MAX_INPUTS_PER_PAGE: 2000,
-                    MAX_INPUTS_PER_FORM: 2000
+                    MAX_INPUTS_PER_FORM: 2000,
                 })
                 .applyTo(page)
 
@@ -396,14 +360,11 @@ test.describe('macos', () => {
         })
 
         // This could cause a crash or hang in certain browsers (Webkit 17)
-        test('large dom with potentially huge regex checks', async ({page}) => {
+        test('large dom with potentially huge regex checks', async ({ page }) => {
             // If this fails, the process is expected to crash or hang. The timeout hopefully shortens the feedback loop.
             test.setTimeout(5000)
             await createWebkitMocks().applyTo(page)
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
-                .platform('macos')
-                .applyTo(page)
+            await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
             const perfPage = scannerPerf(page)
             await perfPage.navigate(constants.pages['perf-huge-regex'])
@@ -418,13 +379,10 @@ test.describe('macos', () => {
          * In that case, we want to ensure we don't do any repeated work.
          *
          */
-        test('Large form without eligible inputs', async ({page}) => {
+        test('Large form without eligible inputs', async ({ page }) => {
             test.setTimeout(5000)
             await createWebkitMocks().applyTo(page)
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
-                .platform('macos')
-                .applyTo(page)
+            await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
             const perfPage = scannerPerf(page)
 

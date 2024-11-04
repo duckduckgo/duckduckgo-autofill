@@ -45,4 +45,4 @@ const attachAndReturnGenericLoginForm = () => {
     return attachAndReturnGenericForm(loginForm)
 }
 
-export {attachAndReturnGenericForm, attachAndReturnGenericLoginForm}
+export { attachAndReturnGenericForm, attachAndReturnGenericLoginForm }

@@ -1,4 +1,4 @@
-import {updatePackageResolved, updatePackageSwift, updateProjectPbxproj} from '../release-utils.js'
+import { updatePackageResolved, updatePackageSwift, updateProjectPbxproj } from '../release-utils.js'
 
 const version = '0.0.0_test'
 const commit = 'd5ce164fecfaf7ff2324522b1ff7127e61596063'
@@ -25,7 +25,7 @@ dependencies: [
         const updatedPackageSwift = updatePackageSwift(examplePackageSwift, version)
         expect(updatedPackageSwift).toContain(`"https://github.com/duckduckgo/duckduckgo-autofill.git", exact: "${version}"`)
 
-        const updatedPackageResolvedForBSK = updatePackageResolved(examplePackageResolvedForBSK, {autofill: {version, commit}})
+        const updatedPackageResolvedForBSK = updatePackageResolved(examplePackageResolvedForBSK, { autofill: { version, commit } })
         expect(updatedPackageResolvedForBSK).toContain(`"revision" : "${commit}"`)
         expect(updatedPackageResolvedForBSK).toContain(`"version" : "${version}"`)
     })
@@ -61,8 +61,8 @@ dependencies: [
     },`
 
         const substitutions = {
-            autofill: {version, commit},
-            bsk: {commit: bskCommit}
+            autofill: { version, commit },
+            bsk: { commit: bskCommit },
         }
         const updatedPackageResolvedForMacOS = updatePackageResolved(examplePackageResolvedForMacOS, substitutions)
         expect(updatedPackageResolvedForMacOS).toContain(`"revision" : "${commit}"`)

@@ -21,7 +21,7 @@ export class UIController {
      * @param {AttachArgs} _args
      * @returns {void}
      */
-    attach (_args) {
+    attach(_args) {
         throw new Error('must implement attach')
     }
     /**
@@ -35,31 +35,25 @@ export class UIController {
      * @param {TopContextData} _topContextData
      * @returns {any | null}
      */
-    createTooltip (_pos, _topContextData) {
-
-    }
+    createTooltip(_pos, _topContextData) {}
     /**
      * @param {string} _via
      */
-    removeTooltip (_via) {
-
-    }
+    removeTooltip(_via) {}
 
     /**
      * Set the currently open HTMLTooltip instance
      *
      * @param {import("../HTMLTooltip.js").HTMLTooltip} _tooltip
      */
-    setActiveTooltip (_tooltip) {
-
-    }
+    setActiveTooltip(_tooltip) {}
 
     /**
      * Get the currently open HTMLTooltip instance, if one exists
      *
      * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
      */
-    getActiveTooltip () {
+    getActiveTooltip() {
         return null
     }
 
@@ -68,7 +62,7 @@ export class UIController {
      *
      * @returns {boolean}
      */
-    isActive () {
+    isActive() {
         return false
     }
 
@@ -76,6 +70,6 @@ export class UIController {
      * Updates the items in the tooltip based on new data. Currently only supporting credentials.
      * @param {CredentialsObject[]} _data
      */
-    updateItems (_data) {}
-    destroy () {}
+    updateItems(_data) {}
+    destroy() {}
 }

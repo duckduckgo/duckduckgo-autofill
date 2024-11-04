@@ -282,7 +282,7 @@ const COUNTRY_CODES_TO_NAMES = {
     ZM: 'Zambia',
     ZR: 'Congo - Kinshasa',
     ZW: 'Zimbabwe',
-    ZZ: 'Unknown Region'
+    ZZ: 'Unknown Region',
 }
 
 /**
@@ -553,10 +553,7 @@ const COUNTRY_NAMES_TO_CODES = {
     Mayotte: 'YT',
     'South Africa': 'ZA',
     Zambia: 'ZM',
-    'Unknown Region': 'ZZ'
+    'Unknown Region': 'ZZ',
 }
 
-export {
-    COUNTRY_CODES_TO_NAMES,
-    COUNTRY_NAMES_TO_CODES
-}
+export { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES }

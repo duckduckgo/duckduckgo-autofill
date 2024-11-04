@@ -1,10 +1,10 @@
 import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js'
 import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
-import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType, getInputVariant} from './matching.js'
+import { getInputType, getMainTypeFromType, getInputSubtype, getInputMainType, getInputVariant } from './matching.js'
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
 import { IdentityTooltipItem } from '../InputTypes/Identity.js'
-import {constants} from '../constants.js'
+import { constants } from '../constants.js'
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -12,7 +12,7 @@ import {constants} from '../constants.js'
  * @param {import("./Form").Form} form
  * @return {string}
  */
-const getIdentitiesIcon = (input, {device}) => {
+const getIdentitiesIcon = (input, { device }) => {
     if (!canBeInteractedWith(input)) return ''
 
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
@@ -44,7 +44,7 @@ const getIdentitiesIcon = (input, {device}) => {
  * @param {import("./Form").Form} form
  * @return {string}
  */
-const getIdentitiesAlternateIcon = (input, {device}) => {
+const getIdentitiesAlternateIcon = (input, { device }) => {
     if (!canBeInteractedWith(input)) return ''
 
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
@@ -98,7 +98,7 @@ const inputTypeConfig = {
         type: 'credentials',
         displayName: 'passwords',
         getIconBase: (input, form) => {
-            const {device} = form
+            const { device } = form
             if (!canBeInteractedWith(input)) return ''
 
             if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return ''
@@ -115,7 +115,7 @@ const inputTypeConfig = {
             }
             return ''
         },
-        getIconFilled: (input, {device}) => {
+        getIconFilled: (input, { device }) => {
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 const subtype = getInputSubtype(input)
                 const variant = getInputVariant(input)
@@ -129,13 +129,15 @@ const inputTypeConfig = {
             return ''
         },
         getIconAlternate: () => '',
-        shouldDecorate: async (input, {isLogin, isHybrid, device, isCredentialsImoprtAvailable}) => {
+        shouldDecorate: async (input, { isLogin, isHybrid, device, isCredentialsImoprtAvailable }) => {
             const subtype = getInputSubtype(input)
             const variant = getInputVariant(input)
 
             if (
                 (subtype === 'password' && variant === 'new') || // New passord field
-                (isLogin || isHybrid || variant === 'current') // Current password field
+                isLogin ||
+                isHybrid ||
+                variant === 'current' // Current password field
             ) {
                 // Check feature flags and available input types
                 return isCredentialsImoprtAvailable || canBeAutofilled(input, device)
@@ -144,7 +146,7 @@ const inputTypeConfig = {
             return false
         },
         dataType: 'Credentials',
-        tooltipItem: (data) => createCredentialsTooltipItem(data)
+        tooltipItem: (data) => createCredentialsTooltipItem(data),
     },
     /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
@@ -153,11 +155,11 @@ const inputTypeConfig = {
         getIconBase: () => '',
         getIconFilled: () => '',
         getIconAlternate: () => '',
-        shouldDecorate: async (input, {device}) => {
+        shouldDecorate: async (input, { device }) => {
             return canBeAutofilled(input, device)
         },
         dataType: 'CreditCards',
-        tooltipItem: (data) => new CreditCardTooltipItem(data)
+        tooltipItem: (data) => new CreditCardTooltipItem(data),
     },
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
@@ -166,11 +168,11 @@ const inputTypeConfig = {
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,
-        shouldDecorate: async (input, {device}) => {
+        shouldDecorate: async (input, { device }) => {
             return canBeAutofilled(input, device)
         },
         dataType: 'Identities',
-        tooltipItem: (data) => new IdentityTooltipItem(data)
+        tooltipItem: (data) => new IdentityTooltipItem(data),
     },
     /** @type {UnknownInputTypeConfig} */
     unknown: {
@@ -183,8 +185,8 @@ const inputTypeConfig = {
         dataType: '',
         tooltipItem: (_data) => {
             throw new Error('unreachable - setting tooltip to unknown field type')
-        }
-    }
+        },
+    },
 }
 
 /**
@@ -216,9 +218,4 @@ const isFieldDecorated = (input) => {
     return input.hasAttribute(constants.ATTR_INPUT_TYPE)
 }
 
-export {
-    getInputConfig,
-    getInputConfigFromType,
-    canBeInteractedWith,
-    isFieldDecorated
-}
+export { getInputConfig, getInputConfigFromType, canBeInteractedWith, isFieldDecorated }

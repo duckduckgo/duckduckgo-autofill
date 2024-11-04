@@ -1,48 +1,48 @@
-import {constants} from '../mocks.js'
-import {genericPage} from './genericPage.js'
-import {expect} from '@playwright/test'
+import { constants } from '../mocks.js'
+import { genericPage } from './genericPage.js'
+import { expect } from '@playwright/test'
 
 /**
  * @param {import("@playwright/test").Page} page
  */
-export function passwordUpdatePage (page) {
+export function passwordUpdatePage(page) {
     class PasswordUpdatePage {
-        async navigate () {
+        async navigate() {
             await page.goto(constants.pages.passwordUpdate)
         }
 
-        async currentPasswordHasFillKey () {
+        async currentPasswordHasFillKey() {
             return genericPage(page).passwordFieldShowsFillKey('#password-current')
         }
 
-        async newPasswordHasGenKey () {
+        async newPasswordHasGenKey() {
             return genericPage(page).passwordFieldShowsGenKey('#password-new')
         }
 
-        async confirmPasswordHasGenKey () {
+        async confirmPasswordHasGenKey() {
             return genericPage(page).passwordFieldShowsGenKey('#password-new-confirm')
         }
 
-        async fillCurrent () {
+        async fillCurrent() {
             const currentField = page.locator('#password-current')
             await currentField.click()
-            const autofillButton = await page.getByRole('button', {name: constants.fields.email.personalAddress})
-            await autofillButton.click({force: true})
+            const autofillButton = await page.getByRole('button', { name: constants.fields.email.personalAddress })
+            await autofillButton.click({ force: true })
         }
 
-        async checkCurrentFieldHasValue (value) {
+        async checkCurrentFieldHasValue(value) {
             const currentField = page.locator('#password-current')
             await expect(currentField).toHaveValue(value)
         }
 
-        async checkGeneratedFill () {
+        async checkGeneratedFill() {
             const generatedPassword = await genericPage(page).selectGeneratedPassword('#password-new')
             const confirmField = await page.locator('#password-new-confirm')
             await expect(confirmField).toHaveValue(generatedPassword)
         }
 
         // When there are no credentials
-        async currentFieldHasNoIcon () {
+        async currentFieldHasNoIcon() {
             return genericPage(page).passwordHasNoIcon('#password-current')
         }
     }

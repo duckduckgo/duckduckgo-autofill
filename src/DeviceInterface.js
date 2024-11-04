@@ -1,15 +1,15 @@
 import { createGlobalConfig } from './config.js'
-import {AndroidInterface} from './DeviceInterface/AndroidInterface.js'
-import {ExtensionInterface} from './DeviceInterface/ExtensionInterface.js'
-import {AppleDeviceInterface} from './DeviceInterface/AppleDeviceInterface.js'
-import {AppleOverlayDeviceInterface} from './DeviceInterface/AppleOverlayDeviceInterface.js'
-import {createTransport} from './deviceApiCalls/transports/transports.js'
-import {DeviceApi} from '../packages/device-api/index.js'
-import {Settings} from './Settings.js'
-import {WindowsInterface} from './DeviceInterface/WindowsInterface.js'
-import {WindowsOverlayDeviceInterface} from './DeviceInterface/WindowsOverlayDeviceInterface.js'
+import { AndroidInterface } from './DeviceInterface/AndroidInterface.js'
+import { ExtensionInterface } from './DeviceInterface/ExtensionInterface.js'
+import { AppleDeviceInterface } from './DeviceInterface/AppleDeviceInterface.js'
+import { AppleOverlayDeviceInterface } from './DeviceInterface/AppleOverlayDeviceInterface.js'
+import { createTransport } from './deviceApiCalls/transports/transports.js'
+import { DeviceApi } from '../packages/device-api/index.js'
+import { Settings } from './Settings.js'
+import { WindowsInterface } from './DeviceInterface/WindowsInterface.js'
+import { WindowsOverlayDeviceInterface } from './DeviceInterface/WindowsOverlayDeviceInterface.js'
 
-function createDevice () {
+function createDevice() {
     const globalConfig = createGlobalConfig()
     const transport = createTransport(globalConfig)
 
@@ -18,12 +18,12 @@ function createDevice () {
      * @type {import("../packages/device-api").DeviceApiTransport}
      */
     const loggingTransport = {
-        async send (deviceApiCall) {
+        async send(deviceApiCall) {
             console.log('[->outgoing]', 'id:', deviceApiCall.method, deviceApiCall.params || null)
             const result = await transport.send(deviceApiCall)
             console.log('[<-incoming]', 'id:', deviceApiCall.method, result || null)
             return result
-        }
+        },
     }
 
     // Create the DeviceAPI + Setting

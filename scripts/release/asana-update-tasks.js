@@ -1,5 +1,5 @@
 const Asana = require('asana')
-const {replaceAllInString, getLink, wrapInLi} = require('./release-utils.js')
+const { replaceAllInString, getLink, wrapInLi } = require('./release-utils.js')
 
 const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN
 const prUrls = {
@@ -7,7 +7,7 @@ const prUrls = {
     bsk: process.env.BSK_PR_URL,
     ios: process.env.IOS_PR_URL,
     macos: process.env.MACOS_PR_URL,
-    windows: process.env.WINDOWS_PR_URL
+    windows: process.env.WINDOWS_PR_URL,
 }
 const asanaOutputRaw = process.env.ASANA_OUTPUT
 
@@ -16,8 +16,8 @@ let asana
 const setupAsana = () => {
     asana = Asana.Client.create({
         defaultHeaders: {
-            'Asana-Enable': 'new_project_templates,new_user_task_lists,new_goal_memberships'
-        }
+            'Asana-Enable': 'new_project_templates,new_user_task_lists,new_goal_memberships',
+        },
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }
 
@@ -41,9 +41,7 @@ const asanaUpdateTasks = async () => {
 
         const prLink = getLink(prUrls[platformName], `${platformObj.displayName} PR`)
         /** @type {[[RegExp, string]]} */
-        const taskDescriptionSubstitutions = [
-            [/\[\[pr_url]]/, prLink]
-        ]
+        const taskDescriptionSubstitutions = [[/\[\[pr_url]]/, prLink]]
 
         let extraContent = ''
         if (platformName === 'bsk') {

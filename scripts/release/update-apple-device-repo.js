@@ -1,7 +1,7 @@
-const {readFileSync, writeFileSync} = require('fs')
-const {join} = require('path')
-const {updateProjectPbxproj} = require('./release-utils.js')
-const {updatePackageResolved} = require('./release-utils.js')
+const { readFileSync, writeFileSync } = require('fs')
+const { join } = require('path')
+const { updateProjectPbxproj } = require('./release-utils.js')
+const { updatePackageResolved } = require('./release-utils.js')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 const platform = process.argv[2]
@@ -11,7 +11,7 @@ const autofillVersion = process.env.VERSION || ''
 
 const bskCommit = process.env.BSK_SHA || ''
 
-function updateAppleDeviceRepo (platform = 'ios', commit) {
+function updateAppleDeviceRepo(platform = 'ios', commit) {
     console.log(`running updateAppleDeviceRepo for ${platform}`)
 
     if (!commit) throw new Error('Commit not provided')
@@ -28,11 +28,11 @@ function updateAppleDeviceRepo (platform = 'ios', commit) {
         const substitutions = {
             autofill: {
                 version: autofillVersion,
-                commit: autofillCommit
+                commit: autofillCommit,
             },
             bsk: {
-                commit: bskCommit
-            }
+                commit: bskCommit,
+            },
         }
 
         const packageResolved = readFileSync(packageResolvedPath, 'utf8')

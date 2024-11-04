@@ -7,7 +7,7 @@ export class CreditCardTooltipItem {
     /** @type {CreditCardObject} */
     #data
     /** @param {CreditCardObject} data */
-    constructor (data) {
+    constructor(data) {
         this.#data = data
     }
     id = () => String(this.#data.id)

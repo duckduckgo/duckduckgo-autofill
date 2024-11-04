@@ -22,15 +22,14 @@ describe('getExplicitLabelsText()', () => {
     afterEach(() => {
         spy.mockClear()
     })
-    it.each([
-        `<input type="text">`,
-        `<input type="text" aria-labelledby="">`,
-        `<input type="text" aria-labelled="">`
-    ])('does not call getElementById() with empty string', (html) => {
-        const {inputs} = setFormHtml(html)
-        getExplicitLabelsText(inputs[0])
-        expect(spy).not.toHaveBeenCalled()
-    })
+    it.each([`<input type="text">`, `<input type="text" aria-labelledby="">`, `<input type="text" aria-labelled="">`])(
+        'does not call getElementById() with empty string',
+        (html) => {
+            const { inputs } = setFormHtml(html)
+            getExplicitLabelsText(inputs[0])
+            expect(spy).not.toHaveBeenCalled()
+        },
+    )
     it.each([
         `
         <div id="label-div">First Name</div>
@@ -39,9 +38,9 @@ describe('getExplicitLabelsText()', () => {
         `
         <div id="label-div">First Name</div>
         <input type="text" aria-labelled="label-div">
-        `
+        `,
     ])('calls getElementById() using string from `aria-labelledby` or `aria-labelled`', (html) => {
-        const {inputs} = setFormHtml(html)
+        const { inputs } = setFormHtml(html)
         getExplicitLabelsText(inputs[0])
         expect(spy).toHaveBeenCalledWith('label-div')
     })

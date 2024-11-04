@@ -1,14 +1,13 @@
-import {DeviceApiTransport} from '../../../packages/device-api/index.js'
+import { DeviceApiTransport } from '../../../packages/device-api/index.js'
 
 /**
  * @typedef {import('../../../packages/device-api/lib/device-api').CallOptions} CallOptions
  * @typedef {import("../../../packages/device-api").DeviceApiCall} DeviceApiCall
  */
 export class WindowsTransport extends DeviceApiTransport {
-    async send (deviceApiCall, options) {
+    async send(deviceApiCall, options) {
         if (deviceApiCall.id) {
-            return windowsTransport(deviceApiCall, options)
-                .withResponse(deviceApiCall.id)
+            return windowsTransport(deviceApiCall, options).withResponse(deviceApiCall.id)
         }
         return windowsTransport(deviceApiCall, options)
     }
@@ -18,11 +17,11 @@ export class WindowsTransport extends DeviceApiTransport {
  * @param {DeviceApiCall} deviceApiCall
  * @param {CallOptions} [options]
  */
-function windowsTransport (deviceApiCall, options) {
+function windowsTransport(deviceApiCall, options) {
     windowsInteropPostMessage({
         Feature: 'Autofill',
         Name: deviceApiCall.method,
-        Data: deviceApiCall.params
+        Data: deviceApiCall.params,
     })
     return {
         /**
@@ -30,9 +29,9 @@ function windowsTransport (deviceApiCall, options) {
          * @param responseId
          * @returns {Promise<*>}
          */
-        withResponse (responseId) {
+        withResponse(responseId) {
             return waitForWindowsResponse(responseId, options)
-        }
+        },
     }
 }
 /**
@@ -40,7 +39,7 @@ function windowsTransport (deviceApiCall, options) {
  * @param {CallOptions} [options]
  * @returns {Promise<any>}
  */
-function waitForWindowsResponse (responseId, options) {
+function waitForWindowsResponse(responseId, options) {
     return new Promise((resolve, reject) => {
         // if already aborted, reject immediately
         if (options?.signal?.aborted) {
@@ -50,7 +49,7 @@ function waitForWindowsResponse (responseId, options) {
         let teardown
 
         // The event handler
-        const handler = event => {
+        const handler = (event) => {
             // console.log(`📩 windows, ${window.location.href}`, [event.origin, JSON.stringify(event.data)])
             if (!event.data) {
                 console.warn('data absent from message')

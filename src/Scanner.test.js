@@ -31,7 +31,7 @@ describe('performance', () => {
     })
     it('should constrain the buffer size', () => {
         const scanner = createScanner(InterfacePrototype.default(), {
-            bufferSize: 2
+            bufferSize: 2,
         })
 
         const spy = jest.spyOn(scanner, 'findEligibleInputs')
@@ -48,7 +48,7 @@ describe('performance', () => {
     })
     it('should not scan if above maximum inputs', () => {
         const scanner = createScanner(InterfacePrototype.default(), {
-            maxInputsPerPage: 3
+            maxInputsPerPage: 3,
         })
 
         scanner.findEligibleInputs(document)
@@ -60,7 +60,7 @@ describe('performance', () => {
     it('should stop scanning if page grows above maximum inputs', () => {
         const scanner = createScanner(InterfacePrototype.default(), {
             maxInputsPerPage: 5,
-            bufferSize: 2
+            bufferSize: 2,
         })
 
         scanner.findEligibleInputs(document)
@@ -73,8 +73,8 @@ describe('performance', () => {
             input.setAttribute('type', 'text')
             return input
         })
-        inputs.forEach(input => form?.appendChild(input))
-        inputs.forEach(input => scanner.enqueue([input]))
+        inputs.forEach((input) => form?.appendChild(input))
+        inputs.forEach((input) => scanner.enqueue([input]))
         jest.advanceTimersByTime(1000)
 
         // Confirm that newly added inputs are not scanned
@@ -82,7 +82,7 @@ describe('performance', () => {
     })
     it('should stop scanning if page grows above maximum forms', () => {
         const scanner = createScanner(InterfacePrototype.default(), {
-            maxFormsPerPage: 1
+            maxFormsPerPage: 1,
         })
         const form = document.querySelector('form')
         const formClone = form?.cloneNode(true)

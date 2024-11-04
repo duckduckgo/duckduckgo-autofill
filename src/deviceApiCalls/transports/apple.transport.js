@@ -3,18 +3,18 @@ import { DeviceApiTransport } from '../../../packages/device-api/index.js'
 
 export class AppleTransport extends DeviceApiTransport {
     /** @param {GlobalConfig} globalConfig */
-    constructor (globalConfig) {
+    constructor(globalConfig) {
         super()
         this.config = globalConfig
         const webkitConfig = new WebkitMessagingConfig({
             hasModernWebkitAPI: this.config.hasModernWebkitAPI,
             webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
-            secret: this.config.secret
+            secret: this.config.secret,
         })
         this.messaging = new Messaging(webkitConfig)
     }
 
-    async send (deviceApiCall) {
+    async send(deviceApiCall) {
         try {
             // if the call has an `id`, it means that it expects a response
             if (deviceApiCall.id) {

@@ -5,7 +5,7 @@ class EmailHTMLTooltip extends HTMLTooltip {
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
-    render (device) {
+    render(device) {
         this.device = device
         this.addresses = device.getLocalAddresses()
 
@@ -15,7 +15,7 @@ ${this.options.css}
     <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">
-                ${this.device.t('autofill:usePersonalDuckAddr', {email: formatDuckAddress(escapeXML(this.addresses.personalAddress))})}
+                ${this.device.t('autofill:usePersonalDuckAddr', { email: formatDuckAddress(escapeXML(this.addresses.personalAddress)) })}
             </span>
             <span class="tooltip__button--email__secondary-text">${this.device.t('autofill:blockEmailTrackers')}</span>
         </button>
@@ -35,7 +35,9 @@ ${this.options.css}
         this.updateAddresses = (addresses) => {
             if (addresses && this.usePersonalCta) {
                 this.addresses = addresses
-                this.usePersonalCta.textContent = this.device.t('autofill:usePersonalDuckAddr', {email: formatDuckAddress(addresses.personalAddress)})
+                this.usePersonalCta.textContent = this.device.t('autofill:usePersonalDuckAddr', {
+                    email: formatDuckAddress(addresses.personalAddress),
+                })
             }
         }
 
@@ -43,11 +45,11 @@ ${this.options.css}
 
         this.registerClickableButton(this.usePersonalButton, () => {
             this.fillForm('personalAddress')
-            firePixel({pixelName: 'autofill_personal_address'})
+            firePixel({ pixelName: 'autofill_personal_address' })
         })
         this.registerClickableButton(this.usePrivateButton, () => {
             this.fillForm('privateAddress')
-            firePixel({pixelName: 'autofill_private_address'})
+            firePixel({ pixelName: 'autofill_private_address' })
         })
 
         // Get the alias from the extension
@@ -59,10 +61,10 @@ ${this.options.css}
     /**
      * @param {'personalAddress' | 'privateAddress'} id
      */
-    async fillForm (id) {
+    async fillForm(id) {
         const address = this.addresses[id]
         const formattedAddress = formatDuckAddress(address)
-        this.device?.selectedDetail({email: formattedAddress, id}, 'email')
+        this.device?.selectedDetail({ email: formattedAddress, id }, 'email')
     }
 }
 

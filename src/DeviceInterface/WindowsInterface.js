@@ -9,7 +9,7 @@ import {
     EmailProtectionGetCapabilitiesCall,
     EmailProtectionRefreshPrivateAddressCall,
     EmailProtectionGetAddressesCall,
-    EmailProtectionGetIsLoggedInCall
+    EmailProtectionGetIsLoggedInCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
@@ -23,32 +23,32 @@ export class WindowsInterface extends InterfacePrototype {
     /** @type {AbortController|null} */
     _abortController = null
 
-    async setupAutofill () {
+    async setupAutofill() {
         const loggedIn = await this._getIsLoggedIn()
         if (loggedIn) {
             await this.getAddresses()
         }
     }
 
-    postInit () {
+    postInit() {
         super.postInit()
         this.ready = true
     }
 
-    createUIController () {
+    createUIController() {
         /**
          * If we get here, we're just a controller for an overlay
          */
         return new OverlayUIController({
             remove: async () => this._closeAutofillParent(),
-            show: async (details) => this._show(details)
+            show: async (details) => this._show(details),
         })
     }
 
     /**
      * @param {GetAutofillDataRequest} details
      */
-    async _show (details) {
+    async _show(details) {
         const { mainType } = details
         // prevent overlapping listeners
         if (this._abortController && !this._abortController.signal.aborted) {
@@ -62,33 +62,33 @@ export class WindowsInterface extends InterfacePrototype {
                 throw new Error('this.currentAttached was absent')
             }
             switch (resp.action) {
-            case 'fill': {
-                if (mainType in resp) {
-                    this.activeForm?.autofillData(resp[mainType], mainType)
-                } else {
-                    throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
+                case 'fill': {
+                    if (mainType in resp) {
+                        this.activeForm?.autofillData(resp[mainType], mainType)
+                    } else {
+                        throw new Error(`action: "fill" cannot occur because "${mainType}" was missing`)
+                    }
+                    break
                 }
-                break
-            }
-            case 'focus': {
-                this.activeForm?.activeInput?.focus()
-                break
-            }
-            case 'none': {
-                // do nothing
-                break
-            }
-
-            case 'refreshAvailableInputTypes': {
-                await this.removeTooltip()
-                return await this.credentialsImport.refresh()
-            }
-
-            default:
-                if (this.globalConfig.isDDGTestMode) {
-                    console.warn('unhandled response', resp)
+                case 'focus': {
+                    this.activeForm?.activeInput?.focus()
+                    break
                 }
-                return this._closeAutofillParent()
+                case 'none': {
+                    // do nothing
+                    break
+                }
+
+                case 'refreshAvailableInputTypes': {
+                    await this.removeTooltip()
+                    return await this.credentialsImport.refresh()
+                }
+
+                default:
+                    if (this.globalConfig.isDDGTestMode) {
+                        console.warn('unhandled response', resp)
+                    }
+                    return this._closeAutofillParent()
             }
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
@@ -104,7 +104,7 @@ export class WindowsInterface extends InterfacePrototype {
     /**
      * @returns {Promise<any>}
      */
-    async _closeAutofillParent () {
+    async _closeAutofillParent() {
         return this.deviceApi.notify(new CloseAutofillParentCall(null))
     }
 
@@ -115,18 +115,18 @@ export class WindowsInterface extends InterfacePrototype {
     /**
      * @returns {Promise<any>}
      */
-    getEmailProtectionCapabilities () {
+    getEmailProtectionCapabilities() {
         return this.deviceApi.request(new EmailProtectionGetCapabilitiesCall({}))
     }
 
-    async _getIsLoggedIn () {
+    async _getIsLoggedIn() {
         const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
 
         this.isDeviceSignedIn = () => isLoggedIn
         return isLoggedIn
     }
 
-    addLogoutListener (handler) {
+    addLogoutListener(handler) {
         // Only deal with logging out if we're in the email web app
         if (!this.globalConfig.isDDGDomain) return
 
@@ -140,28 +140,28 @@ export class WindowsInterface extends InterfacePrototype {
     /**
      * @returns {Promise<any>}
      */
-    storeUserData ({ addUserData }) {
+    storeUserData({ addUserData }) {
         return this.deviceApi.request(new EmailProtectionStoreUserDataCall(addUserData))
     }
     /**
      * @returns {Promise<any>}
      */
-    removeUserData () {
+    removeUserData() {
         return this.deviceApi.request(new EmailProtectionRemoveUserDataCall({}))
     }
     /**
      * @returns {Promise<any>}
      */
-    getUserData () {
+    getUserData() {
         return this.deviceApi.request(new EmailProtectionGetUserDataCall({}))
     }
 
-    async refreshAlias () {
+    async refreshAlias() {
         const addresses = await this.deviceApi.request(new EmailProtectionRefreshPrivateAddressCall({}))
 
         this.storeLocalAddresses(addresses)
     }
-    async getAddresses () {
+    async getAddresses() {
         const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
 
         this.storeLocalAddresses(addresses)

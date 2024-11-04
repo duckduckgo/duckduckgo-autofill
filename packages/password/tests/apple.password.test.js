@@ -1,6 +1,6 @@
-import {Password} from '../lib/apple.password.js'
-import {assert, property, integer, string, array} from 'fast-check'
-import {ParserError} from '../lib/rules-parser.js'
+import { Password } from '../lib/apple.password.js'
+import { assert, property, integer, string, array } from 'fast-check'
+import { ParserError } from '../lib/rules-parser.js'
 
 describe('password implementation, internal API', () => {
     it('should expose generateOrThrow', () => {
@@ -21,16 +21,16 @@ describe('password implementation, internal API', () => {
     })
     it('should produce passwords with an entropy score of over 80', () => {
         const password = new Password()
-        const {entropy} = password.parse(Password.defaults.defaultPasswordRules)
+        const { entropy } = password.parse(Password.defaults.defaultPasswordRules)
         expect(entropy).toBeGreaterThanOrEqual(80)
     })
     it('should produce positive integers from ranges _randomNumberWithUniformDistribution', () => {
         assert(
-            property(integer({min: 1}), data => {
+            property(integer({ min: 1 }), (data) => {
                 const password = new Password()
                 const result = password._randomNumberWithUniformDistribution(data)
                 return result >= 0
-            })
+            }),
         )
     })
     it('should produce boolean _passwordHasNotExceededConsecutiveCharLimit', () => {
@@ -39,7 +39,7 @@ describe('password implementation, internal API', () => {
                 const password = new Password()
                 const result = password._passwordHasNotExceededConsecutiveCharLimit(str, int)
                 return typeof result === 'boolean'
-            })
+            }),
         )
     })
     it('should produce string from _canonicalizedScanSetFromCharacters', () => {
@@ -48,25 +48,25 @@ describe('password implementation, internal API', () => {
                 const password = new Password()
                 const result = password._canonicalizedScanSetFromCharacters(strArray)
                 return typeof result === 'string'
-            })
+            }),
         )
     })
     it('should produce string from _classicPassword', () => {
         assert(
-            property(integer({min: 1, max: 60}), string(), (int, str) => {
+            property(integer({ min: 1, max: 60 }), string(), (int, str) => {
                 const password = new Password()
                 const result = password._classicPassword(int, str)
                 return typeof result === 'string'
-            })
+            }),
         )
     })
     it('should produce boolean from _passwordHasNotExceededRepeatedCharLimit', () => {
         assert(
-            property(integer({min: 1, max: 60}), string(), (limit, str) => {
+            property(integer({ min: 1, max: 60 }), string(), (limit, str) => {
                 const password = new Password()
                 const result = password._passwordHasNotExceededRepeatedCharLimit(str, limit)
                 return typeof result === 'boolean'
-            })
+            }),
         )
     })
     it('should produce boolean from _passwordContainsRequiredCharacters', () => {
@@ -75,7 +75,7 @@ describe('password implementation, internal API', () => {
                 const password = new Password()
                 const result = password._passwordContainsRequiredCharacters(pw, strArray)
                 return typeof result === 'boolean'
-            })
+            }),
         )
     })
 })

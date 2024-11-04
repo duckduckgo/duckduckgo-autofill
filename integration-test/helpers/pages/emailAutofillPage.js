@@ -1,7 +1,7 @@
-import {constants} from '../mocks.js'
-import {clickOnIcon} from '../utils.js'
-import {expect} from '@playwright/test'
-import {mockedCalls} from '../harness.js'
+import { constants } from '../mocks.js'
+import { clickOnIcon } from '../utils.js'
+import { expect } from '@playwright/test'
+import { mockedCalls } from '../harness.js'
 import { genericPage } from './genericPage.js'
 
 const ATTR_AUTOFILL = 'data-ddg-autofill'
@@ -11,11 +11,11 @@ const ATTR_AUTOFILL = 'data-ddg-autofill'
  *
  * @param {import("@playwright/test").Page} page
  */
-export function emailAutofillPage (page) {
-    const {selectors} = constants.fields.email
+export function emailAutofillPage(page) {
+    const { selectors } = constants.fields.email
 
     class EmailAutofillPage {
-        async navigate (domain) {
+        async navigate(domain) {
             const emailAutofillPageName = constants.pages['email-autofill']
             if (domain) {
                 const pagePath = `/${emailAutofillPageName}`
@@ -25,33 +25,33 @@ export function emailAutofillPage (page) {
             }
         }
 
-        async clickOnPage () {
+        async clickOnPage() {
             const heading = page.locator('h2')
             await heading.click()
         }
 
-        async clickIntoInput () {
+        async clickIntoInput() {
             const input = page.locator(selectors.identity)
             // click the input field (not within Dax icon)
             await input.click()
         }
 
-        async clickDirectlyOnDax () {
+        async clickDirectlyOnDax() {
             const input = page.locator(selectors.identity)
             await clickOnIcon(input)
         }
 
-        async assertInputHasFocus () {
+        async assertInputHasFocus() {
             const input = page.locator(selectors.identity)
             await expect(input).toBeFocused()
         }
 
-        async assertInputNotFocused () {
+        async assertInputNotFocused() {
             const input = page.locator(selectors.identity)
             await expect(input).not.toBeFocused()
         }
 
-        async assertEmailValue (emailAddress) {
+        async assertEmailValue(emailAddress) {
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         }
@@ -59,19 +59,18 @@ export function emailAutofillPage (page) {
         /**
          * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
-        async assertPixelsFired (pixels) {
+        async assertPixelsFired(pixels) {
             await genericPage(page).assertPixelsFired(pixels)
         }
 
-        async assertNoPixelsFired () {
-            const calls = await mockedCalls(page, {names: ['sendJSPixel'], minCount: 0})
+        async assertNoPixelsFired() {
+            const calls = await mockedCalls(page, { names: ['sendJSPixel'], minCount: 0 })
             expect(calls.length).toBe(0)
         }
 
-        async assertExtensionPixelsCaptured (expectedPixels) {
+        async assertExtensionPixelsCaptured(expectedPixels) {
             const [backgroundPage] = page.context().backgroundPages()
             const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
-                 
                 return globalThis.pixels
             })
 
@@ -79,12 +78,12 @@ export function emailAutofillPage (page) {
             expect(pixels).toEqual(expectedPixels)
         }
 
-        async assertDaxIconIsShowing () {
+        async assertDaxIconIsShowing() {
             const input = page.locator(selectors.identity)
             expect(input).toHaveAttribute(ATTR_AUTOFILL, 'true')
         }
 
-        async assertDaxIconIsHidden ({checking = 'autofill'} = {}) {
+        async assertDaxIconIsHidden({ checking = 'autofill' } = {}) {
             const input = await page.getByLabel('Email')
             if (checking === 'style') {
                 const style = await input.getAttribute('style')

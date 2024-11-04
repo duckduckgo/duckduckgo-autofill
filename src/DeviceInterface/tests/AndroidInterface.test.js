@@ -1,8 +1,8 @@
-import {AndroidInterface} from '../AndroidInterface.js'
+import { AndroidInterface } from '../AndroidInterface.js'
 import { createGlobalConfig } from '../../config.js'
-import {AndroidTransport} from '../../deviceApiCalls/transports/android.transport.js'
-import {Settings} from '../../Settings.js'
-import {DeviceApi} from '../../../packages/device-api/index.js'
+import { AndroidTransport } from '../../deviceApiCalls/transports/android.transport.js'
+import { Settings } from '../../Settings.js'
+import { DeviceApi } from '../../../packages/device-api/index.js'
 
 describe('AndroidInterface', function () {
     beforeEach(() => {
@@ -10,11 +10,14 @@ describe('AndroidInterface', function () {
         // @ts-ignore
         window.BrowserAutofill = {
             getIncontextSignupDismissedAt: () => {
-                window.postMessage(JSON.stringify({
-                    type: 'getIncontextSignupDismissedAt',
-                    success: {}
-                }), window.origin)
-            }
+                window.postMessage(
+                    JSON.stringify({
+                        type: 'getIncontextSignupDismissedAt',
+                        success: {},
+                    }),
+                    window.origin,
+                )
+            },
         }
     })
     it('can be instantiated without throwing', async () => {

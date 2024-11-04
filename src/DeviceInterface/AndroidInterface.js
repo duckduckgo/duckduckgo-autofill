@@ -1,8 +1,11 @@
 import InterfacePrototype from './InterfacePrototype.js'
-import {sendAndWaitForAnswer} from '../autofill-utils.js'
+import { sendAndWaitForAnswer } from '../autofill-utils.js'
 import { NativeUIController } from '../UI/controllers/NativeUIController.js'
 import { InContextSignup } from '../InContextSignup.js'
-import { CloseEmailProtectionTabCall, ShowInContextEmailProtectionSignupPromptCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
+import {
+    CloseEmailProtectionTabCall,
+    ShowInContextEmailProtectionSignupPromptCall,
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 
 class AndroidInterface extends InterfacePrototype {
     inContextSignup = new InContextSignup(this)
@@ -10,7 +13,7 @@ class AndroidInterface extends InterfacePrototype {
     /**
      * @returns {Promise<string|undefined>}
      */
-    async getAlias () {
+    async getAlias() {
         const { alias } = await sendAndWaitForAnswer(async () => {
             if (this.inContextSignup.isAvailable()) {
                 const { isSignedIn } = await this.deviceApi.request(new ShowInContextEmailProtectionSignupPromptCall(null))
@@ -31,7 +34,7 @@ class AndroidInterface extends InterfacePrototype {
     /**
      * @override
      */
-    createUIController () {
+    createUIController() {
         return new NativeUIController()
     }
 
@@ -39,7 +42,7 @@ class AndroidInterface extends InterfacePrototype {
      * @deprecated use `this.settings.availableInputTypes.email` in the future
      * @returns {boolean}
      */
-    isDeviceSignedIn () {
+    isDeviceSignedIn() {
         // on DDG domains, always check via `window.EmailInterface.isSignedIn()`
         if (this.globalConfig.isDDGDomain) {
             return window.EmailInterface.isSignedIn() === 'true'
@@ -54,7 +57,7 @@ class AndroidInterface extends InterfacePrototype {
         return true
     }
 
-    async setupAutofill () {
+    async setupAutofill() {
         await this.inContextSignup.init()
     }
 
@@ -62,7 +65,7 @@ class AndroidInterface extends InterfacePrototype {
      * Used by the email web app
      * Settings page displays data of the logged in user data
      */
-    getUserData () {
+    getUserData() {
         let userData = null
 
         try {
@@ -80,7 +83,7 @@ class AndroidInterface extends InterfacePrototype {
      * Used by the email web app
      * Device capabilities determine which functionality is available to the user
      */
-    getEmailProtectionCapabilities () {
+    getEmailProtectionCapabilities() {
         let deviceCapabilities = null
 
         try {
@@ -94,15 +97,15 @@ class AndroidInterface extends InterfacePrototype {
         return Promise.resolve(deviceCapabilities)
     }
 
-    storeUserData ({addUserData: {token, userName, cohort}}) {
+    storeUserData({ addUserData: { token, userName, cohort } }) {
         return window.EmailInterface.storeCredentials(token, userName, cohort)
     }
 
     /**
-      * Used by the email web app
-      * Provides functionality to log the user out
-      */
-    removeUserData () {
+     * Used by the email web app
+     * Provides functionality to log the user out
+     */
+    removeUserData() {
         try {
             return window.EmailInterface.removeCredentials()
         } catch (e) {
@@ -116,11 +119,11 @@ class AndroidInterface extends InterfacePrototype {
      * Used by the email web app
      * Provides functionality to close the window after in-context sign-up or sign-in
      */
-    closeEmailProtection () {
+    closeEmailProtection() {
         this.deviceApi.request(new CloseEmailProtectionTabCall(null))
     }
 
-    addLogoutListener (handler) {
+    addLogoutListener(handler) {
         // Only deal with logging out if we're in the email web app
         if (!this.globalConfig.isDDGDomain) return
 
@@ -132,7 +135,7 @@ class AndroidInterface extends InterfacePrototype {
     }
 
     /** Noop */
-    firePixel (_pixelParam) {}
+    firePixel(_pixelParam) {}
 }
 
-export {AndroidInterface}
+export { AndroidInterface }

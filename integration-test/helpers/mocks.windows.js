@@ -1,4 +1,4 @@
-import {createAvailableInputTypes, withDataType} from './utils.js'
+import { createAvailableInputTypes, withDataType } from './utils.js'
 
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
@@ -20,23 +20,23 @@ import {createAvailableInputTypes, withDataType} from './utils.js'
  * @public
  * @returns {MockBuilder}
  */
-export function createWindowsMocks () {
+export function createWindowsMocks() {
     const mocks = {
         getRuntimeConfiguration: {
             contentScope: {
                 features: {
                     autofill: {
                         state: 'enabled',
-                        exceptions: []
-                    }
+                        exceptions: [],
+                    },
                 },
-                unprotectedTemporary: []
+                unprotectedTemporary: [],
             },
             userUnprotectedDomains: [],
             userPreferences: {
                 debug: false,
                 platform: {
-                    name: 'windows'
+                    name: 'windows',
                 },
                 features: {
                     autofill: {
@@ -47,15 +47,15 @@ export function createWindowsMocks () {
                                 inputType_creditCards: false,
                                 emailProtection: false,
                                 password_generation: false,
-                                credentials_saving: true
-                            }
-                        }
-                    }
-                }
+                                credentials_saving: true,
+                            },
+                        },
+                    },
+                },
             },
             availableInputTypes: {
-                ...createAvailableInputTypes()
-            }
+                ...createAvailableInputTypes(),
+            },
         },
         /** @type {null | AvailableInputTypes} */
         getAvailableInputTypes: null,
@@ -64,41 +64,39 @@ export function createWindowsMocks () {
             credentials: [],
             creditCards: [],
             identities: [],
-            serializedInputContext: '{}'
+            serializedInputContext: '{}',
         },
         /** @type {CredentialsObject | null} */
         getAutofillCredentials: null,
         /** @type {null | GetAutofillDataResponse['success']} */
         getAutofillData: null,
         /** @type {null | EmailProtectionGetIsLoggedInResult['success']} */
-        emailProtectionGetIsLoggedIn: null
+        emailProtectionGetIsLoggedIn: null,
     }
     /** @type {MockBuilder} */
     const builder = {
-        withPrivateEmail (_email) {
+        withPrivateEmail(_email) {
             mocks.emailProtectionGetIsLoggedIn = true
             return this
         },
-        withPersonalEmail (_email) {
+        withPersonalEmail(_email) {
             mocks.emailProtectionGetIsLoggedIn = true
             return this
         },
-        withEmailProtection (emails) {
-            return this
-                .withPrivateEmail(emails.privateAddress)
-                .withPersonalEmail(emails.personalAddress)
+        withEmailProtection(emails) {
+            return this.withPrivateEmail(emails.privateAddress).withPersonalEmail(emails.personalAddress)
         },
-        withIncontextSignipDismissed () {
+        withIncontextSignipDismissed() {
             throw new Error('Function not implemented.')
         },
-        withAvailableInputTypes (inputTypes) {
+        withAvailableInputTypes(inputTypes) {
             mocks.getAvailableInputTypes = inputTypes
             return this
         },
         /**
-          * @param {AutofillFeatureToggles} featureToggles
+         * @param {AutofillFeatureToggles} featureToggles
          */
-        withFeatureToggles (featureToggles) {
+        withFeatureToggles(featureToggles) {
             Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles)
             return this
         },
@@ -106,7 +104,7 @@ export function createWindowsMocks () {
          * @param {'enabled' | 'disabled'} state
          * @returns {builder}
          */
-        withRemoteAutofillState (state) {
+        withRemoteAutofillState(state) {
             mocks.getRuntimeConfiguration.contentScope.features.autofill.state = state
             return this
         },
@@ -120,7 +118,7 @@ export function createWindowsMocks () {
             mocks.getAutofillInitData.credentials.push(credentials)
             mocks.getAutofillCredentials = credentials
             /** @type {TopContextData} */
-            const topContextData = {inputType: 'credentials.username'}
+            const topContextData = { inputType: 'credentials.username' }
             mocks.getAutofillInitData.serializedInputContext = JSON.stringify(topContextData)
             mocks.getAutofillData = { credentials, action: 'fill' }
             return this
@@ -128,15 +126,15 @@ export function createWindowsMocks () {
         withDataType: function (data) {
             return withDataType(this, data)
         },
-        tap () {
+        tap() {
             return this
         },
-        async applyTo (page) {
-            return page.evaluate(mocks => {
+        async applyTo(page) {
+            return page.evaluate((mocks) => {
                 window.__playwright_autofill = { mocks: { calls: [] } }
                 const listeners = []
 
-                function recordCall (name, request, response) {
+                function recordCall(name, request, response) {
                     const call = [name, request, response]
                     window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
                 }
@@ -144,15 +142,15 @@ export function createWindowsMocks () {
                  * @param {any} _request
                  * @param {any} response
                  */
-                function respond (name, _request, response) {
+                function respond(name, _request, response) {
                     setTimeout(() => {
                         for (const listener of listeners) {
                             listener({
                                 origin: window.origin,
                                 data: {
                                     type: name + 'Response',
-                                    success: response
-                                }
+                                    success: response,
+                                },
                             })
                         }
                     }, 0)
@@ -162,49 +160,49 @@ export function createWindowsMocks () {
                  * @type {Record<string, (msg: WindowsMessageFormat) => void>}
                  */
                 const mocksObject = {
-                    getRuntimeConfiguration (input) {
+                    getRuntimeConfiguration(input) {
                         recordCall(input.Name, null, mocks.getRuntimeConfiguration)
                         return respond(input.Name, null, mocks.getRuntimeConfiguration)
                     },
-                    getAvailableInputTypes (input) {
+                    getAvailableInputTypes(input) {
                         recordCall(input.Name, null, mocks.getAvailableInputTypes)
                         return respond(input.Name, null, mocks.getAvailableInputTypes)
                     },
-                    closeAutofillParent (input) {
+                    closeAutofillParent(input) {
                         recordCall(input.Name, null, null)
                     },
-                    getAutofillData (input) {
+                    getAutofillData(input) {
                         recordCall(input.Name, input.Data, mocks.getAutofillData)
                         return respond(input.Name, input.Data, mocks.getAutofillData)
                     },
-                    storeFormData (request) {
+                    storeFormData(request) {
                         recordCall(request.Name, request, null)
                     },
-                    getAutofillInitData (request) {
+                    getAutofillInitData(request) {
                         recordCall(request.Name, null, mocks.getAutofillInitData)
                         return respond(request.Name, null, mocks.getAutofillInitData)
                     },
-                    setSize (request) {
+                    setSize(request) {
                         recordCall(request.Name, request, null)
                     },
-                    getAutofillCredentials (request) {
+                    getAutofillCredentials(request) {
                         recordCall(request.Name, null, mocks.getAutofillCredentials)
                         return respond(request.Name, null, mocks.getAutofillCredentials)
                     },
-                    selectedDetail (request) {
+                    selectedDetail(request) {
                         recordCall(request.Name, request.Data, null)
                     },
-                    emailProtectionGetIsLoggedIn (request) {
+                    emailProtectionGetIsLoggedIn(request) {
                         recordCall(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
                         return respond(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
-                    }
+                    },
                 }
 
                 /**
                  * @param {WindowsMessageFormat|WindowsResponseFormat} x
                  * @returns {x is WindowsMessageFormat}
                  */
-                function isOutgoing (x) {
+                function isOutgoing(x) {
                     if (typeof x.Name === 'string') {
                         return true
                     }
@@ -214,7 +212,7 @@ export function createWindowsMocks () {
                 // @ts-ignore
                 window.chrome = {
                     webview: {
-                        postMessage (input) {
+                        postMessage(input) {
                             if (isOutgoing(input)) {
                                 if (mocksObject[input.Name]) {
                                     return mocksObject[input.Name](input)
@@ -226,7 +224,7 @@ export function createWindowsMocks () {
                                     for (const listener of listeners) {
                                         listener({
                                             origin: window.origin,
-                                            data: input
+                                            data: input,
                                         })
                                     }
                                 }, 0)
@@ -234,19 +232,19 @@ export function createWindowsMocks () {
                                 console.warn('cannot handle input', input)
                             }
                         },
-                        removeEventListener (_name, _listener) {
+                        removeEventListener(_name, _listener) {
                             const index = listeners.indexOf(_listener)
                             if (index > -1) {
                                 listeners.splice(index, 1)
                             }
                         },
-                        addEventListener (_name, listener) {
+                        addEventListener(_name, listener) {
                             listeners.push(listener)
-                        }
-                    }
+                        },
+                    },
                 }
             }, mocks)
-        }
+        },
     }
     return builder
 }

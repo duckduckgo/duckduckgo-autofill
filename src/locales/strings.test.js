@@ -10,7 +10,7 @@ describe('TranslateFn', () => {
     })
 
     it('defaults to en for unsupported languages', () => {
-    // Silence warnings, since we expect one here.
+        // Silence warnings, since we expect one here.
         jest.spyOn(console, 'warn').mockImplementation(() => {})
         const t = getTranslator({ language: 'does-not-exist' })
         expect(t('autofill:hello')).toBe('Hello world')

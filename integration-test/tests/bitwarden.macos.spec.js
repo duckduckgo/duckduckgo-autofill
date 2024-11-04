@@ -1,45 +1,44 @@
-import {constants} from '../helpers/mocks.js'
-import {createAutofillScript, forwardConsoleMessages, mockedCalls} from '../helpers/harness.js'
-import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {createAvailableInputTypes} from '../helpers/utils.js'
-import {expect, test as base} from '@playwright/test'
-import {loginPage} from '../helpers/pages/loginPage.js'
-import {overlayPage} from '../helpers/pages/overlayPage.js'
+import { constants } from '../helpers/mocks.js'
+import { createAutofillScript, forwardConsoleMessages, mockedCalls } from '../helpers/harness.js'
+import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js'
+import { createAvailableInputTypes } from '../helpers/utils.js'
+import { expect, test as base } from '@playwright/test'
+import { loginPage } from '../helpers/pages/loginPage.js'
+import { overlayPage } from '../helpers/pages/overlayPage.js'
 
 /**
  *  Tests for various Bitwarden scenarios on macos
  */
 const test = base.extend({})
 
-const {personalAddress} = constants.fields.email
+const { personalAddress } = constants.fields.email
 const password = '123456'
 
 test.describe('When Bitwarden is the password provider', () => {
-    test('When the native layer calls to unblock provider UI (on Catalina)', async ({page}) => {
+    test('When the native layer calls to unblock provider UI (on Catalina)', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
             .withFeatureToggles({
-                third_party_credentials_provider: true
+                third_party_credentials_provider: true,
             })
-            .withAvailableInputTypes(createAvailableInputTypes({
-                credentialsProviderStatus: 'locked'
-            }))
+            .withAvailableInputTypes(
+                createAvailableInputTypes({
+                    credentialsProviderStatus: 'locked',
+                }),
+            )
             .withCredentials({
                 id: 'provider_locked',
                 username: '',
                 password: '',
-                credentialsProvider: 'bitwarden'
+                credentialsProvider: 'bitwarden',
             })
             .withCheckCredentialsProviderStatus?.()
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
         const login = loginPage(page)
         await login.navigate()
@@ -66,28 +65,25 @@ test.describe('When Bitwarden is the password provider', () => {
         await login.fieldsContainIcons()
     })
 
-    test('When we have Bitwarden credentials', async ({page}) => {
+    test('When we have Bitwarden credentials', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
 
         await createWebkitMocks()
             .withFeatureToggles({
-                third_party_credentials_provider: true
+                third_party_credentials_provider: true,
             })
             .withAvailableInputTypes(createAvailableInputTypes())
             .withCredentials({
                 id: '01',
                 username: personalAddress,
                 password,
-                credentialsProvider: 'bitwarden'
+                credentialsProvider: 'bitwarden',
             })
             .applyTo(page)
 
         // Load the autofill.js script with replacements
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
         const login = loginPage(page)
         await login.navigate()
@@ -99,20 +95,22 @@ test.describe('When Bitwarden is the password provider', () => {
     })
 
     test.describe('When bitwarden is locked', async () => {
-        test('in overlay', async ({page}) => {
+        test('in overlay', async ({ page }) => {
             await forwardConsoleMessages(page)
             await createWebkitMocks()
                 .withFeatureToggles({
-                    third_party_credentials_provider: true
+                    third_party_credentials_provider: true,
                 })
-                .withAvailableInputTypes(createAvailableInputTypes({
-                    credentialsProviderStatus: 'locked'
-                }))
+                .withAvailableInputTypes(
+                    createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked',
+                    }),
+                )
                 .withCredentials({
                     id: 'provider_locked',
                     username: '',
                     password: '',
-                    credentialsProvider: 'bitwarden'
+                    credentialsProvider: 'bitwarden',
                 })
                 .withAskToUnlockProvider?.()
                 .applyTo(page)
@@ -130,26 +128,28 @@ test.describe('When Bitwarden is the password provider', () => {
             await overlay.clickButtonWithText('Bitwarden is locked')
             await overlay.doesNotCloseParentAfterCall('askToUnlockProvider')
 
-            const autofillCalls = await mockedCalls(page, {names: ['setSize'], minCount: 1})
+            const autofillCalls = await mockedCalls(page, { names: ['setSize'], minCount: 1 })
             expect(autofillCalls.length).toBeGreaterThanOrEqual(1)
         })
 
-        test('when the native layer calls to unblock provider UI (on modern macOS versions)', async ({page}) => {
+        test('when the native layer calls to unblock provider UI (on modern macOS versions)', async ({ page }) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
 
             await createWebkitMocks()
                 .withFeatureToggles({
-                    third_party_credentials_provider: true
+                    third_party_credentials_provider: true,
                 })
-                .withAvailableInputTypes(createAvailableInputTypes({
-                    credentialsProviderStatus: 'locked'
-                }))
+                .withAvailableInputTypes(
+                    createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked',
+                    }),
+                )
                 .withCredentials({
                     id: 'provider_locked',
                     username: '',
                     password: '',
-                    credentialsProvider: 'bitwarden'
+                    credentialsProvider: 'bitwarden',
                 })
                 .applyTo(page)
 
@@ -207,30 +207,34 @@ test.describe('When Bitwarden is the password provider', () => {
             await login.onlyPasswordFieldHasIcon()
         })
 
-        test('without overlay (Catalina)', async ({page}) => {
+        test('without overlay (Catalina)', async ({ page }) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
 
             await createWebkitMocks()
-                .withAvailableInputTypes(createAvailableInputTypes({
-                    credentialsProviderStatus: 'locked'
-                }))
+                .withAvailableInputTypes(
+                    createAvailableInputTypes({
+                        credentialsProviderStatus: 'locked',
+                    }),
+                )
                 .withCredentials({
                     id: 'provider_locked',
                     username: '',
                     password: '',
-                    credentialsProvider: 'bitwarden'
+                    credentialsProvider: 'bitwarden',
                 })
                 .withAskToUnlockProvider?.()
                 .applyTo(page)
 
             // Load the autofill.js script with replacements
             await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements({
-                    featureToggles: {
-                        third_party_credentials_provider: true
-                    }
-                }))
+                .replaceAll(
+                    macosContentScopeReplacements({
+                        featureToggles: {
+                            third_party_credentials_provider: true,
+                        },
+                    }),
+                )
                 .platform('macos')
                 .applyTo(page)
 

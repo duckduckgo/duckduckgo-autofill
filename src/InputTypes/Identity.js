@@ -9,7 +9,7 @@ export class IdentityTooltipItem {
     /** @type {IdentityObject} */
     #data
     /** @param {IdentityObject} data */
-    constructor (data) {
+    constructor(data) {
         this.#data = data
     }
     id = () => String(this.#data.id)
@@ -26,7 +26,7 @@ export class IdentityTooltipItem {
         }
         return this.#data[subtype]
     }
-    label (_t, subtype) {
+    label(_t, subtype) {
         if (this.#data.id === 'privateAddress') {
             return this.#data[subtype]
         }

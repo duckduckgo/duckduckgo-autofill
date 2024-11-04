@@ -1,7 +1,7 @@
-import {constants} from '../mocks.js'
-import {mockedCalls, payloadsOnly} from '../harness.js'
-import {expect} from '@playwright/test'
-import {clickOnIcon} from '../utils.js'
+import { constants } from '../mocks.js'
+import { mockedCalls, payloadsOnly } from '../harness.js'
+import { expect } from '@playwright/test'
+import { clickOnIcon } from '../utils.js'
 import { genericPage } from './genericPage.js'
 
 /**
@@ -9,7 +9,7 @@ import { genericPage } from './genericPage.js'
  *
  * @param {import("@playwright/test").Page} page
  */
-export function signupPage (page) {
+export function signupPage(page) {
     const decoratedFirstInputSelector = '#email' + constants.fields.email.selectors.identity
     const decoratedSecondInputSelector = '#email-2' + constants.fields.email.selectors.identity
     const emailStyleAttr = () => page.locator('#email').first().getAttribute('style')
@@ -19,20 +19,20 @@ export function signupPage (page) {
          * @param {keyof typeof constants.pages} [to]
          * @return {Promise<void>}
          */
-        async navigate (to = 'signup') {
+        async navigate(to = 'signup') {
             await page.goto(constants.pages[to])
         }
 
-        async clickIntoEmailField () {
+        async clickIntoEmailField() {
             await page.getByLabel('Email').click()
         }
 
-        async clickIntoPasswordField () {
+        async clickIntoPasswordField() {
             const input = page.locator('#password')
             await input.click()
         }
 
-        async clickIntoPasswordConfirmationField () {
+        async clickIntoPasswordConfirmationField() {
             const input = page.locator('#password-2')
             await input.click()
         }
@@ -40,25 +40,26 @@ export function signupPage (page) {
         /**
          * @param {string} address
          */
-        async selectPrivateAddress (address) {
-            await page.getByRole('button', {name: `Generate Private Duck Address ${address} Block email trackers & hide address`})
-                .click({force: true})
+        async selectPrivateAddress(address) {
+            await page
+                .getByRole('button', { name: `Generate Private Duck Address ${address} Block email trackers & hide address` })
+                .click({ force: true })
         }
 
         /**
          * @param {number} times
          * @return {Promise<void>}
          */
-        async assertPasswordWasSuggestedTimes (times = 1) {
-            const calls = await mockedCalls(page, {names: ['getAutofillData']})
+        async assertPasswordWasSuggestedTimes(times = 1) {
+            const calls = await mockedCalls(page, { names: ['getAutofillData'] })
             const payloads = payloadsOnly(calls)
-            const suggested = payloads.filter(json => {
+            const suggested = payloads.filter((json) => {
                 return Boolean(json.generatedPassword)
             })
             expect(suggested.length).toBe(times)
         }
 
-        async assertPasswordWasAutofilled () {
+        async assertPasswordWasAutofilled() {
             await page.waitForFunction(() => {
                 const pw = /** @type {HTMLInputElement} */ (document.querySelector('#password'))
                 return pw?.value.length > 0
@@ -69,7 +70,7 @@ export function signupPage (page) {
             expect(input).toEqual(input2)
         }
 
-        async assertPasswordWasNotAutofilled () {
+        async assertPasswordWasNotAutofilled() {
             // ensure there was time to autofill, otherwise it can give a false negative
             await page.waitForTimeout(100)
             const input = await page.locator('#password').inputValue()
@@ -81,19 +82,19 @@ export function signupPage (page) {
         /**
          * @param {string} address
          */
-        async assertUsernameFieldSent (address) {
-            const calls = payloadsOnly(await mockedCalls(page, {names: ['getAutofillData']}))
+        async assertUsernameFieldSent(address) {
+            const calls = payloadsOnly(await mockedCalls(page, { names: ['getAutofillData'] }))
 
-            expect(/** @type {any} */(calls[0]).generatedPassword.username).toEqual(address)
+            expect(/** @type {any} */ (calls[0]).generatedPassword.username).toEqual(address)
             expect(calls.length).toEqual(1)
         }
 
-        async clickDirectlyOnPasswordIcon () {
+        async clickDirectlyOnPasswordIcon() {
             const input = page.locator('#password')
             await clickOnIcon(input)
         }
 
-        async selectGeneratedPassword () {
+        async selectGeneratedPassword() {
             const input = page.locator('#password')
             await input.click()
 
@@ -107,7 +108,7 @@ export function signupPage (page) {
                 throw new Error('unreachable - password must not be empty')
             }
 
-            await passwordBtn.click({force: true})
+            await passwordBtn.click({ force: true })
             return expect(input).toHaveValue(generatedPassword)
         }
 
@@ -115,59 +116,59 @@ export function signupPage (page) {
          * @param {string} name
          * @return {Promise<void>}
          */
-        async selectFirstName (name) {
+        async selectFirstName(name) {
             const input = page.locator('#firstname')
             await input.click()
             const button = await page.waitForSelector(`button:has-text("${name}")`)
-            await button.click({force: true})
+            await button.click({ force: true })
         }
 
-        async selectLastName (name) {
+        async selectLastName(name) {
             const input = page.locator('#lastname')
             await input.click()
             const button = await page.waitForSelector(`button:has-text("${name}")`)
-            await button.click({force: true})
+            await button.click({ force: true })
         }
 
-        async assertEmailValue (emailAddress) {
-            const {selectors} = constants.fields.email
+        async assertEmailValue(emailAddress) {
+            const { selectors } = constants.fields.email
             const email = page.locator(selectors.identity)
             await expect(email).toHaveValue(emailAddress)
         }
 
-        async selectFirstEmailField (selector) {
+        async selectFirstEmailField(selector) {
             const input = page.locator(decoratedFirstInputSelector)
             await input.click()
             const button = page.locator(`button:has-text("${selector}")`)
-            await button.click({force: true})
+            await button.click({ force: true })
         }
 
         /**
          * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */
-        async assertPixelsFired (pixels) {
+        async assertPixelsFired(pixels) {
             await genericPage(page).assertPixelsFired(pixels)
         }
 
-        async addNewForm () {
+        async addNewForm() {
             const btn = page.locator('text=Add new form')
             await btn.click()
         }
 
-        async selectSecondEmailField (selector) {
+        async selectSecondEmailField(selector) {
             const input = page.locator(decoratedSecondInputSelector)
             await input.click()
             const button = page.locator(`button:has-text("${selector}")`)
-            await button.click({force: true})
+            await button.click({ force: true })
         }
 
         /**
          * @param {Omit<CredentialsObject, "id">} credentials
          * @returns {Promise<void>}
          */
-        async enterCredentials (credentials) {
-            const {identity} = constants.fields.email.selectors
-            const {credential} = constants.fields.password.selectors
+        async enterCredentials(credentials) {
+            const { identity } = constants.fields.email.selectors
+            const { credential } = constants.fields.password.selectors
             await page.fill(identity, credentials.username)
             await page.fill('#password' + credential, credentials.password || '')
             await page.fill('#password-2' + credential, credentials.password || '')
@@ -176,35 +177,35 @@ export function signupPage (page) {
             await page.waitForTimeout(200)
             await page.keyboard.press('Tab')
 
-            await page.getByRole('button', {name: 'Sign up'}).click()
+            await page.getByRole('button', { name: 'Sign up' }).click()
         }
 
         /**
          * @param {string} password
          * @return {Promise<void>}
          */
-        async enterPassword (password) {
-            await page.getByLabel('Password', {exact: true}).fill(password)
+        async enterPassword(password) {
+            await page.getByLabel('Password', { exact: true }).fill(password)
             await page.getByLabel('Password Confirmation').fill(password)
         }
 
         /**
          * @param {string} email
          */
-        async changeEmailFieldTo (email) {
+        async changeEmailFieldTo(email) {
             await page.getByLabel('Email').fill(email)
         }
 
-        async submit () {
-            await page.getByRole('button', {name: 'Sign up'}).click()
+        async submit() {
+            await page.getByRole('button', { name: 'Sign up' }).click()
         }
 
         /**
          * @param {Omit<CredentialsObject, "id">} credentials
          * @returns {Promise<void>}
          */
-        async assertWasPromptedToSave (credentials) {
-            const calls = await mockedCalls(page, {names: ['storeFormData']})
+        async assertWasPromptedToSave(credentials) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'] })
             const payloads = payloadsOnly(calls)
             expect(payloads[0].credentials).toEqual(credentials)
         }
@@ -214,8 +215,8 @@ export function signupPage (page) {
          * @param {Omit<CredentialsObject, "id">} credentials
          * @returns {Promise<void>}
          */
-        async assertWasPromptedToSaveAgain (credentials) {
-            const calls = await mockedCalls(page, {names: ['storeFormData'], minCount: 2})
+        async assertWasPromptedToSaveAgain(credentials) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'], minCount: 2 })
             const payloads = payloadsOnly(calls)
             expect(payloads[1].credentials).toEqual(credentials)
         }
@@ -224,8 +225,8 @@ export function signupPage (page) {
          * @param {Omit<CredentialsObject, "id">} credentials
          * @returns {Promise<void>}
          */
-        async assertWasPromptedToSaveWindows (credentials) {
-            const calls = await mockedCalls(page, {names: ['storeFormData']})
+        async assertWasPromptedToSaveWindows(credentials) {
+            const calls = await mockedCalls(page, { names: ['storeFormData'] })
             expect(calls.length).toBeGreaterThanOrEqual(1)
             const [, sent] = calls[0]
             expect(sent.Data.credentials).toEqual(credentials)
@@ -234,27 +235,27 @@ export function signupPage (page) {
         /**
          * @returns {Promise<void>}
          */
-        async assertWasNotPromptedToSaveWindows () {
-            const calls = await mockedCalls(page, {names: ['storeFormData'], minCount: 0})
+        async assertWasNotPromptedToSaveWindows() {
+            const calls = await mockedCalls(page, { names: ['storeFormData'], minCount: 0 })
 
             expect(calls.length).toBe(0)
         }
 
-        async assertSecondEmailValue (emailAddress) {
+        async assertSecondEmailValue(emailAddress) {
             const input = page.locator(decoratedSecondInputSelector)
             await expect(input).toHaveValue(emailAddress)
         }
 
-        async assertFirstEmailEmpty () {
+        async assertFirstEmailEmpty() {
             const input = page.locator(decoratedFirstInputSelector)
             await expect(input).toHaveValue('')
         }
 
-        async assertEmailHasNoDaxIcon () {
+        async assertEmailHasNoDaxIcon() {
             expect(await emailStyleAttr()).toBeFalsy()
         }
 
-        async assertTooltipNotOpen (text) {
+        async assertTooltipNotOpen(text) {
             return genericPage(page).assertTooltipNotOpen(text)
         }
     }

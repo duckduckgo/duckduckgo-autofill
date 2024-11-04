@@ -12,7 +12,7 @@
  *
  */
 import * as parser from './rules-parser.js'
-import {constants} from './constants.js'
+import { constants } from './constants.js'
 
 /**
  * @typedef {{
@@ -34,7 +34,7 @@ import {constants} from './constants.js'
  */
 
 const defaults = Object.freeze({
-    SCAN_SET_ORDER: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]",
+    SCAN_SET_ORDER: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\"\'<>,.?/ ]',
     defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
     defaultPasswordLength: constants.DEFAULT_MIN_LENGTH,
     defaultPasswordRules: constants.DEFAULT_PASSWORD_RULES,
@@ -42,7 +42,7 @@ const defaults = Object.freeze({
     /**
      * @type {typeof window.crypto.getRandomValues | null}
      */
-    getRandomValues: null
+    getRandomValues: null,
 })
 
 /**
@@ -63,18 +63,18 @@ class Password {
     /**
      * @param {Partial<typeof defaults>} [options]
      */
-    constructor (options = {}) {
+    constructor(options = {}) {
         /**
          * @type {typeof defaults}
          */
         this.options = {
             ...defaults,
-            ...options
+            ...options,
         }
         return this
     }
 
-    static get defaults () {
+    static get defaults() {
         return defaults
     }
 
@@ -94,10 +94,8 @@ class Password {
      * @throws {ParserError|Error}
      * @returns {string}
      */
-    static generateOrThrow (inputString, options = {}) {
-        return new Password(options)
-            .parse(inputString)
-            .generate()
+    static generateOrThrow(inputString, options = {}) {
+        return new Password(options).parse(inputString).generate()
     }
     /**
      * Generates a password using the default ruleset.
@@ -112,10 +110,8 @@ class Password {
      * @param {Partial<typeof defaults>} [options]
      * @returns {string}
      */
-    static generateDefault (options = {}) {
-        return new Password(options)
-            .parse(Password.defaults.defaultPasswordRules)
-            .generate()
+    static generateDefault(options = {}) {
+        return new Password(options).parse(Password.defaults.defaultPasswordRules).generate()
     }
 
     /**
@@ -131,7 +127,7 @@ class Password {
      *    generate: () => string;
      * }}
      */
-    parse (inputString) {
+    parse(inputString) {
         const rules = parser.parsePasswordRules(inputString)
         const requirements = this._requirementsFromRules(rules)
         if (!requirements) throw new Error('could not generate requirements for ' + JSON.stringify(inputString))
@@ -140,7 +136,7 @@ class Password {
             requirements,
             parameters,
             rules,
-            get entropy () {
+            get entropy() {
                 return Math.log2(parameters.PasswordAllowedCharacters.length ** parameters.NumberOfRequiredRandomCharacters)
             },
             generate: () => {
@@ -151,7 +147,7 @@ class Password {
                  */
                 if (password === '') throw new Error('unreachable')
                 return password
-            }
+            },
         }
     }
 
@@ -161,7 +157,7 @@ class Password {
      * @param {parser.Rule[]} passwordRules
      * @returns {Requirements | null}
      */
-    _requirementsFromRules (passwordRules) {
+    _requirementsFromRules(passwordRules) {
         /** @type {Requirements} */
         const requirements = {}
         for (const rule of passwordRules) {
@@ -194,7 +190,11 @@ class Password {
         }
 
         // Fix up PasswordRequiredCharacters, if needed.
-        if (requirements.PasswordRequiredCharacters && requirements.PasswordRequiredCharacters.length === 1 && requirements.PasswordRequiredCharacters[0] === this.options.SCAN_SET_ORDER) {
+        if (
+            requirements.PasswordRequiredCharacters &&
+            requirements.PasswordRequiredCharacters.length === 1 &&
+            requirements.PasswordRequiredCharacters[0] === this.options.SCAN_SET_ORDER
+        ) {
             delete requirements.PasswordRequiredCharacters
         }
 
@@ -205,7 +205,7 @@ class Password {
      * @param {number} range
      * @returns {number}
      */
-    _randomNumberWithUniformDistribution (range) {
+    _randomNumberWithUniformDistribution(range) {
         const getRandomValues = this.options.getRandomValues || safeGlobals.getRandomValues
         // Based on the algorithm described in https://pthree.org/2018/06/13/why-the-multiply-and-floor-rng-method-is-biased/
         const max = Math.floor(2 ** 32 / range) * range
@@ -214,14 +214,14 @@ class Password {
             x = getRandomValues(new Uint32Array(1))[0]
         } while (x >= max)
 
-        return (x % range)
+        return x % range
     }
 
     /**
      * @param {number} numberOfRequiredRandomCharacters
      * @param {string} allowedCharacters
      */
-    _classicPassword (numberOfRequiredRandomCharacters, allowedCharacters) {
+    _classicPassword(numberOfRequiredRandomCharacters, allowedCharacters) {
         const length = allowedCharacters.length
         const randomCharArray = Array(numberOfRequiredRandomCharacters)
         for (let i = 0; i < numberOfRequiredRandomCharacters; i++) {
@@ -236,7 +236,7 @@ class Password {
      * @param {number} consecutiveCharLimit
      * @returns {boolean}
      */
-    _passwordHasNotExceededConsecutiveCharLimit (password, consecutiveCharLimit) {
+    _passwordHasNotExceededConsecutiveCharLimit(password, consecutiveCharLimit) {
         let longestConsecutiveCharLength = 1
         let firstConsecutiveCharIndex = 0
         // Both "123" or "abc" and "321" or "cba" are considered consecutive.
@@ -248,7 +248,10 @@ class Password {
                 // If `isSequenceAscending` is defined, then we know that we are in the middle of an existing
                 // pattern. Check if the pattern continues based on whether the previous pattern was
                 // ascending or descending.
-                if ((isSequenceAscending.valueOf() && currCharCode === prevCharCode + 1) || (!isSequenceAscending.valueOf() && currCharCode === prevCharCode - 1)) {
+                if (
+                    (isSequenceAscending.valueOf() && currCharCode === prevCharCode + 1) ||
+                    (!isSequenceAscending.valueOf() && currCharCode === prevCharCode - 1)
+                ) {
                     continue
                 }
 
@@ -300,7 +303,7 @@ class Password {
      * @param {number} repeatedCharLimit
      * @returns {boolean}
      */
-    _passwordHasNotExceededRepeatedCharLimit (password, repeatedCharLimit) {
+    _passwordHasNotExceededRepeatedCharLimit(password, repeatedCharLimit) {
         let longestRepeatedCharLength = 1
         let lastRepeatedChar = password.charAt(0)
         let lastRepeatedCharIndex = 0
@@ -326,7 +329,7 @@ class Password {
      * @param {string[]} requiredCharacterSets
      * @returns {boolean}
      */
-    _passwordContainsRequiredCharacters (password, requiredCharacterSets) {
+    _passwordContainsRequiredCharacters(password, requiredCharacterSets) {
         const requiredCharacterSetsLength = requiredCharacterSets.length
         const passwordLength = password.length
         for (let i = 0; i < requiredCharacterSetsLength; i++) {
@@ -351,7 +354,7 @@ class Password {
      * @param {string} string2
      * @returns {boolean}
      */
-    _stringsHaveAtLeastOneCommonCharacter (string1, string2) {
+    _stringsHaveAtLeastOneCommonCharacter(string1, string2) {
         const string2Length = string2.length
         for (let i = 0; i < string2Length; i++) {
             const char = string2.charAt(i)
@@ -367,7 +370,7 @@ class Password {
      * @param {Requirements} requirements
      * @returns {PasswordParameters}
      */
-    _passwordGenerationParametersDictionary (requirements) {
+    _passwordGenerationParametersDictionary(requirements) {
         let minPasswordLength = requirements.PasswordMinLength
         const maxPasswordLength = requirements.PasswordMaxLength
 
@@ -444,7 +447,7 @@ class Password {
         return {
             NumberOfRequiredRandomCharacters: numberOfRequiredRandomCharacters,
             PasswordAllowedCharacters: allowedCharacters,
-            RequiredCharacterSets: requiredCharacterSets
+            RequiredCharacterSets: requiredCharacterSets,
         }
     }
 
@@ -453,7 +456,7 @@ class Password {
      * @param {PasswordParameters} [parameters]
      * @returns {string}
      */
-    _generatedPasswordMatchingRequirements (requirements, parameters) {
+    _generatedPasswordMatchingRequirements(requirements, parameters) {
         requirements = requirements || {}
         parameters = parameters || this._passwordGenerationParametersDictionary(requirements)
         const numberOfRequiredRandomCharacters = parameters.NumberOfRequiredRandomCharacters
@@ -469,7 +472,11 @@ class Password {
             }
 
             if (shouldCheckRepeatedCharRequirement) {
-                if (repeatedCharLimit !== undefined && repeatedCharLimit >= 1 && !this._passwordHasNotExceededRepeatedCharLimit(password, repeatedCharLimit)) {
+                if (
+                    repeatedCharLimit !== undefined &&
+                    repeatedCharLimit >= 1 &&
+                    !this._passwordHasNotExceededRepeatedCharLimit(password, repeatedCharLimit)
+                ) {
                     continue
                 }
             }
@@ -489,23 +496,35 @@ class Password {
      * @param {parser.CustomCharacterClass | parser.NamedCharacterClass} characterClass
      * @returns {string[]}
      */
-    _scanSetFromCharacterClass (characterClass) {
+    _scanSetFromCharacterClass(characterClass) {
         if (characterClass instanceof parser.CustomCharacterClass) {
             return characterClass.characters
         }
         console.assert(characterClass instanceof parser.NamedCharacterClass)
         switch (characterClass.name) {
-        case parser.Identifier.ASCII_PRINTABLE:
-        case parser.Identifier.UNICODE:
-            return this.options.SCAN_SET_ORDER.split('')
-        case parser.Identifier.DIGIT:
-            return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('0'), this.options.SCAN_SET_ORDER.indexOf('9') + 1).split('')
-        case parser.Identifier.LOWER:
-            return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('a'), this.options.SCAN_SET_ORDER.indexOf('z') + 1).split('')
-        case parser.Identifier.SPECIAL:
-            return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('-'), this.options.SCAN_SET_ORDER.indexOf(']') + 1).split('')
-        case parser.Identifier.UPPER:
-            return this.options.SCAN_SET_ORDER.substring(this.options.SCAN_SET_ORDER.indexOf('A'), this.options.SCAN_SET_ORDER.indexOf('Z') + 1).split('')
+            case parser.Identifier.ASCII_PRINTABLE:
+            case parser.Identifier.UNICODE:
+                return this.options.SCAN_SET_ORDER.split('')
+            case parser.Identifier.DIGIT:
+                return this.options.SCAN_SET_ORDER.substring(
+                    this.options.SCAN_SET_ORDER.indexOf('0'),
+                    this.options.SCAN_SET_ORDER.indexOf('9') + 1,
+                ).split('')
+            case parser.Identifier.LOWER:
+                return this.options.SCAN_SET_ORDER.substring(
+                    this.options.SCAN_SET_ORDER.indexOf('a'),
+                    this.options.SCAN_SET_ORDER.indexOf('z') + 1,
+                ).split('')
+            case parser.Identifier.SPECIAL:
+                return this.options.SCAN_SET_ORDER.substring(
+                    this.options.SCAN_SET_ORDER.indexOf('-'),
+                    this.options.SCAN_SET_ORDER.indexOf(']') + 1,
+                ).split('')
+            case parser.Identifier.UPPER:
+                return this.options.SCAN_SET_ORDER.substring(
+                    this.options.SCAN_SET_ORDER.indexOf('A'),
+                    this.options.SCAN_SET_ORDER.indexOf('Z') + 1,
+                ).split('')
         }
         console.assert(false, parser.SHOULD_NOT_BE_REACHED)
         return []
@@ -514,7 +533,7 @@ class Password {
     /**
      * @param {(parser.CustomCharacterClass | parser.NamedCharacterClass)[]} characterClasses
      */
-    _charactersFromCharactersClasses (characterClasses) {
+    _charactersFromCharactersClasses(characterClasses) {
         const output = []
         for (const characterClass of characterClasses) {
             output.push(...this._scanSetFromCharacterClass(characterClass))
@@ -526,7 +545,7 @@ class Password {
      * @param {string[]} characters
      * @returns {string}
      */
-    _canonicalizedScanSetFromCharacters (characters) {
+    _canonicalizedScanSetFromCharacters(characters) {
         if (!characters.length) {
             return ''
         }

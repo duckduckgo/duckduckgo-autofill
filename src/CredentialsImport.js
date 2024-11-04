@@ -1,24 +1,28 @@
-import { CloseAutofillParentCall, CredentialsImportFlowPermanentlyDismissedCall, StartCredentialsImportFlowCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import {
+    CloseAutofillParentCall,
+    CredentialsImportFlowPermanentlyDismissedCall,
+    StartCredentialsImportFlowCall,
+} from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
 /**
  * Use this as place to store any state or functionality related to password import promotion
  */
 class CredentialsImport {
     /** @param {import("./DeviceInterface/InterfacePrototype").default} device */
-    constructor (device) {
+    constructor(device) {
         this.device = device
     }
 
     /**
      * Check if password promotion prompt should be shown. Only returns valid value in the main webiew.
      */
-    isAvailable () {
+    isAvailable() {
         // Ideally we should also be checking activeForm?.isLogin or activeForm?.isHybrid, however
         // in some instance activeForm is not yet initialized (when decorating the page).
         return this.device.settings.availableInputTypes.credentialsImport
     }
 
-    init () {
+    init() {
         if (!this.device.globalConfig.hasModernWebkitAPI) return
 
         try {
@@ -29,14 +33,14 @@ class CredentialsImport {
                 writable: false,
                 value: () => {
                     this.refresh()
-                }
+                },
             })
         } catch (e) {
             // Ignore if function can't be set up, it's a UX enhancement not a critical flow
         }
     }
 
-    async refresh () {
+    async refresh() {
         // Refresh all settings (e.g availableInputTypes)
         await this.device.settings.refresh()
 
@@ -54,12 +58,12 @@ class CredentialsImport {
         activeInput?.focus()
     }
 
-    async started () {
+    async started() {
         this.device.deviceApi.notify(new CloseAutofillParentCall(null))
         this.device.deviceApi.notify(new StartCredentialsImportFlowCall({}))
     }
 
-    async dismissed () {
+    async dismissed() {
         this.device.deviceApi.notify(new CredentialsImportFlowPermanentlyDismissedCall(null))
         this.device.deviceApi.notify(new CloseAutofillParentCall(null))
     }

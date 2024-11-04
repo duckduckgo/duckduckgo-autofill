@@ -7,7 +7,7 @@ interface MatchingConfiguration {
     }
 }
 
-type StrategyNames = keyof MatchingConfiguration['strategies'];
+type StrategyNames = keyof MatchingConfiguration['strategies']
 
 interface Matcher {
     type: MatcherTypeNames
@@ -24,55 +24,45 @@ interface MatcherLists {
 }
 
 interface MatcherConfiguration {
-    fields: Record<MatcherTypeNames | string, Matcher>,
+    fields: Record<MatcherTypeNames | string, Matcher>
     lists: Record<string, string[]>
 }
 
 type MatcherTypeNames =
-  | 'unknown'
-  | 'emailAddress'
-  | 'password'
-  | 'newPassword'
-  | 'currentPassword'
-  | 'username'
-  | 'cardName'
-  | 'cardNumber'
-  | 'cardSecurityCode'
-  | 'expirationMonth'
-  | 'expirationYear'
-  | 'expiration'
-  | 'firstName'
-  | 'middleName'
-  | 'lastName'
-  | 'fullName'
-  | 'phone'
-  | 'addressStreet'
-  | 'addressStreet2'
-  | 'addressCity'
-  | 'addressProvince'
-  | 'addressPostalCode'
-  | 'addressCountryCode'
-  | 'birthdayDay'
-  | 'birthdayMonth'
-  | 'birthdayYear'
+    | 'unknown'
+    | 'emailAddress'
+    | 'password'
+    | 'newPassword'
+    | 'currentPassword'
+    | 'username'
+    | 'cardName'
+    | 'cardNumber'
+    | 'cardSecurityCode'
+    | 'expirationMonth'
+    | 'expirationYear'
+    | 'expiration'
+    | 'firstName'
+    | 'middleName'
+    | 'lastName'
+    | 'fullName'
+    | 'phone'
+    | 'addressStreet'
+    | 'addressStreet2'
+    | 'addressCity'
+    | 'addressProvince'
+    | 'addressPostalCode'
+    | 'addressCountryCode'
+    | 'birthdayDay'
+    | 'birthdayMonth'
+    | 'birthdayYear'
 
-type FormMatcherNames =
-    | 'loginRegex'
-    | 'signupRegex'
-    | 'conservativeSignupRegex'
-    | 'resetPasswordLink'
-    | 'loginProvidersRegex'
+type FormMatcherNames = 'loginRegex' | 'signupRegex' | 'conservativeSignupRegex' | 'resetPasswordLink' | 'loginProvidersRegex'
 
-type ButtonMatcherNames =
-    | 'submitButtonRegex'
-    | 'submitButtonUnlikelyRegex'
+type ButtonMatcherNames = 'submitButtonRegex' | 'submitButtonUnlikelyRegex'
 
 type AllDDGMatcherNames = MatcherTypeNames | FormMatcherNames | ButtonMatcherNames
 
-type Strategy =
-  | CSSSelectorStrategy
-  | VendorRegexStrategy
-  | DDGMatcherStrategy
+type Strategy = CSSSelectorStrategy | VendorRegexStrategy | DDGMatcherStrategy
 
 interface CSSSelectorStrategy {
     kind: 'cssSelector'
@@ -81,7 +71,7 @@ interface CSSSelectorStrategy {
 
 interface VendorRegexStrategy {
     kind: 'vendorRegex'
-    regexName: keyof VendorRegexRules | string;
+    regexName: keyof VendorRegexRules | string
 }
 
 interface DDGMatcherStrategy {
@@ -89,12 +79,7 @@ interface DDGMatcherStrategy {
     matcherName: MatcherTypeNames | string
 }
 
-type MatchableStrings =
-    | "nameAttr"
-    | "labelText"
-    | "placeholderAttr"
-    | "relatedText"
-    | "id"
+type MatchableStrings = 'nameAttr' | 'labelText' | 'placeholderAttr' | 'relatedText' | 'id'
 
 type MatchingResult = {
     matched: boolean
@@ -106,46 +91,37 @@ type MatchingResult = {
     strategyName: StrategyNames
 }
 
-type SupportedMainTypes =
-    | 'credentials'
-    | 'creditCards'
-    | 'identities'
-    | 'unknown'
+type SupportedMainTypes = 'credentials' | 'creditCards' | 'identities' | 'unknown'
 
 interface InputTypeConfigBase {
-    type: SupportedMainTypes,
-    displayName: 'identities' | 'passwords' | 'credit cards' | '',
-    getIconFilled: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
-    getIconBase: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
-    getIconAlternate: (input: HTMLInputElement, form: import("../Form/Form").Form) => string,
-    shouldDecorate: (input: HTMLInputElement, form: import("../Form/Form").Form) => Promise<boolean>,
-    dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | '',
-    tooltipItem(data: any): TooltipItemRenderer;
+    type: SupportedMainTypes
+    displayName: 'identities' | 'passwords' | 'credit cards' | ''
+    getIconFilled: (input: HTMLInputElement, form: import('../Form/Form').Form) => string
+    getIconBase: (input: HTMLInputElement, form: import('../Form/Form').Form) => string
+    getIconAlternate: (input: HTMLInputElement, form: import('../Form/Form').Form) => string
+    shouldDecorate: (input: HTMLInputElement, form: import('../Form/Form').Form) => Promise<boolean>
+    dataType: 'Addresses' | 'Credentials' | 'CreditCards' | 'Identities' | ''
+    tooltipItem(data: any): TooltipItemRenderer
 }
 
 interface CredentialsInputTypeConfig extends InputTypeConfigBase {
-    tooltipItem(data: CredentialsObject): TooltipItemRenderer;
+    tooltipItem(data: CredentialsObject): TooltipItemRenderer
 }
 interface CreditCardsInputTypeConfig extends InputTypeConfigBase {
-    tooltipItem(data: CreditCardObject): TooltipItemRenderer;
+    tooltipItem(data: CreditCardObject): TooltipItemRenderer
 }
 interface IdentitiesInputTypeConfig extends InputTypeConfigBase {
-    tooltipItem(data: IdentityObject): TooltipItemRenderer;
+    tooltipItem(data: IdentityObject): TooltipItemRenderer
 }
-interface UnknownInputTypeConfig extends InputTypeConfigBase {
-}
+interface UnknownInputTypeConfig extends InputTypeConfigBase {}
 
-type InputTypeConfigs =
-    | CredentialsInputTypeConfig
-    | CreditCardsInputTypeConfig
-    | IdentitiesInputTypeConfig
-    | UnknownInputTypeConfig
+type InputTypeConfigs = CredentialsInputTypeConfig | CreditCardsInputTypeConfig | IdentitiesInputTypeConfig | UnknownInputTypeConfig
 
 type InputTypeConfig = Record<SupportedMainTypes, InputTypeConfigs>
 
 type CSSSelectorNames = RequiredCssSelectors | MatcherTypeNames
 interface CssSelectorConfiguration {
-    selectors: Record<CSSSelectorNames| string, string>
+    selectors: Record<CSSSelectorNames | string, string>
 }
 
 interface VendorRegexConfiguration {
@@ -162,7 +138,7 @@ interface DDGMatcherConfigurationInternal {
 }
 
 interface DDGMatcher {
-    match?: RegExp;
+    match?: RegExp
     forceUnknown?: RegExp
     skip?: RegExp
     matchableStrings?: MatchableStrings[]
@@ -171,7 +147,7 @@ interface DDGMatcher {
 }
 
 interface DDGMatcherInternal {
-    match?: string;
+    match?: string
     forceUnknown?: string
     skip?: string
     matchableStrings?: MatchableStrings[]
@@ -180,38 +156,38 @@ interface DDGMatcherInternal {
 }
 
 type RequiredCssSelectors =
-    "formInputsSelectorWithoutSelect"
-    | "formInputsSelector"
-    | "submitButtonSelector"
-    | "genericTextField"
-    | "safeUniversalSelector"
+    | 'formInputsSelectorWithoutSelect'
+    | 'formInputsSelector'
+    | 'submitButtonSelector'
+    | 'genericTextField'
+    | 'safeUniversalSelector'
 
 /**
  * This is just here to describe the current vendor regexes
  */
 interface VendorRegexRules {
-    email: RegExp,
-    tel: RegExp,
-    organization: RegExp,
-    'street-address': RegExp,
-    'address-line1': RegExp,
-    'address-line2': RegExp,
-    'address-line3': RegExp,
-    'address-level2': RegExp,
-    'address-level1': RegExp,
-    'postal-code': RegExp,
-    country: RegExp,
+    email: RegExp
+    tel: RegExp
+    organization: RegExp
+    'street-address': RegExp
+    'address-line1': RegExp
+    'address-line2': RegExp
+    'address-line3': RegExp
+    'address-level2': RegExp
+    'address-level1': RegExp
+    'postal-code': RegExp
+    country: RegExp
     // Note: RegExp place the `cc-name` field for Credit Card first, because
     // it is more specific than the `name` field below and we want to check
     // for it before we catch the more generic one.
-    'cc-name': RegExp,
-    name: RegExp,
-    'given-name': RegExp,
-    'additional-name': RegExp,
-    'family-name': RegExp,
-    'cc-number': RegExp,
-    'cc-exp-month': RegExp,
-    'cc-exp-year': RegExp,
-    'cc-exp': RegExp,
+    'cc-name': RegExp
+    name: RegExp
+    'given-name': RegExp
+    'additional-name': RegExp
+    'family-name': RegExp
+    'cc-number': RegExp
+    'cc-exp-month': RegExp
+    'cc-exp-year': RegExp
+    'cc-exp': RegExp
     'cc-type': RegExp
 }

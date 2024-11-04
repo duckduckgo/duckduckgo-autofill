@@ -1,5 +1,5 @@
-import HTMLTooltip, {defaultOptions} from './HTMLTooltip.js'
-import {getInputConfigFromType} from '../Form/inputTypeConfig.js'
+import HTMLTooltip, { defaultOptions } from './HTMLTooltip.js'
+import { getInputConfigFromType } from '../Form/inputTypeConfig.js'
 
 describe('HTMLTooltip', () => {
     const o1 = global.ResizeObserver
@@ -7,11 +7,11 @@ describe('HTMLTooltip', () => {
     beforeEach(() => {
         // @ts-ignore
         global.ResizeObserver = class ResizeObserver {
-            observe () {}
+            observe() {}
         }
         // @ts-ignore
         global.MutationObserver = class MutationObserver {
-            observe () {}
+            observe() {}
         }
     })
     afterEach(() => {

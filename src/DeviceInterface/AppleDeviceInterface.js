@@ -34,7 +34,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @override
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createUIController () {
+    createUIController() {
         if (this.globalConfig.userPreferences?.platform?.name === 'ios') {
             return new NativeUIController()
         }
@@ -42,12 +42,15 @@ class AppleDeviceInterface extends InterfacePrototype {
         if (!this.globalConfig.supportsTopFrame) {
             const options = {
                 ...defaultOptions,
-                testMode: this.isTestMode()
+                testMode: this.isTestMode(),
             }
-            return new HTMLTooltipUIController({
-                device: this,
-                tooltipKind: 'modern'
-            }, options)
+            return new HTMLTooltipUIController(
+                {
+                    device: this,
+                    tooltipKind: 'modern',
+                },
+                options,
+            )
         }
 
         /**
@@ -55,7 +58,7 @@ class AppleDeviceInterface extends InterfacePrototype {
          */
         return new OverlayUIController({
             remove: async () => this._closeAutofillParent(),
-            show: async (details) => this._show(details)
+            show: async (details) => this._show(details),
         })
     }
 
@@ -68,7 +71,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @override
      * @returns {Promise<void>}
      */
-    async setupAutofill () {
+    async setupAutofill() {
         if (!this.globalConfig.supportsTopFrame) {
             await this._getAutofillInitData()
         }
@@ -87,7 +90,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Used by the email web app
      * Settings page displays data of the logged in user data
      */
-    getUserData () {
+    getUserData() {
         return this.deviceApi.request(createRequest('emailHandlerGetUserData'))
     }
 
@@ -95,13 +98,13 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Used by the email web app
      * Device capabilities determine which functionality is available to the user
      */
-    getEmailProtectionCapabilities () {
+    getEmailProtectionCapabilities() {
         return this.deviceApi.request(createRequest('emailHandlerGetCapabilities'))
     }
 
     /**
      */
-    async getSelectedCredentials () {
+    async getSelectedCredentials() {
         return this.deviceApi.request(createRequest('getSelectedCredentials'))
     }
 
@@ -109,10 +112,10 @@ class AppleDeviceInterface extends InterfacePrototype {
      * The data format provided here for `parentArgs` matches Window now.
      * @param {GetAutofillDataRequest} parentArgs
      */
-    async _showAutofillParent (parentArgs) {
+    async _showAutofillParent(parentArgs) {
         const applePayload = {
             ...parentArgs.triggerContext,
-            serializedInputContext: parentArgs.serializedInputContext
+            serializedInputContext: parentArgs.serializedInputContext,
         }
         return this.deviceApi.notify(createNotification('showAutofillParent', applePayload))
     }
@@ -120,14 +123,14 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * @returns {Promise<any>}
      */
-    async _closeAutofillParent () {
+    async _closeAutofillParent() {
         return this.deviceApi.notify(createNotification('closeAutofillParent', {}))
     }
 
     /**
      * @param {GetAutofillDataRequest} details
      */
-    async _show (details) {
+    async _show(details) {
         await this._showAutofillParent(details)
         this._listenForSelectedCredential(async (response) => {
             if (!response) return
@@ -142,32 +145,32 @@ class AppleDeviceInterface extends InterfacePrototype {
         })
     }
 
-    async refreshData () {
+    async refreshData() {
         await super.refreshData()
         await this._checkDeviceSignedIn()
     }
 
-    async getAddresses () {
+    async getAddresses() {
         if (!this.globalConfig.isApp) return this.getAlias()
 
-        const {addresses} = await this.deviceApi.request(createRequest('emailHandlerGetAddresses'))
+        const { addresses } = await this.deviceApi.request(createRequest('emailHandlerGetAddresses'))
         this.storeLocalAddresses(addresses)
         return addresses
     }
 
-    async refreshAlias () {
+    async refreshAlias() {
         await this.deviceApi.notify(createNotification('emailHandlerRefreshAlias'))
         // On macOS we also update the addresses stored locally
         if (this.globalConfig.isApp) this.getAddresses()
     }
 
-    async _checkDeviceSignedIn () {
-        const {isAppSignedIn} = await this.deviceApi.request(createRequest('emailHandlerCheckAppSignedInStatus'))
+    async _checkDeviceSignedIn() {
+        const { isAppSignedIn } = await this.deviceApi.request(createRequest('emailHandlerCheckAppSignedInStatus'))
         this.isDeviceSignedIn = () => !!isAppSignedIn
         return !!isAppSignedIn
     }
 
-    storeUserData ({addUserData: {token, userName, cohort}}) {
+    storeUserData({ addUserData: { token, userName, cohort } }) {
         return this.deviceApi.notify(createNotification('emailHandlerStoreToken', { token, username: userName, cohort }))
     }
 
@@ -175,7 +178,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Used by the email web app
      * Provides functionality to log the user out
      */
-    removeUserData () {
+    removeUserData() {
         this.deviceApi.notify(createNotification('emailHandlerRemoveToken'))
     }
 
@@ -183,7 +186,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Used by the email web app
      * Provides functionality to close the window after in-context sign-up or sign-in
      */
-    closeEmailProtection () {
+    closeEmailProtection() {
         this.deviceApi.request(new CloseEmailProtectionTabCall(null))
     }
 
@@ -195,7 +198,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Gets the init data from the device
      * @returns {APIResponse<PMData>}
      */
-    async _getAutofillInitData () {
+    async _getAutofillInitData() {
         const response = await this.deviceApi.request(createRequest('pmHandlerGetAutofillInitData'))
         this.storeLocalData(response.success)
         return response
@@ -206,28 +209,28 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {CredentialsObject['id']} id - the credential id
      * @returns {APIResponseSingle<CredentialsObject>}
      */
-    getAutofillCredentials (id) {
+    getAutofillCredentials(id) {
         return this.deviceApi.request(createRequest('pmHandlerGetAutofillCredentials', { id }))
     }
 
     /**
      * Opens the native UI for managing passwords
      */
-    openManagePasswords () {
+    openManagePasswords() {
         return this.deviceApi.notify(createNotification('pmHandlerOpenManagePasswords'))
     }
 
     /**
      * Opens the native UI for managing identities
      */
-    openManageIdentities () {
+    openManageIdentities() {
         return this.deviceApi.notify(createNotification('pmHandlerOpenManageIdentities'))
     }
 
     /**
      * Opens the native UI for managing credit cards
      */
-    openManageCreditCards () {
+    openManageCreditCards() {
         return this.deviceApi.notify(createNotification('pmHandlerOpenManageCreditCards'))
     }
 
@@ -236,9 +239,9 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity (id) {
-        const identity = this.getLocalIdentities().find(({id: identityId}) => `${identityId}` === `${id}`)
-        return Promise.resolve({success: identity})
+    getAutofillIdentity(id) {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
+        return Promise.resolve({ success: identity })
     }
 
     /**
@@ -246,30 +249,30 @@ class AppleDeviceInterface extends InterfacePrototype {
      * @param {CreditCardObject['id']} id
      * @returns {APIResponse<CreditCardObject>}
      */
-    getAutofillCreditCard (id) {
+    getAutofillCreditCard(id) {
         return this.deviceApi.request(createRequest('pmHandlerGetCreditCard', { id }))
     }
 
-    getCurrentInputType () {
+    getCurrentInputType() {
         const topContextData = this.getTopContextData()
-        return topContextData?.inputType
-            ? topContextData.inputType
-            : getInputType(this.activeForm?.activeInput)
+        return topContextData?.inputType ? topContextData.inputType : getInputType(this.activeForm?.activeInput)
     }
 
     /**
      * @returns {Promise<string|undefined>}
      */
-    async getAlias () {
-        const {alias} = await this.deviceApi.request(new GetAlias({
-            requiresUserPermission: !this.globalConfig.isApp,
-            shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
-            isIncontextSignupAvailable: this.inContextSignup.isAvailable()
-        }))
+    async getAlias() {
+        const { alias } = await this.deviceApi.request(
+            new GetAlias({
+                requiresUserPermission: !this.globalConfig.isApp,
+                shouldConsumeAliasIfProvided: !this.globalConfig.isApp,
+                isIncontextSignupAvailable: this.inContextSignup.isAvailable(),
+            }),
+        )
         return alias ? formatDuckAddress(alias) : alias
     }
 
-    addLogoutListener (handler) {
+    addLogoutListener(handler) {
         // Only deal with logging out if we're in the email web app
         if (!this.globalConfig.isDDGDomain) return
 
@@ -280,7 +283,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         })
     }
 
-    async addDeviceListeners () {
+    async addDeviceListeners() {
         this.thirdPartyProvider.init()
         this.credentialsImport.init()
     }
@@ -296,34 +299,34 @@ class AppleDeviceInterface extends InterfacePrototype {
      * - 'none' is when the tooltip is open in the native window however hasn't been entered.
      * @param {(response: {data:IdentityObject|CreditCardObject|CredentialsObject, configType: string} | {stateChange: boolean} | {stop: boolean} | null) => void} callback
      */
-    async _listenForSelectedCredential (callback) {
+    async _listenForSelectedCredential(callback) {
         // Prevent two timeouts from happening
         const poll = async () => {
             clearTimeout(this.pollingTimeout)
             const response = await this.getSelectedCredentials()
             switch (response.type) {
-            case 'none':
-                // Parent hasn't got a selected credential yet
-                this.pollingTimeout = setTimeout(() => poll(), 100)
-                return
-            case 'ok': {
-                await callback({data: response.data, configType: response.configType})
-                return
-            }
-            case 'state': {
-                // Inform that state has changed, but continue polling
-                // e.g. in-context signup has been dismissed
-                await callback({stateChange: true})
-                this.pollingTimeout = setTimeout(() => poll(), 100)
-                return
-            }
-            case 'stop':
-                // Parent wants us to stop polling
-                await callback({stop: true})
+                case 'none':
+                    // Parent hasn't got a selected credential yet
+                    this.pollingTimeout = setTimeout(() => poll(), 100)
+                    return
+                case 'ok': {
+                    await callback({ data: response.data, configType: response.configType })
+                    return
+                }
+                case 'state': {
+                    // Inform that state has changed, but continue polling
+                    // e.g. in-context signup has been dismissed
+                    await callback({ stateChange: true })
+                    this.pollingTimeout = setTimeout(() => poll(), 100)
+                    return
+                }
+                case 'stop':
+                    // Parent wants us to stop polling
+                    await callback({ stop: true })
             }
         }
         poll()
     }
 }
 
-export {AppleDeviceInterface}
+export { AppleDeviceInterface }

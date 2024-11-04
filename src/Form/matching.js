@@ -1,14 +1,14 @@
-import {constants} from '../constants.js'
-import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
-import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
-import {logMatching, logUnmatched} from './matching-utils.js'
-import {safeRegexTest, shouldLog} from '../autofill-utils.js'
+import { constants } from '../constants.js'
+import { EXCLUDED_TAGS, extractElementStrings } from './label-util.js'
+import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
+import { logMatching, logUnmatched } from './matching-utils.js'
+import { safeRegexTest, shouldLog } from '../autofill-utils.js'
 
 const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
 
 /** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
 const dimensionBounds = {
-    emailAddress: { minWidth: 35 }
+    emailAddress: { minWidth: 35 },
 }
 
 /**
@@ -44,13 +44,13 @@ class Matching {
         labelText: '',
         placeholderAttr: '',
         relatedText: '',
-        id: ''
+        id: '',
     }
 
     /**
      * @param {MatchingConfiguration} config
      */
-    constructor (config) {
+    constructor(config) {
         this.#config = config
 
         this.#vendorRegexRules = this.#config.strategies.vendorRegex.rules
@@ -63,7 +63,7 @@ class Matching {
             id: [],
             password: [],
             username: [],
-            emailAddress: []
+            emailAddress: [],
         }
 
         /**
@@ -87,7 +87,7 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLElement} formEl
      */
-    setActiveElementStrings (input, formEl) {
+    setActiveElementStrings(input, formEl) {
         this.activeElementStrings = this.getElementStrings(input, formEl)
     }
 
@@ -96,7 +96,7 @@ class Matching {
      * @param {string} regexName
      * @returns {RegExp | undefined}
      */
-    vendorRegex (regexName) {
+    vendorRegex(regexName) {
         const match = this.#vendorRegexRules[regexName]
         if (!match) {
             console.warn('Vendor Regex not found for', regexName)
@@ -111,7 +111,7 @@ class Matching {
      * @param {StrategyNames} vendorRegex
      * @returns {MatcherTypeNames}
      */
-    getStrategyLookupByType (matcherName, vendorRegex) {
+    getStrategyLookupByType(matcherName, vendorRegex) {
         return this.#config.matchers.fields[matcherName]?.strategies[vendorRegex]
     }
 
@@ -120,7 +120,7 @@ class Matching {
      * @param {RequiredCssSelectors | string} selectorName
      * @returns {string};
      */
-    cssSelector (selectorName) {
+    cssSelector(selectorName) {
         const match = this.#cssSelectors[selectorName]
         if (!match) {
             console.warn('CSS selector not found for %s, using a default value', selectorName)
@@ -134,7 +134,7 @@ class Matching {
      * @param {MatcherTypeNames | string} matcherName
      * @returns {DDGMatcher | undefined}
      */
-    ddgMatcher (matcherName) {
+    ddgMatcher(matcherName) {
         const match = this.#ddgMatchers[matcherName]
         if (!match) {
             console.warn('DDG matcher not found for', matcherName)
@@ -148,7 +148,7 @@ class Matching {
      * @param {AllDDGMatcherNames} matcherName
      * @returns {RegExp|undefined}
      */
-    getDDGMatcherRegex (matcherName) {
+    getDDGMatcherRegex(matcherName) {
         const matcher = this.ddgMatcher(matcherName)
         if (!matcher || !matcher.match) {
             console.warn('DDG matcher has unexpected format')
@@ -162,7 +162,7 @@ class Matching {
      * @param {keyof MatcherLists} listName
      * @return {Matcher[]}
      */
-    matcherList (listName) {
+    matcherList(listName) {
         const matcherList = this.#matcherLists[listName]
         if (!matcherList) {
             console.warn('MatcherList not found for ', listName)
@@ -180,7 +180,7 @@ class Matching {
      * @param {keyof MatcherLists} listName
      * @returns {string | undefined}
      */
-    joinCssSelectors (listName) {
+    joinCssSelectors(listName) {
         const matcherList = this.matcherList(listName)
         if (!matcherList) {
             console.warn('Matcher list not found for', listName)
@@ -210,7 +210,7 @@ class Matching {
      * @param {HTMLInputElement} input
      * @returns {boolean}
      */
-    isInputLargeEnough (matchedType, input) {
+    isInputLargeEnough(matchedType, input) {
         const expectedDimensionBounds = dimensionBounds[matchedType]
         if (!expectedDimensionBounds) return true
 
@@ -232,7 +232,7 @@ class Matching {
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedTypes}
      */
-    inferInputType (input, formEl, opts = {}) {
+    inferInputType(input, formEl, opts = {}) {
         const presetType = getInputType(input)
         if (presetType !== 'unknown') {
             return presetType
@@ -327,7 +327,7 @@ class Matching {
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType (input, formEl, opts = {}) {
+    setInputType(input, formEl, opts = {}) {
         const type = this.inferInputType(input, formEl, opts)
         input.setAttribute(ATTR_INPUT_TYPE, type)
         return type
@@ -339,7 +339,7 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} el
      * @return {MatcherTypeNames|undefined}
      */
-    subtypeFromMatchers (listName, el) {
+    subtypeFromMatchers(listName, el) {
         const matchers = this.matcherList(listName)
 
         /**
@@ -411,19 +411,16 @@ class Matching {
      * @param opts
      * @returns {'credentials.password.new'|'credentials.password.current'}
      */
-    inferPasswordVariant (input, opts) {
+    inferPasswordVariant(input, opts) {
         // Check attributes first
         // This is done mainly to ensure coverage for all languages, since attributes are usually in English
         const attrsToCheck = [input.autocomplete, input.name, input.id]
-        if (
-            opts.isSignup &&
-            attrsToCheck.some(str => safeRegexTest(/new.?password|password.?new/i, str))
-        ) {
+        if (opts.isSignup && attrsToCheck.some((str) => safeRegexTest(/new.?password|password.?new/i, str))) {
             return 'credentials.password.new'
         }
         if (
             (opts.isLogin || opts.isHybrid) &&
-            attrsToCheck.some(str => safeRegexTest(/(current|old|previous).?password|password.?(current|old|previous)/i, str))
+            attrsToCheck.some((str) => safeRegexTest(/(current|old|previous).?password|password.?(current|old|previous)/i, str))
         ) {
             return 'credentials.password.current'
         }
@@ -452,12 +449,12 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} el
      * @returns {MatchingResult}
      */
-    execCssSelector (lookup, el) {
+    execCssSelector(lookup, el) {
         const selector = this.cssSelector(lookup)
         return {
             matched: el.matches(selector),
             strategyName: 'cssSelector',
-            matcherType: lookup
+            matcherType: lookup,
         }
     }
 
@@ -471,7 +468,7 @@ class Matching {
      * @param {MatcherTypeNames} lookup
      * @returns {MatchingResult}
      */
-    execDDGMatcher (lookup) {
+    execDDGMatcher(lookup) {
         /** @type {MatchingResult} */
         const defaultResult = { matched: false, strategyName: 'ddgMatcher', matcherType: lookup }
 
@@ -484,7 +481,7 @@ class Matching {
             return defaultResult
         }
 
-        const requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
+        const requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter((ddgMatcherProp) => ddgMatcherProp in ddgMatcher).length
 
         /** @type {MatchableStrings[]} */
         const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText']
@@ -500,7 +497,7 @@ class Matching {
             const result = {
                 ...defaultResult,
                 matchedString: elementString,
-                matchedFrom: stringName
+                matchedFrom: stringName,
             }
 
             // If a negated regex was provided, ensure it does not match
@@ -559,7 +556,7 @@ class Matching {
      * @param {MatcherTypeNames} lookup
      * @return {MatchingResult}
      */
-    execVendorRegex (lookup) {
+    execVendorRegex(lookup) {
         /** @type {MatchingResult} */
         const defaultResult = { matched: false, strategyName: 'vendorRegex', matcherType: lookup }
 
@@ -577,7 +574,7 @@ class Matching {
                     ...defaultResult,
                     matched: true,
                     matchedString: elementString,
-                    matchedFrom: stringName
+                    matchedFrom: stringName,
                 }
             }
         }
@@ -603,7 +600,7 @@ class Matching {
      * @returns {Record<MatchableStrings, string>}
      */
     _elementStringCache = new WeakMap()
-    getElementStrings (el, form) {
+    getElementStrings(el, form) {
         if (this._elementStringCache.has(el)) {
             return this._elementStringCache.get(el)
         }
@@ -616,12 +613,12 @@ class Matching {
             labelText: explicitLabelsText,
             placeholderAttr: el.placeholder || '',
             id: el.id,
-            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector'))
+            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector')),
         }
         this._elementStringCache.set(el, next)
         return next
     }
-    clear () {
+    clear() {
         this._elementStringCache = new WeakMap()
     }
 
@@ -631,7 +628,7 @@ class Matching {
      * @param {HTMLElement} form
      * @returns {Matching}
      */
-    forInput (input, form) {
+    forInput(input, form) {
         this.setActiveElementStrings(input, form)
         return this
     }
@@ -642,27 +639,27 @@ class Matching {
     static emptyConfig = {
         matchers: {
             lists: {},
-            fields: {}
+            fields: {},
         },
         strategies: {
             vendorRegex: {
                 rules: {},
-                ruleSets: []
+                ruleSets: [],
             },
             ddgMatcher: {
-                matchers: {}
+                matchers: {},
             },
             cssSelector: {
-                selectors: {}
-            }
-        }
+                selectors: {},
+            },
+        },
     }
 }
 
 /**
  *  @returns {SupportedTypes}
  */
-function getInputType (input) {
+function getInputType(input) {
     const attr = input?.getAttribute(ATTR_INPUT_TYPE)
     if (isValidSupportedType(attr)) {
         return attr
@@ -675,13 +672,13 @@ function getInputType (input) {
  * @param {SupportedTypes | string} type
  * @returns {SupportedMainTypes}
  */
-function getMainTypeFromType (type) {
+function getMainTypeFromType(type) {
     const mainType = type.split('.')[0]
     switch (mainType) {
-    case 'credentials':
-    case 'creditCards':
-    case 'identities':
-        return mainType
+        case 'credentials':
+        case 'creditCards':
+        case 'identities':
+            return mainType
     }
     return 'unknown'
 }
@@ -691,8 +688,7 @@ function getMainTypeFromType (type) {
  * @param {HTMLInputElement} input
  * @returns {SupportedMainTypes}
  */
-const getInputMainType = (input) =>
-    getMainTypeFromType(getInputType(input))
+const getInputMainType = (input) => getMainTypeFromType(getInputType(input))
 
 /** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
 const supportedIdentitiesSubtypes = /** @type {const} */ ([
@@ -710,14 +706,14 @@ const supportedIdentitiesSubtypes = /** @type {const} */ ([
     'addressCountryCode',
     'birthdayDay',
     'birthdayMonth',
-    'birthdayYear'
+    'birthdayYear',
 ])
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedIdentitiesSubTypes}
  */
-function isValidIdentitiesSubtype (supportedType) {
+function isValidIdentitiesSubtype(supportedType) {
     return supportedIdentitiesSubtypes.includes(supportedType)
 }
 
@@ -728,36 +724,28 @@ const supportedCreditCardSubtypes = /** @type {const} */ ([
     'cardSecurityCode',
     'expirationMonth',
     'expirationYear',
-    'expiration'
+    'expiration',
 ])
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedCreditCardSubTypes}
  */
-function isValidCreditCardSubtype (supportedType) {
+function isValidCreditCardSubtype(supportedType) {
     return supportedCreditCardSubtypes.includes(supportedType)
 }
 
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
-const supportedCredentialsSubtypes = /** @type {const} */ ([
-    'password',
-    'password.new',
-    'password.current',
-    'username'
-])
+const supportedCredentialsSubtypes = /** @type {const} */ (['password', 'password.new', 'password.current', 'username'])
 
 /** @typedef {supportedVariants[number]} SupportedVariants */
-const supportedVariants = /** @type {const} */ ([
-    'new',
-    'current'
-])
+const supportedVariants = /** @type {const} */ (['new', 'current'])
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedCredentialsSubTypes}
  */
-function isValidCredentialsSubtype (supportedType) {
+function isValidCredentialsSubtype(supportedType) {
     return supportedCredentialsSubtypes.includes(supportedType)
 }
 
@@ -767,7 +755,7 @@ function isValidCredentialsSubtype (supportedType) {
 const supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
-    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`),
 ]
 
 /**
@@ -775,7 +763,7 @@ const supportedTypes = [
  * @param {SupportedTypes | string} type
  * @returns {SupportedSubTypes | 'unknown'}
  */
-function getSubtypeFromType (type) {
+function getSubtypeFromType(type) {
     const subType = type?.split('.')[1]
     const validType = isValidSubtype(subType)
     return validType ? subType : 'unknown'
@@ -786,7 +774,7 @@ function getSubtypeFromType (type) {
  * @param {SupportedTypes | string} type
  * @returns {SupportedVariants | ''}
  */
-function getVariantFromType (type) {
+function getVariantFromType(type) {
     const variant = type?.split('.')[2]
     const validVariant = isValidVariant(variant)
     return validVariant ? variant : ''
@@ -796,17 +784,19 @@ function getVariantFromType (type) {
  * @param {SupportedSubTypes | any} supportedSubType
  * @returns {supportedSubType is SupportedSubTypes}
  */
-function isValidSubtype (supportedSubType) {
-    return isValidIdentitiesSubtype(supportedSubType) ||
+function isValidSubtype(supportedSubType) {
+    return (
+        isValidIdentitiesSubtype(supportedSubType) ||
         isValidCreditCardSubtype(supportedSubType) ||
         isValidCredentialsSubtype(supportedSubType)
+    )
 }
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedTypes}
  */
-function isValidSupportedType (supportedType) {
+function isValidSupportedType(supportedType) {
     return supportedTypes.includes(supportedType)
 }
 
@@ -814,7 +804,7 @@ function isValidSupportedType (supportedType) {
  * @param {SupportedVariants | any} supportedVariant
  * @returns {supportedVariant is SupportedVariants}
  */
-function isValidVariant (supportedVariant) {
+function isValidVariant(supportedVariant) {
     return supportedVariants.includes(supportedVariant)
 }
 
@@ -823,7 +813,7 @@ function isValidVariant (supportedVariant) {
  * @param {HTMLInputElement|Element} input
  * @returns {SupportedSubTypes | 'unknown'}
  */
-function getInputSubtype (input) {
+function getInputSubtype(input) {
     const type = getInputType(input)
     return getSubtypeFromType(type)
 }
@@ -833,7 +823,7 @@ function getInputSubtype (input) {
  * @param {HTMLInputElement|Element} input
  * @returns {SupportedVariants | ''}
  */
-function getInputVariant (input) {
+function getInputVariant(input) {
     const type = getInputType(input)
     return getVariantFromType(type)
 }
@@ -848,9 +838,7 @@ const removeExcessWhitespace = (string = '') => {
     // The length check is extra safety to avoid trimming strings that would be discarded anyway
     if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return ''
 
-    return (string)
-        .replace(/\n/g, ' ')
-        .replace(/\s{2,}/g, ' ')
+    return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ')
 }
 
 /**
@@ -991,9 +979,11 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
  * @returns {RegExpMatchArray|null}
  */
 const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
-    return input.placeholder?.match(regex) ||
+    return (
+        input.placeholder?.match(regex) ||
         getExplicitLabelsText(input).match(regex) ||
         getRelatedText(input, form, cssSelector).match(regex)
+    )
 }
 
 /**
@@ -1013,7 +1003,7 @@ const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
  *
  * @return {Matching}
  */
-function createMatching () {
+function createMatching() {
     return new Matching(matchingConfiguration)
 }
 
@@ -1031,5 +1021,5 @@ export {
     matchInPlaceholderAndLabels,
     checkPlaceholderAndLabels,
     Matching,
-    createMatching
+    createMatching,
 }

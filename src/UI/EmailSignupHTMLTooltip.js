@@ -4,7 +4,7 @@ class EmailSignupHTMLTooltip extends HTMLTooltip {
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
-    render (device) {
+    render(device) {
         this.device = device
         const t = this.device.t
 

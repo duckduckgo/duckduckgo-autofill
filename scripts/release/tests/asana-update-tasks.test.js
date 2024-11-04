@@ -15,8 +15,8 @@ jest.mock('asana', () => {
         useAccessToken: () => mockAsanaClient,
         tasks: {
             getTask: () => ({ html_notes: notes }),
-            updateTask: jest.fn()
-        }
+            updateTask: jest.fn(),
+        },
     }
     return { Client: { create: () => mockAsanaClient } }
 })
@@ -32,33 +32,33 @@ beforeEach(() => {
         android: {
             displayName: 'Android',
             taskGid: 'android-123',
-            taskUrl: 'https://example.com/android-task'
+            taskUrl: 'https://example.com/android-task',
         },
         bsk: {
             displayName: 'BrowserServicesKit',
             taskGid: 'bsk-123',
-            taskUrl: 'https://example.com/bsk-task'
+            taskUrl: 'https://example.com/bsk-task',
         },
         ios: {
             displayName: 'iOS',
             taskGid: 'ios-123',
-            taskUrl: 'https://example.com/ios-task'
+            taskUrl: 'https://example.com/ios-task',
         },
         macos: {
             displayName: 'macOS',
             taskGid: 'macos-123',
-            taskUrl: 'https://example.com/macos-task'
+            taskUrl: 'https://example.com/macos-task',
         },
         extensions: {
             displayName: 'Extensions',
             taskGid: 'extension-123',
-            taskUrl: 'https://example.com/extension-task'
+            taskUrl: 'https://example.com/extension-task',
         },
         windows: {
             displayName: 'Windows',
             taskGid: 'windows-123',
-            taskUrl: 'https://example.com/windows-task'
-        }
+            taskUrl: 'https://example.com/windows-task',
+        },
     })
 })
 

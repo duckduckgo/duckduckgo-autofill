@@ -8,7 +8,7 @@ import {
     OpenManagePasswordsCall,
     OpenManageCreditCardsCall,
     OpenManageIdentitiesCall,
-    CloseAutofillParentCall
+    CloseAutofillParentCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js'
 import { overlayApi } from './overlayApi.js'
 
@@ -41,24 +41,27 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @override
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createUIController () {
-        return new HTMLTooltipUIController({
-            tooltipKind: /** @type {const} */ ('modern'),
-            device: this
-        }, {
-            wrapperClass: 'top-autofill',
-            tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
-            remove: async () => this._closeAutofillParent(),
-            testMode: this.isTestMode(),
-            /**
-             * Note: This is needed because Mutation observer didn't support visibility checks on Windows
-             */
-            checkVisibility: false
-        })
+    createUIController() {
+        return new HTMLTooltipUIController(
+            {
+                tooltipKind: /** @type {const} */ ('modern'),
+                device: this,
+            },
+            {
+                wrapperClass: 'top-autofill',
+                tooltipPositionClass: () => '.wrapper { transform: none; }',
+                setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
+                remove: async () => this._closeAutofillParent(),
+                testMode: this.isTestMode(),
+                /**
+                 * Note: This is needed because Mutation observer didn't support visibility checks on Windows
+                 */
+                checkVisibility: false,
+            },
+        )
     }
 
-    addDeviceListeners () {
+    addDeviceListeners() {
         /**
          * On Windows (vs. MacOS) we can use the built-in `mousemove`
          * event and screen-relative positioning.
@@ -91,26 +94,26 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
     /**
      * @returns {Promise<any>}
      */
-    async _closeAutofillParent () {
+    async _closeAutofillParent() {
         return this.deviceApi.notify(new CloseAutofillParentCall(null))
     }
 
     /**
      * @returns {Promise<any>}
      */
-    openManagePasswords () {
+    openManagePasswords() {
         return this.deviceApi.notify(new OpenManagePasswordsCall({}))
     }
     /**
      * @returns {Promise<any>}
      */
-    openManageCreditCards () {
+    openManageCreditCards() {
         return this.deviceApi.notify(new OpenManageCreditCardsCall({}))
     }
     /**
      * @returns {Promise<any>}
      */
-    openManageIdentities () {
+    openManageIdentities() {
         return this.deviceApi.notify(new OpenManageIdentitiesCall({}))
     }
 
@@ -121,7 +124,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @override
      * @returns {Promise<void>}
      */
-    async setupAutofill () {
+    async setupAutofill() {
         const loggedIn = await this._getIsLoggedIn()
         if (loggedIn) {
             await this.getAddresses()
@@ -132,7 +135,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
         this.storeLocalData(response)
     }
 
-    async postInit () {
+    async postInit() {
         // setup overlay API pieces
         this.overlay.showImmediately()
         super.postInit()
@@ -147,7 +150,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
      * @param {string} type
      */
-    async selectedDetail (data, type) {
+    async selectedDetail(data, type) {
         return this.overlay.selectedDetail(data, type)
     }
 
@@ -155,14 +158,14 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * Email Protection calls
      */
 
-    async _getIsLoggedIn () {
+    async _getIsLoggedIn() {
         const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
 
         this.isDeviceSignedIn = () => isLoggedIn
         return isLoggedIn
     }
 
-    async getAddresses () {
+    async getAddresses() {
         const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
 
         this.storeLocalAddresses(addresses)
@@ -174,7 +177,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @param {Number} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity (id) {
+    getAutofillIdentity(id) {
         const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
         return Promise.resolve({ success: identity })
     }

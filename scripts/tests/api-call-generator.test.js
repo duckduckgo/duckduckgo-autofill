@@ -3,9 +3,7 @@ import { join } from 'path'
 
 describe('api call generator', () => {
     it.skip('generates files from fixtures', async () => {
-        const [ts, validators, apiCalls] = await generateFiles(
-            join(process.cwd(), 'scripts/tests/fixtures')
-        )
+        const [ts, validators, apiCalls] = await generateFiles(join(process.cwd(), 'scripts/tests/fixtures'))
         expect(ts.content).toMatchInlineSnapshot(`
       "/* tslint:disable */
       /**

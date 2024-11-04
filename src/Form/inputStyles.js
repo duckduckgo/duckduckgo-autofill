@@ -34,7 +34,7 @@ const getBasicStyles = (input, icon) => ({
     'background-repeat': 'no-repeat',
     'background-origin': 'content-box',
     'background-image': `url(${icon})`,
-    transition: 'background 0s'
+    transition: 'background 0s',
 })
 
 /**
@@ -63,7 +63,7 @@ const getIconStylesAlternate = (input, form) => {
     if (!icon) return {}
 
     return {
-        ...getBasicStyles(input, icon)
+        ...getBasicStyles(input, icon),
     }
 }
 
@@ -81,8 +81,8 @@ const getIconStylesAutofilled = (input, form) => {
     return {
         ...iconStyle,
         'background-color': '#F8F498',
-        color: '#333333'
+        color: '#333333',
     }
 }
 
-export {getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate}
+export { getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate }

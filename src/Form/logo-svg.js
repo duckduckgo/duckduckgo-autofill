@@ -25,4 +25,4 @@ const daxGrayscaleSvg = `
 `.trim()
 const daxGrayscaleBase64 = `data:image/svg+xml;base64,${window.btoa(daxGrayscaleSvg)}`
 
-export {daxBase64, daxGrayscaleBase64}
+export { daxBase64, daxGrayscaleBase64 }

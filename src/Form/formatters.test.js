@@ -1,4 +1,4 @@
-import {formatPhoneNumber, getMMAndYYYYFromString, prepareFormValuesForStorage} from './formatters.js'
+import { formatPhoneNumber, getMMAndYYYYFromString, prepareFormValuesForStorage } from './formatters.js'
 
 describe('Format year and month from single string', () => {
     const testCases = [
@@ -40,14 +40,14 @@ describe('Format year and month from single string', () => {
         '2028 - 5',
         '2028 / 5',
         '28 / 5',
-        '28  5'
+        '28  5',
     ]
 
     test.each(testCases)('Test for "%s"', (expiry) => {
         const result = getMMAndYYYYFromString(expiry)
         expect(result).toMatchObject({
             expirationMonth: '05',
-            expirationYear: '2028'
+            expirationYear: '2028',
         })
     })
 })
@@ -67,7 +67,7 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 creditCards: {},
                 // @ts-ignore
-                identities: {}
+                identities: {},
             })
             expect(values.credentials).toBeUndefined()
         })
@@ -78,7 +78,7 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 creditCards: {},
                 // @ts-ignore
-                identities: {}
+                identities: {},
             })
             expect(values.credentials?.password).toBe('123456')
         })
@@ -89,7 +89,7 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 creditCards: {},
                 // @ts-ignore
-                identities: {}
+                identities: {},
             })
             expect(values.credentials).toEqual(inputCredentials)
         })

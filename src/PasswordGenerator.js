@@ -9,17 +9,17 @@ class PasswordGenerator {
     #previous = null
 
     /** @returns {boolean} */
-    get generated () {
+    get generated() {
         return this.#previous !== null
     }
 
     /** @returns {string|null} */
-    get password () {
+    get password() {
         return this.#previous
     }
 
     /** @param {import('../packages/password').GenerateOptions} [params] */
-    generate (params = {}) {
+    generate(params = {}) {
         if (this.#previous) {
             return this.#previous
         }

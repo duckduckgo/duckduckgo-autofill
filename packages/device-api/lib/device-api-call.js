@@ -36,14 +36,14 @@ export class DeviceApiCall {
     /**
      * @param {import("zod").infer<Params>} data
      */
-    constructor (data) {
+    constructor(data) {
         this.params = data
     }
 
     /**
      * @returns {import("zod").infer<Params>|undefined}
      */
-    validateParams () {
+    validateParams() {
         if (this.params === undefined) {
             return undefined
         }
@@ -55,7 +55,7 @@ export class DeviceApiCall {
      * @param {any|null} incoming
      * @returns {import("zod").infer<Result>}
      */
-    validateResult (incoming) {
+    validateResult(incoming) {
         this._validate(incoming, this.resultValidator)
         if (!incoming) {
             return incoming
@@ -86,7 +86,7 @@ export class DeviceApiCall {
      * @param {import("zod").ZodType|undefined|null} [validator]
      * @private
      */
-    _validate (data, validator) {
+    _validate(data, validator) {
         if (!validator) return data
         if (validator) {
             const result = validator?.safeParse(data)
@@ -106,7 +106,7 @@ export class DeviceApiCall {
     /**
      * @param {import('zod').ZodIssue[]} errors
      */
-    throwError (errors) {
+    throwError(errors) {
         const error = SchemaValidationError.fromZodErrors(errors, this.constructor.name)
         throw error
     }
@@ -124,13 +124,13 @@ export class DeviceApiCall {
      * @param {import("zod").infer<Result>} response
      * @returns {import("zod").infer<Result>}
      */
-    result (response) {
+    result(response) {
         return response
     }
     /**
      * @returns {import("zod").infer<Result>}
      */
-    preResultValidation (response) {
+    preResultValidation(response) {
         return response
     }
 }
@@ -149,26 +149,26 @@ export class SchemaValidationError extends Error {
      * @param {string} name
      * @returns {SchemaValidationError}
      */
-    static fromZodErrors (errors, name) {
+    static fromZodErrors(errors, name) {
         const heading = `${errors.length} SchemaValidationError(s) errors for ` + name
-        function log (issue) {
+        function log(issue) {
             switch (issue.code) {
-            case 'invalid_literal':
-            case 'invalid_type': {
-                console.log(`${name}. Path: '${issue.path.join('.')}', Error: '${issue.message}'`)
-                break
-            }
-            case 'invalid_union': {
-                for (const unionError of issue.unionErrors) {
-                    for (const issue1 of unionError.issues) {
-                        log(issue1)
-                    }
+                case 'invalid_literal':
+                case 'invalid_type': {
+                    console.log(`${name}. Path: '${issue.path.join('.')}', Error: '${issue.message}'`)
+                    break
                 }
-                break
-            }
-            default: {
-                console.log(name, 'other issue:', issue)
-            }
+                case 'invalid_union': {
+                    for (const unionError of issue.unionErrors) {
+                        for (const issue1 of unionError.issues) {
+                            log(issue1)
+                        }
+                    }
+                    break
+                }
+                default: {
+                    console.log(name, 'other issue:', issue)
+                }
             }
         }
         for (const error of errors) {
@@ -193,7 +193,7 @@ export class SchemaValidationError extends Error {
  * @param {Result|null} [resultValidator]
  * @returns {DeviceApiCall<Params, Result>}
  */
-export function createDeviceApiCall (method, params, paramsValidator = null, resultValidator = null) {
+export function createDeviceApiCall(method, params, paramsValidator = null, resultValidator = null) {
     /** @type {DeviceApiCall<Params, Result>} */
     const deviceApiCall = new DeviceApiCall(params)
     deviceApiCall.paramsValidator = paramsValidator
@@ -220,7 +220,7 @@ export function createDeviceApiCall (method, params, paramsValidator = null, res
  * @param {Result|null} [resultValidator]
  * @returns {DeviceApiCall<Params, Result>}
  */
-export function createRequest (method, params, id = 'n/a', paramsValidator = null, resultValidator = null) {
+export function createRequest(method, params, id = 'n/a', paramsValidator = null, resultValidator = null) {
     const call = createDeviceApiCall(method, params, paramsValidator, resultValidator)
     call.id = id
     return call
@@ -236,7 +236,7 @@ export const createNotification = createDeviceApiCall
  * @param {Validator | null} [validator]
  * @returns {import("zod").infer<Validator>}
  */
-export function validate (data, validator = null) {
+export function validate(data, validator = null) {
     if (validator) {
         return validator.parse(data)
     }

@@ -1,26 +1,26 @@
-import {constants} from '../mocks.js'
+import { constants } from '../mocks.js'
 
-import {genericPage} from './genericPage.js'
+import { genericPage } from './genericPage.js'
 
 /**
  * @param {import("@playwright/test").Page} page
  */
-export function mutatingFormPage (page) {
+export function mutatingFormPage(page) {
     class MutatingFormPage {
-        async navigate () {
+        async navigate() {
             await page.goto(constants.pages.mutatingForm)
         }
 
-        async toggleLoginOrSignup () {
+        async toggleLoginOrSignup() {
             const toggleBtn = page.locator('#toggle-login-signup')
             await toggleBtn.click()
         }
 
-        passwordFieldShowsFillKey () {
+        passwordFieldShowsFillKey() {
             return genericPage(page).passwordFieldShowsFillKey()
         }
 
-        passwordFieldShowsGenKey () {
+        passwordFieldShowsGenKey() {
             return genericPage(page).passwordFieldShowsGenKey()
         }
     }

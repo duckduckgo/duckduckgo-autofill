@@ -8,20 +8,24 @@ import { fileURLToPath } from 'node:url'
 
 const imports = []
 const localeObjects = {}
-const localesDir = fileURLToPath(new URL('../src/locales/', import.meta.url));
-const locales = fs.readdirSync(localesDir, { encoding: "utf-8", withFileTypes: true })
-    .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.'))
-    .map(dirent => dirent.name)
+const localesDir = fileURLToPath(new URL('../src/locales/', import.meta.url))
+const locales = fs
+    .readdirSync(localesDir, { encoding: 'utf-8', withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory() && !dirent.name.startsWith('.'))
+    .map((dirent) => dirent.name)
 
 locales.forEach((lang) => {
-    const namespaces = fs.readdirSync(path.join(localesDir, lang))
-        .filter(f => !f.startsWith('.'))
-        .map(f => f.slice(0, f.length - 5))
-    const resources = namespaces.map((ns) => {
-        const importName = `${lang}${ns[0].toUpperCase()}${ns.slice(1)}`
-        imports.push(`import ${importName} from './${lang}/${ns}.json'`)
-        return `${ns}: ${importName}`
-    }).join(', ')
+    const namespaces = fs
+        .readdirSync(path.join(localesDir, lang))
+        .filter((f) => !f.startsWith('.'))
+        .map((f) => f.slice(0, f.length - 5))
+    const resources = namespaces
+        .map((ns) => {
+            const importName = `${lang}${ns[0].toUpperCase()}${ns.slice(1)}`
+            imports.push(`import ${importName} from './${lang}/${ns}.json'`)
+            return `${ns}: ${importName}`
+        })
+        .join(', ')
     localeObjects[lang] = `{ ${resources} }`
 })
 
@@ -32,7 +36,9 @@ const translationsJs = `/**
 ${imports.join('\n')}
 
 export default {
-    ${Object.keys(localeObjects).map(lang => `${lang}: ${localeObjects[lang]}`).join(',\n    ')}
+    ${Object.keys(localeObjects)
+        .map((lang) => `${lang}: ${localeObjects[lang]}`)
+        .join(',\n    ')}
 }
 `
-fs.writeFileSync(path.join(localesDir, 'translations.js'), translationsJs, "utf-8");
+fs.writeFileSync(path.join(localesDir, 'translations.js'), translationsJs, 'utf-8')

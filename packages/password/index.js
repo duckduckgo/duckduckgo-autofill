@@ -1,6 +1,6 @@
-import {Password} from './lib/apple.password.js'
-import {ParserError} from './lib/rules-parser.js'
-import {constants} from './lib/constants.js'
+import { Password } from './lib/apple.password.js'
+import { ParserError } from './lib/rules-parser.js'
+import { constants } from './lib/constants.js'
 
 /**
  * @typedef {{
@@ -23,7 +23,7 @@ import {constants} from './lib/constants.js'
  *
  * @param {GenerateOptions} [options]
  */
-function generate (options = {}) {
+function generate(options = {}) {
     try {
         if (typeof options?.input === 'string') {
             return Password.generateOrThrow(options.input)
@@ -68,7 +68,7 @@ class HostnameInputError extends Error {}
  * @returns {string | undefined}
  * @throws {HostnameInputError}
  */
-function _selectPasswordRules (inputHostname, rules) {
+function _selectPasswordRules(inputHostname, rules) {
     const hostname = _safeHostname(inputHostname)
     // direct match
     if (rules[hostname]) {
@@ -93,7 +93,7 @@ function _selectPasswordRules (inputHostname, rules) {
  * @throws {HostnameInputError}
  * @returns {string}
  */
-function _safeHostname (inputHostname) {
+function _safeHostname(inputHostname) {
     if (inputHostname.startsWith('http:') || inputHostname.startsWith('https:')) {
         throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a scheme')
     }
@@ -108,10 +108,4 @@ function _safeHostname (inputHostname) {
     }
 }
 
-export {
-    generate,
-    _selectPasswordRules,
-    HostnameInputError,
-    ParserError,
-    constants
-}
+export { generate, _selectPasswordRules, HostnameInputError, ParserError, constants }

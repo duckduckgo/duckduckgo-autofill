@@ -1,4 +1,4 @@
-import {DeviceApiTransport} from '../../../packages/device-api/index.js'
+import { DeviceApiTransport } from '../../../packages/device-api/index.js'
 import {
     CloseEmailProtectionTabCall,
     GetAutofillDataCall,
@@ -8,7 +8,7 @@ import {
     SetIncontextSignupPermanentlyDismissedAtCall,
     ShowInContextEmailProtectionSignupPromptCall,
     StartEmailProtectionSignupCall,
-    StoreFormDataCall
+    StoreFormDataCall,
 } from '../__generated__/deviceApiCalls.js'
 
 export class AndroidTransport extends DeviceApiTransport {
@@ -16,7 +16,7 @@ export class AndroidTransport extends DeviceApiTransport {
     config
 
     /** @param {GlobalConfig} globalConfig */
-    constructor (globalConfig) {
+    constructor(globalConfig) {
         super()
         this.config = globalConfig
 
@@ -33,7 +33,7 @@ export class AndroidTransport extends DeviceApiTransport {
      * @param {import("../../../packages/device-api").DeviceApiCall} deviceApiCall
      * @returns {Promise<any>}
      */
-    async send (deviceApiCall) {
+    async send(deviceApiCall) {
         if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
             return androidSpecificRuntimeConfiguration(this.config)
         }
@@ -82,9 +82,9 @@ export class AndroidTransport extends DeviceApiTransport {
  * @param {GlobalConfig} config
  * @returns {Promise<*>}
  */
-function waitForResponse (expectedResponse, config) {
+function waitForResponse(expectedResponse, config) {
     return new Promise((resolve) => {
-        const handler = e => {
+        const handler = (e) => {
             if (!config.isDDGTestMode) {
                 if (e.origin !== '') {
                     return
@@ -123,7 +123,7 @@ function waitForResponse (expectedResponse, config) {
  * @param {GlobalConfig} globalConfig
  * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
  */
-function androidSpecificRuntimeConfiguration (globalConfig) {
+function androidSpecificRuntimeConfiguration(globalConfig) {
     if (!globalConfig.userPreferences) {
         throw new Error('globalConfig.userPreferences not supported yet on Android')
     }
@@ -136,8 +136,8 @@ function androidSpecificRuntimeConfiguration (globalConfig) {
             // @ts-ignore
             userUnprotectedDomains: globalConfig.userUnprotectedDomains,
             // @ts-ignore
-            availableInputTypes: globalConfig.availableInputTypes
-        }
+            availableInputTypes: globalConfig.availableInputTypes,
+        },
     }
 }
 
@@ -145,11 +145,11 @@ function androidSpecificRuntimeConfiguration (globalConfig) {
  * @param {GlobalConfig} globalConfig
  * @returns {{success: import('../__generated__/validators-ts').AvailableInputTypes}}
  */
-function androidSpecificAvailableInputTypes (globalConfig) {
+function androidSpecificAvailableInputTypes(globalConfig) {
     if (!globalConfig.availableInputTypes) {
         throw new Error('globalConfig.availableInputTypes not supported yet on Android')
     }
     return {
-        success: globalConfig.availableInputTypes
+        success: globalConfig.availableInputTypes,
     }
 }

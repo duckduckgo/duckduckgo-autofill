@@ -19,7 +19,7 @@ const setFormHtml = (html) => {
     const inputs = Array.from(formElement?.querySelectorAll('input') || [])
     const selects = Array.from(formElement?.querySelectorAll('select') || [])
     const labels = Array.from(formElement?.querySelectorAll('label') || [])
-    return {formElement, inputs: [...inputs, ...selects], labels}
+    return { formElement, inputs: [...inputs, ...selects], labels }
 }
 
 beforeEach(() => {
@@ -27,10 +27,12 @@ beforeEach(() => {
 })
 
 describe('css-selector matching', () => {
-    it.each(/** @type MatchingTestCases */([
-        { html: `<input name=email />`, matcher: 'emailAddress', matched: true },
-        { html: `<input name=oops! />`, matcher: 'emailAddress', matched: false }
-    ]))(`$html: '$matched'`, (args) => {
+    it.each(
+        /** @type MatchingTestCases */ ([
+            { html: `<input name=email />`, matcher: 'emailAddress', matched: true },
+            { html: `<input name=oops! />`, matcher: 'emailAddress', matched: false },
+        ]),
+    )(`$html: '$matched'`, (args) => {
         const { html, matched, matcher } = args
         const { inputs } = setFormHtml(html)
 
@@ -41,37 +43,36 @@ describe('css-selector matching', () => {
 })
 
 describe('ddg-matchers matching', () => {
-    it.each(/** @type MatchingTestCases */([
-        { html: `<input placeholder=email />`, matcher: 'emailAddress', matched: true },
-        { html: `<input placeholder=mail />`, matcher: 'emailAddress', matched: false },
-        { html: `<input placeholder=email-search />`, matcher: 'emailAddress', matched: false }
-    ])
+    it.each(
+        /** @type MatchingTestCases */ ([
+            { html: `<input placeholder=email />`, matcher: 'emailAddress', matched: true },
+            { html: `<input placeholder=mail />`, matcher: 'emailAddress', matched: false },
+            { html: `<input placeholder=email-search />`, matcher: 'emailAddress', matched: false },
+        ]),
     )(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
 
         const matching = createMatching()
-        const result = matching
-            .forInput(inputs[0], formElement)
-            .execDDGMatcher(matcher)
+        const result = matching.forInput(inputs[0], formElement).execDDGMatcher(matcher)
         expect(result.matched).toBe(matched)
     })
 })
 
 describe('vendor-regexes matching', () => {
-    it.each(/** @type MatchingTestCases */([
-        { html: `<input name=email />`, matcher: 'emailAddress', matched: true },
-        { html: `<input name=email-address />`, matcher: 'emailAddress', matched: true },
-        { html: `<input name="courriel" />`, matcher: 'emailAddress', matched: true }, // fr
-        { html: `<input name="メールアドレス" />`, matcher: 'emailAddress', matched: true } // ja-JP
-    ]))(`$html: '$matcher': $matched`, (args) => {
+    it.each(
+        /** @type MatchingTestCases */ ([
+            { html: `<input name=email />`, matcher: 'emailAddress', matched: true },
+            { html: `<input name=email-address />`, matcher: 'emailAddress', matched: true },
+            { html: `<input name="courriel" />`, matcher: 'emailAddress', matched: true }, // fr
+            { html: `<input name="メールアドレス" />`, matcher: 'emailAddress', matched: true }, // ja-JP
+        ]),
+    )(`$html: '$matcher': $matched`, (args) => {
         const { html, matched, matcher } = args
         const { inputs, formElement } = setFormHtml(html)
 
         const matching = createMatching()
-        const result = matching
-            .forInput(inputs[0], formElement)
-            .execVendorRegex(matching.getStrategyLookupByType(matcher, 'vendorRegex'))
+        const result = matching.forInput(inputs[0], formElement).execVendorRegex(matching.getStrategyLookupByType(matcher, 'vendorRegex'))
         expect(result.matched).toBe(matched)
     })
 })
@@ -86,7 +87,7 @@ describe('matching', () => {
 
     it('default config', () => {
         const matching = new Matching(Matching.emptyConfig)
-        const {formElement, inputs} = setFormHtml(`<input name=email />`)
+        const { formElement, inputs } = setFormHtml(`<input name=email />`)
         const actual = matching.inferInputType(inputs[0], formElement)
         expect(actual).toBe('unknown')
     })
@@ -102,83 +103,92 @@ describe('matching', () => {
         {
             html: `<input name="cc-name" />`,
             subtype: 'creditCards.cardName',
-            opts: {isCCForm: true}
+            opts: { isCCForm: true },
         },
         {
             html: `<input name="accountholdername" /><!-- second input is to trigger cc type --><input name="cc-number"/>`,
             subtype: 'creditCards.cardName',
-            opts: {isCCForm: true}
+            opts: { isCCForm: true },
         },
         {
             html: `<input name="Срок действия карты" /><!-- second input is to trigger cc type --><input name="cc-number"/>`,
             subtype: 'creditCards.expirationMonth',
-            opts: {isCCForm: true}
+            opts: { isCCForm: true },
         },
-        { html: `<input placeholder="ZIP code" autocomplete="shipping postal-code" type="text" name="checkout[shipping_address][zip]"/>`, subtype: 'identities.addressPostalCode' },
+        {
+            html: `<input placeholder="ZIP code" autocomplete="shipping postal-code" type="text" name="checkout[shipping_address][zip]"/>`,
+            subtype: 'identities.addressPostalCode',
+        },
         { html: `<input autocomplete="on" id="address_line2" name="address_line2" type="text">`, subtype: 'identities.addressStreet2' },
-        { html: `<input name="ADDRESS_LINE_1" type="text" aria-required="true" aria-describedby="ariaId_29" aria-labelledby="ariaId_30" autocomplete="off-street-address" aria-autocomplete="list">`, subtype: 'identities.addressStreet' },
-        { html: `<input type="email" class="visuallyhidden" aria-hidden="true" tabindex="-1" style="">`, subtype: 'identities.emailAddress' },
+        {
+            html: `<input name="ADDRESS_LINE_1" type="text" aria-required="true" aria-describedby="ariaId_29" aria-labelledby="ariaId_30" autocomplete="off-street-address" aria-autocomplete="list">`,
+            subtype: 'identities.addressStreet',
+        },
+        {
+            html: `<input type="email" class="visuallyhidden" aria-hidden="true" tabindex="-1" style="">`,
+            subtype: 'identities.emailAddress',
+        },
         {
             html: `<select name="zipLookupCityState" class="form-dropdown-select" data-autom="form-field-zipLookupCityState" aria-required="true" aria-invalid="false"><option>1</option></select>`,
-            subtype: 'identities.addressCity'
+            subtype: 'identities.addressCity',
         },
         {
             html: `<div class="form_row">
                         <label for="shipping_address_two">Shipping address, line 2</label>
                         <input tabindex="104" type="text" class="text" maxlength="35" name="shipping_address_two" id="shipping_address_two">
                     </div>`,
-            subtype: 'identities.addressStreet2'
+            subtype: 'identities.addressStreet2',
         },
         {
             // This test has a new line between `First` and `name` -> which was previously not matching, but is now 😍
             html: `<input data-shane autocorrect="off" aria-labelledby="idms-input-labelledby-1643321390647-1" type="text" />
                     <span aria-hidden="true" id="idms-input-labelledby-1643321390647-1">First
                     name</span>`,
-            subtype: 'identities.firstName'
+            subtype: 'identities.firstName',
         },
         {
             // This test has a script tag between `First` and `name` -> which was previously not matching, but is now 😍
             html: `<input data-shane autocorrect="off" aria-labelledby="idms-input-labelledby-1643321390647-1" type="text" />
                     <span aria-hidden="true" id="idms-input-labelledby-1643321390647-1">First <script>console.log("hello world")</script>
                     name</span>`,
-            subtype: 'identities.firstName'
+            subtype: 'identities.firstName',
         },
         {
             // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
-            opts: {isHybrid: true, hasCredentials: false}
+            opts: { isHybrid: true, hasCredentials: false },
         },
         {
             // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
-            opts: {isHybrid: true, hasCredentials: false, supportsIdentitiesAutofill: true}
+            opts: { isHybrid: true, hasCredentials: false, supportsIdentitiesAutofill: true },
         },
         {
             // when hybrid with no credentials, use credentials by default (nothing shows)
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
-            opts: {isLogin: true, hasCredentials: false, supportsIdentitiesAutofill: true}
+            opts: { isLogin: true, hasCredentials: false, supportsIdentitiesAutofill: true },
         },
         {
             // when login with credentials, show credentials regardless of identities
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
-            opts: {isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true}
+            opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
         {
             // when hybrid with credentials, show credentials regardless of identities
             html: `<input type="email" autocomplete="email" />`,
             subtype: 'credentials.username',
-            opts: {isHybrid: true, hasCredentials: true, supportsIdentitiesAutofill: true}
+            opts: { isHybrid: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
         {
             // a login form's password input with 'reset' in the label should be a current subtype
             html: `<label for="password">Password (Forgot your password? Reset it)</label><input id="password" name></input>`,
             subtype: 'credentials.password.current',
-            opts: {isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true}
-        }
+            opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
+        },
     ])(`$html should be '$subtype'`, (args) => {
         const { html, subtype, opts } = args
         const { formElement, inputs } = setFormHtml(html)
@@ -188,44 +198,44 @@ describe('matching', () => {
         expect(inferred).toBe(subtype)
     })
     it('should not continue past a ddg-matcher that has a "not" regex', () => {
-        const {formElement, inputs} = setFormHtml(`<label>Email search<input name="email-search" /></label>`)
+        const { formElement, inputs } = setFormHtml(`<label>Email search<input name="email-search" /></label>`)
         const matching = new Matching({
             matchers: {
                 lists: {
-                    emailAddress: ['emailAddress']
+                    emailAddress: ['emailAddress'],
                 },
                 fields: {
                     emailAddress: {
                         type: 'emailAddress',
                         strategies: {
                             ddgMatcher: 'emailAddress',
-                            vendorRegex: 'email'
-                        }
-                    }
-                }
+                            vendorRegex: 'email',
+                        },
+                    },
+                },
             },
             strategies: {
                 vendorRegex: {
                     rules: {
-                        email: null
+                        email: null,
                     },
                     ruleSets: [
                         {
-                            email: 'email-'
-                        }
-                    ]
+                            email: 'email-',
+                        },
+                    ],
                 },
                 ddgMatcher: {
                     matchers: {
-                        emailAddress: { match: /emailAddress/ui, forceUnknown: /search/ui }
-                    }
+                        emailAddress: { match: /emailAddress/iu, forceUnknown: /search/iu },
+                    },
                 },
                 cssSelector: {
                     selectors: {
-                        formInputsSelector: 'input'
-                    }
-                }
-            }
+                        formInputsSelector: 'input',
+                    },
+                },
+            },
         })
         const asEmail = matching.inferInputType(inputs[0], formElement)
         /**

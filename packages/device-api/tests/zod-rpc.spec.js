@@ -5,9 +5,9 @@ import { z } from 'zod'
 /**
  * @returns {{handler: DeviceApi, transport: import("../").DeviceApiTransport}}
  */
-function testIo () {
+function testIo() {
     const transport = {
-        send: jest.fn().mockReturnValue({ success: 'hello world' })
+        send: jest.fn().mockReturnValue({ success: 'hello world' }),
     }
     const handler = new DeviceApi(transport)
     return { transport, handler }
@@ -35,7 +35,7 @@ describe('device-api', () => {
             send: async (deviceApiCall) => {
                 expect(deviceApiCall.params).toBe(params)
                 return result
-            }
+            },
         }
         const handler = new DeviceApi(transport)
         const deviceApiCall = createDeviceApiCall('hello-world', params)
@@ -60,7 +60,7 @@ describe('device-api', () => {
             const { handler, transport } = testIo()
             try {
                 await handler.notify(new T1(3))
-            } catch (/** @type {any} */e) {
+            } catch (/** @type {any} */ e) {
                 expect(transport.send).toHaveBeenCalledTimes(0)
                 expect(e.message).toMatchInlineSnapshot(`
           "1 SchemaValidationError(s) errors for T1
@@ -77,7 +77,7 @@ describe('device-api', () => {
             const { handler, transport } = testIo()
             try {
                 await handler.request(new T1(3))
-            } catch (/** @type {any} */e) {
+            } catch (/** @type {any} */ e) {
                 expect(transport.send).toHaveBeenCalledTimes(1)
                 expect(e.message).toMatchInlineSnapshot(`
           "1 SchemaValidationError(s) errors for T1
@@ -88,19 +88,19 @@ describe('device-api', () => {
         it('when there is an error in a result', async () => {
             expect.assertions(1)
             const transport = {
-                send: jest.fn().mockReturnValue({ error: { message: 'hello world' } })
+                send: jest.fn().mockReturnValue({ error: { message: 'hello world' } }),
             }
             const handler = new DeviceApi(transport)
             class T1 extends DeviceApiCall {
                 method = 'abc'
                 resultValidator = z.object({
                     success: z.string().optional(),
-                    error: z.object({ message: z.string() })
+                    error: z.object({ message: z.string() }),
                 })
             }
             try {
                 await handler.request(new T1(null))
-            } catch (/** @type {any} */e) {
+            } catch (/** @type {any} */ e) {
                 expect(e).toBeDefined()
             }
         })

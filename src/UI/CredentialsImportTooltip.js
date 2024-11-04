@@ -5,7 +5,7 @@ class CredentialsImportTooltip extends HTMLTooltip {
      * @param {import("../DeviceInterface/InterfacePrototype.js").default} device
      * @param {{ onStarted(): void, onDismissed(): void }} callbacks
      */
-    render (device, callbacks) {
+    render(device, callbacks) {
         this.device = device
         const t = device.t
 

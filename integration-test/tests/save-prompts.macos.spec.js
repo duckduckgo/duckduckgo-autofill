@@ -1,9 +1,9 @@
-import {createAutofillScript, defaultMacosScript, forwardConsoleMessages} from '../helpers/harness.js'
-import {constants} from '../helpers/mocks.js'
-import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {test as base} from '@playwright/test'
-import {signupPage} from '../helpers/pages/signupPage.js'
-import {loginPage} from '../helpers/pages/loginPage.js'
+import { createAutofillScript, defaultMacosScript, forwardConsoleMessages } from '../helpers/harness.js'
+import { constants } from '../helpers/mocks.js'
+import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js'
+import { test as base } from '@playwright/test'
+import { signupPage } from '../helpers/pages/signupPage.js'
+import { loginPage } from '../helpers/pages/loginPage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
@@ -12,25 +12,21 @@ const test = base.extend({})
 
 test.describe('macos', () => {
     test.describe('prompting to save data', () => {
-        test('Prompting to save from a signup form', async ({page}) => {
+        test('Prompting to save from a signup form', async ({ page }) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
 
-            const {personalAddress} = constants.fields.email
+            const { personalAddress } = constants.fields.email
 
             const credentials = {
                 username: personalAddress,
-                password: '123456'
+                password: '123456',
             }
 
-            await createWebkitMocks()
-                .applyTo(page)
+            await createWebkitMocks().applyTo(page)
 
             // Load the autofill.js script with replacements
-            await createAutofillScript()
-                .replaceAll(macosContentScopeReplacements())
-                .platform('macos')
-                .applyTo(page)
+            await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
 
             const signup = signupPage(page)
             await signup.navigate()
@@ -38,13 +34,13 @@ test.describe('macos', () => {
             await signup.assertWasPromptedToSave(credentials)
         })
         test.describe('Prompting to save from a login form', () => {
-            test('username+password (should prompt)', async ({page}) => {
+            test('username+password (should prompt)', async ({ page }) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
 
                 const credentials = {
                     username: 'dax@wearejh.com',
-                    password: '123456'
+                    password: '123456',
                 }
 
                 await createWebkitMocks().applyTo(page)
@@ -55,7 +51,7 @@ test.describe('macos', () => {
                 await login.submitLoginForm(credentials)
                 await login.assertWasPromptedToSave(credentials)
             })
-            test('password only (should prompt)', async ({page}) => {
+            test('password only (should prompt)', async ({ page }) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
                 await createWebkitMocks().applyTo(page)
@@ -68,7 +64,7 @@ test.describe('macos', () => {
                 await login.submitPasswordOnlyForm(credentials)
                 await login.assertWasPromptedToSave(credentials)
             })
-            test('username only (should NOT prompt)', async ({page}) => {
+            test('username only (should NOT prompt)', async ({ page }) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page)
 

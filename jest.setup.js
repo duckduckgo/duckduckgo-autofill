@@ -1,18 +1,16 @@
 Object.assign(global, require('jest-chrome'))
 // Mocks chrome API calls needed for autofill to run successfully
 // @ts-ignore
-chrome.runtime.sendMessage.mockImplementation(
-    (message, callback) => {
-        let response = {}
-        if (message.getAddresses) {
-            response = {
-                privateAddress: '123test321',
-                personalAddress: 'test'
-            }
+chrome.runtime.sendMessage.mockImplementation((message, callback) => {
+    let response = {}
+    if (message.getAddresses) {
+        response = {
+            privateAddress: '123test321',
+            personalAddress: 'test',
         }
-        callback(response)
     }
-)
+    callback(response)
+})
 
 // The autofill script bails if context is insecure, this enables tests to run
 global.isSecureContext = true
@@ -24,8 +22,8 @@ Object.defineProperty(global.self, 'crypto', {
         ...global.self.crypto,
         // @ts-ignore TS doesn't know of `crypto.webcrypto.subtle`
         subtle: crypto.webcrypto.subtle,
-        getRandomValues: arr => crypto.randomFillSync(arr)
-    }
+        getRandomValues: (arr) => crypto.randomFillSync(arr),
+    },
 })
 
 /**
@@ -36,17 +34,17 @@ Object.defineProperty(global.self, 'crypto', {
  * mock the intersection observer, but its methods.
  * @source https://javascript.tutorialink.com/js-testing-code-that-uses-an-intersectionobserver/
  */
-function setupIntersectionObserverMock ({
+function setupIntersectionObserverMock({
     root = null,
     rootMargin = '',
     thresholds = [],
     disconnect = () => null,
     observe = () => null,
     takeRecords = () => [],
-    unobserve = () => null
+    unobserve = () => null,
 } = {}) {
     class MockIntersectionObserver {
-        constructor () {
+        constructor() {
             this.root = root
             this.rootMargin = rootMargin
             this.thresholds = thresholds
@@ -60,13 +58,13 @@ function setupIntersectionObserverMock ({
     Object.defineProperty(window, 'IntersectionObserver', {
         writable: true,
         configurable: true,
-        value: MockIntersectionObserver
+        value: MockIntersectionObserver,
     })
 
     Object.defineProperty(global, 'IntersectionObserver', {
         writable: true,
         configurable: true,
-        value: MockIntersectionObserver
+        value: MockIntersectionObserver,
     })
 }
 setupIntersectionObserverMock()
@@ -82,7 +80,7 @@ Object.defineProperty(window.HTMLElement.prototype, 'clientWidth', {
         if (mockClientWidthAttribute) return mockClientWidthAttribute
 
         return this._jsdomMockClientWidth || 0
-    }
+    },
 })
 // Enables setting clientHeight by the data-mock-clientHeight attribute or the property _jsdomMockClientHeight
 Object.defineProperty(window.HTMLElement.prototype, 'clientHeight', {
@@ -91,7 +89,7 @@ Object.defineProperty(window.HTMLElement.prototype, 'clientHeight', {
         if (mockClientHeightAttribute) return mockClientHeightAttribute
 
         return this._jsdomMockClientHeight || 0
-    }
+    },
 })
 // Enables setting offsetWidth by the data-mock-offsetWidth attribute or the property _jsdomMockOffsetWidth
 Object.defineProperty(window.HTMLElement.prototype, 'offsetWidth', {
@@ -100,7 +98,7 @@ Object.defineProperty(window.HTMLElement.prototype, 'offsetWidth', {
         if (mockOffsetWidthAttribute) return mockOffsetWidthAttribute
 
         return this._jsdomMockOffsetWidth || 0
-    }
+    },
 })
 // Enables setting offsetHeight by the data-mock-offsetHeight attribute or the property _jsdomMockOffsetHeight
 Object.defineProperty(window.HTMLElement.prototype, 'offsetHeight', {
@@ -109,7 +107,7 @@ Object.defineProperty(window.HTMLElement.prototype, 'offsetHeight', {
         if (mockOffsetHeightAttribute) return mockOffsetHeightAttribute
 
         return this._jsdomMockOffsetHeight || 0
-    }
+    },
 })
 
 // getComputedStyle is super slow on jsdom, by providing this mock we speed tests up significantly
@@ -117,12 +115,12 @@ const defaultStyle = {
     display: 'block',
     visibility: 'visible',
     opacity: '1',
-    paddingRight: '10'
+    paddingRight: '10',
 }
 const mockGetComputedStyle = (el) => {
     return {
         // since we don't load stylesheets in the tests, the style prop is all the css applied, so it's a safe fallback
-        getPropertyValue: (prop) => el.style?.[prop] || defaultStyle[prop]
+        getPropertyValue: (prop) => el.style?.[prop] || defaultStyle[prop],
     }
 }
 // @ts-ignore

@@ -6,41 +6,42 @@ globalThis.setEmailProtectionUserData = (userName) => {
     privateEmailAliasIndex = 0
     emailProtectionUserData = {
         userName,
-        get nextAlias () { return `${privateEmailAliasIndex}` }
+        get nextAlias() {
+            return `${privateEmailAliasIndex}`
+        },
     }
 }
 
-function setNextEmailProtectionAlias () {
+function setNextEmailProtectionAlias() {
     privateEmailAliasIndex = privateEmailAliasIndex + 1
 }
 
-function getAddresses () {
+function getAddresses() {
     if (!emailProtectionUserData) return null
 
     return {
         personalAddress: `${emailProtectionUserData.userName}`,
-        privateAddress: `${emailProtectionUserData.nextAlias}`
+        privateAddress: `${emailProtectionUserData.nextAlias}`,
     }
 }
 
 globalThis.pixels = []
-function firePixel ({pixelName}) {
-     
+function firePixel({ pixelName }) {
     globalThis.pixels.push(pixelName)
 }
 
-function registeredTempAutofillContentScript () {
+function registeredTempAutofillContentScript() {
     return {
         debug: false,
         site: {
             isBroken: false,
             allowlisted: false,
-            enabledFeatures: ['autofill', 'incontextSignup']
-        }
+            enabledFeatures: ['autofill', 'incontextSignup'],
+        },
     }
 }
 
-function init () {
+function init() {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.registeredTempAutofillContentScript) {
             return sendResponse(registeredTempAutofillContentScript())
@@ -55,8 +56,8 @@ function init () {
             return sendResponse({
                 success: {
                     permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt,
-                    isInstalledRecently: true
-                }
+                    isInstalledRecently: true,
+                },
             })
         } else if (message.messageType === 'setIncontextSignupPermanentlyDismissedAt') {
             incontextSignupPermanentlyDismissedAt = message.value

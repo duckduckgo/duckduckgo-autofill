@@ -1,5 +1,5 @@
-const {readFileSync, writeFileSync, copyFileSync} = require('fs')
-const {join} = require('path')
+const { readFileSync, writeFileSync, copyFileSync } = require('fs')
+const { join } = require('path')
 const cwd = join(__dirname, '..')
 const filepath = (...path) => join(cwd, ...path)
 const srcPath = 'src'
@@ -11,7 +11,7 @@ copyAutofillScript()
 copyAutofillHTML()
 copySharedCredentials()
 
-function copyAutofillCSS () {
+function copyAutofillCSS() {
     const stylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-tooltip-styles.css')
     copyFileSync(stylesPath, filepath(distPath, 'autofill.css'))
     copyFileSync(stylesPath, filepath(appleDistPath, 'autofill.css'))
@@ -23,19 +23,19 @@ function copyAutofillCSS () {
     copyFileSync(hostStylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill-host-styles_chrome.css'))
 }
 
-function copyAutofillHTML () {
+function copyAutofillHTML() {
     const htmlFileName = 'TopAutofill.html'
     copyFileSync(filepath(srcPath, htmlFileName), filepath(appleDistPath, htmlFileName))
     copyFileSync(filepath(srcPath, htmlFileName), filepath(distPath, htmlFileName))
 }
 
-function copySharedCredentials () {
+function copySharedCredentials() {
     const sharedCredsFilePath = filepath('packages', 'password', 'shared-credentials.json')
     copyFileSync(sharedCredsFilePath, filepath(appleDistPath, 'shared-credentials.json'))
     copyFileSync(sharedCredsFilePath, filepath(distPath, 'shared-credentials.json'))
 }
 
-function copyFirefoxCSSFile (pathIn, pathOut) {
+function copyFirefoxCSSFile(pathIn, pathOut) {
     let css = readFileSync(pathIn, 'utf8')
 
     // Firefox and Chrome treat relative url differently in injected scripts. This fixes it.
@@ -45,7 +45,7 @@ function copyFirefoxCSSFile (pathIn, pathOut) {
     writeFileSync(pathOut, css)
 }
 
-function copyAutofillScript () {
+function copyAutofillScript() {
     const scriptFileName = 'autofill.js'
     const debugScriptFileName = 'autofill-debug.js'
     const source = '// INJECT isDDGTestMode HERE'

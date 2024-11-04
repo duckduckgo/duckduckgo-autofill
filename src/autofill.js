@@ -1,9 +1,8 @@
 // Polyfills/shims
 import './requestIdleCallback.js'
-import {createDevice} from './DeviceInterface.js'
-import {shouldLog} from './autofill-utils.js';
-
-(() => {
+import { createDevice } from './DeviceInterface.js'
+import { shouldLog } from './autofill-utils.js'
+;(() => {
     if (shouldLog()) {
         console.log('DuckDuckGo Autofill Active')
     }
@@ -16,7 +15,7 @@ import {shouldLog} from './autofill-utils.js';
                 const deviceInterface = createDevice()
                 deviceInterface.init()
             } else {
-                document.addEventListener('visibilitychange', startupAutofill, {once: true})
+                document.addEventListener('visibilitychange', startupAutofill, { once: true })
             }
         }
         startupAutofill()

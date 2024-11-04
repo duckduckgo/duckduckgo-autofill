@@ -1,27 +1,24 @@
-import {createAutofillScript, forwardConsoleMessages} from '../helpers/harness.js'
-import {createWebkitMocks, macosContentScopeReplacements} from '../helpers/mocks.webkit.js'
-import {test as base} from '@playwright/test'
-import {createAvailableInputTypes} from '../helpers/utils.js'
-import {constants} from '../helpers/mocks.js'
-import {passwordUpdatePage} from '../helpers/pages/passwordUpdatePage.js'
+import { createAutofillScript, forwardConsoleMessages } from '../helpers/harness.js'
+import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js'
+import { test as base } from '@playwright/test'
+import { createAvailableInputTypes } from '../helpers/utils.js'
+import { constants } from '../helpers/mocks.js'
+import { passwordUpdatePage } from '../helpers/pages/passwordUpdatePage.js'
 
 /**
  *  Tests for various auto-fill scenarios on macos
  */
 const test = base.extend({})
 
-const {personalAddress} = constants.fields.email
+const { personalAddress } = constants.fields.email
 const password = '123456'
 
 test.describe('Update password page', () => {
-    async function applyScript (page) {
-        await createAutofillScript()
-            .replaceAll(macosContentScopeReplacements())
-            .platform('macos')
-            .applyTo(page)
+    async function applyScript(page) {
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
     }
 
-    test('works as expected when there are saved credentials', async ({page}) => {
+    test('works as expected when there are saved credentials', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
         await createWebkitMocks()
@@ -30,7 +27,7 @@ test.describe('Update password page', () => {
                 id: '01',
                 username: personalAddress,
                 password,
-                credentialsProvider: 'duckduckgo'
+                credentialsProvider: 'duckduckgo',
             })
             .applyTo(page)
 
@@ -51,16 +48,18 @@ test.describe('Update password page', () => {
         await passwordUpdate.checkCurrentFieldHasValue(password)
     })
 
-    test('works as expected when there are no credentials', async ({page}) => {
+    test('works as expected when there are no credentials', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page)
         await createWebkitMocks()
-            .withAvailableInputTypes(createAvailableInputTypes({
-                credentials: {
-                    username: false,
-                    password: false
-                }
-            }))
+            .withAvailableInputTypes(
+                createAvailableInputTypes({
+                    credentials: {
+                        username: false,
+                        password: false,
+                    },
+                }),
+            )
             .applyTo(page)
 
         // Load the autofill.js script with replacements

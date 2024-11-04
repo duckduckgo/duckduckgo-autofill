@@ -2,17 +2,17 @@ import fs from 'fs'
 import path from 'path'
 import { getUnifiedExpiryDate } from './formatters.js'
 import { createScanner } from '../Scanner.js'
-import {getInputSubtype, createMatching, getInputVariant} from './matching.js'
+import { getInputSubtype, createMatching, getInputVariant } from './matching.js'
 import { Form } from './Form.js'
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 
-import {createAvailableInputTypes} from '../../integration-test/helpers/utils.js'
+import { createAvailableInputTypes } from '../../integration-test/helpers/utils.js'
 
 /**
  * @type {object[]}
  */
 const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, '../../test-forms/index.json')).toString('utf-8'))
-testCases.forEach(testCase => {
+testCases.forEach((testCase) => {
     testCase.testContent = fs.readFileSync(path.resolve(__dirname, '../../test-forms', testCase.html), 'utf-8')
 })
 
@@ -24,9 +24,7 @@ testCases.forEach(testCase => {
 const getCCFieldSubtype = (el, form) => {
     const matching = createMatching()
 
-    return matching
-        .forInput(el, form)
-        .subtypeFromMatchers('cc', el)
+    return matching.forInput(el, form).subtypeFromMatchers('cc', el)
 }
 
 const renderInputWithLabel = () => {
@@ -43,9 +41,9 @@ const renderInputWithLabel = () => {
 
 const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
-        arr.forEach(({text, shouldMatch = true}) => {
+        arr.forEach(({ text, shouldMatch = true }) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const {input, label, formElement} = renderInputWithLabel()
+                const { input, label, formElement } = renderInputWithLabel()
                 label.textContent = text
 
                 const subtype = getCCFieldSubtype(input, formElement)
@@ -66,38 +64,34 @@ afterEach(() => {
 describe('Input Classifiers', () => {
     const ccLabelTestCases = {
         cardName: [
-            {text: 'credit card name'},
-            {text: 'name on card'},
-            {text: 'card holder'},
-            {text: 'card owner'},
-            {text: 'card number', shouldMatch: false}
+            { text: 'credit card name' },
+            { text: 'name on card' },
+            { text: 'card holder' },
+            { text: 'card owner' },
+            { text: 'card number', shouldMatch: false },
         ],
-        cardNumber: [
-            {text: 'Credit Card Number'},
-            {text: 'number on card'},
-            {text: 'card owner', shouldMatch: false}
-        ],
+        cardNumber: [{ text: 'Credit Card Number' }, { text: 'number on card' }, { text: 'card owner', shouldMatch: false }],
         expirationMonth: [
-            {text: 'expiry month'},
-            {text: 'expiration month'},
-            {text: 'exp month'},
-            {text: 'Credit Card Number', shouldMatch: false},
-            {text: 'expiry year', shouldMatch: false},
-            {text: 'expiration year', shouldMatch: false},
-            {text: 'exp year', shouldMatch: false},
-            {text: 'card expiry yy', shouldMatch: false}
+            { text: 'expiry month' },
+            { text: 'expiration month' },
+            { text: 'exp month' },
+            { text: 'Credit Card Number', shouldMatch: false },
+            { text: 'expiry year', shouldMatch: false },
+            { text: 'expiration year', shouldMatch: false },
+            { text: 'exp year', shouldMatch: false },
+            { text: 'card expiry yy', shouldMatch: false },
         ],
         expirationYear: [
-            {text: 'expiry year'},
-            {text: 'expiration year'},
-            {text: 'exp year'},
-            {text: 'card expiry yy'},
-            {text: 'Credit Card Number', shouldMatch: false},
-            {text: 'expiry month', shouldMatch: false},
-            {text: 'expiration month', shouldMatch: false},
-            {text: 'exp month', shouldMatch: false},
-            {text: 'card expiry mo', shouldMatch: false}
-        ]
+            { text: 'expiry year' },
+            { text: 'expiration year' },
+            { text: 'exp year' },
+            { text: 'card expiry yy' },
+            { text: 'Credit Card Number', shouldMatch: false },
+            { text: 'expiry month', shouldMatch: false },
+            { text: 'expiration month', shouldMatch: false },
+            { text: 'exp month', shouldMatch: false },
+            { text: 'card expiry mo', shouldMatch: false },
+        ],
     }
     testRegexForCCLabels(ccLabelTestCases)
 
@@ -114,7 +108,7 @@ describe('Input Classifiers', () => {
             { text: 'mm - yy', expectedResult: '08 - 25' },
             { text: 'mm yy', expectedResult: '08 25' },
             { text: 'ie: 08.22', expectedResult: '08.25' },
-            { text: 'Expiry date: MM / YY', expectedResult: '08 / 25' }
+            { text: 'Expiry date: MM / YY', expectedResult: '08 / 25' },
         ])('when checking for "$text"', ({ text, expectedResult }) => {
             let elements
 
@@ -166,12 +160,13 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         expectedSubmitFalseNegatives = 0,
         title = '__test__',
         hasExtraWrappers = true,
-        testContent
+        testContent,
     } = testCase
 
-    const testTextString = expectedFailures.length > 0
-        ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
-        : `should NOT contain failures`
+    const testTextString =
+        expectedFailures.length > 0
+            ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
+            : `should NOT contain failures`
 
     it.concurrent(testTextString, async () => {
         document.body.innerHTML = ''
@@ -201,24 +196,26 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         })
 
         const deviceInterface = InterfacePrototype.default()
-        const availableInputTypes = createAvailableInputTypes({credentials: {username: true, password: true}})
+        const availableInputTypes = createAvailableInputTypes({ credentials: { username: true, password: true } })
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
         deviceInterface.settings.setFeatureToggles({
-            unknown_username_categorization: true
+            unknown_username_categorization: true,
         })
         const scanner = createScanner(deviceInterface)
         scanner.findEligibleInputs(document)
 
-        const detectedSubmitButtons = Array.from(scanner.forms.values()).map(form => form.submitButtons).flat()
+        const detectedSubmitButtons = Array.from(scanner.forms.values())
+            .map((form) => form.submitButtons)
+            .flat()
         /**
          * @type {HTMLElement[]}
          */
         const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
 
         // False positives are tracked in a Form instance but not marked with 'data-manual-submit' in the DOM.
-        const submitFalsePositives = detectedSubmitButtons.filter(button => !identifiedSubmitButtons.includes(button))
+        const submitFalsePositives = detectedSubmitButtons.filter((button) => !identifiedSubmitButtons.includes(button))
         // False negatives are marked with 'data-manual-submit' in the DOM but not tracked in a Form instance.
-        const submitFalseNegatives = identifiedSubmitButtons.filter(button => !detectedSubmitButtons.includes(button))
+        const submitFalseNegatives = identifiedSubmitButtons.filter((button) => !detectedSubmitButtons.includes(button))
 
         if (!generated) {
             expect(submitFalsePositives).toHaveLength(expectedSubmitFalsePositives)
@@ -231,7 +228,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         const automaticallyScoredFields = Array.from(document.querySelectorAll('[data-ddg-inputtype]'))
 
         const getDetailsFromFailure = (field) => {
-            const {manualScoring, ddgInputtype, ...rest} = field.dataset
+            const { manualScoring, ddgInputtype, ...rest } = field.dataset
             // @ts-ignore
             field.style = ''
             const [manualType, manualVariant] = field.getAttribute('data-manual-scoring')?.split('.') || []
@@ -240,23 +237,24 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                 attrs: {
                     name: field.name,
                     id: field.id,
-                    dataset: rest
+                    dataset: rest,
                 },
                 html: field.outerHTML,
                 inferredType: getInputSubtype(field),
                 inferredVariant: getInputVariant(field),
                 manualType,
-                manualVariant
+                manualVariant,
             }
         }
 
         const scores = manuallyScoredFields.map(getDetailsFromFailure)
 
         const falseScores = automaticallyScoredFields
-            .filter(field =>
-                !manuallyScoredFields.includes(field) &&
+            .filter(
+                (field) =>
+                    !manuallyScoredFields.includes(field) &&
                     field.getAttribute('data-ddg-inputtype') !== 'unknown' &&
-                    field.tabIndex !== -1
+                    field.tabIndex !== -1,
             )
             .map(getDetailsFromFailure)
 
@@ -266,13 +264,13 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             detected: detectedSubmitButtons.length,
             identified: identifiedSubmitButtons.length,
             falsePositives: submitFalsePositives.length,
-            falseNegatives: submitFalseNegatives.length
+            falseNegatives: submitFalseNegatives.length,
         }
 
-        testResults.push({testCase, scores, submitButtonScores})
+        testResults.push({ testCase, scores, submitButtonScores })
 
-        const bad = scores.filter(score => isThereAMismatch(score))
-        const failed = bad.map(score => getMismatchedValue(score))
+        const bad = scores.filter((score) => isThereAMismatch(score))
+        const failed = bad.map((score) => getMismatchedValue(score))
 
         if (bad.length !== expectedFailures.length) {
             for (const score of bad) {
@@ -284,7 +282,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                     '\ninferredVariant: ' + JSON.stringify(score.inferredVariant),
                     '\nid:           ' + JSON.stringify(score.attrs.id),
                     '\nname:         ' + JSON.stringify(score.attrs.name),
-                    '\nHTML:         ' + score.html
+                    '\nHTML:         ' + score.html,
                 )
             }
         }
@@ -308,14 +306,14 @@ afterAll(() => {
 
     testResults.forEach((result) => {
         const siteName = result.testCase.html.split('_')[0]
-        const testHasFailures = result.scores.some(score => isThereAMismatch(score))
+        const testHasFailures = result.scores.some((score) => isThereAMismatch(score))
         if (siteHasFailures[siteName] !== true) {
             siteHasFailures[siteName] = testHasFailures
         }
     })
 
     const allSites = Object.values(siteHasFailures).length
-    const failingSites = Object.values(siteHasFailures).filter(t => t === true).length
+    const failingSites = Object.values(siteHasFailures).filter((t) => t === true).length
     const proportionFailingSites = failingSites / allSites
 
     /* field statistics */
@@ -329,7 +327,7 @@ afterAll(() => {
 
     testResults.forEach((result) => {
         result.scores.forEach((field) => {
-            const {manualType, inferredType} = field
+            const { manualType, inferredType } = field
             if (!totalFieldsByType[manualType]) {
                 totalFieldsByType[manualType] = 0
                 totalFailuresByFieldType[manualType] = 0
@@ -356,23 +354,39 @@ afterAll(() => {
         '\n% of false positive fields:\t' + ((totalFalsePositives / totalFields) * 100).toFixed(1) + '%',
         '\n\t\t (' + totalFalsePositives + ' of ' + totalFields + ')',
         '\n% fields failing by type:',
-        '\n' + Object.keys(totalFieldsByType).sort().map((type) => {
-            return '\n' + (type + ':').padEnd(24) +
-                    (Math.round((totalFailuresByFieldType[type] / totalFieldsByType[type]) * 100) + '%').padEnd(4) +
-                    ' | ' + String(totalFailuresByFieldType[type]).padStart(4) +
-                    ' out of ' + String(totalFieldsByType[type]).padStart(4) + ' fields | ' +
-                    ' (' + Math.round((totalFailuresByFieldType[type] / totalFailedFields) * 100) + '% of all failures)'
-        }).join('') + '\n'
+        '\n' +
+            Object.keys(totalFieldsByType)
+                .sort()
+                .map((type) => {
+                    return (
+                        '\n' +
+                        (type + ':').padEnd(24) +
+                        (Math.round((totalFailuresByFieldType[type] / totalFieldsByType[type]) * 100) + '%').padEnd(4) +
+                        ' | ' +
+                        String(totalFailuresByFieldType[type]).padStart(4) +
+                        ' out of ' +
+                        String(totalFieldsByType[type]).padStart(4) +
+                        ' fields | ' +
+                        ' (' +
+                        Math.round((totalFailuresByFieldType[type] / totalFailedFields) * 100) +
+                        '% of all failures)'
+                    )
+                })
+                .join('') +
+            '\n',
     )
 
-    const totalDetectedButtons = testResults.map(test => test.submitButtonScores.detected).reduce((a, b) => a + b, 0)
-    const totalIdentifiedButtons = testResults.map(test => test.submitButtonScores.identified).reduce((a, b) => a + b, 0)
-    const totalFalsePositiveButtons = testResults.map(test => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0)
-    const totalFalseNegativeButtons = testResults.map(test => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0)
+    const totalDetectedButtons = testResults.map((test) => test.submitButtonScores.detected).reduce((a, b) => a + b, 0)
+    const totalIdentifiedButtons = testResults.map((test) => test.submitButtonScores.identified).reduce((a, b) => a + b, 0)
+    const totalFalsePositiveButtons = testResults.map((test) => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0)
+    const totalFalseNegativeButtons = testResults.map((test) => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0)
 
     console.log(
         'Submit button statistics:\n',
         totalDetectedButtons + ' detected (' + Math.round((totalFalsePositiveButtons / totalDetectedButtons) * 100) + '% false positive)\n',
-        totalIdentifiedButtons + ' manually identified (' + Math.round((totalFalseNegativeButtons / totalIdentifiedButtons) * 100) + '% false negative)\n'
+        totalIdentifiedButtons +
+            ' manually identified (' +
+            Math.round((totalFalseNegativeButtons / totalIdentifiedButtons) * 100) +
+            '% false negative)\n',
     )
 })

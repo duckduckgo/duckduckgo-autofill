@@ -1,34 +1,34 @@
-import {constants} from '../mocks.js'
+import { constants } from '../mocks.js'
 
-import {genericPage} from './genericPage.js'
+import { genericPage } from './genericPage.js'
 
 /**
  * @param {import("@playwright/test").Page} page
  */
-export function shadowDomPage (page) {
+export function shadowDomPage(page) {
     class ShadowDomPage {
-        async navigate () {
+        async navigate() {
             await page.goto(constants.pages.shadowDom)
         }
 
-        async showTheForm () {
+        async showTheForm() {
             const toggleBtn = page.locator(`button:has-text("Click here to sign up")`)
             await toggleBtn.click()
         }
 
-        async clickThePasswordField () {
+        async clickThePasswordField() {
             return genericPage(page).clickThePasswordField()
         }
 
-        passwordHasNoIcon () {
+        passwordHasNoIcon() {
             return genericPage(page).passwordHasNoIcon()
         }
 
-        passwordFieldShowsGenKey () {
+        passwordFieldShowsGenKey() {
             return genericPage(page).passwordFieldShowsGenKey()
         }
 
-        selectGeneratedPassword () {
+        selectGeneratedPassword() {
             return genericPage(page).selectGeneratedPassword()
         }
     }

@@ -2,7 +2,7 @@
 const timersPromises = require('node:timers/promises')
 const Asana = require('asana')
 const MarkdownIt = require('markdown-it')
-const {getLink} = require('./release-utils.js')
+const { getLink } = require('./release-utils.js')
 const md = new MarkdownIt()
 
 const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN
@@ -32,18 +32,18 @@ const platforms = {
     android: {
         displayName: 'Android',
         taskGid: '',
-        taskUrl: ''
+        taskUrl: '',
     },
     bsk: {
         displayName: 'BrowserServicesKit',
         taskGid: '',
-        taskUrl: ''
+        taskUrl: '',
     },
     windows: {
         displayName: 'Windows',
         taskGid: '',
-        taskUrl: ''
-    }
+        taskUrl: '',
+    },
 }
 
 let asana
@@ -51,8 +51,8 @@ let asana
 const setupAsana = () => {
     asana = Asana.Client.create({
         defaultHeaders: {
-            'Asana-Enable': 'new_project_templates,new_user_task_lists,new_goal_memberships'
-        }
+            'Asana-Enable': 'new_project_templates,new_user_task_lists,new_goal_memberships',
+        },
     }).useAccessToken(ASANA_ACCESS_TOKEN)
 }
 
@@ -60,7 +60,7 @@ const duplicateTemplateTask = (templateTaskGid) => {
     const duplicateOption = {
         include: ['notes', 'assignee', 'subtasks', 'projects'],
         name: `Autofill release ${version}`,
-        opt_fields: 'html_notes'
+        opt_fields: 'html_notes',
     }
 
     return asana.tasks.duplicateTask(templateTaskGid, duplicateOption)
@@ -103,17 +103,18 @@ const asanaCreateTasks = async () => {
 
     const { html_notes: notes } = await asana.tasks.getTask(new_task.gid, { opt_fields: 'html_notes' })
 
-    const updatedNotes =
-        notes.replace('[[version]]', version)
-            .replace('[[commit]]', commit)
-            .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
-            .replace('[[notes]]', releaseNotes)
-            .replace(/<\/?p>/ig, '\n')
-            // Asana supports only h1 and h2
-            .replace(/<(h3|h4)>/ig, '<h2>').replace(/<\/(h3|h4)>/ig, '</h2>')
+    const updatedNotes = notes
+        .replace('[[version]]', version)
+        .replace('[[commit]]', commit)
+        .replace('[[release_url]]', getLink(releaseUrl, 'Autofill Release'))
+        .replace('[[notes]]', releaseNotes)
+        .replace(/<\/?p>/gi, '\n')
+        // Asana supports only h1 and h2
+        .replace(/<(h3|h4)>/gi, '<h2>')
+        .replace(/<\/(h3|h4)>/gi, '</h2>')
 
     // Updating task and moving to Release section...
-    await asana.tasks.updateTask(new_task.gid, {html_notes: updatedNotes})
+    await asana.tasks.updateTask(new_task.gid, { html_notes: updatedNotes })
 
     await asana.tasks.addProjectForTask(new_task.gid, { project: autofillProjectGid, section: releaseSectionGid })
 
@@ -122,15 +123,13 @@ const asanaCreateTasks = async () => {
     await waitForJobSuccess(duplicateTaskJobGid)
 
     // Getting subtasks...
-    const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, {opt_fields: 'name,html_notes,permalink_url'})
+    const { data: subtasks } = await asana.tasks.getSubtasksForTask(new_task.gid, { opt_fields: 'name,html_notes,permalink_url' })
 
     // Updating subtasks and moving to appropriate projects...
     for (const subtask of subtasks) {
-        const {gid, name, html_notes, permalink_url} = subtask
+        const { gid, name, html_notes, permalink_url } = subtask
 
-        const platform = Object.keys(platforms).find(
-            (key) => name.includes(platforms[key].displayName)
-        )
+        const platform = Object.keys(platforms).find((key) => name.includes(platforms[key].displayName))
         if (!platform) throw new Error('Unexpected platform name: ' + name)
 
         platforms[platform].taskGid = gid
@@ -139,9 +138,7 @@ const asanaCreateTasks = async () => {
         const newName = name.replace('[[version]]', version)
         const projectGids = (html_notes.match(projectExtractorRegex)?.[1] || '').split(',')
 
-        const subtaskNotes =
-            html_notes.replace(projectExtractorRegex, '')
-                .replace('[[notes]]', updatedNotes)
+        const subtaskNotes = html_notes.replace(projectExtractorRegex, '').replace('[[notes]]', updatedNotes)
 
         await asana.tasks.updateTask(gid, { name: newName, html_notes: subtaskNotes })
 
@@ -150,15 +147,12 @@ const asanaCreateTasks = async () => {
         }
     }
 
-    const finalNotes =
-        updatedNotes
-            .replace('<li>[[pr_url]]</li>', version)
-            .replace('<li>[[extra_content]]</li>', version)
+    const finalNotes = updatedNotes.replace('<li>[[pr_url]]</li>', version).replace('<li>[[extra_content]]</li>', version)
 
-    await asana.tasks.updateTask(new_task.gid, {html_notes: finalNotes})
+    await asana.tasks.updateTask(new_task.gid, { html_notes: finalNotes })
 
     const jsonString = JSON.stringify(platforms)
-    return {stdout: jsonString}
+    return { stdout: jsonString }
 }
 
 asanaCreateTasks()
@@ -172,4 +166,4 @@ asanaCreateTasks()
         process.exit(1)
     })
 
-module.exports = {asanaCreateTasks}
+module.exports = { asanaCreateTasks }

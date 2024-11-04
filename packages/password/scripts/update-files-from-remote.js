@@ -1,5 +1,5 @@
-const {join} = require('path')
-const {writeFileSync} = require('fs')
+const { join } = require('path')
+const { writeFileSync } = require('fs')
 const { createHash } = require('node:crypto')
 const BASE_URL = 'https://raw.githubusercontent.com/apple/password-manager-resources/main/quirks/'
 
@@ -20,20 +20,20 @@ const paths = {
     rules: {
         localPath: join(__dirname, '..', 'rules.json'),
         remoteUrl: BASE_URL + 'password-rules.json',
-        displayName: 'Password rules'
+        displayName: 'Password rules',
     },
     sharedCreds: {
         localPath: join(__dirname, '..', 'shared-credentials.json'),
         remoteUrl: BASE_URL + 'shared-credentials.json',
-        displayName: 'Shared credentials'
-    }
+        displayName: 'Shared credentials',
+    },
 }
 
 /**
  * @param {import("fs").PathOrFileDescriptor} outputPath
  * @param {typeof import("../rules.json") | typeof import("../shared-credentials.json")} contents
  */
-function update (outputPath, contents) {
+function update(outputPath, contents) {
     writeFileSync(outputPath, JSON.stringify(contents, null, 2))
 }
 
@@ -41,7 +41,7 @@ function update (outputPath, contents) {
  * @param {string} url
  * @returns {Promise<any>}
  */
-async function download (url) {
+async function download(url) {
     const res = await fetch(url)
     if (res.ok) {
         return res.json()
@@ -57,7 +57,7 @@ async function download (url) {
  * @returns {string}
  * @source https://stackoverflow.com/a/74933512/1948947
  */
-function hashText (content, algo = 'sha256') {
+function hashText(content, algo = 'sha256') {
     const hashFunc = createHash(algo)
     hashFunc.update(content)
     return hashFunc.digest('hex')
@@ -69,7 +69,7 @@ function hashText (content, algo = 'sha256') {
  * @param {string} remote
  * @returns {boolean}
  */
-function areFilesDifferent (local, remote) {
+function areFilesDifferent(local, remote) {
     const localSha256 = hashText(JSON.stringify(local))
     const remoteSha256 = hashText(JSON.stringify(remote))
     return localSha256 !== remoteSha256
@@ -79,7 +79,7 @@ function areFilesDifferent (local, remote) {
  * Downloads the remote file, checks the SHA diff and updates local if different
  * @param {PathObj} pathObj
  */
-function updateFileIfNeeded (pathObj) {
+function updateFileIfNeeded(pathObj) {
     download(pathObj.remoteUrl)
         .then((remoteFile) => {
             const localFile = require(pathObj.localPath)

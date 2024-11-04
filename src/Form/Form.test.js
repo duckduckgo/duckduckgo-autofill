@@ -1,7 +1,7 @@
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
 import { createScanner } from '../Scanner.js'
-import {attachAndReturnGenericForm} from '../test-utils.js'
-import {constants} from '../constants.js'
+import { attachAndReturnGenericForm } from '../test-utils.js'
+import { constants } from '../constants.js'
 
 afterEach(() => {
     document.body.innerHTML = ''
@@ -18,7 +18,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with email',
@@ -29,7 +29,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with both email and username fields',
@@ -41,7 +41,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with readonly email fields and password',
@@ -52,7 +52,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with empty fields',
@@ -63,7 +63,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with only the password filled',
@@ -74,7 +74,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {password: 'testPassword'}}
+            expValues: { credentials: { password: 'testPassword' } },
         },
         {
             testCase: 'form with only the username filled',
@@ -85,7 +85,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form where the password is <=3 characters long',
@@ -96,7 +96,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with hidden email field',
@@ -107,7 +107,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with hidden username field',
@@ -118,7 +118,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with email in plain text',
@@ -129,7 +129,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'complete checkout form',
@@ -186,16 +186,16 @@ describe('Test the form class reading values correctly', () => {
                     addressPostalCode: '23901',
                     addressCountryCode: 'US',
                     phone: '6100000000',
-                    emailAddress: 'peppapig@email.com'
+                    emailAddress: 'peppapig@email.com',
                 },
                 creditCards: {
                     cardName: 'Peppa Pig',
                     cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
+                    cardNumber: '4111111111111111',
+                },
+            },
         },
         {
             testCase: 'test localised country code with text input',
@@ -207,7 +207,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: true,
-            expValues: {identities: {addressCountryCode: 'IT'}}
+            expValues: { identities: { addressCountryCode: 'IT' } },
         },
         {
             testCase: 'incomplete identities form',
@@ -217,7 +217,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: false,
-            expValues: {identities: undefined}
+            expValues: { identities: undefined },
         },
         {
             testCase: 'incomplete creditCard form',
@@ -227,7 +227,7 @@ describe('Test the form class reading values correctly', () => {
     <input autocomplete="cc-number" value="4111111111111111">
 </form>`,
             expHasValues: false,
-            expValues: {creditCards: undefined}
+            expValues: { creditCards: undefined },
         },
         {
             testCase: 'creditCard form with all values except cvv',
@@ -246,9 +246,9 @@ describe('Test the form class reading values correctly', () => {
                     cardName: 'Peppa Pig',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
+                    cardNumber: '4111111111111111',
+                },
+            },
         },
         {
             testCase: 'creditCard form with all values but name and identities name in adjacent field',
@@ -282,18 +282,13 @@ describe('Test the form class reading values correctly', () => {
                     cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
-        }
+                    cardNumber: '4111111111111111',
+                },
+            },
+        },
     ]
 
-    test.each(testCases)('Test $testCase', (
-        {
-            form,
-            expHasValues,
-            expValues
-        }) => {
+    test.each(testCases)('Test $testCase', ({ form, expHasValues, expValues }) => {
         const formEl = attachAndReturnGenericForm(form)
         const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
         const formClass = scanner.forms.get(formEl)

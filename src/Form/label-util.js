@@ -1,4 +1,4 @@
-import {removeExcessWhitespace} from './matching.js'
+import { removeExcessWhitespace } from './matching.js'
 const EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
 
 /**
@@ -13,7 +13,7 @@ const EXCLUDED_TAGS = ['BR', 'SCRIPT', 'NOSCRIPT', 'OPTION', 'STYLE']
  */
 const extractElementStrings = (element) => {
     const strings = new Set()
-    const _extractElementStrings = el => {
+    const _extractElementStrings = (el) => {
         if (EXCLUDED_TAGS.includes(el.tagName)) {
             return
         }
@@ -39,4 +39,4 @@ const extractElementStrings = (element) => {
     return [...strings]
 }
 
-export {extractElementStrings, EXCLUDED_TAGS}
+export { extractElementStrings, EXCLUDED_TAGS }

@@ -2,15 +2,9 @@
 const genericTextField = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`
 
-const formInputsSelectorWithoutSelect = [
-    genericTextField,
-    '[autocomplete=username]'
-]
+const formInputsSelectorWithoutSelect = [genericTextField, '[autocomplete=username]']
 
-const formInputsSelector = [
-    ...formInputsSelectorWithoutSelect,
-    'select'
-]
+const formInputsSelector = [...formInputsSelectorWithoutSelect, 'select']
 
 const submitButtonSelector = `
 input[type=submit],
@@ -41,7 +35,7 @@ input[autocomplete=email]`,
     // https://account.nicovideo.jp/login
     `input[name="mail_tel" i]`,
     // https://www.morningstar.it/it/membership/LoginPopup.aspx
-    `input[value=email i]`
+    `input[value=email i]`,
 ]
 
 const username = [
@@ -106,13 +100,13 @@ const username = [
     `input[can-field="accountName"]`,
     // https://www.fullcolor.com/customer/account/login/
     `input[name="login[username]"]`,
-    `input[placeholder^="username" i]`
+    `input[placeholder^="username" i]`,
 ]
 
 const password = [
     `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])`,
     // DDG's CloudSave feature https://duckduckgo.com/settings
-    'input.js-cloudsave-phrase'
+    'input.js-cloudsave-phrase',
 ]
 
 const cardName = `
@@ -251,7 +245,7 @@ const addressCountryCode = [
     `[name=country i], [autocomplete=country i],
      [name*=countryCode i], [name*=country-code i],
      [name*=countryName i], [name*=country-name i]`,
-    `select.idms-address-country` // Fix for Apple signup
+    `select.idms-address-country`, // Fix for Apple signup
 ]
 
 const birthdayDay = `
@@ -313,7 +307,7 @@ const selectors = {
     addressCountryCode,
     birthdayDay,
     birthdayMonth,
-    birthdayYear
+    birthdayYear,
 }
 
-module.exports = {selectors}
+module.exports = { selectors }

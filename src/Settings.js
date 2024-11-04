@@ -1,7 +1,7 @@
-import {validate} from '../packages/device-api/index.js'
-import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
-import {autofillEnabled} from './autofill-utils.js'
+import { validate } from '../packages/device-api/index.js'
+import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
+import { autofillSettingsSchema } from './deviceApiCalls/__generated__/validators.zod.js'
+import { autofillEnabled } from './autofill-utils.js'
 
 /**
  * Some Type helpers to prevent duplication
@@ -41,7 +41,7 @@ export class Settings {
      * @param {GlobalConfig} config
      * @param {DeviceApi} deviceApi
      */
-    constructor (config, deviceApi) {
+    constructor(config, deviceApi) {
         this.deviceApi = deviceApi
         this.globalConfig = config
     }
@@ -58,7 +58,7 @@ export class Settings {
      *
      * @returns {Promise<AutofillFeatureToggles>}
      */
-    async getFeatureToggles () {
+    async getFeatureToggles() {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration()
             const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
@@ -78,7 +78,7 @@ export class Settings {
      * support this going forward.
      * @returns {Promise<boolean|null>}
      */
-    async getEnabled () {
+    async getEnabled() {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration()
             const enabled = autofillEnabled(runtimeConfig)
@@ -104,7 +104,7 @@ export class Settings {
      *
      * @returns {Promise<string>} the device's current language code, or 'en' if something goes wrong
      */
-    async getLanguage () {
+    async getLanguage() {
         try {
             const conf = await this._getRuntimeConfiguration()
             const language = conf.userPreferences.language ?? 'en'
@@ -134,7 +134,7 @@ export class Settings {
      * @throws
      * @private
      */
-    async _getRuntimeConfiguration () {
+    async _getRuntimeConfiguration() {
         if (this._runtimeConfiguration) return this._runtimeConfiguration
         const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
         this._runtimeConfiguration = runtimeConfig
@@ -147,7 +147,7 @@ export class Settings {
      *
      * @returns {Promise<AvailableInputTypes>}
      */
-    async getAvailableInputTypes () {
+    async getAvailableInputTypes() {
         try {
             // This info is not needed in the topFrame, so we avoid calling the native app
             if (this.globalConfig.isTopFrame) {
@@ -173,7 +173,7 @@ export class Settings {
      *      enabled: boolean | null
      * }>}
      */
-    async refresh () {
+    async refresh() {
         this.setEnabled(await this.getEnabled())
         this.setFeatureToggles(await this.getFeatureToggles())
         this.setAvailableInputTypes(await this.getAvailableInputTypes())
@@ -189,7 +189,7 @@ export class Settings {
         return {
             featureToggles: this.featureToggles,
             availableInputTypes: this.availableInputTypes,
-            enabled: this.enabled
+            enabled: this.enabled,
         }
     }
 
@@ -202,7 +202,7 @@ export class Settings {
      * }} types
      * @returns {boolean}
      */
-    isTypeUnavailable ({mainType, subtype, variant}) {
+    isTypeUnavailable({ mainType, subtype, variant }) {
         if (mainType === 'unknown') return true
 
         // Ensure password generation feature flag is respected
@@ -220,7 +220,7 @@ export class Settings {
      * Requests data from remote
      * @returns {Promise<>}
      */
-    async populateData () {
+    async populateData() {
         const availableInputTypesFromRemote = await this.getAvailableInputTypes()
         this.setAvailableInputTypes(availableInputTypesFromRemote)
     }
@@ -234,8 +234,8 @@ export class Settings {
      * }} types
      * @returns {Promise<boolean>}
      */
-    async populateDataIfNeeded ({mainType, subtype, variant}) {
-        if (this.isTypeUnavailable({mainType, subtype, variant})) return false
+    async populateDataIfNeeded({ mainType, subtype, variant }) {
+        if (this.isTypeUnavailable({ mainType, subtype, variant })) return false
         if (this.availableInputTypes?.[mainType] === undefined) {
             await this.populateData()
             return true
@@ -254,7 +254,7 @@ export class Settings {
      * @param {import("./InContextSignup.js").InContextSignup?} inContextSignup
      * @returns {boolean}
      */
-    canAutofillType ({mainType, subtype, variant}, inContextSignup) {
+    canAutofillType({ mainType, subtype, variant }, inContextSignup) {
         if (this.isTypeUnavailable({ mainType, subtype, variant })) return false
 
         // If it's an email field and Email Protection is enabled, return true regardless of other options
@@ -284,29 +284,29 @@ export class Settings {
     }
 
     /** @returns {AutofillFeatureToggles} */
-    get featureToggles () {
+    get featureToggles() {
         if (this._featureToggles === null) throw new Error('feature toggles accessed before being set')
         return this._featureToggles
     }
 
     /** @param {AutofillFeatureToggles} input */
-    setFeatureToggles (input) {
+    setFeatureToggles(input) {
         this._featureToggles = input
     }
 
     /** @returns {AvailableInputTypes} */
-    get availableInputTypes () {
+    get availableInputTypes() {
         if (this._availableInputTypes === null) throw new Error('available input types accessed before being set')
         return this._availableInputTypes
     }
 
     /** @param {AvailableInputTypes} value */
-    setAvailableInputTypes (value) {
-        this._availableInputTypes = {...this._availableInputTypes, ...value}
+    setAvailableInputTypes(value) {
+        this._availableInputTypes = { ...this._availableInputTypes, ...value }
     }
 
     /** @returns {string} the user's current two-character language code, as provided by the platform */
-    get language () {
+    get language() {
         return this._language
     }
 
@@ -314,7 +314,7 @@ export class Settings {
      * Sets the current two-character language code.
      * @param {string} language - the language
      */
-    setLanguage (language) {
+    setLanguage(language) {
         this._language = language
     }
 
@@ -329,13 +329,13 @@ export class Settings {
             inputType_credentials: false,
             inputType_creditCards: false,
             inlineIcon_credentials: false,
-            unknown_username_categorization: false
+            unknown_username_categorization: false,
         },
         /** @type {AvailableInputTypes} */
         availableInputTypes: {
             credentials: {
                 username: false,
-                password: false
+                password: false,
             },
             identities: {
                 firstName: false,
@@ -351,22 +351,22 @@ export class Settings {
                 addressPostalCode: false,
                 addressCountryCode: false,
                 phone: false,
-                emailAddress: false
+                emailAddress: false,
             },
             creditCards: {
                 cardName: false,
                 cardSecurityCode: false,
                 expirationMonth: false,
                 expirationYear: false,
-                cardNumber: false
+                cardNumber: false,
             },
-            email: false
+            email: false,
         },
         /** @type {boolean | null} */
-        enabled: null
+        enabled: null,
     }
 
-    static default (globalConfig, deviceApi) {
+    static default(globalConfig, deviceApi) {
         const settings = new Settings(globalConfig, deviceApi)
         settings.setFeatureToggles(Settings.defaults.featureToggles)
         settings.setAvailableInputTypes(Settings.defaults.availableInputTypes)
@@ -374,14 +374,14 @@ export class Settings {
     }
 
     /** @returns {boolean|null} */
-    get enabled () {
+    get enabled() {
         return this._enabled
     }
 
     /**
      * @param {boolean|null} enabled
      */
-    setEnabled (enabled) {
+    setEnabled(enabled) {
         this._enabled = enabled
     }
 }

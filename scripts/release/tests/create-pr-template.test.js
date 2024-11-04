@@ -1,5 +1,5 @@
-import {createPRTemplate} from '../create-pr-template.js'
-import {data} from './release-test-helpers.js'
+import { createPRTemplate } from '../create-pr-template.js'
+import { data } from './release-test-helpers.js'
 
 describe('it returns the expected result', () => {
     test('for Android', () => {

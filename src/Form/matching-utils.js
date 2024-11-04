@@ -1,12 +1,12 @@
-import {shouldLog} from '../autofill-utils.js'
-import {getExplicitLabelsText} from './matching.js'
+import { shouldLog } from '../autofill-utils.js'
+import { getExplicitLabelsText } from './matching.js'
 
 /**
  * Logs out matching details when debug flag is active
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @param {MatchingResult} matchingResult
  */
-function logMatching (el, matchingResult) {
+function logMatching(el, matchingResult) {
     if (!shouldLog()) return
 
     const fieldIdentifier = getInputIdentifier(el)
@@ -14,7 +14,7 @@ function logMatching (el, matchingResult) {
     console.group(fieldIdentifier)
     console.log(el)
 
-    const {strategyName, matchedString, matchedFrom, matcherType} = matchingResult
+    const { strategyName, matchedString, matchedFrom, matcherType } = matchingResult
 
     const verb = getVerb(matchingResult)
 
@@ -33,7 +33,7 @@ function logMatching (el, matchingResult) {
  * @param {MatchingResult} matchingResult
  * @return {string}
  */
-function getVerb (matchingResult) {
+function getVerb(matchingResult) {
     if (matchingResult.matched) return 'Matched'
 
     if (matchingResult.proceed === false) return 'Matched forceUnknown'
@@ -48,7 +48,7 @@ function getVerb (matchingResult) {
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @returns {string}
  */
-function getInputIdentifier (el) {
+function getInputIdentifier(el) {
     const label = getExplicitLabelsText(el)
     const placeholder = el instanceof HTMLInputElement && el.placeholder ? `${el.placeholder}` : ''
     const name = el.name ? `${el.name}` : ''
@@ -62,7 +62,7 @@ function getInputIdentifier (el) {
  * @param el
  * @param allStrings
  */
-function logUnmatched (el, allStrings) {
+function logUnmatched(el, allStrings) {
     if (!shouldLog()) return
 
     const fieldIdentifier = getInputIdentifier(el)
@@ -76,4 +76,4 @@ function logUnmatched (el, allStrings) {
     console.groupEnd()
 }
 
-export {logMatching, logUnmatched}
+export { logMatching, logUnmatched }

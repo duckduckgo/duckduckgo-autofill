@@ -15,31 +15,31 @@ const mockInterface = {
     settings: {
         availableInputTypes: {
             credentials: true,
-            identities: true
+            identities: true,
         },
         featureToggles: {
             inputType_credentials: true,
             inputType_identities: true,
-            inputType_creditCards: true
-        }
+            inputType_creditCards: true,
+        },
     },
     globalConfig: {
-        isDDGApp: true
+        isDDGApp: true,
     },
-    getLocalIdentities () {
+    getLocalIdentities() {
         return []
     },
-    isDeviceSignedIn () {
+    isDeviceSignedIn() {
         return false
     },
-    attachTooltip (...args) {
+    attachTooltip(...args) {
         console.log('device.attachTooltip', args)
-    }
+    },
 }
 
 // @ts-ignore
 const scanner = createScanner(mockInterface, {
-    initialDelay: 1 // allow debugging directly on macOS - if this was 0 then it would try to use requestIdleCallback, which is absent in WebKit
+    initialDelay: 1, // allow debugging directly on macOS - if this was 0 then it would try to use requestIdleCallback, which is absent in WebKit
 })
 
 scanner.init()

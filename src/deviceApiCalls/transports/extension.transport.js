@@ -1,4 +1,4 @@
-import {DeviceApiTransport} from '../../../packages/device-api/index.js'
+import { DeviceApiTransport } from '../../../packages/device-api/index.js'
 import {
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
@@ -7,19 +7,19 @@ import {
     GetIncontextSignupDismissedAtCall,
     CloseAutofillParentCall,
     StartEmailProtectionSignupCall,
-    AddDebugFlagCall
+    AddDebugFlagCall,
 } from '../__generated__/deviceApiCalls.js'
-import {isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig} from '../../autofill-utils.js'
-import {Settings} from '../../Settings.js'
+import { isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig } from '../../autofill-utils.js'
+import { Settings } from '../../Settings.js'
 
 export class ExtensionTransport extends DeviceApiTransport {
     /** @param {GlobalConfig} globalConfig */
-    constructor (globalConfig) {
+    constructor(globalConfig) {
         super()
         this.config = globalConfig
     }
 
-    async send (deviceApiCall) {
+    async send(deviceApiCall) {
         if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
             return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this))
         }
@@ -45,8 +45,7 @@ export class ExtensionTransport extends DeviceApiTransport {
             return deviceApiCall.result(await extensionSpecificAddDebugFlag(deviceApiCall.params))
         }
 
-        if (deviceApiCall instanceof CloseAutofillParentCall ||
-            deviceApiCall instanceof StartEmailProtectionSignupCall) {
+        if (deviceApiCall instanceof CloseAutofillParentCall || deviceApiCall instanceof StartEmailProtectionSignupCall) {
             return // noop
         }
 
@@ -58,7 +57,7 @@ export class ExtensionTransport extends DeviceApiTransport {
  * @param {ExtensionTransport} deviceApi
  * @returns {Promise<ReturnType<GetRuntimeConfigurationCall['result']>>}
  */
-async function extensionSpecificRuntimeConfiguration (deviceApi) {
+async function extensionSpecificRuntimeConfiguration(deviceApi) {
     const contentScope = await getContentScopeConfig()
     const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
     const incontextSignupEnabled = isIncontextSignupEnabledFromProcessedConfig(contentScope)
@@ -77,42 +76,42 @@ async function extensionSpecificRuntimeConfiguration (deviceApi) {
                             featureToggles: {
                                 ...Settings.defaults.featureToggles,
                                 emailProtection: emailProtectionEnabled,
-                                emailProtection_incontext_signup: incontextSignupEnabled
-                            }
-                        }
-                    }
-                }
+                                emailProtection_incontext_signup: incontextSignupEnabled,
+                            },
+                        },
+                    },
+                },
             },
             // @ts-ignore
-            userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains || []
-        }
+            userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains || [],
+        },
     }
 }
 
-async function extensionSpecificGetAvailableInputTypes () {
+async function extensionSpecificGetAvailableInputTypes() {
     const contentScope = await getContentScopeConfig()
     const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
 
     return {
         success: {
             ...Settings.defaults.availableInputTypes,
-            email: emailProtectionEnabled
-        }
+            email: emailProtectionEnabled,
+        },
     }
 }
 
-async function getContentScopeConfig () {
-    return new Promise(resolve => {
+async function getContentScopeConfig() {
+    return new Promise((resolve) => {
         chrome.runtime.sendMessage(
             {
                 registeredTempAutofillContentScript: true,
-                documentUrl: window.location.href
+                documentUrl: window.location.href,
             },
             (response) => {
                 if (response && 'site' in response) {
                     resolve(response)
                 }
-            }
+            },
         )
     })
 }
@@ -120,16 +119,16 @@ async function getContentScopeConfig () {
 /**
  * @param {import('../__generated__/validators-ts').SendJSPixelParams} params
  */
-async function extensionSpecificSendPixel (params) {
-    return new Promise(resolve => {
+async function extensionSpecificSendPixel(params) {
+    return new Promise((resolve) => {
         chrome.runtime.sendMessage(
             {
                 messageType: 'sendJSPixel',
-                options: params
+                options: params,
             },
             () => {
                 resolve(true)
-            }
+            },
         )
     })
 }
@@ -137,29 +136,29 @@ async function extensionSpecificSendPixel (params) {
 /**
  * @param {import('../__generated__/validators-ts').AddDebugFlagParams} params
  */
-async function extensionSpecificAddDebugFlag (params) {
-    return new Promise(resolve => {
+async function extensionSpecificAddDebugFlag(params) {
+    return new Promise((resolve) => {
         chrome.runtime.sendMessage(
             {
                 messageType: 'addDebugFlag',
-                options: params
+                options: params,
             },
             () => {
                 resolve(true)
-            }
+            },
         )
     })
 }
 
-async function extensionSpecificGetIncontextSignupDismissedAt () {
-    return new Promise(resolve => {
+async function extensionSpecificGetIncontextSignupDismissedAt() {
+    return new Promise((resolve) => {
         chrome.runtime.sendMessage(
             {
-                messageType: 'getIncontextSignupDismissedAt'
+                messageType: 'getIncontextSignupDismissedAt',
             },
             (response) => {
                 resolve(response)
-            }
+            },
         )
     })
 }
@@ -167,16 +166,16 @@ async function extensionSpecificGetIncontextSignupDismissedAt () {
 /**
  * @param {import('../__generated__/validators-ts').SetIncontextSignupPermanentlyDismissedAt} params
  */
-async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall (params) {
-    return new Promise(resolve => {
+async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(params) {
+    return new Promise((resolve) => {
         chrome.runtime.sendMessage(
             {
                 messageType: 'setIncontextSignupPermanentlyDismissedAt',
-                options: params
+                options: params,
             },
             () => {
                 resolve(true)
-            }
+            },
         )
     })
 }

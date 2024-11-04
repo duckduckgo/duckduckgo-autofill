@@ -1,7 +1,7 @@
-import {AppleDeviceInterface} from './AppleDeviceInterface.js'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
-import {overlayApi} from './overlayApi.js'
-import {createNotification} from '../../packages/device-api/index.js'
+import { AppleDeviceInterface } from './AppleDeviceInterface.js'
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
+import { overlayApi } from './overlayApi.js'
+import { createNotification } from '../../packages/device-api/index.js'
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -32,25 +32,28 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @override
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createUIController () {
-        return new HTMLTooltipUIController({
-            tooltipKind: /** @type {const} */ ('modern'),
-            device: this
-        }, {
-            wrapperClass: 'top-autofill',
-            tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
-            remove: async () => this._closeAutofillParent(),
-            testMode: this.isTestMode()
-        })
+    createUIController() {
+        return new HTMLTooltipUIController(
+            {
+                tooltipKind: /** @type {const} */ ('modern'),
+                device: this,
+            },
+            {
+                wrapperClass: 'top-autofill',
+                tooltipPositionClass: () => '.wrapper { transform: none; }',
+                setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
+                remove: async () => this._closeAutofillParent(),
+                testMode: this.isTestMode(),
+            },
+        )
     }
 
-    async startCredentialsImportFlow () {
+    async startCredentialsImportFlow() {
         this._closeAutofillParent()
         await this.deviceApi.notify(createNotification('startCredentialsImportFlow'))
     }
 
-    addDeviceListeners () {
+    addDeviceListeners() {
         /**
          * The native side will send a custom event 'mouseMove' to indicate
          * that the HTMLTooltip should fake an element being focused.
@@ -87,7 +90,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @override
      * @returns {Promise<void>}
      */
-    async setupAutofill () {
+    async setupAutofill() {
         await this._getAutofillInitData()
         await this.inContextSignup.init()
         const signedIn = await this._checkDeviceSignedIn()
@@ -97,7 +100,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
         }
     }
 
-    async postInit () {
+    async postInit() {
         // setup overlay API pieces
         this.overlay.showImmediately()
         super.postInit()
@@ -112,7 +115,7 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
      * @param {string} type
      */
-    async selectedDetail (data, type) {
+    async selectedDetail(data, type) {
         return this.overlay.selectedDetail(data, type)
     }
 }

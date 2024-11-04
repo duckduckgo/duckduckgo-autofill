@@ -1,12 +1,12 @@
 import { isEventWithinDax } from '../../autofill-utils.js'
-import {getInputConfigFromType} from '../../Form/inputTypeConfig.js'
-import {getSubtypeFromType} from '../../Form/matching.js'
+import { getInputConfigFromType } from '../../Form/inputTypeConfig.js'
+import { getSubtypeFromType } from '../../Form/matching.js'
 import DataHTMLTooltip from '../DataHTMLTooltip.js'
 import EmailHTMLTooltip from '../EmailHTMLTooltip.js'
 import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js'
-import {defaultOptions} from '../HTMLTooltip.js'
+import { defaultOptions } from '../HTMLTooltip.js'
 import CredentialsImportTooltip from '../CredentialsImportTooltip.js'
-import {UIController} from './UIController.js'
+import { UIController } from './UIController.js'
 
 /**
  * @typedef HTMLTooltipControllerOptions
@@ -41,7 +41,7 @@ export class HTMLTooltipUIController extends UIController {
      * @param {HTMLTooltipControllerOptions} options
      * @param {Partial<import('../HTMLTooltip.js').HTMLTooltipOptions>} htmlTooltipOptions
      */
-    constructor (options, htmlTooltipOptions = defaultOptions) {
+    constructor(options, htmlTooltipOptions = defaultOptions) {
         super()
         this._options = options
         this._htmlTooltipOptions = Object.assign({}, defaultOptions, htmlTooltipOptions)
@@ -61,7 +61,7 @@ export class HTMLTooltipUIController extends UIController {
      * Cleans up after this UI controller by removing the tooltip and all
      * listeners.
      */
-    destroy () {
+    destroy() {
         this.removeTooltip()
         window.removeEventListener('pointerdown', this, true)
         window.removeEventListener('pointerup', this, true)
@@ -70,7 +70,7 @@ export class HTMLTooltipUIController extends UIController {
     /**
      * @param {import('./UIController').AttachArgs} args
      */
-    attach (args) {
+    attach(args) {
         if (this.getActiveTooltip()) {
             return
         }
@@ -91,7 +91,7 @@ export class HTMLTooltipUIController extends UIController {
      * @param {TopContextData} topContextData
      * @return {import("../HTMLTooltip").HTMLTooltip}
      */
-    createTooltip (getPosition, topContextData) {
+    createTooltip(getPosition, topContextData) {
         this._attachListeners()
         const config = getInputConfigFromType(topContextData.inputType)
         this._activeInputType = topContextData.inputType
@@ -105,44 +105,46 @@ export class HTMLTooltipUIController extends UIController {
             isIncontextSignupAvailable: () => {
                 const subtype = getSubtypeFromType(topContextData.inputType)
                 return !!this._options.device.inContextSignup?.isAvailable(subtype)
-            }
-
+            },
         }
 
         const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0
         if (topContextData.credentialsImport && hasNoCredentialsData) {
-            this._options.device.firePixel({pixelName: 'autofill_import_credentials_prompt_shown'})
-            return new CredentialsImportTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-                .render(this._options.device, {
+            this._options.device.firePixel({ pixelName: 'autofill_import_credentials_prompt_shown' })
+            return new CredentialsImportTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(
+                this._options.device,
+                {
                     onStarted: () => {
                         this._options.device.credentialsImport.started()
                     },
                     onDismissed: () => {
                         this._options.device.credentialsImport.dismissed()
-                    }
-                })
+                    },
+                },
+            )
         }
 
         if (this._options.tooltipKind === 'legacy') {
-            this._options.device.firePixel({pixelName: 'autofill_show'})
-            return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-                .render(this._options.device)
+            this._options.device.firePixel({ pixelName: 'autofill_show' })
+            return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device)
         }
 
         if (this._options.tooltipKind === 'emailsignup') {
-            this._options.device.firePixel({pixelName: 'incontext_show'})
-            return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-                .render(this._options.device)
+            this._options.device.firePixel({ pixelName: 'incontext_show' })
+            return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device)
         }
 
         // collect the data for each item to display
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData)
         // convert the data into tool tip item renderers
-        const asRenderers = data.map(d => config.tooltipItem(d))
+        const asRenderers = data.map((d) => config.tooltipItem(d))
 
         // construct the autofill
-        return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions)
-            .render(this._options.device, config, asRenderers, {
+        return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(
+            this._options.device,
+            config,
+            asRenderers,
+            {
                 onSelect: (id) => {
                     this._onSelect(topContextData.inputType, data, id)
                 },
@@ -154,17 +156,18 @@ export class HTMLTooltipUIController extends UIController {
                 },
                 onIncontextSignup: () => {
                     this._onIncontextSignup()
-                }
-            })
+                },
+            },
+        )
     }
 
-    updateItems (data) {
+    updateItems(data) {
         if (this._activeInputType === 'unknown') return
 
         const config = getInputConfigFromType(this._activeInputType)
 
         // convert the data into tool tip item renderers
-        const asRenderers = data.map(d => config.tooltipItem(d))
+        const asRenderers = data.map((d) => config.tooltipItem(d))
 
         const activeTooltip = this.getActiveTooltip()
         if (activeTooltip instanceof DataHTMLTooltip) {
@@ -180,7 +183,7 @@ export class HTMLTooltipUIController extends UIController {
                 },
                 onIncontextSignup: () => {
                     this._onIncontextSignup()
-                }
+                },
             })
         }
         // TODO: can we remove this timeout once implemented with real APIs?
@@ -190,43 +193,43 @@ export class HTMLTooltipUIController extends UIController {
         }, 10)
     }
 
-    _attachListeners () {
+    _attachListeners() {
         window.addEventListener('input', this)
         window.addEventListener('keydown', this, true)
     }
 
-    _removeListeners () {
+    _removeListeners() {
         window.removeEventListener('input', this)
         window.removeEventListener('keydown', this, true)
     }
 
-    handleEvent (event) {
+    handleEvent(event) {
         switch (event.type) {
-        case 'keydown':
-            if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
-                if (event.code === 'Escape') {
-                    event.preventDefault()
-                    event.stopImmediatePropagation()
+            case 'keydown':
+                if (['Escape', 'Tab', 'Enter'].includes(event.code)) {
+                    if (event.code === 'Escape') {
+                        event.preventDefault()
+                        event.stopImmediatePropagation()
+                    }
+                    this.removeTooltip()
                 }
+                break
+            case 'input':
                 this.removeTooltip()
+                break
+            case 'pointerdown': {
+                this._pointerDownListener(event)
+                break
             }
-            break
-        case 'input':
-            this.removeTooltip()
-            break
-        case 'pointerdown': {
-            this._pointerDownListener(event)
-            break
-        }
-        case 'pointerup': {
-            this._pointerUpListener(event)
-            break
-        }
+            case 'pointerup': {
+                this._pointerUpListener(event)
+                break
+            }
         }
     }
 
     // Global listener for event delegation
-    _pointerDownListener (e) {
+    _pointerDownListener(e) {
         if (!e.isTrusted) return
         // Ignore events on the Dax icon, we handle those elsewhere
         if (isEventWithinDax(e, e.target)) return
@@ -235,14 +238,14 @@ export class HTMLTooltipUIController extends UIController {
         if (e.target.nodeName === 'DDG-AUTOFILL') {
             this._handleClickInTooltip(e)
         } else {
-            this.removeTooltip().catch(e => {
+            this.removeTooltip().catch((e) => {
                 console.error('error removing tooltip', e)
             })
         }
     }
 
     // Global listener for event delegation
-    _pointerUpListener (e) {
+    _pointerUpListener(e) {
         if (!e.isTrusted) return
         // Ignore events on the Dax icon, we handle those elsewhere
         if (isEventWithinDax(e, e.target)) return
@@ -253,7 +256,7 @@ export class HTMLTooltipUIController extends UIController {
         }
     }
 
-    _handleClickInTooltip (e) {
+    _handleClickInTooltip(e) {
         e.preventDefault()
         e.stopImmediatePropagation()
 
@@ -264,7 +267,7 @@ export class HTMLTooltipUIController extends UIController {
         activeTooltip?.dispatchClick()
     }
 
-    async removeTooltip (_via) {
+    async removeTooltip(_via) {
         this._htmlTooltipOptions.remove()
         if (this._activeTooltip) {
             this._removeListeners()
@@ -286,14 +289,14 @@ export class HTMLTooltipUIController extends UIController {
     /**
      * @returns {import("../HTMLTooltip.js").HTMLTooltip|null}
      */
-    getActiveTooltip () {
+    getActiveTooltip() {
         return this._activeTooltip
     }
 
     /**
      * @param {import("../HTMLTooltip.js").HTMLTooltip} value
      */
-    setActiveTooltip (value) {
+    setActiveTooltip(value) {
         this._activeTooltip = value
     }
 
@@ -306,7 +309,7 @@ export class HTMLTooltipUIController extends UIController {
      * @param {import('../../Form/matching').SupportedTypes} inputType - The input type for the current field
      * @param {TopContextData} topContextData
      */
-    _dataForAutofill (config, inputType, topContextData) {
+    _dataForAutofill(config, inputType, topContextData) {
         return this._options.device.dataForAutofill(config, inputType, topContextData)
     }
 
@@ -319,7 +322,7 @@ export class HTMLTooltipUIController extends UIController {
      * @param {(CreditCardObject | IdentityObject | CredentialsObject)[]} data
      * @param {CreditCardObject['id']|IdentityObject['id']|CredentialsObject['id']} id
      */
-    _onSelect (inputType, data, id) {
+    _onSelect(inputType, data, id) {
         return this._options.device.onSelect(inputType, data, id)
     }
 
@@ -330,21 +333,21 @@ export class HTMLTooltipUIController extends UIController {
      * @returns {*}
      * @private
      */
-    _onManage (type) {
+    _onManage(type) {
         this.removeTooltip()
         switch (type) {
-        case 'credentials':
-            return this._options.device.openManagePasswords()
-        case 'creditCards':
-            return this._options.device.openManageCreditCards()
-        case 'identities':
-            return this._options.device.openManageIdentities()
-        default:
+            case 'credentials':
+                return this._options.device.openManagePasswords()
+            case 'creditCards':
+                return this._options.device.openManageCreditCards()
+            case 'identities':
+                return this._options.device.openManageIdentities()
+            default:
             // noop
         }
     }
 
-    _onIncontextSignupDismissed ({ hasOtherOptions }) {
+    _onIncontextSignupDismissed({ hasOtherOptions }) {
         this._options.device.inContextSignup?.onIncontextSignupDismissed({ shouldHideTooltip: !hasOtherOptions })
 
         // If there are other options available, just force a re-render
@@ -357,11 +360,11 @@ export class HTMLTooltipUIController extends UIController {
         }
     }
 
-    _onIncontextSignup () {
+    _onIncontextSignup() {
         this._options.device.inContextSignup?.onIncontextSignup()
     }
 
-    isActive () {
+    isActive() {
         return Boolean(this.getActiveTooltip())
     }
 }

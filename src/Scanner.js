@@ -1,20 +1,10 @@
 import { Form } from './Form/Form.js'
 import { constants } from './constants.js'
 import { createMatching } from './Form/matching.js'
-import {
-    logPerformance,
-    isFormLikelyToBeUsedAsPageWrapper,
-    shouldLog, pierceShadowTree,
-    findEnclosedElements
-} from './autofill-utils.js'
+import { logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog, pierceShadowTree, findEnclosedElements } from './autofill-utils.js'
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
 
-const {
-    MAX_INPUTS_PER_PAGE,
-    MAX_FORMS_PER_PAGE,
-    MAX_INPUTS_PER_FORM,
-    ATTR_INPUT_TYPE
-} = constants
+const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants
 
 /**
  * @typedef {{
@@ -54,7 +44,7 @@ const defaultScannerOptions = {
     // large pages which are unlikely to require autofill anyway.
     maxInputsPerPage: MAX_INPUTS_PER_PAGE,
     maxFormsPerPage: MAX_FORMS_PER_PAGE,
-    maxInputsPerForm: MAX_INPUTS_PER_FORM
+    maxInputsPerForm: MAX_INPUTS_PER_FORM,
 }
 
 /**
@@ -84,7 +74,7 @@ class DefaultScanner {
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
      */
-    constructor (device, options) {
+    constructor(device, options) {
         this.device = device
         this.matching = createMatching()
         this.options = options
@@ -97,7 +87,7 @@ class DefaultScanner {
      * on page load and load scripts asynchronously, so our initial scan didn't set the autoprompt correctly
      * @returns {boolean}
      */
-    get shouldAutoprompt () {
+    get shouldAutoprompt() {
         return Date.now() - this.initTimeStamp <= 1500
     }
 
@@ -107,7 +97,7 @@ class DefaultScanner {
      * Call the returned function to remove listeners.
      * @returns {(reason: string, ...rest) => void}
      */
-    init () {
+    init() {
         if (this.device.globalConfig.isExtension) {
             this.device.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }))
         }
@@ -136,7 +126,7 @@ class DefaultScanner {
     /**
      * Scan the page and begin observing changes
      */
-    scanAndObserve () {
+    scanAndObserve() {
         window.performance?.mark?.('initial_scanner:init:start')
         this.findEligibleInputs(document)
         window.performance?.mark?.('initial_scanner:init:end')
@@ -147,7 +137,7 @@ class DefaultScanner {
     /**
      * @param context
      */
-    findEligibleInputs (context) {
+    findEligibleInputs(context) {
         // Avoid autofill on Email Protection web app
         if (this.device.globalConfig.isDDGDomain) {
             return this
@@ -185,7 +175,7 @@ class DefaultScanner {
      * @param {string} reason
      * @param {any} rest
      */
-    setMode (mode, reason, ...rest) {
+    setMode(mode, reason, ...rest) {
         this.mode = mode
 
         if (shouldLog()) {
@@ -204,7 +194,7 @@ class DefaultScanner {
         this.changedElements.clear()
         this.mutObs.disconnect()
 
-        this.forms.forEach(form => {
+        this.forms.forEach((form) => {
             form.destroy()
         })
         this.forms.clear()
@@ -214,7 +204,7 @@ class DefaultScanner {
         activeInput?.focus()
     }
 
-    get isStopped () {
+    get isStopped() {
         return this.mode === 'stopped'
     }
 
@@ -222,7 +212,7 @@ class DefaultScanner {
      * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
      * @returns {HTMLFormElement|HTMLElement}
      */
-    getParentForm (input) {
+    getParentForm(input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
             if (input.form) {
                 // Use input.form unless it encloses most of the DOM
@@ -282,7 +272,7 @@ class DefaultScanner {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement|null} form
      */
-    addInput (input, form = null) {
+    addInput(input, form = null) {
         if (this.isStopped) return
 
         const parentForm = form || this.getParentForm(input)
@@ -351,7 +341,7 @@ class DefaultScanner {
      *
      * @param {(HTMLElement|Document)[]} htmlElements
      */
-    enqueue (htmlElements) {
+    enqueue(htmlElements) {
         // if the buffer limit is reached, stop trying to track elements and process body instead.
         if (this.changedElements.size >= this.options.bufferSize) {
             this.rescanAll = true
@@ -378,7 +368,7 @@ class DefaultScanner {
      * re-scan the changed elements, but only if they
      * are still present in the DOM
      */
-    processChangedElements () {
+    processChangedElements() {
         if (this.rescanAll) {
             this.findEligibleInputs(document)
             return
@@ -414,12 +404,12 @@ class DefaultScanner {
         this.enqueue(outgoing)
     })
 
-    handleEvent (event) {
+    handleEvent(event) {
         switch (event.type) {
-        case 'pointerdown':
-        case 'focus':
-            this.scanOnClick(event)
-            break
+            case 'pointerdown':
+            case 'focus':
+                this.scanOnClick(event)
+                break
         }
     }
 
@@ -427,7 +417,7 @@ class DefaultScanner {
      * Scan clicked input fields, even if they're within a shadow tree
      * @param {FocusEvent | PointerEvent} event
      */
-    scanOnClick (event) {
+    scanOnClick(event) {
         // If the scanner is stopped, just return
         if (this.isStopped || !(event.target instanceof Element)) return
 
@@ -438,10 +428,7 @@ class DefaultScanner {
 
         // If it's an input we haven't already scanned,
         // find the enclosing parent form, and scan it.
-        if (
-            realTarget instanceof HTMLInputElement &&
-            !realTarget.hasAttribute(ATTR_INPUT_TYPE)
-        ) {
+        if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
             const parentForm = this.getParentForm(realTarget)
             if (parentForm && parentForm instanceof HTMLFormElement) {
                 const hasShadowTree = event.target?.shadowRoot != null
@@ -461,13 +448,11 @@ class DefaultScanner {
  * @param {Partial<ScannerOptions>} [scannerOptions]
  * @returns {Scanner}
  */
-function createScanner (device, scannerOptions) {
+function createScanner(device, scannerOptions) {
     return new DefaultScanner(device, {
         ...defaultScannerOptions,
-        ...scannerOptions
+        ...scannerOptions,
     })
 }
 
-export {
-    createScanner
-}
+export { createScanner }

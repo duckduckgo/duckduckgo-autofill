@@ -1,6 +1,6 @@
-import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
-import {constants} from './constants.js'
-import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js'
+import { constants } from './constants.js'
+import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils'
 
 const SIGN_IN_MSG = { signMeIn: true }
 
@@ -22,7 +22,7 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     }
 
     return new Promise((resolve) => {
-        const handler = e => {
+        const handler = (e) => {
             if (e.origin !== window.origin) return
             if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) return
 
@@ -97,15 +97,15 @@ const setValueForInput = (el, val, config) => {
     }
 
     // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
-    el.dispatchEvent(new Event('keydown', {bubbles: true}))
+    el.dispatchEvent(new Event('keydown', { bubbles: true }))
 
     originalSet?.call(el, val)
 
     const events = [
-        new Event('input', {bubbles: true}),
+        new Event('input', { bubbles: true }),
         // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
-        new Event('keyup', {bubbles: true}),
-        new Event('change', {bubbles: true})
+        new Event('keyup', { bubbles: true }),
+        new Event('change', { bubbles: true }),
     ]
     events.forEach((ev) => el.dispatchEvent(ev))
     // We call this again to make sure all forms are happy
@@ -123,10 +123,10 @@ const setValueForInput = (el, val, config) => {
 const fireEventsOnSelect = (el) => {
     /** @type {Event[]} */
     const events = [
-        new Event('mousedown', {bubbles: true}),
-        new Event('mouseup', {bubbles: true}),
-        new Event('click', {bubbles: true}),
-        new Event('change', {bubbles: true})
+        new Event('mousedown', { bubbles: true }),
+        new Event('mouseup', { bubbles: true }),
+        new Event('click', { bubbles: true }),
+        new Event('change', { bubbles: true }),
     ]
 
     // Events fire on the select el, not option
@@ -145,8 +145,7 @@ const fireEventsOnSelect = (el) => {
 const setValueForSelect = (el, val) => {
     const subtype = getInputSubtype(el)
     const isMonth = subtype.includes('Month')
-    const isZeroBasedNumber = isMonth &&
-        el.options[0].value === '0' && el.options.length === 12
+    const isZeroBasedNumber = isMonth && el.options[0].value === '0' && el.options.length === 12
     const stringVal = String(val)
     const numberVal = Number(val)
 
@@ -200,27 +199,30 @@ const setValue = (el, val, config) => {
 const safeExecute = (el, fn, _opts = {}) => {
     // TODO: temporary fix to misterious bug in Chrome
     // const {checkVisibility = true} = opts
-    const intObs = new IntersectionObserver((changes) => {
-        for (const change of changes) {
-            // Feature detection
-            if (typeof change.isVisible === 'undefined') {
-                // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
-                change.isVisible = true
+    const intObs = new IntersectionObserver(
+        (changes) => {
+            for (const change of changes) {
+                // Feature detection
+                if (typeof change.isVisible === 'undefined') {
+                    // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
+                    change.isVisible = true
+                }
+                if (change.isIntersecting) {
+                    /**
+                     * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
+                     * During testing it was found that windows does not `change.isVisible` properly.
+                     */
+                    // TODO: temporary fix to misterious bug in Chrome
+                    // if (!checkVisibility || change.isVisible) {
+                    //     fn()
+                    // }
+                    fn()
+                }
             }
-            if (change.isIntersecting) {
-                /**
-                 * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
-                 * During testing it was found that windows does not `change.isVisible` properly.
-                 */
-                // TODO: temporary fix to misterious bug in Chrome
-                // if (!checkVisibility || change.isVisible) {
-                //     fn()
-                // }
-                fn()
-            }
-        }
-        intObs.disconnect()
-    }, {trackVisibility: true, delay: 100})
+            intObs.disconnect()
+        },
+        { trackVisibility: true, delay: 100 },
+    )
     intObs.observe(el)
 }
 
@@ -235,10 +237,7 @@ const isPotentiallyViewable = (el) => {
     const visibility = computedStyle.getPropertyValue('visibility')
     const opacityThreshold = 0.6
 
-    return el.clientWidth !== 0 &&
-        el.clientHeight !== 0 &&
-        opacity > opacityThreshold &&
-        visibility !== 'hidden'
+    return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > opacityThreshold && visibility !== 'hidden'
 }
 
 /**
@@ -247,7 +246,7 @@ const isPotentiallyViewable = (el) => {
  * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
  */
 const getDaxBoundingBox = (input) => {
-    const {right: inputRight, top: inputTop, height: inputHeight} = input.getBoundingClientRect()
+    const { right: inputRight, top: inputTop, height: inputHeight } = input.getBoundingClientRect()
     const inputRightPadding = parseInt(getComputedStyle(input).paddingRight)
     const width = 30
     const height = 30
@@ -256,7 +255,7 @@ const getDaxBoundingBox = (input) => {
     const left = right - width
     const bottom = top + height
 
-    return {bottom, height, left, right, top, width, x: left, y: top}
+    return { bottom, height, left, right, top, width, x: left, y: top }
 }
 
 /**
@@ -266,7 +265,7 @@ const getDaxBoundingBox = (input) => {
  * @returns {boolean}
  */
 const isEventWithinDax = (e, input) => {
-    const {left, right, top, bottom} = getDaxBoundingBox(input)
+    const { left, right, top, bottom } = getDaxBoundingBox(input)
     const withinX = e.clientX >= left && e.clientX <= right
     const withinY = e.clientY >= top && e.clientY <= bottom
 
@@ -278,16 +277,15 @@ const isEventWithinDax = (e, input) => {
  * @param {HTMLElement} el
  * @param {Object<string, string>} styles
  */
-const addInlineStyles = (el, styles) => Object.entries(styles)
-    .forEach(([property, val]) => el.style.setProperty(property, val, 'important'))
+const addInlineStyles = (el, styles) =>
+    Object.entries(styles).forEach(([property, val]) => el.style.setProperty(property, val, 'important'))
 
 /**
  * Removes inline styles from a prop:value object
  * @param {HTMLElement} el
  * @param {Object<string, string>} styles
  */
-const removeInlineStyles = (el, styles) => Object.keys(styles)
-    .forEach(property => el.style.removeProperty(property))
+const removeInlineStyles = (el, styles) => Object.keys(styles).forEach((property) => el.style.removeProperty(property))
 
 const ADDRESS_DOMAIN = '@duck.com'
 /**
@@ -302,9 +300,9 @@ const formatDuckAddress = (address) => address + ADDRESS_DOMAIN
  * @param {string} str The string to escape.
  * @return {string} The escaped string.
  */
-function escapeXML (str) {
+function escapeXML(str) {
     const replacements = { '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;', '/': '&#x2F;' }
-    return String(str).replace(/[&"'<>/]/g, m => replacements[m])
+    return String(str).replace(/[&"'<>/]/g, (m) => replacements[m])
 }
 
 /**
@@ -320,18 +318,19 @@ const isLikelyASubmitButton = (el, matching) => {
 
     if (
         (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-        el.getAttribute('name') === 'submit') && // is called "submit"
+            el.getAttribute('name') === 'submit') && // is called "submit"
         !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
-    ) return true
+    )
+        return true
 
     return (
-        safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
-        safeRegexTest(/submit/i, dataTestId) ||
-        safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
-        (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className)) // it's a large element 250x40px
-    ) &&
-    el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
+        (safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
+            safeRegexTest(/submit/i, dataTestId) ||
+            safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
+            (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className))) && // it's a large element 250x40px
+        el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
+        !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
+    )
 }
 
 /**
@@ -385,7 +384,7 @@ const getTextShallow = (el) => {
  * @param {string} [hostname]
  * @returns {boolean}
  */
-function isLocalNetwork (hostname = window.location.hostname) {
+function isLocalNetwork(hostname = window.location.hostname) {
     return (
         ['localhost', '', '::1'].includes(hostname) ||
         hostname.includes('127.0.0.1') ||
@@ -397,13 +396,14 @@ function isLocalNetwork (hostname = window.location.hostname) {
 }
 
 // Extracted from lib/DDG/Util/Constants.pm
-const tldrs = /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i
+const tldrs =
+    /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i
 /**
  * Check if hostname is a valid top-level domain
  * @param {string} [hostname]
  * @returns {boolean}
  */
-function isValidTLD (hostname = window.location.hostname) {
+function isValidTLD(hostname = window.location.hostname) {
     return tldrs.test(hostname) || hostname === 'fill.dev'
 }
 
@@ -425,7 +425,7 @@ const wasAutofilledByChrome = (input) => {
  * Checks if we should log form analysis debug info to the console
  * @returns {boolean}
  */
-function shouldLog () {
+function shouldLog() {
     return readDebugSetting('ddg-autofill-debug')
 }
 
@@ -433,7 +433,7 @@ function shouldLog () {
  * Checks if we should log performance info to the console
  * @returns {boolean}
  */
-function shouldLogPerformance () {
+function shouldLogPerformance() {
     return readDebugSetting('ddg-autofill-perf')
 }
 
@@ -442,7 +442,7 @@ function shouldLogPerformance () {
  * @param setting
  * @returns {boolean}
  */
-function readDebugSetting (setting) {
+function readDebugSetting(setting) {
     // sessionStorage throws in invalid schemes like data: and file:
     try {
         return window.sessionStorage?.getItem(setting) === 'true'
@@ -451,7 +451,7 @@ function readDebugSetting (setting) {
     }
 }
 
-function logPerformance (markName) {
+function logPerformance(markName) {
     if (shouldLogPerformance()) {
         const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`)
         console.log(`${markName} took ${Math.round(measurement?.duration)}ms`)
@@ -464,7 +464,7 @@ function logPerformance (markName) {
  * @param {Function} callback
  * @returns {Function}
  */
-function whenIdle (callback) {
+function whenIdle(callback) {
     let timer
     return (...args) => {
         cancelIdleCallback(timer)
@@ -478,7 +478,7 @@ function whenIdle (callback) {
  * @param {number} totalLength
  * @returns {string}
  */
-function truncateFromMiddle (string, totalLength = 30) {
+function truncateFromMiddle(string, totalLength = 30) {
     if (totalLength < 4) {
         throw new Error('Do not use with strings shorter than 4')
     }
@@ -494,7 +494,7 @@ function truncateFromMiddle (string, totalLength = 30) {
  * @param {HTMLFormElement} form
  * @returns {boolean}
  */
-function isFormLikelyToBeUsedAsPageWrapper (form) {
+function isFormLikelyToBeUsedAsPageWrapper(form) {
     if (form.parentElement !== document.body) return false
 
     const formChildren = form.querySelectorAll('*').length
@@ -507,7 +507,7 @@ function isFormLikelyToBeUsedAsPageWrapper (form) {
      * Percentage of the formChildren on the total body elements
      * form * 100 / body = x
      */
-    const formChildrenPercentage = formChildren * 100 / bodyChildren
+    const formChildrenPercentage = (formChildren * 100) / bodyChildren
 
     return formChildrenPercentage > 50
 }
@@ -518,7 +518,7 @@ function isFormLikelyToBeUsedAsPageWrapper (form) {
  * @param {String} string
  * @returns {boolean}
  */
-function safeRegexTest (regex, string) {
+function safeRegexTest(regex, string) {
     if (!string || !regex || string.length > constants.TEXT_LENGTH_CUTOFF) return false
 
     return regex.test(string)
@@ -530,8 +530,8 @@ function safeRegexTest (regex, string) {
  * @param {typeof Element} [wantedTargetType]
  * @returns {EventTarget | null}
  */
-function pierceShadowTree (event, wantedTargetType) {
-    const {target} = event
+function pierceShadowTree(event, wantedTargetType) {
+    const { target } = event
 
     // Sanity checks
     if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target
@@ -544,7 +544,7 @@ function pierceShadowTree (event, wantedTargetType) {
     }
 
     // Otherwise, search the wanted target, or return the original target
-    return clickStack.find(el => el instanceof wantedTargetType) || target
+    return clickStack.find((el) => el instanceof wantedTargetType) || target
 }
 
 /**
@@ -552,7 +552,7 @@ function pierceShadowTree (event, wantedTargetType) {
  * @param {Document | DocumentOrShadowRoot} root
  * @returns {Element | null}
  */
-function getActiveElement (root = document) {
+function getActiveElement(root = document) {
     const activeElement = root.activeElement
 
     if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement
@@ -572,7 +572,7 @@ function getActiveElement (root = document) {
  * @param {string} selector
  * @returns {Element[]}
  */
-function findEnclosedElements (root, selector) {
+function findEnclosedElements(root, selector) {
     // Check if there are any normal elements that match the selector
     const elements = root.querySelectorAll(selector)
     if (elements.length > 0) {
@@ -626,5 +626,5 @@ export {
     safeRegexTest,
     pierceShadowTree,
     getActiveElement,
-    findEnclosedElements
+    findEnclosedElements,
 }

@@ -1,5 +1,5 @@
-import {attachAndReturnGenericForm} from '../../test-utils.js'
-import {Form} from '../../Form/Form.js'
+import { attachAndReturnGenericForm } from '../../test-utils.js'
+import { Form } from '../../Form/Form.js'
 import InterfacePrototype from '../InterfacePrototype.js'
 
 describe('InterfacePrototype', function () {
@@ -16,11 +16,13 @@ describe('InterfacePrototype', function () {
         const mockedDoc = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
 
         const device = InterfacePrototype.default()
-        jest.spyOn(device.settings, 'refresh').mockImplementation(() => Promise.resolve({
-            enabled: true,
-            featureToggles: {},
-            availableInputTypes: {}
-        }))
+        jest.spyOn(device.settings, 'refresh').mockImplementation(() =>
+            Promise.resolve({
+                enabled: true,
+                featureToggles: {},
+                availableInputTypes: {},
+            }),
+        )
         await device.init()
 
         const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController)
@@ -35,7 +37,7 @@ describe('InterfacePrototype', function () {
             input,
             click: null,
             trigger: 'userInitiated',
-            triggerMetaData: {type: 'explicit-opt-in'}
+            triggerMetaData: { type: 'explicit-opt-in' },
         })
         expect(uiController.attach).not.toHaveBeenCalled()
 

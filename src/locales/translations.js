@@ -55,5 +55,5 @@ export default {
     sl: { autofill: slAutofill },
     sv: { autofill: svAutofill },
     tr: { autofill: trAutofill },
-    xa: { autofill: xaAutofill }
+    xa: { autofill: xaAutofill },
 }

@@ -1,5 +1,5 @@
-import {createAvailableInputTypes, withDataType} from './utils.js'
-import {constants} from './mocks.js'
+import { createAvailableInputTypes, withDataType } from './utils.js'
+import { constants } from './mocks.js'
 
 /**
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').GetAutofillDataResponse} GetAutofillDataResponse
@@ -9,7 +9,7 @@ import {constants} from './mocks.js'
  * @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').CheckCredentialsProviderStatusResult} CheckCredentialsProviderStatusTypes
  */
 
-const {personalAddress} = constants.fields.email
+const { personalAddress } = constants.fields.email
 const password = '123456'
 
 /**
@@ -23,10 +23,10 @@ export const iosContentScopeReplacements = (overrides = {}) => {
             features: {
                 autofill: {
                     exceptions: [],
-                    state: 'enabled'
-                }
+                    state: 'enabled',
+                },
             },
-            unprotectedTemporary: []
+            unprotectedTemporary: [],
         },
         userUnprotectedDomains: [],
         userPreferences: {
@@ -37,15 +37,15 @@ export const iosContentScopeReplacements = (overrides = {}) => {
                     settings: {
                         featureToggles: {
                             inlineIcon_credentials: true,
-                            ...overrides.featureToggles
-                        }
-                    }
-                }
-            }
+                            ...overrides.featureToggles,
+                        },
+                    },
+                },
+            },
         },
         availableInputTypes: {
-            ...createAvailableInputTypes(overrides.availableInputTypes)
-        }
+            ...createAvailableInputTypes(overrides.availableInputTypes),
+        },
     }
 }
 
@@ -65,10 +65,10 @@ export const macosContentScopeReplacements = (opts = {}) => {
             features: {
                 autofill: {
                     exceptions: [],
-                    state: 'enabled'
-                }
+                    state: 'enabled',
+                },
             },
-            unprotectedTemporary: []
+            unprotectedTemporary: [],
         },
         userUnprotectedDomains: [],
         userPreferences: {
@@ -87,16 +87,16 @@ export const macosContentScopeReplacements = (opts = {}) => {
                             password_generation: true,
                             credentials_saving: true,
                             inlineIcon_credentials: true,
-                            ...featureToggles
-                        }
-                    }
-                }
-            }
+                            ...featureToggles,
+                        },
+                    },
+                },
+            },
         },
         availableInputTypes: {
-            ...createAvailableInputTypes(availableInputTypes)
+            ...createAvailableInputTypes(availableInputTypes),
         },
-        ...overlay ? macosWithOverlay() : macosWithoutOverlay()
+        ...(overlay ? macosWithOverlay() : macosWithoutOverlay()),
     }
 }
 
@@ -107,7 +107,7 @@ export const macosWithOverlay = () => {
     return {
         hasModernWebkitAPI: true,
         isTopFrame: false,
-        supportsTopFrame: true
+        supportsTopFrame: true,
     }
 }
 
@@ -153,8 +153,8 @@ export const macosWithoutOverlay = () => {
             'startEmailProtectionSignup',
             'closeEmailProtectionTab',
             'startCredentialsImportFlow',
-            'credentialsImportFlowPermanentlyDismissed'
-        ]
+            'credentialsImportFlowPermanentlyDismissed',
+        ],
     }
 }
 
@@ -173,7 +173,7 @@ export const macosWithoutOverlay = () => {
  * @public
  * @param {"macos" | "ios"} platform
  */
-export function createWebkitMocks (platform = 'macos') {
+export function createWebkitMocks(platform = 'macos') {
     /**
      * Note: this will be mutated
      */
@@ -184,29 +184,29 @@ export function createWebkitMocks (platform = 'macos') {
                 identities: [],
                 credentials: [],
                 creditCards: [],
-                serializedInputContext: '{}'
-            }
+                serializedInputContext: '{}',
+            },
         },
         emailHandlerCheckAppSignedInStatus: {
-            isAppSignedIn: false
+            isAppSignedIn: false,
         },
         emailHandlerGetAddresses: {
             /** @type {EmailAddresses} */
             addresses: {
                 personalAddress: '',
-                privateAddress: ''
-            }
+                privateAddress: '',
+            },
         },
         emailHandlerRefreshAlias: null,
         emailHandlerGetAlias: {
             /** @type {string|null} */
-            alias: null
+            alias: null,
         },
         closeAutofillParent: {},
-        getSelectedCredentials: [{type: 'stop'}],
+        getSelectedCredentials: [{ type: 'stop' }],
         pmHandlerGetAutofillCredentials: {
             /** @type {CredentialsObject|null} */
-            success: null
+            success: null,
         },
         showAutofillParent: {},
         setSize: {},
@@ -221,16 +221,16 @@ export function createWebkitMocks (platform = 'macos') {
                     features: {
                         autofill: {
                             state: 'enabled',
-                            exceptions: []
-                        }
+                            exceptions: [],
+                        },
                     },
-                    unprotectedTemporary: []
+                    unprotectedTemporary: [],
                 },
                 userUnprotectedDomains: [],
                 userPreferences: {
                     debug: false,
                     platform: {
-                        name: 'macos'
+                        name: 'macos',
                     },
                     features: {
                         autofill: {
@@ -244,14 +244,14 @@ export function createWebkitMocks (platform = 'macos') {
                                     password_generation: true,
                                     credentials_saving: true,
                                     inlineIcon_credentials: true,
-                                    email: true
-                                }
-                            }
-                        }
-                    }
+                                    email: true,
+                                },
+                            },
+                        },
+                    },
                 },
-                availableInputTypes: constants.availableInputTypes
-            }
+                availableInputTypes: constants.availableInputTypes,
+            },
         },
         storeFormData: null,
         selectedDetail: null,
@@ -268,12 +268,12 @@ export function createWebkitMocks (platform = 'macos') {
         startEmailProtectionSignup: null,
         closeEmailProtectionTab: null,
         startCredentialsImportFlow: {},
-        credentialsImportFlowPermanentlyDismissed: null
+        credentialsImportFlowPermanentlyDismissed: null,
     }
 
     /** @type {MockBuilder<any, webkitBase>} */
     const builder = {
-        withPrivateEmail (email) {
+        withPrivateEmail(email) {
             webkitBase.emailHandlerCheckAppSignedInStatus.isAppSignedIn = true
             if (platform === 'ios') {
                 webkitBase.emailHandlerGetAlias.alias = email
@@ -282,7 +282,7 @@ export function createWebkitMocks (platform = 'macos') {
             }
             return this
         },
-        withPersonalEmail (email) {
+        withPersonalEmail(email) {
             webkitBase.emailHandlerCheckAppSignedInStatus.isAppSignedIn = true
             if (platform === 'ios') {
                 webkitBase.emailHandlerGetAlias.alias = email
@@ -291,31 +291,29 @@ export function createWebkitMocks (platform = 'macos') {
             }
             return this
         },
-        withEmailProtection (emails) {
-            return this
-                .withPrivateEmail(emails.privateAddress)
-                .withPersonalEmail(emails.personalAddress)
+        withEmailProtection(emails) {
+            return this.withPrivateEmail(emails.privateAddress).withPersonalEmail(emails.personalAddress)
         },
-        withIncontextSignipDismissed () {
+        withIncontextSignipDismissed() {
             webkitBase.getIncontextSignupDismissedAt.success.permanentlyDismissedAt = 946684800000
             return this
         },
-        withIdentity (identity, inputType = 'identities.firstName') {
+        withIdentity(identity, inputType = 'identities.firstName') {
             webkitBase.pmHandlerGetAutofillInitData.success.identities.push(identity)
-            const topContextData = {inputType}
+            const topContextData = { inputType }
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             return this
         },
-        withCreditCard (creditCard, inputType = 'creditCards.cardNumber') {
+        withCreditCard(creditCard, inputType = 'creditCards.cardNumber') {
             webkitBase.pmHandlerGetAutofillInitData.success.creditCards.push(creditCard)
-            const topContextData = {inputType}
+            const topContextData = { inputType }
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             return this
         },
-        withCredentialsImport (inputType) {
+        withCredentialsImport(inputType) {
             const topContextData = {
                 inputType,
-                credentialsImport: true
+                credentialsImport: true,
             }
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             return this
@@ -323,20 +321,20 @@ export function createWebkitMocks (platform = 'macos') {
         withCredentials: function (credentials, inputType = 'credentials.username') {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials)
             /** @type {TopContextData} */
-            const topContextData = {inputType}
+            const topContextData = { inputType }
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData)
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials
             webkitBase.getAutofillData = { success: { credentials, action: 'fill' } }
             webkitBase.getSelectedCredentials = [
                 // Simulates macOS overlay polling. This means the user hasn't
                 // selected anything for 5 polls, then selects.
-                {type: 'none'},
-                {type: 'none'},
-                {type: 'none'},
-                {type: 'none'},
-                {type: 'none'},
-                {type: 'ok', data: credentials, configType: 'credentials'},
-                {type: 'stop'}
+                { type: 'none' },
+                { type: 'none' },
+                { type: 'none' },
+                { type: 'none' },
+                { type: 'none' },
+                { type: 'ok', data: credentials, configType: 'credentials' },
+                { type: 'stop' },
             ]
             return this
         },
@@ -344,25 +342,30 @@ export function createWebkitMocks (platform = 'macos') {
             return withDataType(this, data)
         },
         withAvailableInputTypes: function (inputTypes) {
-            webkitBase.getAvailableInputTypes = {success: inputTypes}
+            webkitBase.getAvailableInputTypes = { success: inputTypes }
             return this
         },
         withFeatureToggles: function (featureToggles) {
-            Object.assign(webkitBase.getRuntimeConfiguration.success.userPreferences.features.autofill.settings.featureToggles, featureToggles)
+            Object.assign(
+                webkitBase.getRuntimeConfiguration.success.userPreferences.features.autofill.settings.featureToggles,
+                featureToggles,
+            )
             return this
         },
         withAskToUnlockProvider: function () {
             webkitBase.askToUnlockProvider = {
                 success: {
                     status: 'unlocked',
-                    credentials: [{
-                        id: '2',
-                        password: '',
-                        username: constants.fields.email.personalAddress,
-                        credentialsProvider: 'bitwarden'
-                    }],
-                    availableInputTypes: createAvailableInputTypes()
-                }
+                    credentials: [
+                        {
+                            id: '2',
+                            password: '',
+                            username: constants.fields.email.personalAddress,
+                            credentialsProvider: 'bitwarden',
+                        },
+                    ],
+                    availableInputTypes: createAvailableInputTypes(),
+                },
             }
             return this
         },
@@ -373,49 +376,43 @@ export function createWebkitMocks (platform = 'macos') {
                     success: {
                         status: 'unlocked',
                         credentials: [],
-                        availableInputTypes: {credentials: {password: false, username: false}}
-                    }
+                        availableInputTypes: { credentials: { password: false, username: false } },
+                    },
                 },
                 {
                     // unlocked with credentials available
                     success: {
                         status: 'unlocked',
-                        credentials: [
-                            {id: '3', password, username: personalAddress, credentialsProvider: 'bitwarden'}
-                        ],
-                        availableInputTypes: {credentials: {password: true, username: true}}
-                    }
+                        credentials: [{ id: '3', password, username: personalAddress, credentialsProvider: 'bitwarden' }],
+                        availableInputTypes: { credentials: { password: true, username: true } },
+                    },
                 },
                 {
                     // unlocked with only a password field
                     success: {
                         status: 'unlocked',
-                        credentials: [
-                            {id: '3', password, username: '', credentialsProvider: 'bitwarden'}
-                        ],
-                        availableInputTypes: {credentials: {password: true, username: false}}
-                    }
+                        credentials: [{ id: '3', password, username: '', credentialsProvider: 'bitwarden' }],
+                        availableInputTypes: { credentials: { password: true, username: false } },
+                    },
                 },
                 {
                     // back to being locked
                     success: {
                         status: 'locked',
-                        credentials: [
-                            {id: 'provider_locked', password: '', username: ''}
-                        ],
-                        availableInputTypes: {credentials: {password: true, username: true}}
-                    }
-                }
+                        credentials: [{ id: 'provider_locked', password: '', username: '' }],
+                        availableInputTypes: { credentials: { password: true, username: true } },
+                    },
+                },
             ]
             return this
         },
-        tap (fn) {
+        tap(fn) {
             fn(webkitBase)
             return this
         },
-        async applyTo (page) {
+        async applyTo(page) {
             if (webkitBase.getAvailableInputTypes === null) {
-                webkitBase.getAvailableInputTypes = {success: {}}
+                webkitBase.getAvailableInputTypes = { success: {} }
             }
             return withMockedWebkit(page, { ...webkitBase })
         },
@@ -432,7 +429,7 @@ export function createWebkitMocks (platform = 'macos') {
                 delete webkitBase[handler]
             }
             return this
-        }
+        },
     }
 
     return builder
@@ -445,11 +442,11 @@ export function createWebkitMocks (platform = 'macos') {
  * @param {import("@playwright/test").Page} page
  * @param {Record<string, any>} mocks
  */
-async function withMockedWebkit (page, mocks) {
+async function withMockedWebkit(page, mocks) {
     await page.addInitScript((mocks) => {
         window.__playwright_autofill = { mocks: { calls: [] } }
         window.webkit = {
-            messageHandlers: {}
+            messageHandlers: {},
         }
         for (const [msgName, response] of Object.entries(mocks)) {
             window.webkit.messageHandlers[msgName] = {
@@ -485,7 +482,7 @@ async function withMockedWebkit (page, mocks) {
                     }
 
                     return JSON.stringify(thisResponse)
-                }
+                },
             }
         }
 
@@ -502,18 +499,15 @@ async function withMockedWebkit (page, mocks) {
          * @param {Record<string, any>} response - the data that will be encrypted and returned back to the page
          * @returns {Promise<{ciphertext: *[], tag: *[]}>}
          */
-        async function encryptResponse (message, response) {
+        async function encryptResponse(message, response) {
             /**
              * Create a `CryptoKey` based on the incoming message's 'key' field
              * @type {CryptoKey}
              */
-            const keyEncoded = await crypto.subtle.importKey(
-                'raw',
-                new Uint8Array(message.messageHandling.key),
-                'AES-GCM',
-                false,
-                ['encrypt', 'decrypt']
-            )
+            const keyEncoded = await crypto.subtle.importKey('raw', new Uint8Array(message.messageHandling.key), 'AES-GCM', false, [
+                'encrypt',
+                'decrypt',
+            ])
 
             /**
              * Encode the response JSON
@@ -527,10 +521,10 @@ async function withMockedWebkit (page, mocks) {
             const encryptedContent = await window.crypto.subtle.encrypt(
                 {
                     name: 'AES-GCM',
-                    iv: new Uint8Array(message.messageHandling.iv)
+                    iv: new Uint8Array(message.messageHandling.iv),
                 },
                 keyEncoded,
-                encodedJson
+                encodedJson,
             )
 
             /**
@@ -538,7 +532,7 @@ async function withMockedWebkit (page, mocks) {
              */
             return {
                 ciphertext: [...new Uint8Array(encryptedContent)],
-                tag: []
+                tag: [],
             }
         }
     }, mocks)

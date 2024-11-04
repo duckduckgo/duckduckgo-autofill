@@ -1,11 +1,8 @@
-import {
-    createAutofillScript,
-    forwardConsoleMessages
-} from '../helpers/harness.js'
-import {test as base, expect} from '@playwright/test'
-import {createWindowsMocks} from '../helpers/mocks.windows.js'
-import {testContext} from '../helpers/test-context.js'
-import {signupPage} from '../helpers/pages/signupPage.js'
+import { createAutofillScript, forwardConsoleMessages } from '../helpers/harness.js'
+import { test as base, expect } from '@playwright/test'
+import { createWindowsMocks } from '../helpers/mocks.windows.js'
+import { testContext } from '../helpers/test-context.js'
+import { signupPage } from '../helpers/pages/signupPage.js'
 
 /**
  *  Tests for autofill scenarios on Windows
@@ -14,7 +11,7 @@ const test = testContext(base)
 
 test.describe('Windows secure messaging', () => {
     test.describe('When autofill script runs', () => {
-        test('the window.chrome.webview variables have been removed', async ({page}) => {
+        test('the window.chrome.webview variables have been removed', async ({ page }) => {
             // enable in-terminal exceptions
             await forwardConsoleMessages(page)
 
@@ -31,9 +28,7 @@ test.describe('Windows secure messaging', () => {
             expect(res).toBe('function')
 
             // now we add the script like Windows will, wrapped with access to a couple of vars
-            await createAutofillScript()
-                .platform('windows')
-                .applyTo(page)
+            await createAutofillScript().platform('windows').applyTo(page)
 
             const prev = await page.evaluate(() => typeof window.chrome.webview.postMessage)
             const current = await page.evaluate(() => typeof windowsInteropPostMessage)

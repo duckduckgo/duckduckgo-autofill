@@ -6,32 +6,34 @@
  * adding any manual entries to `manualEntries` below.
  *
  */
-const {readFileSync, writeFileSync} = require('fs')
-const {join} = require('path')
+const { readFileSync, writeFileSync } = require('fs')
+const { join } = require('path')
 const rules = require('../rules.json')
 const filePath = join(__dirname, 'index.html')
 const html = readFileSync(filePath, 'utf8')
-const {Password} = require('../lib/apple.password.js')
+const { Password } = require('../lib/apple.password.js')
 
 let s = ''
 
 const manualEntries = {
     // this is just to test the use of chars that need escaping
-    '" test': { 'password-rules': `minlength: 6; required: lower, upper; required: digit; required: ["]` }
+    '" test': { 'password-rules': `minlength: 6; required: lower, upper; required: digit; required: ["]` },
 }
 
 const joined = [...Object.entries(manualEntries), ...Object.entries(rules)]
 const outputs = []
 const password = new Password({
-    getRandomValues: (/** @type {any} */ v) => require('crypto').randomFillSync(v)
+    getRandomValues: (/** @type {any} */ v) => require('crypto').randomFillSync(v),
 })
 
 for (const [domain, value] of joined) {
     const rulesString = value['password-rules']
     if (domain && rulesString) {
-        const {parameters, generate, entropy} = password.parse(rulesString)
+        const { parameters, generate, entropy } = password.parse(rulesString)
         const charsetLength = parameters.PasswordAllowedCharacters.length
-        const passwords = new Array(5).fill(0).map((_, i) => i)
+        const passwords = new Array(5)
+            .fill(0)
+            .map((_, i) => i)
             .map(() => {
                 const pw = generate()
                 return { pw, length: pw.length }
@@ -45,7 +47,7 @@ for (const [domain, value] of joined) {
             averageLength,
             entropy,
             passwords,
-            charset: parameters.PasswordAllowedCharacters
+            charset: parameters.PasswordAllowedCharacters,
         })
     }
 }
@@ -53,7 +55,7 @@ for (const [domain, value] of joined) {
 outputs.sort((a, b) => a.entropy - b.entropy)
 
 for (const output of outputs) {
-    const {averageLength, entropy, passwords, charsetLength, rules, domain, charset} = output
+    const { averageLength, entropy, passwords, charsetLength, rules, domain, charset } = output
     let entropyScore = 'Very Strong'
     if (entropy >= 60 && entropy <= 127) {
         entropyScore = 'Strong'
@@ -74,7 +76,7 @@ for (const output of outputs) {
         <pre><code><b>charset</b>: ${escapeXML(charset)}</code></pre>
         <pre><code><b>charset size</b>: ${charsetLength}, <b>length:</b> ${averageLength}</code></pre>
         <pre><code><b>entropy:</b> <span class="rules" data-entropy="${entropyScore}">${entropyScore}</span> ${entropy.toFixed(2)}</code></pre>
-        <div><pre><code>${escapeXML(passwords.map(pw => `${pw.pw} (${pw.length})`).join('\n'))}</code></pre></div>
+        <div><pre><code>${escapeXML(passwords.map((pw) => `${pw.pw} (${pw.length})`).join('\n'))}</code></pre></div>
     </td>
 </tr>
         `
@@ -93,7 +95,7 @@ writeFileSync(filePath, newHtml)
  * @param {string} str The string to escape.
  * @return {string} The escaped string.
  */
-function escapeXML (str) {
+function escapeXML(str) {
     const replacements = { '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;', '/': '&#x2F;' }
-    return String(str).replace(/[&"'<>/]/g, m => replacements[m])
+    return String(str).replace(/[&"'<>/]/g, (m) => replacements[m])
 }

@@ -7,7 +7,7 @@ export class DeviceApiTransport {
      * @param {CallOptions} [_options]
      * @returns {Promise<any>}
      */
-    async send (_deviceApiCall, _options) {
+    async send(_deviceApiCall, _options) {
         return undefined
     }
 }
@@ -24,7 +24,7 @@ export class DeviceApi {
     /** @type {DeviceApiTransport} */
     transport
     /** @param {DeviceApiTransport} transport */
-    constructor (transport) {
+    constructor(transport) {
         this.transport = transport
     }
     /**
@@ -33,7 +33,7 @@ export class DeviceApi {
      * @param {CallOptions} [options]
      * @returns {Promise<NonNullable<ReturnType<D['validateResult']>['success']>>}
      */
-    async request (deviceApiCall, options) {
+    async request(deviceApiCall, options) {
         deviceApiCall.validateParams()
         const result = await this.transport.send(deviceApiCall, options)
         const processed = deviceApiCall.preResultValidation(result)
@@ -45,7 +45,7 @@ export class DeviceApi {
      * @param {CallOptions} [options]
      * @returns {Promise<void>}
      */
-    async notify (deviceApiCall, options) {
+    async notify(deviceApiCall, options) {
         deviceApiCall.validateParams()
         return this.transport.send(deviceApiCall, options)
     }
