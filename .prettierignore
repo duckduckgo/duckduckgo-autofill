@@ -1,0 +1,11 @@
+dist
+swift-package
+shared/js/content-scope/sjcl.js
+unit-test/data/reference-tests
+docs/**/*
+**/__generated__
+**/*.json
+**/*.md
+**/*.html
+**/*.har
+**/*.css
