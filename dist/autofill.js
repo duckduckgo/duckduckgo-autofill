@@ -494,44 +494,44 @@ var _webkit = require("./webkit.js");
  */
 class Messaging {
   /**
-  * @param {WebkitMessagingConfig} config
-  */
+   * @param {WebkitMessagingConfig} config
+   */
   constructor(config) {
     this.transport = getTransport(config);
   }
   /**
-  * Send a 'fire-and-forget' message.
-  * @throws {Error}
-  * {@link MissingHandler}
-  *
-  * @example
-  *
-  * ```
-  * const messaging = new Messaging(config)
-  * messaging.notify("foo", {bar: "baz"})
-  * ```
-  * @param {string} name
-  * @param {Record<string, any>} [data]
-  */
+   * Send a 'fire-and-forget' message.
+   * @throws {Error}
+   * {@link MissingHandler}
+   *
+   * @example
+   *
+   * ```
+   * const messaging = new Messaging(config)
+   * messaging.notify("foo", {bar: "baz"})
+   * ```
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
   notify(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.transport.notify(name, data);
   }
   /**
-  * Send a request, and wait for a response
-  * @throws {Error}
-  * {@link MissingHandler}
-  *
-  * @example
-  * ```
-  * const messaging = new Messaging(config)
-  * const response = await messaging.request("foo", {bar: "baz"})
-  * ```
-  *
-  * @param {string} name
-  * @param {Record<string, any>} [data]
-  * @return {Promise<any>}
-  */
+   * Send a request, and wait for a response
+   * @throws {Error}
+   * {@link MissingHandler}
+   *
+   * @example
+   * ```
+   * const messaging = new Messaging(config)
+   * const response = await messaging.request("foo", {bar: "baz"})
+   * ```
+   *
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @return {Promise<any>}
+   */
   request(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     return this.transport.request(name, data);
@@ -544,20 +544,20 @@ class Messaging {
 exports.Messaging = Messaging;
 class MessagingTransport {
   /**
-  * @param {string} name
-  * @param {Record<string, any>} [data]
-  * @returns {void}
-  */
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @returns {void}
+   */
   // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
   notify(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     throw new Error("must implement 'notify'");
   }
   /**
-  * @param {string} name
-  * @param {Record<string, any>} [data]
-  * @return {Promise<any>}
-  */
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   * @return {Promise<any>}
+   */
   // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
   request(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -582,9 +582,9 @@ function getTransport(config) {
  */
 class MissingHandler extends Error {
   /**
-  * @param {string} message
-  * @param {string} handlerName
-  */
+   * @param {string} message
+   * @param {string} handlerName
+   */
   constructor(message, handlerName) {
     super(message);
     this.handlerName = handlerName;
@@ -690,8 +690,8 @@ class WebkitMessagingTransport {
   config;
   globals;
   /**
-  * @param {WebkitMessagingConfig} config
-  */
+   * @param {WebkitMessagingConfig} config
+   */
   constructor(config) {
     this.config = config;
     this.globals = captureGlobals();
@@ -700,11 +700,11 @@ class WebkitMessagingTransport {
     }
   }
   /**
-  * Sends message to the webkit layer (fire and forget)
-  * @param {String} handler
-  * @param {*} data
-  * @internal
-  */
+   * Sends message to the webkit layer (fire and forget)
+   * @param {String} handler
+   * @param {*} data
+   * @internal
+   */
   wkSend(handler) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!(handler in this.globals.window.webkit.messageHandlers)) {
@@ -728,12 +728,12 @@ class WebkitMessagingTransport {
   }
 
   /**
-  * Sends message to the webkit layer and waits for the specified response
-  * @param {String} handler
-  * @param {*} data
-  * @returns {Promise<*>}
-  * @internal
-  */
+   * Sends message to the webkit layer and waits for the specified response
+   * @param {String} handler
+   * @param {*} data
+   * @returns {Promise<*>}
+   * @internal
+   */
   async wkSendAndWait(handler) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (this.config.hasModernWebkitAPI) {
@@ -774,27 +774,27 @@ class WebkitMessagingTransport {
     }
   }
   /**
-  * @param {string} name
-  * @param {Record<string, any>} [data]
-  */
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
   notify(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.wkSend(name, data);
   }
   /**
-  * @param {string} name
-  * @param {Record<string, any>} [data]
-  */
+   * @param {string} name
+   * @param {Record<string, any>} [data]
+   */
   request(name) {
     let data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     return this.wkSendAndWait(name, data);
   }
   /**
-  * Generate a random method name and adds it to the global scope
-  * The native layer will use this method to send the response
-  * @param {string | number} randomMethodName
-  * @param {Function} callback
-  */
+   * Generate a random method name and adds it to the global scope
+   * The native layer will use this method to send the response
+   * @param {string | number} randomMethodName
+   * @param {Function} callback
+   */
   generateRandomMethod(randomMethodName, callback) {
     var _this = this;
     this.globals.ObjectDefineProperty(this.globals.window, randomMethodName, {
@@ -803,8 +803,8 @@ class WebkitMessagingTransport {
       configurable: true,
       writable: false,
       /**
-      * @param {any[]} args
-      */
+       * @param {any[]} args
+       */
       value: function () {
         callback(...arguments);
         // @ts-ignore - we want this to throw if it fails as it would indicate a fatal error.
@@ -820,16 +820,16 @@ class WebkitMessagingTransport {
   }
 
   /**
-  * @type {{name: string, length: number}}
-  */
+   * @type {{name: string, length: number}}
+   */
   algoObj = {
     name: 'AES-GCM',
     length: 256
   };
 
   /**
-  * @returns {Promise<Uint8Array>}
-  */
+   * @returns {Promise<Uint8Array>}
+   */
   async createRandKey() {
     const key = await this.globals.generateKey(this.algoObj, true, ['encrypt', 'decrypt']);
     const exportedKey = await this.globals.exportKey('raw', key);
@@ -837,18 +837,18 @@ class WebkitMessagingTransport {
   }
 
   /**
-  * @returns {Uint8Array}
-  */
+   * @returns {Uint8Array}
+   */
   createRandIv() {
     return this.globals.getRandomValues(new this.globals.Uint8Array(12));
   }
 
   /**
-  * @param {BufferSource} ciphertext
-  * @param {BufferSource} key
-  * @param {Uint8Array} iv
-  * @returns {Promise<string>}
-  */
+   * @param {BufferSource} ciphertext
+   * @param {BufferSource} key
+   * @param {Uint8Array} iv
+   * @returns {Promise<string>}
+   */
   async decrypt(ciphertext, key, iv) {
     const cryptoKey = await this.globals.importKey('raw', key, 'AES-GCM', false, ['decrypt']);
     const algo = {
@@ -861,20 +861,20 @@ class WebkitMessagingTransport {
   }
 
   /**
-  * When required (such as on macos 10.x), capture the `postMessage` method on
-  * each webkit messageHandler
-  *
-  * @param {string[]} handlerNames
-  */
+   * When required (such as on macos 10.x), capture the `postMessage` method on
+   * each webkit messageHandler
+   *
+   * @param {string[]} handlerNames
+   */
   captureWebkitHandlers(handlerNames) {
     const handlers = window.webkit.messageHandlers;
     if (!handlers) throw new _messaging.MissingHandler('window.webkit.messageHandlers was absent', 'all');
     for (const webkitMessageHandlerName of handlerNames) {
       if (typeof handlers[webkitMessageHandlerName]?.postMessage === 'function') {
         /**
-        * `bind` is used here to ensure future calls to the captured
-        * `postMessage` have the correct `this` context
-        */
+         * `bind` is used here to ensure future calls to the captured
+         * `postMessage` have the correct `this` context
+         */
         const original = handlers[webkitMessageHandlerName];
         const bound = handlers[webkitMessageHandlerName].postMessage?.bind(original);
         this.globals.capturedWebkitHandlers[webkitMessageHandlerName] = bound;
@@ -903,11 +903,11 @@ class WebkitMessagingTransport {
 exports.WebkitMessagingTransport = WebkitMessagingTransport;
 class WebkitMessagingConfig {
   /**
-  * @param {object} params
-  * @param {boolean} params.hasModernWebkitAPI
-  * @param {string[]} params.webkitMessageHandlerNames
-  * @param {string} params.secret
-  */
+   * @param {object} params
+   * @param {boolean} params.hasModernWebkitAPI
+   * @param {string[]} params.webkitMessageHandlerNames
+   * @param {string} params.secret
+   */
   constructor(params) {
     /**
      * Whether or not the current WebKit Platform supports secure messaging
@@ -915,13 +915,13 @@ class WebkitMessagingConfig {
      */
     this.hasModernWebkitAPI = params.hasModernWebkitAPI;
     /**
-    * A list of WebKit message handler names that a user script can send
-    */
+     * A list of WebKit message handler names that a user script can send
+     */
     this.webkitMessageHandlerNames = params.webkitMessageHandlerNames;
     /**
-    * A string provided by native platforms to be sent with future outgoing
-    * messages
-    */
+     * A string provided by native platforms to be sent with future outgoing
+     * messages
+     */
     this.secret = params.secret;
   }
 }
@@ -933,28 +933,28 @@ class WebkitMessagingConfig {
 exports.WebkitMessagingConfig = WebkitMessagingConfig;
 class SecureMessagingParams {
   /**
-  * @param {object} params
-  * @param {string} params.methodName
-  * @param {string} params.secret
-  * @param {number[]} params.key
-  * @param {number[]} params.iv
-  */
+   * @param {object} params
+   * @param {string} params.methodName
+   * @param {string} params.secret
+   * @param {number[]} params.key
+   * @param {number[]} params.iv
+   */
   constructor(params) {
     /**
      * The method that's been appended to `window` to be called later
      */
     this.methodName = params.methodName;
     /**
-    * The secret used to ensure message sender validity
-    */
+     * The secret used to ensure message sender validity
+     */
     this.secret = params.secret;
     /**
-    * The CipherKey as number[]
-    */
+     * The CipherKey as number[]
+     */
     this.key = params.key;
     /**
-    * The Initial Vector as number[]
-    */
+     * The Initial Vector as number[]
+     */
     this.iv = params.iv;
   }
 }
@@ -1165,7 +1165,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  * }} PasswordParameters
  */
 const defaults = Object.freeze({
-  SCAN_SET_ORDER: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\\"'<>,.?/ ]",
+  SCAN_SET_ORDER: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\"\'<>,.?/ ]',
   defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
   defaultPasswordLength: _constants.constants.DEFAULT_MIN_LENGTH,
   defaultPasswordRules: _constants.constants.DEFAULT_PASSWORD_RULES,
@@ -1732,7 +1732,6 @@ class Rule {
   }
 }
 exports.Rule = Rule;
-;
 class NamedCharacterClass {
   constructor(name) {
     console.assert(_isValidRequiredOrAllowedPropertyValueIdentifier(name));
@@ -1749,10 +1748,8 @@ class NamedCharacterClass {
   }
 }
 exports.NamedCharacterClass = NamedCharacterClass;
-;
 class ParserError extends Error {}
 exports.ParserError = ParserError;
-;
 class CustomCharacterClass {
   constructor(characters) {
     console.assert(characters instanceof Array);
@@ -1768,14 +1765,11 @@ class CustomCharacterClass {
     return `[${this._characters.join('').replace('"', '&quot;')}]`;
   }
 }
-exports.CustomCharacterClass = CustomCharacterClass;
-;
 
 // MARK: Lexer functions
-
+exports.CustomCharacterClass = CustomCharacterClass;
 function _isIdentifierCharacter(c) {
   console.assert(c.length === 1);
-  // eslint-disable-next-line no-mixed-operators
   return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c === '-';
 }
 function _isASCIIDigit(c) {
@@ -3588,9 +3582,9 @@ class AndroidInterface extends _InterfacePrototype.default {
   }
 
   /**
-    * Used by the email web app
-    * Provides functionality to log the user out
-    */
+   * Used by the email web app
+   * Provides functionality to log the user out
+   */
   removeUserData() {
     try {
       return window.EmailInterface.removeCredentials();
@@ -6969,7 +6963,7 @@ class FormAnalyzer {
     }
 
     // Match form textContent against common cc fields (includes hidden labels)
-    const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/ig);
+    const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/gi);
     // De-dupe matches to avoid counting the same element more than once
     const deDupedMatches = new Set(textMatches?.map(match => match.toLowerCase()));
 
@@ -11338,7 +11332,7 @@ ${css}
         if (btn.matches('.wrapper:not(.top-autofill) button:hover, .currentFocus')) {
           callbacks.onSelect(btn.id);
         } else {
-          console.warn('The button doesn\'t seem to be hovered. Please check.');
+          console.warn("The button doesn't seem to be hovered. Please check.");
         }
       });
     });
@@ -11542,7 +11536,9 @@ const defaultOptions = exports.defaultOptions = {
         }`,
   css: `<style>${_styles.CSS_STYLES}</style>`,
   setSize: undefined,
-  remove: () => {/** noop */},
+  remove: () => {
+    /** noop */
+  },
   testMode: false,
   checkVisibility: true,
   hasCaret: false,
@@ -11830,7 +11826,7 @@ class HTMLTooltip {
           checkVisibility: this.options.checkVisibility
         });
       } else {
-        console.warn('The button doesn\'t seem to be hovered. Please check.');
+        console.warn("The button doesn't seem to be hovered. Please check.");
       }
     }
   }
@@ -13158,8 +13154,9 @@ const isLikelyASubmitButton = (el, matching) => {
   // has high-signal submit classes
   safeRegexTest(/submit/i, dataTestId) || safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) ||
   // has high-signal text
-  el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className) // it's a large element 250x40px
-  ) && el.offsetHeight * el.offsetWidth >= 2000 &&
+  el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className)) &&
+  // it's a large element 250x40px
+  el.offsetHeight * el.offsetWidth >= 2000 &&
   // it's not a very small button like inline links and such
   !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel);
 };
