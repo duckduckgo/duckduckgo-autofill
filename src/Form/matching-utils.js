@@ -1,5 +1,5 @@
-import { shouldLog } from '../autofill-utils.js'
-import { getExplicitLabelsText } from './matching.js'
+import { shouldLog } from '../autofill-utils.js';
+import { getExplicitLabelsText } from './matching.js';
 
 /**
  * Logs out matching details when debug flag is active
@@ -7,25 +7,25 @@ import { getExplicitLabelsText } from './matching.js'
  * @param {MatchingResult} matchingResult
  */
 function logMatching(el, matchingResult) {
-    if (!shouldLog()) return
+    if (!shouldLog()) return;
 
-    const fieldIdentifier = getInputIdentifier(el)
+    const fieldIdentifier = getInputIdentifier(el);
 
-    console.group(fieldIdentifier)
-    console.log(el)
+    console.group(fieldIdentifier);
+    console.log(el);
 
-    const { strategyName, matchedString, matchedFrom, matcherType } = matchingResult
+    const { strategyName, matchedString, matchedFrom, matcherType } = matchingResult;
 
-    const verb = getVerb(matchingResult)
+    const verb = getVerb(matchingResult);
 
-    let stringToLog = `${verb} for "${matcherType}" with "${strategyName}"`
+    let stringToLog = `${verb} for "${matcherType}" with "${strategyName}"`;
 
     if (matchedString && matchedFrom) {
-        stringToLog += `\nString: "${matchedString}"\nSource: "${matchedFrom}"`
+        stringToLog += `\nString: "${matchedString}"\nSource: "${matchedFrom}"`;
     }
 
-    console.log(stringToLog)
-    console.groupEnd()
+    console.log(stringToLog);
+    console.groupEnd();
 }
 
 /**
@@ -34,13 +34,13 @@ function logMatching(el, matchingResult) {
  * @return {string}
  */
 function getVerb(matchingResult) {
-    if (matchingResult.matched) return 'Matched'
+    if (matchingResult.matched) return 'Matched';
 
-    if (matchingResult.proceed === false) return 'Matched forceUnknown'
+    if (matchingResult.proceed === false) return 'Matched forceUnknown';
 
-    if (matchingResult.skip) return 'Skipped'
+    if (matchingResult.skip) return 'Skipped';
 
-    return ''
+    return '';
 }
 
 /**
@@ -49,12 +49,12 @@ function getVerb(matchingResult) {
  * @returns {string}
  */
 function getInputIdentifier(el) {
-    const label = getExplicitLabelsText(el)
-    const placeholder = el instanceof HTMLInputElement && el.placeholder ? `${el.placeholder}` : ''
-    const name = el.name ? `${el.name}` : ''
-    const id = el.id ? `#${el.id}` : ''
+    const label = getExplicitLabelsText(el);
+    const placeholder = el instanceof HTMLInputElement && el.placeholder ? `${el.placeholder}` : '';
+    const name = el.name ? `${el.name}` : '';
+    const id = el.id ? `#${el.id}` : '';
 
-    return 'Field: ' + (label || placeholder || name || id)
+    return 'Field: ' + (label || placeholder || name || id);
 }
 
 /**
@@ -63,17 +63,17 @@ function getInputIdentifier(el) {
  * @param allStrings
  */
 function logUnmatched(el, allStrings) {
-    if (!shouldLog()) return
+    if (!shouldLog()) return;
 
-    const fieldIdentifier = getInputIdentifier(el)
+    const fieldIdentifier = getInputIdentifier(el);
 
-    console.group(fieldIdentifier)
-    console.log(el)
+    console.group(fieldIdentifier);
+    console.log(el);
 
-    const stringToLog = 'Field not matched.'
+    const stringToLog = 'Field not matched.';
 
-    console.log(stringToLog, allStrings)
-    console.groupEnd()
+    console.log(stringToLog, allStrings);
+    console.groupEnd();
 }
 
-export { logMatching, logUnmatched }
+export { logMatching, logUnmatched };

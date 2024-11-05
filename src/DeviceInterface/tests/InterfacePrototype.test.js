@@ -1,11 +1,11 @@
-import { attachAndReturnGenericForm } from '../../test-utils.js'
-import { Form } from '../../Form/Form.js'
-import InterfacePrototype from '../InterfacePrototype.js'
+import { attachAndReturnGenericForm } from '../../test-utils.js';
+import { Form } from '../../Form/Form.js';
+import InterfacePrototype from '../InterfacePrototype.js';
 
 describe('InterfacePrototype', function () {
     beforeEach(() => {
-        require('../../requestIdleCallback.js')
-    })
+        require('../../requestIdleCallback.js');
+    });
 
     /**
      * On macOS we load some tabs in the background at startup. If one of those tabs called focus() on the fields
@@ -13,24 +13,24 @@ describe('InterfacePrototype', function () {
      * @asana https://app.asana.com/0/1200930669568058/1202411700616532/f
      */
     it('will not fire attach if the document is hidden', async () => {
-        const mockedDoc = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
+        const mockedDoc = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
 
-        const device = InterfacePrototype.default()
+        const device = InterfacePrototype.default();
         jest.spyOn(device.settings, 'refresh').mockImplementation(() =>
             Promise.resolve({
                 enabled: true,
                 featureToggles: {},
                 availableInputTypes: {},
             }),
-        )
-        await device.init()
+        );
+        await device.init();
 
-        const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController)
-        jest.spyOn(uiController, 'attach')
+        const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController);
+        jest.spyOn(uiController, 'attach');
 
-        const formEl = attachAndReturnGenericForm()
-        const input = /** @type {HTMLInputElement} */ (formEl.querySelector('input'))
-        const formInstance = new Form(formEl, input, device)
+        const formEl = attachAndReturnGenericForm();
+        const input = /** @type {HTMLInputElement} */ (formEl.querySelector('input'));
+        const formInstance = new Form(formEl, input, device);
 
         device.attachTooltip({
             form: formInstance,
@@ -38,9 +38,9 @@ describe('InterfacePrototype', function () {
             click: null,
             trigger: 'userInitiated',
             triggerMetaData: { type: 'explicit-opt-in' },
-        })
-        expect(uiController.attach).not.toHaveBeenCalled()
+        });
+        expect(uiController.attach).not.toHaveBeenCalled();
 
-        mockedDoc.mockRestore()
-    })
-})
+        mockedDoc.mockRestore();
+    });
+});

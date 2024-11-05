@@ -1,20 +1,20 @@
-import { createAutofillScript, forwardConsoleMessages, mockedCalls } from '../helpers/harness.js'
-import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js'
-import { createAvailableInputTypes } from '../helpers/utils.js'
-import { expect, test as base } from '@playwright/test'
-import { loginPage } from '../helpers/pages/loginPage.js'
-import { overlayPage } from '../helpers/pages/overlayPage.js'
-import { signupPage } from '../helpers/pages/signupPage.js'
+import { createAutofillScript, forwardConsoleMessages, mockedCalls } from '../helpers/harness.js';
+import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/mocks.webkit.js';
+import { createAvailableInputTypes } from '../helpers/utils.js';
+import { expect, test as base } from '@playwright/test';
+import { loginPage } from '../helpers/pages/loginPage.js';
+import { overlayPage } from '../helpers/pages/overlayPage.js';
+import { signupPage } from '../helpers/pages/signupPage.js';
 
 /**
  *  Tests for credentials import promotion prompt on macos
  */
-const test = base.extend({})
+const test = base.extend({});
 
 test.describe('Import credentials prompt', () => {
     test('when availableInputTypes is set for credentials import, credentials import prompt is shown', async ({ page }) => {
         // enable in-terminal exceptions
-        await forwardConsoleMessages(page)
+        await forwardConsoleMessages(page);
 
         await createWebkitMocks()
             .withAvailableInputTypes(
@@ -26,21 +26,21 @@ test.describe('Import credentials prompt', () => {
                     credentialsImport: true,
                 }),
             )
-            .applyTo(page)
+            .applyTo(page);
 
         // Load the autofill.js script with replacements
-        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page);
 
-        const login = loginPage(page)
-        await login.navigate()
-        await login.clickIntoPasswordInput()
-        await login.assertTooltipOpen('Import passwords to DuckDuckGo')
-        await login.assertPixelsFired([{ pixelName: 'autofill_import_credentials_prompt_shown' }])
-    })
+        const login = loginPage(page);
+        await login.navigate();
+        await login.clickIntoPasswordInput();
+        await login.assertTooltipOpen('Import passwords to DuckDuckGo');
+        await login.assertPixelsFired([{ pixelName: 'autofill_import_credentials_prompt_shown' }]);
+    });
 
     test('when credentialsImport in availableInputTypes is false, credentials import prompt is not shown', async ({ page }) => {
         // enable in-terminal exceptions
-        await forwardConsoleMessages(page)
+        await forwardConsoleMessages(page);
 
         await createWebkitMocks()
             .withAvailableInputTypes(
@@ -48,22 +48,22 @@ test.describe('Import credentials prompt', () => {
                     credentialsImport: false,
                 }),
             )
-            .applyTo(page)
+            .applyTo(page);
 
         // Load the autofill.js script with replacements
-        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page);
 
-        const login = loginPage(page)
-        await login.navigate()
-        await login.clickIntoPasswordInput()
-        await login.assertTooltipNotOpen('Import passwords to DuckDuckGo')
-    })
+        const login = loginPage(page);
+        await login.navigate();
+        await login.clickIntoPasswordInput();
+        await login.assertTooltipNotOpen('Import passwords to DuckDuckGo');
+    });
 
     test('when credentialsImport in availableInputTypes is true, and the form is of type signup credentials import prompt is not shown', async ({
         page,
     }) => {
         // enable in-terminal exceptions
-        await forwardConsoleMessages(page)
+        await forwardConsoleMessages(page);
 
         await createWebkitMocks()
             .withAvailableInputTypes(
@@ -72,20 +72,20 @@ test.describe('Import credentials prompt', () => {
                     email: true,
                 }),
             )
-            .applyTo(page)
+            .applyTo(page);
 
         // Load the autofill.js script with replacements
-        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page)
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page);
 
-        const signup = signupPage(page)
-        await signup.navigate()
-        await signup.clickIntoEmailField()
-        await signup.assertTooltipNotOpen('Import passwords to DuckDuckGo')
-    })
+        const signup = signupPage(page);
+        await signup.navigate();
+        await signup.clickIntoEmailField();
+        await signup.assertTooltipNotOpen('Import passwords to DuckDuckGo');
+    });
 
     test.describe('in overlay', async () => {
         test('when credentials import prompt is clicked, native API call is made', async ({ page }) => {
-            await forwardConsoleMessages(page)
+            await forwardConsoleMessages(page);
             await createWebkitMocks()
                 .withAvailableInputTypes(
                     createAvailableInputTypes({
@@ -97,7 +97,7 @@ test.describe('Import credentials prompt', () => {
                     }),
                 )
                 .withCredentialsImport?.('credentials.username')
-                .applyTo(page)
+                .applyTo(page);
 
             // Pretend we're running in a top-frame scenario
             await createAutofillScript()
@@ -105,19 +105,19 @@ test.describe('Import credentials prompt', () => {
                 .replace('isTopFrame', true)
                 .replace('supportsTopFrame', true)
                 .platform('macos')
-                .applyTo(page)
+                .applyTo(page);
 
-            const overlay = overlayPage(page)
-            await overlay.navigate()
-            await overlay.clickButtonWithText('Import passwords to DuckDuckGo')
+            const overlay = overlayPage(page);
+            await overlay.navigate();
+            await overlay.clickButtonWithText('Import passwords to DuckDuckGo');
 
-            const webkitCalls = await mockedCalls(page, { names: ['startCredentialsImportFlow'], minCount: 1 })
-            await expect(webkitCalls.length).toBeGreaterThanOrEqual(1)
-            await overlay.assertCloseAutofillParent()
-        })
+            const webkitCalls = await mockedCalls(page, { names: ['startCredentialsImportFlow'], minCount: 1 });
+            await expect(webkitCalls.length).toBeGreaterThanOrEqual(1);
+            await overlay.assertCloseAutofillParent();
+        });
 
         test('when dismiss prompt is clicked, native API call is made', async ({ page }) => {
-            await forwardConsoleMessages(page)
+            await forwardConsoleMessages(page);
             await createWebkitMocks()
                 .withAvailableInputTypes(
                     createAvailableInputTypes({
@@ -129,7 +129,7 @@ test.describe('Import credentials prompt', () => {
                     }),
                 )
                 .withCredentialsImport?.('credentials.username')
-                .applyTo(page)
+                .applyTo(page);
 
             // Pretend we're running in a top-frame scenario
             await createAutofillScript()
@@ -137,15 +137,15 @@ test.describe('Import credentials prompt', () => {
                 .replace('isTopFrame', true)
                 .replace('supportsTopFrame', true)
                 .platform('macos')
-                .applyTo(page)
+                .applyTo(page);
 
-            const overlay = overlayPage(page)
-            await overlay.navigate()
-            await overlay.clickButtonWithText("Don't Show Again")
+            const overlay = overlayPage(page);
+            await overlay.navigate();
+            await overlay.clickButtonWithText("Don't Show Again");
 
-            const webkitCalls = await mockedCalls(page, { names: ['credentialsImportFlowPermanentlyDismissed'], minCount: 1 })
-            await expect(webkitCalls.length).toBeGreaterThanOrEqual(1)
-            await overlay.assertCloseAutofillParent()
-        })
-    })
-})
+            const webkitCalls = await mockedCalls(page, { names: ['credentialsImportFlowPermanentlyDismissed'], minCount: 1 });
+            await expect(webkitCalls.length).toBeGreaterThanOrEqual(1);
+            await overlay.assertCloseAutofillParent();
+        });
+    });
+});

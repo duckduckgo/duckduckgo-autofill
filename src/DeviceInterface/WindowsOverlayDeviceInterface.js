@@ -1,5 +1,5 @@
-import InterfacePrototype from './InterfacePrototype.js'
-import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
+import InterfacePrototype from './InterfacePrototype.js';
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js';
 import {
     EmailProtectionGetAddressesCall,
     GetAutofillInitDataCall,
@@ -9,8 +9,8 @@ import {
     OpenManageCreditCardsCall,
     OpenManageIdentitiesCall,
     CloseAutofillParentCall,
-} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import { overlayApi } from './overlayApi.js'
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js';
+import { overlayApi } from './overlayApi.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -24,15 +24,15 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * Mark top frame as not stripping credential data
      * @type {boolean}
      */
-    stripCredentials = false
+    stripCredentials = false;
 
     /**
      * overlay API helpers
      */
-    overlay = overlayApi(this)
+    overlay = overlayApi(this);
 
-    previousScreenX = 0
-    previousScreenY = 0
+    previousScreenX = 0;
+    previousScreenY = 0;
 
     /**
      * Because we're running inside the Overlay, we always create the HTML
@@ -58,7 +58,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
                  */
                 checkVisibility: false,
             },
-        )
+        );
     }
 
     addDeviceListeners() {
@@ -77,44 +77,44 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
                 (!this.previousScreenX && !this.previousScreenY) || // if no previous coords
                 (this.previousScreenX === event.screenX && this.previousScreenY === event.screenY) // or the mouse hasn't moved
             ) {
-                this.previousScreenX = event.screenX
-                this.previousScreenY = event.screenY
-                return
+                this.previousScreenX = event.screenX;
+                this.previousScreenY = event.screenY;
+                return;
             }
 
-            const activeTooltip = this.uiController?.getActiveTooltip?.()
-            activeTooltip?.focus(event.x, event.y)
-            this.previousScreenX = event.screenX
-            this.previousScreenY = event.screenY
-        })
+            const activeTooltip = this.uiController?.getActiveTooltip?.();
+            activeTooltip?.focus(event.x, event.y);
+            this.previousScreenX = event.screenX;
+            this.previousScreenY = event.screenY;
+        });
 
-        return super.addDeviceListeners()
+        return super.addDeviceListeners();
     }
 
     /**
      * @returns {Promise<any>}
      */
     async _closeAutofillParent() {
-        return this.deviceApi.notify(new CloseAutofillParentCall(null))
+        return this.deviceApi.notify(new CloseAutofillParentCall(null));
     }
 
     /**
      * @returns {Promise<any>}
      */
     openManagePasswords() {
-        return this.deviceApi.notify(new OpenManagePasswordsCall({}))
+        return this.deviceApi.notify(new OpenManagePasswordsCall({}));
     }
     /**
      * @returns {Promise<any>}
      */
     openManageCreditCards() {
-        return this.deviceApi.notify(new OpenManageCreditCardsCall({}))
+        return this.deviceApi.notify(new OpenManageCreditCardsCall({}));
     }
     /**
      * @returns {Promise<any>}
      */
     openManageIdentities() {
-        return this.deviceApi.notify(new OpenManageIdentitiesCall({}))
+        return this.deviceApi.notify(new OpenManageIdentitiesCall({}));
     }
 
     /**
@@ -125,20 +125,20 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {Promise<void>}
      */
     async setupAutofill() {
-        const loggedIn = await this._getIsLoggedIn()
+        const loggedIn = await this._getIsLoggedIn();
         if (loggedIn) {
-            await this.getAddresses()
+            await this.getAddresses();
         }
 
-        const response = await this.deviceApi.request(new GetAutofillInitDataCall(null))
+        const response = await this.deviceApi.request(new GetAutofillInitDataCall(null));
         // @ts-ignore
-        this.storeLocalData(response)
+        this.storeLocalData(response);
     }
 
     async postInit() {
         // setup overlay API pieces
-        this.overlay.showImmediately()
-        super.postInit()
+        this.overlay.showImmediately();
+        super.postInit();
     }
 
     /**
@@ -151,7 +151,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @param {string} type
      */
     async selectedDetail(data, type) {
-        return this.overlay.selectedDetail(data, type)
+        return this.overlay.selectedDetail(data, type);
     }
 
     /**
@@ -159,17 +159,17 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      */
 
     async _getIsLoggedIn() {
-        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
+        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}));
 
-        this.isDeviceSignedIn = () => isLoggedIn
-        return isLoggedIn
+        this.isDeviceSignedIn = () => isLoggedIn;
+        return isLoggedIn;
     }
 
     async getAddresses() {
-        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
+        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}));
 
-        this.storeLocalAddresses(addresses)
-        return addresses
+        this.storeLocalAddresses(addresses);
+        return addresses;
     }
 
     /**
@@ -178,7 +178,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     getAutofillIdentity(id) {
-        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
-        return Promise.resolve({ success: identity })
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
+        return Promise.resolve({ success: identity });
     }
 }

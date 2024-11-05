@@ -1,4 +1,4 @@
-import { DeviceApiTransport } from '../../../packages/device-api/index.js'
+import { DeviceApiTransport } from '../../../packages/device-api/index.js';
 import {
     GetAvailableInputTypesCall,
     GetRuntimeConfigurationCall,
@@ -8,48 +8,48 @@ import {
     CloseAutofillParentCall,
     StartEmailProtectionSignupCall,
     AddDebugFlagCall,
-} from '../__generated__/deviceApiCalls.js'
-import { isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig } from '../../autofill-utils.js'
-import { Settings } from '../../Settings.js'
+} from '../__generated__/deviceApiCalls.js';
+import { isAutofillEnabledFromProcessedConfig, isIncontextSignupEnabledFromProcessedConfig } from '../../autofill-utils.js';
+import { Settings } from '../../Settings.js';
 
 export class ExtensionTransport extends DeviceApiTransport {
     /** @param {GlobalConfig} globalConfig */
     constructor(globalConfig) {
-        super()
-        this.config = globalConfig
+        super();
+        this.config = globalConfig;
     }
 
     async send(deviceApiCall) {
         if (deviceApiCall instanceof GetRuntimeConfigurationCall) {
-            return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this))
+            return deviceApiCall.result(await extensionSpecificRuntimeConfiguration(this));
         }
 
         if (deviceApiCall instanceof GetAvailableInputTypesCall) {
-            return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes())
+            return deviceApiCall.result(await extensionSpecificGetAvailableInputTypes());
         }
 
         if (deviceApiCall instanceof SetIncontextSignupPermanentlyDismissedAtCall) {
-            return deviceApiCall.result(await extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(deviceApiCall.params))
+            return deviceApiCall.result(await extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(deviceApiCall.params));
         }
 
         if (deviceApiCall instanceof GetIncontextSignupDismissedAtCall) {
-            return deviceApiCall.result(await extensionSpecificGetIncontextSignupDismissedAt())
+            return deviceApiCall.result(await extensionSpecificGetIncontextSignupDismissedAt());
         }
 
         // TODO: unify all calls to use deviceApiCall.method instead of all these if blocks
         if (deviceApiCall instanceof SendJSPixelCall) {
-            return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params))
+            return deviceApiCall.result(await extensionSpecificSendPixel(deviceApiCall.params));
         }
 
         if (deviceApiCall instanceof AddDebugFlagCall) {
-            return deviceApiCall.result(await extensionSpecificAddDebugFlag(deviceApiCall.params))
+            return deviceApiCall.result(await extensionSpecificAddDebugFlag(deviceApiCall.params));
         }
 
         if (deviceApiCall instanceof CloseAutofillParentCall || deviceApiCall instanceof StartEmailProtectionSignupCall) {
-            return // noop
+            return; // noop
         }
 
-        console.error('Send not implemented for ' + deviceApiCall.method)
+        console.error('Send not implemented for ' + deviceApiCall.method);
     }
 }
 
@@ -58,9 +58,9 @@ export class ExtensionTransport extends DeviceApiTransport {
  * @returns {Promise<ReturnType<GetRuntimeConfigurationCall['result']>>}
  */
 async function extensionSpecificRuntimeConfiguration(deviceApi) {
-    const contentScope = await getContentScopeConfig()
-    const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
-    const incontextSignupEnabled = isIncontextSignupEnabledFromProcessedConfig(contentScope)
+    const contentScope = await getContentScopeConfig();
+    const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope);
+    const incontextSignupEnabled = isIncontextSignupEnabledFromProcessedConfig(contentScope);
 
     return {
         success: {
@@ -85,19 +85,19 @@ async function extensionSpecificRuntimeConfiguration(deviceApi) {
             // @ts-ignore
             userUnprotectedDomains: deviceApi.config?.userUnprotectedDomains || [],
         },
-    }
+    };
 }
 
 async function extensionSpecificGetAvailableInputTypes() {
-    const contentScope = await getContentScopeConfig()
-    const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope)
+    const contentScope = await getContentScopeConfig();
+    const emailProtectionEnabled = isAutofillEnabledFromProcessedConfig(contentScope);
 
     return {
         success: {
             ...Settings.defaults.availableInputTypes,
             email: emailProtectionEnabled,
         },
-    }
+    };
 }
 
 async function getContentScopeConfig() {
@@ -109,11 +109,11 @@ async function getContentScopeConfig() {
             },
             (response) => {
                 if (response && 'site' in response) {
-                    resolve(response)
+                    resolve(response);
                 }
             },
-        )
-    })
+        );
+    });
 }
 
 /**
@@ -127,10 +127,10 @@ async function extensionSpecificSendPixel(params) {
                 options: params,
             },
             () => {
-                resolve(true)
+                resolve(true);
             },
-        )
-    })
+        );
+    });
 }
 
 /**
@@ -144,10 +144,10 @@ async function extensionSpecificAddDebugFlag(params) {
                 options: params,
             },
             () => {
-                resolve(true)
+                resolve(true);
             },
-        )
-    })
+        );
+    });
 }
 
 async function extensionSpecificGetIncontextSignupDismissedAt() {
@@ -157,10 +157,10 @@ async function extensionSpecificGetIncontextSignupDismissedAt() {
                 messageType: 'getIncontextSignupDismissedAt',
             },
             (response) => {
-                resolve(response)
+                resolve(response);
             },
-        )
-    })
+        );
+    });
 }
 
 /**
@@ -174,8 +174,8 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
                 options: params,
             },
             () => {
-                resolve(true)
+                resolve(true);
             },
-        )
-    })
+        );
+    });
 }

@@ -22,7 +22,7 @@ export class UIController {
      * @returns {void}
      */
     attach(_args) {
-        throw new Error('must implement attach')
+        throw new Error('must implement attach');
     }
     /**
      * Implement this if your tooltip can be created from positioning
@@ -54,7 +54,7 @@ export class UIController {
      * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
      */
     getActiveTooltip() {
-        return null
+        return null;
     }
 
     /**
@@ -63,7 +63,7 @@ export class UIController {
      * @returns {boolean}
      */
     isActive() {
-        return false
+        return false;
     }
 
     /**

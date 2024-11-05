@@ -1,4 +1,4 @@
-import { Matching, createMatching } from './matching.js'
+import { Matching, createMatching } from './matching.js';
 
 /**
  * @typedef {{
@@ -13,18 +13,18 @@ const setFormHtml = (html) => {
     <form>
         ${html}
     </form>
-    `
-    const formElement = document.querySelector('form')
-    if (!formElement) throw new Error('unreachable')
-    const inputs = Array.from(formElement?.querySelectorAll('input') || [])
-    const selects = Array.from(formElement?.querySelectorAll('select') || [])
-    const labels = Array.from(formElement?.querySelectorAll('label') || [])
-    return { formElement, inputs: [...inputs, ...selects], labels }
-}
+    `;
+    const formElement = document.querySelector('form');
+    if (!formElement) throw new Error('unreachable');
+    const inputs = Array.from(formElement?.querySelectorAll('input') || []);
+    const selects = Array.from(formElement?.querySelectorAll('select') || []);
+    const labels = Array.from(formElement?.querySelectorAll('label') || []);
+    return { formElement, inputs: [...inputs, ...selects], labels };
+};
 
 beforeEach(() => {
-    document.body.innerHTML = ''
-})
+    document.body.innerHTML = '';
+});
 
 describe('css-selector matching', () => {
     it.each(
@@ -33,14 +33,14 @@ describe('css-selector matching', () => {
             { html: `<input name=oops! />`, matcher: 'emailAddress', matched: false },
         ]),
     )(`$html: '$matched'`, (args) => {
-        const { html, matched, matcher } = args
-        const { inputs } = setFormHtml(html)
+        const { html, matched, matcher } = args;
+        const { inputs } = setFormHtml(html);
 
-        const matching = createMatching()
-        const result = matching.execCssSelector(matcher, inputs[0])
-        expect(result.matched).toBe(matched)
-    })
-})
+        const matching = createMatching();
+        const result = matching.execCssSelector(matcher, inputs[0]);
+        expect(result.matched).toBe(matched);
+    });
+});
 
 describe('ddg-matchers matching', () => {
     it.each(
@@ -50,14 +50,14 @@ describe('ddg-matchers matching', () => {
             { html: `<input placeholder=email-search />`, matcher: 'emailAddress', matched: false },
         ]),
     )(`$html: '$matcher': $matched`, (args) => {
-        const { html, matched, matcher } = args
-        const { inputs, formElement } = setFormHtml(html)
+        const { html, matched, matcher } = args;
+        const { inputs, formElement } = setFormHtml(html);
 
-        const matching = createMatching()
-        const result = matching.forInput(inputs[0], formElement).execDDGMatcher(matcher)
-        expect(result.matched).toBe(matched)
-    })
-})
+        const matching = createMatching();
+        const result = matching.forInput(inputs[0], formElement).execDDGMatcher(matcher);
+        expect(result.matched).toBe(matched);
+    });
+});
 
 describe('vendor-regexes matching', () => {
     it.each(
@@ -68,29 +68,29 @@ describe('vendor-regexes matching', () => {
             { html: `<input name="メールアドレス" />`, matcher: 'emailAddress', matched: true }, // ja-JP
         ]),
     )(`$html: '$matcher': $matched`, (args) => {
-        const { html, matched, matcher } = args
-        const { inputs, formElement } = setFormHtml(html)
+        const { html, matched, matcher } = args;
+        const { inputs, formElement } = setFormHtml(html);
 
-        const matching = createMatching()
-        const result = matching.forInput(inputs[0], formElement).execVendorRegex(matching.getStrategyLookupByType(matcher, 'vendorRegex'))
-        expect(result.matched).toBe(matched)
-    })
-})
+        const matching = createMatching();
+        const result = matching.forInput(inputs[0], formElement).execVendorRegex(matching.getStrategyLookupByType(matcher, 'vendorRegex'));
+        expect(result.matched).toBe(matched);
+    });
+});
 
 describe('matching', () => {
     beforeAll(() => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {})
-    })
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
     afterAll(() => {
-        jest.restoreAllMocks()
-    })
+        jest.restoreAllMocks();
+    });
 
     it('default config', () => {
-        const matching = new Matching(Matching.emptyConfig)
-        const { formElement, inputs } = setFormHtml(`<input name=email />`)
-        const actual = matching.inferInputType(inputs[0], formElement)
-        expect(actual).toBe('unknown')
-    })
+        const matching = new Matching(Matching.emptyConfig);
+        const { formElement, inputs } = setFormHtml(`<input name=email />`);
+        const actual = matching.inferInputType(inputs[0], formElement);
+        expect(actual).toBe('unknown');
+    });
     it.each([
         { html: `<input name=email />`, subtype: 'identities.emailAddress' },
         { html: `<input name="telefonnummer" value=0123456 />`, subtype: 'identities.phone' },
@@ -190,15 +190,15 @@ describe('matching', () => {
             opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
     ])(`$html should be '$subtype'`, (args) => {
-        const { html, subtype, opts } = args
-        const { formElement, inputs } = setFormHtml(html)
+        const { html, subtype, opts } = args;
+        const { formElement, inputs } = setFormHtml(html);
 
-        const matching = createMatching()
-        const inferred = matching.inferInputType(inputs[0], formElement, opts)
-        expect(inferred).toBe(subtype)
-    })
+        const matching = createMatching();
+        const inferred = matching.inferInputType(inputs[0], formElement, opts);
+        expect(inferred).toBe(subtype);
+    });
     it('should not continue past a ddg-matcher that has a "not" regex', () => {
-        const { formElement, inputs } = setFormHtml(`<label>Email search<input name="email-search" /></label>`)
+        const { formElement, inputs } = setFormHtml(`<label>Email search<input name="email-search" /></label>`);
         const matching = new Matching({
             matchers: {
                 lists: {
@@ -236,12 +236,12 @@ describe('matching', () => {
                     },
                 },
             },
-        })
-        const asEmail = matching.inferInputType(inputs[0], formElement)
+        });
+        const asEmail = matching.inferInputType(inputs[0], formElement);
         /**
          * This should be 'unknown' because the negated 'search' regex in teh ddg-matcher should prevent
          * further strategies like the following vendor one
          */
-        expect(asEmail).toBe('unknown')
-    })
-})
+        expect(asEmail).toBe('unknown');
+    });
+});

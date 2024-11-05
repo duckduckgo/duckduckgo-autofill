@@ -1,7 +1,7 @@
-const { matchingConfiguration } = require('../src/Form/matching-config/matching-config-source.js')
-const { writeFileSync } = require('fs')
-const { join } = require('path')
-const { inspect } = require('util')
+const { matchingConfiguration } = require('../src/Form/matching-config/matching-config-source.js');
+const { writeFileSync } = require('fs');
+const { join } = require('path');
+const { inspect } = require('util');
 
 /**
  * DDGRegexes are stored as strings so we can annotate them with comments, here we transform them into RegExp
@@ -13,13 +13,13 @@ const { inspect } = require('util')
  */
 function convertAllValuesToRegex(obj) {
     for (const [key, value] of Object.entries(obj)) {
-        const source = String(value).normalize('NFKC')
-        obj[key] = new RegExp(source, 'ui')
+        const source = String(value).normalize('NFKC');
+        obj[key] = new RegExp(source, 'ui');
     }
-    return obj
+    return obj;
 }
 for (const [key, value] of Object.entries(matchingConfiguration.strategies.ddgMatcher.matchers)) {
-    matchingConfiguration.strategies.ddgMatcher.matchers[key] = convertAllValuesToRegex(value)
+    matchingConfiguration.strategies.ddgMatcher.matchers[key] = convertAllValuesToRegex(value);
 }
 
 /**
@@ -27,13 +27,13 @@ for (const [key, value] of Object.entries(matchingConfiguration.strategies.ddgMa
  */
 Object.entries(matchingConfiguration.strategies.cssSelector.selectors).forEach(([name, selector]) => {
     if (Array.isArray(selector)) {
-        selector = selector.join(',')
+        selector = selector.join(',');
     }
     matchingConfiguration.strategies.cssSelector.selectors[name] = selector
         .replace(/\n/g, ' ')
         .replace(/\s{2,}/g, ' ')
-        .trim()
-})
+        .trim();
+});
 
 /**
  * VendorRules come from different providers, here we merge them all together in one RegEx per inputType
@@ -46,17 +46,17 @@ Object.entries(matchingConfiguration.strategies.cssSelector.selectors).forEach((
  * @return {{RULES: Record<keyof VendorRegexRules, RegExp | undefined>}}
  */
 function mergeVendorRules(ruleName, ruleSets) {
-    const rules = []
+    const rules = [];
     ruleSets.forEach((set) => {
         if (set[ruleName]) {
-            rules.push(`(${set[ruleName]?.toLowerCase()})`.normalize('NFKC'))
+            rules.push(`(${set[ruleName]?.toLowerCase()})`.normalize('NFKC'));
         }
-    })
-    return new RegExp(rules.join('|'), 'iu')
+    });
+    return new RegExp(rules.join('|'), 'iu');
 }
-const ruleSets = matchingConfiguration.strategies.vendorRegex.ruleSets
+const ruleSets = matchingConfiguration.strategies.vendorRegex.ruleSets;
 for (const ruleName of Object.keys(matchingConfiguration.strategies.vendorRegex.rules)) {
-    matchingConfiguration.strategies.vendorRegex.rules[ruleName] = mergeVendorRules(ruleName, ruleSets)
+    matchingConfiguration.strategies.vendorRegex.rules[ruleName] = mergeVendorRules(ruleName, ruleSets);
 }
 
 /**
@@ -68,8 +68,8 @@ const fileContents = [
     'const matchingConfiguration = ',
     inspect(matchingConfiguration, { maxArrayLength: Infinity, depth: Infinity, maxStringLength: Infinity }),
     '\n\nexport { matchingConfiguration }\n',
-].join('')
+].join('');
 
 // Write to file
-const outputPath = join(__dirname, '../src/Form/matching-config/__generated__', '/compiled-matching-config.js')
-writeFileSync(outputPath, fileContents)
+const outputPath = join(__dirname, '../src/Form/matching-config/__generated__', '/compiled-matching-config.js');
+writeFileSync(outputPath, fileContents);

@@ -1,33 +1,33 @@
-let emailProtectionUserData = null
-let privateEmailAliasIndex = 0
-let incontextSignupPermanentlyDismissedAt
+let emailProtectionUserData = null;
+let privateEmailAliasIndex = 0;
+let incontextSignupPermanentlyDismissedAt;
 
 globalThis.setEmailProtectionUserData = (userName) => {
-    privateEmailAliasIndex = 0
+    privateEmailAliasIndex = 0;
     emailProtectionUserData = {
         userName,
         get nextAlias() {
-            return `${privateEmailAliasIndex}`
+            return `${privateEmailAliasIndex}`;
         },
-    }
-}
+    };
+};
 
 function setNextEmailProtectionAlias() {
-    privateEmailAliasIndex = privateEmailAliasIndex + 1
+    privateEmailAliasIndex = privateEmailAliasIndex + 1;
 }
 
 function getAddresses() {
-    if (!emailProtectionUserData) return null
+    if (!emailProtectionUserData) return null;
 
     return {
         personalAddress: `${emailProtectionUserData.userName}`,
         privateAddress: `${emailProtectionUserData.nextAlias}`,
-    }
+    };
 }
 
-globalThis.pixels = []
+globalThis.pixels = [];
 function firePixel({ pixelName }) {
-    globalThis.pixels.push(pixelName)
+    globalThis.pixels.push(pixelName);
 }
 
 function registeredTempAutofillContentScript() {
@@ -38,34 +38,34 @@ function registeredTempAutofillContentScript() {
             allowlisted: false,
             enabledFeatures: ['autofill', 'incontextSignup'],
         },
-    }
+    };
 }
 
 function init() {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.registeredTempAutofillContentScript) {
-            return sendResponse(registeredTempAutofillContentScript())
+            return sendResponse(registeredTempAutofillContentScript());
         } else if (message.getAddresses) {
-            return sendResponse(getAddresses())
+            return sendResponse(getAddresses());
         } else if (message.refreshAlias) {
-            setNextEmailProtectionAlias()
-            return sendResponse(getAddresses())
+            setNextEmailProtectionAlias();
+            return sendResponse(getAddresses());
         } else if (message.messageType === 'sendJSPixel') {
-            return sendResponse(firePixel(message.options))
+            return sendResponse(firePixel(message.options));
         } else if (message.messageType === 'getIncontextSignupDismissedAt') {
             return sendResponse({
                 success: {
                     permanentlyDismissedAt: incontextSignupPermanentlyDismissedAt,
                     isInstalledRecently: true,
                 },
-            })
+            });
         } else if (message.messageType === 'setIncontextSignupPermanentlyDismissedAt') {
-            incontextSignupPermanentlyDismissedAt = message.value
-            return sendResponse()
+            incontextSignupPermanentlyDismissedAt = message.value;
+            return sendResponse();
         }
-    })
+    });
 
     // TODO handle addUserData, logout, contextualAutofill and ddgUserReady messages
 }
 
-init()
+init();

@@ -1,10 +1,10 @@
-import { matchInPlaceholderAndLabels, checkPlaceholderAndLabels } from './matching.js'
-import { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES } from './countryNames.js'
+import { matchInPlaceholderAndLabels, checkPlaceholderAndLabels } from './matching.js';
+import { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES } from './countryNames.js';
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
-const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i
+const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i;
 // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
-const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
+const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
 
 /**
  * Format the cc year to best adapt to the input requirements (YY vs YYYY)
@@ -14,11 +14,11 @@ const FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i
  * @returns {string}
  */
 const formatCCYear = (input, year, form) => {
-    const selector = form.matching.cssSelector('formInputsSelector')
-    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year
+    const selector = form.matching.cssSelector('formInputsSelector');
+    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
 
-    return `${Number(year) - 2000}`
-}
+    return `${Number(year) - 2000}`;
+};
 
 /**
  * Get a unified expiry date with separator
@@ -29,16 +29,16 @@ const formatCCYear = (input, year, form) => {
  * @returns {string}
  */
 const getUnifiedExpiryDate = (input, month, year, form) => {
-    const formattedYear = formatCCYear(input, year, form)
-    const paddedMonth = `${month}`.padStart(2, '0')
-    const cssSelector = form.matching.cssSelector('formInputsSelector')
-    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)?.groups?.separator || '/'
+    const formattedYear = formatCCYear(input, year, form);
+    const paddedMonth = `${month}`.padStart(2, '0');
+    const cssSelector = form.matching.cssSelector('formInputsSelector');
+    const separator = matchInPlaceholderAndLabels(input, DATE_SEPARATOR_REGEX, form.form, cssSelector)?.groups?.separator || '/';
 
-    return `${paddedMonth}${separator}${formattedYear}`
-}
+    return `${paddedMonth}${separator}${formattedYear}`;
+};
 
 const formatFullName = ({ firstName = '', middleName = '', lastName = '' }) =>
-    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim()
+    `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`.trim();
 
 /**
  * Tries to look up a human-readable country name from the country code
@@ -48,21 +48,21 @@ const formatFullName = ({ firstName = '', middleName = '', lastName = '' }) =>
  */
 const getCountryDisplayName = (locale, addressCountryCode) => {
     try {
-        const regionNames = new Intl.DisplayNames([locale], { type: 'region' })
+        const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
         // Adding this ts-ignore to prevent having to change this implementation.
         // @ts-ignore
-        return regionNames.of(addressCountryCode)
+        return regionNames.of(addressCountryCode);
     } catch (e) {
-        return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode
+        return COUNTRY_CODES_TO_NAMES[addressCountryCode] || addressCountryCode;
     }
-}
+};
 
 /**
  * Tries to infer the element locale or returns 'en'
  * @param {HTMLInputElement | HTMLSelectElement} el
  * @return {string | 'en'}
  */
-const inferElementLocale = (el) => el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en'
+const inferElementLocale = (el) => el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || 'en';
 
 /**
  * Tries to format the country code into a localised country name
@@ -70,52 +70,52 @@ const inferElementLocale = (el) => el.lang || el.form?.lang || document.body.lan
  * @param {{addressCountryCode?: string}} options
  */
 const getCountryName = (el, options = {}) => {
-    const { addressCountryCode } = options
-    if (!addressCountryCode) return ''
+    const { addressCountryCode } = options;
+    if (!addressCountryCode) return '';
 
     // Try to infer the field language or fallback to en
-    const elLocale = inferElementLocale(el)
-    const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode)
+    const elLocale = inferElementLocale(el);
+    const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode);
 
     // If it's a select el we try to find a suitable match to autofill
     if (el.nodeName === 'SELECT') {
-        const englishCountryName = getCountryDisplayName('en', addressCountryCode)
+        const englishCountryName = getCountryDisplayName('en', addressCountryCode);
         // This regex matches both the localised and English country names
         const countryNameRegex = new RegExp(
             String.raw`${localisedCountryName.replace(/ /g, '.?')}|${englishCountryName.replace(/ /g, '.?')}`,
             'i',
-        )
-        const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i')
+        );
+        const countryCodeRegex = new RegExp(String.raw`\b${addressCountryCode}\b`, 'i');
 
         // We check the country code first because it's more accurate
         if (el instanceof HTMLSelectElement) {
             for (const option of el.options) {
                 if (countryCodeRegex.test(option.value)) {
-                    return option.value
+                    return option.value;
                 }
             }
 
             for (const option of el.options) {
-                if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value
+                if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value;
             }
         }
     }
 
-    return localisedCountryName
-}
+    return localisedCountryName;
+};
 
 /**
  * Try to get a map of localised country names to code, or falls back to the English map
  * @param {HTMLInputElement | HTMLSelectElement} el
  */
 const getLocalisedCountryNamesToCodes = (el) => {
-    if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES
+    if (typeof Intl.DisplayNames !== 'function') return COUNTRY_NAMES_TO_CODES;
 
     // Try to infer the field language or fallback to en
-    const elLocale = inferElementLocale(el)
+    const elLocale = inferElementLocale(el);
 
-    return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(([code]) => [getCountryDisplayName(elLocale, code), code]))
-}
+    return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(([code]) => [getCountryDisplayName(elLocale, code), code]));
+};
 
 /**
  * Try to infer a country code from an element we identified as identities.addressCountryCode
@@ -123,20 +123,20 @@ const getLocalisedCountryNamesToCodes = (el) => {
  * @return {string}
  */
 const inferCountryCodeFromElement = (el) => {
-    if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value
-    if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value]
+    if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value;
+    if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value];
 
-    const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el)
-    if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value]
+    const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el);
+    if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value];
 
     if (el instanceof HTMLSelectElement) {
-        const selectedText = el.selectedOptions[0]?.text
-        if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText
-        if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText]
-        if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText]
+        const selectedText = el.selectedOptions[0]?.text;
+        if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText;
+        if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText];
+        if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText];
     }
-    return ''
-}
+    return '';
+};
 
 /**
  * Gets separate expiration month and year from a single string
@@ -145,52 +145,52 @@ const inferCountryCodeFromElement = (el) => {
  */
 const getMMAndYYYYFromString = (expiration) => {
     /** @type {string[]} */
-    const values = expiration.match(/(\d+)/g) || []
+    const values = expiration.match(/(\d+)/g) || [];
     return values?.reduce(
         (output, current) => {
             if (Number(current) > 12) {
-                output.expirationYear = current.padStart(4, '20')
+                output.expirationYear = current.padStart(4, '20');
             } else {
-                output.expirationMonth = current.padStart(2, '0')
+                output.expirationMonth = current.padStart(2, '0');
             }
-            return output
+            return output;
         },
         { expirationYear: '', expirationMonth: '' },
-    )
-}
+    );
+};
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCredentials = ({ credentials }) => Boolean(credentials.password)
+const shouldStoreCredentials = ({ credentials }) => Boolean(credentials.password);
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
 const shouldStoreIdentities = ({ identities }) =>
-    Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity)
+    Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
 const shouldStoreCreditCards = ({ creditCards }) => {
-    if (!creditCards.cardNumber) return false
-    if (creditCards.cardSecurityCode) return true
+    if (!creditCards.cardNumber) return false;
+    if (creditCards.cardSecurityCode) return true;
     // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
-    if (creditCards.expiration) return true
+    if (creditCards.expiration) return true;
     // Expiration can also be two separate values
-    return Boolean(creditCards.expirationYear && creditCards.expirationMonth)
-}
+    return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
+};
 
 /**
  * Removes formatting characters from phone numbers, only leaves digits and the + sign
  * @param {String} phone
  * @returns {String}
  */
-const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '')
+const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '');
 
 /**
  * Formats form data into an object to send to the device for storage
@@ -200,11 +200,11 @@ const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '')
  */
 const prepareFormValuesForStorage = (formValues) => {
     /** @type {Partial<InternalDataStorageObject>} */
-    let { credentials, identities, creditCards } = formValues
+    let { credentials, identities, creditCards } = formValues;
 
     // If we have an identity name but not a card name, copy it over there
     if (!creditCards.cardName && (identities?.fullName || identities?.firstName)) {
-        creditCards.cardName = identities?.fullName || formatFullName(identities)
+        creditCards.cardName = identities?.fullName || formatFullName(identities);
     }
 
     /** Fixes for credentials **/
@@ -212,10 +212,10 @@ const prepareFormValuesForStorage = (formValues) => {
     if (shouldStoreCredentials(formValues)) {
         // If we don't have a username to match a password, let's see if the email is available
         if (credentials.password && !credentials.username && identities.emailAddress) {
-            credentials.username = identities.emailAddress
+            credentials.username = identities.emailAddress;
         }
     } else {
-        credentials = undefined
+        credentials = undefined;
     }
 
     /** Fixes for identities **/
@@ -225,43 +225,43 @@ const prepareFormValuesForStorage = (formValues) => {
             // when forms have both first/last and fullName we keep the individual values and drop the fullName
             if (!(identities.firstName && identities.lastName)) {
                 // If the fullname can be easily split into two, we'll store it as first and last
-                const nameParts = identities.fullName.trim().split(/\s+/)
+                const nameParts = identities.fullName.trim().split(/\s+/);
                 if (nameParts.length === 2) {
-                    identities.firstName = nameParts[0]
-                    identities.lastName = nameParts[1]
+                    identities.firstName = nameParts[0];
+                    identities.lastName = nameParts[1];
                 } else {
                     // If we can't split it, just store it as first name
-                    identities.firstName = identities.fullName
+                    identities.firstName = identities.fullName;
                 }
             }
-            delete identities.fullName
+            delete identities.fullName;
         }
         if (identities.phone) {
-            identities.phone = formatPhoneNumber(identities.phone)
+            identities.phone = formatPhoneNumber(identities.phone);
         }
     } else {
-        identities = undefined
+        identities = undefined;
     }
 
     /** Fixes for credit cards **/
     // Don't store if there isn't enough data
     if (shouldStoreCreditCards(formValues)) {
         if (creditCards.expiration) {
-            const { expirationMonth, expirationYear } = getMMAndYYYYFromString(creditCards.expiration)
-            creditCards.expirationMonth = expirationMonth
-            creditCards.expirationYear = expirationYear
-            delete creditCards.expiration
+            const { expirationMonth, expirationYear } = getMMAndYYYYFromString(creditCards.expiration);
+            creditCards.expirationMonth = expirationMonth;
+            creditCards.expirationYear = expirationYear;
+            delete creditCards.expiration;
         }
-        creditCards.expirationYear = creditCards.expirationYear?.padStart(4, '20')
+        creditCards.expirationYear = creditCards.expirationYear?.padStart(4, '20');
         if (creditCards.cardNumber) {
-            creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '')
+            creditCards.cardNumber = creditCards.cardNumber.replace(/\D/g, '');
         }
     } else {
-        creditCards = undefined
+        creditCards = undefined;
     }
 
-    return { credentials, identities, creditCards }
-}
+    return { credentials, identities, creditCards };
+};
 
 export {
     formatCCYear,
@@ -273,4 +273,4 @@ export {
     getMMAndYYYYFromString,
     formatPhoneNumber,
     prepareFormValuesForStorage,
-}
+};

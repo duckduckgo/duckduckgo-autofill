@@ -50,7 +50,7 @@
  * debugMessaging.notify("pageLoad", { time: window.performance.now() })
  * ```
  */
-import { WebkitMessagingConfig, WebkitMessagingTransport } from './webkit.js'
+import { WebkitMessagingConfig, WebkitMessagingTransport } from './webkit.js';
 
 /**
  * @implements {MessagingTransport}
@@ -60,7 +60,7 @@ export class Messaging {
      * @param {WebkitMessagingConfig} config
      */
     constructor(config) {
-        this.transport = getTransport(config)
+        this.transport = getTransport(config);
     }
     /**
      * Send a 'fire-and-forget' message.
@@ -77,7 +77,7 @@ export class Messaging {
      * @param {Record<string, any>} [data]
      */
     notify(name, data = {}) {
-        this.transport.notify(name, data)
+        this.transport.notify(name, data);
     }
     /**
      * Send a request, and wait for a response
@@ -95,7 +95,7 @@ export class Messaging {
      * @return {Promise<any>}
      */
     request(name, data = {}) {
-        return this.transport.request(name, data)
+        return this.transport.request(name, data);
     }
 }
 
@@ -110,7 +110,7 @@ export class MessagingTransport {
      */
     // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
     notify(name, data = {}) {
-        throw new Error("must implement 'notify'")
+        throw new Error("must implement 'notify'");
     }
     /**
      * @param {string} name
@@ -119,7 +119,7 @@ export class MessagingTransport {
      */
     // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
     request(name, data = {}) {
-        throw new Error('must implement')
+        throw new Error('must implement');
     }
 }
 
@@ -129,9 +129,9 @@ export class MessagingTransport {
  */
 function getTransport(config) {
     if (config instanceof WebkitMessagingConfig) {
-        return new WebkitMessagingTransport(config)
+        return new WebkitMessagingTransport(config);
     }
-    throw new Error('unreachable')
+    throw new Error('unreachable');
 }
 
 /**
@@ -143,12 +143,12 @@ export class MissingHandler extends Error {
      * @param {string} handlerName
      */
     constructor(message, handlerName) {
-        super(message)
-        this.handlerName = handlerName
+        super(message);
+        this.handlerName = handlerName;
     }
 }
 
 /**
  * Some re-exports for convenience
  */
-export { WebkitMessagingConfig }
+export { WebkitMessagingConfig };

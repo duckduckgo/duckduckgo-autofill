@@ -1,20 +1,20 @@
-import fs from 'fs'
-import path from 'path'
-import { getUnifiedExpiryDate } from './formatters.js'
-import { createScanner } from '../Scanner.js'
-import { getInputSubtype, createMatching, getInputVariant } from './matching.js'
-import { Form } from './Form.js'
-import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
+import fs from 'fs';
+import path from 'path';
+import { getUnifiedExpiryDate } from './formatters.js';
+import { createScanner } from '../Scanner.js';
+import { getInputSubtype, createMatching, getInputVariant } from './matching.js';
+import { Form } from './Form.js';
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js';
 
-import { createAvailableInputTypes } from '../../integration-test/helpers/utils.js'
+import { createAvailableInputTypes } from '../../integration-test/helpers/utils.js';
 
 /**
  * @type {object[]}
  */
-const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, '../../test-forms/index.json')).toString('utf-8'))
+const testCases = JSON.parse(fs.readFileSync(path.join(__dirname, '../../test-forms/index.json')).toString('utf-8'));
 testCases.forEach((testCase) => {
-    testCase.testContent = fs.readFileSync(path.resolve(__dirname, '../../test-forms', testCase.html), 'utf-8')
-})
+    testCase.testContent = fs.readFileSync(path.resolve(__dirname, '../../test-forms', testCase.html), 'utf-8');
+});
 
 /**
  * @param {HTMLInputElement} el
@@ -22,44 +22,44 @@ testCases.forEach((testCase) => {
  * @returns {string|undefined}
  */
 const getCCFieldSubtype = (el, form) => {
-    const matching = createMatching()
+    const matching = createMatching();
 
-    return matching.forInput(el, form).subtypeFromMatchers('cc', el)
-}
+    return matching.forInput(el, form).subtypeFromMatchers('cc', el);
+};
 
 const renderInputWithLabel = () => {
-    const input = document.createElement('input')
-    input.id = 'inputId'
-    const label = document.createElement('label')
-    label.setAttribute('for', 'inputId')
-    const formElement = document.createElement('form')
-    formElement.append(input, label)
-    document.body.append(formElement)
-    const form = new Form(formElement, input, InterfacePrototype.default())
-    return { input, label, formElement, form }
-}
+    const input = document.createElement('input');
+    input.id = 'inputId';
+    const label = document.createElement('label');
+    label.setAttribute('for', 'inputId');
+    const formElement = document.createElement('form');
+    formElement.append(input, label);
+    document.body.append(formElement);
+    const form = new Form(formElement, input, InterfacePrototype.default());
+    return { input, label, formElement, form };
+};
 
 const testRegexForCCLabels = (cases) => {
     Object.entries(cases).forEach(([expectedType, arr]) => {
         arr.forEach(({ text, shouldMatch = true }) => {
             it(`"${text}" should ${shouldMatch ? '' : 'not '}match regex for ${expectedType}`, () => {
-                const { input, label, formElement } = renderInputWithLabel()
-                label.textContent = text
+                const { input, label, formElement } = renderInputWithLabel();
+                label.textContent = text;
 
-                const subtype = getCCFieldSubtype(input, formElement)
+                const subtype = getCCFieldSubtype(input, formElement);
                 if (shouldMatch) {
-                    expect(subtype).toBe(expectedType)
+                    expect(subtype).toBe(expectedType);
                 } else {
-                    expect(subtype).not.toBe(expectedType)
+                    expect(subtype).not.toBe(expectedType);
                 }
-            })
-        })
-    })
-}
+            });
+        });
+    });
+};
 
 afterEach(() => {
-    document.body.innerHTML = ''
-})
+    document.body.innerHTML = '';
+});
 
 describe('Input Classifiers', () => {
     const ccLabelTestCases = {
@@ -92,8 +92,8 @@ describe('Input Classifiers', () => {
             { text: 'exp month', shouldMatch: false },
             { text: 'card expiry mo', shouldMatch: false },
         ],
-    }
-    testRegexForCCLabels(ccLabelTestCases)
+    };
+    testRegexForCCLabels(ccLabelTestCases);
 
     describe('Unified Expiration Date', () => {
         describe.each([
@@ -110,47 +110,47 @@ describe('Input Classifiers', () => {
             { text: 'ie: 08.22', expectedResult: '08.25' },
             { text: 'Expiry date: MM / YY', expectedResult: '08 / 25' },
         ])('when checking for "$text"', ({ text, expectedResult }) => {
-            let elements
+            let elements;
 
             beforeEach(() => {
-                elements = renderInputWithLabel()
-                elements.input.autocomplete = 'cc-exp'
-            })
+                elements = renderInputWithLabel();
+                elements.input.autocomplete = 'cc-exp';
+            });
 
             it('matches for placeholder text', () => {
-                elements.input.placeholder = text
+                elements.input.placeholder = text;
 
-                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, '8', '2025', elements.form)).toBe(expectedResult)
-            })
+                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration');
+                expect(getUnifiedExpiryDate(elements.input, '8', '2025', elements.form)).toBe(expectedResult);
+            });
 
             it('matches for label text', () => {
-                elements.label.textContent = text
+                elements.label.textContent = text;
 
-                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration')
-                expect(getUnifiedExpiryDate(elements.input, '8', '2025', elements.form)).toBe(expectedResult)
-            })
-        })
-    })
-})
+                expect(getCCFieldSubtype(elements.input, elements.form)).toBe('expiration');
+                expect(getUnifiedExpiryDate(elements.input, '8', '2025', elements.form)).toBe(expectedResult);
+            });
+        });
+    });
+});
 
 const getMismatchedValue = (score) => {
     if (score.inferredType !== score.manualType) {
-        return score.manualType
+        return score.manualType;
     }
 
     if (score.manualVariant && score.manualVariant !== score.inferredVariant) {
-        return `${score.manualType}.${score.manualVariant}`
+        return `${score.manualType}.${score.manualVariant}`;
     }
 
-    return ''
-}
+    return '';
+};
 
 const isThereAMismatch = (score) => {
-    return Boolean(getMismatchedValue(score))
-}
+    return Boolean(getMismatchedValue(score));
+};
 
-const testResults = []
+const testResults = [];
 describe.each(testCases)('Test $html fields', (testCase) => {
     const {
         html,
@@ -161,77 +161,77 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         title = '__test__',
         hasExtraWrappers = true,
         testContent,
-    } = testCase
+    } = testCase;
 
     const testTextString =
         expectedFailures.length > 0
             ? `should contain ${expectedFailures.length} known failure(s): ${JSON.stringify(expectedFailures)}`
-            : `should NOT contain failures`
+            : `should NOT contain failures`;
 
     it.concurrent(testTextString, async () => {
-        document.body.innerHTML = ''
+        document.body.innerHTML = '';
 
-        let baseWrapper = document.body
+        let baseWrapper = document.body;
 
         if (hasExtraWrappers) {
-            baseWrapper = document.createElement('div')
-            document.body.appendChild(baseWrapper)
+            baseWrapper = document.createElement('div');
+            document.body.appendChild(baseWrapper);
         }
 
-        baseWrapper.innerHTML = testContent
-        document.title = title
+        baseWrapper.innerHTML = testContent;
+        document.title = title;
 
-        const matching = createMatching()
-        const buttons = document.querySelectorAll(matching.cssSelector('submitButtonSelector'))
+        const matching = createMatching();
+        const buttons = document.querySelectorAll(matching.cssSelector('submitButtonSelector'));
         buttons.forEach((button) => {
             // We're doing this so that isPotentiallyViewable(button) === true. See jest.setup.js for more info
             // @ts-ignore
-            button._jsdomMockClientWidth = 150
+            button._jsdomMockClientWidth = 150;
             // @ts-ignore
-            button._jsdomMockClientHeight = 50
+            button._jsdomMockClientHeight = 50;
             // @ts-ignore
-            button._jsdomMockOffsetWidth = 150
+            button._jsdomMockOffsetWidth = 150;
             // @ts-ignore
-            button._jsdomMockOffsetHeight = 50
-        })
+            button._jsdomMockOffsetHeight = 50;
+        });
 
-        const deviceInterface = InterfacePrototype.default()
-        const availableInputTypes = createAvailableInputTypes({ credentials: { username: true, password: true } })
-        deviceInterface.settings.setAvailableInputTypes(availableInputTypes)
+        const deviceInterface = InterfacePrototype.default();
+        const availableInputTypes = createAvailableInputTypes({ credentials: { username: true, password: true } });
+        deviceInterface.settings.setAvailableInputTypes(availableInputTypes);
         deviceInterface.settings.setFeatureToggles({
             unknown_username_categorization: true,
-        })
-        const scanner = createScanner(deviceInterface)
-        scanner.findEligibleInputs(document)
+        });
+        const scanner = createScanner(deviceInterface);
+        scanner.findEligibleInputs(document);
 
         const detectedSubmitButtons = Array.from(scanner.forms.values())
             .map((form) => form.submitButtons)
-            .flat()
+            .flat();
         /**
          * @type {HTMLElement[]}
          */
-        const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'))
+        const identifiedSubmitButtons = Array.from(document.querySelectorAll('[data-manual-submit]'));
 
         // False positives are tracked in a Form instance but not marked with 'data-manual-submit' in the DOM.
-        const submitFalsePositives = detectedSubmitButtons.filter((button) => !identifiedSubmitButtons.includes(button))
+        const submitFalsePositives = detectedSubmitButtons.filter((button) => !identifiedSubmitButtons.includes(button));
         // False negatives are marked with 'data-manual-submit' in the DOM but not tracked in a Form instance.
-        const submitFalseNegatives = identifiedSubmitButtons.filter((button) => !detectedSubmitButtons.includes(button))
+        const submitFalseNegatives = identifiedSubmitButtons.filter((button) => !detectedSubmitButtons.includes(button));
 
         if (!generated) {
-            expect(submitFalsePositives).toHaveLength(expectedSubmitFalsePositives)
-            expect(submitFalseNegatives).toHaveLength(expectedSubmitFalseNegatives)
+            expect(submitFalsePositives).toHaveLength(expectedSubmitFalsePositives);
+            expect(submitFalseNegatives).toHaveLength(expectedSubmitFalseNegatives);
         }
 
         /** @type {Array<HTMLInputElement>} */
-        const manuallyScoredFields = Array.from(document.querySelectorAll('[data-manual-scoring]'))
+        const manuallyScoredFields = Array.from(document.querySelectorAll('[data-manual-scoring]'));
         /** @type {Array<HTMLInputElement>} */
-        const automaticallyScoredFields = Array.from(document.querySelectorAll('[data-ddg-inputtype]'))
+        const automaticallyScoredFields = Array.from(document.querySelectorAll('[data-ddg-inputtype]'));
 
         const getDetailsFromFailure = (field) => {
-            const { manualScoring, ddgInputtype, ...rest } = field.dataset
+            const { manualScoring, ddgInputtype, ...rest } = field.dataset;
             // @ts-ignore
-            field.style = ''
-            const [manualType, manualVariant] = field.getAttribute('data-manual-scoring')?.split('.') || []
+            field.style = '';
+            const [manualType, manualVariant] = field.getAttribute('data-manual-scoring')?.split('.') || [];
 
             return {
                 attrs: {
@@ -244,10 +244,10 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                 inferredVariant: getInputVariant(field),
                 manualType,
                 manualVariant,
-            }
-        }
+            };
+        };
 
-        const scores = manuallyScoredFields.map(getDetailsFromFailure)
+        const scores = manuallyScoredFields.map(getDetailsFromFailure);
 
         const falseScores = automaticallyScoredFields
             .filter(
@@ -256,21 +256,21 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                     field.getAttribute('data-ddg-inputtype') !== 'unknown' &&
                     field.tabIndex !== -1,
             )
-            .map(getDetailsFromFailure)
+            .map(getDetailsFromFailure);
 
-        scores.concat(falseScores)
+        scores.concat(falseScores);
 
         const submitButtonScores = {
             detected: detectedSubmitButtons.length,
             identified: identifiedSubmitButtons.length,
             falsePositives: submitFalsePositives.length,
             falseNegatives: submitFalseNegatives.length,
-        }
+        };
 
-        testResults.push({ testCase, scores, submitButtonScores })
+        testResults.push({ testCase, scores, submitButtonScores });
 
-        const bad = scores.filter((score) => isThereAMismatch(score))
-        const failed = bad.map((score) => getMismatchedValue(score))
+        const bad = scores.filter((score) => isThereAMismatch(score));
+        const failed = bad.map((score) => getMismatchedValue(score));
 
         if (bad.length !== expectedFailures.length) {
             for (const score of bad) {
@@ -283,18 +283,18 @@ describe.each(testCases)('Test $html fields', (testCase) => {
                     '\nid:           ' + JSON.stringify(score.attrs.id),
                     '\nname:         ' + JSON.stringify(score.attrs.name),
                     '\nHTML:         ' + score.html,
-                )
+                );
             }
         }
 
         if (generated) {
             // Ignore order
-            expect(failed.sort()).toStrictEqual(expectedFailures.sort())
+            expect(failed.sort()).toStrictEqual(expectedFailures.sort());
         } else {
-            expect(failed).toStrictEqual(expectedFailures)
+            expect(failed).toStrictEqual(expectedFailures);
         }
-    })
-})
+    });
+});
 
 afterAll(() => {
     /* site statistics
@@ -302,48 +302,48 @@ afterAll(() => {
     (including expected failures)
      */
 
-    const siteHasFailures = {}
+    const siteHasFailures = {};
 
     testResults.forEach((result) => {
-        const siteName = result.testCase.html.split('_')[0]
-        const testHasFailures = result.scores.some((score) => isThereAMismatch(score))
+        const siteName = result.testCase.html.split('_')[0];
+        const testHasFailures = result.scores.some((score) => isThereAMismatch(score));
         if (siteHasFailures[siteName] !== true) {
-            siteHasFailures[siteName] = testHasFailures
+            siteHasFailures[siteName] = testHasFailures;
         }
-    })
+    });
 
-    const allSites = Object.values(siteHasFailures).length
-    const failingSites = Object.values(siteHasFailures).filter((t) => t === true).length
-    const proportionFailingSites = failingSites / allSites
+    const allSites = Object.values(siteHasFailures).length;
+    const failingSites = Object.values(siteHasFailures).filter((t) => t === true).length;
+    const proportionFailingSites = failingSites / allSites;
 
     /* field statistics */
 
-    let totalFields = 0
-    let totalFailedFields = 0
-    let totalFalsePositives = 0
+    let totalFields = 0;
+    let totalFailedFields = 0;
+    let totalFalsePositives = 0;
 
-    const totalFieldsByType = {}
-    const totalFailuresByFieldType = {}
+    const totalFieldsByType = {};
+    const totalFailuresByFieldType = {};
 
     testResults.forEach((result) => {
         result.scores.forEach((field) => {
-            const { manualType, inferredType } = field
+            const { manualType, inferredType } = field;
             if (!totalFieldsByType[manualType]) {
-                totalFieldsByType[manualType] = 0
-                totalFailuresByFieldType[manualType] = 0
+                totalFieldsByType[manualType] = 0;
+                totalFailuresByFieldType[manualType] = 0;
             }
 
             if (manualType !== inferredType) {
-                totalFailedFields++
-                totalFailuresByFieldType[manualType]++
+                totalFailedFields++;
+                totalFailuresByFieldType[manualType]++;
             }
             if ((!manualType || manualType === 'unknown') && inferredType !== manualType) {
-                totalFalsePositives++
+                totalFalsePositives++;
             }
-            totalFields++
-            totalFieldsByType[manualType]++
-        })
-    })
+            totalFields++;
+            totalFieldsByType[manualType]++;
+        });
+    });
 
     console.log(
         'Input classification statistics:',
@@ -370,16 +370,16 @@ afterAll(() => {
                         ' (' +
                         Math.round((totalFailuresByFieldType[type] / totalFailedFields) * 100) +
                         '% of all failures)'
-                    )
+                    );
                 })
                 .join('') +
             '\n',
-    )
+    );
 
-    const totalDetectedButtons = testResults.map((test) => test.submitButtonScores.detected).reduce((a, b) => a + b, 0)
-    const totalIdentifiedButtons = testResults.map((test) => test.submitButtonScores.identified).reduce((a, b) => a + b, 0)
-    const totalFalsePositiveButtons = testResults.map((test) => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0)
-    const totalFalseNegativeButtons = testResults.map((test) => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0)
+    const totalDetectedButtons = testResults.map((test) => test.submitButtonScores.detected).reduce((a, b) => a + b, 0);
+    const totalIdentifiedButtons = testResults.map((test) => test.submitButtonScores.identified).reduce((a, b) => a + b, 0);
+    const totalFalsePositiveButtons = testResults.map((test) => test.submitButtonScores.falsePositives).reduce((a, b) => a + b, 0);
+    const totalFalseNegativeButtons = testResults.map((test) => test.submitButtonScores.falseNegatives).reduce((a, b) => a + b, 0);
 
     console.log(
         'Submit button statistics:\n',
@@ -388,5 +388,5 @@ afterAll(() => {
             ' manually identified (' +
             Math.round((totalFalseNegativeButtons / totalIdentifiedButtons) * 100) +
             '% false negative)\n',
-    )
-})
+    );
+});

@@ -6,4 +6,4 @@ export const constants = {
     MAX_FORMS_PER_PAGE: 30,
     MAX_INPUTS_PER_FORM: 80,
     MAX_FORM_RESCANS: 50,
-}
+};

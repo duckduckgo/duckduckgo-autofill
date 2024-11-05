@@ -1,14 +1,14 @@
-const { readFileSync } = require('fs')
-const { replaceConstExports } = require('./scripts/zod-file-replacer.js')
+const { readFileSync } = require('fs');
+const { replaceConstExports } = require('./scripts/zod-file-replacer.js');
 
 module.exports = function (grunt) {
-    'use strict'
+    'use strict';
 
-    grunt.loadNpmTasks('grunt-exec')
-    grunt.loadNpmTasks('grunt-eslint')
-    grunt.loadNpmTasks('grunt-browserify')
-    grunt.loadNpmTasks('grunt-contrib-watch')
-    const through = require('through2')
+    grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-eslint');
+    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    const through = require('through2');
 
     const defaultTransforms = [
         [
@@ -22,18 +22,18 @@ module.exports = function (grunt) {
             (file) => {
                 return through(function (buf, _enc, next) {
                     if (!file.endsWith('styles.js')) {
-                        this.push(buf)
-                        return next()
+                        this.push(buf);
+                        return next();
                     }
-                    const fileContent = readFileSync('./src/UI/styles/autofill-tooltip-styles.css', 'utf8')
-                    const matcher = "'$CSS_STYLES$'"
-                    const asString = buf.toString().replace(matcher, JSON.stringify(fileContent))
-                    this.push(asString)
-                    next()
-                })
+                    const fileContent = readFileSync('./src/UI/styles/autofill-tooltip-styles.css', 'utf8');
+                    const matcher = "'$CSS_STYLES$'";
+                    const asString = buf.toString().replace(matcher, JSON.stringify(fileContent));
+                    this.push(asString);
+                    next();
+                });
             },
         ],
-    ]
+    ];
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -50,13 +50,13 @@ module.exports = function (grunt) {
                             (file) => {
                                 return through(function (buf, _enc, next) {
                                     if (!file.endsWith('.zod.js')) {
-                                        this.push(buf)
-                                        return next()
+                                        this.push(buf);
+                                        return next();
                                     }
-                                    const newFileContent = replaceConstExports(buf.toString())
-                                    this.push(newFileContent)
-                                    next()
-                                })
+                                    const newFileContent = replaceConstExports(buf.toString());
+                                    this.push(newFileContent);
+                                    next();
+                                });
                             },
                         ],
                     ],
@@ -112,7 +112,7 @@ module.exports = function (grunt) {
                 tasks: ['exec:copyAssets', 'browserify:dist', 'browserify:debug'],
             },
         },
-    })
+    });
 
     grunt.registerTask('default', [
         'exec:precompileRegexes',
@@ -120,6 +120,6 @@ module.exports = function (grunt) {
         'browserify:dist',
         'browserify:debug',
         'exec:copyAssets',
-    ])
-    grunt.registerTask('dev', ['default', 'watch'])
-}
+    ]);
+    grunt.registerTask('dev', ['default', 'watch']);
+};

@@ -8,7 +8,7 @@ export class DeviceApiTransport {
      * @returns {Promise<any>}
      */
     async send(_deviceApiCall, _options) {
-        return undefined
+        return undefined;
     }
 }
 
@@ -22,10 +22,10 @@ export class DeviceApiTransport {
  */
 export class DeviceApi {
     /** @type {DeviceApiTransport} */
-    transport
+    transport;
     /** @param {DeviceApiTransport} transport */
     constructor(transport) {
-        this.transport = transport
+        this.transport = transport;
     }
     /**
      * @template {import("./device-api-call").DeviceApiCall} D
@@ -34,10 +34,10 @@ export class DeviceApi {
      * @returns {Promise<NonNullable<ReturnType<D['validateResult']>['success']>>}
      */
     async request(deviceApiCall, options) {
-        deviceApiCall.validateParams()
-        const result = await this.transport.send(deviceApiCall, options)
-        const processed = deviceApiCall.preResultValidation(result)
-        return deviceApiCall.validateResult(processed)
+        deviceApiCall.validateParams();
+        const result = await this.transport.send(deviceApiCall, options);
+        const processed = deviceApiCall.preResultValidation(result);
+        return deviceApiCall.validateResult(processed);
     }
     /**
      * @template {import("./device-api-call").DeviceApiCall} P
@@ -46,7 +46,7 @@ export class DeviceApi {
      * @returns {Promise<void>}
      */
     async notify(deviceApiCall, options) {
-        deviceApiCall.validateParams()
-        return this.transport.send(deviceApiCall, options)
+        deviceApiCall.validateParams();
+        return this.transport.send(deviceApiCall, options);
     }
 }

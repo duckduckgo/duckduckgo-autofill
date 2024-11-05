@@ -1,50 +1,50 @@
-import { removeExcessWhitespace, Matching } from './matching.js'
-import { constants } from '../constants.js'
-import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js'
-import { findEnclosedElements, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js'
+import { removeExcessWhitespace, Matching } from './matching.js';
+import { constants } from '../constants.js';
+import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js';
+import { findEnclosedElements, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js';
 
 class FormAnalyzer {
     /** @type HTMLElement */
-    form
+    form;
     /** @type Matching */
-    matching
+    matching;
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
      */
     constructor(form, input, matching) {
-        this.form = form
-        this.matching = matching || new Matching(matchingConfiguration)
+        this.form = form;
+        this.matching = matching || new Matching(matchingConfiguration);
 
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
          */
-        this.autofillSignal = 0
+        this.autofillSignal = 0;
         /**
          * A hybrid form can be either a login or a signup, the site uses a single form for both
          * @type {number}
          */
-        this.hybridSignal = 0
+        this.hybridSignal = 0;
 
         /**
          * Collects the signals for debugging purposes
          * @type {string[]}
          */
-        this.signals = []
+        this.signals = [];
 
         // Analyse the input that was passed. This is pretty arbitrary, but historically it's been working nicely.
-        this.evaluateElAttributes(input, 1, true)
+        this.evaluateElAttributes(input, 1, true);
 
         // If we have a meaningful container (a form), check that, otherwise check the whole page
         if (form !== input) {
-            this.evaluateForm()
+            this.evaluateForm();
         } else {
-            this.evaluatePage()
+            this.evaluatePage();
         }
 
-        return this
+        return this;
     }
 
     /**
@@ -53,21 +53,21 @@ class FormAnalyzer {
      */
     get isHybrid() {
         // When marking for hybrid we also want to ensure other signals are weak
-        const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10
+        const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10;
 
-        return this.hybridSignal > 0 && areOtherSignalsWeak
+        return this.hybridSignal > 0 && areOtherSignalsWeak;
     }
 
     get isLogin() {
-        if (this.isHybrid) return false
+        if (this.isHybrid) return false;
 
-        return this.autofillSignal < 0
+        return this.autofillSignal < 0;
     }
 
     get isSignup() {
-        if (this.isHybrid) return false
+        if (this.isHybrid) return false;
 
-        return this.autofillSignal >= 0
+        return this.autofillSignal >= 0;
     }
 
     /**
@@ -77,9 +77,9 @@ class FormAnalyzer {
      * @returns {FormAnalyzer}
      */
     increaseSignalBy(strength, signal) {
-        this.autofillSignal += strength
-        this.signals.push(`${signal}: +${strength}`)
-        return this
+        this.autofillSignal += strength;
+        this.signals.push(`${signal}: +${strength}`);
+        return this;
     }
 
     /**
@@ -89,9 +89,9 @@ class FormAnalyzer {
      * @returns {FormAnalyzer}
      */
     decreaseSignalBy(strength, signal) {
-        this.autofillSignal -= strength
-        this.signals.push(`${signal}: -${strength}`)
-        return this
+        this.autofillSignal -= strength;
+        this.signals.push(`${signal}: -${strength}`);
+        return this;
     }
 
     /**
@@ -101,9 +101,9 @@ class FormAnalyzer {
      * @returns {FormAnalyzer}
      */
     increaseHybridSignal(strength, signal) {
-        this.hybridSignal += strength
-        this.signals.push(`${signal} (hybrid): +${strength}`)
-        return this
+        this.hybridSignal += strength;
+        this.signals.push(`${signal} (hybrid): +${strength}`);
+        return this;
     }
 
     /**
@@ -126,75 +126,75 @@ class FormAnalyzer {
         shouldBeConservative = false,
     }) {
         // If the string is empty or too long (noisy) do nothing
-        if (!string || string.length > constants.TEXT_LENGTH_CUTOFF) return this
+        if (!string || string.length > constants.TEXT_LENGTH_CUTOFF) return this;
 
         const matchesLogin =
             safeRegexTest(/current.?password/i, string) ||
             safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), string) ||
-            safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)
+            safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string);
 
         // Check explicitly for unified login/signup forms
         if (shouldCheckUnifiedForm && matchesLogin && safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), string)) {
-            this.increaseHybridSignal(strength, signalType)
-            return this
+            this.increaseHybridSignal(strength, signalType);
+            return this;
         }
 
-        const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex')
-        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string)
+        const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
+        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string);
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
-            if (matchesLogin) this.increaseSignalBy(strength, signalType)
-            if (matchesSignup) this.decreaseSignalBy(strength, signalType)
+            if (matchesLogin) this.increaseSignalBy(strength, signalType);
+            if (matchesSignup) this.decreaseSignalBy(strength, signalType);
         } else {
-            if (matchesLogin) this.decreaseSignalBy(strength, signalType)
-            if (matchesSignup) this.increaseSignalBy(strength, signalType)
+            if (matchesLogin) this.decreaseSignalBy(strength, signalType);
+            if (matchesSignup) this.increaseSignalBy(strength, signalType);
         }
-        return this
+        return this;
     }
 
     evaluateElAttributes(el, signalStrength = 3, isInput = false) {
         Array.from(el.attributes).forEach((attr) => {
-            if (attr.name === 'style') return
+            if (attr.name === 'style') return;
 
-            const attributeString = `${attr.name}=${attr.value}`
+            const attributeString = `${attr.name}=${attr.value}`;
             this.updateSignal({
                 string: attributeString,
                 strength: signalStrength,
                 signalType: `${el.name} attr: ${attributeString}`,
                 shouldCheckUnifiedForm: isInput,
-            })
-        })
+            });
+        });
     }
 
     evaluateUrl() {
-        const { pathname, hash } = window.location
-        const pathToMatch = pathname + hash
+        const { pathname, hash } = window.location;
+        const pathToMatch = pathname + hash;
 
-        const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch)
-        const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch)
+        const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex('loginRegex'), pathToMatch);
+        const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex('conservativeSignupRegex'), pathToMatch);
 
         // If the url matches both, do nothing: the signal is probably confounding
-        if (matchesLogin && matchesSignup) return
+        if (matchesLogin && matchesSignup) return;
 
         if (matchesLogin) {
-            this.decreaseSignalBy(1, 'url matches login')
+            this.decreaseSignalBy(1, 'url matches login');
         }
 
         if (matchesSignup) {
-            this.increaseSignalBy(1, 'url matches signup')
+            this.increaseSignalBy(1, 'url matches signup');
         }
     }
 
     evaluatePageTitle() {
-        const pageTitle = document.title
-        this.updateSignal({ string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true })
+        const pageTitle = document.title;
+        this.updateSignal({ string: pageTitle, strength: 2, signalType: `page title: ${pageTitle}`, shouldCheckUnifiedForm: true });
     }
 
     evaluatePageHeadings() {
-        const headings = document.querySelectorAll('h1, h2, h3')
+        const headings = document.querySelectorAll('h1, h2, h3');
         headings.forEach((heading) => {
-            const textContent = removeExcessWhitespace(heading.textContent || '')
+            const textContent = removeExcessWhitespace(heading.textContent || '');
 
             this.updateSignal({
                 string: textContent,
@@ -202,29 +202,29 @@ class FormAnalyzer {
                 signalType: `heading: ${textContent}`,
                 shouldCheckUnifiedForm: true,
                 shouldBeConservative: true,
-            })
-        })
+            });
+        });
     }
 
     evaluatePage() {
-        this.evaluateUrl()
-        this.evaluatePageTitle()
-        this.evaluatePageHeadings()
+        this.evaluateUrl();
+        this.evaluatePageTitle();
+        this.evaluatePageHeadings();
         // Check for submit buttons
-        const buttons = document.querySelectorAll(this.matching.cssSelector('submitButtonSelector'))
+        const buttons = document.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
         buttons.forEach((button) => {
             // if the button has a form, it's not related to our input, because our input has no form here
             if (button instanceof HTMLButtonElement) {
                 if (!button.form && !button.closest('form')) {
-                    this.evaluateElement(button)
-                    this.evaluateElAttributes(button, 0.5)
+                    this.evaluateElement(button);
+                    this.evaluateElAttributes(button, 0.5);
                 }
             }
-        })
+        });
     }
 
     evaluateElement(el) {
-        const string = getTextShallow(el)
+        const string = getTextShallow(el);
 
         if (el.matches(this.matching.cssSelector('password'))) {
             // These are explicit signals by the web author, so we weigh them heavily
@@ -232,31 +232,31 @@ class FormAnalyzer {
                 string: el.getAttribute('autocomplete') || el.getAttribute('name') || '',
                 strength: 5,
                 signalType: `explicit: ${el.getAttribute('autocomplete')}`,
-            })
-            return
+            });
+            return;
         }
 
         // check button contents
         if (el.matches(this.matching.cssSelector('submitButtonSelector') + ', *[class*=button]')) {
             // If we're confident this is the submit button, it's a stronger signal
-            let likelyASubmit = isLikelyASubmitButton(el, this.matching)
-            let shouldFlip = false
+            let likelyASubmit = isLikelyASubmitButton(el, this.matching);
+            let shouldFlip = false;
             if (likelyASubmit) {
                 this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach((submit) => {
                     // If there is another element marked as submit and this is not, flip back to false
                     if (el.type !== 'submit' && el !== submit) {
-                        likelyASubmit = false
+                        likelyASubmit = false;
                     }
-                })
+                });
             } else {
                 // Here we don't think this is a submit, so if there is another submit in the form, flip the score
-                const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'))
-                const isSocialButton = /facebook|twitter|google|apple/i.test(string)
-                shouldFlip = thereIsASubmitButton && !isSocialButton
+                const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
+                const isSocialButton = /facebook|twitter|google|apple/i.test(string);
+                shouldFlip = thereIsASubmitButton && !isSocialButton;
             }
-            const strength = likelyASubmit ? 20 : 4
-            this.updateSignal({ string, strength, signalType: `button: ${string}`, shouldFlip })
-            return
+            const strength = likelyASubmit ? 20 : 4;
+            this.updateSignal({ string, strength, signalType: `button: ${string}`, shouldFlip });
+            return;
         }
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
         if (
@@ -264,101 +264,101 @@ class FormAnalyzer {
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
             el.matches('button[class*=secondary]')
         ) {
-            let shouldFlip = true
-            let strength = 1
+            let shouldFlip = true;
+            let strength = 1;
             // Don't flip forgotten password links
             if (safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string)) {
-                shouldFlip = false
-                strength = 3
+                shouldFlip = false;
+                strength = 3;
             } else if (safeRegexTest(this.matching.getDDGMatcherRegex('loginProvidersRegex'), string)) {
                 // Don't flip login providers links
-                shouldFlip = false
+                shouldFlip = false;
             }
-            this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip })
+            this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
         } else {
             // any other case
-            this.updateSignal({ string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true })
+            this.updateSignal({ string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });
         }
     }
 
     evaluateForm() {
         // Check page url
-        this.evaluateUrl()
+        this.evaluateUrl();
 
         // Check page title
-        this.evaluatePageTitle()
+        this.evaluatePageTitle();
 
         // Check form attributes
-        this.evaluateElAttributes(this.form)
+        this.evaluateElAttributes(this.form);
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
-        const selector = this.matching.cssSelector('safeUniversalSelector')
-        const formElements = findEnclosedElements(this.form, selector)
+        const selector = this.matching.cssSelector('safeUniversalSelector');
+        const formElements = findEnclosedElements(this.form, selector);
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
-            if (i >= 200) break
+            if (i >= 200) break;
 
-            const element = formElements[i]
+            const element = formElements[i];
             // Check if element is not hidden. Note that we can't use offsetHeight
             // nor intersectionObserver, because the element could be outside the
             // viewport or its parent hidden
-            const displayValue = window.getComputedStyle(element, null).getPropertyValue('display')
-            if (displayValue !== 'none') this.evaluateElement(element)
+            const displayValue = window.getComputedStyle(element, null).getPropertyValue('display');
+            if (displayValue !== 'none') this.evaluateElement(element);
         }
 
         // A form with many fields is unlikely to be a login form
-        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'))
+        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
         if (relevantFields.length >= 4) {
-            this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login')
+            this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
         }
 
         // If we can't decide at this point, try reading page headings
         if (this.autofillSignal === 0) {
-            this.evaluatePageHeadings()
+            this.evaluatePageHeadings();
         }
-        return this
+        return this;
     }
 
     /** @type {undefined|boolean} */
-    _isCCForm = undefined
+    _isCCForm = undefined;
     /**
      * Tries to infer if it's a credit card form
      * @returns {boolean}
      */
     isCCForm() {
-        if (this._isCCForm !== undefined) return this._isCCForm
+        if (this._isCCForm !== undefined) return this._isCCForm;
 
-        const formEl = this.form
-        const ccFieldSelector = this.matching.joinCssSelectors('cc')
+        const formEl = this.form;
+        const ccFieldSelector = this.matching.joinCssSelectors('cc');
         if (!ccFieldSelector) {
-            this._isCCForm = false
-            return this._isCCForm
+            this._isCCForm = false;
+            return this._isCCForm;
         }
-        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector)
+        const hasCCSelectorChild = formEl.matches(ccFieldSelector) || formEl.querySelector(ccFieldSelector);
         // If the form contains one of the specific selectors, we have high confidence
         if (hasCCSelectorChild) {
-            this._isCCForm = true
-            return this._isCCForm
+            this._isCCForm = true;
+            return this._isCCForm;
         }
 
         // Read form attributes to find a signal
         const hasCCAttribute = [...formEl.attributes].some(({ name, value }) =>
             safeRegexTest(/(credit|payment).?card/i, `${name}=${value}`),
-        )
+        );
         if (hasCCAttribute) {
-            this._isCCForm = true
-            return this._isCCForm
+            this._isCCForm = true;
+            return this._isCCForm;
         }
 
         // Match form textContent against common cc fields (includes hidden labels)
-        const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/gi)
+        const textMatches = formEl.textContent?.match(/(credit|payment).?card(.?number)?|ccv|security.?code|cvv|cvc|csc/gi);
         // De-dupe matches to avoid counting the same element more than once
-        const deDupedMatches = new Set(textMatches?.map((match) => match.toLowerCase()))
+        const deDupedMatches = new Set(textMatches?.map((match) => match.toLowerCase()));
 
         // We check for more than one to minimise false positives
-        this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1)
-        return this._isCCForm
+        this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1);
+        return this._isCCForm;
     }
 }
 
-export default FormAnalyzer
+export default FormAnalyzer;

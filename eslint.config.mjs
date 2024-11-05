@@ -1,6 +1,6 @@
-import globals from 'globals'
-import ddgConfig from '@duckduckgo/eslint-config'
-import babelParser from '@babel/eslint-parser'
+import globals from 'globals';
+import ddgConfig from '@duckduckgo/eslint-config';
+import babelParser from '@babel/eslint-parser';
 
 export default [
     {
@@ -54,4 +54,4 @@ export default [
             ],
         },
     },
-]
+];

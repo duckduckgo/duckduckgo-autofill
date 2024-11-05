@@ -1,26 +1,26 @@
 // Polyfills/shims
-import './requestIdleCallback.js'
-import { createDevice } from './DeviceInterface.js'
-import { shouldLog } from './autofill-utils.js'
-;(() => {
+import './requestIdleCallback.js';
+import { createDevice } from './DeviceInterface.js';
+import { shouldLog } from './autofill-utils.js';
+(() => {
     if (shouldLog()) {
-        console.log('DuckDuckGo Autofill Active')
+        console.log('DuckDuckGo Autofill Active');
     }
 
-    if (!window.isSecureContext) return false
+    if (!window.isSecureContext) return false;
 
     try {
         const startupAutofill = () => {
             if (document.visibilityState === 'visible') {
-                const deviceInterface = createDevice()
-                deviceInterface.init()
+                const deviceInterface = createDevice();
+                deviceInterface.init();
             } else {
-                document.addEventListener('visibilitychange', startupAutofill, { once: true })
+                document.addEventListener('visibilitychange', startupAutofill, { once: true });
             }
-        }
-        startupAutofill()
+        };
+        startupAutofill();
     } catch (e) {
-        console.error(e)
+        console.error(e);
         // Noop, we errored
     }
-})()
+})();

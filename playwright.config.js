@@ -1,5 +1,5 @@
 // @ts-check
-const { devices } = require('@playwright/test')
+const { devices } = require('@playwright/test');
 
 /**
  * Read environment variables from file.
@@ -112,6 +112,6 @@ const config = {
         //   },
         // },
     ],
-}
+};
 
-module.exports = config
+module.exports = config;

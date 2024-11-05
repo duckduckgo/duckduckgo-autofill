@@ -1,30 +1,30 @@
-import { DeviceApi } from '../packages/device-api/index.js'
-import { createGlobalConfig } from './config.js'
-import { Settings } from './Settings.js'
-import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import InterfacePrototype from './DeviceInterface/InterfacePrototype.js'
-import { InContextSignup } from './InContextSignup.js'
+import { DeviceApi } from '../packages/device-api/index.js';
+import { createGlobalConfig } from './config.js';
+import { Settings } from './Settings.js';
+import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
+import InterfacePrototype from './DeviceInterface/InterfacePrototype.js';
+import { InContextSignup } from './InContextSignup.js';
 
 const createAvailableInputTypes = (overrides) => {
-    const base = Settings.defaults.availableInputTypes
+    const base = Settings.defaults.availableInputTypes;
     return {
         ...base,
         ...overrides,
-    }
-}
+    };
+};
 
 const createGlobalConfigWithDefaults = (defaults) => {
     return {
         ...createGlobalConfig(),
         ...defaults,
-    }
-}
+    };
+};
 
-jest.mock('./InContextSignup.js')
+jest.mock('./InContextSignup.js');
 
 describe('Settings', () => {
     it('feature toggles + input types combinations ', async () => {
-        const inContextSignupMock = new InContextSignup(InterfacePrototype.default())
+        const inContextSignupMock = new InContextSignup(InterfacePrototype.default());
 
         /** @type {[import("./Settings").AutofillFeatureToggles, import("./Settings").AvailableInputTypes, (settings: Settings) => void][]} */
         const cases = [
@@ -36,7 +36,7 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(true);
                 },
             ],
             [
@@ -47,7 +47,9 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(
+                        false,
+                    );
                 },
             ],
             [
@@ -58,7 +60,7 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'new' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'new' }, null)).toBe(false);
                 },
             ],
             [
@@ -69,7 +71,9 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'credentials', subtype: 'password', variant: 'current' }, null)).toBe(
+                        false,
+                    );
                 },
             ],
             [
@@ -80,7 +84,7 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName', variant: '' }, null)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName', variant: '' }, null)).toBe(true);
                 },
             ],
             [
@@ -91,7 +95,7 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName', variant: '' }, null)).toBe(false)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'fullName', variant: '' }, null)).toBe(false);
                 },
             ],
             [
@@ -102,7 +106,7 @@ describe('Settings', () => {
                     }),
                 },
                 (settings) => {
-                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress', variant: '' }, null)).toBe(true)
+                    expect(settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress', variant: '' }, null)).toBe(true);
                 },
             ],
             [
@@ -112,27 +116,27 @@ describe('Settings', () => {
                 },
                 (settings) => {
                     // @ts-ignore
-                    inContextSignupMock.isAvailable.mockReturnValue(true)
+                    inContextSignupMock.isAvailable.mockReturnValue(true);
                     expect(
                         settings.canAutofillType({ mainType: 'identities', subtype: 'emailAddress', variant: '' }, inContextSignupMock),
-                    ).toBe(true)
+                    ).toBe(true);
                 },
             ],
-        ]
+        ];
         for (const [toggles, types, fn] of cases) {
-            const settings = await settingsFromMockedCalls(toggles, types)
-            fn(settings)
+            const settings = await settingsFromMockedCalls(toggles, types);
+            fn(settings);
         }
-    })
+    });
     it('handles errors in transport (falling back to defaults)', async () => {
         const deviceApi = new DeviceApi({
             async send(_call) {
-                throw new Error('oops!')
+                throw new Error('oops!');
             },
-        })
-        const settings = new Settings(createGlobalConfig(), deviceApi)
-        await settings.refresh()
-        expect(settings.availableInputTypes).toMatchObject(Settings.defaults.availableInputTypes)
+        });
+        const settings = new Settings(createGlobalConfig(), deviceApi);
+        await settings.refresh();
+        expect(settings.availableInputTypes).toMatchObject(Settings.defaults.availableInputTypes);
         expect(settings.featureToggles).toMatchInlineSnapshot(`
       {
         "credentials_saving": false,
@@ -145,9 +149,9 @@ describe('Settings', () => {
         "password_generation": false,
         "unknown_username_categorization": false,
       }
-    `)
-    })
-})
+    `);
+    });
+});
 
 /**
  * @param {import("./Settings").AutofillFeatureToggles} featureToggles
@@ -174,23 +178,23 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
                 },
             },
         },
-    })
+    });
     const deviceApi = new DeviceApi({
         async send(call) {
             if (call instanceof GetRuntimeConfigurationCall) {
-                return resp1
+                return resp1;
             }
             if (call instanceof GetAvailableInputTypesCall) {
                 return {
                     success: availableInputTypes,
-                }
+                };
             }
         },
-    })
+    });
     const globalConfig = createGlobalConfigWithDefaults({
         availableInputTypes: createAvailableInputTypes(availableInputTypes),
-    })
-    const settings = new Settings(globalConfig, deviceApi)
-    await settings.refresh()
-    return settings
+    });
+    const settings = new Settings(globalConfig, deviceApi);
+    await settings.refresh();
+    return settings;
 }

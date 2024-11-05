@@ -1,4 +1,4 @@
-import { createAvailableInputTypes, withDataType } from './utils.js'
+import { createAvailableInputTypes, withDataType } from './utils.js';
 
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
@@ -72,71 +72,71 @@ export function createWindowsMocks() {
         getAutofillData: null,
         /** @type {null | EmailProtectionGetIsLoggedInResult['success']} */
         emailProtectionGetIsLoggedIn: null,
-    }
+    };
     /** @type {MockBuilder} */
     const builder = {
         withPrivateEmail(_email) {
-            mocks.emailProtectionGetIsLoggedIn = true
-            return this
+            mocks.emailProtectionGetIsLoggedIn = true;
+            return this;
         },
         withPersonalEmail(_email) {
-            mocks.emailProtectionGetIsLoggedIn = true
-            return this
+            mocks.emailProtectionGetIsLoggedIn = true;
+            return this;
         },
         withEmailProtection(emails) {
-            return this.withPrivateEmail(emails.privateAddress).withPersonalEmail(emails.personalAddress)
+            return this.withPrivateEmail(emails.privateAddress).withPersonalEmail(emails.personalAddress);
         },
         withIncontextSignipDismissed() {
-            throw new Error('Function not implemented.')
+            throw new Error('Function not implemented.');
         },
         withAvailableInputTypes(inputTypes) {
-            mocks.getAvailableInputTypes = inputTypes
-            return this
+            mocks.getAvailableInputTypes = inputTypes;
+            return this;
         },
         /**
          * @param {AutofillFeatureToggles} featureToggles
          */
         withFeatureToggles(featureToggles) {
-            Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles)
-            return this
+            Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles);
+            return this;
         },
         /**
          * @param {'enabled' | 'disabled'} state
          * @returns {builder}
          */
         withRemoteAutofillState(state) {
-            mocks.getRuntimeConfiguration.contentScope.features.autofill.state = state
-            return this
+            mocks.getRuntimeConfiguration.contentScope.features.autofill.state = state;
+            return this;
         },
         withIdentity: function () {
-            throw new Error('Function not implemented.')
+            throw new Error('Function not implemented.');
         },
         withCreditCard: function () {
-            throw new Error('Function not implemented.')
+            throw new Error('Function not implemented.');
         },
         withCredentials: function (credentials) {
-            mocks.getAutofillInitData.credentials.push(credentials)
-            mocks.getAutofillCredentials = credentials
+            mocks.getAutofillInitData.credentials.push(credentials);
+            mocks.getAutofillCredentials = credentials;
             /** @type {TopContextData} */
-            const topContextData = { inputType: 'credentials.username' }
-            mocks.getAutofillInitData.serializedInputContext = JSON.stringify(topContextData)
-            mocks.getAutofillData = { credentials, action: 'fill' }
-            return this
+            const topContextData = { inputType: 'credentials.username' };
+            mocks.getAutofillInitData.serializedInputContext = JSON.stringify(topContextData);
+            mocks.getAutofillData = { credentials, action: 'fill' };
+            return this;
         },
         withDataType: function (data) {
-            return withDataType(this, data)
+            return withDataType(this, data);
         },
         tap() {
-            return this
+            return this;
         },
         async applyTo(page) {
             return page.evaluate((mocks) => {
-                window.__playwright_autofill = { mocks: { calls: [] } }
-                const listeners = []
+                window.__playwright_autofill = { mocks: { calls: [] } };
+                const listeners = [];
 
                 function recordCall(name, request, response) {
-                    const call = [name, request, response]
-                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                    const call = [name, request, response];
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)));
                 }
                 /**
                  * @param {any} _request
@@ -151,9 +151,9 @@ export function createWindowsMocks() {
                                     type: name + 'Response',
                                     success: response,
                                 },
-                            })
+                            });
                         }
-                    }, 0)
+                    }, 0);
                 }
 
                 /**
@@ -161,42 +161,42 @@ export function createWindowsMocks() {
                  */
                 const mocksObject = {
                     getRuntimeConfiguration(input) {
-                        recordCall(input.Name, null, mocks.getRuntimeConfiguration)
-                        return respond(input.Name, null, mocks.getRuntimeConfiguration)
+                        recordCall(input.Name, null, mocks.getRuntimeConfiguration);
+                        return respond(input.Name, null, mocks.getRuntimeConfiguration);
                     },
                     getAvailableInputTypes(input) {
-                        recordCall(input.Name, null, mocks.getAvailableInputTypes)
-                        return respond(input.Name, null, mocks.getAvailableInputTypes)
+                        recordCall(input.Name, null, mocks.getAvailableInputTypes);
+                        return respond(input.Name, null, mocks.getAvailableInputTypes);
                     },
                     closeAutofillParent(input) {
-                        recordCall(input.Name, null, null)
+                        recordCall(input.Name, null, null);
                     },
                     getAutofillData(input) {
-                        recordCall(input.Name, input.Data, mocks.getAutofillData)
-                        return respond(input.Name, input.Data, mocks.getAutofillData)
+                        recordCall(input.Name, input.Data, mocks.getAutofillData);
+                        return respond(input.Name, input.Data, mocks.getAutofillData);
                     },
                     storeFormData(request) {
-                        recordCall(request.Name, request, null)
+                        recordCall(request.Name, request, null);
                     },
                     getAutofillInitData(request) {
-                        recordCall(request.Name, null, mocks.getAutofillInitData)
-                        return respond(request.Name, null, mocks.getAutofillInitData)
+                        recordCall(request.Name, null, mocks.getAutofillInitData);
+                        return respond(request.Name, null, mocks.getAutofillInitData);
                     },
                     setSize(request) {
-                        recordCall(request.Name, request, null)
+                        recordCall(request.Name, request, null);
                     },
                     getAutofillCredentials(request) {
-                        recordCall(request.Name, null, mocks.getAutofillCredentials)
-                        return respond(request.Name, null, mocks.getAutofillCredentials)
+                        recordCall(request.Name, null, mocks.getAutofillCredentials);
+                        return respond(request.Name, null, mocks.getAutofillCredentials);
                     },
                     selectedDetail(request) {
-                        recordCall(request.Name, request.Data, null)
+                        recordCall(request.Name, request.Data, null);
                     },
                     emailProtectionGetIsLoggedIn(request) {
-                        recordCall(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
-                        return respond(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
+                        recordCall(request.Name, null, mocks.emailProtectionGetIsLoggedIn);
+                        return respond(request.Name, null, mocks.emailProtectionGetIsLoggedIn);
                     },
-                }
+                };
 
                 /**
                  * @param {WindowsMessageFormat|WindowsResponseFormat} x
@@ -204,9 +204,9 @@ export function createWindowsMocks() {
                  */
                 function isOutgoing(x) {
                     if (typeof x.Name === 'string') {
-                        return true
+                        return true;
                     }
-                    return false
+                    return false;
                 }
 
                 // @ts-ignore
@@ -215,9 +215,9 @@ export function createWindowsMocks() {
                         postMessage(input) {
                             if (isOutgoing(input)) {
                                 if (mocksObject[input.Name]) {
-                                    return mocksObject[input.Name](input)
+                                    return mocksObject[input.Name](input);
                                 } else {
-                                    throw new Error('windows mock missing for ' + input.Name)
+                                    throw new Error('windows mock missing for ' + input.Name);
                                 }
                             } else if (typeof input.type === 'string') {
                                 setTimeout(() => {
@@ -225,26 +225,26 @@ export function createWindowsMocks() {
                                         listener({
                                             origin: window.origin,
                                             data: input,
-                                        })
+                                        });
                                     }
-                                }, 0)
+                                }, 0);
                             } else {
-                                console.warn('cannot handle input', input)
+                                console.warn('cannot handle input', input);
                             }
                         },
                         removeEventListener(_name, _listener) {
-                            const index = listeners.indexOf(_listener)
+                            const index = listeners.indexOf(_listener);
                             if (index > -1) {
-                                listeners.splice(index, 1)
+                                listeners.splice(index, 1);
                             }
                         },
                         addEventListener(_name, listener) {
-                            listeners.push(listener)
+                            listeners.push(listener);
                         },
                     },
-                }
-            }, mocks)
+                };
+            }, mocks);
         },
-    }
-    return builder
+    };
+    return builder;
 }

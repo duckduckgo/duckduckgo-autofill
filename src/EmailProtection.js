@@ -3,16 +3,16 @@
  */
 class EmailProtection {
     /** @type {string|null} */
-    #previous = null
+    #previous = null;
 
     /** @param {import("./DeviceInterface/InterfacePrototype").default} device */
     constructor(device) {
-        this.device = device
+        this.device = device;
     }
 
     /** @returns {string|null} */
     get lastGenerated() {
-        return this.#previous
+        return this.#previous;
     }
 
     /**
@@ -20,9 +20,9 @@ class EmailProtection {
      * @param {string} emailAddress
      */
     storeReceived(emailAddress) {
-        this.#previous = emailAddress
-        return emailAddress
+        this.#previous = emailAddress;
+        return emailAddress;
     }
 }
 
-export { EmailProtection }
+export { EmailProtection };

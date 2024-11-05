@@ -283,7 +283,7 @@ const COUNTRY_CODES_TO_NAMES = {
     ZR: 'Congo - Kinshasa',
     ZW: 'Zimbabwe',
     ZZ: 'Unknown Region',
-}
+};
 
 /**
  * Country names object using country name to reference 2-letter country codes
@@ -554,6 +554,6 @@ const COUNTRY_NAMES_TO_CODES = {
     'South Africa': 'ZA',
     Zambia: 'ZM',
     'Unknown Region': 'ZZ',
-}
+};
 
-export { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES }
+export { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES };

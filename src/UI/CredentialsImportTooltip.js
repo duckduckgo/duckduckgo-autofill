@@ -1,4 +1,4 @@
-import HTMLTooltip from './HTMLTooltip.js'
+import HTMLTooltip from './HTMLTooltip.js';
 
 class CredentialsImportTooltip extends HTMLTooltip {
     /**
@@ -6,8 +6,8 @@ class CredentialsImportTooltip extends HTMLTooltip {
      * @param {{ onStarted(): void, onDismissed(): void }} callbacks
      */
     render(device, callbacks) {
-        this.device = device
-        const t = device.t
+        this.device = device;
+        const t = device.t;
 
         this.shadow.innerHTML = `
 ${this.options.css}
@@ -27,22 +27,22 @@ ${this.options.css}
         </button>
     </div>
 </div>
-`
-        this.tooltip = this.shadow.querySelector('.tooltip')
+`;
+        this.tooltip = this.shadow.querySelector('.tooltip');
 
-        this.buttonWrapper = this.shadow.querySelector('.js-promo-wrapper')
-        this.dismissWrapper = this.shadow.querySelector('.js-dismiss')
+        this.buttonWrapper = this.shadow.querySelector('.js-promo-wrapper');
+        this.dismissWrapper = this.shadow.querySelector('.js-dismiss');
 
         this.registerClickableButton(this.buttonWrapper, () => {
-            callbacks.onStarted()
-        })
+            callbacks.onStarted();
+        });
         this.registerClickableButton(this.dismissWrapper, () => {
-            callbacks.onDismissed()
-        })
+            callbacks.onDismissed();
+        });
 
-        this.init()
-        return this
+        this.init();
+        return this;
     }
 }
 
-export default CredentialsImportTooltip
+export default CredentialsImportTooltip;

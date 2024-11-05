@@ -21,19 +21,19 @@ window.requestIdleCallback =
     window.requestIdleCallback ||
     function (cb) {
         return setTimeout(function () {
-            const start = Date.now()
+            const start = Date.now();
             cb({
                 didTimeout: false,
                 timeRemaining: function () {
-                    return Math.max(0, 50 - (Date.now() - start))
+                    return Math.max(0, 50 - (Date.now() - start));
                 },
-            })
-        }, 1)
-    }
+            });
+        }, 1);
+    };
 window.cancelIdleCallback =
     window.cancelIdleCallback ||
     function (id) {
-        clearTimeout(id)
-    }
+        clearTimeout(id);
+    };
 
-export default {}
+export default {};

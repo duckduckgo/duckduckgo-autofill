@@ -1,5 +1,5 @@
-import { constants } from '../mocks.js'
-import { expect } from '@playwright/test'
+import { constants } from '../mocks.js';
+import { expect } from '@playwright/test';
 
 /**
  * A wrapper around interactions for `integration-test/pages/select-input.html`
@@ -13,13 +13,13 @@ export function selectInputPage(page) {
          * @return {Promise<void>}
          */
         async navigate(to = 'selectInput', withLabel = false) {
-            await page.goto(withLabel ? `${constants.pages[to]}?form-type=with-label` : constants.pages[to])
+            await page.goto(withLabel ? `${constants.pages[to]}?form-type=with-label` : constants.pages[to]);
         }
 
         async selectOption(option, withLabel) {
             await page.selectOption(withLabel ? `form#with-label select#address-city` : `form#no-label select#address-city`, {
                 value: option,
-            })
+            });
         }
 
         /**
@@ -29,8 +29,8 @@ export function selectInputPage(page) {
         async assertSelectedValue(option, withLabel = false) {
             const selectValue = await page
                 .locator(withLabel ? `form#with-label select#address-city` : 'form#no-label select#address-city')
-                .inputValue()
-            expect(selectValue).toBe(option)
+                .inputValue();
+            expect(selectValue).toBe(option);
         }
 
         /**
@@ -38,19 +38,19 @@ export function selectInputPage(page) {
          * @return {Promise<void>}
          */
         async selectFirstName(name, withLabel = false) {
-            const input = page.locator(withLabel ? `form#with-label input#firstname` : 'form#no-label input#firstname')
-            await input.click()
-            const button = await page.waitForSelector(`button:has-text("${name}")`)
-            await button.click({ force: true })
+            const input = page.locator(withLabel ? `form#with-label input#firstname` : 'form#no-label input#firstname');
+            await input.click();
+            const button = await page.waitForSelector(`button:has-text("${name}")`);
+            await button.click({ force: true });
         }
 
         async selectLastName(name) {
-            const input = page.locator('#lastname')
-            await input.click()
-            const button = await page.waitForSelector(`button:has-text("${name}")`)
-            await button.click({ force: true })
+            const input = page.locator('#lastname');
+            await input.click();
+            const button = await page.waitForSelector(`button:has-text("${name}")`);
+            await button.click({ force: true });
         }
     }
 
-    return new SelectInputPage()
+    return new SelectInputPage();
 }

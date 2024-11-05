@@ -1,6 +1,6 @@
-import { createScanner } from './Scanner.js'
+import { createScanner } from './Scanner.js';
 
-sessionStorage.setItem('ddg-autofill-debug', 'true')
+sessionStorage.setItem('ddg-autofill-debug', 'true');
 
 /**
  * Scanner.debug.js
@@ -27,19 +27,19 @@ const mockInterface = {
         isDDGApp: true,
     },
     getLocalIdentities() {
-        return []
+        return [];
     },
     isDeviceSignedIn() {
-        return false
+        return false;
     },
     attachTooltip(...args) {
-        console.log('device.attachTooltip', args)
+        console.log('device.attachTooltip', args);
     },
-}
+};
 
 // @ts-ignore
 const scanner = createScanner(mockInterface, {
     initialDelay: 1, // allow debugging directly on macOS - if this was 0 then it would try to use requestIdleCallback, which is absent in WebKit
-})
+});
 
-scanner.init()
+scanner.init();
