@@ -1,11 +1,11 @@
-import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
-import { createScanner } from '../Scanner.js'
-import {attachAndReturnGenericForm} from '../test-utils.js'
-import {constants} from '../constants.js'
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js';
+import { createScanner } from '../Scanner.js';
+import { attachAndReturnGenericForm } from '../test-utils.js';
+import { constants } from '../constants.js';
 
 afterEach(() => {
-    document.body.innerHTML = ''
-})
+    document.body.innerHTML = '';
+});
 
 describe('Test the form class reading values correctly', () => {
     const testCases = [
@@ -18,7 +18,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with email',
@@ -29,7 +29,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with both email and username fields',
@@ -41,7 +41,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with readonly email fields and password',
@@ -52,7 +52,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with empty fields',
@@ -63,7 +63,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with only the password filled',
@@ -74,7 +74,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {password: 'testPassword'}}
+            expValues: { credentials: { password: 'testPassword' } },
         },
         {
             testCase: 'form with only the username filled',
@@ -85,7 +85,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form where the password is <=3 characters long',
@@ -96,7 +96,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with hidden email field',
@@ -107,7 +107,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with hidden username field',
@@ -118,7 +118,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with email in plain text',
@@ -129,7 +129,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'complete checkout form',
@@ -186,16 +186,16 @@ describe('Test the form class reading values correctly', () => {
                     addressPostalCode: '23901',
                     addressCountryCode: 'US',
                     phone: '6100000000',
-                    emailAddress: 'peppapig@email.com'
+                    emailAddress: 'peppapig@email.com',
                 },
                 creditCards: {
                     cardName: 'Peppa Pig',
                     cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
+                    cardNumber: '4111111111111111',
+                },
+            },
         },
         {
             testCase: 'test localised country code with text input',
@@ -207,7 +207,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: true,
-            expValues: {identities: {addressCountryCode: 'IT'}}
+            expValues: { identities: { addressCountryCode: 'IT' } },
         },
         {
             testCase: 'incomplete identities form',
@@ -217,7 +217,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: false,
-            expValues: {identities: undefined}
+            expValues: { identities: undefined },
         },
         {
             testCase: 'incomplete creditCard form',
@@ -227,7 +227,7 @@ describe('Test the form class reading values correctly', () => {
     <input autocomplete="cc-number" value="4111111111111111">
 </form>`,
             expHasValues: false,
-            expValues: {creditCards: undefined}
+            expValues: { creditCards: undefined },
         },
         {
             testCase: 'creditCard form with all values except cvv',
@@ -246,9 +246,9 @@ describe('Test the form class reading values correctly', () => {
                     cardName: 'Peppa Pig',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
+                    cardNumber: '4111111111111111',
+                },
+            },
         },
         {
             testCase: 'creditCard form with all values but name and identities name in adjacent field',
@@ -282,66 +282,61 @@ describe('Test the form class reading values correctly', () => {
                     cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
-        }
-    ]
+                    cardNumber: '4111111111111111',
+                },
+            },
+        },
+    ];
 
-    test.each(testCases)('Test $testCase', (
-        {
-            form,
-            expHasValues,
-            expValues
-        }) => {
-        const formEl = attachAndReturnGenericForm(form)
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        const formClass = scanner.forms.get(formEl)
-        const hasValues = formClass?.hasValues()
-        const formValues = formClass?.getValuesReadyForStorage()
+    test.each(testCases)('Test $testCase', ({ form, expHasValues, expValues }) => {
+        const formEl = attachAndReturnGenericForm(form);
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const formClass = scanner.forms.get(formEl);
+        const hasValues = formClass?.hasValues();
+        const formValues = formClass?.getValuesReadyForStorage();
 
-        expect(hasValues).toBe(expHasValues)
-        expect(formValues).toMatchObject(expValues)
-    })
-})
+        expect(hasValues).toBe(expHasValues);
+        expect(formValues).toMatchObject(expValues);
+    });
+});
 
 describe('Check form has focus', () => {
     test('focus detected correctly', () => {
-        const formEl = attachAndReturnGenericForm()
+        const formEl = attachAndReturnGenericForm();
 
         // When we require autofill, the script scores the fields in the DOM
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-        const formClass = scanner.forms.get(formEl)
+        const formClass = scanner.forms.get(formEl);
 
-        expect(formClass?.hasFocus()).toBe(false)
+        expect(formClass?.hasFocus()).toBe(false);
 
-        const input = formEl.querySelector('input')
-        input?.focus()
+        const input = formEl.querySelector('input');
+        input?.focus();
 
-        expect(formClass?.hasFocus()).toBe(true)
+        expect(formClass?.hasFocus()).toBe(true);
 
-        input?.blur()
+        input?.blur();
 
-        expect(formClass?.hasFocus()).toBe(false)
-    })
-})
+        expect(formClass?.hasFocus()).toBe(false);
+    });
+});
 
 describe('Attempt form submission when needed', () => {
-    const submitHandler = jest.fn((e) => e.preventDefault())
+    const submitHandler = jest.fn((e) => e.preventDefault());
 
-    afterEach(() => submitHandler.mockClear())
+    afterEach(() => submitHandler.mockClear());
 
     describe('Do not submit', () => {
         test('when the form is not a login', () => {
-            const formEl = attachAndReturnGenericForm()
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+            const formEl = attachAndReturnGenericForm();
+            formEl.addEventListener('submit', submitHandler);
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).not.toHaveBeenCalled()
-        })
+            const formClass = scanner.forms.get(formEl);
+            formClass?.attemptSubmissionIfNeeded();
+            expect(submitHandler).not.toHaveBeenCalled();
+        });
         test('when the form has more than one submit button', () => {
             const formEl = attachAndReturnGenericForm(`
                 <form>
@@ -349,15 +344,15 @@ describe('Attempt form submission when needed', () => {
                     <input type="password" value="testPassword" autocomplete="current-password" />
                     <button type="submit">Log in</button>
                     <button type="submit">Other weird login buton that takes you somewhere else</button>
-                </form>`)
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+                </form>`);
+            formEl.addEventListener('submit', submitHandler);
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).not.toHaveBeenCalled()
-        })
-    })
+            const formClass = scanner.forms.get(formEl);
+            formClass?.attemptSubmissionIfNeeded();
+            expect(submitHandler).not.toHaveBeenCalled();
+        });
+    });
     describe('Submit the form', () => {
         test('a valid login form with a clear submit button', () => {
             const formEl = attachAndReturnGenericForm(`
@@ -365,53 +360,53 @@ describe('Attempt form submission when needed', () => {
                     <input type="text" value="testUsername" autocomplete="username" />
                     <input type="password" value="testPassword" autocomplete="current-password" />
                     <button type="submit">Log in</button>
-                </form>`)
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+                </form>`);
+            formEl.addEventListener('submit', submitHandler);
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).toHaveBeenCalled()
-        })
-    })
-})
+            const formClass = scanner.forms.get(formEl);
+            formClass?.attemptSubmissionIfNeeded();
+            expect(submitHandler).toHaveBeenCalled();
+        });
+    });
+});
 
 describe('Form bails', () => {
     beforeEach(() => {
-        document.body.innerHTML = ''
-    })
+        document.body.innerHTML = '';
+    });
     test('when it has too many fields on load', async () => {
-        const formEl = attachAndReturnGenericForm()
+        const formEl = attachAndReturnGenericForm();
         for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
-            const input = document.createElement('input')
-            input.type = 'email'
-            input.placeholder = 'Email address'
-            formEl.appendChild(input)
+            const input = document.createElement('input');
+            input.type = 'email';
+            input.placeholder = 'Email address';
+            formEl.appendChild(input);
         }
 
-        createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
-        expect(decoratedInputs).toHaveLength(0)
-    })
+        createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+        expect(decoratedInputs).toHaveLength(0);
+    });
     test('when too many fields are added after the initial scan', async () => {
-        const formEl = attachAndReturnGenericForm()
+        const formEl = attachAndReturnGenericForm();
 
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        let decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
-        expect(decoratedInputs).toHaveLength(2)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        let decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+        expect(decoratedInputs).toHaveLength(2);
 
-        const newInputs = []
+        const newInputs = [];
         for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
-            const input = document.createElement('input')
-            input.type = 'email'
-            input.placeholder = 'Email address'
-            newInputs.push(input)
+            const input = document.createElement('input');
+            input.type = 'email';
+            input.placeholder = 'Email address';
+            newInputs.push(input);
         }
-        formEl.append(...newInputs)
+        formEl.append(...newInputs);
         // Scan right away without waiting for the queue
-        scanner.findEligibleInputs(formEl)
+        scanner.findEligibleInputs(formEl);
 
-        decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
-        expect(decoratedInputs).toHaveLength(0)
-    })
-})
+        decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+        expect(decoratedInputs).toHaveLength(0);
+    });
+});

@@ -1,4 +1,4 @@
-import { getInputConfig } from './inputTypeConfig.js'
+import { getInputConfig } from './inputTypeConfig.js';
 
 /**
  * Returns the css-ready base64 encoding of the icon for the given input
@@ -8,18 +8,18 @@ import { getInputConfig } from './inputTypeConfig.js'
  * @return {string}
  */
 const getIcon = (input, form, type = 'base') => {
-    const config = getInputConfig(input)
+    const config = getInputConfig(input);
     if (type === 'base') {
-        return config.getIconBase(input, form)
+        return config.getIconBase(input, form);
     }
     if (type === 'filled') {
-        return config.getIconFilled(input, form)
+        return config.getIconFilled(input, form);
     }
     if (type === 'alternate') {
-        return config.getIconAlternate(input, form)
+        return config.getIconAlternate(input, form);
     }
-    return ''
-}
+    return '';
+};
 
 /**
  * Returns an object with styles to be applied inline
@@ -34,8 +34,8 @@ const getBasicStyles = (input, icon) => ({
     'background-repeat': 'no-repeat',
     'background-origin': 'content-box',
     'background-image': `url(${icon})`,
-    'transition': 'background 0s'
-})
+    transition: 'background 0s',
+});
 
 /**
  * Get inline styles for the injected icon, base state
@@ -44,12 +44,12 @@ const getBasicStyles = (input, icon) => ({
  * @return {Object<string, string>}
  */
 const getIconStylesBase = (input, form) => {
-    const icon = getIcon(input, form)
+    const icon = getIcon(input, form);
 
-    if (!icon) return {}
+    if (!icon) return {};
 
-    return getBasicStyles(input, icon)
-}
+    return getBasicStyles(input, icon);
+};
 
 /**
  * Get inline styles for the injected icon, alternate state
@@ -58,14 +58,14 @@ const getIconStylesBase = (input, form) => {
  * @return {Object<string, string>}
  */
 const getIconStylesAlternate = (input, form) => {
-    const icon = getIcon(input, form, 'alternate')
+    const icon = getIcon(input, form, 'alternate');
 
-    if (!icon) return {}
+    if (!icon) return {};
 
     return {
-        ...getBasicStyles(input, icon)
-    }
-}
+        ...getBasicStyles(input, icon),
+    };
+};
 
 /**
  * Get inline styles for the injected icon, autofilled state
@@ -74,15 +74,15 @@ const getIconStylesAlternate = (input, form) => {
  * @return {Object<string, string>}
  */
 const getIconStylesAutofilled = (input, form) => {
-    const icon = getIcon(input, form, 'filled')
+    const icon = getIcon(input, form, 'filled');
 
-    const iconStyle = icon ? getBasicStyles(input, icon) : {}
+    const iconStyle = icon ? getBasicStyles(input, icon) : {};
 
     return {
         ...iconStyle,
         'background-color': '#F8F498',
-        'color': '#333333'
-    }
-}
+        color: '#333333',
+    };
+};
 
-export {getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate}
+export { getIconStylesBase, getIconStylesAutofilled, getIconStylesAlternate };

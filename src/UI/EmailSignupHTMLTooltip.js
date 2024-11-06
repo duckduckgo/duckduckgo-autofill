@@ -1,12 +1,12 @@
-import HTMLTooltip from './HTMLTooltip.js'
+import HTMLTooltip from './HTMLTooltip.js';
 
 class EmailSignupHTMLTooltip extends HTMLTooltip {
     /**
      * @param {import("../DeviceInterface/InterfacePrototype").default} device
      */
-    render (device) {
-        this.device = device
-        const t = this.device.t
+    render(device) {
+        this.device = device;
+        const t = this.device.t;
 
         this.shadow.innerHTML = `
 ${this.options.css}
@@ -25,28 +25,28 @@ ${this.options.css}
         </div>
     </div>
     <div class="tooltip--email__caret"></div>
-</div>`
+</div>`;
 
-        this.tooltip = this.shadow.querySelector('.tooltip')
+        this.tooltip = this.shadow.querySelector('.tooltip');
 
-        this.closeEmailSignup = this.shadow.querySelector('.js-close-email-signup')
+        this.closeEmailSignup = this.shadow.querySelector('.js-close-email-signup');
         this.registerClickableButton(this.closeEmailSignup, () => {
-            device.inContextSignup?.onIncontextSignupClosed()
-        })
+            device.inContextSignup?.onIncontextSignupClosed();
+        });
 
-        this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup')
+        this.dismissEmailSignup = this.shadow.querySelector('.js-dismiss-email-signup');
         this.registerClickableButton(this.dismissEmailSignup, () => {
-            device.inContextSignup?.onIncontextSignupDismissed()
-        })
+            device.inContextSignup?.onIncontextSignupDismissed();
+        });
 
-        this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup')
+        this.getEmailSignup = this.shadow.querySelector('.js-get-email-signup');
         this.registerClickableButton(this.getEmailSignup, () => {
-            device.inContextSignup?.onIncontextSignup()
-        })
+            device.inContextSignup?.onIncontextSignup();
+        });
 
-        this.init()
-        return this
+        this.init();
+        return this;
     }
 }
 
-export default EmailSignupHTMLTooltip
+export default EmailSignupHTMLTooltip;

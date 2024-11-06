@@ -1,4 +1,4 @@
-const {selectors} = require('./selectors-css.js')
+const { selectors } = require('./selectors-css.js');
 
 /**
  * This is here to mimic what Remote Configuration might look like
@@ -11,187 +11,187 @@ const matchingConfiguration = {
             unknown: {
                 type: 'unknown',
                 strategies: {
-                    ddgMatcher: 'unknown'
-                }
+                    ddgMatcher: 'unknown',
+                },
             },
             emailAddress: {
                 type: 'emailAddress',
                 strategies: {
                     cssSelector: 'emailAddress',
                     ddgMatcher: 'emailAddress',
-                    vendorRegex: 'email'
-                }
+                    vendorRegex: 'email',
+                },
             },
             password: {
                 type: 'password',
                 strategies: {
                     cssSelector: 'password',
-                    ddgMatcher: 'password'
-                }
+                    ddgMatcher: 'password',
+                },
             },
             username: {
                 type: 'username',
                 strategies: {
                     cssSelector: 'username',
-                    ddgMatcher: 'username'
-                }
+                    ddgMatcher: 'username',
+                },
             },
             firstName: {
                 type: 'firstName',
                 strategies: {
                     cssSelector: 'firstName',
                     ddgMatcher: 'firstName',
-                    vendorRegex: 'given-name'
-                }
+                    vendorRegex: 'given-name',
+                },
             },
             middleName: {
                 type: 'middleName',
                 strategies: {
                     cssSelector: 'middleName',
                     ddgMatcher: 'middleName',
-                    vendorRegex: 'additional-name'
-                }
+                    vendorRegex: 'additional-name',
+                },
             },
             lastName: {
                 type: 'lastName',
                 strategies: {
                     cssSelector: 'lastName',
                     ddgMatcher: 'lastName',
-                    vendorRegex: 'family-name'
-                }
+                    vendorRegex: 'family-name',
+                },
             },
             fullName: {
                 type: 'fullName',
                 strategies: {
                     cssSelector: 'fullName',
                     ddgMatcher: 'fullName',
-                    vendorRegex: 'name'
-                }
+                    vendorRegex: 'name',
+                },
             },
             phone: {
                 type: 'phone',
                 strategies: {
                     cssSelector: 'phone',
                     ddgMatcher: 'phone',
-                    vendorRegex: 'tel'
-                }
+                    vendorRegex: 'tel',
+                },
             },
             addressStreet: {
                 type: 'addressStreet',
                 strategies: {
                     cssSelector: 'addressStreet',
                     ddgMatcher: 'addressStreet',
-                    vendorRegex: 'address-line1'
-                }
+                    vendorRegex: 'address-line1',
+                },
             },
             addressStreet2: {
                 type: 'addressStreet2',
                 strategies: {
                     cssSelector: 'addressStreet2',
                     ddgMatcher: 'addressStreet2',
-                    vendorRegex: 'address-line2'
-                }
+                    vendorRegex: 'address-line2',
+                },
             },
             addressCity: {
                 type: 'addressCity',
                 strategies: {
                     cssSelector: 'addressCity',
                     ddgMatcher: 'addressCity',
-                    vendorRegex: 'address-level2'
-                }
+                    vendorRegex: 'address-level2',
+                },
             },
             addressProvince: {
                 type: 'addressProvince',
                 strategies: {
                     cssSelector: 'addressProvince',
                     ddgMatcher: 'addressProvince',
-                    vendorRegex: 'address-level1'
-                }
+                    vendorRegex: 'address-level1',
+                },
             },
             addressPostalCode: {
                 type: 'addressPostalCode',
                 strategies: {
                     cssSelector: 'addressPostalCode',
                     ddgMatcher: 'addressPostalCode',
-                    vendorRegex: 'postal-code'
-                }
+                    vendorRegex: 'postal-code',
+                },
             },
             addressCountryCode: {
                 type: 'addressCountryCode',
                 strategies: {
                     cssSelector: 'addressCountryCode',
                     ddgMatcher: 'addressCountryCode',
-                    vendorRegex: 'country'
-                }
+                    vendorRegex: 'country',
+                },
             },
             birthdayDay: {
                 type: 'birthdayDay',
                 strategies: {
                     cssSelector: 'birthdayDay',
-                    ddgMatcher: 'birthdayDay'
-                }
+                    ddgMatcher: 'birthdayDay',
+                },
             },
             birthdayMonth: {
                 type: 'birthdayMonth',
                 strategies: {
                     cssSelector: 'birthdayMonth',
-                    ddgMatcher: 'birthdayMonth'
-                }
+                    ddgMatcher: 'birthdayMonth',
+                },
             },
             birthdayYear: {
                 type: 'birthdayYear',
                 strategies: {
                     cssSelector: 'birthdayYear',
-                    ddgMatcher: 'birthdayYear'
-                }
+                    ddgMatcher: 'birthdayYear',
+                },
             },
             cardName: {
                 type: 'cardName',
                 strategies: {
                     cssSelector: 'cardName',
                     ddgMatcher: 'cardName',
-                    vendorRegex: 'cc-name'
-                }
+                    vendorRegex: 'cc-name',
+                },
             },
             cardNumber: {
                 type: 'cardNumber',
                 strategies: {
                     cssSelector: 'cardNumber',
                     ddgMatcher: 'cardNumber',
-                    vendorRegex: 'cc-number'
-                }
+                    vendorRegex: 'cc-number',
+                },
             },
             cardSecurityCode: {
                 type: 'cardSecurityCode',
                 strategies: {
                     cssSelector: 'cardSecurityCode',
-                    ddgMatcher: 'cardSecurityCode'
-                }
+                    ddgMatcher: 'cardSecurityCode',
+                },
             },
             expirationMonth: {
                 type: 'expirationMonth',
                 strategies: {
                     cssSelector: 'expirationMonth',
                     ddgMatcher: 'expirationMonth',
-                    vendorRegex: 'cc-exp-month'
-                }
+                    vendorRegex: 'cc-exp-month',
+                },
             },
             expirationYear: {
                 type: 'expirationYear',
                 strategies: {
                     cssSelector: 'expirationYear',
                     ddgMatcher: 'expirationYear',
-                    vendorRegex: 'cc-exp-year'
-                }
+                    vendorRegex: 'cc-exp-year',
+                },
             },
             expiration: {
                 type: 'expiration',
                 strategies: {
                     cssSelector: 'expiration',
                     ddgMatcher: 'expiration',
-                    vendorRegex: 'cc-exp'
-                }
-            }
+                    vendorRegex: 'cc-exp',
+                },
+            },
         },
         lists: {
             unknown: ['unknown'],
@@ -213,18 +213,19 @@ const matchingConfiguration = {
                 'addressCountryCode',
                 'birthdayDay',
                 'birthdayMonth',
-                'birthdayYear'
-            ]
-        }
+                'birthdayYear',
+            ],
+        },
     },
     strategies: {
         /** @type {{selectors: Record<CSSSelectorNames| string, string | string[]>}} */
-        cssSelector: {selectors},
+        cssSelector: { selectors },
         /** @type {DDGMatcherConfigurationInternal} */
         ddgMatcher: {
             matchers: {
                 unknown: {
-                    match: 'search|find|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp|social security number|ssn' +
+                    match:
+                        'search|find|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp|social security number|ssn' +
                         // Italian
                         '|cerca|filtr|oggetto|titolo|(due|2|più).?fattori' +
                         // German
@@ -237,10 +238,11 @@ const matchingConfiguration = {
                         '|busca|busqueda|filtra|dos pasos|un solo uso' +
                         // Swedish
                         '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
-                    skip: 'phone|mobile|email|password'
+                    skip: 'phone|mobile|email|password',
                 },
                 emailAddress: {
-                    match: '.mail\\b|apple.?id' +
+                    match:
+                        '.mail\\b|apple.?id' +
                         // Italian
                         '|posta elettronica' +
                         // Dutch
@@ -250,10 +252,11 @@ const matchingConfiguration = {
                         // Swedish
                         '|\\be.?post|e.?postadress',
                     skip: 'phone|(first.?|last.?)name|number|code',
-                    forceUnknown: 'search|filter|subject|title|\\btab\\b|otp'
+                    forceUnknown: 'search|filter|subject|title|\\btab\\b|otp',
                 },
                 password: {
-                    match: 'password' +
+                    match:
+                        'password' +
                         // German
                         '|passwort|kennwort' +
                         // Dutch
@@ -265,16 +268,17 @@ const matchingConfiguration = {
                         // Swedish
                         '|lösenord',
                     skip: 'email|one-time|error|hint|^username$',
-                    forceUnknown: 'search|captcha|mfa|2fa|two factor|otp|pin'
+                    forceUnknown: 'search|captcha|mfa|2fa|two factor|otp|pin',
                 },
                 newPassword: {
-                    match: 'new|re.?(enter|type)|repeat|update\\b'
+                    match: 'new|re.?(enter|type)|repeat|update\\b',
                 },
                 currentPassword: {
-                    match: 'current|old|previous|expired|existing'
+                    match: 'current|old|previous|expired|existing',
                 },
                 username: {
-                    match: '(user|account|online.?id|membership.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
+                    match:
+                        '(user|account|online.?id|membership.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
                         // Italian
                         '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice (cliente|uten)' +
                         // German
@@ -285,76 +289,81 @@ const matchingConfiguration = {
                         '|nom d.utilisateur|identifiant|pseudo' +
                         // Spanish
                         '|usuari|cuenta|identificador|apodo' +
-                            // in Spanish dni and nie stand for id number, often used as username
-                            '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
+                        // in Spanish dni and nie stand for id number, often used as username
+                        '|\\bdni\\b|\\bnie\\b| del? documento|documento de identidad' +
                         // Swedish
                         '|användarnamn|kontonamn|användar-id',
                     skip: 'phone',
-                    forceUnknown: 'search|policy' +
+                    forceUnknown:
+                        'search|policy' +
                         // Github assignee picker
-                        '|choose a user\\b'
+                        '|choose a user\\b',
                 },
 
                 // CC
-                cardName: {match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)'},
-                cardNumber: {match: 'card.*number|number.*card', skip: 'phone', forceUnknown: 'plus'},
-                cardSecurityCode: {match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id'},
+                cardName: { match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)' },
+                cardNumber: { match: 'card.*number|number.*card', skip: 'phone', forceUnknown: 'plus' },
+                cardSecurityCode: { match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id' },
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    skip: 'mm[/\\s.\\-_—–]|check'
+                    skip: 'mm[/\\s.\\-_—–]|check',
                 },
-                expirationYear: {match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check'},
+                expirationYear: { match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check' },
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    skip: 'invalid|^dd/|check'
+                    skip: 'invalid|^dd/|check',
                 },
 
                 // Identities
                 firstName: {
-                    match: '(first|given|fore).?name' +
+                    match:
+                        '(first|given|fore).?name' +
                         // Italian
                         '|\\bnome',
-                    skip: 'last|cognome|completo'
+                    skip: 'last|cognome|completo',
                 },
                 middleName: {
-                    match: '(middle|additional).?name'
+                    match: '(middle|additional).?name',
                 },
                 lastName: {
-                    match: '(last|family|sur)[^i]?name' +
+                    match:
+                        '(last|family|sur)[^i]?name' +
                         // Italian
                         '|cognome',
-                    skip: 'first|\\bnome'
+                    skip: 'first|\\bnome',
                 },
                 fullName: {
-                    match: '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' +
+                    match:
+                        '^(full.?|whole\\s|first.*last\\s|real\\s|contact.?)?name\\b' +
                         // Italian
                         '|\\bnome',
-                    forceUnknown: 'company|org|item'
+                    forceUnknown: 'company|org|item',
                 },
                 phone: {
-                    match: 'phone|mobile' +
+                    match:
+                        'phone|mobile' +
                         // Italian
                         '|telefono|cellulare',
                     skip: 'code|pass|country',
-                    forceUnknown: 'ext|type|otp'
+                    forceUnknown: 'ext|type|otp',
                 },
                 addressStreet: {
                     match: 'address',
                     forceUnknown: '\\bip\\b|duck|web|url',
-                    skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico'
+                    skip: 'address.*(2|two|3|three)|email|log.?in|sign.?in|civico',
                 },
                 addressStreet2: {
                     match: 'address.*(2|two)|apartment|\\bapt\\b|\\bflat\\b|\\bline.*(2|two)',
                     forceUnknown: '\\bip\\b|duck',
-                    skip: 'email|log.?in|sign.?in'
+                    skip: 'email|log.?in|sign.?in',
                 },
-                addressCity: {match: 'city|town|città|comune', skip: '\\bzip\\b|\\bcap\\b', forceUnknown: 'vatican'},
-                addressProvince: {match: 'state|province|region|county|provincia|regione', forceUnknown: 'united', skip: 'country'},
-                addressPostalCode: {match: '\\bzip\\b|postal\\b|post.?code|\\bcap\\b|codice postale'},
-                addressCountryCode: {match: 'country|\\bnation\\b|nazione|paese'},
-                birthdayDay: {match: '(birth.*day|day.*birth)', skip: 'month|year'},
-                birthdayMonth: {match: '(birth.*month|month.*birth)', skip: 'year'},
-                birthdayYear: {match: '(birth.*year|year.*birth)'},
+                addressCity: { match: 'city|town|città|comune', skip: '\\bzip\\b|\\bcap\\b', forceUnknown: 'vatican' },
+                addressProvince: { match: 'state|province|region|county|provincia|regione', forceUnknown: 'united', skip: 'country' },
+                addressPostalCode: { match: '\\bzip\\b|postal\\b|post.?code|\\bcap\\b|codice postale' },
+                addressCountryCode: { match: 'country|\\bnation\\b|nazione|paese' },
+                birthdayDay: { match: '(birth.*day|day.*birth)', skip: 'month|year' },
+                birthdayMonth: { match: '(birth.*month|month.*birth)', skip: 'year' },
+                birthdayYear: { match: '(birth.*year|year.*birth)' },
                 loginRegex: {
                     match:
                         'sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' +
@@ -371,10 +380,11 @@ const matchingConfiguration = {
                         // Spanish
                         '|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar' +
                         // Swedish
-                        '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord'
+                        '|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord',
                 },
                 signupRegex: {
-                    match: 'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm' +
+                    match:
+                        'sign(ing)?.?up|join|\\bregist(er|ration)|newsletter|\\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga' +
                         // German
@@ -386,10 +396,11 @@ const matchingConfiguration = {
                         // Spanish
                         '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
                         // Swedish
-                        '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord'
+                        '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord',
                 },
                 conservativeSignupRegex: {
-                    match: 'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                    match:
+                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' +
                         // German
@@ -401,10 +412,11 @@ const matchingConfiguration = {
                         // Spanish
                         '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
                         // Swedish
-                        '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera'
+                        '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera',
                 },
                 resetPasswordLink: {
-                    match: '(forgot(ten)?|reset|don\'t remember) (your )?password|password forgotten' +
+                    match:
+                        "(forgot(ten)?|reset|don't remember) (your )?password|password forgotten" +
                         // Italian
                         '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
                         // German
@@ -416,10 +428,11 @@ const matchingConfiguration = {
                         // Spanish
                         '|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)' +
                         // Swedish
-                        '|glömt lösenord|återställ lösenord'
+                        '|glömt lösenord|återställ lösenord',
                 },
                 loginProvidersRegex: {
-                    match: ' with ' +
+                    match:
+                        ' with ' +
                         // Italian and Spanish
                         '| con ' +
                         // German
@@ -427,10 +440,11 @@ const matchingConfiguration = {
                         // Dutch
                         '| met ' +
                         // French
-                        '| avec '
+                        '| avec ',
                 },
                 submitButtonRegex: {
-                    match: 'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\\bset\\b' +
+                    match:
+                        'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\\bset\\b' +
                         // Italian
                         '|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona' +
                         // German
@@ -442,10 +456,11 @@ const matchingConfiguration = {
                         // Spanish
                         '|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar' +
                         // Swedish
-                        '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera'
+                        '|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera',
                 },
                 submitButtonUnlikelyRegex: {
-                    match: 'facebook|twitter|google|apple|cancel|show|toggle|reveal|hide|print|back|already' +
+                    match:
+                        'facebook|twitter|google|apple|cancel|show|toggle|reveal|hide|print|back|already' +
                         // Italian
                         '|annulla|mostra|nascondi|stampa|indietro|già' +
                         // German
@@ -457,9 +472,9 @@ const matchingConfiguration = {
                         // Spanish
                         '|anular|cancelar|imprimir|cerrar' +
                         // Swedish
-                        '|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan'
-                }
-            }
+                        '|avbryt|lösenord|visa|dölj|skirv ut|tillbaka|redan',
+                },
+            },
         },
         /**
          * @type {VendorRegexConfiguration}
@@ -487,7 +502,7 @@ const matchingConfiguration = {
                 'cc-exp-month': null,
                 'cc-exp-year': null,
                 'cc-exp': null,
-                'cc-type': null
+                'cc-type': null,
             },
             ruleSets: [
                 //= ========================================================================
@@ -498,14 +513,11 @@ const matchingConfiguration = {
                     'address-line3': 'addrline3|address_3',
                     'address-level1': 'land', // de-DE
                     'additional-name': 'apellido.?materno|lastlastname',
-                    'cc-name':
-                        'accountholdername' +
-                        '|titulaire', // fr-FR
+                    'cc-name': 'accountholdername' + '|titulaire', // fr-FR
                     'cc-number': '(cc|kk)nr', // de-DE
                     'cc-exp-month': '(cc|kk)month', // de-DE
                     'cc-exp-year': '(cc|kk)year', // de-DE
-                    'cc-type': 'type' +
-                        '|kartenmarke' // de-DE
+                    'cc-type': 'type' + '|kartenmarke', // de-DE
                 },
 
                 //= ========================================================================
@@ -514,19 +526,9 @@ const matchingConfiguration = {
                 {
                     email: '(^e-?mail$)|(^email-?address$)',
 
-                    tel:
-                        '(^phone$)' +
-                        '|(^mobile$)' +
-                        '|(^mobile-?phone$)' +
-                        '|(^tel$)' +
-                        '|(^telephone$)' +
-                        '|(^phone-?number$)',
+                    tel: '(^phone$)' + '|(^mobile$)' + '|(^mobile-?phone$)' + '|(^tel$)' + '|(^telephone$)' + '|(^phone-?number$)',
 
-                    organization:
-                        '(^company$)' +
-                        '|(^company-?name$)' +
-                        '|(^organization$)' +
-                        '|(^organization-?name$)',
+                    organization: '(^company$)' + '|(^company-?name$)' + '|(^organization$)' + '|(^organization-?name$)',
 
                     'street-address':
                         '(^address$)' +
@@ -538,30 +540,13 @@ const matchingConfiguration = {
                         '|(^mail-?addr(ess)?$)' + // Modified to not grab lines, below
                         '|(^bill-?addr(ess)?$)', // Modified to not grab lines, below
 
-                    'address-line1':
-                        '(^address-?1$)' +
-                        '|(^address-?line-?1$)' +
-                        '|(^addr-?1$)' +
-                        '|(^street-?1$)',
+                    'address-line1': '(^address-?1$)' + '|(^address-?line-?1$)' + '|(^addr-?1$)' + '|(^street-?1$)',
 
-                    'address-line2':
-                        '(^address-?2$)' +
-                        '|(^address-?line-?2$)' +
-                        '|(^addr-?2$)' +
-                        '|(^street-?2$)',
+                    'address-line2': '(^address-?2$)' + '|(^address-?line-?2$)' + '|(^addr-?2$)' + '|(^street-?2$)',
 
-                    'address-line3':
-                        '(^address-?3$)' +
-                        '|(^address-?line-?3$)' +
-                        '|(^addr-?3$)' +
-                        '|(^street-?3$)',
+                    'address-line3': '(^address-?3$)' + '|(^address-?line-?3$)' + '|(^addr-?3$)' + '|(^street-?3$)',
 
-                    'address-level2':
-                        '(^city$)' +
-                        '|(^town$)' +
-                        '|(^address-?level-?2$)' +
-                        '|(^address-?city$)' +
-                        '|(^address-?town$)',
+                    'address-level2': '(^city$)' + '|(^town$)' + '|(^address-?level-?2$)' + '|(^address-?city$)' + '|(^address-?town$)',
 
                     'address-level1':
                         '(^state$)' +
@@ -594,11 +579,7 @@ const matchingConfiguration = {
 
                     name: '(^name$)|full-?name|your-?name',
 
-                    'given-name':
-                        '(^f-?name$)' +
-                        '|(^first-?name$)' +
-                        '|(^given-?name$)' +
-                        '|(^first-?n$)',
+                    'given-name': '(^f-?name$)' + '|(^first-?name$)' + '|(^given-?name$)' + '|(^first-?n$)',
 
                     'additional-name':
                         '(^m-?name$)' +
@@ -747,12 +728,7 @@ const matchingConfiguration = {
                         '|(^exp-?date-?year$)' +
                         '|(^date-?y$)',
 
-                    'cc-type':
-                        '(^cc-?type$)' +
-                        '|(^card-?type$)' +
-                        '|(^card-?brand$)' +
-                        '|(^cc-?brand$)' +
-                        '|(^cb-?type$)'
+                    'cc-type': '(^cc-?type$)' + '|(^card-?type$)' + '|(^card-?brand$)' + '|(^cc-?brand$)' + '|(^cb-?type$)',
                 },
 
                 //= ========================================================================
@@ -866,7 +842,7 @@ const matchingConfiguration = {
                         '|^시[^도·・]|시[·・]?군[·・]?구', // ko-KR
 
                     'address-level1':
-                    // '(?<!(united|hist|history).?)state|county|region|province' + // todo: not supported in safari
+                        // '(?<!(united|hist|history).?)state|county|region|province' + // todo: not supported in safari
                         'county|region|province' +
                         '|county|principality' + // en-UK
                         '|都道府県' + // ja-JP
@@ -946,8 +922,7 @@ const matchingConfiguration = {
                         '|(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)' + // tr
                         '|नाम', // hi
 
-                    'additional-name':
-                        'middle.*name|mname|middle$|middle.*initial|m\\.i\\.|mi$|\\bmi\\b',
+                    'additional-name': 'middle.*name|mname|middle$|middle.*initial|m\\.i\\.|mi$|\\bmi\\b',
 
                     'family-name':
                         'last.*name|lname|surname|last$|secondname|family.*name' +
@@ -1007,11 +982,11 @@ const matchingConfiguration = {
                         '|scadenza' + // it-IT
                         '|有効期限' + // ja-JP
                         '|validade' + // pt-BR, pt-PT
-                        '|Срок действия карты' // ru
-                }
-            ]
-        }
-    }
-}
+                        '|Срок действия карты', // ru
+                },
+            ],
+        },
+    },
+};
 
-module.exports = { matchingConfiguration }
+module.exports = { matchingConfiguration };

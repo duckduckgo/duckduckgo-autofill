@@ -1,10 +1,10 @@
-import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js'
-import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js'
-import {getInputType, getMainTypeFromType, getInputSubtype, getInputMainType, getInputVariant} from './matching.js'
-import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js'
-import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js'
-import { IdentityTooltipItem } from '../InputTypes/Identity.js'
-import {constants} from '../constants.js'
+import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js';
+import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js';
+import { getInputType, getMainTypeFromType, getInputSubtype, getInputMainType, getInputVariant } from './matching.js';
+import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js';
+import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js';
+import { IdentityTooltipItem } from '../InputTypes/Identity.js';
+import { constants } from '../constants.js';
 
 /**
  * Get the icon for the identities (currently only Dax for emails)
@@ -12,31 +12,31 @@ import {constants} from '../constants.js'
  * @param {import("./Form").Form} form
  * @return {string}
  */
-const getIdentitiesIcon = (input, {device}) => {
-    if (!canBeInteractedWith(input)) return ''
+const getIdentitiesIcon = (input, { device }) => {
+    if (!canBeInteractedWith(input)) return '';
 
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-    const { isDDGApp, isFirefox, isExtension } = device.globalConfig
-    const subtype = getInputSubtype(input)
+    const { isDDGApp, isFirefox, isExtension } = device.globalConfig;
+    const subtype = getInputSubtype(input);
 
     if (device.inContextSignup?.isAvailable(subtype)) {
         if (isDDGApp || isFirefox) {
-            return daxGrayscaleBase64
+            return daxGrayscaleBase64;
         } else if (isExtension) {
-            return chrome.runtime.getURL('img/logo-small-grayscale.svg')
+            return chrome.runtime.getURL('img/logo-small-grayscale.svg');
         }
     }
 
     if (subtype === 'emailAddress' && device.isDeviceSignedIn()) {
         if (isDDGApp || isFirefox) {
-            return daxBase64
+            return daxBase64;
         } else if (isExtension) {
-            return chrome.runtime.getURL('img/logo-small.svg')
+            return chrome.runtime.getURL('img/logo-small.svg');
         }
     }
 
-    return ''
-}
+    return '';
+};
 
 /**
  * Get the alternate icon for the identities (currently only Dax for emails)
@@ -44,32 +44,32 @@ const getIdentitiesIcon = (input, {device}) => {
  * @param {import("./Form").Form} form
  * @return {string}
  */
-const getIdentitiesAlternateIcon = (input, {device}) => {
-    if (!canBeInteractedWith(input)) return ''
+const getIdentitiesAlternateIcon = (input, { device }) => {
+    if (!canBeInteractedWith(input)) return '';
 
     // In Firefox web_accessible_resources could leak a unique user identifier, so we avoid it here
-    const { isDDGApp, isFirefox, isExtension } = device.globalConfig
-    const subtype = getInputSubtype(input)
+    const { isDDGApp, isFirefox, isExtension } = device.globalConfig;
+    const subtype = getInputSubtype(input);
 
-    const isIncontext = device.inContextSignup?.isAvailable(subtype)
-    const isEmailProtection = subtype === 'emailAddress' && device.isDeviceSignedIn()
+    const isIncontext = device.inContextSignup?.isAvailable(subtype);
+    const isEmailProtection = subtype === 'emailAddress' && device.isDeviceSignedIn();
     if (isIncontext || isEmailProtection) {
         if (isDDGApp || isFirefox) {
-            return daxBase64
+            return daxBase64;
         } else if (isExtension) {
-            return chrome.runtime.getURL('img/logo-small.svg')
+            return chrome.runtime.getURL('img/logo-small.svg');
         }
     }
 
-    return ''
-}
+    return '';
+};
 
 /**
  * Checks whether a field is readonly or disabled
  * @param {HTMLInputElement} input
  * @return {boolean}
  */
-const canBeInteractedWith = (input) => !input.readOnly && !input.disabled
+const canBeInteractedWith = (input) => !input.readOnly && !input.disabled;
 
 /**
  * Checks if the input can be decorated and we have the needed data
@@ -78,15 +78,15 @@ const canBeInteractedWith = (input) => !input.readOnly && !input.disabled
  * @returns {Promise<boolean>}
  */
 const canBeAutofilled = async (input, device) => {
-    const mainType = getInputMainType(input)
-    if (mainType === 'unknown') return false
+    const mainType = getInputMainType(input);
+    if (mainType === 'unknown') return false;
 
-    const subtype = getInputSubtype(input)
-    const variant = getInputVariant(input)
-    await device.settings.populateDataIfNeeded({ mainType, subtype })
-    const canAutofill = device.settings.canAutofillType({ mainType, subtype, variant }, device.inContextSignup)
-    return Boolean(canAutofill)
-}
+    const subtype = getInputSubtype(input);
+    const variant = getInputVariant(input);
+    await device.settings.populateDataIfNeeded({ mainType, subtype });
+    const canAutofill = device.settings.canAutofillType({ mainType, subtype, variant }, device.inContextSignup);
+    return Boolean(canAutofill);
+};
 
 /**
  * A map of config objects. These help by centralising here some complexity
@@ -98,53 +98,55 @@ const inputTypeConfig = {
         type: 'credentials',
         displayName: 'passwords',
         getIconBase: (input, form) => {
-            const {device} = form
-            if (!canBeInteractedWith(input)) return ''
+            const { device } = form;
+            if (!canBeInteractedWith(input)) return '';
 
-            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return ''
+            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return '';
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
-                const subtype = getInputSubtype(input)
-                const variant = getInputVariant(input)
+                const subtype = getInputSubtype(input);
+                const variant = getInputVariant(input);
 
                 if (subtype === 'password' && variant === 'new') {
-                    return ddgPasswordIcons.ddgPasswordGenIconBase
+                    return ddgPasswordIcons.ddgPasswordGenIconBase;
                 }
 
-                return ddgPasswordIcons.ddgPasswordIconBase
+                return ddgPasswordIcons.ddgPasswordIconBase;
             }
-            return ''
+            return '';
         },
-        getIconFilled: (input, {device}) => {
+        getIconFilled: (input, { device }) => {
             if (device.settings.featureToggles.inlineIcon_credentials) {
-                const subtype = getInputSubtype(input)
-                const variant = getInputVariant(input)
+                const subtype = getInputSubtype(input);
+                const variant = getInputVariant(input);
 
                 if (subtype === 'password' && variant === 'new') {
-                    return ddgPasswordIcons.ddgPasswordGenIconFilled
+                    return ddgPasswordIcons.ddgPasswordGenIconFilled;
                 }
 
-                return ddgPasswordIcons.ddgPasswordIconFilled
+                return ddgPasswordIcons.ddgPasswordIconFilled;
             }
-            return ''
+            return '';
         },
         getIconAlternate: () => '',
-        shouldDecorate: async (input, {isLogin, isHybrid, device, isCredentialsImoprtAvailable}) => {
-            const subtype = getInputSubtype(input)
-            const variant = getInputVariant(input)
+        shouldDecorate: async (input, { isLogin, isHybrid, device, isCredentialsImoprtAvailable }) => {
+            const subtype = getInputSubtype(input);
+            const variant = getInputVariant(input);
 
             if (
                 (subtype === 'password' && variant === 'new') || // New passord field
-                (isLogin || isHybrid || variant === 'current') // Current password field
+                isLogin ||
+                isHybrid ||
+                variant === 'current' // Current password field
             ) {
                 // Check feature flags and available input types
-                return isCredentialsImoprtAvailable || canBeAutofilled(input, device)
+                return isCredentialsImoprtAvailable || canBeAutofilled(input, device);
             }
 
-            return false
+            return false;
         },
         dataType: 'Credentials',
-        tooltipItem: (data) => createCredentialsTooltipItem(data)
+        tooltipItem: (data) => createCredentialsTooltipItem(data),
     },
     /** @type {CreditCardsInputTypeConfig} */
     creditCards: {
@@ -153,11 +155,11 @@ const inputTypeConfig = {
         getIconBase: () => '',
         getIconFilled: () => '',
         getIconAlternate: () => '',
-        shouldDecorate: async (input, {device}) => {
-            return canBeAutofilled(input, device)
+        shouldDecorate: async (input, { device }) => {
+            return canBeAutofilled(input, device);
         },
         dataType: 'CreditCards',
-        tooltipItem: (data) => new CreditCardTooltipItem(data)
+        tooltipItem: (data) => new CreditCardTooltipItem(data),
     },
     /** @type {IdentitiesInputTypeConfig} */
     identities: {
@@ -166,11 +168,11 @@ const inputTypeConfig = {
         getIconBase: getIdentitiesIcon,
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,
-        shouldDecorate: async (input, {device}) => {
-            return canBeAutofilled(input, device)
+        shouldDecorate: async (input, { device }) => {
+            return canBeAutofilled(input, device);
         },
         dataType: 'Identities',
-        tooltipItem: (data) => new IdentityTooltipItem(data)
+        tooltipItem: (data) => new IdentityTooltipItem(data),
     },
     /** @type {UnknownInputTypeConfig} */
     unknown: {
@@ -182,10 +184,10 @@ const inputTypeConfig = {
         shouldDecorate: async () => false,
         dataType: '',
         tooltipItem: (_data) => {
-            throw new Error('unreachable - setting tooltip to unknown field type')
-        }
-    }
-}
+            throw new Error('unreachable - setting tooltip to unknown field type');
+        },
+    },
+};
 
 /**
  * Retrieves configs from an input el
@@ -193,9 +195,9 @@ const inputTypeConfig = {
  * @returns {InputTypeConfigs}
  */
 const getInputConfig = (input) => {
-    const inputType = getInputType(input)
-    return getInputConfigFromType(inputType)
-}
+    const inputType = getInputType(input);
+    return getInputConfigFromType(inputType);
+};
 
 /**
  * Retrieves configs from an input type
@@ -203,9 +205,9 @@ const getInputConfig = (input) => {
  * @returns {InputTypeConfigs}
  */
 const getInputConfigFromType = (inputType) => {
-    const inputMainType = getMainTypeFromType(inputType)
-    return inputTypeConfig[inputMainType]
-}
+    const inputMainType = getMainTypeFromType(inputType);
+    return inputTypeConfig[inputMainType];
+};
 
 /**
  * Given an input field checks wheter it was previously decorated
@@ -213,12 +215,7 @@ const getInputConfigFromType = (inputType) => {
  * @returns {Boolean}
  */
 const isFieldDecorated = (input) => {
-    return input.hasAttribute(constants.ATTR_INPUT_TYPE)
-}
+    return input.hasAttribute(constants.ATTR_INPUT_TYPE);
+};
 
-export {
-    getInputConfig,
-    getInputConfigFromType,
-    canBeInteractedWith,
-    isFieldDecorated
-}
+export { getInputConfig, getInputConfigFromType, canBeInteractedWith, isFieldDecorated };

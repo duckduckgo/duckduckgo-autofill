@@ -1,4 +1,4 @@
-import {formatPhoneNumber, getMMAndYYYYFromString, prepareFormValuesForStorage} from './formatters.js'
+import { formatPhoneNumber, getMMAndYYYYFromString, prepareFormValuesForStorage } from './formatters.js';
 
 describe('Format year and month from single string', () => {
     const testCases = [
@@ -40,24 +40,24 @@ describe('Format year and month from single string', () => {
         '2028 - 5',
         '2028 / 5',
         '28 / 5',
-        '28  5'
-    ]
+        '28  5',
+    ];
 
     test.each(testCases)('Test for "%s"', (expiry) => {
-        const result = getMMAndYYYYFromString(expiry)
+        const result = getMMAndYYYYFromString(expiry);
         expect(result).toMatchObject({
             expirationMonth: '05',
-            expirationYear: '2028'
-        })
-    })
-})
+            expirationYear: '2028',
+        });
+    });
+});
 
 describe('Can strip phone formatting characters', () => {
     it('should strip all unexpected characters from phone', () => {
-        const complexPhoneNumber = '+1 (3) 345-123456.3'
-        expect(formatPhoneNumber(complexPhoneNumber)).toEqual('+133451234563')
-    })
-})
+        const complexPhoneNumber = '+1 (3) 345-123456.3';
+        expect(formatPhoneNumber(complexPhoneNumber)).toEqual('+133451234563');
+    });
+});
 
 describe('prepareFormValuesForStorage()', () => {
     describe('handling credentials', () => {
@@ -67,10 +67,10 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 creditCards: {},
                 // @ts-ignore
-                identities: {}
-            })
-            expect(values.credentials).toBeUndefined()
-        })
+                identities: {},
+            });
+            expect(values.credentials).toBeUndefined();
+        });
         it('accepts password only', () => {
             const values = prepareFormValuesForStorage({
                 // @ts-ignore
@@ -78,20 +78,20 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 creditCards: {},
                 // @ts-ignore
-                identities: {}
-            })
-            expect(values.credentials?.password).toBe('123456')
-        })
+                identities: {},
+            });
+            expect(values.credentials?.password).toBe('123456');
+        });
         it('accepts username+password', () => {
-            const inputCredentials = { username: 'dax@example.com', password: '123456' }
+            const inputCredentials = { username: 'dax@example.com', password: '123456' };
             const values = prepareFormValuesForStorage({
                 credentials: inputCredentials,
                 // @ts-ignore
                 creditCards: {},
                 // @ts-ignore
-                identities: {}
-            })
-            expect(values.credentials).toEqual(inputCredentials)
-        })
-    })
-})
+                identities: {},
+            });
+            expect(values.credentials).toEqual(inputCredentials);
+        });
+    });
+});

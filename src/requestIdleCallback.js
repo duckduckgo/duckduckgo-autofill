@@ -17,22 +17,23 @@
  * @see https://developers.google.com/web/updates/2015/08/using-requestidlecallback
  */
 // @ts-ignore
-window.requestIdleCallback = window.requestIdleCallback ||
+window.requestIdleCallback =
+    window.requestIdleCallback ||
     function (cb) {
         return setTimeout(function () {
-            const start = Date.now()
-            // eslint-disable-next-line standard/no-callback-literal
+            const start = Date.now();
             cb({
                 didTimeout: false,
                 timeRemaining: function () {
-                    return Math.max(0, 50 - (Date.now() - start))
-                }
-            })
-        }, 1)
-    }
-window.cancelIdleCallback = window.cancelIdleCallback ||
+                    return Math.max(0, 50 - (Date.now() - start));
+                },
+            });
+        }, 1);
+    };
+window.cancelIdleCallback =
+    window.cancelIdleCallback ||
     function (id) {
-        clearTimeout(id)
-    }
+        clearTimeout(id);
+    };
 
-export default {}
+export default {};

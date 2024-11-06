@@ -1,4 +1,4 @@
-import {constants} from './mocks.js'
+import { constants } from './mocks.js';
 
 /** @typedef {import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes} AvailableInputTypes */
 
@@ -8,12 +8,12 @@ import {constants} from './mocks.js'
  * @returns {AvailableInputTypes}
  */
 const createAvailableInputTypes = (overrides) => {
-    const base = constants.availableInputTypes
+    const base = constants.availableInputTypes;
     return {
         ...base,
-        ...overrides
-    }
-}
+        ...overrides,
+    };
+};
 
 /**
  * Given a Duck address returns the username without the domain
@@ -21,8 +21,8 @@ const createAvailableInputTypes = (overrides) => {
  * @returns {string}
  */
 const stripDuckExtension = (emailAddress) => {
-    return emailAddress.replace('@duck.com', '')
-}
+    return emailAddress.replace('@duck.com', '');
+};
 
 /**
  * Clicks directly on the icon within the input field
@@ -30,10 +30,10 @@ const stripDuckExtension = (emailAddress) => {
  * @returns {Promise<void>}
  */
 const clickOnIcon = async (input) => {
-    const box = await input.boundingBox()
-    if (!box) throw new Error('unreachable')
-    await input.click({position: {x: box.width - (box.height / 2), y: box.height / 2}})
-}
+    const box = await input.boundingBox();
+    if (!box) throw new Error('unreachable');
+    await input.click({ position: { x: box.width - box.height / 2, y: box.height / 2 } });
+};
 
 /**
  * @param {MockBuilder} builder
@@ -45,16 +45,16 @@ const clickOnIcon = async (input) => {
  * }} data
  * @returns {MockBuilder}
  */
-function withDataType (builder, {credentials, identity, creditCard, emailProtection}) {
-    if (credentials) builder.withCredentials(credentials)
+function withDataType(builder, { credentials, identity, creditCard, emailProtection }) {
+    if (credentials) builder.withCredentials(credentials);
 
-    if (identity) builder.withIdentity(identity)
+    if (identity) builder.withIdentity(identity);
 
-    if (creditCard) builder.withCreditCard(creditCard)
+    if (creditCard) builder.withCreditCard(creditCard);
 
-    if (emailProtection) builder.withEmailProtection(emailProtection)
+    if (emailProtection) builder.withEmailProtection(emailProtection);
 
-    return builder
+    return builder;
 }
 
 /**
@@ -63,35 +63,41 @@ function withDataType (builder, {credentials, identity, creditCard, emailProtect
  * @param {import('@playwright/test').Locator} button
  * @returns {Promise<void>}
  */
-async function addTopAutofillMouseFocus (page, button) {
-    const coords = await button.boundingBox({timeout: 1000})
-    const x = coords?.x || 10
-    const y = coords?.y || 10
+async function addTopAutofillMouseFocus(page, button) {
+    const coords = await button.boundingBox({ timeout: 1000 });
+    const x = coords?.x || 10;
+    const y = coords?.y || 10;
 
-    await page.evaluate(({x, y}) => {
-        const event = new CustomEvent('mouseMove', {detail: {x: x + 30, y: y + 10}})
-        window.dispatchEvent(event)
-    }, {x, y})
-    await page.mouse.move(x + 30, y + 10)
+    await page.evaluate(
+        ({ x, y }) => {
+            const event = new CustomEvent('mouseMove', { detail: { x: x + 30, y: y + 10 } });
+            window.dispatchEvent(event);
+        },
+        { x, y },
+    );
+    await page.mouse.move(x + 30, y + 10);
 
-    await page.evaluate(({x, y}) => {
-        const moved = new CustomEvent('mouseMove', {detail: {x: x + 50, y: y + 15}})
-        window.dispatchEvent(moved)
-    }, {x, y})
-    await page.mouse.move(x + 50, y + 15)
+    await page.evaluate(
+        ({ x, y }) => {
+            const moved = new CustomEvent('mouseMove', { detail: { x: x + 50, y: y + 15 } });
+            window.dispatchEvent(moved);
+        },
+        { x, y },
+    );
+    await page.mouse.move(x + 50, y + 15);
 }
 
 /**
  * @param {any} stringInput
  * @returns {Platform}
  */
-export function validPlatform (stringInput) {
+export function validPlatform(stringInput) {
     /** @type {Platform[]} */
-    const valid = ['extension', 'windows', 'ios', 'macos', 'android']
+    const valid = ['extension', 'windows', 'ios', 'macos', 'android'];
     if (!valid.includes(stringInput)) {
-        throw new Error(`invalid platform: ${stringInput}`)
+        throw new Error(`invalid platform: ${stringInput}`);
     }
-    return stringInput
+    return stringInput;
 }
 
-export {createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType, addTopAutofillMouseFocus}
+export { createAvailableInputTypes, stripDuckExtension, clickOnIcon, withDataType, addTopAutofillMouseFocus };

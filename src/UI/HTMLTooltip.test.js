@@ -1,23 +1,23 @@
-import HTMLTooltip, {defaultOptions} from './HTMLTooltip.js'
-import {getInputConfigFromType} from '../Form/inputTypeConfig.js'
+import HTMLTooltip, { defaultOptions } from './HTMLTooltip.js';
+import { getInputConfigFromType } from '../Form/inputTypeConfig.js';
 
 describe('HTMLTooltip', () => {
-    let o1 = global.ResizeObserver
-    let o2 = global.MutationObserver
+    const o1 = global.ResizeObserver;
+    const o2 = global.MutationObserver;
     beforeEach(() => {
         // @ts-ignore
         global.ResizeObserver = class ResizeObserver {
-            observe () {}
-        }
+            observe() {}
+        };
         // @ts-ignore
         global.MutationObserver = class MutationObserver {
-            observe () {}
-        }
-    })
+            observe() {}
+        };
+    });
     afterEach(() => {
-        global.ResizeObserver = o1
-        global.MutationObserver = o2
-    })
+        global.ResizeObserver = o1;
+        global.MutationObserver = o2;
+    });
     /**
      * This test ensures that `setupSizeListener` is not called if the platform
      * in question cannot use PerformanceObserver with {entryTypes: ['layout-shift', 'paint']}
@@ -31,10 +31,10 @@ describe('HTMLTooltip', () => {
      * @link {https://app.asana.com/0/1177771139624306/1202412384393015/f}
      */
     it('works with default values', () => {
-        const config = getInputConfigFromType('credentials.username')
-        const tooltip = new HTMLTooltip(config, 'credentials.username', () => {}, defaultOptions)
-        const spy = jest.spyOn(tooltip, 'setupSizeListener')
-        tooltip.init()
-        expect(spy).not.toHaveBeenCalled()
-    })
-})
+        const config = getInputConfigFromType('credentials.username');
+        const tooltip = new HTMLTooltip(config, 'credentials.username', () => {}, defaultOptions);
+        const spy = jest.spyOn(tooltip, 'setupSizeListener');
+        tooltip.init();
+        expect(spy).not.toHaveBeenCalled();
+    });
+});

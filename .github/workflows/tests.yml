@@ -1,45 +1,44 @@
 name: Test
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-
+    push:
+        branches: [main]
+    pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: '.nvmrc'
-      - uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: npm ci
-        run: "npm ci"
-      - name: "Clean tree"
-        run: "npm run test:clean-tree"
-      - name: "ESLint"
-        run: "npm run lint"
-      - name: "Typescript"
-        run: "npm run tsc"
-      - name: "Unit Tests"
-        run: "npm run test:unit"
-      - name: "Password unit tests"
-        run: "npm run test:passwords"
-      - name: Install Playwright + DEPS
-        run: npx playwright install --with-deps
-      - name: "Install dependencies for CI integration tests"
-        run: sudo apt-get install xvfb
-      - run: npm run test:integration:ci
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-results
-          path: test-results
+    test:
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version-file: '.nvmrc'
+            - uses: actions/cache@v2
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+            - name: npm ci
+              run: 'npm ci'
+            - name: 'Clean tree'
+              run: 'npm run test:clean-tree'
+            - name: 'ESLint'
+              run: 'npm run lint'
+            - name: 'Typescript'
+              run: 'npm run tsc'
+            - name: 'Unit Tests'
+              run: 'npm run test:unit'
+            - name: 'Password unit tests'
+              run: 'npm run test:passwords'
+            - name: Install Playwright + DEPS
+              run: npx playwright install --with-deps
+            - name: 'Install dependencies for CI integration tests'
+              run: sudo apt-get install xvfb
+            - run: npm run test:integration:ci
+            - name: Upload test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-results
+                  path: test-results

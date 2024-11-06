@@ -1,4 +1,4 @@
-import {createAvailableInputTypes, withDataType} from './utils.js'
+import { createAvailableInputTypes, withDataType } from './utils.js';
 
 /**
  * @typedef {import("../../src/deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
@@ -20,42 +20,42 @@ import {createAvailableInputTypes, withDataType} from './utils.js'
  * @public
  * @returns {MockBuilder}
  */
-export function createWindowsMocks () {
+export function createWindowsMocks() {
     const mocks = {
         getRuntimeConfiguration: {
-            'contentScope': {
-                'features': {
-                    'autofill': {
-                        'state': 'enabled',
-                        'exceptions': []
-                    }
+            contentScope: {
+                features: {
+                    autofill: {
+                        state: 'enabled',
+                        exceptions: [],
+                    },
                 },
-                'unprotectedTemporary': []
+                unprotectedTemporary: [],
             },
-            'userUnprotectedDomains': [],
-            'userPreferences': {
-                'debug': false,
-                'platform': {
-                    'name': 'windows'
+            userUnprotectedDomains: [],
+            userPreferences: {
+                debug: false,
+                platform: {
+                    name: 'windows',
                 },
-                'features': {
-                    'autofill': {
-                        'settings': {
-                            'featureToggles': {
-                                'inputType_credentials': true,
-                                'inputType_identities': false,
-                                'inputType_creditCards': false,
-                                'emailProtection': false,
-                                'password_generation': false,
-                                'credentials_saving': true
-                            }
-                        }
-                    }
-                }
+                features: {
+                    autofill: {
+                        settings: {
+                            featureToggles: {
+                                inputType_credentials: true,
+                                inputType_identities: false,
+                                inputType_creditCards: false,
+                                emailProtection: false,
+                                password_generation: false,
+                                credentials_saving: true,
+                            },
+                        },
+                    },
+                },
             },
             availableInputTypes: {
-                ...createAvailableInputTypes()
-            }
+                ...createAvailableInputTypes(),
+            },
         },
         /** @type {null | AvailableInputTypes} */
         getAvailableInputTypes: null,
@@ -64,189 +64,187 @@ export function createWindowsMocks () {
             credentials: [],
             creditCards: [],
             identities: [],
-            serializedInputContext: '{}'
+            serializedInputContext: '{}',
         },
         /** @type {CredentialsObject | null} */
         getAutofillCredentials: null,
         /** @type {null | GetAutofillDataResponse['success']} */
         getAutofillData: null,
         /** @type {null | EmailProtectionGetIsLoggedInResult['success']} */
-        emailProtectionGetIsLoggedIn: null
-    }
+        emailProtectionGetIsLoggedIn: null,
+    };
     /** @type {MockBuilder} */
     const builder = {
-        withPrivateEmail (_email) {
-            mocks.emailProtectionGetIsLoggedIn = true
-            return this
+        withPrivateEmail(_email) {
+            mocks.emailProtectionGetIsLoggedIn = true;
+            return this;
         },
-        withPersonalEmail (_email) {
-            mocks.emailProtectionGetIsLoggedIn = true
-            return this
+        withPersonalEmail(_email) {
+            mocks.emailProtectionGetIsLoggedIn = true;
+            return this;
         },
-        withEmailProtection (emails) {
-            return this
-                .withPrivateEmail(emails.privateAddress)
-                .withPersonalEmail(emails.personalAddress)
+        withEmailProtection(emails) {
+            return this.withPrivateEmail(emails.privateAddress).withPersonalEmail(emails.personalAddress);
         },
-        withIncontextSignipDismissed () {
-            throw new Error('Function not implemented.')
+        withIncontextSignipDismissed() {
+            throw new Error('Function not implemented.');
         },
-        withAvailableInputTypes (inputTypes) {
-            mocks.getAvailableInputTypes = inputTypes
-            return this
+        withAvailableInputTypes(inputTypes) {
+            mocks.getAvailableInputTypes = inputTypes;
+            return this;
         },
         /**
-          * @param {AutofillFeatureToggles} featureToggles
+         * @param {AutofillFeatureToggles} featureToggles
          */
-        withFeatureToggles (featureToggles) {
-            Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles)
-            return this
+        withFeatureToggles(featureToggles) {
+            Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles);
+            return this;
         },
         /**
          * @param {'enabled' | 'disabled'} state
          * @returns {builder}
          */
-        withRemoteAutofillState (state) {
-            mocks.getRuntimeConfiguration.contentScope.features.autofill.state = state
-            return this
+        withRemoteAutofillState(state) {
+            mocks.getRuntimeConfiguration.contentScope.features.autofill.state = state;
+            return this;
         },
         withIdentity: function () {
-            throw new Error('Function not implemented.')
+            throw new Error('Function not implemented.');
         },
         withCreditCard: function () {
-            throw new Error('Function not implemented.')
+            throw new Error('Function not implemented.');
         },
         withCredentials: function (credentials) {
-            mocks.getAutofillInitData.credentials.push(credentials)
-            mocks.getAutofillCredentials = credentials
+            mocks.getAutofillInitData.credentials.push(credentials);
+            mocks.getAutofillCredentials = credentials;
             /** @type {TopContextData} */
-            const topContextData = {inputType: 'credentials.username'}
-            mocks.getAutofillInitData.serializedInputContext = JSON.stringify(topContextData)
-            mocks.getAutofillData = { credentials, action: 'fill' }
-            return this
+            const topContextData = { inputType: 'credentials.username' };
+            mocks.getAutofillInitData.serializedInputContext = JSON.stringify(topContextData);
+            mocks.getAutofillData = { credentials, action: 'fill' };
+            return this;
         },
         withDataType: function (data) {
-            return withDataType(this, data)
+            return withDataType(this, data);
         },
-        tap () {
-            return this
+        tap() {
+            return this;
         },
-        async applyTo (page) {
-            return page.evaluate(mocks => {
-                window.__playwright_autofill = { mocks: { calls: [] } }
-                const listeners = []
+        async applyTo(page) {
+            return page.evaluate((mocks) => {
+                window.__playwright_autofill = { mocks: { calls: [] } };
+                const listeners = [];
 
-                function recordCall (name, request, response) {
-                    const call = [name, request, response]
-                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)))
+                function recordCall(name, request, response) {
+                    const call = [name, request, response];
+                    window.__playwright_autofill.mocks.calls.push(JSON.parse(JSON.stringify(call)));
                 }
                 /**
                  * @param {any} _request
                  * @param {any} response
                  */
-                function respond (name, _request, response) {
+                function respond(name, _request, response) {
                     setTimeout(() => {
-                        for (let listener of listeners) {
+                        for (const listener of listeners) {
                             listener({
                                 origin: window.origin,
                                 data: {
                                     type: name + 'Response',
-                                    success: response
-                                }
-                            })
+                                    success: response,
+                                },
+                            });
                         }
-                    }, 0)
+                    }, 0);
                 }
 
                 /**
                  * @type {Record<string, (msg: WindowsMessageFormat) => void>}
                  */
                 const mocksObject = {
-                    getRuntimeConfiguration (input) {
-                        recordCall(input.Name, null, mocks.getRuntimeConfiguration)
-                        return respond(input.Name, null, mocks.getRuntimeConfiguration)
+                    getRuntimeConfiguration(input) {
+                        recordCall(input.Name, null, mocks.getRuntimeConfiguration);
+                        return respond(input.Name, null, mocks.getRuntimeConfiguration);
                     },
-                    getAvailableInputTypes (input) {
-                        recordCall(input.Name, null, mocks.getAvailableInputTypes)
-                        return respond(input.Name, null, mocks.getAvailableInputTypes)
+                    getAvailableInputTypes(input) {
+                        recordCall(input.Name, null, mocks.getAvailableInputTypes);
+                        return respond(input.Name, null, mocks.getAvailableInputTypes);
                     },
-                    closeAutofillParent (input) {
-                        recordCall(input.Name, null, null)
+                    closeAutofillParent(input) {
+                        recordCall(input.Name, null, null);
                     },
-                    getAutofillData (input) {
-                        recordCall(input.Name, input.Data, mocks.getAutofillData)
-                        return respond(input.Name, input.Data, mocks.getAutofillData)
+                    getAutofillData(input) {
+                        recordCall(input.Name, input.Data, mocks.getAutofillData);
+                        return respond(input.Name, input.Data, mocks.getAutofillData);
                     },
-                    storeFormData (request) {
-                        recordCall(request.Name, request, null)
+                    storeFormData(request) {
+                        recordCall(request.Name, request, null);
                     },
-                    getAutofillInitData (request) {
-                        recordCall(request.Name, null, mocks.getAutofillInitData)
-                        return respond(request.Name, null, mocks.getAutofillInitData)
+                    getAutofillInitData(request) {
+                        recordCall(request.Name, null, mocks.getAutofillInitData);
+                        return respond(request.Name, null, mocks.getAutofillInitData);
                     },
-                    setSize (request) {
-                        recordCall(request.Name, request, null)
+                    setSize(request) {
+                        recordCall(request.Name, request, null);
                     },
-                    getAutofillCredentials (request) {
-                        recordCall(request.Name, null, mocks.getAutofillCredentials)
-                        return respond(request.Name, null, mocks.getAutofillCredentials)
+                    getAutofillCredentials(request) {
+                        recordCall(request.Name, null, mocks.getAutofillCredentials);
+                        return respond(request.Name, null, mocks.getAutofillCredentials);
                     },
-                    selectedDetail (request) {
-                        recordCall(request.Name, request.Data, null)
+                    selectedDetail(request) {
+                        recordCall(request.Name, request.Data, null);
                     },
-                    emailProtectionGetIsLoggedIn (request) {
-                        recordCall(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
-                        return respond(request.Name, null, mocks.emailProtectionGetIsLoggedIn)
-                    }
-                }
+                    emailProtectionGetIsLoggedIn(request) {
+                        recordCall(request.Name, null, mocks.emailProtectionGetIsLoggedIn);
+                        return respond(request.Name, null, mocks.emailProtectionGetIsLoggedIn);
+                    },
+                };
 
                 /**
                  * @param {WindowsMessageFormat|WindowsResponseFormat} x
                  * @returns {x is WindowsMessageFormat}
                  */
-                function isOutgoing (x) {
+                function isOutgoing(x) {
                     if (typeof x.Name === 'string') {
-                        return true
+                        return true;
                     }
-                    return false
+                    return false;
                 }
 
                 // @ts-ignore
                 window.chrome = {
                     webview: {
-                        postMessage (input) {
+                        postMessage(input) {
                             if (isOutgoing(input)) {
                                 if (mocksObject[input.Name]) {
-                                    return mocksObject[input.Name](input)
+                                    return mocksObject[input.Name](input);
                                 } else {
-                                    throw new Error('windows mock missing for ' + input.Name)
+                                    throw new Error('windows mock missing for ' + input.Name);
                                 }
                             } else if (typeof input.type === 'string') {
                                 setTimeout(() => {
-                                    for (let listener of listeners) {
+                                    for (const listener of listeners) {
                                         listener({
                                             origin: window.origin,
-                                            data: input
-                                        })
+                                            data: input,
+                                        });
                                     }
-                                }, 0)
+                                }, 0);
                             } else {
-                                console.warn('cannot handle input', input)
+                                console.warn('cannot handle input', input);
                             }
                         },
-                        removeEventListener (_name, _listener) {
-                            const index = listeners.indexOf(_listener)
+                        removeEventListener(_name, _listener) {
+                            const index = listeners.indexOf(_listener);
                             if (index > -1) {
-                                listeners.splice(index, 1)
+                                listeners.splice(index, 1);
                             }
                         },
-                        addEventListener (_name, listener) {
-                            listeners.push(listener)
-                        }
-                    }
-                }
-            }, mocks)
-        }
-    }
-    return builder
+                        addEventListener(_name, listener) {
+                            listeners.push(listener);
+                        },
+                    },
+                };
+            }, mocks);
+        },
+    };
+    return builder;
 }
