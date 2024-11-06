@@ -1,0 +1,3 @@
+# .git-blame-ignore-revs
+# Switched to a shared DDG ESLint config and introduced Prettier: https://github.com/duckduckgo/duckduckgo-autofill/pull/695
+0648a2fae1d40d48793dbf0d486a09e8b8636879
