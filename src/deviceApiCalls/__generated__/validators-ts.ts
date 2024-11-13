@@ -248,12 +248,6 @@ export interface API {
     resultValidator?: ShowInContextEmailProtectionSignupPrompt;
     [k: string]: unknown;
   };
-  /**
-   * Used to store temporary partial form data (username or email) to supplement the signup completion at a later time
-   */
-  storeTemporaryPartialFormData?: {
-    [k: string]: unknown;
-  };
 }
 /**
  * Parameters for the addDebugFlag method

@@ -313,13 +313,6 @@
           "$ref": "./schemas/showInContextEmailProtectionSignupPrompt.result.json"
         }
       }
-    },
-    "storeTemporaryPartialFormData": {
-      "type": "object",
-      "description": "Used to store temporary partial form data (username or email) to supplement the signup completion at a later time",
-      "paramsValidator": {
-        "$ref": "./schemas/storeTemporaryPartialFormData.params.json"
-      }
     }
   }
 }

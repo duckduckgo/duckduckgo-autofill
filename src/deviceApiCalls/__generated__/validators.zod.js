@@ -435,6 +435,5 @@ export const apiSchema = z.object({
     ShowInContextEmailProtectionSignupPrompt: z.record(z.unknown()).and(z.object({
         id: z.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
         resultValidator: showInContextEmailProtectionSignupPromptSchema.optional()
-    })).optional(),
-    storeTemporaryPartialFormData: z.record(z.unknown()).optional()
+    })).optional()
 });

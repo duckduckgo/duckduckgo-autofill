@@ -244,9 +244,3 @@ export class ShowInContextEmailProtectionSignupPromptCall extends DeviceApiCall 
   id = "ShowInContextEmailProtectionSignupPromptResponse"
   resultValidator = showInContextEmailProtectionSignupPromptSchema
 }
-/**
- * @extends {DeviceApiCall<any, any>} 
- */
-export class StoreTemporaryPartialFormDataCall extends DeviceApiCall {
-  method = "storeTemporaryPartialFormData"
-}
