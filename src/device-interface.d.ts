@@ -71,7 +71,7 @@ interface DataStorageObject {
     credentials?: CredentialsObject;
     creditCards?: CreditCardObject;
     identities?: IdentityObject;
-    trigger?: 'partialFormSave' | 'formSubmission' | 'passwordGeneration' | 'emailProtection';
+    trigger?: 'partialSave' | 'formSubmission' | 'passwordGeneration' | 'emailProtection';
 }
 
 interface InternalDataStorageObject {

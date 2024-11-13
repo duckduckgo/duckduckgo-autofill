@@ -9282,7 +9282,10 @@ class InterfacePrototype {
         password: this.passwordGenerator.password,
         username: this.emailProtection.lastGenerated
       });
-      this.storeFormData(formData, 'formSubmission');
+
+      // If credentials has only username field, and no password field, then trigger is a partialSave
+      const trigger = formData.credentials?.username && !formData.credentials?.password ? 'partialSave' : 'formSubmission';
+      this.storeFormData(formData, trigger);
     }
   }
 
@@ -11890,7 +11893,7 @@ const shouldStoreCredentials = _ref3 => {
   let {
     credentials
   } = _ref3;
-  return Boolean(credentials.password);
+  return Boolean(credentials.password) || Boolean(credentials.username);
 };
 
 /**
@@ -17413,7 +17416,8 @@ const wasAutofilledByChrome = input => {
  */
 exports.wasAutofilledByChrome = wasAutofilledByChrome;
 function shouldLog() {
-  return readDebugSetting('ddg-autofill-debug');
+  return true;
+  // return readDebugSetting('ddg-autofill-debug');
 }
 
 /**
@@ -18196,7 +18200,7 @@ const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = _z
 });
 const storeFormDataSchema = exports.storeFormDataSchema = _zod.z.object({
   credentials: outgoingCredentialsSchema.optional(),
-  trigger: _zod.z.union([_zod.z.literal("formSubmission"), _zod.z.literal("passwordGeneration"), _zod.z.literal("emailProtection")]).optional()
+  trigger: _zod.z.union([_zod.z.literal("partialSave"), _zod.z.literal("formSubmission"), _zod.z.literal("passwordGeneration"), _zod.z.literal("emailProtection")]).optional()
 });
 const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = _zod.z.object({
   type: _zod.z.literal("getAvailableInputTypesResponse").optional(),

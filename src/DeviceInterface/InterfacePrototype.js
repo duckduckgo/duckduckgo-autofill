@@ -806,7 +806,10 @@ class InterfacePrototype {
                 password: this.passwordGenerator.password,
                 username: this.emailProtection.lastGenerated,
             });
-            this.storeFormData(formData, 'formSubmission');
+
+            // If credentials has only username field, and no password field, then trigger is a partialSave
+            const trigger = formData.credentials?.username && !formData.credentials?.password ? 'partialSave' : 'formSubmission';
+            this.storeFormData(formData, trigger);
         }
     }
 

@@ -163,7 +163,7 @@ const getMMAndYYYYFromString = (expiration) => {
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCredentials = ({ credentials }) => Boolean(credentials.password);
+const shouldStoreCredentials = ({ credentials }) => Boolean(credentials.password) || Boolean(credentials.username);
 
 /**
  * @param {InternalDataStorageObject} credentials
