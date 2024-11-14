@@ -1,7 +1,13 @@
 import { Form } from './Form/Form.js';
 import { constants } from './constants.js';
 import { createMatching } from './Form/matching.js';
-import { logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog, pierceShadowTree, findEnclosedElements } from './autofill-utils.js';
+import {
+    logPerformance,
+    isFormLikelyToBeUsedAsPageWrapper,
+    shouldLog,
+    pierceShadowTree,
+    findEnclosedShadowElements,
+} from './autofill-utils.js';
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
 
 const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants;
@@ -143,19 +149,19 @@ class DefaultScanner {
             return this;
         }
 
-        if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
+        const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+
+        if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
         } else {
-            const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-            const inputs = context.querySelectorAll(selector);
+            const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
             inputs.forEach((input) => this.addInput(input));
-            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
-                const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-                findEnclosedElements(context, selector).forEach((input) => {
+            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree && inputs.length === 0) {
+                findEnclosedShadowElements(context, formInputsSelectorWithoutSelect).forEach((input) => {
                     if (input instanceof HTMLInputElement) {
                         this.addInput(input, context);
                     }
