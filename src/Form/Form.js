@@ -387,13 +387,21 @@ class Form {
     }
 
     /**
-     * Function takes a form and a selector and returns all form elements that match the selector
-     * @param {HTMLFormElement} form
+     * Function attempts to find elements using .elements to catch field outside the form itself using the form attribute.
+     * It also catches all elements when the markup is broken.
+     * We use .filter to avoid fieldset, button, textarea etc.
+     * If .elements doesn't work, it falls back to querySelectorAll.
+     * Doesn't look for shadow elements.
      * @param {string} selector
      * @returns
      */
-    getFilteredFormElements(form, selector) {
-        return [...form.elements].filter((el) => el.matches(selector));
+    getFormElements(selector) {
+        // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+        if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
+            return [...this.form.elements].filter((el) => el.matches(selector));
+        } else {
+            return this.form.querySelectorAll(selector);
+        }
     }
 
     categorizeInputs() {
@@ -404,17 +412,8 @@ class Form {
         } else {
             /** @type {Element[] | NodeList} */
             let foundInputs = [];
-            // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
-            const hasIterableFormElements =
-                this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements);
 
-            // For form elements we use .elements to catch fields outside the form itself using the form attribute.
-            // It also catches all elements when the markup is broken.
-            // We use .filter to avoid fieldset, button, textarea etc.
-            const formElements = hasIterableFormElements
-                ? // @ts-expect-error - TS doesn't know that form is an HTMLFormElement
-                  this.getFilteredFormElements(this.form, selector)
-                : [...this.form.querySelectorAll(selector)];
+            const formElements = this.getFormElements(selector);
 
             // Also scan the form for shadow elements
             foundInputs = [...formElements, ...findEnclosedShadowElements(this.form, selector)];
@@ -487,8 +486,10 @@ class Form {
 
     get submitButtons() {
         const selector = this.matching.cssSelector('submitButtonSelector');
-        const buttons = Array.from(this.form.querySelectorAll(selector));
-        const allButtons = /** @type {HTMLElement[]} */ (buttons.length > 0 ? buttons : findEnclosedShadowElements(this.form, selector));
+        const buttons = this.form.querySelectorAll(selector);
+        const allButtons = /** @type {HTMLElement[]} */ (
+            buttons.length > 0 ? [...buttons] : findEnclosedShadowElements(this.form, selector)
+        );
 
         return allButtons.filter(
             (btn) => isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this),

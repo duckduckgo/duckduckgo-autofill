@@ -293,8 +293,8 @@ class FormAnalyzer {
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
         const selector = this.matching.cssSelector('safeUniversalSelector');
-        const elements = document.querySelectorAll(selector);
-        const formElements = elements.length > 0 ? elements : findEnclosedShadowElements(this.form, selector);
+        const elements = this.form.querySelectorAll(selector);
+        const formElements = elements.length > 0 ? [...elements] : findEnclosedShadowElements(this.form, selector);
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break;
