@@ -160,7 +160,7 @@ class DefaultScanner {
                 return this;
             }
             inputs.forEach((input) => this.addInput(input));
-            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree && inputs.length === 0) {
+            if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
                 findEnclosedShadowElements(context, formInputsSelectorWithoutSelect).forEach((input) => {
                     if (input instanceof HTMLInputElement) {
                         this.addInput(input, context);
@@ -239,7 +239,7 @@ class DefaultScanner {
         let traversalLayerCount = 0;
         let element = input;
         // traverse the DOM to search for related inputs
-        while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
+        while (traversalLayerCount <= 10 && element.parentElement !== document.documentElement) {
             // Avoid overlapping containers or forms
             const siblingForm = element.parentElement?.querySelector('form');
             if (siblingForm && siblingForm !== element) {
@@ -436,12 +436,10 @@ class DefaultScanner {
         // find the enclosing parent form, and scan it.
         if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
             const parentForm = this.getParentForm(realTarget);
-            if (parentForm && parentForm instanceof HTMLFormElement) {
-                const hasShadowTree = event.target?.shadowRoot != null;
-                const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-                this.forms.set(parentForm, form);
-                this.findEligibleInputs(parentForm);
-            }
+            const hasShadowTree = event.target?.shadowRoot != null;
+            const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
+            this.forms.set(parentForm, form);
+            this.findEligibleInputs(parentForm);
         }
 
         window.performance?.mark?.('scan_shadow:init:end');

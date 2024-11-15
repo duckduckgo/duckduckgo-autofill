@@ -223,6 +223,18 @@ class FormAnalyzer {
         });
     }
 
+    /**
+     * Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
+     * If it does, it checks if it contains an anchor element inside.
+     * @param {any} el
+     * @returns
+     */
+    isCustomWebElementLink(el) {
+        const tagName = el.nodeName.toLowerCase();
+        const isCustomElement = customElements != null && customElements.get(tagName) != null;
+        return isCustomElement && /-link$/.test(tagName) && findEnclosedShadowElements(el, 'a').length > 0;
+    }
+
     evaluateElement(el) {
         const string = getTextShallow(el);
 
@@ -262,7 +274,8 @@ class FormAnalyzer {
         if (
             (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
-            el.matches('button[class*=secondary]')
+            el.matches('button[class*=secondary]') ||
+            this.isCustomWebElementLink(el)
         ) {
             let shouldFlip = true;
             let strength = 1;

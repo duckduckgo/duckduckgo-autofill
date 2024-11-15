@@ -11002,6 +11002,18 @@ class FormAnalyzer {
       }
     });
   }
+
+  /**
+   * Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
+   * If it does, it checks if it contains an anchor element inside.
+   * @param {any} el
+   * @returns
+   */
+  isCustomWebElementLink(el) {
+    const tagName = el.nodeName.toLowerCase();
+    const isCustomElement = customElements != null && customElements.get(tagName) != null;
+    return isCustomElement && /-link$/.test(tagName) && (0, _autofillUtils.findEnclosedShadowElements)(el, 'a').length > 0;
+  }
   evaluateElement(el) {
     const string = (0, _autofillUtils.getTextShallow)(el);
     if (el.matches(this.matching.cssSelector('password'))) {
@@ -11042,7 +11054,7 @@ class FormAnalyzer {
       return;
     }
     // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-    if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
+    if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]') || this.isCustomWebElementLink(el)) {
       let shouldFlip = true;
       let strength = 1;
       // Don't flip forgotten password links
@@ -14542,7 +14554,7 @@ class DefaultScanner {
         return this;
       }
       inputs.forEach(input => this.addInput(input));
-      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree && inputs.length === 0) {
+      if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
         (0, _autofillUtils.findEnclosedShadowElements)(context, formInputsSelectorWithoutSelect).forEach(input => {
           if (input instanceof HTMLInputElement) {
             this.addInput(input, context);
@@ -14618,7 +14630,7 @@ class DefaultScanner {
     let traversalLayerCount = 0;
     let element = input;
     // traverse the DOM to search for related inputs
-    while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
+    while (traversalLayerCount <= 10 && element.parentElement !== document.documentElement) {
       // Avoid overlapping containers or forms
       const siblingForm = element.parentElement?.querySelector('form');
       if (siblingForm && siblingForm !== element) {
@@ -14806,12 +14818,10 @@ class DefaultScanner {
     // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const parentForm = this.getParentForm(realTarget);
-      if (parentForm && parentForm instanceof HTMLFormElement) {
-        const hasShadowTree = event.target?.shadowRoot != null;
-        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-        this.forms.set(parentForm, form);
-        this.findEligibleInputs(parentForm);
-      }
+      const hasShadowTree = event.target?.shadowRoot != null;
+      const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
+      this.forms.set(parentForm, form);
+      this.findEligibleInputs(parentForm);
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
@@ -17562,16 +17572,16 @@ function getActiveElement() {
 }
 
 /**
- * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * Takes a root element and tries to find elements in shadow DOMs that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}
  */
 function findEnclosedShadowElements(root, selector) {
-  // Check if there are any shadow elements that match the selector
   const shadowElements = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode();
+  /** @type {Node|null} */
+  let node = walker.currentNode;
   while (node) {
     if (node instanceof HTMLElement && node.shadowRoot) {
       shadowElements.push(...node.shadowRoot.querySelectorAll(selector));

@@ -567,17 +567,16 @@ function getActiveElement(root = document) {
 }
 
 /**
- * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * Takes a root element and tries to find elements in shadow DOMs that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}
  */
 function findEnclosedShadowElements(root, selector) {
-    // Check if there are any shadow elements that match the selector
     const shadowElements = [];
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-
-    let node = walker.nextNode();
+    /** @type {Node|null} */
+    let node = walker.currentNode;
     while (node) {
         if (node instanceof HTMLElement && node.shadowRoot) {
             shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
