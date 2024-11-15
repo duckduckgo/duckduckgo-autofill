@@ -14,7 +14,7 @@ import {
     shouldLog,
     safeRegexTest,
     getActiveElement,
-    findEnclosedShadowElements,
+    findElementsInShadowTree,
 } from '../autofill-utils.js';
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant } from './matching.js';
@@ -416,7 +416,7 @@ class Form {
             const formElements = this.getFormElements(selector);
 
             // Also scan the form for shadow elements
-            foundInputs = [...formElements, ...findEnclosedShadowElements(this.form, selector)];
+            foundInputs = [...formElements, ...findElementsInShadowTree(this.form, selector)];
 
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach((input) => this.addInput(input));
@@ -487,9 +487,7 @@ class Form {
     get submitButtons() {
         const selector = this.matching.cssSelector('submitButtonSelector');
         const buttons = this.form.querySelectorAll(selector);
-        const allButtons = /** @type {HTMLElement[]} */ (
-            buttons.length > 0 ? [...buttons] : findEnclosedShadowElements(this.form, selector)
-        );
+        const allButtons = /** @type {HTMLElement[]} */ (buttons.length > 0 ? [...buttons] : findElementsInShadowTree(this.form, selector));
 
         return allButtons.filter(
             (btn) => isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this),

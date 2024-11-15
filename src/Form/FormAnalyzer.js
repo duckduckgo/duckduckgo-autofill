@@ -1,7 +1,7 @@
 import { removeExcessWhitespace, Matching } from './matching.js';
 import { constants } from '../constants.js';
 import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js';
-import { findEnclosedShadowElements, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js';
+import { findElementsInShadowTree, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js';
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -232,7 +232,7 @@ class FormAnalyzer {
     isCustomWebElementLink(el) {
         const tagName = el.nodeName.toLowerCase();
         const isCustomElement = customElements != null && customElements.get(tagName) != null;
-        return isCustomElement && /-link$/.test(tagName) && findEnclosedShadowElements(el, 'a').length > 0;
+        return isCustomElement && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
     }
 
     evaluateElement(el) {
@@ -307,7 +307,7 @@ class FormAnalyzer {
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
         const selector = this.matching.cssSelector('safeUniversalSelector');
         const elements = this.form.querySelectorAll(selector);
-        const formElements = elements.length > 0 ? [...elements] : findEnclosedShadowElements(this.form, selector);
+        const formElements = elements.length > 0 ? [...elements] : findElementsInShadowTree(this.form, selector);
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break;

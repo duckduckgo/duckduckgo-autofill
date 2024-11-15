@@ -10237,7 +10237,7 @@ class Form {
       const formElements = this.getFormElements(selector);
 
       // Also scan the form for shadow elements
-      foundInputs = [...formElements, ...(0, _autofillUtils.findEnclosedShadowElements)(this.form, selector)];
+      foundInputs = [...formElements, ...(0, _autofillUtils.findElementsInShadowTree)(this.form, selector)];
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
       } else {
@@ -10299,8 +10299,7 @@ class Form {
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
     const buttons = this.form.querySelectorAll(selector);
-    const allButtons = /** @type {HTMLElement[]} */
-    buttons.length > 0 ? [...buttons] : (0, _autofillUtils.findEnclosedShadowElements)(this.form, selector);
+    const allButtons = /** @type {HTMLElement[]} */buttons.length > 0 ? [...buttons] : (0, _autofillUtils.findElementsInShadowTree)(this.form, selector);
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {
@@ -11012,7 +11011,7 @@ class FormAnalyzer {
   isCustomWebElementLink(el) {
     const tagName = el.nodeName.toLowerCase();
     const isCustomElement = customElements != null && customElements.get(tagName) != null;
-    return isCustomElement && /-link$/.test(tagName) && (0, _autofillUtils.findEnclosedShadowElements)(el, 'a').length > 0;
+    return isCustomElement && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
   }
   evaluateElement(el) {
     const string = (0, _autofillUtils.getTextShallow)(el);
@@ -11094,7 +11093,7 @@ class FormAnalyzer {
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
     const selector = this.matching.cssSelector('safeUniversalSelector');
     const elements = this.form.querySelectorAll(selector);
-    const formElements = elements.length > 0 ? [...elements] : (0, _autofillUtils.findEnclosedShadowElements)(this.form, selector);
+    const formElements = elements.length > 0 ? [...elements] : (0, _autofillUtils.findElementsInShadowTree)(this.form, selector);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -14555,7 +14554,7 @@ class DefaultScanner {
       }
       inputs.forEach(input => this.addInput(input));
       if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
-        (0, _autofillUtils.findEnclosedShadowElements)(context, formInputsSelectorWithoutSelect).forEach(input => {
+        (0, _autofillUtils.findElementsInShadowTree)(context, formInputsSelectorWithoutSelect).forEach(input => {
           if (input instanceof HTMLInputElement) {
             this.addInput(input, context);
           }
@@ -16958,7 +16957,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.findEnclosedShadowElements = findEnclosedShadowElements;
+exports.findElementsInShadowTree = findElementsInShadowTree;
 exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
 exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
@@ -17577,7 +17576,7 @@ function getActiveElement() {
  * @param {string} selector
  * @returns {Element[]}
  */
-function findEnclosedShadowElements(root, selector) {
+function findElementsInShadowTree(root, selector) {
   const shadowElements = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
   /** @type {Node|null} */

@@ -6,7 +6,7 @@ import {
     isFormLikelyToBeUsedAsPageWrapper,
     shouldLog,
     pierceShadowTree,
-    findEnclosedShadowElements,
+    findElementsInShadowTree,
 } from './autofill-utils.js';
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
 
@@ -161,7 +161,7 @@ class DefaultScanner {
             }
             inputs.forEach((input) => this.addInput(input));
             if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
-                findEnclosedShadowElements(context, formInputsSelectorWithoutSelect).forEach((input) => {
+                findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {
                     if (input instanceof HTMLInputElement) {
                         this.addInput(input, context);
                     }

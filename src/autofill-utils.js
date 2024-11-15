@@ -572,7 +572,7 @@ function getActiveElement(root = document) {
  * @param {string} selector
  * @returns {Element[]}
  */
-function findEnclosedShadowElements(root, selector) {
+function findElementsInShadowTree(root, selector) {
     const shadowElements = [];
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
     /** @type {Node|null} */
@@ -619,5 +619,5 @@ export {
     safeRegexTest,
     pierceShadowTree,
     getActiveElement,
-    findEnclosedShadowElements,
+    findElementsInShadowTree,
 };
