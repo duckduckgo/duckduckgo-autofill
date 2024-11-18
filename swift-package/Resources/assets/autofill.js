@@ -2891,6 +2891,9 @@ module.exports={
   "keldoc.com": {
     "password-rules": "minlength: 12; required: lower; required: upper; required: digit; required: [!@#$%^&*];"
   },
+  "kennedy-center.org": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@];"
+  },
   "key.harvard.edu": {
     "password-rules": "minlength: 10; maxlength: 100; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^[']];"
   },
