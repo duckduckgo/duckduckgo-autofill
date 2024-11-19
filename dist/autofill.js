@@ -5118,7 +5118,9 @@ class InterfacePrototype {
       });
 
       // If credentials has only username field, and no password field, then trigger is a partialSave
-      const trigger = formData.credentials?.username && !formData.credentials?.password ? 'partialSave' : 'formSubmission';
+      const isUsernameOnly = Boolean(formData.credentials?.username) && !formData.credentials?.password && [...form.inputs.credentials].length === 1;
+      const isEitherEmailOrPhone = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone);
+      const trigger = isUsernameOnly || isEitherEmailOrPhone ? 'partialSave' : 'formSubmission';
       this.storeFormData(formData, trigger);
     }
   }
@@ -5899,7 +5901,8 @@ class Form {
    */
   getValuesReadyForStorage() {
     const formValues = this.getRawValues();
-    return (0, _formatters.prepareFormValuesForStorage)(formValues);
+    const hasOnlyOneCredential = this.inputs.credentials.size === 1;
+    return (0, _formatters.prepareFormValuesForStorage)(formValues, hasOnlyOneCredential);
   }
 
   /**
@@ -7723,11 +7726,15 @@ const getMMAndYYYYFromString = expiration => {
  * @return {boolean}
  */
 exports.getMMAndYYYYFromString = getMMAndYYYYFromString;
-const shouldStoreCredentials = _ref3 => {
+const shouldStoreCredentials = (_ref3, hasOnlyOneCredential) => {
   let {
     credentials
   } = _ref3;
-  return Boolean(credentials.password) || Boolean(credentials.username);
+  if (credentials.password) {
+    return Boolean(credentials.password);
+  } else {
+    return hasOnlyOneCredential && Boolean(credentials.username);
+  }
 };
 
 /**
@@ -7738,7 +7745,7 @@ const shouldStoreIdentities = _ref4 => {
   let {
     identities
   } = _ref4;
-  return Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
+  return Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity) || Boolean(identities.emailAddress) || Boolean(identities.phone);
 };
 
 /**
@@ -7768,10 +7775,11 @@ const formatPhoneNumber = phone => phone.replaceAll(/[^0-9|+]/g, '');
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
+ * @param {boolean} hasOnlyOneCredential
  * @return {DataStorageObject}
  */
 exports.formatPhoneNumber = formatPhoneNumber;
-const prepareFormValuesForStorage = formValues => {
+const prepareFormValuesForStorage = (formValues, hasOnlyOneCredential) => {
   /** @type {Partial<InternalDataStorageObject>} */
   let {
     credentials,
@@ -7786,7 +7794,7 @@ const prepareFormValuesForStorage = formValues => {
 
   /** Fixes for credentials **/
   // Don't store if there isn't enough data
-  if (shouldStoreCredentials(formValues)) {
+  if (shouldStoreCredentials(formValues, hasOnlyOneCredential)) {
     // If we don't have a username to match a password, let's see if the email is available
     if (credentials.password && !credentials.username && identities.emailAddress) {
       credentials.username = identities.emailAddress;
@@ -13250,8 +13258,7 @@ const wasAutofilledByChrome = input => {
  */
 exports.wasAutofilledByChrome = wasAutofilledByChrome;
 function shouldLog() {
-  return true;
-  // return readDebugSetting('ddg-autofill-debug');
+  return readDebugSetting('ddg-autofill-debug');
 }
 
 /**

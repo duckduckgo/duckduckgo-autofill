@@ -808,7 +808,10 @@ class InterfacePrototype {
             });
 
             // If credentials has only username field, and no password field, then trigger is a partialSave
-            const trigger = formData.credentials?.username && !formData.credentials?.password ? 'partialSave' : 'formSubmission';
+            const isUsernameOnly =
+                Boolean(formData.credentials?.username) && !formData.credentials?.password && [...form.inputs.credentials].length === 1;
+            const isEitherEmailOrPhone = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone);
+            const trigger = isUsernameOnly || isEitherEmailOrPhone ? 'partialSave' : 'formSubmission';
             this.storeFormData(formData, trigger);
         }
     }

@@ -163,14 +163,25 @@ const getMMAndYYYYFromString = (expiration) => {
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCredentials = ({ credentials }) => Boolean(credentials.password) || Boolean(credentials.username);
+const shouldStoreCredentials = ({ credentials }, hasOnlyOneCredential) => {
+    if (credentials.password) {
+        return Boolean(credentials.password);
+    } else {
+        return hasOnlyOneCredential && Boolean(credentials.username);
+    }
+};
 
 /**
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreIdentities = ({ identities }) =>
-    Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
+const shouldStoreIdentities = ({ identities }) => {
+    return (
+        Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity) ||
+        Boolean(identities.emailAddress) ||
+        Boolean(identities.phone)
+    );
+};
 
 /**
  * @param {InternalDataStorageObject} credentials
@@ -196,9 +207,10 @@ const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '');
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
+ * @param {boolean} hasOnlyOneCredential
  * @return {DataStorageObject}
  */
-const prepareFormValuesForStorage = (formValues) => {
+const prepareFormValuesForStorage = (formValues, hasOnlyOneCredential) => {
     /** @type {Partial<InternalDataStorageObject>} */
     let { credentials, identities, creditCards } = formValues;
 
@@ -209,7 +221,7 @@ const prepareFormValuesForStorage = (formValues) => {
 
     /** Fixes for credentials **/
     // Don't store if there isn't enough data
-    if (shouldStoreCredentials(formValues)) {
+    if (shouldStoreCredentials(formValues, hasOnlyOneCredential)) {
         // If we don't have a username to match a password, let's see if the email is available
         if (credentials.password && !credentials.username && identities.emailAddress) {
             credentials.username = identities.emailAddress;

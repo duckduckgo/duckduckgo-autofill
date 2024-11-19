@@ -215,6 +215,12 @@ export function loginPage(page, opts = {}) {
             expect(mockCalls.length).toBe(0);
         }
 
+        async shouldPromptToSave() {
+            let mockCalls = [];
+            mockCalls = await mockedCalls(page, { names: ['storeFormData'] });
+            expect(mockCalls.length).toBeGreaterThan(0);
+        }
+
         /**
          * This is used mostly to avoid false negatives when we check for something _not_ happening.
          * Basically, you check that a specific call hasn't happened but the rest of the script ran just fine.

@@ -276,7 +276,11 @@ describe('Test the form class reading values correctly', () => {
 </form>`,
             expHasValues: true,
             expValues: {
-                identities: undefined,
+                identities: {
+                    emailAddress: 'peppapig@email.com',
+                    firstName: 'Peppa',
+                    lastName: 'Pig',
+                },
                 creditCards: {
                     cardName: 'Peppa Pig',
                     cardSecurityCode: '123',

@@ -426,8 +426,7 @@ const wasAutofilledByChrome = (input) => {
  * @returns {boolean}
  */
 function shouldLog() {
-    return true;
-    // return readDebugSetting('ddg-autofill-debug');
+    return readDebugSetting('ddg-autofill-debug');
 }
 
 /**
