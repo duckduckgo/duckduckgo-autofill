@@ -6909,9 +6909,10 @@ class FormAnalyzer {
       });
     } else {
       // any other case
+      const isH1Element = el.tagName === 'H1';
       this.updateSignal({
         string,
-        strength: 1,
+        strength: isH1Element ? 3 : 1,
         signalType: `generic: ${string}`,
         shouldCheckUnifiedForm: true
       });
@@ -10466,7 +10467,7 @@ class DefaultScanner {
     let traversalLayerCount = 0;
     let element = input;
     // traverse the DOM to search for related inputs
-    while (traversalLayerCount <= 10 && element.parentElement !== document.documentElement) {
+    while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
       // Avoid overlapping containers or forms
       const siblingForm = element.parentElement?.querySelector('form');
       if (siblingForm && siblingForm !== element) {
@@ -10477,12 +10478,16 @@ class DefaultScanner {
       }
       if (element.parentElement) {
         element = element.parentElement;
-        const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
-        const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
-        // If we find a button or another input, we assume that's our form
-        if (inputs.length > 1 || buttons.length) {
-          // found related input, return common ancestor
-          return element;
+        // check if current element is the only child of the parent, and increase traversal only then
+        if (element.childElementCount > 1) {
+          const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+          const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+          // If we find a button or another input, we assume that's our form
+          if (inputs.length > 1 || buttons.length) {
+            // found related input, return common ancestor
+            return element;
+          }
+          traversalLayerCount++;
         }
       } else {
         // possibly a shadow boundary, so traverse through the shadow root and find the form
@@ -10492,7 +10497,6 @@ class DefaultScanner {
           element = root.host;
         }
       }
-      traversalLayerCount++;
     }
     return input;
   }

@@ -290,7 +290,8 @@ class FormAnalyzer {
             this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
         } else {
             // any other case
-            this.updateSignal({ string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });
+            const isH1Element = el.tagName === 'H1';
+            this.updateSignal({ string, strength: isH1Element ? 3 : 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });
         }
     }
 
