@@ -438,6 +438,10 @@ class DefaultScanner {
         // find the enclosing parent form, and scan it.
         if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
             const parentForm = this.getParentForm(realTarget);
+
+            // If the parent form is an input element, we don't want to scan it further
+            if (parentForm instanceof HTMLInputElement) return;
+
             const hasShadowTree = event.target?.shadowRoot != null;
             const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
             this.forms.set(parentForm, form);

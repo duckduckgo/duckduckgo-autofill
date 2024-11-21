@@ -11015,7 +11015,7 @@ class FormAnalyzer {
     // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
     // If it does, it checks if it contains an anchor element inside.
     const tagName = el.nodeName.toLowerCase();
-    const isCustomWebElementLink = customElements.get(tagName) != null && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
+    const isCustomWebElementLink = customElements?.get(tagName) != null && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
 
     // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
     return el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]') || isCustomWebElementLink;
@@ -14827,6 +14827,9 @@ class DefaultScanner {
     // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const parentForm = this.getParentForm(realTarget);
+
+      // If the parent form is an input element, we don't want to scan it further
+      if (parentForm instanceof HTMLInputElement) return;
       const hasShadowTree = event.target?.shadowRoot != null;
       const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
       this.forms.set(parentForm, form);

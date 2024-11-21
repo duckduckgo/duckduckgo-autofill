@@ -234,7 +234,7 @@ class FormAnalyzer {
         // If it does, it checks if it contains an anchor element inside.
         const tagName = el.nodeName.toLowerCase();
         const isCustomWebElementLink =
-            customElements.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
+            customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
 
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
         return (
