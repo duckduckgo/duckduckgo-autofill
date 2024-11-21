@@ -224,15 +224,25 @@ class FormAnalyzer {
     }
 
     /**
-     * Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
-     * If it does, it checks if it contains an anchor element inside.
+     * Function that checks if the element is an external link or a custom web element that
+     * encapsulates a link.
      * @param {any} el
-     * @returns
+     * @returns {boolean}
      */
-    isCustomWebElementLink(el) {
+    isElementExternalLink(el) {
+        // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
+        // If it does, it checks if it contains an anchor element inside.
         const tagName = el.nodeName.toLowerCase();
-        const isCustomElement = customElements != null && customElements.get(tagName) != null;
-        return isCustomElement && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
+        const isCustomWebElementLink =
+            customElements.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
+
+        // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
+        return (
+            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
+            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
+            el.matches('button[class*=secondary]') ||
+            isCustomWebElementLink
+        );
     }
 
     evaluateElement(el) {
@@ -270,13 +280,7 @@ class FormAnalyzer {
             this.updateSignal({ string, strength, signalType: `button: ${string}`, shouldFlip });
             return;
         }
-        // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-        if (
-            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
-            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
-            el.matches('button[class*=secondary]') ||
-            this.isCustomWebElementLink(el)
-        ) {
+        if (this.isElementExternalLink(el)) {
             let shouldFlip = true;
             let strength = 1;
             // Don't flip forgotten password links

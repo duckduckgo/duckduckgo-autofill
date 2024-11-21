@@ -11006,15 +11006,19 @@ class FormAnalyzer {
   }
 
   /**
-   * Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
-   * If it does, it checks if it contains an anchor element inside.
+   * Function that checks if the element is an external link or a custom web element that
+   * encapsulates a link.
    * @param {any} el
-   * @returns
+   * @returns {boolean}
    */
-  isCustomWebElementLink(el) {
+  isElementExternalLink(el) {
+    // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
+    // If it does, it checks if it contains an anchor element inside.
     const tagName = el.nodeName.toLowerCase();
-    const isCustomElement = customElements != null && customElements.get(tagName) != null;
-    return isCustomElement && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
+    const isCustomWebElementLink = customElements.get(tagName) != null && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
+
+    // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
+    return el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]') || isCustomWebElementLink;
   }
   evaluateElement(el) {
     const string = (0, _autofillUtils.getTextShallow)(el);
@@ -11055,8 +11059,7 @@ class FormAnalyzer {
       });
       return;
     }
-    // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-    if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]') || this.isCustomWebElementLink(el)) {
+    if (this.isElementExternalLink(el)) {
       let shouldFlip = true;
       let strength = 1;
       // Don't flip forgotten password links
@@ -14644,7 +14647,7 @@ class DefaultScanner {
       }
       if (element.parentElement) {
         element = element.parentElement;
-        // check if current element is the only child of the parent, and increase traversal only then
+        // If the parent is a redundant component (only contains a single element or is a shadowRoot) do not increase the traversal count.
         if (element.childElementCount > 1) {
           const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
           const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));

@@ -252,7 +252,7 @@ class DefaultScanner {
 
             if (element.parentElement) {
                 element = element.parentElement;
-                // check if current element is the only child of the parent, and increase traversal only then
+                // If the parent is a redundant component (only contains a single element or is a shadowRoot) do not increase the traversal count.
                 if (element.childElementCount > 1) {
                     const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
                     const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
