@@ -10493,6 +10493,9 @@ class DefaultScanner {
         if (root instanceof ShadowRoot && root.host) {
           // @ts-ignore
           element = root.host;
+        } else {
+          // We're in a strange state (no parent or shadow root), just break out of the loop for safety
+          break;
         }
       }
     }
