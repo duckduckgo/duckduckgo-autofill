@@ -10211,16 +10211,33 @@ class Form {
       });
     }
   }
+
+  /**
+   * The function looks for form's control elements, and returns them if they're iterable.
+   * @param {*} selector
+   */
+  getFormControlElements(selector) {
+    // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+    if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
+      // For form elements we use .elements to catch fields outside the form itself using the form attribute.
+      // It also catches all elements when the markup is broken.
+      // We use .filter to avoid specific types of elements.
+      const formControls = [...this.form.elements].filter(el => el.matches(selector));
+      return [...formControls];
+    } else {
+      return null;
+    }
+  }
   categorizeInputs() {
     const selector = this.matching.cssSelector('formInputsSelector');
     // If there's no form container and it's just a lonely input field (this.form is an input field)
     if (this.form.matches(selector)) {
       this.addInput(this.form);
     } else {
-      /** @type {Element[] | NodeList} */
-
-      // Also scan the form for shadow elements
-      const foundInputs = (0, _autofillUtils.getFormElements)(this.form, selector, true, true);
+      // Attempt to get form's control elements first as it can catch elements when markup is broke, or if the fields are outside the form.
+      // Other wise use queryFormElements, that can scan for shadow tree.
+      const formControlElements = this.getFormControlElements(selector);
+      const foundInputs = formControlElements != null ? [...formControlElements, ...(0, _autofillUtils.findElementsInShadowTree)(this.form, selector)] : (0, _autofillUtils.queryFormElements)(this.form, selector, true);
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
       } else {
@@ -10281,7 +10298,7 @@ class Form {
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
-    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.getFormElements)(this.form, selector);
+    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.queryFormElements)(this.form, selector);
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {
@@ -11078,7 +11095,7 @@ class FormAnalyzer {
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
     const selector = this.matching.cssSelector('safeUniversalSelector');
-    const formElements = (0, _autofillUtils.getFormElements)(this.form, selector);
+    const formElements = (0, _autofillUtils.queryFormElements)(this.form, selector);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -16951,9 +16968,7 @@ exports.escapeXML = escapeXML;
 exports.findElementsInShadowTree = findElementsInShadowTree;
 exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
-exports.getDaxBoundingBox = void 0;
-exports.getFormElements = getFormElements;
-exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = void 0;
+exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
 exports.isFormLikelyToBeUsedAsPageWrapper = isFormLikelyToBeUsedAsPageWrapper;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -16962,6 +16977,7 @@ exports.isValidTLD = isValidTLD;
 exports.logPerformance = logPerformance;
 exports.notifyWebApp = void 0;
 exports.pierceShadowTree = pierceShadowTree;
+exports.queryFormElements = queryFormElements;
 exports.safeExecute = exports.removeInlineStyles = void 0;
 exports.safeRegexTest = safeRegexTest;
 exports.setValue = exports.sendAndWaitForAnswer = void 0;
@@ -17585,31 +17601,20 @@ function findElementsInShadowTree(root, selector) {
 
 /**
  * Default operation: finds elements using querySelectorAll.
- * Optionally, if forced an form.elements is iterable, attempts to find elements using .elements instead,
- * to catch field outside the form itsel using the form attribute. It also catches all elements
- * when the markup is broken. We use .filter along with a selector to avoid any unwanted elements.
  * Optionally, can be forced to scan the shadow tree.
  * @param {string} selector
  * @param {boolean} forceScanShadowTree
- * @param {boolean} shouldCheckFormControls
  * @returns {Element[]}
  */
-function getFormElements(form, selector) {
+function queryFormElements(form, selector) {
   let forceScanShadowTree = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  let shouldCheckFormControls = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
   // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
   /** @type {Element[]|NodeListOf<Element>} element */
-  let formElements = [];
-  if (shouldCheckFormControls && form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
-    formElements = [...form.elements].filter(el => el.matches(selector));
-  } else {
-    formElements = form.querySelectorAll(selector);
-  }
+  const formElements = form.querySelectorAll(selector);
   if (forceScanShadowTree || formElements.length === 0) {
     return [...formElements, ...findElementsInShadowTree(form, selector)];
-  } else {
-    return [...formElements];
   }
+  return [...formElements];
 }
 
 },{"./Form/matching.js":44,"./constants.js":67,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],65:[function(require,module,exports){

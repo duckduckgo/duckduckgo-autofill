@@ -589,30 +589,20 @@ function findElementsInShadowTree(root, selector) {
 
 /**
  * Default operation: finds elements using querySelectorAll.
- * Optionally, if forced an form.elements is iterable, attempts to find elements using .elements instead,
- * to catch field outside the form itsel using the form attribute. It also catches all elements
- * when the markup is broken. We use .filter along with a selector to avoid any unwanted elements.
  * Optionally, can be forced to scan the shadow tree.
  * @param {string} selector
  * @param {boolean} forceScanShadowTree
- * @param {boolean} shouldCheckFormControls
  * @returns {Element[]}
  */
-function getFormElements(form, selector, forceScanShadowTree = false, shouldCheckFormControls = false) {
+function queryFormElements(form, selector, forceScanShadowTree = false) {
     // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
     /** @type {Element[]|NodeListOf<Element>} element */
-    let formElements = [];
-    if (shouldCheckFormControls && form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
-        formElements = [...form.elements].filter((el) => el.matches(selector));
-    } else {
-        formElements = form.querySelectorAll(selector);
-    }
+    const formElements = form.querySelectorAll(selector);
 
     if (forceScanShadowTree || formElements.length === 0) {
         return [...formElements, ...findElementsInShadowTree(form, selector)];
-    } else {
-        return [...formElements];
     }
+    return [...formElements];
 }
 
 export {
@@ -648,5 +638,5 @@ export {
     pierceShadowTree,
     getActiveElement,
     findElementsInShadowTree,
-    getFormElements,
+    queryFormElements,
 };
