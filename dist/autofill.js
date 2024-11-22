@@ -6528,8 +6528,11 @@ class Form {
 
     // After autofill we check if form values match the data provided…
     const formValues = this.getValuesReadyForStorage();
+    const hasOnlyOneCredential = Boolean(formValues.credentials?.username) && !formValues.credentials?.password || Boolean(formValues.credentials?.password) && !formValues.credentials?.username;
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
-    if (areAllFormValuesKnown) {
+    // If all form values are known, but we only have a single credntial field - then we want to prompt a partial save with username,
+    // So that in multi step forms (like reset-password), we can identify which username was picked, or complete a password save.
+    if (areAllFormValuesKnown && !hasOnlyOneCredential) {
       // …if we know all the values do not prompt to store data
       this.shouldPromptToStoreData = false;
       // reset this to its initial value
