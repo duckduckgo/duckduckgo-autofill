@@ -6053,15 +6053,18 @@ class Form {
    * If .elements doesn't work, it falls back to querySelectorAll.
    * Doesn't look for shadow elements.
    * @param {string} selector
-   * @returns
+   * @returns {Element[]}
    */
   getFormElements(selector) {
     // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+    /** @type {Element[]|NodeListOf<Element>} element  */
+    let formElements = [];
     if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
-      return [...this.form.elements].filter(el => el.matches(selector));
+      formElements = [...this.form.elements].filter(el => el.matches(selector));
     } else {
-      return this.form.querySelectorAll(selector);
+      formElements = this.form.querySelectorAll(selector);
     }
+    return [...formElements, ...(0, _autofillUtils.findElementsInShadowTree)(this.form, selector)];
   }
   categorizeInputs() {
     const selector = this.matching.cssSelector('formInputsSelector');
@@ -6070,11 +6073,9 @@ class Form {
       this.addInput(this.form);
     } else {
       /** @type {Element[] | NodeList} */
-      let foundInputs = [];
-      const formElements = this.getFormElements(selector);
 
       // Also scan the form for shadow elements
-      foundInputs = [...formElements, ...(0, _autofillUtils.findElementsInShadowTree)(this.form, selector)];
+      const foundInputs = this.getFormElements(selector);
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
       } else {
@@ -10662,8 +10663,8 @@ class DefaultScanner {
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const parentForm = this.getParentForm(realTarget);
 
-      // If the parent form is an input element, we don't want to scan it further
-      if (parentForm instanceof HTMLInputElement) return;
+      // If the parent form is an input element or the same as the target, we don't want to scan it further.
+      if (parentForm instanceof HTMLInputElement || parentForm.isEqualNode(realTarget)) return;
       const hasShadowTree = event.target?.shadowRoot != null;
       const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
       this.forms.set(parentForm, form);
