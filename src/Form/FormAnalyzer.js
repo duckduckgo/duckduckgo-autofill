@@ -1,7 +1,13 @@
 import { removeExcessWhitespace, Matching } from './matching.js';
 import { constants } from '../constants.js';
 import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js';
-import { findEnclosedElements, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js';
+import {
+    findElementsInShadowTree,
+    queryElementsWithShadow,
+    getTextShallow,
+    isLikelyASubmitButton,
+    safeRegexTest,
+} from '../autofill-utils.js';
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -223,6 +229,28 @@ class FormAnalyzer {
         });
     }
 
+    /**
+     * Function that checks if the element is an external link or a custom web element that
+     * encapsulates a link.
+     * @param {any} el
+     * @returns {boolean}
+     */
+    isElementExternalLink(el) {
+        // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
+        // If it does, it checks if it contains an anchor element inside.
+        const tagName = el.nodeName.toLowerCase();
+        const isCustomWebElementLink =
+            customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
+
+        // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
+        return (
+            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
+            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
+            el.matches('button[class*=secondary]') ||
+            isCustomWebElementLink
+        );
+    }
+
     evaluateElement(el) {
         const string = getTextShallow(el);
 
@@ -258,12 +286,7 @@ class FormAnalyzer {
             this.updateSignal({ string, strength, signalType: `button: ${string}`, shouldFlip });
             return;
         }
-        // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-        if (
-            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
-            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
-            el.matches('button[class*=secondary]')
-        ) {
+        if (this.isElementExternalLink(el)) {
             let shouldFlip = true;
             let strength = 1;
             // Don't flip forgotten password links
@@ -277,7 +300,8 @@ class FormAnalyzer {
             this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
         } else {
             // any other case
-            this.updateSignal({ string, strength: 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });
+            const isH1Element = el.tagName === 'H1';
+            this.updateSignal({ string, strength: isH1Element ? 3 : 1, signalType: `generic: ${string}`, shouldCheckUnifiedForm: true });
         }
     }
 
@@ -293,7 +317,7 @@ class FormAnalyzer {
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
         const selector = this.matching.cssSelector('safeUniversalSelector');
-        const formElements = findEnclosedElements(this.form, selector);
+        const formElements = queryElementsWithShadow(this.form, selector);
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break;

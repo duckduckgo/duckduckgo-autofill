@@ -14,7 +14,9 @@ import {
     shouldLog,
     safeRegexTest,
     getActiveElement,
-    findEnclosedElements,
+    queryElementsWithShadow,
+    findElementsInShadowTree,
+    getFormControlElements,
 } from '../autofill-utils.js';
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant } from './matching.js';
@@ -392,20 +394,13 @@ class Form {
         if (this.form.matches(selector)) {
             this.addInput(this.form);
         } else {
-            /** @type {Element[] | NodeList} */
-            let foundInputs = [];
-            // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
-            if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
-                // For form elements we use .elements to catch fields outside the form itself using the form attribute.
-                // It also catches all elements when the markup is broken.
-                // We use .filter to avoid fieldset, button, textarea etc.
-                const formElements = [...this.form.elements].filter((el) => el.matches(selector));
-                // If there are no form elements, we try to look for all
-                // enclosed elements within the form.
-                foundInputs = formElements.length > 0 ? formElements : findEnclosedElements(this.form, selector);
-            } else {
-                foundInputs = this.form.querySelectorAll(selector);
-            }
+            // Attempt to get form's control elements first as it can catch elements when markup is broke, or if the fields are outside the form.
+            // Other wise use queryElementsWithShadow, that can scan for shadow tree.
+            const formControlElements = getFormControlElements(this.form, selector);
+            const foundInputs =
+                formControlElements != null
+                    ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)]
+                    : queryElementsWithShadow(this.form, selector, true);
 
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach((input) => this.addInput(input));
@@ -475,8 +470,7 @@ class Form {
 
     get submitButtons() {
         const selector = this.matching.cssSelector('submitButtonSelector');
-        const allButtons = /** @type {HTMLElement[]} */ (findEnclosedElements(this.form, selector));
-
+        const allButtons = /** @type {HTMLElement[]} */ (queryElementsWithShadow(this.form, selector));
         return allButtons.filter(
             (btn) => isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this),
         );
