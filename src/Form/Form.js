@@ -14,7 +14,7 @@ import {
     shouldLog,
     safeRegexTest,
     getActiveElement,
-    findElementsInShadowTree,
+    getFormElements,
 } from '../autofill-utils.js';
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant } from './matching.js';
@@ -386,27 +386,6 @@ class Form {
         }
     }
 
-    /**
-     * Function attempts to find elements using .elements to catch field outside the form itself using the form attribute.
-     * It also catches all elements when the markup is broken.
-     * We use .filter to avoid fieldset, button, textarea etc.
-     * If .elements doesn't work, it falls back to querySelectorAll.
-     * Doesn't look for shadow elements.
-     * @param {string} selector
-     * @returns {Element[]}
-     */
-    getFormElements(selector) {
-        // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
-        /** @type {Element[]|NodeListOf<Element>} element  */
-        let formElements = [];
-        if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
-            formElements = [...this.form.elements].filter((el) => el.matches(selector));
-        } else {
-            formElements = this.form.querySelectorAll(selector);
-        }
-        return [...formElements, ...findElementsInShadowTree(this.form, selector)];
-    }
-
     categorizeInputs() {
         const selector = this.matching.cssSelector('formInputsSelector');
         // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -416,7 +395,7 @@ class Form {
             /** @type {Element[] | NodeList} */
 
             // Also scan the form for shadow elements
-            const foundInputs = this.getFormElements(selector);
+            const foundInputs = getFormElements(this.form, selector, true, true);
 
             if (foundInputs.length < MAX_INPUTS_PER_FORM) {
                 foundInputs.forEach((input) => this.addInput(input));
@@ -486,9 +465,7 @@ class Form {
 
     get submitButtons() {
         const selector = this.matching.cssSelector('submitButtonSelector');
-        const buttons = this.form.querySelectorAll(selector);
-        const allButtons = /** @type {HTMLElement[]} */ (buttons.length > 0 ? [...buttons] : findElementsInShadowTree(this.form, selector));
-
+        const allButtons = /** @type {HTMLElement[]} */ (getFormElements(this.form, selector));
         return allButtons.filter(
             (btn) => isPotentiallyViewable(btn) && isLikelyASubmitButton(btn, this.matching) && buttonMatchesFormType(btn, this),
         );

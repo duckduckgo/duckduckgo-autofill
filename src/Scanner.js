@@ -439,8 +439,8 @@ class DefaultScanner {
         if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
             const parentForm = this.getParentForm(realTarget);
 
-            // If the parent form is an input element or the same as the target, we don't want to scan it further.
-            if (parentForm instanceof HTMLInputElement || parentForm.isEqualNode(realTarget)) return;
+            // If the parent form is an input element we bail.
+            if (parentForm instanceof HTMLInputElement) return;
 
             const hasShadowTree = event.target?.shadowRoot != null;
             const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);

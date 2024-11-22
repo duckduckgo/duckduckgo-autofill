@@ -1,7 +1,7 @@
 import { removeExcessWhitespace, Matching } from './matching.js';
 import { constants } from '../constants.js';
 import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js';
-import { findElementsInShadowTree, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js';
+import { findElementsInShadowTree, getFormElements, getTextShallow, isLikelyASubmitButton, safeRegexTest } from '../autofill-utils.js';
 
 class FormAnalyzer {
     /** @type HTMLElement */
@@ -311,8 +311,7 @@ class FormAnalyzer {
 
         // Check form contents (noisy elements are skipped with the safeUniversalSelector)
         const selector = this.matching.cssSelector('safeUniversalSelector');
-        const elements = this.form.querySelectorAll(selector);
-        const formElements = elements.length > 0 ? [...elements] : findElementsInShadowTree(this.form, selector);
+        const formElements = getFormElements(this.form, selector);
         for (let i = 0; i < formElements.length; i++) {
             // Safety cutoff to avoid huge DOMs freezing the browser
             if (i >= 200) break;
