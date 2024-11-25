@@ -5122,8 +5122,9 @@ class InterfacePrototype {
 
       // If credentials has only username field, and no password field, then trigger is a partialSave
       const isUsernameOnly = Boolean(formData.credentials?.username) && !formData.credentials?.password && [...form.inputs.credentials].length === 1;
-      const isEitherEmailOrPhone = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone);
-      const trigger = isUsernameOnly || isEitherEmailOrPhone ? 'partialSave' : 'formSubmission';
+      // Is an email or phone number present in the form, but no other credentials
+      const isEmailOrPhoneOnly = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone) && [...form.inputs.credentials].length === 0;
+      const trigger = isUsernameOnly || isEmailOrPhoneOnly ? 'partialSave' : 'formSubmission';
       this.storeFormData(formData, trigger);
     }
   }
@@ -6057,20 +6058,10 @@ class Form {
     if (this.form.matches(selector)) {
       this.addInput(this.form);
     } else {
-      /** @type {Element[] | NodeList} */
-      let foundInputs = [];
-      // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
-      if (this.form instanceof HTMLFormElement && this.form.elements != null && Symbol.iterator in Object(this.form.elements)) {
-        // For form elements we use .elements to catch fields outside the form itself using the form attribute.
-        // It also catches all elements when the markup is broken.
-        // We use .filter to avoid fieldset, button, textarea etc.
-        const formElements = [...this.form.elements].filter(el => el.matches(selector));
-        // If there are no form elements, we try to look for all
-        // enclosed elements within the form.
-        foundInputs = formElements.length > 0 ? formElements : (0, _autofillUtils.findEnclosedElements)(this.form, selector);
-      } else {
-        foundInputs = this.form.querySelectorAll(selector);
-      }
+      // Attempt to get form's control elements first as it can catch elements when markup is broke, or if the fields are outside the form.
+      // Other wise use queryElementsWithShadow, that can scan for shadow tree.
+      const formControlElements = (0, _autofillUtils.getFormControlElements)(this.form, selector);
+      const foundInputs = formControlElements != null ? [...formControlElements, ...(0, _autofillUtils.findElementsInShadowTree)(this.form, selector)] : (0, _autofillUtils.queryElementsWithShadow)(this.form, selector, true);
       if (foundInputs.length < MAX_INPUTS_PER_FORM) {
         foundInputs.forEach(input => this.addInput(input));
       } else {
@@ -6131,7 +6122,7 @@ class Form {
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
-    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.findEnclosedElements)(this.form, selector);
+    const allButtons = /** @type {HTMLElement[]} */(0, _autofillUtils.queryElementsWithShadow)(this.form, selector);
     return allButtons.filter(btn => (0, _autofillUtils.isPotentiallyViewable)(btn) && (0, _autofillUtils.isLikelyASubmitButton)(btn, this.matching) && (0, _autofillUtils.buttonMatchesFormType)(btn, this));
   }
   attemptSubmissionIfNeeded() {
@@ -6836,6 +6827,22 @@ class FormAnalyzer {
       }
     });
   }
+
+  /**
+   * Function that checks if the element is an external link or a custom web element that
+   * encapsulates a link.
+   * @param {any} el
+   * @returns {boolean}
+   */
+  isElementExternalLink(el) {
+    // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
+    // If it does, it checks if it contains an anchor element inside.
+    const tagName = el.nodeName.toLowerCase();
+    const isCustomWebElementLink = customElements?.get(tagName) != null && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
+
+    // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
+    return el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]') || isCustomWebElementLink;
+  }
   evaluateElement(el) {
     const string = (0, _autofillUtils.getTextShallow)(el);
     if (el.matches(this.matching.cssSelector('password'))) {
@@ -6875,8 +6882,7 @@ class FormAnalyzer {
       });
       return;
     }
-    // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-    if (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]')) {
+    if (this.isElementExternalLink(el)) {
       let shouldFlip = true;
       let strength = 1;
       // Don't flip forgotten password links
@@ -6895,9 +6901,10 @@ class FormAnalyzer {
       });
     } else {
       // any other case
+      const isH1Element = el.tagName === 'H1';
       this.updateSignal({
         string,
-        strength: 1,
+        strength: isH1Element ? 3 : 1,
         signalType: `generic: ${string}`,
         shouldCheckUnifiedForm: true
       });
@@ -6915,7 +6922,7 @@ class FormAnalyzer {
 
     // Check form contents (noisy elements are skipped with the safeUniversalSelector)
     const selector = this.matching.cssSelector('safeUniversalSelector');
-    const formElements = (0, _autofillUtils.findEnclosedElements)(this.form, selector);
+    const formElements = (0, _autofillUtils.queryElementsWithShadow)(this.form, selector);
     for (let i = 0; i < formElements.length; i++) {
       // Safety cutoff to avoid huge DOMs freezing the browser
       if (i >= 200) break;
@@ -10370,19 +10377,18 @@ class DefaultScanner {
     if (this.device.globalConfig.isDDGDomain) {
       return this;
     }
-    if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
+    const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+    if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
       this.addInput(context);
     } else {
-      const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-      const inputs = context.querySelectorAll(selector);
+      const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
       if (inputs.length > this.options.maxInputsPerPage) {
         this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
         return this;
       }
       inputs.forEach(input => this.addInput(input));
       if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
-        const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-        (0, _autofillUtils.findEnclosedElements)(context, selector).forEach(input => {
+        (0, _autofillUtils.findElementsInShadowTree)(context, formInputsSelectorWithoutSelect).forEach(input => {
           if (input instanceof HTMLInputElement) {
             this.addInput(input, context);
           }
@@ -10468,12 +10474,16 @@ class DefaultScanner {
       }
       if (element.parentElement) {
         element = element.parentElement;
-        const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
-        const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
-        // If we find a button or another input, we assume that's our form
-        if (inputs.length > 1 || buttons.length) {
-          // found related input, return common ancestor
-          return element;
+        // If the parent is a redundant component (only contains a single element or is a shadowRoot) do not increase the traversal count.
+        if (element.childElementCount > 1) {
+          const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+          const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+          // If we find a button or another input, we assume that's our form
+          if (inputs.length > 1 || buttons.length) {
+            // found related input, return common ancestor
+            return element;
+          }
+          traversalLayerCount++;
         }
       } else {
         // possibly a shadow boundary, so traverse through the shadow root and find the form
@@ -10481,9 +10491,11 @@ class DefaultScanner {
         if (root instanceof ShadowRoot && root.host) {
           // @ts-ignore
           element = root.host;
+        } else {
+          // We're in a strange state (no parent or shadow root), just break out of the loop for safety
+          break;
         }
       }
-      traversalLayerCount++;
     }
     return input;
   }
@@ -10645,12 +10657,13 @@ class DefaultScanner {
     // find the enclosing parent form, and scan it.
     if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
       const parentForm = this.getParentForm(realTarget);
-      if (parentForm && parentForm instanceof HTMLFormElement) {
-        const hasShadowTree = event.target?.shadowRoot != null;
-        const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-        this.forms.set(parentForm, form);
-        this.findEligibleInputs(parentForm);
-      }
+
+      // If the parent form is an input element we bail.
+      if (parentForm instanceof HTMLInputElement) return;
+      const hasShadowTree = event.target?.shadowRoot != null;
+      const form = new _Form.Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
+      this.forms.set(parentForm, form);
+      this.findEligibleInputs(parentForm);
     }
     window.performance?.mark?.('scan_shadow:init:end');
     (0, _autofillUtils.logPerformance)('scan_shadow');
@@ -12787,10 +12800,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.buttonMatchesFormType = exports.autofillEnabled = exports.addInlineStyles = exports.SIGN_IN_MSG = exports.ADDRESS_DOMAIN = void 0;
 exports.escapeXML = escapeXML;
-exports.findEnclosedElements = findEnclosedElements;
+exports.findElementsInShadowTree = findElementsInShadowTree;
 exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
-exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = exports.getDaxBoundingBox = void 0;
+exports.getDaxBoundingBox = void 0;
+exports.getFormControlElements = getFormControlElements;
+exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = void 0;
 exports.isFormLikelyToBeUsedAsPageWrapper = isFormLikelyToBeUsedAsPageWrapper;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -12799,6 +12814,7 @@ exports.isValidTLD = isValidTLD;
 exports.logPerformance = logPerformance;
 exports.notifyWebApp = void 0;
 exports.pierceShadowTree = pierceShadowTree;
+exports.queryElementsWithShadow = queryElementsWithShadow;
 exports.safeExecute = exports.removeInlineStyles = void 0;
 exports.safeRegexTest = safeRegexTest;
 exports.setValue = exports.sendAndWaitForAnswer = void 0;
@@ -13401,22 +13417,16 @@ function getActiveElement() {
 }
 
 /**
- * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * Takes a root element and tries to find elements in shadow DOMs that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}
  */
-function findEnclosedElements(root, selector) {
-  // Check if there are any normal elements that match the selector
-  const elements = root.querySelectorAll(selector);
-  if (elements.length > 0) {
-    return Array.from(elements);
-  }
-
-  // Check if there are any shadow elements that match the selector
+function findElementsInShadowTree(root, selector) {
   const shadowElements = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode();
+  /** @type {Node|null} */
+  let node = walker.currentNode;
   while (node) {
     if (node instanceof HTMLElement && node.shadowRoot) {
       shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
@@ -13424,6 +13434,43 @@ function findEnclosedElements(root, selector) {
     node = walker.nextNode();
   }
   return shadowElements;
+}
+
+/**
+ * The function looks for form's control elements, and returns them if they're iterable.
+ * @param {HTMLElement} form
+ * @param {string} selector
+ * @returns {Element[]|null}
+ */
+function getFormControlElements(form, selector) {
+  // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+  if (form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
+    // For form elements we use .elements to catch fields outside the form itself using the form attribute.
+    // It also catches all elements when the markup is broken.
+    // We use .filter to avoid specific types of elements.
+    const formControls = [...form.elements].filter(el => el.matches(selector));
+    return [...formControls];
+  } else {
+    return null;
+  }
+}
+
+/**
+ * Default operation: finds elements using querySelectorAll.
+ * Optionally, can be forced to scan the shadow tree.
+ * @param {HTMLElement} element
+ * @param {string} selector
+ * @param {boolean} forceScanShadowTree
+ * @returns {Element[]}
+ */
+function queryElementsWithShadow(element, selector) {
+  let forceScanShadowTree = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  /** @type {Element[]|NodeListOf<Element>} element */
+  const elements = element.querySelectorAll(selector);
+  if (forceScanShadowTree || elements.length === 0) {
+    return [...elements, ...findElementsInShadowTree(element, selector)];
+  }
+  return [...elements];
 }
 
 },{"./Form/matching.js":34,"./constants.js":57,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],55:[function(require,module,exports){

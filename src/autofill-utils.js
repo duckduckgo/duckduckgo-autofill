@@ -567,23 +567,16 @@ function getActiveElement(root = document) {
 }
 
 /**
- * Takes a root element and tries to find visible elements first, and if it fails, it tries to find shadow elements
+ * Takes a root element and tries to find elements in shadow DOMs that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
  * @returns {Element[]}
  */
-function findEnclosedElements(root, selector) {
-    // Check if there are any normal elements that match the selector
-    const elements = root.querySelectorAll(selector);
-    if (elements.length > 0) {
-        return Array.from(elements);
-    }
-
-    // Check if there are any shadow elements that match the selector
+function findElementsInShadowTree(root, selector) {
     const shadowElements = [];
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-
-    let node = walker.nextNode();
+    /** @type {Node|null} */
+    let node = walker.currentNode;
     while (node) {
         if (node instanceof HTMLElement && node.shadowRoot) {
             shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
@@ -592,6 +585,43 @@ function findEnclosedElements(root, selector) {
     }
 
     return shadowElements;
+}
+
+/**
+ * The function looks for form's control elements, and returns them if they're iterable.
+ * @param {HTMLElement} form
+ * @param {string} selector
+ * @returns {Element[]|null}
+ */
+function getFormControlElements(form, selector) {
+    // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+    if (form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
+        // For form elements we use .elements to catch fields outside the form itself using the form attribute.
+        // It also catches all elements when the markup is broken.
+        // We use .filter to avoid specific types of elements.
+        const formControls = [...form.elements].filter((el) => el.matches(selector));
+        return [...formControls];
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Default operation: finds elements using querySelectorAll.
+ * Optionally, can be forced to scan the shadow tree.
+ * @param {HTMLElement} element
+ * @param {string} selector
+ * @param {boolean} forceScanShadowTree
+ * @returns {Element[]}
+ */
+function queryElementsWithShadow(element, selector, forceScanShadowTree = false) {
+    /** @type {Element[]|NodeListOf<Element>} element */
+    const elements = element.querySelectorAll(selector);
+
+    if (forceScanShadowTree || elements.length === 0) {
+        return [...elements, ...findElementsInShadowTree(element, selector)];
+    }
+    return [...elements];
 }
 
 export {
@@ -626,5 +656,7 @@ export {
     safeRegexTest,
     pierceShadowTree,
     getActiveElement,
-    findEnclosedElements,
+    findElementsInShadowTree,
+    queryElementsWithShadow,
+    getFormControlElements,
 };

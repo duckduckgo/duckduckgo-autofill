@@ -1,7 +1,13 @@
 import { Form } from './Form/Form.js';
 import { constants } from './constants.js';
 import { createMatching } from './Form/matching.js';
-import { logPerformance, isFormLikelyToBeUsedAsPageWrapper, shouldLog, pierceShadowTree, findEnclosedElements } from './autofill-utils.js';
+import {
+    logPerformance,
+    isFormLikelyToBeUsedAsPageWrapper,
+    shouldLog,
+    pierceShadowTree,
+    findElementsInShadowTree,
+} from './autofill-utils.js';
 import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
 
 const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants;
@@ -143,19 +149,19 @@ class DefaultScanner {
             return this;
         }
 
-        if ('matches' in context && context.matches?.(this.matching.cssSelector('formInputsSelectorWithoutSelect'))) {
+        const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+
+        if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
         } else {
-            const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-            const inputs = context.querySelectorAll(selector);
+            const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
             inputs.forEach((input) => this.addInput(input));
             if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
-                const selector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-                findEnclosedElements(context, selector).forEach((input) => {
+                findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {
                     if (input instanceof HTMLInputElement) {
                         this.addInput(input, context);
                     }
@@ -246,12 +252,16 @@ class DefaultScanner {
 
             if (element.parentElement) {
                 element = element.parentElement;
-                const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
-                const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
-                // If we find a button or another input, we assume that's our form
-                if (inputs.length > 1 || buttons.length) {
-                    // found related input, return common ancestor
-                    return element;
+                // If the parent is a redundant component (only contains a single element or is a shadowRoot) do not increase the traversal count.
+                if (element.childElementCount > 1) {
+                    const inputs = element.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+                    const buttons = element.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+                    // If we find a button or another input, we assume that's our form
+                    if (inputs.length > 1 || buttons.length) {
+                        // found related input, return common ancestor
+                        return element;
+                    }
+                    traversalLayerCount++;
                 }
             } else {
                 // possibly a shadow boundary, so traverse through the shadow root and find the form
@@ -259,10 +269,11 @@ class DefaultScanner {
                 if (root instanceof ShadowRoot && root.host) {
                     // @ts-ignore
                     element = root.host;
+                } else {
+                    // We're in a strange state (no parent or shadow root), just break out of the loop for safety
+                    break;
                 }
             }
-
-            traversalLayerCount++;
         }
 
         return input;
@@ -430,12 +441,14 @@ class DefaultScanner {
         // find the enclosing parent form, and scan it.
         if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
             const parentForm = this.getParentForm(realTarget);
-            if (parentForm && parentForm instanceof HTMLFormElement) {
-                const hasShadowTree = event.target?.shadowRoot != null;
-                const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-                this.forms.set(parentForm, form);
-                this.findEligibleInputs(parentForm);
-            }
+
+            // If the parent form is an input element we bail.
+            if (parentForm instanceof HTMLInputElement) return;
+
+            const hasShadowTree = event.target?.shadowRoot != null;
+            const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
+            this.forms.set(parentForm, form);
+            this.findEligibleInputs(parentForm);
         }
 
         window.performance?.mark?.('scan_shadow:init:end');
