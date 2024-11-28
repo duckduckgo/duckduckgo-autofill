@@ -242,13 +242,16 @@ class FormAnalyzer {
         const isCustomWebElementLink =
             customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
 
+        // Checks if the element is wrapped in an anchor or button element. We check only one level deep to avoid performance issues.
+        const isWrappedInLink = el.parentElement instanceof HTMLAnchorElement || el.parentElement instanceof HTMLButtonElement;
+
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-        return (
+        const isElementLink =
             (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
             (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
-            el.matches('button[class*=secondary]') ||
-            isCustomWebElementLink
-        );
+            el.matches('button[class*=secondary]');
+
+        return isCustomWebElementLink || isWrappedInLink || isElementLink;
     }
 
     evaluateElement(el) {
