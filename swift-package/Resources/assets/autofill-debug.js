@@ -11023,7 +11023,7 @@ class FormAnalyzer {
       if (likelyASubmit) {
         this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(submit => {
           // If there is another element marked as submit and this is not, flip back to false
-          if (el.type !== 'submit' && el !== submit) {
+          if (el.getAttribute('type') !== 'submit' && el !== submit) {
             likelyASubmit = false;
           }
         });
