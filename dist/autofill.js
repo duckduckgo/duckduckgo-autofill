@@ -8636,7 +8636,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           match: /sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)|registreren|eigenschappen|profiel|bijwerken|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera/iu
         },
         resetPasswordLink: {
-          match: /(forgot(ten)?|reset|don't remember) (your )?password|password forgotten|password dimenticata|reset(?:ta) password|recuper[ao] password|(vergessen|verloren|verlegt|wiederherstellen) passwort|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
+          match: /(forgot(ten)?|reset|don't remember).?(your )?password|password forgotten|password dimenticata|reset(?:ta) password|recuper[ao] password|(vergessen|verloren|verlegt|wiederherstellen) passwort|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
         },
         loginProvidersRegex: {
           match: / with | con | mit | met | avec /iu
@@ -13879,25 +13879,25 @@ const contentScopeSchema = exports.contentScopeSchema = null;
 const userPreferencesSchema = exports.userPreferencesSchema = null;
 const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = null;
 const availableInputTypesSchema = exports.availableInputTypesSchema = null;
-const availableInputTypes1Schema = exports.availableInputTypes1Schema = null;
-const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = null;
-const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = null;
-const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = null;
-const storeFormDataSchema = exports.storeFormDataSchema = null;
-const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = null;
 const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = null;
 const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = null;
-const autofillSettingsSchema = exports.autofillSettingsSchema = null;
+const availableInputTypes1Schema = exports.availableInputTypes1Schema = null;
+const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
+const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = null;
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = null;
 const emailProtectionGetUserDataResultSchema = exports.emailProtectionGetUserDataResultSchema = null;
 const emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = null;
 const emailProtectionGetAddressesResultSchema = exports.emailProtectionGetAddressesResultSchema = null;
 const emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = null;
-const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
-const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
-const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
+const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = null;
+const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = null;
+const storeFormDataSchema = exports.storeFormDataSchema = null;
+const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = null;
 const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = null;
 const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = null;
+const autofillSettingsSchema = exports.autofillSettingsSchema = null;
+const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
+const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
 const apiSchema = exports.apiSchema = null;
 
 },{}],60:[function(require,module,exports){

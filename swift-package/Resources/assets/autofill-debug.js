@@ -138,6 +138,11 @@ class ZodError extends Error {
     processError(this);
     return fieldErrors;
   }
+  static assert(value) {
+    if (!(value instanceof ZodError)) {
+      throw new Error(`Not a ZodError: ${value}`);
+    }
+  }
   toString() {
     return this.message;
   }
@@ -267,6 +272,13 @@ const makeIssue = params => {
     ...issueData,
     path: fullPath
   };
+  if (issueData.message !== undefined) {
+    return {
+      ...issueData,
+      path: fullPath,
+      message: issueData.message
+    };
+  }
   let errorMessage = "";
   const maps = errorMaps.filter(m => !!m).slice().reverse();
   for (const map of maps) {
@@ -278,17 +290,18 @@ const makeIssue = params => {
   return {
     ...issueData,
     path: fullPath,
-    message: issueData.message || errorMessage
+    message: errorMessage
   };
 };
 exports.makeIssue = makeIssue;
 exports.EMPTY_PATH = [];
 function addIssueToContext(ctx, issueData) {
+  const overrideMap = (0, errors_1.getErrorMap)();
   const issue = (0, exports.makeIssue)({
     issueData: issueData,
     data: ctx.data,
     path: ctx.path,
-    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, (0, errors_1.getErrorMap)(), en_1.default // then global default map
+    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, overrideMap, overrideMap === en_1.default ? undefined : en_1.default // then global default map
     ].filter(x => !!x)
   });
   ctx.common.issues.push(issue);
@@ -319,9 +332,11 @@ class ParseStatus {
   static async mergeObjectAsync(status, pairs) {
     const syncPairs = [];
     for (const pair of pairs) {
+      const key = await pair.key;
+      const value = await pair.value;
       syncPairs.push({
-        key: await pair.key,
-        value: await pair.value
+        key,
+        value
       });
     }
     return ParseStatus.mergeObjectSync(status, syncPairs);
@@ -632,11 +647,23 @@ exports.default = errorMap;
 },{"../ZodError":2,"../helpers/util":8}],11:[function(require,module,exports){
 "use strict";
 
+var __classPrivateFieldGet = void 0 && (void 0).__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var __classPrivateFieldSet = void 0 && (void 0).__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
+};
+var _ZodEnum_cache, _ZodNativeEnum_cache;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.date = exports.boolean = exports.bigint = exports.array = exports.any = exports.coerce = exports.ZodFirstPartyTypeKind = exports.late = exports.ZodSchema = exports.Schema = exports.custom = exports.ZodReadonly = exports.ZodPipeline = exports.ZodBranded = exports.BRAND = exports.ZodNaN = exports.ZodCatch = exports.ZodDefault = exports.ZodNullable = exports.ZodOptional = exports.ZodTransformer = exports.ZodEffects = exports.ZodPromise = exports.ZodNativeEnum = exports.ZodEnum = exports.ZodLiteral = exports.ZodLazy = exports.ZodFunction = exports.ZodSet = exports.ZodMap = exports.ZodRecord = exports.ZodTuple = exports.ZodIntersection = exports.ZodDiscriminatedUnion = exports.ZodUnion = exports.ZodObject = exports.ZodArray = exports.ZodVoid = exports.ZodNever = exports.ZodUnknown = exports.ZodAny = exports.ZodNull = exports.ZodUndefined = exports.ZodSymbol = exports.ZodDate = exports.ZodBoolean = exports.ZodBigInt = exports.ZodNumber = exports.ZodString = exports.ZodType = void 0;
-exports.NEVER = exports.void = exports.unknown = exports.union = exports.undefined = exports.tuple = exports.transformer = exports.symbol = exports.string = exports.strictObject = exports.set = exports.record = exports.promise = exports.preprocess = exports.pipeline = exports.ostring = exports.optional = exports.onumber = exports.oboolean = exports.object = exports.number = exports.nullable = exports.null = exports.never = exports.nativeEnum = exports.nan = exports.map = exports.literal = exports.lazy = exports.intersection = exports.instanceof = exports.function = exports.enum = exports.effect = exports.discriminatedUnion = void 0;
+exports.boolean = exports.bigint = exports.array = exports.any = exports.coerce = exports.ZodFirstPartyTypeKind = exports.late = exports.ZodSchema = exports.Schema = exports.custom = exports.ZodReadonly = exports.ZodPipeline = exports.ZodBranded = exports.BRAND = exports.ZodNaN = exports.ZodCatch = exports.ZodDefault = exports.ZodNullable = exports.ZodOptional = exports.ZodTransformer = exports.ZodEffects = exports.ZodPromise = exports.ZodNativeEnum = exports.ZodEnum = exports.ZodLiteral = exports.ZodLazy = exports.ZodFunction = exports.ZodSet = exports.ZodMap = exports.ZodRecord = exports.ZodTuple = exports.ZodIntersection = exports.ZodDiscriminatedUnion = exports.ZodUnion = exports.ZodObject = exports.ZodArray = exports.ZodVoid = exports.ZodNever = exports.ZodUnknown = exports.ZodAny = exports.ZodNull = exports.ZodUndefined = exports.ZodSymbol = exports.ZodDate = exports.ZodBoolean = exports.ZodBigInt = exports.ZodNumber = exports.ZodString = exports.datetimeRegex = exports.ZodType = void 0;
+exports.NEVER = exports.void = exports.unknown = exports.union = exports.undefined = exports.tuple = exports.transformer = exports.symbol = exports.string = exports.strictObject = exports.set = exports.record = exports.promise = exports.preprocess = exports.pipeline = exports.ostring = exports.optional = exports.onumber = exports.oboolean = exports.object = exports.number = exports.nullable = exports.null = exports.never = exports.nativeEnum = exports.nan = exports.map = exports.literal = exports.lazy = exports.intersection = exports.instanceof = exports.function = exports.enum = exports.effect = exports.discriminatedUnion = exports.date = void 0;
 const errors_1 = require("./errors");
 const errorUtil_1 = require("./helpers/errorUtil");
 const parseUtil_1 = require("./helpers/parseUtil");
@@ -698,16 +725,25 @@ function processCreateParams(params) {
     description
   };
   const customMap = (iss, ctx) => {
+    var _a, _b;
+    const {
+      message
+    } = params;
+    if (iss.code === "invalid_enum_value") {
+      return {
+        message: message !== null && message !== void 0 ? message : ctx.defaultError
+      };
+    }
+    if (typeof ctx.data === "undefined") {
+      return {
+        message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError
+      };
+    }
     if (iss.code !== "invalid_type") return {
       message: ctx.defaultError
     };
-    if (typeof ctx.data === "undefined") {
-      return {
-        message: required_error !== null && required_error !== void 0 ? required_error : ctx.defaultError
-      };
-    }
     return {
-      message: invalid_type_error !== null && invalid_type_error !== void 0 ? invalid_type_error : ctx.defaultError
+      message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError
     };
   };
   return {
@@ -977,11 +1013,13 @@ exports.ZodType = ZodType;
 exports.Schema = ZodType;
 exports.ZodSchema = ZodType;
 const cuidRegex = /^c[^\s-]{8,}$/i;
-const cuid2Regex = /^[a-z][a-z0-9]*$/;
+const cuid2Regex = /^[0-9a-z]+$/;
 const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 // const uuidRegex =
 //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
 const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+const nanoidRegex = /^[a-z0-9_-]{21}$/i;
+const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
 // from https://stackoverflow.com/a/46181/1550155
 // old version: too slow, didn't support unicode
 // const emailRegex = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
@@ -994,36 +1032,47 @@ const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-
 //   /^[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 // const emailRegex =
 //   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
-const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
+const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
 // const emailRegex =
 //   /^[a-z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9\-]+)*$/i;
 // from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
 const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
 let emojiRegex;
-const ipv4Regex = /^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$/;
+// faster, simpler, safer
+const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
 const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
-// Adapted from https://stackoverflow.com/a/3143231
-const datetimeRegex = args => {
+// https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
+const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+// simple
+// const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
+// no leap year validation
+// const dateRegexSource = `\\d{4}-((0[13578]|10|12)-31|(0[13-9]|1[0-2])-30|(0[1-9]|1[0-2])-(0[1-9]|1\\d|2\\d))`;
+// with leap year validation
+const dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
+const dateRegex = new RegExp(`^${dateRegexSource}$`);
+function timeRegexSource(args) {
+  // let regex = `\\d{2}:\\d{2}:\\d{2}`;
+  let regex = `([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d`;
   if (args.precision) {
-    if (args.offset) {
-      return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${args.precision}}(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
-    } else {
-      return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${args.precision}}Z$`);
-    }
-  } else if (args.precision === 0) {
-    if (args.offset) {
-      return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
-    } else {
-      return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$`);
-    }
-  } else {
-    if (args.offset) {
-      return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
-    } else {
-      return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$`);
-    }
+    regex = `${regex}\\.\\d{${args.precision}}`;
+  } else if (args.precision == null) {
+    regex = `${regex}(\\.\\d+)?`;
   }
-};
+  return regex;
+}
+function timeRegex(args) {
+  return new RegExp(`^${timeRegexSource(args)}$`);
+}
+// Adapted from https://stackoverflow.com/a/3143231
+function datetimeRegex(args) {
+  let regex = `${dateRegexSource}T${timeRegexSource(args)}`;
+  const opts = [];
+  opts.push(args.local ? `Z?` : `Z`);
+  if (args.offset) opts.push(`([+-]\\d{2}:?\\d{2})`);
+  regex = `${regex}(${opts.join("|")})`;
+  return new RegExp(`^${regex}$`);
+}
+exports.datetimeRegex = datetimeRegex;
 function isValidIP(ip, version) {
   if ((version === "v4" || !version) && ipv4Regex.test(ip)) {
     return true;
@@ -1045,10 +1094,7 @@ class ZodString extends ZodType {
         code: ZodError_1.ZodIssueCode.invalid_type,
         expected: util_1.ZodParsedType.string,
         received: ctx.parsedType
-      }
-      //
-      );
-
+      });
       return parseUtil_1.INVALID;
     }
     const status = new parseUtil_1.ParseStatus();
@@ -1134,6 +1180,16 @@ class ZodString extends ZodType {
           ctx = this._getOrReturnCtx(input, ctx);
           (0, parseUtil_1.addIssueToContext)(ctx, {
             validation: "uuid",
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            message: check.message
+          });
+          status.dirty();
+        }
+      } else if (check.kind === "nanoid") {
+        if (!nanoidRegex.test(input.data)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            validation: "nanoid",
             code: ZodError_1.ZodIssueCode.invalid_string,
             message: check.message
           });
@@ -1247,11 +1303,53 @@ class ZodString extends ZodType {
           });
           status.dirty();
         }
+      } else if (check.kind === "date") {
+        const regex = dateRegex;
+        if (!regex.test(input.data)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            validation: "date",
+            message: check.message
+          });
+          status.dirty();
+        }
+      } else if (check.kind === "time") {
+        const regex = timeRegex(check);
+        if (!regex.test(input.data)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            validation: "time",
+            message: check.message
+          });
+          status.dirty();
+        }
+      } else if (check.kind === "duration") {
+        if (!durationRegex.test(input.data)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            validation: "duration",
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            message: check.message
+          });
+          status.dirty();
+        }
       } else if (check.kind === "ip") {
         if (!isValidIP(input.data, check.version)) {
           ctx = this._getOrReturnCtx(input, ctx);
           (0, parseUtil_1.addIssueToContext)(ctx, {
             validation: "ip",
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            message: check.message
+          });
+          status.dirty();
+        }
+      } else if (check.kind === "base64") {
+        if (!base64Regex.test(input.data)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            validation: "base64",
             code: ZodError_1.ZodIssueCode.invalid_string,
             message: check.message
           });
@@ -1303,6 +1401,12 @@ class ZodString extends ZodType {
       ...errorUtil_1.errorUtil.errToObj(message)
     });
   }
+  nanoid(message) {
+    return this._addCheck({
+      kind: "nanoid",
+      ...errorUtil_1.errorUtil.errToObj(message)
+    });
+  }
   cuid(message) {
     return this._addCheck({
       kind: "cuid",
@@ -1321,6 +1425,12 @@ class ZodString extends ZodType {
       ...errorUtil_1.errorUtil.errToObj(message)
     });
   }
+  base64(message) {
+    return this._addCheck({
+      kind: "base64",
+      ...errorUtil_1.errorUtil.errToObj(message)
+    });
+  }
   ip(options) {
     return this._addCheck({
       kind: "ip",
@@ -1328,12 +1438,13 @@ class ZodString extends ZodType {
     });
   }
   datetime(options) {
-    var _a;
+    var _a, _b;
     if (typeof options === "string") {
       return this._addCheck({
         kind: "datetime",
         precision: null,
         offset: false,
+        local: false,
         message: options
       });
     }
@@ -1341,7 +1452,34 @@ class ZodString extends ZodType {
       kind: "datetime",
       precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
       offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
+      local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
       ...errorUtil_1.errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
+    });
+  }
+  date(message) {
+    return this._addCheck({
+      kind: "date",
+      message
+    });
+  }
+  time(options) {
+    if (typeof options === "string") {
+      return this._addCheck({
+        kind: "time",
+        precision: null,
+        message: options
+      });
+    }
+    return this._addCheck({
+      kind: "time",
+      precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
+      ...errorUtil_1.errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
+    });
+  }
+  duration(message) {
+    return this._addCheck({
+      kind: "duration",
+      ...errorUtil_1.errorUtil.errToObj(message)
     });
   }
   regex(regex, message) {
@@ -1428,6 +1566,15 @@ class ZodString extends ZodType {
   get isDatetime() {
     return !!this._def.checks.find(ch => ch.kind === "datetime");
   }
+  get isDate() {
+    return !!this._def.checks.find(ch => ch.kind === "date");
+  }
+  get isTime() {
+    return !!this._def.checks.find(ch => ch.kind === "time");
+  }
+  get isDuration() {
+    return !!this._def.checks.find(ch => ch.kind === "duration");
+  }
   get isEmail() {
     return !!this._def.checks.find(ch => ch.kind === "email");
   }
@@ -1440,6 +1587,9 @@ class ZodString extends ZodType {
   get isUUID() {
     return !!this._def.checks.find(ch => ch.kind === "uuid");
   }
+  get isNANOID() {
+    return !!this._def.checks.find(ch => ch.kind === "nanoid");
+  }
   get isCUID() {
     return !!this._def.checks.find(ch => ch.kind === "cuid");
   }
@@ -1451,6 +1601,9 @@ class ZodString extends ZodType {
   }
   get isIP() {
     return !!this._def.checks.find(ch => ch.kind === "ip");
+  }
+  get isBase64() {
+    return !!this._def.checks.find(ch => ch.kind === "base64");
   }
   get minLength() {
     let min = null;
@@ -2442,9 +2595,10 @@ class ZodObject extends ZodType {
         const syncPairs = [];
         for (const pair of pairs) {
           const key = await pair.key;
+          const value = await pair.value;
           syncPairs.push({
             key,
-            value: await pair.value,
+            value,
             alwaysSet: pair.alwaysSet
           });
         }
@@ -2814,15 +2968,25 @@ const getDiscriminator = type => {
     return type.options;
   } else if (type instanceof ZodNativeEnum) {
     // eslint-disable-next-line ban/ban
-    return Object.keys(type.enum);
+    return util_1.util.objectValues(type.enum);
   } else if (type instanceof ZodDefault) {
     return getDiscriminator(type._def.innerType);
   } else if (type instanceof ZodUndefined) {
     return [undefined];
   } else if (type instanceof ZodNull) {
     return [null];
+  } else if (type instanceof ZodOptional) {
+    return [undefined, ...getDiscriminator(type.unwrap())];
+  } else if (type instanceof ZodNullable) {
+    return [null, ...getDiscriminator(type.unwrap())];
+  } else if (type instanceof ZodBranded) {
+    return getDiscriminator(type.unwrap());
+  } else if (type instanceof ZodReadonly) {
+    return getDiscriminator(type.unwrap());
+  } else if (type instanceof ZodCatch) {
+    return getDiscriminator(type._def.innerType);
   } else {
-    return null;
+    return [];
   }
 };
 class ZodDiscriminatedUnion extends ZodType {
@@ -2886,7 +3050,7 @@ class ZodDiscriminatedUnion extends ZodType {
     // try {
     for (const type of options) {
       const discriminatorValues = getDiscriminator(type.shape[discriminator]);
-      if (!discriminatorValues) {
+      if (!discriminatorValues.length) {
         throw new Error(`A discriminator value for key \`${discriminator}\` could not be extracted from all schema options`);
       }
       for (const value of discriminatorValues) {
@@ -3123,7 +3287,8 @@ class ZodRecord extends ZodType {
     for (const key in ctx.data) {
       pairs.push({
         key: keyType._parse(new ParseInputLazyPath(ctx, key, ctx.path, key)),
-        value: valueType._parse(new ParseInputLazyPath(ctx, ctx.data[key], ctx.path, key))
+        value: valueType._parse(new ParseInputLazyPath(ctx, ctx.data[key], ctx.path, key)),
+        alwaysSet: key in ctx.data
       });
     }
     if (ctx.common.async) {
@@ -3511,6 +3676,10 @@ function createZodEnum(values, params) {
   });
 }
 class ZodEnum extends ZodType {
+  constructor() {
+    super(...arguments);
+    _ZodEnum_cache.set(this, void 0);
+  }
   _parse(input) {
     if (typeof input.data !== "string") {
       const ctx = this._getOrReturnCtx(input);
@@ -3522,7 +3691,10 @@ class ZodEnum extends ZodType {
       });
       return parseUtil_1.INVALID;
     }
-    if (this._def.values.indexOf(input.data) === -1) {
+    if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f")) {
+      __classPrivateFieldSet(this, _ZodEnum_cache, new Set(this._def.values), "f");
+    }
+    if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f").has(input.data)) {
       const ctx = this._getOrReturnCtx(input);
       const expectedValues = this._def.values;
       (0, parseUtil_1.addIssueToContext)(ctx, {
@@ -3559,15 +3731,28 @@ class ZodEnum extends ZodType {
     return enumValues;
   }
   extract(values) {
-    return ZodEnum.create(values);
+    let newDef = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._def;
+    return ZodEnum.create(values, {
+      ...this._def,
+      ...newDef
+    });
   }
   exclude(values) {
-    return ZodEnum.create(this.options.filter(opt => !values.includes(opt)));
+    let newDef = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this._def;
+    return ZodEnum.create(this.options.filter(opt => !values.includes(opt)), {
+      ...this._def,
+      ...newDef
+    });
   }
 }
 exports.ZodEnum = ZodEnum;
+_ZodEnum_cache = new WeakMap();
 ZodEnum.create = createZodEnum;
 class ZodNativeEnum extends ZodType {
+  constructor() {
+    super(...arguments);
+    _ZodNativeEnum_cache.set(this, void 0);
+  }
   _parse(input) {
     const nativeEnumValues = util_1.util.getValidEnumValues(this._def.values);
     const ctx = this._getOrReturnCtx(input);
@@ -3580,7 +3765,10 @@ class ZodNativeEnum extends ZodType {
       });
       return parseUtil_1.INVALID;
     }
-    if (nativeEnumValues.indexOf(input.data) === -1) {
+    if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f")) {
+      __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util_1.util.getValidEnumValues(this._def.values)), "f");
+    }
+    if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f").has(input.data)) {
       const expectedValues = util_1.util.objectValues(nativeEnumValues);
       (0, parseUtil_1.addIssueToContext)(ctx, {
         received: ctx.data,
@@ -3596,6 +3784,7 @@ class ZodNativeEnum extends ZodType {
   }
 }
 exports.ZodNativeEnum = ZodNativeEnum;
+_ZodNativeEnum_cache = new WeakMap();
 ZodNativeEnum.create = (values, params) => {
   return new ZodNativeEnum({
     values: values,
@@ -3665,32 +3854,34 @@ class ZodEffects extends ZodType {
     checkCtx.addIssue = checkCtx.addIssue.bind(checkCtx);
     if (effect.type === "preprocess") {
       const processed = effect.transform(ctx.data, checkCtx);
-      if (ctx.common.issues.length) {
-        return {
-          status: "dirty",
-          value: ctx.data
-        };
-      }
       if (ctx.common.async) {
-        return Promise.resolve(processed).then(processed => {
-          return this._def.schema._parseAsync({
+        return Promise.resolve(processed).then(async processed => {
+          if (status.value === "aborted") return parseUtil_1.INVALID;
+          const result = await this._def.schema._parseAsync({
             data: processed,
             path: ctx.path,
             parent: ctx
           });
+          if (result.status === "aborted") return parseUtil_1.INVALID;
+          if (result.status === "dirty") return (0, parseUtil_1.DIRTY)(result.value);
+          if (status.value === "dirty") return (0, parseUtil_1.DIRTY)(result.value);
+          return result;
         });
       } else {
-        return this._def.schema._parseSync({
+        if (status.value === "aborted") return parseUtil_1.INVALID;
+        const result = this._def.schema._parseSync({
           data: processed,
           path: ctx.path,
           parent: ctx
         });
+        if (result.status === "aborted") return parseUtil_1.INVALID;
+        if (result.status === "dirty") return (0, parseUtil_1.DIRTY)(result.value);
+        if (status.value === "dirty") return (0, parseUtil_1.DIRTY)(result.value);
+        return result;
       }
     }
     if (effect.type === "refinement") {
-      const executeRefinement = (acc
-      // effect: RefinementEffect<any>
-      ) => {
+      const executeRefinement = acc => {
         const result = effect.refinement(acc, checkCtx);
         if (ctx.common.async) {
           return Promise.resolve(result);
@@ -4013,10 +4204,16 @@ exports.ZodPipeline = ZodPipeline;
 class ZodReadonly extends ZodType {
   _parse(input) {
     const result = this._def.innerType._parse(input);
-    if ((0, parseUtil_1.isValid)(result)) {
-      result.value = Object.freeze(result.value);
-    }
-    return result;
+    const freeze = data => {
+      if ((0, parseUtil_1.isValid)(data)) {
+        data.value = Object.freeze(data.value);
+      }
+      return data;
+    };
+    return (0, parseUtil_1.isAsync)(result) ? result.then(data => freeze(data)) : freeze(result);
+  }
+  unwrap() {
+    return this._def.innerType;
   }
 }
 exports.ZodReadonly = ZodReadonly;
@@ -4027,7 +4224,7 @@ ZodReadonly.create = (type, params) => {
     ...processCreateParams(params)
   });
 };
-const custom = function (check) {
+function custom(check) {
   let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   let
   /**
@@ -4059,7 +4256,7 @@ const custom = function (check) {
     }
   });
   return ZodAny.create();
-};
+}
 exports.custom = custom;
 exports.late = {
   object: ZodObject.lazycreate
@@ -4113,7 +4310,7 @@ cls) {
   let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {
     message: `Input not instance of ${cls.name}`
   };
-  return (0, exports.custom)(data => data instanceof cls, params);
+  return custom(data => data instanceof cls, params);
 };
 exports.instanceof = instanceOfType;
 const stringType = ZodString.create;
@@ -12802,7 +12999,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           match: /sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)|registreren|eigenschappen|profiel|bijwerken|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera/iu
         },
         resetPasswordLink: {
-          match: /(forgot(ten)?|reset|don't remember) (your )?password|password forgotten|password dimenticata|reset(?:ta) password|recuper[ao] password|(vergessen|verloren|verlegt|wiederherstellen) passwort|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
+          match: /(forgot(ten)?|reset|don't remember).?(your )?password|password forgotten|password dimenticata|reset(?:ta) password|recuper[ao] password|(vergessen|verloren|verlegt|wiederherstellen) passwort|wachtwoord (vergeten|reset)|(oublié|récupérer) ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|re(iniciar|cuperar) (contraseña|clave)|olvid(ó su|aste tu|é mi) (contraseña|clave)|recordar( su)? (contraseña|clave)|glömt lösenord|återställ lösenord/iu
         },
         loginProvidersRegex: {
           match: / with | con | mit | met | avec /iu
@@ -18175,6 +18372,26 @@ const availableInputTypesSchema = exports.availableInputTypesSchema = _zod.z.obj
   credentialsProviderStatus: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]).optional(),
   credentialsImport: _zod.z.boolean().optional()
 });
+const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = _zod.z.object({
+  type: _zod.z.literal("getAutofillInitDataResponse").optional(),
+  success: _zod.z.object({
+    credentials: _zod.z.array(credentialsSchema),
+    identities: _zod.z.array(_zod.z.record(_zod.z.unknown())),
+    creditCards: _zod.z.array(_zod.z.record(_zod.z.unknown())),
+    serializedInputContext: _zod.z.string()
+  }).optional(),
+  error: genericErrorSchema.optional()
+});
+const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = _zod.z.object({
+  type: _zod.z.literal("getAutofillCredentialsResponse").optional(),
+  success: _zod.z.object({
+    id: _zod.z.string().optional(),
+    autogenerated: _zod.z.boolean().optional(),
+    username: _zod.z.string(),
+    password: _zod.z.string().optional()
+  }).optional(),
+  error: genericErrorSchema.optional()
+});
 const availableInputTypes1Schema = exports.availableInputTypes1Schema = _zod.z.object({
   credentials: _zod.z.object({
     username: _zod.z.boolean().optional(),
@@ -18207,6 +18424,11 @@ const availableInputTypes1Schema = exports.availableInputTypes1Schema = _zod.z.o
   credentialsProviderStatus: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]).optional(),
   credentialsImport: _zod.z.boolean().optional()
 });
+const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = _zod.z.object({
+  status: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]),
+  credentials: _zod.z.array(credentialsSchema),
+  availableInputTypes: availableInputTypes1Schema
+});
 const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = _zod.z.object({
   inputType_credentials: _zod.z.boolean().optional(),
   inputType_identities: _zod.z.boolean().optional(),
@@ -18218,55 +18440,6 @@ const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = _zod
   inlineIcon_credentials: _zod.z.boolean().optional(),
   third_party_credentials_provider: _zod.z.boolean().optional(),
   unknown_username_categorization: _zod.z.boolean().optional()
-});
-const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = _zod.z.object({
-  generatedPassword: generatedPasswordSchema.optional(),
-  inputType: _zod.z.string(),
-  mainType: _zod.z.union([_zod.z.literal("credentials"), _zod.z.literal("identities"), _zod.z.literal("creditCards")]),
-  subType: _zod.z.string(),
-  trigger: _zod.z.union([_zod.z.literal("userInitiated"), _zod.z.literal("autoprompt"), _zod.z.literal("postSignup")]).optional(),
-  serializedInputContext: _zod.z.string().optional(),
-  triggerContext: triggerContextSchema.optional()
-});
-const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = _zod.z.object({
-  type: _zod.z.literal("getAutofillDataResponse").optional(),
-  success: _zod.z.object({
-    credentials: credentialsSchema.optional(),
-    action: _zod.z.union([_zod.z.literal("fill"), _zod.z.literal("focus"), _zod.z.literal("none"), _zod.z.literal("refreshAvailableInputTypes"), _zod.z.literal("acceptGeneratedPassword"), _zod.z.literal("rejectGeneratedPassword")])
-  }).optional(),
-  error: genericErrorSchema.optional()
-});
-const storeFormDataSchema = exports.storeFormDataSchema = _zod.z.object({
-  credentials: outgoingCredentialsSchema.optional(),
-  trigger: _zod.z.union([_zod.z.literal("formSubmission"), _zod.z.literal("passwordGeneration"), _zod.z.literal("emailProtection")]).optional()
-});
-const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = _zod.z.object({
-  type: _zod.z.literal("getAvailableInputTypesResponse").optional(),
-  success: availableInputTypesSchema,
-  error: genericErrorSchema.optional()
-});
-const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = _zod.z.object({
-  type: _zod.z.literal("getAutofillInitDataResponse").optional(),
-  success: _zod.z.object({
-    credentials: _zod.z.array(credentialsSchema),
-    identities: _zod.z.array(_zod.z.record(_zod.z.unknown())),
-    creditCards: _zod.z.array(_zod.z.record(_zod.z.unknown())),
-    serializedInputContext: _zod.z.string()
-  }).optional(),
-  error: genericErrorSchema.optional()
-});
-const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = _zod.z.object({
-  type: _zod.z.literal("getAutofillCredentialsResponse").optional(),
-  success: _zod.z.object({
-    id: _zod.z.string().optional(),
-    autogenerated: _zod.z.boolean().optional(),
-    username: _zod.z.string(),
-    password: _zod.z.string().optional()
-  }).optional(),
-  error: genericErrorSchema.optional()
-});
-const autofillSettingsSchema = exports.autofillSettingsSchema = _zod.z.object({
-  featureToggles: autofillFeatureTogglesSchema
 });
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = _zod.z.object({
   success: _zod.z.boolean().optional(),
@@ -18302,19 +18475,30 @@ const emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtection
   }).optional(),
   error: genericErrorSchema.optional()
 });
-const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = _zod.z.object({
-  contentScope: contentScopeSchema,
-  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
-  userPreferences: userPreferencesSchema
+const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = _zod.z.object({
+  generatedPassword: generatedPasswordSchema.optional(),
+  inputType: _zod.z.string(),
+  mainType: _zod.z.union([_zod.z.literal("credentials"), _zod.z.literal("identities"), _zod.z.literal("creditCards")]),
+  subType: _zod.z.string(),
+  trigger: _zod.z.union([_zod.z.literal("userInitiated"), _zod.z.literal("autoprompt"), _zod.z.literal("postSignup")]).optional(),
+  serializedInputContext: _zod.z.string().optional(),
+  triggerContext: triggerContextSchema.optional()
 });
-const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = _zod.z.object({
-  status: _zod.z.union([_zod.z.literal("locked"), _zod.z.literal("unlocked")]),
-  credentials: _zod.z.array(credentialsSchema),
-  availableInputTypes: availableInputTypes1Schema
+const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = _zod.z.object({
+  type: _zod.z.literal("getAutofillDataResponse").optional(),
+  success: _zod.z.object({
+    credentials: credentialsSchema.optional(),
+    action: _zod.z.union([_zod.z.literal("fill"), _zod.z.literal("focus"), _zod.z.literal("none"), _zod.z.literal("refreshAvailableInputTypes"), _zod.z.literal("acceptGeneratedPassword"), _zod.z.literal("rejectGeneratedPassword")])
+  }).optional(),
+  error: genericErrorSchema.optional()
 });
-const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = _zod.z.object({
-  type: _zod.z.literal("getRuntimeConfigurationResponse").optional(),
-  success: runtimeConfigurationSchema.optional(),
+const storeFormDataSchema = exports.storeFormDataSchema = _zod.z.object({
+  credentials: outgoingCredentialsSchema.optional(),
+  trigger: _zod.z.union([_zod.z.literal("formSubmission"), _zod.z.literal("passwordGeneration"), _zod.z.literal("emailProtection")]).optional()
+});
+const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = _zod.z.object({
+  type: _zod.z.literal("getAvailableInputTypesResponse").optional(),
+  success: availableInputTypesSchema,
   error: genericErrorSchema.optional()
 });
 const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = _zod.z.object({
@@ -18325,6 +18509,19 @@ const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema 
 const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = _zod.z.object({
   type: _zod.z.literal("checkCredentialsProviderStatusResponse").optional(),
   success: providerStatusUpdatedSchema,
+  error: genericErrorSchema.optional()
+});
+const autofillSettingsSchema = exports.autofillSettingsSchema = _zod.z.object({
+  featureToggles: autofillFeatureTogglesSchema
+});
+const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = _zod.z.object({
+  contentScope: contentScopeSchema,
+  userUnprotectedDomains: _zod.z.array(_zod.z.string()),
+  userPreferences: userPreferencesSchema
+});
+const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = _zod.z.object({
+  type: _zod.z.literal("getRuntimeConfigurationResponse").optional(),
+  success: runtimeConfigurationSchema.optional(),
   error: genericErrorSchema.optional()
 });
 const apiSchema = exports.apiSchema = _zod.z.object({

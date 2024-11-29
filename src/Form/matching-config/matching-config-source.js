@@ -416,7 +416,7 @@ const matchingConfiguration = {
                 },
                 resetPasswordLink: {
                     match:
-                        "(forgot(ten)?|reset|don't remember) (your )?password|password forgotten" +
+                        "(forgot(ten)?|reset|don't remember).?(your )?password|password forgotten" +
                         // Italian
                         '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
                         // German

@@ -120,7 +120,7 @@
   { "html": "samash_signup.html" },
   { "html": "financialtimes_login.html", "title": "Login" },
   { "html": "containerstore_login_signup.html" },
-  { "html": "containerstore_forgot_password.html", "expectedFailures": ["username"] },
+  { "html": "containerstore_forgot_password.html", "expectedFailures": ["password.new"] },
   { "html": "containerstore_newsletter.html" },
   { "html": "containerstore_checkout.html", "expectedSubmitFalsePositives": 1, "expectedSubmitFalseNegatives": 2 },
   { "html": "containerstore_hidden_contact.html" },
