@@ -6519,11 +6519,13 @@ class Form {
 
     // After autofill we check if form values match the data provided…
     const formValues = this.getValuesReadyForStorage();
-    const hasOnlyOneCredential = Boolean(formValues.credentials?.username) && !formValues.credentials?.password || Boolean(formValues.credentials?.password) && !formValues.credentials?.username;
+    const hasNoCredentialsData = !formValues.credentials?.username && !formValues.credentials?.password;
+    const hasOnlyEmail = formValues.identities && Object.keys(formValues.identities).length === 1 && formValues.identities.emailAddress;
+    const hasOnlyOneCredentialOrEmail = Boolean(formValues.credentials?.username) !== Boolean(formValues.credentials?.password) || hasOnlyEmail && hasNoCredentialsData;
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
     // If all form values are known, but we only have a single credntial field - then we want to prompt a partial save with username,
     // So that in multi step forms (like reset-password), we can identify which username was picked, or complete a password save.
-    if (areAllFormValuesKnown && !hasOnlyOneCredential) {
+    if (areAllFormValuesKnown && !hasOnlyOneCredentialOrEmail) {
       // …if we know all the values do not prompt to store data
       this.shouldPromptToStoreData = false;
       // reset this to its initial value
@@ -13894,25 +13896,25 @@ const contentScopeSchema = exports.contentScopeSchema = null;
 const userPreferencesSchema = exports.userPreferencesSchema = null;
 const outgoingCredentialsSchema = exports.outgoingCredentialsSchema = null;
 const availableInputTypesSchema = exports.availableInputTypesSchema = null;
-const availableInputTypes1Schema = exports.availableInputTypes1Schema = null;
-const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = null;
-const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = null;
-const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = null;
-const storeFormDataSchema = exports.storeFormDataSchema = null;
-const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = null;
 const getAutofillInitDataResponseSchema = exports.getAutofillInitDataResponseSchema = null;
 const getAutofillCredentialsResultSchema = exports.getAutofillCredentialsResultSchema = null;
-const autofillSettingsSchema = exports.autofillSettingsSchema = null;
+const availableInputTypes1Schema = exports.availableInputTypes1Schema = null;
+const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
+const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = null;
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = null;
 const emailProtectionGetUserDataResultSchema = exports.emailProtectionGetUserDataResultSchema = null;
 const emailProtectionGetCapabilitiesResultSchema = exports.emailProtectionGetCapabilitiesResultSchema = null;
 const emailProtectionGetAddressesResultSchema = exports.emailProtectionGetAddressesResultSchema = null;
 const emailProtectionRefreshPrivateAddressResultSchema = exports.emailProtectionRefreshPrivateAddressResultSchema = null;
-const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
-const providerStatusUpdatedSchema = exports.providerStatusUpdatedSchema = null;
-const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
+const getAutofillDataRequestSchema = exports.getAutofillDataRequestSchema = null;
+const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = null;
+const storeFormDataSchema = exports.storeFormDataSchema = null;
+const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = null;
 const askToUnlockProviderResultSchema = exports.askToUnlockProviderResultSchema = null;
 const checkCredentialsProviderStatusResultSchema = exports.checkCredentialsProviderStatusResultSchema = null;
+const autofillSettingsSchema = exports.autofillSettingsSchema = null;
+const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
+const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
 const apiSchema = exports.apiSchema = null;
 
 },{}],60:[function(require,module,exports){
