@@ -813,7 +813,8 @@ class InterfacePrototype {
             // Is an email or phone number present in the form, but no other credentials
             const isEmailOrPhoneOnly =
                 Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone) &&
-                [...form.inputs.credentials].length === 0;
+                [...form.inputs.credentials].length === 0 &&
+                [...form.inputs.identities].length === 1;
             const trigger = isUsernameOnly || isEmailOrPhoneOnly ? 'partialSave' : 'formSubmission';
             this.storeFormData(formData, trigger);
         }
