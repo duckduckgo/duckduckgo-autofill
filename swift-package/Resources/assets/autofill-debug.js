@@ -10268,8 +10268,7 @@ class Form {
    */
   getValuesReadyForStorage() {
     const formValues = this.getRawValues();
-    const hasOnlyOneCredential = this.inputs.credentials.size === 1;
-    return (0, _formatters.prepareFormValuesForStorage)(formValues, hasOnlyOneCredential);
+    return (0, _formatters.prepareFormValuesForStorage)(formValues);
   }
 
   /**
@@ -12104,25 +12103,10 @@ const getMMAndYYYYFromString = expiration => {
  * @return {boolean}
  */
 exports.getMMAndYYYYFromString = getMMAndYYYYFromString;
-const shouldStoreCredentials = (_ref3, hasOnlyOneCredential) => {
-  let {
-    credentials
-  } = _ref3;
-  if (credentials.password) {
-    return Boolean(credentials.password);
-  } else {
-    return hasOnlyOneCredential && Boolean(credentials.username);
-  }
-};
-
-/**
- * @param {InternalDataStorageObject} credentials
- * @return {boolean}
- */
-const shouldStoreIdentities = _ref4 => {
+const shouldStoreIdentities = _ref3 => {
   let {
     identities
-  } = _ref4;
+  } = _ref3;
   return Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity) || Boolean(identities.emailAddress) || Boolean(identities.phone);
 };
 
@@ -12130,10 +12114,10 @@ const shouldStoreIdentities = _ref4 => {
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCreditCards = _ref5 => {
+const shouldStoreCreditCards = _ref4 => {
   let {
     creditCards
-  } = _ref5;
+  } = _ref4;
   if (!creditCards.cardNumber) return false;
   if (creditCards.cardSecurityCode) return true;
   // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
@@ -12153,11 +12137,10 @@ const formatPhoneNumber = phone => phone.replaceAll(/[^0-9|+]/g, '');
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
- * @param {boolean} hasOnlyOneCredential
  * @return {DataStorageObject}
  */
 exports.formatPhoneNumber = formatPhoneNumber;
-const prepareFormValuesForStorage = (formValues, hasOnlyOneCredential) => {
+const prepareFormValuesForStorage = formValues => {
   /** @type {Partial<InternalDataStorageObject>} */
   let {
     credentials,
@@ -12170,9 +12153,8 @@ const prepareFormValuesForStorage = (formValues, hasOnlyOneCredential) => {
     creditCards.cardName = identities?.fullName || formatFullName(identities);
   }
 
-  /** Fixes for credentials **/
-  // Don't store if there isn't enough data
-  if (shouldStoreCredentials(formValues, hasOnlyOneCredential)) {
+  /** Fixes for credentials */
+  if (credentials.username || credentials.password) {
     // If we don't have a username to match a password, let's see if the email is available
     if (credentials.password && !credentials.username && identities.emailAddress) {
       credentials.username = identities.emailAddress;

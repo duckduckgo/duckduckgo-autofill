@@ -62,44 +62,35 @@ describe('Can strip phone formatting characters', () => {
 describe('prepareFormValuesForStorage()', () => {
     describe('handling credentials', () => {
         it('accepts for username only', () => {
-            const values = prepareFormValuesForStorage(
-                {
-                    credentials: { username: 'dax@example.com' },
-                    // @ts-ignore
-                    creditCards: {},
-                    // @ts-ignore
-                    identities: {},
-                },
-                true,
-            );
+            const values = prepareFormValuesForStorage({
+                credentials: { username: 'dax@example.com' },
+                // @ts-ignore
+                creditCards: {},
+                // @ts-ignore
+                identities: {},
+            });
             expect(values.credentials?.username).toBe('dax@example.com');
         });
         it('accepts password only', () => {
-            const values = prepareFormValuesForStorage(
-                {
-                    // @ts-ignore
-                    credentials: { password: '123456' },
-                    // @ts-ignore
-                    creditCards: {},
-                    // @ts-ignore
-                    identities: {},
-                },
-                false,
-            );
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: { password: '123456' },
+                // @ts-ignore
+                creditCards: {},
+                // @ts-ignore
+                identities: {},
+            });
             expect(values.credentials?.password).toBe('123456');
         });
         it('accepts username+password', () => {
             const inputCredentials = { username: 'dax@example.com', password: '123456' };
-            const values = prepareFormValuesForStorage(
-                {
-                    credentials: inputCredentials,
-                    // @ts-ignore
-                    creditCards: {},
-                    // @ts-ignore
-                    identities: {},
-                },
-                false,
-            );
+            const values = prepareFormValuesForStorage({
+                credentials: inputCredentials,
+                // @ts-ignore
+                creditCards: {},
+                // @ts-ignore
+                identities: {},
+            });
             expect(values.credentials).toEqual(inputCredentials);
         });
     });

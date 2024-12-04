@@ -240,8 +240,7 @@ class Form {
      */
     getValuesReadyForStorage() {
         const formValues = this.getRawValues();
-        const hasOnlyOneCredential = this.inputs.credentials.size === 1;
-        return prepareFormValuesForStorage(formValues, hasOnlyOneCredential);
+        return prepareFormValuesForStorage(formValues);
     }
 
     /**
