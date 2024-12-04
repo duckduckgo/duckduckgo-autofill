@@ -6831,7 +6831,8 @@ class FormAnalyzer {
     const isCustomWebElementLink = customElements?.get(tagName) != null && /-link$/.test(tagName) && (0, _autofillUtils.findElementsInShadowTree)(el, 'a').length > 0;
 
     // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-    return el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]') || isCustomWebElementLink;
+    const isElementLink = el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]');
+    return isCustomWebElementLink || isElementLink;
   }
   evaluateElement(el) {
     const string = (0, _autofillUtils.getTextShallow)(el);
@@ -6853,7 +6854,7 @@ class FormAnalyzer {
       if (likelyASubmit) {
         this.form.querySelectorAll('input[type=submit], button[type=submit]').forEach(submit => {
           // If there is another element marked as submit and this is not, flip back to false
-          if (el.type !== 'submit' && el !== submit) {
+          if (el.getAttribute('type') !== 'submit' && el !== submit) {
             likelyASubmit = false;
           }
         });
