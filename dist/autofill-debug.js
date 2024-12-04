@@ -9484,9 +9484,9 @@ class InterfacePrototype {
       });
 
       // If credentials has only username field, and no password field, then trigger is a partialSave
-      const isUsernameOnly = Boolean(formData.credentials?.username) && !formData.credentials?.password && [...form.inputs.credentials].length === 1;
+      const isUsernameOnly = Boolean(formData.credentials?.username) && !formData.credentials?.password && form.inputs.credentials.size === 1;
       // Is an email or phone number present in the form, but no other credentials
-      const isEmailOrPhoneOnly = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone) && [...form.inputs.credentials].length === 0 && [...form.inputs.identities].length === 1;
+      const isEmailOrPhoneOnly = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone) && form.inputs.credentials.size === 0 && form.inputs.identities.size === 1;
       const trigger = isUsernameOnly || isEmailOrPhoneOnly ? 'partialSave' : 'formSubmission';
       this.storeFormData(formData, trigger);
     }
@@ -10886,7 +10886,7 @@ class Form {
     const hasOnlyEmail = formValues.identities && Object.keys(formValues.identities).length === 1 && formValues.identities.emailAddress;
     const hasOnlyOneCredentialOrEmail = Boolean(formValues.credentials?.username) !== Boolean(formValues.credentials?.password) || hasOnlyEmail && hasNoCredentialsData;
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
-    // If all form values are known, but we only have a single credntial field - then we want to prompt a partial save with username,
+    // If all form values are known, but we only have a single credential field - then we want to prompt a partial save with username,
     // So that in multi step forms (like reset-password), we can identify which username was picked, or complete a password save.
     if (areAllFormValuesKnown && !hasOnlyOneCredentialOrEmail) {
       // …if we know all the values do not prompt to store data

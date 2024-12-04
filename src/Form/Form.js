@@ -905,7 +905,7 @@ class Form {
         const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
             (subtype) => formValues[dataType][subtype] === data[subtype],
         );
-        // If all form values are known, but we only have a single credntial field - then we want to prompt a partial save with username,
+        // If all form values are known, but we only have a single credential field - then we want to prompt a partial save with username,
         // So that in multi step forms (like reset-password), we can identify which username was picked, or complete a password save.
         if (areAllFormValuesKnown && !hasOnlyOneCredentialOrEmail) {
             // …if we know all the values do not prompt to store data
