@@ -896,7 +896,8 @@ class Form {
         // After autofill we check if form values match the data provided…
         const formValues = this.getValuesReadyForStorage();
         const hasNoCredentialsData = !formValues.credentials?.username && !formValues.credentials?.password;
-        const hasOnlyEmail = formValues.identities && Object.keys(formValues.identities).length === 1 && formValues.identities.emailAddress;
+        const hasOnlyEmail =
+            formValues.identities && Object.keys(formValues.identities ?? {}).length === 1 && formValues.identities?.emailAddress;
 
         const hasOnlyOneCredentialOrEmail =
             Boolean(formValues.credentials?.username) !== Boolean(formValues.credentials?.password) ||
@@ -904,10 +905,14 @@ class Form {
         const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
             (subtype) => formValues[dataType][subtype] === data[subtype],
         );
-        // If all form values are known, but we only have a single credential field - then we want to prompt a partial save with username,
+
+        // If we only have a single credential field - then we want to prompt a partial save with username,
         // So that in multi step forms (like reset-password), we can identify which username was picked, or complete a password save.
-        if (areAllFormValuesKnown && !hasOnlyOneCredentialOrEmail) {
-            // …if we know all the values do not prompt to store data
+        if (hasOnlyOneCredentialOrEmail) {
+            this.shouldPromptToStoreData = true;
+            this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
+        } else if (areAllFormValuesKnown) {
+            // …if it's a normal form with more than one field and if we know all the values do not prompt to store data
             this.shouldPromptToStoreData = false;
             // reset this to its initial value
             this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
