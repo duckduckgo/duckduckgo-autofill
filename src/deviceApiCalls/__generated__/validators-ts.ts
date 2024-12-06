@@ -389,7 +389,7 @@ export interface UserPreferences {
  */
 export interface StoreFormData {
   credentials?: OutgoingCredentials;
-  trigger?: "formSubmission" | "passwordGeneration" | "emailProtection";
+  trigger?: "partialSave" | "formSubmission" | "passwordGeneration" | "emailProtection";
 }
 export interface OutgoingCredentials {
   /**

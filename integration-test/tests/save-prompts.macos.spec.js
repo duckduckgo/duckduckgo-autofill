@@ -64,7 +64,7 @@ test.describe('macos', () => {
                 await login.submitPasswordOnlyForm(credentials);
                 await login.assertWasPromptedToSave(credentials);
             });
-            test('username only (should NOT prompt)', async ({ page }) => {
+            test('username only (should prompt)', async ({ page }) => {
                 // enable in-terminal exceptions
                 await forwardConsoleMessages(page);
 
@@ -76,7 +76,7 @@ test.describe('macos', () => {
                 const login = loginPage(page);
                 await login.navigate();
                 await login.submitUsernameOnlyForm(credentials.username);
-                await login.shouldNotPromptToSave();
+                await login.shouldPromptToSave();
             });
         });
     });

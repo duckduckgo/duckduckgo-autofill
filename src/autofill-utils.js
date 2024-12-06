@@ -624,6 +624,15 @@ function queryElementsWithShadow(element, selector, forceScanShadowTree = false)
     return [...elements];
 }
 
+/**
+ * Checks if there is a single username-like identity, i.e. email or phone
+ * @param {InternalIdentityObject} identities
+ * @returns {boolean}
+ */
+function hasUsernameLikeIdentity(identities) {
+    return Object.keys(identities ?? {}).length === 1 && Boolean(identities?.emailAddress || identities.phone);
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -659,4 +668,5 @@ export {
     findElementsInShadowTree,
     queryElementsWithShadow,
     getFormControlElements,
+    hasUsernameLikeIdentity,
 };

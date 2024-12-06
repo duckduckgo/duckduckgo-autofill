@@ -9476,13 +9476,17 @@ class InterfacePrototype {
   postSubmit(values, form) {
     if (!form.form) return;
     if (!form.hasValues(values)) return;
-    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated];
+    const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && values?.credentials?.username;
+    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, isUsernameOnly];
     if (checks.some(Boolean)) {
       const formData = (0, _Credentials.appendGeneratedKey)(values, {
         password: this.passwordGenerator.password,
         username: this.emailProtection.lastGenerated
       });
-      this.storeFormData(formData, 'formSubmission');
+
+      // If credentials has only username field, and no password field, then trigger is a partialSave
+      const trigger = isUsernameOnly ? 'partialSave' : 'formSubmission';
+      this.storeFormData(formData, trigger);
     }
   }
 
@@ -11921,6 +11925,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatPhoneNumber = exports.formatFullName = exports.formatCCYear = void 0;
 var _matching = require("./matching.js");
 var _countryNames = require("./countryNames.js");
+var _autofillUtils = require("../autofill-utils.js");
 // Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
 const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i;
 // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
@@ -12093,21 +12098,10 @@ const getMMAndYYYYFromString = expiration => {
  * @return {boolean}
  */
 exports.getMMAndYYYYFromString = getMMAndYYYYFromString;
-const shouldStoreCredentials = _ref3 => {
-  let {
-    credentials
-  } = _ref3;
-  return Boolean(credentials.password);
-};
-
-/**
- * @param {InternalDataStorageObject} credentials
- * @return {boolean}
- */
-const shouldStoreIdentities = _ref4 => {
+const shouldStoreIdentities = _ref3 => {
   let {
     identities
-  } = _ref4;
+  } = _ref3;
   return Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
 };
 
@@ -12115,10 +12109,10 @@ const shouldStoreIdentities = _ref4 => {
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreCreditCards = _ref5 => {
+const shouldStoreCreditCards = _ref4 => {
   let {
     creditCards
-  } = _ref5;
+  } = _ref4;
   if (!creditCards.cardNumber) return false;
   if (creditCards.cardSecurityCode) return true;
   // Some forms (Amazon) don't have the cvv, so we still save if there's the expiration
@@ -12154,14 +12148,14 @@ const prepareFormValuesForStorage = formValues => {
     creditCards.cardName = identities?.fullName || formatFullName(identities);
   }
 
-  /** Fixes for credentials **/
-  // Don't store if there isn't enough data
-  if (shouldStoreCredentials(formValues)) {
-    // If we don't have a username to match a password, let's see if the email is available
-    if (credentials.password && !credentials.username && identities.emailAddress) {
-      credentials.username = identities.emailAddress;
-    }
-  } else {
+  /** Fixes for credentials */
+  if (!credentials.username && (0, _autofillUtils.hasUsernameLikeIdentity)(identities)) {
+    // @ts-ignore - We know that username is not a useful value here
+    credentials.username = identities.emailAddress || identities.phone;
+  }
+
+  // If we still don't have any credentials, we discard the object
+  if (Object.keys(credentials ?? {}).length === 0) {
     credentials = undefined;
   }
 
@@ -12217,7 +12211,7 @@ const prepareFormValuesForStorage = formValues => {
 };
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames.js":36,"./matching.js":44}],38:[function(require,module,exports){
+},{"../autofill-utils.js":64,"./countryNames.js":36,"./matching.js":44}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17154,7 +17148,9 @@ exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
 exports.getDaxBoundingBox = void 0;
 exports.getFormControlElements = getFormControlElements;
-exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = void 0;
+exports.getTextShallow = void 0;
+exports.hasUsernameLikeIdentity = hasUsernameLikeIdentity;
+exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = void 0;
 exports.isFormLikelyToBeUsedAsPageWrapper = isFormLikelyToBeUsedAsPageWrapper;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -17820,6 +17816,15 @@ function queryElementsWithShadow(element, selector) {
     return [...elements, ...findElementsInShadowTree(element, selector)];
   }
   return [...elements];
+}
+
+/**
+ * Checks if there is a single username-like identity, i.e. email or phone
+ * @param {InternalIdentityObject} identities
+ * @returns {boolean}
+ */
+function hasUsernameLikeIdentity(identities) {
+  return Object.keys(identities ?? {}).length === 1 && Boolean(identities?.emailAddress || identities.phone);
 }
 
 },{"./Form/matching.js":44,"./constants.js":67,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],65:[function(require,module,exports){
@@ -18495,7 +18500,7 @@ const getAutofillDataResponseSchema = exports.getAutofillDataResponseSchema = _z
 });
 const storeFormDataSchema = exports.storeFormDataSchema = _zod.z.object({
   credentials: outgoingCredentialsSchema.optional(),
-  trigger: _zod.z.union([_zod.z.literal("formSubmission"), _zod.z.literal("passwordGeneration"), _zod.z.literal("emailProtection")]).optional()
+  trigger: _zod.z.union([_zod.z.literal("partialSave"), _zod.z.literal("formSubmission"), _zod.z.literal("passwordGeneration"), _zod.z.literal("emailProtection")]).optional()
 });
 const getAvailableInputTypesResultSchema = exports.getAvailableInputTypesResultSchema = _zod.z.object({
   type: _zod.z.literal("getAvailableInputTypesResponse").optional(),
