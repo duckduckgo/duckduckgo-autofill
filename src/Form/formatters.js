@@ -205,7 +205,7 @@ const prepareFormValuesForStorage = (formValues) => {
     /** Fixes for credentials */
     if (!credentials.username && hasUsernameLikeIdentity(identities)) {
         // @ts-ignore - We know that username is not a useful value here
-        credentials.username = identities.emailAddress ?? identities.phone;
+        credentials.username = identities.emailAddress || identities.phone;
     }
 
     // If we still don't have any credentials, we discard the object

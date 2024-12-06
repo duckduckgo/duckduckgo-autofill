@@ -800,7 +800,7 @@ class InterfacePrototype {
         if (!form.form) return;
         if (!form.hasValues(values)) return;
 
-        const isUsernameOnly = Object.keys(values?.credentials ?? {}).length === 1 && values?.credentials?.username;
+        const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && values?.credentials?.username;
         const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, isUsernameOnly];
         if (checks.some(Boolean)) {
             const formData = appendGeneratedKey(values, {

@@ -9476,7 +9476,7 @@ class InterfacePrototype {
   postSubmit(values, form) {
     if (!form.form) return;
     if (!form.hasValues(values)) return;
-    const isUsernameOnly = Object.keys(values?.credentials ?? {}).length === 1 && values?.credentials?.username;
+    const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && values?.credentials?.username;
     const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, isUsernameOnly];
     if (checks.some(Boolean)) {
       const formData = (0, _Credentials.appendGeneratedKey)(values, {
@@ -12151,7 +12151,7 @@ const prepareFormValuesForStorage = formValues => {
   /** Fixes for credentials */
   if (!credentials.username && (0, _autofillUtils.hasUsernameLikeIdentity)(identities)) {
     // @ts-ignore - We know that username is not a useful value here
-    credentials.username = identities.emailAddress ?? identities.phone;
+    credentials.username = identities.emailAddress || identities.phone;
   }
 
   // If we still don't have any credentials, we discard the object
@@ -17819,7 +17819,7 @@ function queryElementsWithShadow(element, selector) {
 }
 
 /**
- * Checks if there's only one identity in the object, and it's a username-like identity
+ * Checks if there is a single username-like identity, i.e. email or phone
  * @param {InternalIdentityObject} identities
  * @returns {boolean}
  */

@@ -625,7 +625,7 @@ function queryElementsWithShadow(element, selector, forceScanShadowTree = false)
 }
 
 /**
- * Checks if there's only one identity in the object, and it's a username-like identity
+ * Checks if there is a single username-like identity, i.e. email or phone
  * @param {InternalIdentityObject} identities
  * @returns {boolean}
  */
