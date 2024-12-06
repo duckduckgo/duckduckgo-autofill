@@ -5113,7 +5113,8 @@ class InterfacePrototype {
   postSubmit(values, form) {
     if (!form.form) return;
     if (!form.hasValues(values)) return;
-    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated];
+    const isUsernameOnly = Object.keys(values?.credentials ?? {}).length === 1 && values?.credentials?.username;
+    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, isUsernameOnly];
     if (checks.some(Boolean)) {
       const formData = (0, _Credentials.appendGeneratedKey)(values, {
         password: this.passwordGenerator.password,
@@ -5121,10 +5122,7 @@ class InterfacePrototype {
       });
 
       // If credentials has only username field, and no password field, then trigger is a partialSave
-      const isUsernameOnly = Boolean(formData.credentials?.username) && !formData.credentials?.password && form.inputs.credentials.size === 1;
-      // Is an email or phone number present in the form, but no other credentials
-      const isEmailOrPhoneOnly = Boolean(formData.identities?.emailAddress) !== Boolean(formData.identities?.phone) && form.inputs.credentials.size === 0 && form.inputs.identities.size === 1;
-      const trigger = isUsernameOnly || isEmailOrPhoneOnly ? 'partialSave' : 'formSubmission';
+      const trigger = isUsernameOnly ? 'partialSave' : 'formSubmission';
       this.storeFormData(formData, trigger);
     }
   }
@@ -6518,18 +6516,9 @@ class Form {
 
     // After autofill we check if form values match the data provided…
     const formValues = this.getValuesReadyForStorage();
-    const hasNoCredentialsData = !formValues.credentials?.username && !formValues.credentials?.password;
-    const hasOnlyEmail = formValues.identities && Object.keys(formValues.identities ?? {}).length === 1 && formValues.identities?.emailAddress;
-    const hasOnlyOneCredentialOrEmail = Boolean(formValues.credentials?.username) !== Boolean(formValues.credentials?.password) || hasOnlyEmail && hasNoCredentialsData;
     const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(subtype => formValues[dataType][subtype] === data[subtype]);
-
-    // If we only have a single credential field - then we want to prompt a partial save with username,
-    // So that in multi step forms (like reset-password), we can identify which username was picked, or complete a password save.
-    if (hasOnlyOneCredentialOrEmail) {
-      this.shouldPromptToStoreData = true;
-      this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
-    } else if (areAllFormValuesKnown) {
-      // …if it's a normal form with more than one field and if we know all the values do not prompt to store data
+    if (areAllFormValuesKnown) {
+      // …if we know all the values do not prompt to store data
       this.shouldPromptToStoreData = false;
       // reset this to its initial value
       this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
@@ -7573,6 +7562,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.prepareFormValuesForStorage = exports.inferCountryCodeFromElement = exports.getUnifiedExpiryDate = exports.getMMAndYYYYFromString = exports.getCountryName = exports.getCountryDisplayName = exports.formatPhoneNumber = exports.formatFullName = exports.formatCCYear = void 0;
 var _matching = require("./matching.js");
 var _countryNames = require("./countryNames.js");
+var _autofillUtils = require("../autofill-utils.js");
 // Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
 const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i;
 // Matches 4 non-digit repeated characters (YYYY or AAAA) or 4 digits (2022)
@@ -7749,7 +7739,7 @@ const shouldStoreIdentities = _ref3 => {
   let {
     identities
   } = _ref3;
-  return Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity) || Boolean(identities.emailAddress) || Boolean(identities.phone);
+  return Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
 };
 
 /**
@@ -7796,12 +7786,13 @@ const prepareFormValuesForStorage = formValues => {
   }
 
   /** Fixes for credentials */
-  if (credentials.username || credentials.password) {
-    // If we don't have a username to match a password, let's see if the email is available
-    if (credentials.password && !credentials.username && identities.emailAddress) {
-      credentials.username = identities.emailAddress;
-    }
-  } else {
+  if (!credentials.username && (0, _autofillUtils.hasUsernameLikeIdentity)(identities)) {
+    // @ts-ignore - We know that username is not a useful value here
+    credentials.username = identities.emailAddress ?? identities.phone;
+  }
+
+  // If we still don't have any credentials, we discard the object
+  if (Object.keys(credentials ?? {}).length === 0) {
     credentials = undefined;
   }
 
@@ -7857,7 +7848,7 @@ const prepareFormValuesForStorage = formValues => {
 };
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"./countryNames.js":26,"./matching.js":34}],28:[function(require,module,exports){
+},{"../autofill-utils.js":54,"./countryNames.js":26,"./matching.js":34}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12794,7 +12785,9 @@ exports.formatDuckAddress = void 0;
 exports.getActiveElement = getActiveElement;
 exports.getDaxBoundingBox = void 0;
 exports.getFormControlElements = getFormControlElements;
-exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = exports.getTextShallow = void 0;
+exports.getTextShallow = void 0;
+exports.hasUsernameLikeIdentity = hasUsernameLikeIdentity;
+exports.isEventWithinDax = exports.isAutofillEnabledFromProcessedConfig = void 0;
 exports.isFormLikelyToBeUsedAsPageWrapper = isFormLikelyToBeUsedAsPageWrapper;
 exports.isLikelyASubmitButton = exports.isIncontextSignupEnabledFromProcessedConfig = void 0;
 exports.isLocalNetwork = isLocalNetwork;
@@ -13460,6 +13453,15 @@ function queryElementsWithShadow(element, selector) {
     return [...elements, ...findElementsInShadowTree(element, selector)];
   }
   return [...elements];
+}
+
+/**
+ * Checks if there's only one identity in the object, and it's a username-like identity
+ * @param {InternalIdentityObject} identities
+ * @returns {boolean}
+ */
+function hasUsernameLikeIdentity(identities) {
+  return Object.keys(identities ?? {}).length === 1 && Boolean(identities?.emailAddress || identities.phone);
 }
 
 },{"./Form/matching.js":34,"./constants.js":57,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],55:[function(require,module,exports){

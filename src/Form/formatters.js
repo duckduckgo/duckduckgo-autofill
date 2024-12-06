@@ -1,5 +1,6 @@
 import { matchInPlaceholderAndLabels, checkPlaceholderAndLabels } from './matching.js';
 import { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES } from './countryNames.js';
+import { hasUsernameLikeIdentity } from '../autofill-utils.js';
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
 const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i;
@@ -163,13 +164,8 @@ const getMMAndYYYYFromString = (expiration) => {
  * @param {InternalDataStorageObject} credentials
  * @return {boolean}
  */
-const shouldStoreIdentities = ({ identities }) => {
-    return (
-        Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity) ||
-        Boolean(identities.emailAddress) ||
-        Boolean(identities.phone)
-    );
-};
+const shouldStoreIdentities = ({ identities }) =>
+    Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
 
 /**
  * @param {InternalDataStorageObject} credentials
@@ -207,12 +203,13 @@ const prepareFormValuesForStorage = (formValues) => {
     }
 
     /** Fixes for credentials */
-    if (credentials.username || credentials.password) {
-        // If we don't have a username to match a password, let's see if the email is available
-        if (credentials.password && !credentials.username && identities.emailAddress) {
-            credentials.username = identities.emailAddress;
-        }
-    } else {
+    if (!credentials.username && hasUsernameLikeIdentity(identities)) {
+        // @ts-ignore - We know that username is not a useful value here
+        credentials.username = identities.emailAddress ?? identities.phone;
+    }
+
+    // If we still don't have any credentials, we discard the object
+    if (Object.keys(credentials ?? {}).length === 0) {
         credentials = undefined;
     }
 
