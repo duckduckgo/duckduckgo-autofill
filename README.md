@@ -40,3 +40,8 @@ We have GitHub Action to facilitate releases. Remember to test on all platforms 
 4. Publish!
 
 This will create the relevant tasks in the [Autofill Project](https://app.asana.com/0/1198964220583541/1200878329826704) in Asana, add the subtasks to relevant projects, and create PRs in all client repos.
+
+### Communicating breaking changes
+In case breaking changes were introduced to a specific platform:
+1. Add a comment and close the relevant asana tasks and PRs that were created by the automation. Make sure the future course of action to support those platforms is made clear in these comments.
+2. Remove those Asana tasks from any other projects/boards they may have been added to by the asana automation. 
