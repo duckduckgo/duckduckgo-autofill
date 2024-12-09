@@ -38,7 +38,7 @@
     "@babel/core": "^7.23.0",
     "@babel/eslint-parser": "^7.25.9",
     "@babel/preset-env": "^7.22.20",
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#1.3.0",
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#6.42.0",
     "@duckduckgo/eslint-config": "github:duckduckgo/eslint-config#v0.1.0",
     "@duckduckgo/privacy-test-pages": "github:duckduckgo/privacy-test-pages#1.3.1",
     "@playwright/test": "^1.41.1",
