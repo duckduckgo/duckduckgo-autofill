@@ -217,6 +217,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Opens the native UI for managing passwords
      */
     openManagePasswords() {
+        this._closeAutofillParent();
         return this.deviceApi.notify(createNotification('pmHandlerOpenManagePasswords'));
     }
 
@@ -224,6 +225,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Opens the native UI for managing identities
      */
     openManageIdentities() {
+        this._closeAutofillParent();
         return this.deviceApi.notify(createNotification('pmHandlerOpenManageIdentities'));
     }
 
@@ -231,6 +233,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      * Opens the native UI for managing credit cards
      */
     openManageCreditCards() {
+        this._closeAutofillParent();
         return this.deviceApi.notify(createNotification('pmHandlerOpenManageCreditCards'));
     }
 

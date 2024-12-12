@@ -102,19 +102,22 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {Promise<any>}
      */
     openManagePasswords() {
-        return this.deviceApi.notify(new OpenManagePasswordsCall({}));
+        this.deviceApi.notify(new OpenManagePasswordsCall({}));
+        return this._closeAutofillParent();
     }
     /**
      * @returns {Promise<any>}
      */
     openManageCreditCards() {
-        return this.deviceApi.notify(new OpenManageCreditCardsCall({}));
+        this.deviceApi.notify(new OpenManageCreditCardsCall({}));
+        return this._closeAutofillParent();
     }
     /**
      * @returns {Promise<any>}
      */
     openManageIdentities() {
-        return this.deviceApi.notify(new OpenManageIdentitiesCall({}));
+        this.deviceApi.notify(new OpenManageIdentitiesCall({}));
+        return this._closeAutofillParent();
     }
 
     /**
