@@ -334,7 +334,6 @@ export class HTMLTooltipUIController extends UIController {
      * @private
      */
     _onManage(type) {
-        this.removeTooltip();
         switch (type) {
             case 'credentials':
                 return this._options.device.openManagePasswords();

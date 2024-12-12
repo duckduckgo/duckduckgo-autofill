@@ -3849,6 +3849,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    * Opens the native UI for managing passwords
    */
   openManagePasswords() {
+    this._closeAutofillParent();
     return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManagePasswords'));
   }
 
@@ -3856,6 +3857,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    * Opens the native UI for managing identities
    */
   openManageIdentities() {
+    this._closeAutofillParent();
     return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManageIdentities'));
   }
 
@@ -3863,6 +3865,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
    * Opens the native UI for managing credit cards
    */
   openManageCreditCards() {
+    this._closeAutofillParent();
     return this.deviceApi.notify((0, _index.createNotification)('pmHandlerOpenManageCreditCards'));
   }
 
@@ -5412,19 +5415,22 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
    * @returns {Promise<any>}
    */
   openManagePasswords() {
-    return this.deviceApi.notify(new _deviceApiCalls.OpenManagePasswordsCall({}));
+    this.deviceApi.notify(new _deviceApiCalls.OpenManagePasswordsCall({}));
+    return this._closeAutofillParent();
   }
   /**
    * @returns {Promise<any>}
    */
   openManageCreditCards() {
-    return this.deviceApi.notify(new _deviceApiCalls.OpenManageCreditCardsCall({}));
+    this.deviceApi.notify(new _deviceApiCalls.OpenManageCreditCardsCall({}));
+    return this._closeAutofillParent();
   }
   /**
    * @returns {Promise<any>}
    */
   openManageIdentities() {
-    return this.deviceApi.notify(new _deviceApiCalls.OpenManageIdentitiesCall({}));
+    this.deviceApi.notify(new _deviceApiCalls.OpenManageIdentitiesCall({}));
+    return this._closeAutofillParent();
   }
 
   /**
@@ -12224,7 +12230,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
    * @private
    */
   _onManage(type) {
-    this.removeTooltip();
     switch (type) {
       case 'credentials':
         return this._options.device.openManagePasswords();
