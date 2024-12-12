@@ -16581,25 +16581,27 @@ class HTMLTooltipUIController extends _UIController.UIController {
 
   /**
    * Called when clicking on the Manage… button in the html tooltip
-   *
    * @param {SupportedMainTypes} type
    * @returns {*}
    * @private
    */
   _onManage(type) {
-    this.removeTooltip();
     switch (type) {
       case 'credentials':
-        return this._options.device.openManagePasswords();
+        this._options.device.openManagePasswords();
+        break;
       case 'creditCards':
-        return this._options.device.openManageCreditCards();
+        this._options.device.openManageCreditCards();
+        break;
       case 'identities':
-        return this._options.device.openManageIdentities();
+        this._options.device.openManageIdentities();
+        break;
       default:
       // noop
     }
-  }
 
+    this.removeTooltip();
+  }
   _onIncontextSignupDismissed(_ref) {
     let {
       hasOtherOptions
