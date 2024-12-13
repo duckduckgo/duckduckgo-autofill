@@ -271,7 +271,7 @@ const matchingConfiguration = {
                     forceUnknown: 'search|captcha|mfa|2fa|two factor|otp|pin',
                 },
                 newPassword: {
-                    match: 'new|re.?(enter|type)|repeat|update\\b',
+                    match: 'new|confirm|re.?(enter|type)|repeat|update\\b',
                 },
                 currentPassword: {
                     match: 'current|old|previous|expired|existing',
