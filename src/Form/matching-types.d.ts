@@ -159,7 +159,7 @@ type RequiredCssSelectors =
     | 'formInputsSelectorWithoutSelect'
     | 'formInputsSelector'
     | 'submitButtonSelector'
-    | 'genericTextField'
+    | 'genericTextInputField'
     | 'safeUniversalSelector';
 
 /**

@@ -11293,9 +11293,16 @@ class FormAnalyzer {
     }
 
     // A form with many fields is unlikely to be a login form
-    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
+    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextInputField'));
     if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
+    }
+    const passwordHintRegex = /\b(?:password.*?(?:must|should|has to|needs to|can))?\b.*?(?:(at least|minimum|no fewer than)\s+\d+\s+(characters?|letters?|numbers?|special characters?)|(uppercase|lowercase|capital|digit|number|symbol|special character)|\b(no spaces|cannot contain your email|cannot repeat characters|must be unique|case sensitive)\b)/;
+
+    // If the form contains password hints, it's highly likely a signup form.
+    const hasPasswordHints = Array.from(this.form.querySelectorAll('div, span')).filter(div => div.textContent != null && div.textContent.trim() !== '' && window.getComputedStyle(div).display !== 'none' && window.getComputedStyle(div).visibility !== 'hidden').some(div => div.textContent && (0, _autofillUtils.safeRegexTest)(passwordHintRegex, div.textContent));
+    if (hasPasswordHints) {
+      this.increaseSignalBy(6, 'Password hints');
     }
 
     // If we can't decide at this point, try reading page headings
@@ -12847,7 +12854,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
   strategies: {
     cssSelector: {
       selectors: {
-        genericTextField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
+        genericTextInputField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
         submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
         formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
         formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
