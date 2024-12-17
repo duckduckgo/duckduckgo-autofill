@@ -9463,6 +9463,17 @@ class InterfacePrototype {
   }
 
   /**
+   * Checks if partial save can be triggered
+   * @param {DataStorageObject} values
+   * @returns {boolean}
+   */
+  shouldTriggerPartialSave(values) {
+    // If credentials has only username field, and no password field, then trigger is a partialSave
+    const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && Boolean(values?.credentials?.username);
+    return isUsernameOnly && Boolean(this.settings.featureToggles.partial_form_saves);
+  }
+
+  /**
    * `postSubmit` gives features a one-time-only opportunity to perform an
    * action directly after a form submission was observed.
    *
@@ -9476,16 +9487,14 @@ class InterfacePrototype {
   postSubmit(values, form) {
     if (!form.form) return;
     if (!form.hasValues(values)) return;
-    const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && values?.credentials?.username;
-    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, isUsernameOnly];
+    const shouldPartialSave = this.shouldTriggerPartialSave(values);
+    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, shouldPartialSave];
     if (checks.some(Boolean)) {
       const formData = (0, _Credentials.appendGeneratedKey)(values, {
         password: this.passwordGenerator.password,
         username: this.emailProtection.lastGenerated
       });
-
-      // If credentials has only username field, and no password field, then trigger is a partialSave
-      const trigger = isUsernameOnly ? 'partialSave' : 'formSubmission';
+      const trigger = shouldPartialSave ? 'partialSave' : 'formSubmission';
       this.storeFormData(formData, trigger);
     }
   }
@@ -18447,7 +18456,8 @@ const autofillFeatureTogglesSchema = exports.autofillFeatureTogglesSchema = _zod
   credentials_saving: _zod.z.boolean().optional(),
   inlineIcon_credentials: _zod.z.boolean().optional(),
   third_party_credentials_provider: _zod.z.boolean().optional(),
-  unknown_username_categorization: _zod.z.boolean().optional()
+  unknown_username_categorization: _zod.z.boolean().optional(),
+  partial_form_saves: _zod.z.boolean().optional()
 });
 const emailProtectionGetIsLoggedInResultSchema = exports.emailProtectionGetIsLoggedInResultSchema = _zod.z.object({
   success: _zod.z.boolean().optional(),

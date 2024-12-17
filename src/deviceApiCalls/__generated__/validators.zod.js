@@ -237,7 +237,8 @@ export const autofillFeatureTogglesSchema = z.object({
     credentials_saving: z.boolean().optional(),
     inlineIcon_credentials: z.boolean().optional(),
     third_party_credentials_provider: z.boolean().optional(),
-    unknown_username_categorization: z.boolean().optional()
+    unknown_username_categorization: z.boolean().optional(),
+    partial_form_saves: z.boolean().optional()
 });
 
 export const emailProtectionGetIsLoggedInResultSchema = z.object({

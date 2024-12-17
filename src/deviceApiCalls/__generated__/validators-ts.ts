@@ -629,6 +629,10 @@ export interface AutofillFeatureToggles {
    * If true, we will attempt categorizaing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, we will trigger a partial save if the form has only username field, and no password field
+   */
+  partial_form_saves?: boolean;
 }
 export interface GetAliasParams {
   requiresUserPermission: boolean;
