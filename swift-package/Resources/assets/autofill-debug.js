@@ -7769,8 +7769,8 @@ class CredentialsImport {
     activeInput?.focus();
   }
   async started() {
-    this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
     this.device.deviceApi.notify(new _deviceApiCalls.StartCredentialsImportFlowCall({}));
+    this.device.deviceApi.notify(new _deviceApiCalls.CloseAutofillParentCall(null));
   }
   async dismissed() {
     this.device.deviceApi.notify(new _deviceApiCalls.CredentialsImportFlowPermanentlyDismissedCall(null));

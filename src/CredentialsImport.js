@@ -59,8 +59,8 @@ class CredentialsImport {
     }
 
     async started() {
-        this.device.deviceApi.notify(new CloseAutofillParentCall(null));
         this.device.deviceApi.notify(new StartCredentialsImportFlowCall({}));
+        this.device.deviceApi.notify(new CloseAutofillParentCall(null));
     }
 
     async dismissed() {
