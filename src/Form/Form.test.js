@@ -84,8 +84,8 @@ describe('Test the form class reading values correctly', () => {
     <input type="password" value="" autocomplete="new-password" />
     <button type="submit">Sign up</button>
 </form>`,
-            expHasValues: true,
-            expValues: { credentials: { username: 'testUsername' } },
+            expHasValues: false,
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form where the password is <=3 characters long',
@@ -95,8 +95,8 @@ describe('Test the form class reading values correctly', () => {
     <input type="password" value="abc" autocomplete="new-password" />
     <button type="submit">Sign up</button>
 </form>`,
-            expHasValues: true,
-            expValues: { credentials: { username: 'testUsername' } },
+            expHasValues: false,
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with hidden email field',

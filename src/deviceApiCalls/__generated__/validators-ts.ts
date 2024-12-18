@@ -629,6 +629,10 @@ export interface AutofillFeatureToggles {
    * If true, we will attempt categorizaing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, then username only form saves will be allowed
+   */
+  partial_form_saves?: boolean;
 }
 export interface GetAliasParams {
   requiresUserPermission: boolean;

@@ -799,17 +799,22 @@ class InterfacePrototype {
     postSubmit(values, form) {
         if (!form.form) return;
         if (!form.hasValues(values)) return;
-
-        const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && values?.credentials?.username;
-        const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, isUsernameOnly];
+        const shouldTriggerPartialSave =
+            Object.keys(values?.credentials || {}).length === 1 &&
+            Boolean(values?.credentials?.username) &&
+            this.settings.featureToggles.partial_form_saves;
+        const checks = [
+            form.shouldPromptToStoreData && !form.submitHandlerExecuted,
+            this.passwordGenerator.generated,
+            shouldTriggerPartialSave,
+        ];
         if (checks.some(Boolean)) {
             const formData = appendGeneratedKey(values, {
                 password: this.passwordGenerator.password,
                 username: this.emailProtection.lastGenerated,
             });
 
-            // If credentials has only username field, and no password field, then trigger is a partialSave
-            const trigger = isUsernameOnly ? 'partialSave' : 'formSubmission';
+            const trigger = shouldTriggerPartialSave ? 'partialSave' : 'formSubmission';
             this.storeFormData(formData, trigger);
         }
     }
