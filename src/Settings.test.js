@@ -146,6 +146,7 @@ describe('Settings', () => {
         "inputType_credentials": false,
         "inputType_creditCards": false,
         "inputType_identities": false,
+        "partial_form_saves": false,
         "password_generation": false,
         "unknown_username_categorization": false,
       }

@@ -43,6 +43,7 @@ export function androidStringReplacements(overrides = {}) {
                             inputType_credentials: true,
                             inputType_identities: false,
                             inputType_creditCards: false,
+                            partial_form_saves: true,
                             emailProtection: true,
                             emailProtection_incontext_signup: true,
                             password_generation: false,
