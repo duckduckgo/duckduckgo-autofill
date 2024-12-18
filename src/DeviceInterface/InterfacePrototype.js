@@ -802,7 +802,7 @@ class InterfacePrototype {
         const shouldTriggerPartialSave =
             Object.keys(values?.credentials || {}).length === 1 &&
             Boolean(values?.credentials?.username) &&
-            Boolean(this.settings.featureToggles.partial_form_saves);
+            this.settings.featureToggles.partial_form_saves;
         const checks = [
             form.shouldPromptToStoreData && !form.submitHandlerExecuted,
             this.passwordGenerator.generated,

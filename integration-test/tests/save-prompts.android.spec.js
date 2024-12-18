@@ -56,7 +56,6 @@ test.describe('Android Save prompts', () => {
                         androidStringReplacements({
                             featureToggles: {
                                 credentials_saving: true,
-                                partial_form_saves: false,
                             },
                             availableInputTypes: {
                                 credentials: { username: false, password: false },
@@ -82,11 +81,11 @@ test.describe('Android Save prompts', () => {
                 await login.submitPasswordOnlyForm(credentials);
                 await login.assertWasPromptedToSave(credentials);
             });
-            test('with username only (should NOT prompt)', async ({ page }) => {
+            test('with username only (should prompt)', async ({ page }) => {
                 const { login } = await setup(page);
                 const credentials = { username: '123456' };
                 await login.submitUsernameOnlyForm(credentials.username);
-                await login.shouldNotPromptToSave();
+                await login.shouldPromptToSave();
             });
         });
     });
