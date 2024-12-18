@@ -786,17 +786,6 @@ class InterfacePrototype {
     }
 
     /**
-     * Checks if partial save can be triggered
-     * @param {DataStorageObject} values
-     * @returns {boolean}
-     */
-    shouldTriggerPartialSave(values) {
-        // If credentials has only username field, and no password field, then trigger is a partialSave
-        const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && Boolean(values?.credentials?.username);
-        return isUsernameOnly && Boolean(this.settings.featureToggles.partial_form_saves);
-    }
-
-    /**
      * `postSubmit` gives features a one-time-only opportunity to perform an
      * action directly after a form submission was observed.
      *
@@ -810,15 +799,22 @@ class InterfacePrototype {
     postSubmit(values, form) {
         if (!form.form) return;
         if (!form.hasValues(values)) return;
-        const shouldPartialSave = this.shouldTriggerPartialSave(values);
-        const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, shouldPartialSave];
+        const shouldTriggerPartialSave =
+            Object.keys(values?.credentials || {}).length === 1 &&
+            Boolean(values?.credentials?.username) &&
+            Boolean(this.settings.featureToggles.partial_form_saves);
+        const checks = [
+            form.shouldPromptToStoreData && !form.submitHandlerExecuted,
+            this.passwordGenerator.generated,
+            shouldTriggerPartialSave,
+        ];
         if (checks.some(Boolean)) {
             const formData = appendGeneratedKey(values, {
                 password: this.passwordGenerator.password,
                 username: this.emailProtection.lastGenerated,
             });
 
-            const trigger = shouldPartialSave ? 'partialSave' : 'formSubmission';
+            const trigger = shouldTriggerPartialSave ? 'partialSave' : 'formSubmission';
             this.storeFormData(formData, trigger);
         }
     }

@@ -244,6 +244,7 @@ export function createWebkitMocks(platform = 'macos') {
                                     password_generation: true,
                                     credentials_saving: true,
                                     inlineIcon_credentials: true,
+                                    partial_form_saves: true,
                                     email: true,
                                 },
                             },

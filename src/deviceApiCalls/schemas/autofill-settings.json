@@ -44,7 +44,7 @@
         },
         "partial_form_saves": {
           "type": "boolean",
-          "description": "If true, we will trigger a partial save if the form has only username field, and no password field"
+          "description": "If true, then username only form saves will be allowed"
         }
       },
       "required": []

@@ -630,7 +630,7 @@ export interface AutofillFeatureToggles {
    */
   unknown_username_categorization?: boolean;
   /**
-   * If true, we will trigger a partial save if the form has only username field, and no password field
+   * If true, then username only form saves will be allowed
    */
   partial_form_saves?: boolean;
 }

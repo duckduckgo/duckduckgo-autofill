@@ -9463,17 +9463,6 @@ class InterfacePrototype {
   }
 
   /**
-   * Checks if partial save can be triggered
-   * @param {DataStorageObject} values
-   * @returns {boolean}
-   */
-  shouldTriggerPartialSave(values) {
-    // If credentials has only username field, and no password field, then trigger is a partialSave
-    const isUsernameOnly = Object.keys(values?.credentials || {}).length === 1 && Boolean(values?.credentials?.username);
-    return isUsernameOnly && Boolean(this.settings.featureToggles.partial_form_saves);
-  }
-
-  /**
    * `postSubmit` gives features a one-time-only opportunity to perform an
    * action directly after a form submission was observed.
    *
@@ -9487,14 +9476,14 @@ class InterfacePrototype {
   postSubmit(values, form) {
     if (!form.form) return;
     if (!form.hasValues(values)) return;
-    const shouldPartialSave = this.shouldTriggerPartialSave(values);
-    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, shouldPartialSave];
+    const shouldTriggerPartialSave = Object.keys(values?.credentials || {}).length === 1 && Boolean(values?.credentials?.username) && Boolean(this.settings.featureToggles.partial_form_saves);
+    const checks = [form.shouldPromptToStoreData && !form.submitHandlerExecuted, this.passwordGenerator.generated, shouldTriggerPartialSave];
     if (checks.some(Boolean)) {
       const formData = (0, _Credentials.appendGeneratedKey)(values, {
         password: this.passwordGenerator.password,
         username: this.emailProtection.lastGenerated
       });
-      const trigger = shouldPartialSave ? 'partialSave' : 'formSubmission';
+      const trigger = shouldTriggerPartialSave ? 'partialSave' : 'formSubmission';
       this.storeFormData(formData, trigger);
     }
   }
@@ -10275,7 +10264,7 @@ class Form {
    */
   getValuesReadyForStorage() {
     const formValues = this.getRawValues();
-    return (0, _formatters.prepareFormValuesForStorage)(formValues);
+    return (0, _formatters.prepareFormValuesForStorage)(formValues, this.device.settings.featureToggles.partial_form_saves);
   }
 
   /**
@@ -12103,7 +12092,7 @@ const getMMAndYYYYFromString = expiration => {
 };
 
 /**
- * @param {InternalDataStorageObject} credentials
+ * @param {InternalDataStorageObject} data
  * @return {boolean}
  */
 exports.getMMAndYYYYFromString = getMMAndYYYYFromString;
@@ -12115,7 +12104,7 @@ const shouldStoreIdentities = _ref3 => {
 };
 
 /**
- * @param {InternalDataStorageObject} credentials
+ * @param {InternalDataStorageObject} data
  * @return {boolean}
  */
 const shouldStoreCreditCards = _ref4 => {
@@ -12144,7 +12133,8 @@ const formatPhoneNumber = phone => phone.replaceAll(/[^0-9|+]/g, '');
  * @return {DataStorageObject}
  */
 exports.formatPhoneNumber = formatPhoneNumber;
-const prepareFormValuesForStorage = formValues => {
+const prepareFormValuesForStorage = function (formValues) {
+  let canTriggerPartialSave = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
   /** @type {Partial<InternalDataStorageObject>} */
   let {
     credentials,
@@ -12158,13 +12148,14 @@ const prepareFormValuesForStorage = formValues => {
   }
 
   /** Fixes for credentials */
-  if (!credentials.username && (0, _autofillUtils.hasUsernameLikeIdentity)(identities)) {
-    // @ts-ignore - We know that username is not a useful value here
+  // If we don't have a username to match a password, let's see if email or phone are available
+  if (credentials.password && !credentials.username && (0, _autofillUtils.hasUsernameLikeIdentity)(identities)) {
+    // @ts-ignore - username will be likely undefined, but needs to be specifically assigned to a string value
     credentials.username = identities.emailAddress || identities.phone;
   }
 
-  // If we still don't have any credentials, we discard the object
-  if (Object.keys(credentials ?? {}).length === 0) {
+  // If there's no password, and we shouldn't trigger a partial save, let's discard the object
+  if (!credentials.password && !canTriggerPartialSave) {
     credentials = undefined;
   }
 
@@ -15390,7 +15381,8 @@ class Settings {
       inputType_credentials: false,
       inputType_creditCards: false,
       inlineIcon_credentials: false,
-      unknown_username_categorization: false
+      unknown_username_categorization: false,
+      partial_form_saves: false
     },
     /** @type {AvailableInputTypes} */
     availableInputTypes: {

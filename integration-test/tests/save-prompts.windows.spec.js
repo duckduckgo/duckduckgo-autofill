@@ -58,4 +58,31 @@ test.describe('Save prompts on windows', () => {
             await signup.assertWasNotPromptedToSaveWindows();
         });
     });
+
+    test.describe('When partial form saves are disabled', () => {
+        test('I should not be prompted to save for username only', async ({ page }) => {
+            // enable in-terminal exceptions
+            await forwardConsoleMessages(page);
+
+            const { personalAddress } = constants.fields.email;
+
+            const credentials = {
+                username: personalAddress,
+            };
+
+            const signup = signupPage(page);
+            await signup.navigate();
+
+            await createWindowsMocks()
+                .withFeatureToggles({
+                    partial_form_saves: false,
+                })
+                .applyTo(page);
+
+            await createAutofillScript().platform('windows').applyTo(page);
+
+            await signup.enterCredentials(credentials);
+            await signup.assertWasNotPromptedToSaveWindows();
+        });
+    });
 });
