@@ -61,7 +61,7 @@ describe('Can strip phone formatting characters', () => {
 
 describe('prepareFormValuesForStorage()', () => {
     describe('handling credentials', () => {
-        it('accepts for username only', () => {
+        it('rejects for username only', () => {
             const values = prepareFormValuesForStorage({
                 credentials: { username: 'dax@example.com' },
                 // @ts-ignore
@@ -69,7 +69,7 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 identities: {},
             });
-            expect(values.credentials?.username).toBe('dax@example.com');
+            expect(values.credentials).toBeUndefined();
         });
         it('accepts password only', () => {
             const values = prepareFormValuesForStorage({
@@ -91,6 +91,20 @@ describe('prepareFormValuesForStorage()', () => {
                 // @ts-ignore
                 identities: {},
             });
+            expect(values.credentials).toEqual(inputCredentials);
+        });
+        it('accepts username only with partial_form_saves feature', () => {
+            const inputCredentials = { username: 'dax@example.com' };
+            const values = prepareFormValuesForStorage(
+                {
+                    credentials: inputCredentials,
+                    // @ts-ignore
+                    creditCards: {},
+                    // @ts-ignore
+                    identities: {},
+                },
+                true,
+            );
             expect(values.credentials).toEqual(inputCredentials);
         });
     });

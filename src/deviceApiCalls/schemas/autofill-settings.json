@@ -41,6 +41,10 @@
         "unknown_username_categorization": {
           "type": "boolean",
           "description": "If true, we will attempt categorizaing username, based on the rest of the input fields in the form"
+        },
+        "partial_form_saves": {
+          "type": "boolean",
+          "description": "If true, then username only form saves will be allowed"
         }
       },
       "required": []
