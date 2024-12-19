@@ -11015,6 +11015,9 @@ class FormAnalyzer {
     }
     return this;
   }
+  areLoginOrSignupSignalsWeak() {
+    return Math.abs(this.autofillSignal) < 10;
+  }
 
   /**
    * Hybrid forms can be used for both login and signup
@@ -11022,8 +11025,8 @@ class FormAnalyzer {
    */
   get isHybrid() {
     // When marking for hybrid we also want to ensure other signals are weak
-    const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10;
-    return this.hybridSignal > 0 && areOtherSignalsWeak;
+
+    return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
   }
   get isLogin() {
     if (this.isHybrid) return false;
@@ -11182,7 +11185,41 @@ class FormAnalyzer {
       }
     });
   }
-  updateFormHeaderSignals() {
+
+  /**
+   * Takes an element and returns all its children that are text-only nodes
+   * @param {HTMLElement|Element} element
+   * @param {number} maxDepth
+   * @param {number} currentDepth
+   * @returns {HTMLElement[]|Element[]}
+   */
+  getElementsWithOnlyTextChild(element) {
+    let maxDepth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+    let currentDepth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    // Array to collect elements with only text child nodes
+    const elementsWithTextChild = [];
+
+    // If we've reached the max depth, stop traversing further
+    if (currentDepth > maxDepth) {
+      return elementsWithTextChild;
+    }
+
+    // Check if the current element has only one text child node
+    if (element.nodeType === Node.ELEMENT_NODE) {
+      const childNodes = element.childNodes;
+      if (childNodes.length === 1 && childNodes[0].nodeType === Node.TEXT_NODE) {
+        elementsWithTextChild.push(element);
+      }
+    }
+
+    // Recurse through each child element and collect matching elements
+    for (const child of element.children) {
+      // Recursively get elements from child elements, increasing depth by 1
+      elementsWithTextChild.push(...this.getElementsWithOnlyTextChild(child, maxDepth, currentDepth + 1));
+    }
+    return elementsWithTextChild;
+  }
+  evaluateFormHeaderSignals() {
     const isVisuallyBeforeForm = el => el.getBoundingClientRect().top < this.form.getBoundingClientRect().top;
     const isHeaderSized = el => {
       if (el instanceof HTMLHeadingElement) {
@@ -11191,27 +11228,30 @@ class FormAnalyzer {
       const computedStyle = window.getComputedStyle(el);
       const fontWeight = computedStyle.fontWeight;
       const isRelativelyTall = parseFloat(computedStyle.height) / this.form.clientHeight > 0.1;
-      if (fontWeight === 'bold' || parseFloat(fontWeight) >= 700 || isRelativelyTall) {
+      if (isRelativelyTall && (fontWeight === 'bold' || parseFloat(fontWeight) >= 700)) {
         return true;
       }
     };
-    const allSiblings = Array.from(this.form.parentElement?.children ?? []).filter(element => element !== this.form);
+    const allSiblings = Array.from(this.form.parentElement?.children ?? []).filter(element => element !== this.form).map(element => this.getElementsWithOnlyTextChild(element)).flat();
     if (allSiblings.length === 0) return false;
-    allSiblings.forEach(sibling => {
-      if (sibling instanceof HTMLElement && sibling.childElementCount === 1 && isVisuallyBeforeForm(sibling) && isHeaderSized(sibling)) {
-        const string = sibling.textContent?.trim();
+    allSiblings.forEach(element => {
+      if (element instanceof HTMLElement && isVisuallyBeforeForm(element) && isHeaderSized(element)) {
+        const string = element.textContent?.trim();
         if (string) {
-          if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?in|log[- ]?in)$/, string)) {
-            return this.decreaseSignalBy(3, 'Strong login header before form');
-          } else if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?up)$/, string)) {
-            return this.increaseSignalBy(3, 'Strong signup header before form');
+          if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?in|log[- ]?in)$/i, string)) {
+            return this.decreaseSignalBy(3, 'Strong login signal above form');
+          } else if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?up)$/i, string)) {
+            return this.increaseSignalBy(3, 'Strong signup signal above form');
           }
         }
       }
     });
   }
-  hasPasswordHints() {
-    return Array.from(this.form.querySelectorAll('div, span')).filter(div => div.textContent != null && div.textContent.trim() !== '' && window.getComputedStyle(div).display !== 'none' && window.getComputedStyle(div).visibility !== 'hidden').some(div => div.textContent && (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
+  evaluatePasswordHints() {
+    const hasPasswordHints = Array.from(this.form.querySelectorAll('div, span')).filter(div => div.textContent != null && div.textContent.trim() !== '' && window.getComputedStyle(div).display !== 'none' && window.getComputedStyle(div).visibility !== 'hidden').some(div => div.textContent && (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
+    if (hasPasswordHints) {
+      this.increaseSignalBy(3, 'Password hints');
+    }
   }
 
   /**
@@ -11326,9 +11366,11 @@ class FormAnalyzer {
     if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
     }
-    this.updateFormHeaderSignals();
-    if (this.hasPasswordHints()) {
-      this.increaseSignalBy(3, 'Password hints');
+
+    // If we can't decide at this point, try reading form headers and password hints
+    if (this.areLoginOrSignupSignalsWeak()) {
+      this.evaluatePasswordHints();
+      this.evaluateFormHeaderSignals();
     }
 
     // If we can't decide at this point, try reading page headings
