@@ -56,7 +56,7 @@ type MatcherTypeNames =
     | 'birthdayMonth'
     | 'birthdayYear';
 
-type FormMatcherNames = 'loginRegex' | 'signupRegex' | 'conservativeSignupRegex' | 'resetPasswordLink' | 'loginProvidersRegex';
+type FormMatcherNames = 'loginRegex' | 'signupRegex' | 'conservativeSignupRegex' | 'resetPasswordLink' | 'loginProvidersRegex' | 'passwordHintsRegex';
 
 type ButtonMatcherNames = 'submitButtonRegex' | 'submitButtonUnlikelyRegex';
 
@@ -159,7 +159,7 @@ type RequiredCssSelectors =
     | 'formInputsSelectorWithoutSelect'
     | 'formInputsSelector'
     | 'submitButtonSelector'
-    | 'genericTextField'
+    | 'genericTextInputField'
     | 'safeUniversalSelector';
 
 /**

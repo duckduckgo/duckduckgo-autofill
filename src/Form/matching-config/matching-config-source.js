@@ -442,6 +442,9 @@ const matchingConfiguration = {
                         // French
                         '| avec ',
                 },
+                passwordHintsRegex: {
+                    match: '\\b(?:password.*?(?:must|should|has to|needs to|can))?\\b.*?(?:(at least|minimum|no fewer than)\\s+\\d+\\s+(characters?|letters?|numbers?|special characters?)|(uppercase|lowercase|capital|digit|number|symbol|special character)|\b(no spaces|cannot contain your email|cannot repeat characters|must be unique|case sensitive)\\b)',
+                },
                 submitButtonRegex: {
                     match:
                         'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\\bset\\b' +
