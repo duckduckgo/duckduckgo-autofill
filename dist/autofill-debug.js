@@ -11015,6 +11015,9 @@ class FormAnalyzer {
     }
     return this;
   }
+  areLoginOrSignupSignalsWeak() {
+    return Math.abs(this.autofillSignal) < 10;
+  }
 
   /**
    * Hybrid forms can be used for both login and signup
@@ -11022,8 +11025,8 @@ class FormAnalyzer {
    */
   get isHybrid() {
     // When marking for hybrid we also want to ensure other signals are weak
-    const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10;
-    return this.hybridSignal > 0 && areOtherSignalsWeak;
+
+    return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
   }
   get isLogin() {
     if (this.isHybrid) return false;
@@ -11184,6 +11187,74 @@ class FormAnalyzer {
   }
 
   /**
+   * Takes an element and returns all its children that are text-only nodes
+   * @param {HTMLElement|Element} element
+   * @param {number} maxDepth
+   * @param {number} currentDepth
+   * @returns {HTMLElement[]|Element[]}
+   */
+  getElementsWithOnlyTextChild(element) {
+    let maxDepth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+    let currentDepth = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    // Array to collect elements with only text child nodes
+    const elementsWithTextChild = [];
+
+    // If we've reached the max depth, stop traversing further
+    if (currentDepth > maxDepth) {
+      return elementsWithTextChild;
+    }
+
+    // Check if the current element has only one text child node
+    if (element.nodeType === Node.ELEMENT_NODE) {
+      const childNodes = element.childNodes;
+      if (childNodes.length === 1 && childNodes[0].nodeType === Node.TEXT_NODE) {
+        elementsWithTextChild.push(element);
+      }
+    }
+
+    // Recurse through each child element and collect matching elements
+    for (const child of element.children) {
+      // Recursively get elements from child elements, increasing depth by 1
+      elementsWithTextChild.push(...this.getElementsWithOnlyTextChild(child, maxDepth, currentDepth + 1));
+    }
+    return elementsWithTextChild;
+  }
+  evaluateFormHeaderSignals() {
+    const isVisuallyBeforeForm = el => el.getBoundingClientRect().top < this.form.getBoundingClientRect().top;
+    const isHeaderSized = el => {
+      if (el instanceof HTMLHeadingElement) {
+        return true;
+      }
+      const computedStyle = window.getComputedStyle(el);
+      const fontWeight = computedStyle.fontWeight;
+      const isRelativelyTall = parseFloat(computedStyle.height) / this.form.clientHeight > 0.1;
+      if (isRelativelyTall && (fontWeight === 'bold' || parseFloat(fontWeight) >= 700)) {
+        return true;
+      }
+    };
+    const allSiblings = Array.from(this.form.parentElement?.children ?? []).filter(element => element !== this.form).map(element => this.getElementsWithOnlyTextChild(element)).flat();
+    if (allSiblings.length === 0) return false;
+    allSiblings.forEach(element => {
+      if (element instanceof HTMLElement && isVisuallyBeforeForm(element) && isHeaderSized(element)) {
+        const string = element.textContent?.trim();
+        if (string) {
+          if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?in|log[- ]?in)$/i, string)) {
+            return this.decreaseSignalBy(3, 'Strong login signal above form');
+          } else if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?up)$/i, string)) {
+            return this.increaseSignalBy(3, 'Strong signup signal above form');
+          }
+        }
+      }
+    });
+  }
+  evaluatePasswordHints() {
+    const hasPasswordHints = Array.from(this.form.querySelectorAll('div, span')).filter(div => div.textContent != null && div.textContent.trim() !== '' && window.getComputedStyle(div).display !== 'none' && window.getComputedStyle(div).visibility !== 'hidden').some(div => div.textContent && (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
+    if (hasPasswordHints) {
+      this.increaseSignalBy(3, 'Password hints');
+    }
+  }
+
+  /**
    * Function that checks if the element is an external link or a custom web element that
    * encapsulates a link.
    * @param {any} el
@@ -11291,9 +11362,15 @@ class FormAnalyzer {
     }
 
     // A form with many fields is unlikely to be a login form
-    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
+    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextInputField'));
     if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
+    }
+
+    // If we can't decide at this point, try reading form headers and password hints
+    if (this.areLoginOrSignupSignalsWeak()) {
+      this.evaluatePasswordHints();
+      this.evaluateFormHeaderSignals();
     }
 
     // If we can't decide at this point, try reading page headings
@@ -12847,7 +12924,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
   strategies: {
     cssSelector: {
       selectors: {
-        genericTextField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
+        genericTextInputField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
         submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
         formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
         formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
@@ -12998,6 +13075,9 @@ const matchingConfiguration = exports.matchingConfiguration = {
         },
         loginProvidersRegex: {
           match: / with | con | mit | met | avec /iu
+        },
+        passwordHintsRegex: {
+          match: /\b(?:password.*?(?:must|should|has to|needs to|can))?\b.*?(?:(at least|minimum|no fewer than)\s+\d+\s+(characters?|letters?|numbers?|special characters?)|(uppercase|lowercase|capital|digit|number|symbol|special character)|(no spaces|cannot contain your email|cannot repeat characters|must be unique|case sensitive)\b)/iu
         },
         submitButtonRegex: {
           match: /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\bset\b|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona|senden|\bja\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera/iu
