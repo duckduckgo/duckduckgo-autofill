@@ -161,14 +161,14 @@ const getMMAndYYYYFromString = (expiration) => {
 };
 
 /**
- * @param {InternalDataStorageObject} credentials
+ * @param {InternalDataStorageObject} data
  * @return {boolean}
  */
 const shouldStoreIdentities = ({ identities }) =>
     Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
 
 /**
- * @param {InternalDataStorageObject} credentials
+ * @param {InternalDataStorageObject} data
  * @return {boolean}
  */
 const shouldStoreCreditCards = ({ creditCards }) => {
@@ -193,7 +193,7 @@ const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '');
  * @param {InternalDataStorageObject} formValues
  * @return {DataStorageObject}
  */
-const prepareFormValuesForStorage = (formValues) => {
+const prepareFormValuesForStorage = (formValues, canTriggerPartialSave = false) => {
     /** @type {Partial<InternalDataStorageObject>} */
     let { credentials, identities, creditCards } = formValues;
 
@@ -203,13 +203,14 @@ const prepareFormValuesForStorage = (formValues) => {
     }
 
     /** Fixes for credentials */
-    if (!credentials.username && hasUsernameLikeIdentity(identities)) {
-        // @ts-ignore - We know that username is not a useful value here
+    // If we don't have a username to match a password, let's see if email or phone are available
+    if (credentials.password && !credentials.username && hasUsernameLikeIdentity(identities)) {
+        // @ts-ignore - username will be likely undefined, but needs to be specifically assigned to a string value
         credentials.username = identities.emailAddress || identities.phone;
     }
 
-    // If we still don't have any credentials, we discard the object
-    if (Object.keys(credentials ?? {}).length === 0) {
+    // If there's no password, and we shouldn't trigger a partial save, let's discard the object
+    if (!credentials.password && !canTriggerPartialSave) {
         credentials = undefined;
     }
 

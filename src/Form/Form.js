@@ -240,7 +240,7 @@ class Form {
      */
     getValuesReadyForStorage() {
         const formValues = this.getRawValues();
-        return prepareFormValuesForStorage(formValues);
+        return prepareFormValuesForStorage(formValues, this.device.settings.featureToggles.partial_form_saves);
     }
 
     /**
