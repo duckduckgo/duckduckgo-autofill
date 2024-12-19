@@ -336,9 +336,6 @@ class FormAnalyzer {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
         }
 
-        const passwordHintRegex =
-            /\b(?:password.*?(?:must|should|has to|needs to|can))?\b.*?(?:(at least|minimum|no fewer than)\s+\d+\s+(characters?|letters?|numbers?|special characters?)|(uppercase|lowercase|capital|digit|number|symbol|special character)|\b(no spaces|cannot contain your email|cannot repeat characters|must be unique|case sensitive)\b)/;
-
         // If the form contains password hints, it's highly likely a signup form.
         const hasPasswordHints = Array.from(this.form.querySelectorAll('div, span'))
             .filter(
@@ -348,7 +345,7 @@ class FormAnalyzer {
                     window.getComputedStyle(div).display !== 'none' &&
                     window.getComputedStyle(div).visibility !== 'hidden',
             )
-            .some((div) => div.textContent && safeRegexTest(passwordHintRegex, div.textContent));
+            .some((div) => div.textContent && safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
 
         if (hasPasswordHints) {
             this.increaseSignalBy(6, 'Password hints');
