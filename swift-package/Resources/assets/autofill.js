@@ -6819,6 +6819,37 @@ class FormAnalyzer {
       }
     });
   }
+  updateFormHeaderSignals() {
+    const isVisuallyBeforeForm = el => el.getBoundingClientRect().top < this.form.getBoundingClientRect().top;
+    const isHeaderSized = el => {
+      if (el instanceof HTMLHeadingElement) {
+        return true;
+      }
+      const computedStyle = window.getComputedStyle(el);
+      const fontWeight = computedStyle.fontWeight;
+      const isRelativelyTall = parseFloat(computedStyle.height) / this.form.clientHeight > 0.1;
+      if (fontWeight === 'bold' || parseFloat(fontWeight) >= 700 || isRelativelyTall) {
+        return true;
+      }
+    };
+    const allSiblings = Array.from(this.form.parentElement?.children ?? []).filter(element => element !== this.form);
+    if (allSiblings.length === 0) return false;
+    allSiblings.forEach(sibling => {
+      if (sibling instanceof HTMLElement && sibling.childElementCount === 1 && isVisuallyBeforeForm(sibling) && isHeaderSized(sibling)) {
+        const string = sibling.textContent?.trim();
+        if (string) {
+          if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?in|log[- ]?in)$/, string)) {
+            return this.decreaseSignalBy(3, 'Strong login header before form');
+          } else if ((0, _autofillUtils.safeRegexTest)(/^(sign[- ]?up)$/, string)) {
+            return this.increaseSignalBy(3, 'Strong signup header before form');
+          }
+        }
+      }
+    });
+  }
+  hasPasswordHints() {
+    return Array.from(this.form.querySelectorAll('div, span')).filter(div => div.textContent != null && div.textContent.trim() !== '' && window.getComputedStyle(div).display !== 'none' && window.getComputedStyle(div).visibility !== 'hidden').some(div => div.textContent && (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
+  }
 
   /**
    * Function that checks if the element is an external link or a custom web element that
@@ -6932,11 +6963,9 @@ class FormAnalyzer {
     if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
     }
-
-    // If the form contains password hints, it's highly likely a signup form.
-    const hasPasswordHints = Array.from(this.form.querySelectorAll('div, span')).filter(div => div.textContent != null && div.textContent.trim() !== '' && window.getComputedStyle(div).display !== 'none' && window.getComputedStyle(div).visibility !== 'hidden').some(div => div.textContent && (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
-    if (hasPasswordHints) {
-      this.increaseSignalBy(6, 'Password hints');
+    this.updateFormHeaderSignals();
+    if (this.hasPasswordHints()) {
+      this.increaseSignalBy(3, 'Password hints');
     }
 
     // If we can't decide at this point, try reading page headings
