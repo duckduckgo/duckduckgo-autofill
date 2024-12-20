@@ -321,7 +321,7 @@ class FormAnalyzer {
         // Check page title
         this.evaluatePageTitle();
 
-        // Evaluate form's input elements
+        // Evaluate attributes of form's input elements
         this.form.querySelectorAll(this.matching.cssSelector('formInputsSelector')).forEach((input) => {
             this.evaluateElAttributes(input, 1, true);
         });

@@ -548,5 +548,6 @@
   { "html": "accounts_oneplus_login.html"},
   { "html": "google_password_manager_search.html"},
   { "html": "paperlesspost_login.html"},
-  { "html": "deltamath_reset_password.html"}
+  { "html": "deltamath_reset_password.html"},
+  { "html": "sleeper_com_signup.html", "expectedSubmitFalseNegatives": 1 }
 ]
