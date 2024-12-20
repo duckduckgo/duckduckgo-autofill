@@ -40,9 +40,6 @@ class FormAnalyzer {
          */
         this.signals = [];
 
-        // Analyse the input that was passed. This is pretty arbitrary, but historically it's been working nicely.
-        this.evaluateElAttributes(input, 1, true);
-
         // If we have a meaningful container (a form), check that, otherwise check the whole page
         if (form !== input) {
             this.evaluateForm();
@@ -149,7 +146,7 @@ class FormAnalyzer {
         }
 
         const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
-        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string);
+        const matchesSignup = safeRegexTest(/new.?(password|username)/i, string) || safeRegexTest(signupRegexToUse, string);
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -232,89 +229,12 @@ class FormAnalyzer {
         });
     }
 
-    /**
-     * Takes an element and returns all its children that are text-only nodes
-     * @param {HTMLElement|Element} element
-     * @param {number} maxDepth
-     * @param {number} currentDepth
-     * @returns {HTMLElement[]|Element[]}
-     */
-    getElementsWithOnlyTextChild(element, maxDepth = 2, currentDepth = 0) {
-        // Array to collect elements with only text child nodes
-        const elementsWithTextChild = [];
-
-        // If we've reached the max depth, stop traversing further
-        if (currentDepth > maxDepth) {
-            return elementsWithTextChild;
-        }
-
-        // Check if the current element has only one text child node
-        if (element.nodeType === Node.ELEMENT_NODE) {
-            const childNodes = element.childNodes;
-
-            if (childNodes.length === 1 && childNodes[0].nodeType === Node.TEXT_NODE) {
-                elementsWithTextChild.push(element);
-            }
-        }
-
-        // Recurse through each child element and collect matching elements
-        for (const child of element.children) {
-            // Recursively get elements from child elements, increasing depth by 1
-            elementsWithTextChild.push(...this.getElementsWithOnlyTextChild(child, maxDepth, currentDepth + 1));
-        }
-
-        return elementsWithTextChild;
-    }
-
-    evaluateFormHeaderSignals() {
-        const isVisuallyBeforeForm = (el) => el.getBoundingClientRect().top < this.form.getBoundingClientRect().top;
-
-        const isHeaderSized = (el) => {
-            if (el instanceof HTMLHeadingElement) {
-                return true;
-            }
-
-            const computedStyle = window.getComputedStyle(el);
-            const fontWeight = computedStyle.fontWeight;
-            const isRelativelyTall = parseFloat(computedStyle.height) / this.form.clientHeight > 0.1;
-            if (isRelativelyTall && (fontWeight === 'bold' || parseFloat(fontWeight) >= 700)) {
-                return true;
-            }
-        };
-
-        const allSiblings = Array.from(this.form.parentElement?.children ?? [])
-            .filter((element) => element !== this.form)
-            .map((element) => this.getElementsWithOnlyTextChild(element))
-            .flat();
-
-        if (allSiblings.length === 0) return false;
-
-        allSiblings.forEach((element) => {
-            if (element instanceof HTMLElement && isVisuallyBeforeForm(element) && isHeaderSized(element)) {
-                const string = element.textContent?.trim();
-                if (string) {
-                    if (safeRegexTest(/^(sign[- ]?in|log[- ]?in)$/i, string)) {
-                        return this.decreaseSignalBy(3, 'Strong login signal above form');
-                    } else if (safeRegexTest(/^(sign[- ]?up)$/i, string)) {
-                        return this.increaseSignalBy(3, 'Strong signup signal above form');
-                    }
-                }
-            }
-        });
-    }
-
     evaluatePasswordHints() {
-        const hasPasswordHints = Array.from(this.form.querySelectorAll('div, span'))
-            .filter(
-                (div) =>
-                    div.textContent != null &&
-                    div.textContent.trim() !== '' &&
-                    window.getComputedStyle(div).display !== 'none' &&
-                    window.getComputedStyle(div).visibility !== 'hidden',
-            )
-            .some((div) => div.textContent && safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), div.textContent));
-        if (hasPasswordHints) {
-            this.increaseSignalBy(3, 'Password hints');
+        if (this.form.textContent) {
+            const hasPasswordHints = safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), this.form.textContent, 200);
+            if (hasPasswordHints) {
+                this.increaseSignalBy(5, 'Password hints');
+            }
         }
     }
 
@@ -401,6 +321,11 @@ class FormAnalyzer {
         // Check page title
         this.evaluatePageTitle();
 
+        // Evaluate form's input elements
+        this.form.querySelectorAll(this.matching.cssSelector('formInputsSelector')).forEach((input) => {
+            this.evaluateElAttributes(input, 1, true);
+        });
+
         // Check form attributes
         this.evaluateElAttributes(this.form);
 
@@ -425,10 +350,9 @@ class FormAnalyzer {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
         }
 
-        // If we can't decide at this point, try reading form headers and password hints
+        // If we can't decide at this point, try reading password hints
         if (this.areLoginOrSignupSignalsWeak()) {
             this.evaluatePasswordHints();
-            this.evaluateFormHeaderSignals();
         }
 
         // If we can't decide at this point, try reading page headings
