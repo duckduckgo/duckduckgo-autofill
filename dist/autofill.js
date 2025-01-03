@@ -2520,7 +2520,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!#$%&()*+=@^_];"
   },
   "cvs.com": {
-    "password-rules": "minlength: 8; maxlength: 25; required: lower, upper; required: digit; allowed: [!@#$%^&*()];"
+    "password-rules": "minlength: 8; maxlength: 25; required: lower, upper; required: digit; required: [!@#$%^&*()];"
   },
   "dailymail.co.uk": {
     "password-rules": "minlength: 5; maxlength: 15;"
