@@ -6883,7 +6883,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [!#$%&()*+=@^_];"
   },
   "cvs.com": {
-    "password-rules": "minlength: 8; maxlength: 25; required: lower, upper; required: digit; allowed: [!@#$%^&*()];"
+    "password-rules": "minlength: 8; maxlength: 25; required: lower, upper; required: digit; required: [!@#$%^&*()];"
   },
   "dailymail.co.uk": {
     "password-rules": "minlength: 5; maxlength: 15;"
@@ -7595,6 +7595,9 @@ module.exports={
   },
   "treasurer.mo.gov": {
     "password-rules": "minlength: 8; maxlength: 26; required: lower; required: upper; required: digit; required: [!#$&];"
+  },
+  "truist.com": {
+    "password-rules": "minlength: 8; maxlength: 28; max-consecutive: 2; required: lower; required: upper; required: digit; required: [!#$%()*,:;=@_];"
   },
   "turkishairlines.com": {
     "password-rules": "minlength: 6; maxlength: 6; required: digit; max-consecutive: 3;"
