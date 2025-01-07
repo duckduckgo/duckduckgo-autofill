@@ -416,22 +416,25 @@ class Form {
             const credentialInputs = [...this.inputs.credentials];
             const unknownInputs = [...this.inputs.unknown];
             const identityInputs = [...this.inputs.identities];
+            const phoneInputs = identityInputs.filter((input) => getInputSubtype(input) === 'phone');
             const creditCards = [...this.inputs.creditCards];
 
-            const hasUsername = credentialInputs.some((input) => getInputSubtype(input) === 'username');
-            const hasIdentitiesExceptPhone = identityInputs.filter((input) => getInputSubtype(input) !== 'phone').length > 0;
+            const hasUsernameInput = credentialInputs.some((input) => getInputSubtype(input) === 'username');
 
-            const hasIdentitiesOrCreditCards = hasIdentitiesExceptPhone || creditCards.length > 0;
+            // Check for available input data
+            const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
+            const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
 
-            const phoneInputs = identityInputs.filter((input) => getInputSubtype(input) === 'phone');
+            // Check if it has only phone or credit card inputs
+            const hasPhoneOrCreditCardOnly = phoneInputs.length === identityInputs.length || creditCards.length === identityInputs.length;
 
             // Categorise if the form:
             // 1. doesn't have a username field,
-            // 2. doesn't have identities (except phone) or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
+            // 2. doesn't have identities (except phone or credit card), otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
             // 3. has exactly one unknown input or one phone input, and
             // 4. the form is a login form.
-            const ambiguousInputs = [...unknownInputs, ...phoneInputs];
-            if (!hasUsername && !hasIdentitiesOrCreditCards && this.isLogin && ambiguousInputs.length === 1) {
+            const ambiguousInputs = [...unknownInputs, ...phoneInputs, ...creditCards];
+            if (!hasUsernameInput && hasPhoneOrCreditCardOnly && this.isLogin && ambiguousInputs.length === 1) {
                 const passwordInputs = credentialInputs.filter(
                     (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password',
                 );
@@ -439,7 +442,16 @@ class Form {
                 const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
                 if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
                     const ambiguousInputType = getInputMainType(ambiguousInput);
-                    this.recategorizeInputToUsername(ambiguousInput, ambiguousInputType);
+                    const ambiguousInputSubtype = getInputSubtype(ambiguousInput);
+                    if (ambiguousInputSubtype === 'phone' && !hasUsernameData) {
+                        this.recategorizeInputToTargetType(
+                            ambiguousInput,
+                            ambiguousInputType,
+                            hasPhoneData ? 'identities.phone' : 'credentials.username',
+                        );
+                    } else {
+                        this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, 'credentials.username');
+                    }
                 }
             }
         }
@@ -456,11 +468,13 @@ class Form {
      * Recategorizes input's attribute to username, decorates it and also updates the input set.
      * @param {HTMLInputElement} input
      * @param {SupportedMainTypes} type
+     * @param {import('./matching.js').SupportedTypes} targetType
      */
-    recategorizeInputToUsername(input, type) {
-        input.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
+    recategorizeInputToTargetType(input, type, targetType) {
+        input.setAttribute(ATTR_INPUT_TYPE, targetType);
         this.decorateInput(input);
-        this.inputs.credentials.add(input);
+        const [mainType] = targetType.split('.');
+        this.inputs[mainType].add(input);
         this.inputs[type].delete(input);
     }
 
