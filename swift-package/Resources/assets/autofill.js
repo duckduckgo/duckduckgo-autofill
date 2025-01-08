@@ -6825,7 +6825,7 @@ class FormAnalyzer {
   evaluatePasswordHints() {
     const textContent = this.form.textContent?.replace(/\s+/g, ' ');
     if (textContent) {
-      const hasPasswordHints = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 200);
+      const hasPasswordHints = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 500);
       if (hasPasswordHints) {
         this.increaseSignalBy(5, 'Password hints');
       }
