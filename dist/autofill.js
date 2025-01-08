@@ -6895,6 +6895,8 @@ class FormAnalyzer {
         signalType: `external link: ${string}`,
         shouldFlip
       });
+    } else if (el.matches(this.matching.cssSelector('enabledCheckboxSelector')) && this.isPersistentSigninText(string)) {
+      this.decreaseSignalBy(3, 'checkbox: persistent sign-in');
     } else {
       // any other case
       const isH1Element = el.tagName === 'H1';
@@ -6985,6 +6987,15 @@ class FormAnalyzer {
     // We check for more than one to minimise false positives
     this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1);
     return this._isCCForm;
+  }
+
+  /**
+   * Checks if the text is a persistent sign-in text, e.g "stay signed in" or "remember me"
+   * @param {string} text
+   * @returns {boolean}
+   */
+  isPersistentSigninText(text) {
+    return (0, _autofillUtils.safeRegexTest)(/stay.?signed.?in|remember.?me/i, text);
   }
 }
 var _default = exports.default = FormAnalyzer;
@@ -8492,6 +8503,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
         formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
         formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
         safeUniversalSelector: '*:not(select):not(option):not(script):not(noscript):not(style):not(br)',
+        enabledCheckboxSelector: 'input[type="checkbox"]:not([disabled])',
         emailAddress: 'input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]), input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]), input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=email], input[type=text][aria-label*=email i]:not([aria-label*=search i]), input:not([type])[aria-label*=email i]:not([aria-label*=search i]), input[name=username][type=email], input[autocomplete=username][type=email], input[autocomplete=username][placeholder*=email i], input[autocomplete=email],input[name="mail_tel" i],input[value=email i]',
         username: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])[autocomplete^=user i],input[name=username i],input[name="loginId" i],input[name="userid" i],input[id="userid" i],input[name="user_id" i],input[name="user-id" i],input[id="login-id" i],input[id="login_id" i],input[id="loginid" i],input[name="login" i],input[name=accountname i],input[autocomplete=username i],input[name*=accountid i],input[name="j_username" i],input[id="j_username" i],input[name="uwinid" i],input[name="livedoor_id" i],input[name="ssousername" i],input[name="j_userlogin_pwd" i],input[name="user[login]" i],input[name="user" i],input[name$="_username" i],input[id="lmSsoinput" i],input[name="account_subdomain" i],input[name="masterid" i],input[name="tridField" i],input[id="signInName" i],input[id="w3c_accountsbundle_accountrequeststep1_login" i],input[id="username" i],input[name="_user" i],input[name="login_username" i],input[name^="login-user-account" i],input[id="loginusuario" i],input[name="usuario" i],input[id="UserLoginFormUsername" i],input[id="nw_username" i],input[can-field="accountName"],input[name="login[username]"],input[placeholder^="username" i]',
         password: 'input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i]),input.js-cloudsave-phrase',
@@ -13214,6 +13226,13 @@ const getTextShallow = el => {
     }
     if (el.type === 'image') {
       return (0, _matching.removeExcessWhitespace)(el.alt || el.value || el.title || el.name);
+    }
+
+    // If it's checkbox, check for the first label to keep it simple.
+    // If there are multiple ones, we want to be on the safe side and ignore them,
+    // as the text can be noisy, resulting in false positives on the caller side.
+    if (el.type === 'checkbox' && el.labels?.length === 1) {
+      return (0, _matching.removeExcessWhitespace)(el.labels[0].textContent);
     }
   }
   let text = '';
