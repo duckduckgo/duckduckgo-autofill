@@ -230,8 +230,9 @@ class FormAnalyzer {
     }
 
     evaluatePasswordHints() {
-        if (this.form.textContent) {
-            const hasPasswordHints = safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), this.form.textContent, 200);
+        const textContent = this.form.textContent?.replace(/\s+/g, ' ');
+        if (textContent) {
+            const hasPasswordHints = safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 200);
             if (hasPasswordHints) {
                 this.increaseSignalBy(5, 'Password hints');
             }

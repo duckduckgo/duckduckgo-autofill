@@ -443,7 +443,7 @@ const matchingConfiguration = {
                         '| avec ',
                 },
                 passwordHintsRegex: {
-                    match: '\\b(?:password.*?(?:must|should|has to|needs to|can))?\\b.*?(?:(at least|minimum|no fewer than)\\s+\\d+\\s+(characters?|letters?|numbers?|special characters?)|(uppercase|lowercase|capital|digit|number|symbol|special character)|\b(no spaces|cannot contain your email|cannot repeat characters|must be unique|case sensitive)\\b)',
+                    match: '(?:(?:must|at least).+?(?:\\d+|characters|letter|number|special character|uppercase|lowercase)[^\n]*)',
                 },
                 submitButtonRegex: {
                     match:
