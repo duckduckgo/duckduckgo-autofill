@@ -297,6 +297,8 @@ class FormAnalyzer {
                 shouldFlip = false;
             }
             this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
+        } else if (el.matches(this.matching.cssSelector('enabledCheckboxSelector')) && this.isPersistentSigninText(string)) {
+            this.decreaseSignalBy(3, 'checkbox: persistent sign-in');
         } else {
             // any other case
             const isH1Element = el.tagName === 'H1';
@@ -384,14 +386,22 @@ class FormAnalyzer {
     }
 
     /**
+     * Checks if the text is a persistent sign-in text, e.g "stay signed in" or "remember me"
+     * @param {string} text
+     * @returns {boolean}
+     */
+    isPersistentSigninText(text) {
+        return /stay.?signed.?in|remember.?me/i.test(text);
+    }
+
+    /**
      * @param {string} text
      * @returns {boolean}
      */
     shouldFlipScoreForButtonText(text) {
         const isForgotPassword = safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), text);
-        const isStaySignedIn = /stay.?signed.?in$/i.test(text);
         const isSocialButton = /facebook|twitter|google|apple/i.test(text);
-        return !isForgotPassword && !isStaySignedIn && !isSocialButton;
+        return !isForgotPassword && !isSocialButton;
     }
 }
 
