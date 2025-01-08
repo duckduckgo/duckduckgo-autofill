@@ -15,8 +15,6 @@ button:not([role=switch]):not([role=link]),
 a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`;
 
-const enabledCheckboxSelector = 'input[type="checkbox"]:not([disabled])';
-
 const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)';
 
 const emailAddress = [
@@ -281,7 +279,6 @@ const selectors = {
     formInputsSelectorWithoutSelect,
     formInputsSelector,
     safeUniversalSelector,
-    enabledCheckboxSelector,
 
     // Credentials
     emailAddress,
