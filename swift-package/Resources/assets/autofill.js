@@ -6992,9 +6992,8 @@ class FormAnalyzer {
    */
   shouldFlipScoreForButtonText(text) {
     const isForgotPassword = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('resetPasswordLink'), text);
-    const isStaySignedIn = /stay.?signed.?in$/i.test(text);
     const isSocialButton = /facebook|twitter|google|apple/i.test(text);
-    return !isForgotPassword && !isStaySignedIn && !isSocialButton;
+    return !isForgotPassword && !isSocialButton;
   }
 }
 var _default = exports.default = FormAnalyzer;
