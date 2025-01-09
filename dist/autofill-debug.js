@@ -11125,7 +11125,8 @@ class FormAnalyzer {
         string: attributeString,
         strength: signalStrength,
         signalType: `${el.name} attr: ${attributeString}`,
-        shouldCheckUnifiedForm: isInput
+        shouldCheckUnifiedForm: isInput,
+        shouldBeConservative: true
       });
     });
   }
