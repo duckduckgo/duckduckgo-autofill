@@ -231,7 +231,7 @@ class FormAnalyzer {
     }
 
     evaluatePasswordHints() {
-        const textContent = this.form.textContent?.replace(/\s+/g, ' ');
+        const textContent = removeExcessWhitespace(this.form.textContent, 1000);
         if (textContent) {
             const hasPasswordHints = safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 500);
             if (hasPasswordHints) {
