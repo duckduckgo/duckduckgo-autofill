@@ -548,5 +548,8 @@
   { "html": "accounts_oneplus_login.html"},
   { "html": "google_password_manager_search.html"},
   { "html": "paperlesspost_login.html"},
-  { "html": "deltamath_reset_password.html"}
+  { "html": "deltamath_reset_password.html"},
+  { "html": "freshdirect_com_login.html"},
+  { "html": "auth_wetransfer_com_login.html"},
+  { "html": "revolut_business_login.html"}
 ]
