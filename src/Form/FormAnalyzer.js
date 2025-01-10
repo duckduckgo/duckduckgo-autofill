@@ -299,6 +299,8 @@ class FormAnalyzer {
                 shouldFlip = false;
             }
             this.updateSignal({ string, strength, signalType: `external link: ${string}`, shouldFlip });
+        } else if (el.matches(this.matching.cssSelector('enabledCheckboxSelector')) && this.isPersistentSigninText(string)) {
+            this.decreaseSignalBy(3, 'checkbox: persistent sign-in');
         } else {
             // any other case
             const isH1Element = el.tagName === 'H1';
@@ -383,6 +385,15 @@ class FormAnalyzer {
         // We check for more than one to minimise false positives
         this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1);
         return this._isCCForm;
+    }
+
+    /**
+     * Checks if the text is a persistent sign-in text, e.g "stay signed in" or "remember me"
+     * @param {string} text
+     * @returns {boolean}
+     */
+    isPersistentSigninText(text) {
+        return safeRegexTest(/stay.?signed.?in|remember.?me/i, text);
     }
 }
 

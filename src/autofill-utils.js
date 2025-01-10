@@ -367,6 +367,13 @@ const getTextShallow = (el) => {
         if (el.type === 'image') {
             return removeExcessWhitespace(el.alt || el.value || el.title || el.name);
         }
+
+        // If it's checkbox, check for the first label to keep it simple.
+        // If there are multiple ones, we want to be on the safe side and ignore them,
+        // as the text can be noisy, resulting in false positives on the caller side.
+        if (el.type === 'checkbox' && el.labels?.length === 1) {
+            return removeExcessWhitespace(el.labels[0].textContent);
+        }
     }
 
     let text = '';
