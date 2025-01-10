@@ -6876,8 +6876,7 @@ class FormAnalyzer {
       } else {
         // Here we don't think this is a submit, so if there is another submit in the form, flip the score
         const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
-        const isSocialButton = /facebook|twitter|google|apple/i.test(string);
-        shouldFlip = thereIsASubmitButton && !isSocialButton;
+        shouldFlip = thereIsASubmitButton && this.shouldFlipScoreForButtonText(string);
       }
       const strength = likelyASubmit ? 20 : 4;
       this.updateSignal({
@@ -7005,6 +7004,16 @@ class FormAnalyzer {
     // We check for more than one to minimise false positives
     this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1);
     return this._isCCForm;
+  }
+
+  /**
+   * @param {string} text
+   * @returns {boolean}
+   */
+  shouldFlipScoreForButtonText(text) {
+    const isForgotPassword = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('resetPasswordLink'), text);
+    const isSocialButton = /facebook|twitter|google|apple/i.test(text);
+    return !isForgotPassword && !isSocialButton;
   }
 }
 var _default = exports.default = FormAnalyzer;
