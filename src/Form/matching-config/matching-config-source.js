@@ -366,7 +366,7 @@ const matchingConfiguration = {
                 birthdayYear: { match: '(birth.*year|year.*birth)' },
                 loginRegex: {
                     match:
-                        'sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)' +
+                        'sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password( |-)(forgotten|lost|recovery)' +
                         '|mfa-submit-form' + // fix chase.com
                         '|unlock|logged in as' + // fix bitwarden
                         // Italian

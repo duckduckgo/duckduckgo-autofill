@@ -169,6 +169,7 @@ class FormAnalyzer {
                 strength: signalStrength,
                 signalType: `${el.name} attr: ${attributeString}`,
                 shouldCheckUnifiedForm: isInput,
+                shouldBeConservative: true,
             });
         });
     }
