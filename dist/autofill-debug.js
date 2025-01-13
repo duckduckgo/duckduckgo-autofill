@@ -11007,6 +11007,9 @@ class FormAnalyzer {
      */
     this.signals = [];
 
+    // Analyse the input that was passed. This is pretty arbitrary, but historically it's been working nicely.
+    this.evaluateElAttributes(input, 1, true);
+
     // If we have a meaningful container (a form), check that, otherwise check the whole page
     if (form !== input) {
       this.evaluateForm();
@@ -11284,11 +11287,6 @@ class FormAnalyzer {
 
     // Check page title
     this.evaluatePageTitle();
-
-    // Evaluate attributes of form's input elements
-    this.form.querySelectorAll(this.matching.cssSelector('formInputsSelector')).forEach(input => {
-      this.evaluateElAttributes(input, 1, true);
-    });
 
     // Check form attributes
     this.evaluateElAttributes(this.form);
