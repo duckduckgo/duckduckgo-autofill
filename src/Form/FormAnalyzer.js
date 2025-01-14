@@ -231,12 +231,11 @@ class FormAnalyzer {
     }
 
     /**
-     * Function that checks if the element is an external link or a custom web element that
-     * encapsulates a link.
+     * Function that checks if the element is link like and navigating away from the current page
      * @param {any} el
      * @returns {boolean}
      */
-    isElementExternalLink(el) {
+    isOutboundLink(el) {
         // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
         // If it does, it checks if it contains an anchor element inside.
         const tagName = el.nodeName.toLowerCase();
@@ -244,12 +243,16 @@ class FormAnalyzer {
             customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
 
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-        const isElementLink =
-            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
-            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
-            el.matches('button[class*=secondary]');
+        const isElementLikelyALink = (el) => {
+            if (el == null) return false;
+            return (
+                (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
+                (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
+                el.matches('button[class*=secondary]')
+            );
+        };
 
-        return isCustomWebElementLink || isElementLink;
+        return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest('a'));
     }
 
     evaluateElement(el) {
@@ -278,15 +281,26 @@ class FormAnalyzer {
                     }
                 });
             } else {
-                // Here we don't think this is a submit, so if there is another submit in the form, flip the score
-                const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
-                shouldFlip = thereIsASubmitButton && this.shouldFlipScoreForButtonText(string);
+                // Here we don't think this is a submit, so determine if we should flip the score
+                const hasAnotherSubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
+                const buttonText = string;
+
+                if (hasAnotherSubmitButton) {
+                    // If there's another submit button, flip based on text content alone
+                    shouldFlip = this.shouldFlipScoreForButtonText(buttonText);
+                } else {
+                    // With no submit button, only flip if it's an outbound link that navigates away, and also match the text
+                    // Here we want to be more conservative, because we don't want to flip for every link given that there was no
+                    // submit button detected on the form, hence the extra check for the link.
+                    const isOutboundLink = this.isOutboundLink(el);
+                    shouldFlip = isOutboundLink && this.shouldFlipScoreForButtonText(buttonText);
+                }
             }
             const strength = likelyASubmit ? 20 : 4;
             this.updateSignal({ string, strength, signalType: `button: ${string}`, shouldFlip });
             return;
         }
-        if (this.isElementExternalLink(el)) {
+        if (this.isOutboundLink(el)) {
             let shouldFlip = true;
             let strength = 1;
             // Don't flip forgotten password links
