@@ -154,7 +154,7 @@ class Form {
      * @param {KeyboardEvent | null} [e]
      */
     hasFocus(e) {
-        return this.form.contains(getActiveElement()) || this.form.contains(/** @type HTMLElement */ (e?.target));
+        return this.form.contains(getActiveElement()) || this.form.contains(/** @type HTMLElement */(e?.target));
     }
 
     submitHandler(via = 'unknown') {
@@ -421,20 +421,13 @@ class Form {
 
             const hasUsernameInput = credentialInputs.some((input) => getInputSubtype(input) === 'username');
 
-            // Check for available input data
-            const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
-            const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
-
-            // Check if it has only phone or credit card inputs
-            const hasPhoneOrCreditCardOnly = phoneInputs.length === identityInputs.length || creditCards.length === identityInputs.length;
-
             // Categorise if the form:
             // 1. doesn't have a username field,
             // 2. doesn't have identities (except phone or credit card), otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
             // 3. has exactly one unknown input or one phone input, and
             // 4. the form is a login form.
             const ambiguousInputs = [...unknownInputs, ...phoneInputs, ...creditCards];
-            if (!hasUsernameInput && hasPhoneOrCreditCardOnly && this.isLogin && ambiguousInputs.length === 1) {
+            if (!hasUsernameInput && this.isLogin && ambiguousInputs.length === 1) {
                 const passwordInputs = credentialInputs.filter(
                     (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password',
                 );
@@ -443,6 +436,10 @@ class Form {
                 if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
                     const ambiguousInputType = getInputMainType(ambiguousInput);
                     const ambiguousInputSubtype = getInputSubtype(ambiguousInput);
+                    // Check for available input data
+                    const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
+                    const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
+
                     if (ambiguousInputSubtype === 'phone' && !hasUsernameData) {
                         this.recategorizeInputToTargetType(
                             ambiguousInput,
@@ -660,7 +657,7 @@ class Form {
             // Get click co-ordinates for pointer events
             // We need click coordinates to position the tooltip when the field is in an iframe
             if (e.type === 'pointerdown') {
-                return getMainClickCoords(/** @type {PointerEvent} */ (e)) || null;
+                return getMainClickCoords(/** @type {PointerEvent} */(e)) || null;
             }
 
             // Reuse a previous click co-ordinates if they exist for this element

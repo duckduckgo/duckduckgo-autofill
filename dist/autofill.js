@@ -6774,7 +6774,8 @@ class FormAnalyzer {
         string: attributeString,
         strength: signalStrength,
         signalType: `${el.name} attr: ${attributeString}`,
-        shouldCheckUnifiedForm: isInput
+        shouldCheckUnifiedForm: isInput,
+        shouldBeConservative: true
       });
     });
   }
@@ -6878,8 +6879,7 @@ class FormAnalyzer {
       } else {
         // Here we don't think this is a submit, so if there is another submit in the form, flip the score
         const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
-        const isSocialButton = /facebook|twitter|google|apple/i.test(string);
-        shouldFlip = thereIsASubmitButton && !isSocialButton;
+        shouldFlip = thereIsASubmitButton && this.shouldFlipScoreForButtonText(string);
       }
       const strength = likelyASubmit ? 20 : 4;
       this.updateSignal({
@@ -6997,6 +6997,16 @@ class FormAnalyzer {
     // We check for more than one to minimise false positives
     this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1);
     return this._isCCForm;
+  }
+
+  /**
+   * @param {string} text
+   * @returns {boolean}
+   */
+  shouldFlipScoreForButtonText(text) {
+    const isForgotPassword = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('resetPasswordLink'), text);
+    const isSocialButton = /facebook|twitter|google|apple/i.test(text);
+    return !isForgotPassword && !isSocialButton;
   }
 }
 var _default = exports.default = FormAnalyzer;
@@ -8637,7 +8647,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
           match: /(birth.*year|year.*birth)/iu
         },
         loginRegex: {
-          match: /sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password (forgotten|lost)|mfa-submit-form|unlock|logged in as|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl|inloggen|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord/iu
+          match: /sign(ing)?.?[io]n(?!g)|log.?[io]n|log.?out|unsubscri|(forgot(ten)?|reset) (your )?password|password( |-)(forgotten|lost|recovery)|mfa-submit-form|unlock|logged in as|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password|(ein|aus)loggen|anmeld(eformular|ung|efeld)|abmelden|passwort (vergessen|verloren)|zugang| zugangsformular|einwahl|inloggen|se (dé)?connecter|(dé)?connexion|récupérer ((mon|ton|votre|le) )?mot de passe|mot de passe (oublié|perdu)|clave(?! su)|olvidó su (clave|contraseña)|.*sesión|conect(arse|ado)|conéctate|acce(de|so)|entrar|logga (in|ut)|avprenumerera|avregistrera|glömt lösenord|återställ lösenord/iu
         },
         signupRegex: {
           match: /sign(ing)?.?up|join|\bregist(er|ration)|newsletter|\bsubscri(be|ption)|contact|create|start|enroll|settings|preferences|profile|update|checkout|purchase|buy|^order|schedule|estimate|request|new.?customer|(confirm|re.?(type|enter)|repeat) password|password confirm|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)i|sottoscriv|sottoscrizione|compra|acquist(a|o)|ordin[aeio]|richie(?:di|sta)|(?:conferma|ripeti) password|inizia|nuovo cliente|impostazioni|preferenze|profilo|aggiorna|paga|registrier(ung|en)|profil (anlegen|erstellen)| nachrichten|verteiler|neukunde|neuer (kunde|benutzer|nutzer)|passwort wiederholen|anmeldeseite|nieuwsbrief|aanmaken|profiel|s.inscrire|inscription|s.abonner|créer|préférences|profil|mise à jour|payer|ach(eter|at)| nouvel utilisateur|(confirmer|réessayer) ((mon|ton|votre|le) )?mot de passe|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|solicitar|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera|till kassan|gäst|köp|beställ|schemalägg|ny kund|(repetera|bekräfta) lösenord/iu
