@@ -11201,7 +11201,7 @@ class FormAnalyzer {
     // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
     const isElementLikelyALink = el => {
       if (el == null) return false;
-      return el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#' || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]');
+      return el instanceof HTMLAnchorElement && el.href && !el.getAttribute('href')?.startsWith('#') || (el.getAttribute('role') || '').toUpperCase() === 'LINK' || el.matches('button[class*=secondary]');
     };
     return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest('a'));
   }

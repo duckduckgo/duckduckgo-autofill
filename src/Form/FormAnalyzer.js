@@ -246,7 +246,7 @@ class FormAnalyzer {
         const isElementLikelyALink = (el) => {
             if (el == null) return false;
             return (
-                (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
+                (el instanceof HTMLAnchorElement && el.href && !el.getAttribute('href')?.startsWith('#')) ||
                 (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
                 el.matches('button[class*=secondary]')
             );
