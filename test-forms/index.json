@@ -552,5 +552,6 @@
   { "html": "sleeper_com_signup.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "freshdirect_com_login.html"},
   { "html": "auth_wetransfer_com_login.html"},
-  { "html": "revolut_business_login.html"}
+  { "html": "revolut_business_login.html"},
+  { "html": "fedex_login.html"}
 ]
