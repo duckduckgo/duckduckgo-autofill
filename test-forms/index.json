@@ -551,5 +551,6 @@
   { "html": "deltamath_reset_password.html"},
   { "html": "freshdirect_com_login.html"},
   { "html": "auth_wetransfer_com_login.html"},
-  { "html": "revolut_business_login.html"}
+  { "html": "revolut_business_login.html"},
+  { "html": "fedex_login.html"}
 ]
