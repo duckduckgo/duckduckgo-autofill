@@ -154,7 +154,10 @@ const getMismatchedValue = (score) => {
  */
 const cleanFormHTML = (html) => {
     // Collapse both whitespace and newlines between tags, preserving content within tags
-    return html.replace(/>\s*[\r\n]+\s*</g, '><');
+    return html
+        .replace(/^\s*/gm, '') // Remove leading whitespace on each line
+        .replace(/>[\r\n]+</gm, '><') // Remove new lines which exist between elements
+        .replace(/[\r\n]+/gm, ' '); // Replace any existing new lines with a space
 };
 
 const isThereAMismatch = (score) => {
