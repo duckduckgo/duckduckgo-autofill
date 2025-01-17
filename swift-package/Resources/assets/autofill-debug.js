@@ -11190,7 +11190,7 @@ class FormAnalyzer {
     });
   }
   evaluatePasswordHints() {
-    const textContent = (0, _matching.removeExcessWhitespace)(this.form.textContent, 750);
+    const textContent = (0, _matching.removeExcessWhitespace)(this.form.textContent, 200);
     if (textContent) {
       const hasPasswordHints = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 500);
       if (hasPasswordHints) {
