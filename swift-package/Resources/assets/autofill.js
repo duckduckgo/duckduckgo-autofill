@@ -6078,26 +6078,22 @@ class Form {
       const creditCards = [...this.inputs.creditCards];
       const hasUsernameInput = credentialInputs.some(input => (0, _matching.getInputSubtype)(input) === 'username');
 
-      // Check for available input data
-      const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
-      const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
-
-      // Check if it has only phone or credit card inputs
-      const hasPhoneOrCreditCardOnly = phoneInputs.length === identityInputs.length || creditCards.length === identityInputs.length;
-
       // Categorise if the form:
       // 1. doesn't have a username field,
       // 2. doesn't have identities (except phone or credit card), otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
       // 3. has exactly one unknown input or one phone input, and
       // 4. the form is a login form.
       const ambiguousInputs = [...unknownInputs, ...phoneInputs, ...creditCards];
-      if (!hasUsernameInput && hasPhoneOrCreditCardOnly && this.isLogin && ambiguousInputs.length === 1) {
+      if (!hasUsernameInput && this.isLogin && ambiguousInputs.length === 1) {
         const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password');
         const ambiguousInput = ambiguousInputs[0];
         const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
         if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
           const ambiguousInputType = (0, _matching.getInputMainType)(ambiguousInput);
           const ambiguousInputSubtype = (0, _matching.getInputSubtype)(ambiguousInput);
+          // Check for available input data
+          const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
+          const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
           if (ambiguousInputSubtype === 'phone' && !hasUsernameData) {
             this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, hasPhoneData ? 'identities.phone' : 'credentials.username');
           } else {

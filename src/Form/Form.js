@@ -154,7 +154,7 @@ class Form {
      * @param {KeyboardEvent | null} [e]
      */
     hasFocus(e) {
-        return this.form.contains(getActiveElement()) || this.form.contains(/** @type HTMLElement */(e?.target));
+        return this.form.contains(getActiveElement()) || this.form.contains(/** @type HTMLElement */ (e?.target));
     }
 
     submitHandler(via = 'unknown') {
@@ -657,7 +657,7 @@ class Form {
             // Get click co-ordinates for pointer events
             // We need click coordinates to position the tooltip when the field is in an iframe
             if (e.type === 'pointerdown') {
-                return getMainClickCoords(/** @type {PointerEvent} */(e)) || null;
+                return getMainClickCoords(/** @type {PointerEvent} */ (e)) || null;
             }
 
             // Reuse a previous click co-ordinates if they exist for this element
