@@ -146,6 +146,20 @@ const getMismatchedValue = (score) => {
     return '';
 };
 
+/**
+ * Cleans HTML content by removing excess whitespace and newlines between tags while preserving
+ * whitespace within text content
+ * @param {string} html The HTML content to clean
+ * @returns {string} The cleaned HTML
+ */
+const cleanFormHTML = (html) => {
+    // Collapse both whitespace and newlines between tags, preserving content within tags
+    return html
+        .replace(/^\s*/gm, '') // Remove leading whitespace on each line
+        .replace(/>[\r\n]+</gm, '><') // Remove new lines which exist between elements
+        .replace(/[\r\n]+/gm, ' '); // Replace any existing new lines with a space
+};
+
 const isThereAMismatch = (score) => {
     return Boolean(getMismatchedValue(score));
 };
@@ -178,7 +192,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
             document.body.appendChild(baseWrapper);
         }
 
-        baseWrapper.innerHTML = testContent;
+        baseWrapper.innerHTML = cleanFormHTML(testContent);
         document.title = title;
 
         const matching = createMatching();

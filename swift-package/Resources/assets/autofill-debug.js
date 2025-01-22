@@ -11018,6 +11018,9 @@ class FormAnalyzer {
     }
     return this;
   }
+  areLoginOrSignupSignalsWeak() {
+    return Math.abs(this.autofillSignal) < 10;
+  }
 
   /**
    * Hybrid forms can be used for both login and signup
@@ -11025,8 +11028,8 @@ class FormAnalyzer {
    */
   get isHybrid() {
     // When marking for hybrid we also want to ensure other signals are weak
-    const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10;
-    return this.hybridSignal > 0 && areOtherSignalsWeak;
+
+    return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
   }
   get isLogin() {
     if (this.isHybrid) return false;
@@ -11103,7 +11106,7 @@ class FormAnalyzer {
       return this;
     }
     const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
-    const matchesSignup = (0, _autofillUtils.safeRegexTest)(/new.?password/i, string) || (0, _autofillUtils.safeRegexTest)(signupRegexToUse, string);
+    const matchesSignup = (0, _autofillUtils.safeRegexTest)(/new.?(password|username)/i, string) || (0, _autofillUtils.safeRegexTest)(signupRegexToUse, string);
 
     // In some cases a login match means the login is somewhere else, i.e. when a link points outside
     if (shouldFlip) {
@@ -11185,6 +11188,15 @@ class FormAnalyzer {
         }
       }
     });
+  }
+  evaluatePasswordHints() {
+    const textContent = (0, _matching.removeExcessWhitespace)(this.form.textContent, 200);
+    if (textContent) {
+      const hasPasswordHints = (0, _autofillUtils.safeRegexTest)(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 500);
+      if (hasPasswordHints) {
+        this.increaseSignalBy(5, 'Password hints');
+      }
+    }
   }
 
   /**
@@ -11306,9 +11318,14 @@ class FormAnalyzer {
     }
 
     // A form with many fields is unlikely to be a login form
-    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
+    const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextInputField'));
     if (relevantFields.length >= 4) {
       this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
+    }
+
+    // If we can't decide at this point, try reading password hints
+    if (this.areLoginOrSignupSignalsWeak()) {
+      this.evaluatePasswordHints();
     }
 
     // If we can't decide at this point, try reading page headings
@@ -12872,7 +12889,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
   strategies: {
     cssSelector: {
       selectors: {
-        genericTextField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
+        genericTextInputField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
         submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
         formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
         formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
@@ -13023,6 +13040,9 @@ const matchingConfiguration = exports.matchingConfiguration = {
         },
         loginProvidersRegex: {
           match: / with | con | mit | met | avec /iu
+        },
+        passwordHintsRegex: {
+          match: /at least (\d+|one) (character|letter|number|special|uppercase|lowercase)|must be between (\d+) and (\d+) characters/iu
         },
         submitButtonRegex: {
           match: /submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\bset\b|invia|conferma|salva|continua|entra|acced|accesso|compra|paga|sottoscriv|registra|dona|senden|\bja\b|bestätigen|weiter|nächste|kaufen|bezahlen|spenden|versturen|verzenden|opslaan|volgende|koop|kopen|voeg toe|aanmelden|envoyer|confirmer|sauvegarder|continuer|suivant|signer|connexion|acheter|payer|s.abonner|donner|enviar|confirmar|registrarse|continuar|siguiente|comprar|donar|skicka|bekräfta|spara|fortsätt|nästa|logga in|köp|handla|till kassan|registrera|donera/iu
@@ -14017,9 +14037,10 @@ function getInputVariant(input) {
  */
 const removeExcessWhitespace = function () {
   let string = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  let textLengthCutoff = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : TEXT_LENGTH_CUTOFF;
   string = string?.trim() || '';
   // The length check is extra safety to avoid trimming strings that would be discarded anyway
-  if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return '';
+  if (!string || string.length > textLengthCutoff + 50) return '';
   return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ');
 };
 
@@ -17745,7 +17766,8 @@ function isFormLikelyToBeUsedAsPageWrapper(form) {
  * @returns {boolean}
  */
 function safeRegexTest(regex, string) {
-  if (!string || !regex || string.length > _constants.constants.TEXT_LENGTH_CUTOFF) return false;
+  let textLengthCutoff = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _constants.constants.TEXT_LENGTH_CUTOFF;
+  if (!string || !regex || string.length > textLengthCutoff) return false;
   return regex.test(string);
 }
 
