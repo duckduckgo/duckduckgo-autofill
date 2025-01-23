@@ -388,6 +388,10 @@ class Form {
         }
     }
 
+    canCategorizeAmbiguousInput() {
+        return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs.length === 1;
+    }
+
     /**
      * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
      * @param {HTMLInputElement} ambiguousInput
@@ -407,6 +411,37 @@ class Form {
             return 'creditCards.cardNumber';
         }
         return 'credentials.username';
+    }
+
+    /**
+     * Returns the ambiguous inputs that should be categorised.
+     * An input is considered ambiguous if it's unknown, phone or credit card and,
+     * the form doesn't have a username field,
+     * the form has password fields.
+     * @returns {HTMLInputElement[]}
+     */
+    get ambiguousInputs() {
+        const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === 'phone');
+        const hasUsernameInput = [...this.inputs.credentials].some((input) => getInputSubtype(input) === 'username');
+        const hasPasswordInputs =
+            [...this.inputs.credentials].filter((/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password').length >
+            0;
+        return !hasUsernameInput && hasPasswordInputs ? [...this.inputs.unknown, ...phoneInputs, ...this.inputs.creditCards] : [];
+    }
+
+    /**
+     * Recategorizes input's attribute to username, decorates it and also updates the input set.
+     * @param {HTMLInputElement} input
+     * @param {SupportedMainTypes} type
+     * @param {import('./matching.js').SupportedTypes} targetType
+     */
+    recategorizeInputToTargetType(input, type, targetType) {
+        const [mainType] = targetType.split('.');
+        if (type === mainType) return;
+        input.setAttribute(ATTR_INPUT_TYPE, targetType);
+        this.decorateInput(input);
+        this.inputs[mainType].add(input);
+        this.inputs[type].delete(input);
     }
 
     categorizeInputs() {
@@ -432,31 +467,13 @@ class Form {
             }
         }
 
-        // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
-        // Categorise if the form:
-        // 1. doesn't have a username field,
-        // 2. has exactly two inputs (to avoid categorising more complex forms), and
-        // 3. has exactly one ambiguous input (unknown, phone or credit card), and
-        if (this.canCategorizeUnknownUsername()) {
-            const credentialInputs = [...this.inputs.credentials];
-            const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === 'phone');
-            const creditCards = [...this.inputs.creditCards];
-
-            const hasUsernameInput = credentialInputs.some((input) => getInputSubtype(input) === 'username');
-            const hasOverallTwoInputs = [...this.inputs.all].length === 2;
-            const ambiguousInputs = [...this.inputs.unknown, ...phoneInputs, ...creditCards];
-
-            if (!hasUsernameInput && hasOverallTwoInputs && ambiguousInputs.length === 1) {
-                const passwordInputs = credentialInputs.filter(
-                    (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password',
-                );
-                const ambiguousInput = ambiguousInputs[0];
-                const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-                if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
-                    const ambiguousInputType = getInputMainType(ambiguousInput);
-                    const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
-                    this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, targetType);
-                }
+        if (this.canCategorizeAmbiguousInput()) {
+            const ambiguousInput = this.ambiguousInputs[0];
+            const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+            if (ambiguousInput && ambiguousInput.matches?.(inputSelector)) {
+                const ambiguousInputType = getInputMainType(ambiguousInput);
+                const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
+                this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, targetType);
             }
         }
 
@@ -466,25 +483,6 @@ class Form {
         if (this.form !== document.body) {
             this.mutObs.observe(this.form, this.mutObsConfig);
         }
-    }
-
-    /**
-     * Recategorizes input's attribute to username, decorates it and also updates the input set.
-     * @param {HTMLInputElement} input
-     * @param {SupportedMainTypes} type
-     * @param {import('./matching.js').SupportedTypes} targetType
-     */
-    recategorizeInputToTargetType(input, type, targetType) {
-        const [mainType] = targetType.split('.');
-        if (type === mainType) return;
-        input.setAttribute(ATTR_INPUT_TYPE, targetType);
-        this.decorateInput(input);
-        this.inputs[mainType].add(input);
-        this.inputs[type].delete(input);
-    }
-
-    canCategorizeUnknownUsername() {
-        return this.isLogin && this.device.settings.featureToggles.unknown_username_categorization;
     }
 
     get submitButtons() {
