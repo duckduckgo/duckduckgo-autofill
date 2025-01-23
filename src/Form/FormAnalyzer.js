@@ -53,15 +53,18 @@ class FormAnalyzer {
         return this;
     }
 
+    areLoginOrSignupSignalsWeak() {
+        return Math.abs(this.autofillSignal) < 10;
+    }
+
     /**
      * Hybrid forms can be used for both login and signup
      * @returns {boolean}
      */
     get isHybrid() {
         // When marking for hybrid we also want to ensure other signals are weak
-        const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10;
 
-        return this.hybridSignal > 0 && areOtherSignalsWeak;
+        return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
 
     get isLogin() {
@@ -146,7 +149,7 @@ class FormAnalyzer {
         }
 
         const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
-        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string);
+        const matchesSignup = safeRegexTest(/new.?(password|username)/i, string) || safeRegexTest(signupRegexToUse, string);
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -228,6 +231,16 @@ class FormAnalyzer {
                 }
             }
         });
+    }
+
+    evaluatePasswordHints() {
+        const textContent = removeExcessWhitespace(this.form.textContent, 200);
+        if (textContent) {
+            const hasPasswordHints = safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 500);
+            if (hasPasswordHints) {
+                this.increaseSignalBy(5, 'Password hints');
+            }
+        }
     }
 
     /**
@@ -345,9 +358,14 @@ class FormAnalyzer {
         }
 
         // A form with many fields is unlikely to be a login form
-        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
+        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextInputField'));
         if (relevantFields.length >= 4) {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
+        }
+
+        // If we can't decide at this point, try reading password hints
+        if (this.areLoginOrSignupSignalsWeak()) {
+            this.evaluatePasswordHints();
         }
 
         // If we can't decide at this point, try reading page headings

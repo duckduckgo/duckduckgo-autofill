@@ -831,10 +831,10 @@ function getInputVariant(input) {
  * @param {string | null} string
  * @return {string}
  */
-const removeExcessWhitespace = (string = '') => {
+const removeExcessWhitespace = (string = '', textLengthCutoff = TEXT_LENGTH_CUTOFF) => {
     string = string?.trim() || '';
     // The length check is extra safety to avoid trimming strings that would be discarded anyway
-    if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return '';
+    if (!string || string.length > textLengthCutoff + 50) return '';
 
     return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ');
 };
