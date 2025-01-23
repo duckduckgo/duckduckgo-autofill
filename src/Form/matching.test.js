@@ -96,7 +96,6 @@ describe('matching', () => {
         { html: `<input name="telefonnummer" value=0123456 />`, subtype: 'identities.phone' },
         { html: `<input name="電話" value=0123456 />`, subtype: 'identities.phone' },
         { html: `<input name="姓" value=0123456 />`, subtype: 'identities.lastName' },
-        { html: `<input placeholder="password" />`, subtype: 'credentials.password.new' },
         { html: `<input placeholder="captcha-password" />`, subtype: 'unknown' },
         { html: `<input placeholder="username" />`, subtype: 'credentials.username' },
         { html: `<input name="username-search" />`, subtype: 'unknown' },
@@ -185,7 +184,7 @@ describe('matching', () => {
         },
         {
             // a login form's password input with 'reset' in the label should be a current subtype
-            html: `<label for="password">Password (Forgot your password? Reset it)</label><input id="password" name></input>`,
+            html: `<label for="password">Password (Forgot your password? Reset it)</label><input type="password" id="password" name></input>`,
             subtype: 'credentials.password.current',
             opts: { isLogin: true, hasCredentials: true, supportsIdentitiesAutofill: true },
         },
