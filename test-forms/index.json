@@ -110,6 +110,7 @@
   { "html": "litmus_home_new.html" },
   { "html": "asana_tasklist.html", "expectedFailures": ["unknown"] },
   { "html": "asana_search.html" },
+  { "html": "asana_board_title.html", "expectedSubmitFalsePositives": 1 },
   { "html": "aa_login.html" },
   { "html": "hackernews_login_signup.html", "hasExtraWrappers": false },
   { "html": "mkelectricalcontracting_contact.html", "expectedSubmitFalseNegatives": 1 },
