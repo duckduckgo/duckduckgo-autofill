@@ -13381,6 +13381,12 @@ function truncateFromMiddle(string) {
  * @returns {boolean}
  */
 function isFormLikelyToBeUsedAsPageWrapper(form) {
+  /**
+   * We have a strict failsafe here to avoid running into performance issues.
+   * Running querySelectorAll('*') on a large number of sites is risky. We've seen
+   * documents with hundreds of thousands of elements and pages that create and delete
+   * forms as you scroll.
+   */
   if (form.parentElement !== document.body) return false;
   const formChildren = form.querySelectorAll('*').length;
   // If the form has few content elements, it's unlikely to cause issues anyway
