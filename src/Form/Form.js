@@ -19,7 +19,7 @@ import {
     getFormControlElements,
 } from '../autofill-utils.js';
 
-import { getInputSubtype, getInputMainType, createMatching, getInputVariant } from './matching.js';
+import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js';
 import { canBeInteractedWith, getInputConfig, isFieldDecorated } from './inputTypeConfig.js';
 
@@ -432,17 +432,20 @@ class Form {
 
     /**
      * Recategorizes input's attribute to username, decorates it and also updates the input set.
-     * @param {HTMLInputElement} input
-     * @param {SupportedMainTypes} type
-     * @param {import('./matching.js').SupportedTypes} targetType
      */
-    recategorizeInputToTargetType(input, type, targetType) {
-        const mainType = getInputMainType(input);
-        if (targetType === mainType) return;
-        input.setAttribute(ATTR_INPUT_TYPE, targetType);
-        this.decorateInput(input);
-        this.inputs[mainType].add(input);
-        this.inputs[type].delete(input);
+    recategorizeInputToTargetType() {
+        const ambiguousInput = this.ambiguousInputs?.[0];
+        const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        if (ambiguousInput?.matches?.(inputSelector)) {
+            const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
+            const inputType = getInputType(ambiguousInput);
+            if (!targetType || targetType === inputType) return;
+
+            ambiguousInput.setAttribute(ATTR_INPUT_TYPE, targetType);
+            this.decorateInput(ambiguousInput);
+            this.inputs[getMainTypeFromType(targetType)].add(ambiguousInput);
+            this.inputs[getMainTypeFromType(inputType)].delete(ambiguousInput);
+        }
     }
 
     categorizeInputs() {
@@ -468,15 +471,7 @@ class Form {
             }
         }
 
-        if (this.canCategorizeAmbiguousInput()) {
-            const ambiguousInput = this.ambiguousInputs?.[0];
-            const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-            if (ambiguousInput && ambiguousInput.matches?.(inputSelector)) {
-                const ambiguousInputType = getInputMainType(ambiguousInput);
-                const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
-                if (targetType) this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, targetType);
-            }
-        }
+        if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
 
         this.initialScanComplete = true;
 

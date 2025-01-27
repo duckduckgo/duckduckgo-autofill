@@ -418,7 +418,7 @@ describe('Form re-categorizes inputs', () => {
     });
     describe('Should recategorize', () => {
         test('when form has unknown input and has username data available', () => {
-            attachAndReturnGenericForm(`
+            const formEl = attachAndReturnGenericForm(`
                 <form>
                 <input type="text" value="unknown" autocomplete="unknown" />
                 <input type="password" value="testPassword" autocomplete="current-password" />
@@ -432,12 +432,14 @@ describe('Form re-categorizes inputs', () => {
                     phone: true,
                 },
             });
-            createScanner(deviceInterface).findEligibleInputs(document);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
             const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
             expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+            expect(form?.inputs.credentials.size).toBe(2);
         });
         test('when form has unknown input and has phone data available', () => {
-            attachAndReturnGenericForm(`
+            const formEl = attachAndReturnGenericForm(`
             <form>
                 <input type="tel" placeholder="Phone" />
                 <input type="password" value="testPassword" autocomplete="new-password" />
@@ -451,13 +453,15 @@ describe('Form re-categorizes inputs', () => {
                     phone: true,
                 },
             });
-            createScanner(deviceInterface).findEligibleInputs(document);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
             const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
             expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.phone');
+            expect(form?.inputs.identities.size).toBe(1);
         });
 
         test('when form has card number input and has credit card data available', () => {
-            attachAndReturnGenericForm(`
+            const formEl = attachAndReturnGenericForm(`
             <form>
                 <input type="text" name="cardNumber" placeholder="Card Number" />
                 <input type="password" value="testPassword" autocomplete="current-password" />
@@ -471,9 +475,11 @@ describe('Form re-categorizes inputs', () => {
                     cardNumber: true,
                 },
             });
-            createScanner(deviceInterface).findEligibleInputs(document);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
             const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
             expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardNumber');
+            expect(form?.inputs.creditCards.size).toBe(1);
         });
     });
 
@@ -485,7 +491,8 @@ describe('Form re-categorizes inputs', () => {
                 <input type="password" value="testPassword" autocomplete="current-password" />
                 <button type="submit">Login</button>
             </form>`);
-            createScanner(deviceInterface).findEligibleInputs(formEl);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(formEl);
+            const form = scanner.forms.get(formEl);
             const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
             deviceInterface.settings.setAvailableInputTypes({
                 credentials: {
@@ -496,6 +503,8 @@ describe('Form re-categorizes inputs', () => {
                 },
             });
             expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardName');
+            expect(form?.inputs.creditCards.size).toBe(1);
+            expect(form?.inputs.unknown.size).toBe(0);
         });
 
         test('when form has username input and unknown input together, and username data available', () => {
@@ -511,9 +520,12 @@ describe('Form re-categorizes inputs', () => {
                     username: true,
                 },
             });
-            createScanner(deviceInterface).findEligibleInputs(formEl);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(formEl);
+            const form = scanner.forms.get(formEl);
             const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
             expect(decoratedInputs[1].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
+            expect(form?.inputs.unknown.size).toBe(1);
+            expect(form?.inputs.credentials.size).toBe(2);
         });
 
         test('when it is a signup form with unknown input and has username data available', () => {
@@ -528,9 +540,12 @@ describe('Form re-categorizes inputs', () => {
                     username: true,
                 },
             });
-            createScanner(deviceInterface).findEligibleInputs(formEl);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(formEl);
+            const form = scanner.forms.get(formEl);
             const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
             expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
+            expect(form?.inputs.unknown.size).toBe(1);
+            expect(form?.inputs.credentials.size).toBe(1);
         });
     });
 });

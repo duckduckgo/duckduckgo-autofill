@@ -6088,17 +6088,19 @@ class Form {
 
   /**
    * Recategorizes input's attribute to username, decorates it and also updates the input set.
-   * @param {HTMLInputElement} input
-   * @param {SupportedMainTypes} type
-   * @param {import('./matching.js').SupportedTypes} targetType
    */
-  recategorizeInputToTargetType(input, type, targetType) {
-    const mainType = (0, _matching.getInputMainType)(input);
-    if (targetType === mainType) return;
-    input.setAttribute(ATTR_INPUT_TYPE, targetType);
-    this.decorateInput(input);
-    this.inputs[mainType].add(input);
-    this.inputs[type].delete(input);
+  recategorizeInputToTargetType() {
+    const ambiguousInput = this.ambiguousInputs?.[0];
+    const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+    if (ambiguousInput?.matches?.(inputSelector)) {
+      const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
+      const inputType = (0, _matching.getInputType)(ambiguousInput);
+      if (!targetType || targetType === inputType) return;
+      ambiguousInput.setAttribute(ATTR_INPUT_TYPE, targetType);
+      this.decorateInput(ambiguousInput);
+      this.inputs[(0, _matching.getMainTypeFromType)(targetType)].add(ambiguousInput);
+      this.inputs[(0, _matching.getMainTypeFromType)(inputType)].delete(ambiguousInput);
+    }
   }
   categorizeInputs() {
     const selector = this.matching.cssSelector('formInputsSelector');
@@ -6118,15 +6120,7 @@ class Form {
         return;
       }
     }
-    if (this.canCategorizeAmbiguousInput()) {
-      const ambiguousInput = this.ambiguousInputs?.[0];
-      const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-      if (ambiguousInput && ambiguousInput.matches?.(inputSelector)) {
-        const ambiguousInputType = (0, _matching.getInputMainType)(ambiguousInput);
-        const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
-        if (targetType) this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, targetType);
-      }
-    }
+    if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
     this.initialScanComplete = true;
 
     // Observe only if the container isn't the body, to avoid performance overloads
