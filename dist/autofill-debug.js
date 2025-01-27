@@ -10413,6 +10413,58 @@ class Form {
       });
     }
   }
+  canCategorizeAmbiguousInput() {
+    return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
+  }
+
+  /**
+   * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
+   * @param {HTMLInputElement} ambiguousInput
+   * @returns {import('./matching.js').SupportedTypes | undefined}
+   */
+  getTargetTypeForAmbiguousInput(ambiguousInput) {
+    const ambiguousInputSubtype = (0, _matching.getInputSubtype)(ambiguousInput);
+    const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
+    const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
+    const hasCreditCardData = Boolean(this.device.settings.availableInputTypes.creditCards?.cardNumber);
+    if (hasUsernameData || ambiguousInputSubtype === 'unknown') return 'credentials.username';
+    if (hasPhoneData && ambiguousInputSubtype === 'phone') return 'identities.phone';
+    if (hasCreditCardData && ambiguousInputSubtype === 'cardNumber') return 'creditCards.cardNumber';
+  }
+
+  /**
+   * Returns the ambiguous inputs that should be categorised.
+   * An input is considered ambiguous if it's unknown, phone or credit card and,
+   * the form doesn't have a username field,
+   * the form has password fields.
+   * @returns {HTMLInputElement[] | null}
+   */
+  get ambiguousInputs() {
+    const hasUsernameInput = [...this.inputs.credentials].some(input => (0, _matching.getInputSubtype)(input) === 'username');
+    if (hasUsernameInput) return null;
+    const hasPasswordInputs = [...this.inputs.credentials].filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password').length > 0;
+    if (!hasPasswordInputs) return null;
+    const phoneInputs = [...this.inputs.identities].filter(input => (0, _matching.getInputSubtype)(input) === 'phone');
+    const cardNumberInputs = [...this.inputs.creditCards].filter(input => (0, _matching.getInputSubtype)(input) === 'cardNumber');
+    return [...this.inputs.unknown, ...phoneInputs, ...cardNumberInputs];
+  }
+
+  /**
+   * Recategorizes input's attribute to username, decorates it and also updates the input set.
+   */
+  recategorizeInputToTargetType() {
+    const ambiguousInput = this.ambiguousInputs?.[0];
+    const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+    if (ambiguousInput?.matches?.(inputSelector)) {
+      const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
+      const inputType = (0, _matching.getInputType)(ambiguousInput);
+      if (!targetType || targetType === inputType) return;
+      ambiguousInput.setAttribute(ATTR_INPUT_TYPE, targetType);
+      this.decorateInput(ambiguousInput);
+      this.inputs[(0, _matching.getMainTypeFromType)(targetType)].add(ambiguousInput);
+      this.inputs[(0, _matching.getMainTypeFromType)(inputType)].delete(ambiguousInput);
+    }
+  }
   categorizeInputs() {
     const selector = this.matching.cssSelector('formInputsSelector');
     // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -10431,55 +10483,13 @@ class Form {
         return;
       }
     }
-
-    // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
-    if (this.canCategorizeUnknownUsername()) {
-      const credentialInputs = [...this.inputs.credentials];
-      const unknownInputs = [...this.inputs.unknown];
-      const identityInputs = [...this.inputs.identities];
-      const creditCards = [...this.inputs.creditCards];
-      const hasUsername = credentialInputs.some(input => (0, _matching.getInputSubtype)(input) === 'username');
-      const hasIdentitiesExceptPhone = identityInputs.filter(input => (0, _matching.getInputSubtype)(input) !== 'phone').length > 0;
-      const hasIdentitiesOrCreditCards = hasIdentitiesExceptPhone || creditCards.length > 0;
-      const phoneInputs = identityInputs.filter(input => (0, _matching.getInputSubtype)(input) === 'phone');
-
-      // Categorise if the form:
-      // 1. doesn't have a username field,
-      // 2. doesn't have identities (except phone) or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
-      // 3. has exactly one unknown input or one phone input, and
-      // 4. the form is a login form.
-      const ambiguousInputs = [...unknownInputs, ...phoneInputs];
-      if (!hasUsername && !hasIdentitiesOrCreditCards && this.isLogin && ambiguousInputs.length === 1) {
-        const passwordInputs = credentialInputs.filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password');
-        const ambiguousInput = ambiguousInputs[0];
-        const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-        if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
-          const ambiguousInputType = (0, _matching.getInputMainType)(ambiguousInput);
-          this.recategorizeInputToUsername(ambiguousInput, ambiguousInputType);
-        }
-      }
-    }
+    if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
     this.initialScanComplete = true;
 
     // Observe only if the container isn't the body, to avoid performance overloads
     if (this.form !== document.body) {
       this.mutObs.observe(this.form, this.mutObsConfig);
     }
-  }
-
-  /**
-   * Recategorizes input's attribute to username, decorates it and also updates the input set.
-   * @param {HTMLInputElement} input
-   * @param {SupportedMainTypes} type
-   */
-  recategorizeInputToUsername(input, type) {
-    input.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
-    this.decorateInput(input);
-    this.inputs.credentials.add(input);
-    this.inputs[type].delete(input);
-  }
-  canCategorizeUnknownUsername() {
-    return this.device.settings.featureToggles.unknown_username_categorization;
   }
   get submitButtons() {
     const selector = this.matching.cssSelector('submitButtonSelector');
@@ -12190,10 +12200,10 @@ const prepareFormValuesForStorage = function (formValues) {
   }
 
   /** Fixes for credentials */
-  // If we don't have a username to match a password, let's see if email or phone are available
-  if (credentials.password && !credentials.username && (0, _autofillUtils.hasUsernameLikeIdentity)(identities)) {
+  // If we don't have a username to match a password, let's see if email or phone or card number are available
+  if (credentials.password && !credentials.username && ((0, _autofillUtils.hasUsernameLikeIdentity)(identities) || creditCards.cardNumber)) {
     // @ts-ignore - username will be likely undefined, but needs to be specifically assigned to a string value
-    credentials.username = identities.emailAddress || identities.phone;
+    credentials.username = identities.emailAddress || identities.phone || creditCards.cardNumber;
   }
 
   // If there's no password, and we shouldn't trigger a partial save, let's discard the object

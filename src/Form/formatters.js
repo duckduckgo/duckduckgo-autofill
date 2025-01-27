@@ -203,10 +203,10 @@ const prepareFormValuesForStorage = (formValues, canTriggerPartialSave = false) 
     }
 
     /** Fixes for credentials */
-    // If we don't have a username to match a password, let's see if email or phone are available
-    if (credentials.password && !credentials.username && hasUsernameLikeIdentity(identities)) {
+    // If we don't have a username to match a password, let's see if email or phone or card number are available
+    if (credentials.password && !credentials.username && (hasUsernameLikeIdentity(identities) || creditCards.cardNumber)) {
         // @ts-ignore - username will be likely undefined, but needs to be specifically assigned to a string value
-        credentials.username = identities.emailAddress || identities.phone;
+        credentials.username = identities.emailAddress || identities.phone || creditCards.cardNumber;
     }
 
     // If there's no password, and we shouldn't trigger a partial save, let's discard the object
