@@ -442,6 +442,12 @@ const matchingConfiguration = {
                         // French
                         '| avec ',
                 },
+                passwordHintsRegex: {
+                    match:
+                        'at least (\\d+|one) (character|letter|number|special|uppercase|lowercase)' +
+                        // Fix for containerstore.com
+                        '|must be between (\\d+) and (\\d+) characters',
+                },
                 submitButtonRegex: {
                     match:
                         'submit|send|confirm|save|continue|next|sign|log.?([io])n|buy|purchase|check.?out|subscribe|donate|update|\\bset\\b' +
