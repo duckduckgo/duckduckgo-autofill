@@ -389,13 +389,13 @@ class Form {
     }
 
     canCategorizeAmbiguousInput() {
-        return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs.length === 1;
+        return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
     }
 
     /**
      * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
      * @param {HTMLInputElement} ambiguousInput
-     * @returns {import('./matching.js').SupportedTypes}
+     * @returns {import('./matching.js').SupportedTypes | undefined}
      */
     getTargetTypeForAmbiguousInput(ambiguousInput) {
         const ambiguousInputSubtype = getInputSubtype(ambiguousInput);
@@ -403,14 +403,11 @@ class Form {
         const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
         const hasCreditCardData = Boolean(this.device.settings.availableInputTypes.creditCards?.cardNumber);
 
-        if (hasUsernameData) {
-            return 'credentials.username';
-        } else if (hasPhoneData && ambiguousInputSubtype === 'phone') {
-            return 'identities.phone';
-        } else if (hasCreditCardData && ambiguousInputSubtype === 'cardNumber') {
-            return 'creditCards.cardNumber';
-        }
-        return 'credentials.username';
+        if (hasUsernameData || ambiguousInputSubtype === 'unknown') return 'credentials.username';
+
+        if (hasPhoneData && ambiguousInputSubtype === 'phone') return 'identities.phone';
+
+        if (hasCreditCardData && ambiguousInputSubtype === 'cardNumber') return 'creditCards.cardNumber';
     }
 
     /**
@@ -418,15 +415,19 @@ class Form {
      * An input is considered ambiguous if it's unknown, phone or credit card and,
      * the form doesn't have a username field,
      * the form has password fields.
-     * @returns {HTMLInputElement[]}
+     * @returns {HTMLInputElement[] | null}
      */
     get ambiguousInputs() {
-        const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === 'phone');
         const hasUsernameInput = [...this.inputs.credentials].some((input) => getInputSubtype(input) === 'username');
+        if (hasUsernameInput) return null;
         const hasPasswordInputs =
             [...this.inputs.credentials].filter((/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password').length >
             0;
-        return !hasUsernameInput && hasPasswordInputs ? [...this.inputs.unknown, ...phoneInputs, ...this.inputs.creditCards] : [];
+        if (!hasPasswordInputs) return null;
+
+        const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === 'phone');
+        const cardNumberInputs = [...this.inputs.creditCards].filter((input) => getInputSubtype(input) === 'cardNumber');
+        return [...this.inputs.unknown, ...phoneInputs, ...cardNumberInputs];
     }
 
     /**
@@ -436,8 +437,8 @@ class Form {
      * @param {import('./matching.js').SupportedTypes} targetType
      */
     recategorizeInputToTargetType(input, type, targetType) {
-        const [mainType] = targetType.split('.');
-        if (type === mainType) return;
+        const mainType = getInputMainType(input);
+        if (targetType === mainType) return;
         input.setAttribute(ATTR_INPUT_TYPE, targetType);
         this.decorateInput(input);
         this.inputs[mainType].add(input);
@@ -468,12 +469,12 @@ class Form {
         }
 
         if (this.canCategorizeAmbiguousInput()) {
-            const ambiguousInput = this.ambiguousInputs[0];
+            const ambiguousInput = this.ambiguousInputs?.[0];
             const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
             if (ambiguousInput && ambiguousInput.matches?.(inputSelector)) {
                 const ambiguousInputType = getInputMainType(ambiguousInput);
                 const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
-                this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, targetType);
+                if (targetType) this.recategorizeInputToTargetType(ambiguousInput, ambiguousInputType, targetType);
             }
         }
 

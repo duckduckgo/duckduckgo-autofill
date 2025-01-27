@@ -410,3 +410,127 @@ describe('Form bails', () => {
         expect(decoratedInputs).toHaveLength(0);
     });
 });
+
+describe('Form re-categorizes inputs', () => {
+    const deviceInterface = InterfacePrototype.default();
+    deviceInterface.settings.setFeatureToggles({
+        unknown_username_categorization: true,
+    });
+    describe('Should recategorize', () => {
+        test('when form has unknown input and has username data available', () => {
+            attachAndReturnGenericForm(`
+                <form>
+                <input type="text" value="unknown" autocomplete="unknown" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Login</button>
+            </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+                identities: {
+                    phone: true,
+                },
+            });
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+        });
+        test('when form has unknown input and has phone data available', () => {
+            attachAndReturnGenericForm(`
+            <form>
+                <input type="tel" placeholder="Phone" />
+                <input type="password" value="testPassword" autocomplete="new-password" />
+                <button type="submit">Sign in</button>
+            </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: false,
+                },
+                identities: {
+                    phone: true,
+                },
+            });
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.phone');
+        });
+
+        test('when form has card number input and has credit card data available', () => {
+            attachAndReturnGenericForm(`
+            <form>
+                <input type="text" name="cardNumber" placeholder="Card Number" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Sign in</button>
+            </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: false,
+                },
+                creditCards: {
+                    cardNumber: true,
+                },
+            });
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardNumber');
+        });
+    });
+
+    describe('Should not recategorize', () => {
+        test('when form has card name input, and has username and cardName data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <input type="text" value="testCardName" autocomplete="cc-name" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Login</button>
+            </form>`);
+            createScanner(deviceInterface).findEligibleInputs(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+                creditCards: {
+                    cardName: true,
+                },
+            });
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardName');
+        });
+
+        test('when form has username input and unknown input together, and username data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="text" value="unknown" autocomplete="unknown" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Sign in</button>
+                </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+            });
+            createScanner(deviceInterface).findEligibleInputs(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[1].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
+        });
+
+        test('when it is a signup form with unknown input and has username data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="text" value="unknown" autocomplete="unknown" />
+                    <input type="password" value="testPassword" autocomplete="new-password" />
+                    <button type="submit">Sign up</button>
+                </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+            });
+            createScanner(deviceInterface).findEligibleInputs(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
+        });
+    });
+});
