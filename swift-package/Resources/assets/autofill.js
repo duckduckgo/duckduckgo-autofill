@@ -6034,10 +6034,16 @@ class Form {
   }
   initFormListeners() {
     // This ensures we fire the handler again if the form is changed
-    this.addListener(this.form, 'input', () => {
+    this.addListener(this.form, 'input', e => {
       if (!this.isAutofilling) {
         this.submitHandlerExecuted = false;
-        this.resetShouldPromptToStoreData();
+        /** @type {import('./matching.js').SupportedTypes} **/
+        const inputType = e.target.getAttribute(ATTR_INPUT_TYPE);
+        if (inputType && inputType !== 'unknown') {
+          this.resetShouldPromptToStoreData();
+        } else {
+          this.shouldPromptToStoreData = false;
+        }
       }
     });
 

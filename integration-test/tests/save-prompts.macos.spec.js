@@ -4,7 +4,7 @@ import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/moc
 import { test as base } from '@playwright/test';
 import { signupPage } from '../helpers/pages/signupPage.js';
 import { loginPage } from '../helpers/pages/loginPage.js';
-
+import { addressPage } from '../helpers/pages/addressPage.js';
 /**
  *  Tests for various auto-fill scenarios on macos
  */
@@ -77,6 +77,33 @@ test.describe('macos', () => {
                 await login.navigate();
                 await login.submitUsernameOnlyForm(credentials.username);
                 await login.shouldPromptToSave();
+            });
+        });
+        test.describe('prompting to save an address form with additional inputs', () => {
+            const addressData = {
+                firstName: 'John',
+                lastName: 'Doe',
+                addressStreet: '123 Main St',
+                addressStreet2: 'Apt 4B',
+                addressCity: 'New York',
+                addressCountryCode: 'US',
+                addressProvince: 'NY',
+                addressPostalCode: '10001',
+                phone: '5550123',
+                notes: 'Leave at door',
+            };
+            test('submitting address form with non-ddg inputs should not prompt', async ({ page }) => {
+                // enable in-terminal exceptions
+                await forwardConsoleMessages(page);
+
+                await createWebkitMocks().applyTo(page);
+                await defaultMacosScript(page);
+
+                const address = addressPage(page);
+                await address.navigate();
+                await address.fillAddressForm(addressData);
+                await address.submitFormViaTextbox();
+                await address.shouldNotPromptToSave();
             });
         });
     });
