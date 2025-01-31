@@ -2441,6 +2441,9 @@ module.exports={
   "carrefour.it": {
     "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
   },
+  "carte-mobilite-inclusion.fr": {
+    "password-rules": "minlength: 12; maxlength: 30; required: lower; required: upper; required: digit;"
+  },
   "cathaypacific.com": {
     "password-rules": "minlength: 8; maxlength: 20; required: upper; required: digit; required: [!#$*^]; allowed: lower;"
   },
@@ -2992,6 +2995,9 @@ module.exports={
   },
   "mlb.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
+  },
+  "mountainwarehouse.com": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-@#$%^&*_+={}|\\:',?/`~\"();.];"
   },
   "mpv.tickets.com": {
     "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
