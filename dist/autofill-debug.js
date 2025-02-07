@@ -10469,6 +10469,7 @@ class Form {
       this.decorateInput(ambiguousInput);
       this.inputs[(0, _matching.getMainTypeFromType)(targetType)].add(ambiguousInput);
       this.inputs[(0, _matching.getMainTypeFromType)(inputType)].delete(ambiguousInput);
+      if ((0, _autofillUtils.shouldLog)()) console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
     }
   }
   categorizeInputs() {
