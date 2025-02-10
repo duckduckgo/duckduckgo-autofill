@@ -17,8 +17,8 @@ on:
 
 env:
     VERSION: ${{ github.event.inputs.tag_name || github.event.release.tag_name }}
-    RELEASE_URL: ${{ github.event.release.html_url }}
-    RELEASE_NOTES: ${{ github.event.release.body }}
+    RELEASE_URL: ${{ github.event.inputs.release_url || github.event.release.html_url }}
+    RELEASE_NOTES: ${{ github.event.inputs.release_notes || github.event.release.body }}
 
 jobs:
     # ------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ jobs:
             - name: Update Android autofill reference
               run: |
                   cd android
-                  npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
+                  npm install github:duckduckgo/duckduckgo-autofill#${{ env.VERSION }}
                   cd ..
             - name: Create Android PR Body
               env:
@@ -94,9 +94,9 @@ jobs:
                       package.json
                       package-lock.json
                       node_modules/@duckduckgo/autofill
-                  commit-message: Update autofill to ${{ github.event.release.tag_name }}
-                  branch: update-autofill-${{ github.event.release.tag_name }}
-                  title: Update autofill to ${{ github.event.release.tag_name }}
+                  commit-message: Update autofill to ${{ env.VERSION }}
+                  branch: update-autofill-${{ env.VERSION }}
+                  title: Update autofill to ${{ env.VERSION }}
                   body: '${{ env.PR_BODY_ANDROID }}'
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
@@ -143,9 +143,9 @@ jobs:
               with:
                   path: apple-monorepo/
                   add-paths: BrowserServicesKit/Package.swift,BrowserServicesKit/Package.resolved
-                  commit-message: Update autofill to ${{ github.event.release.tag_name }}
-                  branch: update-autofill-${{ github.event.release.tag_name }}
-                  title: Update autofill to ${{ github.event.release.tag_name }}
+                  commit-message: Update autofill to ${{ env.VERSION }}
+                  branch: update-autofill-${{ env.VERSION }}
+                  title: Update autofill to ${{ env.VERSION }}
                   body: ${{ env.PR_BODY_APPLE }}
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
@@ -178,7 +178,7 @@ jobs:
             - name: Update Extensions autofill reference
               run: |
                   cd extensions
-                  npm install github:duckduckgo/duckduckgo-autofill#${{ github.event.release.tag_name }}
+                  npm install github:duckduckgo/duckduckgo-autofill#${{ env.VERSION }}
                   cd ..
             - name: Create Extensions PR Body
               env:
@@ -199,9 +199,9 @@ jobs:
                   add-paths: |
                       package.json
                       package-lock.json
-                  commit-message: Update autofill to ${{ github.event.release.tag_name }}
-                  branch: update-autofill-${{ github.event.release.tag_name }}
-                  title: Update autofill to ${{ github.event.release.tag_name }}
+                  commit-message: Update autofill to ${{ env.VERSION }}
+                  branch: update-autofill-${{ env.VERSION }}
+                  title: Update autofill to ${{ env.VERSION }}
                   body: '${{ env.PR_BODY_EXTENSIONS }}'
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
@@ -253,9 +253,9 @@ jobs:
                   path: windows/
                   add-paths: |
                       submodules/duckduckgo-autofill
-                  commit-message: Update autofill to ${{ github.event.release.tag_name }}
-                  branch: update-autofill-${{ github.event.release.tag_name }}
-                  title: Update autofill to ${{ github.event.release.tag_name }}
+                  commit-message: Update autofill to ${{ env.VERSION }}
+                  branch: update-autofill-${{ env.VERSION }}
+                  title: Update autofill to ${{ env.VERSION }}
                   body: '${{ env.PR_BODY_WINDOWS }}'
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
