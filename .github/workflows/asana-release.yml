@@ -4,9 +4,13 @@ on:
     release:
         types: [created]
     workflow_dispatch:
+        inputs:
+            tag_name:
+                description: 'Tag name for the release'
+                required: true
 
 env:
-    VERSION: ${{ github.event.release.tag_name }}
+    VERSION: ${{ github.event.inputs.tag_name || github.event.release.tag_name }}
     RELEASE_URL: ${{ github.event.release.html_url }}
     RELEASE_NOTES: ${{ github.event.release.body }}
 
