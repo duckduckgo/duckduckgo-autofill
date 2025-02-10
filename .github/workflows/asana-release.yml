@@ -3,6 +3,7 @@ name: Autofill Release Workflow
 on:
     release:
         types: [created]
+    workflow_dispatch:
 
 env:
     VERSION: ${{ github.event.release.tag_name }}
@@ -37,6 +38,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_android:
+        if: false # TODO: Remove after testing monorepo release changes
         runs-on: ubuntu-20.04
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
@@ -121,11 +123,11 @@ jobs:
                   TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js bsk)"
                   # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
                   DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
-                  echo "PR_BODY_BSK<<$DELIMITER" >> $GITHUB_ENV
+                  echo "PR_BODY_APPLE<<$DELIMITER" >> $GITHUB_ENV
                   echo "$TEMPLATE" >> $GITHUB_ENV
                   echo "$DELIMITER" >> $GITHUB_ENV
             # --- Effect ---
-            - name: Create PR for BSK
+            - name: Create PR for Apple monorepo
               uses: peter-evans/create-pull-request@b3a2c5d525a1eb75e75c781e45a1bf3bfc23bdc6
               id: create-pr
               with:
@@ -134,7 +136,7 @@ jobs:
                   commit-message: Update autofill to ${{ github.event.release.tag_name }}
                   branch: update-autofill-${{ github.event.release.tag_name }}
                   title: Update autofill to ${{ github.event.release.tag_name }}
-                  body: ${{ env.PR_BODY_BSK }}
+                  body: ${{ env.PR_BODY_APPLE }}
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
 
     # ------------------------------------------------------------------------------
@@ -142,6 +144,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_extensions:
+        if: false # TODO: Remove after testing monorepo release changes
         runs-on: ubuntu-20.04
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
@@ -197,6 +200,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_windows:
+        if: false # TODO: Remove after testing monorepo release changes
         runs-on: ubuntu-20.04
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
