@@ -22,7 +22,7 @@ const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/;
  *
  * @typedef {{
  *   android: platformData,
- *   bsk: platformData,
+ *   apple: platformData,
  *   windows: platformData
  * }} AsanaOutput
  */
@@ -34,8 +34,8 @@ const platforms = {
         taskGid: '',
         taskUrl: '',
     },
-    bsk: {
-        displayName: 'BrowserServicesKit',
+    apple: {
+        displayName: 'Apple',
         taskGid: '',
         taskUrl: '',
     },

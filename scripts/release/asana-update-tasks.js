@@ -4,9 +4,7 @@ const { replaceAllInString, getLink, wrapInLi } = require('./release-utils.js');
 const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN;
 const prUrls = {
     android: process.env.ANDROID_PR_URL,
-    bsk: process.env.BSK_PR_URL,
-    ios: process.env.IOS_PR_URL,
-    macos: process.env.MACOS_PR_URL,
+    apple: process.env.APPLE_PR_URL,
     windows: process.env.WINDOWS_PR_URL,
 };
 const asanaOutputRaw = process.env.ASANA_OUTPUT;
@@ -44,13 +42,6 @@ const asanaUpdateTasks = async () => {
         const taskDescriptionSubstitutions = [[/\[\[pr_url]]/, prLink]];
 
         let extraContent = '';
-        if (platformName === 'bsk') {
-            // On the BSK task we also substitute the ios and macos placeholders
-            const iosPrLink = prUrls.ios ? getLink(prUrls.ios, 'iOS PR') : 'Error creating iOS PR';
-            const macosPrLink = prUrls.macos ? getLink(prUrls.macos, 'macOS PR') : 'Error creating macOS PR';
-            extraContent = `${wrapInLi(iosPrLink)}${wrapInLi(macosPrLink)}`;
-        }
-
         taskDescriptionSubstitutions.push([/<li>\[\[extra_content]]<\/li>/, extraContent]);
 
         const updatedNotes = replaceAllInString(notes, taskDescriptionSubstitutions);

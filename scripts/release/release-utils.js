@@ -51,19 +51,6 @@ function wrapInLi(content) {
 }
 
 /**
- * Provide the source project.pbxproj for iOS and macOS and get it updated with the BSK reference
- * @param {string} projectPbxprojContent
- * @param {string} commit
- * @returns {string}
- */
-function updateProjectPbxproj(projectPbxprojContent, commit) {
-    const bskPackageRegex =
-        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/i;
-
-    return replaceInString(projectPbxprojContent, bskPackageRegex, `$1revision$3revision = ${commit};`);
-}
-
-/**
  * Provide the source Package.swift for BSK and get it updated with the autofill version
  * @param {string} packageSwiftContent
  * @param {string} version
@@ -120,5 +107,4 @@ module.exports = {
     wrapInLi,
     updatePackageSwift,
     updatePackageResolved,
-    updateProjectPbxproj,
 };

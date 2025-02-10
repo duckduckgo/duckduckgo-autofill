@@ -113,14 +113,14 @@ jobs:
                   repository: duckduckgo/apple-monorepo-test # TODO: Update with final monorepo URL
                   path: apple-monorepo/
                   token: ${{ secrets.DAXMOBILE_AUTOFILL_AUTOMATION }}
-            - name: Update BSK autofill reference
+            - name: Update Apple autofill reference
               run: |
                   node ./autofill/scripts/release/update-bsk-repo.js
             - name: Create Apple PR Body
               env:
                   ASANA_OUTPUT: ${{ needs.create_asana_tasks.outputs.asana-output }}
               run: |
-                  TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js bsk)"
+                  TEMPLATE="$(node ./autofill/scripts/release/create-pr-template.js apple)"
                   # Creates a randomised delimiter. See https://app.asana.com/0/1199892415909552/1203243297643584/f
                   DELIMITER=$(echo $RANDOM | md5sum | head -c 20;)
                   echo "PR_BODY_APPLE<<$DELIMITER" >> $GITHUB_ENV
