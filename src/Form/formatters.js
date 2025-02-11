@@ -188,6 +188,45 @@ const shouldStoreCreditCards = ({ creditCards }) => {
 const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '');
 
 /**
+ * Infer credentials from password and identities
+ * @param {InternalDataStorageObject['credentials']} credentials
+ * @param {InternalDataStorageObject['identities']} identities
+ * @param {string|undefined} cardNumber
+ * @return {InternalDataStorageObject['credentials'] | undefined}
+ */
+const inferCredentialsForPartialSave = (credentials, identities, cardNumber) => {
+    // Try to infer username from identity or card number
+    if (!credentials.username && (hasUsernameLikeIdentity(identities) || cardNumber)) {
+        // @ts-ignore - We know that username is not a useful value here
+        credentials.username = identities.emailAddress || identities.phone || cardNumber;
+    }
+    // Discard empty credentials
+    if (Object.keys(credentials ?? {}).length === 0) {
+        return undefined;
+    }
+    return credentials;
+};
+
+/**
+ * Infer credentials from password and identities
+ * @param {InternalDataStorageObject['credentials']} credentials
+ * @param {InternalDataStorageObject['identities']} identities
+ * @param {string|undefined} cardNumber
+ * @return {InternalDataStorageObject['credentials'] | undefined}
+ */
+const inferCredentials = (credentials, identities, cardNumber) => {
+    if (!credentials.password) {
+        return undefined;
+    }
+    // Try to use email as username if password exists but username is missing
+    if (credentials.password && !credentials.username && (hasUsernameLikeIdentity(identities) || cardNumber)) {
+        // @ts-ignore - We know that username is not a useful value here
+        credentials.username = identities.emailAddress || identities.phone || cardNumber;
+    }
+    return credentials;
+};
+
+/**
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
@@ -202,17 +241,21 @@ const prepareFormValuesForStorage = (formValues, canTriggerPartialSave = false) 
         creditCards.cardName = identities?.fullName || formatFullName(identities);
     }
 
-    /** Fixes for credentials */
-    // If we don't have a username to match a password, let's see if email or phone or card number are available
-    if (credentials.password && !credentials.username && (hasUsernameLikeIdentity(identities) || creditCards.cardNumber)) {
-        // @ts-ignore - username will be likely undefined, but needs to be specifically assigned to a string value
-        credentials.username = identities.emailAddress || identities.phone || creditCards.cardNumber;
-    }
-
-    // If there's no password, and we shouldn't trigger a partial save, let's discard the object
-    if (!credentials.password && !canTriggerPartialSave) {
-        credentials = undefined;
-    }
+    /** Fixes for credentials
+     * https://app.asana.com/0/1203822806345703/1209282738083555/f
+     * We're splitting the two approaches to infer credentials:
+     * 1. inferCredentialsForPartialSave - This is used when `partialFormSaves` config is enabled,
+     * 2. inferCredentials - This is used when we're triggering a form submission
+     * There's some de-duplication of logic because of it, but it's kept mostly to avoid
+     * having to change the overall older logic. We attempted simplifying this logic
+     * in 16.1.0 (https://github.com/duckduckgo/duckduckgo-autofill/compare/16.0.0...16.1.0)
+     * but that refactor seem to have caused some regression, which is visible in the metrics
+     * but not reproducible with the current tests. Once the feature is stable, we should
+     * revisit and remove the older logic.
+     */
+    credentials = canTriggerPartialSave
+        ? inferCredentialsForPartialSave(credentials, identities, creditCards.cardNumber)
+        : inferCredentials(credentials, identities, creditCards.cardNumber);
 
     /** Fixes for identities **/
     // Don't store if there isn't enough data
