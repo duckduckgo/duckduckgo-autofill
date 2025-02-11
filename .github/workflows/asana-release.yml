@@ -233,7 +233,7 @@ jobs:
               run: |
                   cd windows/submodules/duckduckgo-autofill
                   git fetch --tags
-                  git checkout ${{ github.event.release.tag_name }}
+                  git checkout ${{ env.VERSION }}
                   cd ../../../
             - name: Create Windows PR Body
               env:
