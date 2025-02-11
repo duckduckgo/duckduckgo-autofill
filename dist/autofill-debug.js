@@ -12245,7 +12245,18 @@ const prepareFormValuesForStorage = function (formValues) {
     creditCards.cardName = identities?.fullName || formatFullName(identities);
   }
 
-  /** Fixes for credentials **/
+  /** Fixes for credentials
+   * https://app.asana.com/0/1203822806345703/1209282738083555/f
+   * We're splitting the two approaches to infer credentials:
+   * 1. inferCredentialsForPartialSave - This is used when `partialFormSaves` config is enabled,
+   * 2. inferCredentials - This is used when we're triggering a form submission
+   * There's some de-duplication of logic because of it, but it's kept mostly to avoid
+   * having to change the overall older logic. We attempted simplifying this logic
+   * in 16.1.0 (https://github.com/duckduckgo/duckduckgo-autofill/compare/16.0.0...16.1.0)
+   * but that refactor seem to have caused some regression, which is visible in the metrics
+   * but not reproducible with the current tests. Once the feature is stable, we should
+   * revisit and remove the older logic.
+   */
   credentials = canTriggerPartialSave ? inferCredentialsForPartialSave(credentials, identities, creditCards.cardNumber) : inferCredentials(credentials, identities, creditCards.cardNumber);
 
   /** Fixes for identities **/
