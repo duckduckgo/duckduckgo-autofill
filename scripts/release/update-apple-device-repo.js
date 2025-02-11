@@ -16,14 +16,24 @@ function updateAppleDeviceRepo(platform = 'ios', commit) {
 
     if (!commit) throw new Error('Commit not provided');
 
-    const projectFilePath = filepath(`../../${platform}/DuckDuckGo.xcodeproj/project.pbxproj`);
+    let projectFileName;
+
+    if (platform === 'ios') {
+        projectFileName = 'DuckDuckGo-iOS.xcodeproj';
+    } else if (platform === 'macos') {
+        projectFileName = 'DuckDuckGo-macOS.xcodeproj';
+    } else {
+        throw new Error(`Unsupported platform: ${platform}`);
+    }
+
+    const projectFilePath = filepath(`../../${platform}/${projectFileName}/project.pbxproj`);
 
     const projectFile = readFileSync(projectFilePath, 'utf8');
     const updatedProjectFile = updateProjectPbxproj(projectFile, commit);
     writeFileSync(projectFilePath, updatedProjectFile);
 
     if (platform === 'macos') {
-        const packageResolvedPath = filepath('../../macos/DuckDuckGo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved');
+        const packageResolvedPath = filepath(`../../macos/${projectFileName}/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`);
 
         const substitutions = {
             autofill: {
