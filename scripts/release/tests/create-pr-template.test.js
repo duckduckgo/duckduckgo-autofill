@@ -10,7 +10,7 @@ describe('it returns the expected result', () => {
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
         expect(output).toContain(asanaData.android.taskGid);
-        expect(output).not.toContain(data.bskPrUrl);
+        expect(output).not.toContain(data.applePrUrl);
     });
 
     test('for iOS', () => {
@@ -21,7 +21,7 @@ describe('it returns the expected result', () => {
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
         expect(output).toContain(asanaData.bsk.taskGid);
-        expect(output).toContain(data.bskPrUrl);
+        expect(output).toContain(data.applePrUrl);
     });
 
     test('for macOS', () => {
@@ -32,7 +32,7 @@ describe('it returns the expected result', () => {
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
         expect(output).toContain(asanaData.bsk.taskGid);
-        expect(output).toContain(data.bskPrUrl);
+        expect(output).toContain(data.applePrUrl);
     });
 
     test('for extensions', () => {
@@ -41,6 +41,6 @@ describe('it returns the expected result', () => {
         expect(output).toContain(data.version);
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
-        expect(output).not.toContain(data.bskPrUrl);
+        expect(output).not.toContain(data.applePrUrl);
     });
 });
