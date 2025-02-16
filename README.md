@@ -1,6 +1,6 @@
 # DuckDuckGo Autofill
 
-This code is installed using `npm` in our [extension](https://github.com/duckduckgo/duckduckgo-privacy-extension) and as a git submodule by native apps ([iOS](https://github.com/duckduckgo/iOS) and [Android](https://github.com/duckduckgo/Android)).
+This code is installed using `npm` in our [extension](https://github.com/duckduckgo/duckduckgo-privacy-extension) and as a git submodule by native apps ([iOS/macOS](https://github.com/duckduckgo/apple-browsers) and [Android](https://github.com/duckduckgo/Android)).
 
 DuckDuckGo Autofill is distributed under the Apache 2.0 [License](LICENSE.md).
 
