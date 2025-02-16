@@ -92,7 +92,7 @@ function updatePackageResolved(packageResolvedContent, substitutions) {
 
     if (substitutions.bsk) {
         const bskRegex =
-            /("location" : "https:\/\/github.com\/duckduckgo\/BrowserServicesKit",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/i;
+            /("location" : "https:\/\/github.com\/duckduckgo\/apple-browsers",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/i;
 
         updatedContent = replaceInString(updatedContent, bskRegex, `$1${substitutions.bsk.commit}$4`);
     }

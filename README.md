@@ -21,7 +21,7 @@ Now you can run `npm start` in this repo and the changes will be picked up autom
 
 ### Apple apps (iOS and macOS)
 
-On Apple clients, autofill is included as part of the [BrowserServicesKit](https://github.com/duckduckgo/BrowserServicesKit) (BSK) package. If your changes involve native code, you probably want to work within BSK, otherwise you can work directly within the client codebases.
+On Apple clients, autofill is included as part of the [BrowserServicesKit](https://github.com/duckduckgo/apple-browsers) (BSK) package. If your changes involve native code, you probably want to work within BSK, otherwise you can work directly within the client codebases.
 
 The easiest way to override the client version of autofill is to drag-and-drop your local autofill folder from the Finder right into Xcode project navigator, at the root level. If you're working in BSK, you can drag-and-drop autofill in the BSK project and then drag-and-drop BSK itself in the platform project.
 

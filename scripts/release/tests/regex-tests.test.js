@@ -35,7 +35,7 @@ dependencies: [
 {
         "identity" : "browserserviceskit",
         "kind" : "remoteSourceControl",
-        "location" : "https://github.com/duckduckgo/BrowserServicesKit",
+        "location" : "https://github.com/duckduckgo/apple-browsers",
         "state" : {
             "revision" : "fc9ada07283575e3106e6fc5c670a96c34a86f55",
             "version" : "54.1.0"
