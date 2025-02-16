@@ -181,7 +181,7 @@ jobs:
               id: create-pr
               with:
                   path: ios/
-                  add-paths: DuckDuckGo.xcodeproj/project.pbxproj
+                  add-paths: DuckDuckGo-iOS.xcodeproj/project.pbxproj
                   commit-message: Update BSK with autofill ${{ github.event.release.tag_name }}
                   branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
                   title: Update BSK with autofill ${{ github.event.release.tag_name }}
@@ -232,7 +232,7 @@ jobs:
               id: create-pr
               with:
                   path: macos/
-                  add-paths: DuckDuckGo.xcodeproj/project.pbxproj
+                  add-paths: DuckDuckGo-macOS.xcodeproj/project.pbxproj
                   commit-message: Update BSK with autofill ${{ github.event.release.tag_name }}
                   branch: update-bsk-with-autofill-${{ github.event.release.tag_name }}
                   title: Update BSK with autofill ${{ github.event.release.tag_name }}
