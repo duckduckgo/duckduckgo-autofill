@@ -1,5 +1,5 @@
 const Asana = require('asana');
-const { replaceAllInString, getLink, wrapInLi } = require('./release-utils.js');
+const { replaceAllInString, getLink } = require('./release-utils.js');
 
 const ASANA_ACCESS_TOKEN = process.env.ASANA_ACCESS_TOKEN;
 const prUrls = {
@@ -41,7 +41,7 @@ const asanaUpdateTasks = async () => {
         /** @type {[[RegExp, string]]} */
         const taskDescriptionSubstitutions = [[/\[\[pr_url]]/, prLink]];
 
-        let extraContent = '';
+        const extraContent = '';
         taskDescriptionSubstitutions.push([/<li>\[\[extra_content]]<\/li>/, extraContent]);
 
         const updatedNotes = replaceAllInString(notes, taskDescriptionSubstitutions);
