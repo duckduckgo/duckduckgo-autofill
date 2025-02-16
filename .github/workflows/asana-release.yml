@@ -48,7 +48,6 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_android:
-        if: false # TODO: Remove after testing monorepo release changes
         runs-on: ubuntu-20.04
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
@@ -154,7 +153,6 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_extensions:
-        if: false # TODO: Remove after testing monorepo release changes
         runs-on: ubuntu-20.04
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
@@ -210,7 +208,6 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_windows:
-        if: false # TODO: Remove after testing monorepo release changes
         runs-on: ubuntu-20.04
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
