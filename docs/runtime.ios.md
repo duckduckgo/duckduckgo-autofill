@@ -2,7 +2,7 @@
 
 on Apple devices, this data is retrieved from the following string-replacements
 
-- [BrowserServices Kit String replacements](https://github.com/duckduckgo/BrowserServicesKit/blob/main/Sources/BrowserServicesKit/Autofill/AutofillUserScript+SourceProvider.swift#L54-L56)
+- [BrowserServices Kit String replacements](https://github.com/duckduckgo/apple-browsers/blob/main/BrowserServicesKit/Sources/BrowserServicesKit/Autofill/AutofillUserScript+SourceProvider.swift#L54-L56)
 
 Internally, we force it into the following shape in order to conform to the following schema definition:
 - [Runtime Configuration Schema](https://github.com/duckduckgo/content-scope-scripts/blob/shane/unify-config/src/schema/runtime-configuration.schema.json)

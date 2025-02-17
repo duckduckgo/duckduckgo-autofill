@@ -10,29 +10,18 @@ describe('it returns the expected result', () => {
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
         expect(output).toContain(asanaData.android.taskGid);
-        expect(output).not.toContain(data.bskPrUrl);
+        expect(output).not.toContain(data.applePrUrl);
     });
 
-    test('for iOS', () => {
-        const output = createPRTemplate('ios', data);
+    test('for Apple', () => {
+        const output = createPRTemplate('apple', data);
         /** @type {import('../asana-create-tasks').AsanaOutput} */
         const asanaData = JSON.parse(data.asanaOutputRaw);
         expect(output).toContain(data.version);
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
-        expect(output).toContain(asanaData.bsk.taskGid);
-        expect(output).toContain(data.bskPrUrl);
-    });
-
-    test('for macOS', () => {
-        const output = createPRTemplate('macos', data);
-        /** @type {import('../asana-create-tasks').AsanaOutput} */
-        const asanaData = JSON.parse(data.asanaOutputRaw);
-        expect(output).toContain(data.version);
-        expect(output).toContain(data.releaseNotesRaw);
-        expect(output).toContain(data.releaseUrl);
-        expect(output).toContain(asanaData.bsk.taskGid);
-        expect(output).toContain(data.bskPrUrl);
+        expect(output).toContain(asanaData.apple.taskGid);
+        expect(output).toContain(data.applePrUrl);
     });
 
     test('for extensions', () => {
@@ -41,6 +30,6 @@ describe('it returns the expected result', () => {
         expect(output).toContain(data.version);
         expect(output).toContain(data.releaseNotesRaw);
         expect(output).toContain(data.releaseUrl);
-        expect(output).not.toContain(data.bskPrUrl);
+        expect(output).not.toContain(data.applePrUrl);
     });
 });
