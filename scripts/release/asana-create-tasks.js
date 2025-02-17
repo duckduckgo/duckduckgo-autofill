@@ -12,7 +12,7 @@ const releaseUrl = process.env.RELEASE_URL || '';
 const releaseNotesRaw = process.env.RELEASE_NOTES;
 const releaseNotes = md.render(releaseNotesRaw);
 
-const templateTaskGid = '1209337353837996'; /* TODO: Replace with original template ID after monorepo migration */
+const templateTaskGid = '1200547430029363';
 const autofillProjectGid = '1198964220583541';
 const releaseSectionGid = '1200559726959935';
 const projectExtractorRegex = /\[\[project_gids=(.+)]]\s/;
