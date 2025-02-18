@@ -286,6 +286,21 @@ describe('Test the form class reading values correctly', () => {
                 },
             },
         },
+        {
+            testCase: 'signup form with email address and password, with first name and last name in adjacent fields    ',
+            form: `
+<form method="post" id="signupForm">
+    <input type="text" value="Dax" id="firstName" placeholder="First name" />
+    <input type="text" value="McDax" id="lastName" placeholder="Last name" />
+    <input type="email" value="dax@mcdax.com" autocomplete="email" />
+    <input type="password" value="123456" autocomplete="new-password" />
+    <button type="submit">Sign up</button>
+</form>`,
+            expHasValues: true,
+            expValues: {
+                credentials: { username: 'dax@mcdax.com', password: '123456' },
+            },
+        },
     ];
 
     test.each(testCases)('Test $testCase', ({ form, expHasValues, expValues }) => {
