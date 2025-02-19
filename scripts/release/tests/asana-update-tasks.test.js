@@ -24,9 +24,7 @@ jest.mock('asana', () => {
 beforeEach(() => {
     process.env.ASANA_ACCESS_TOKEN = 'mock-asana-access-token';
     process.env.ANDROID_PR_URL = 'https://github.com/duckduckgo/android/pr/1';
-    process.env.BSK_PR_URL = 'https://github.com/duckduckgo/BrowserServicesKit/pr/1';
-    process.env.IOS_PR_URL = 'https://github.com/duckduckgo/ios/pr/1';
-    process.env.MACOS_PR_URL = 'https://github.com/duckduckgo/macos-browser/pr/1';
+    process.env.APPLE_PR_URL = 'https://github.com/duckduckgo/apple-browsers/pr/1';
     process.env.WINDOWS_PR_URL = 'https://github.com/duckduckgo/windows-browser/pr/1';
     process.env.ASANA_OUTPUT = JSON.stringify({
         android: {
@@ -34,20 +32,10 @@ beforeEach(() => {
             taskGid: 'android-123',
             taskUrl: 'https://example.com/android-task',
         },
-        bsk: {
-            displayName: 'BrowserServicesKit',
-            taskGid: 'bsk-123',
-            taskUrl: 'https://example.com/bsk-task',
-        },
-        ios: {
-            displayName: 'iOS',
-            taskGid: 'ios-123',
-            taskUrl: 'https://example.com/ios-task',
-        },
-        macos: {
-            displayName: 'macOS',
-            taskGid: 'macos-123',
-            taskUrl: 'https://example.com/macos-task',
+        apple: {
+            displayName: 'Apple',
+            taskGid: 'apple-123',
+            taskUrl: 'https://example.com/apple-task',
         },
         extensions: {
             displayName: 'Extensions',
@@ -101,7 +89,7 @@ describe('when not all PR URLs are available', () => {
         // Wait for update tasks to run
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        expect(mockAsanaClient.tasks.updateTask).toBeCalledTimes(4);
+        expect(mockAsanaClient.tasks.updateTask).toBeCalledTimes(3);
         expect(mockAsanaClient.tasks.updateTask.mock.calls).toMatchSnapshot();
     });
 });
@@ -114,7 +102,7 @@ describe('when all data is available', () => {
         // Wait for update tasks to run
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        expect(mockAsanaClient.tasks.updateTask).toBeCalledTimes(5);
+        expect(mockAsanaClient.tasks.updateTask).toBeCalledTimes(3);
         expect(mockAsanaClient.tasks.updateTask.mock.calls).toMatchSnapshot();
     });
 });

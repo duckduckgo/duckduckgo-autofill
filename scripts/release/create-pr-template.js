@@ -7,12 +7,12 @@ const filepath = (...path) => join(cwd, ...path);
 /**
  * @typedef {{
  *   releaseNotesRaw: string,
- *   bskPrUrl: string,
+ *   applePrUrl: string,
  *   asanaOutputRaw: string,
  *   releaseUrl: string,
  *   version: string
  * }} CreatePRTemplateData
- * @typedef {'android' | 'extensions' | 'bsk' | 'ios' | 'macos' | 'windows'} ReleasePlatform
+ * @typedef {'android' | 'extensions' | 'apple' | 'windows'} ReleasePlatform
  */
 
 const platform = /** @type {ReleasePlatform} */ (process.argv[2]);
@@ -22,7 +22,7 @@ const data = {
     version: process.env.VERSION || '',
     releaseUrl: process.env.RELEASE_URL || '',
     releaseNotesRaw: process.env.RELEASE_NOTES || '',
-    bskPrUrl: process.env.BSK_PR_URL || '',
+    applePrUrl: process.env.APPLE_PR_URL || '',
     asanaOutputRaw: process.env.ASANA_OUTPUT || '{}',
 };
 
@@ -47,9 +47,9 @@ function createPRTemplate(platform, data) {
 
     let asanaUrl = asanaOutput[platform]?.taskUrl;
 
-    if (['ios', 'macos'].includes(platform)) {
-        asanaUrl = asanaOutput.bsk?.taskUrl;
-        extraContent = `BSK PR: ${data.bskPrUrl}`;
+    if (['apple'].includes(platform)) {
+        asanaUrl = asanaOutput.apple?.taskUrl;
+        extraContent = `Apple PR: ${data.applePrUrl}`;
     }
 
     const updatedTemplate = replaceAllInString(template, [

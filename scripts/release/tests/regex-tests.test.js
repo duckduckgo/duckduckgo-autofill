@@ -1,4 +1,4 @@
-import { updatePackageResolved, updatePackageSwift, updateProjectPbxproj } from '../release-utils.js';
+import { updatePackageResolved, updatePackageSwift } from '../release-utils.js';
 
 const version = '0.0.0_test';
 const commit = 'd5ce164fecfaf7ff2324522b1ff7127e61596063';
@@ -35,7 +35,7 @@ dependencies: [
 {
         "identity" : "browserserviceskit",
         "kind" : "remoteSourceControl",
-        "location" : "https://github.com/duckduckgo/BrowserServicesKit",
+        "location" : "https://github.com/duckduckgo/apple-browsers",
         "state" : {
             "revision" : "fc9ada07283575e3106e6fc5c670a96c34a86f55",
             "version" : "54.1.0"
@@ -68,22 +68,5 @@ dependencies: [
         expect(updatedPackageResolvedForMacOS).toContain(`"revision" : "${commit}"`);
         expect(updatedPackageResolvedForMacOS).toContain(`"version" : "${version}"`);
         expect(updatedPackageResolvedForMacOS).toContain(`"revision" : "${bskCommit}"`);
-    });
-
-    test('Apple platforms can be updated successfully', () => {
-        const exampleProjectPbxproj = `
-98A16C2928A11BDE00A6C003 /* XCRemoteSwiftPackageReference "BrowserServicesKit" */ = {
-    isa = XCRemoteSwiftPackageReference;
-    repositoryURL = "https://github.com/DuckDuckGo/BrowserServicesKit";
-    requirement = {
-        kind = exactVersion;
-        version = 32.0.1;
-   };
-};`;
-
-        const updatedProjectPbxproj = updateProjectPbxproj(exampleProjectPbxproj, commit);
-        expect(updatedProjectPbxproj).toContain(`kind = revision;`);
-        expect(updatedProjectPbxproj).toContain(`revision = ${commit};`);
-        expect(updatedProjectPbxproj).not.toContain(`exactVersion`);
     });
 });
