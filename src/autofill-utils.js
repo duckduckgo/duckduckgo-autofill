@@ -631,12 +631,22 @@ function queryElementsWithShadow(element, selector, forceScanShadowTree = false)
 }
 
 /**
- * Checks if there is a single username-like identity, i.e. email or phone
+ * Checks if there is a single username-like identity, i.e. email or phone or credit card number
+ * If there is then returns that, otherwise returns undefined
  * @param {InternalIdentityObject} identities
- * @returns {boolean}
+ * @param {InternalCreditCardObject} creditCards
+ * @returns {string | undefined}
  */
-function hasUsernameLikeIdentity(identities) {
-    return Object.keys(identities ?? {}).length === 1 && Boolean(identities?.emailAddress || identities.phone);
+function getUsernameLikeIdentity(identities, creditCards) {
+    if (identities?.emailAddress) {
+        return identities.emailAddress;
+    }
+    if (Object.keys(identities ?? {}).length === 1 && Boolean(identities.phone)) {
+        return identities.phone;
+    }
+    if (Object.keys(creditCards ?? {}).length === 1 && Boolean(creditCards.cardNumber)) {
+        return creditCards.cardNumber;
+    }
 }
 
 export {
@@ -674,5 +684,5 @@ export {
     findElementsInShadowTree,
     queryElementsWithShadow,
     getFormControlElements,
-    hasUsernameLikeIdentity,
+    getUsernameLikeIdentity,
 };

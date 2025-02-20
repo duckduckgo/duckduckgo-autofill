@@ -1,6 +1,6 @@
 import { matchInPlaceholderAndLabels, checkPlaceholderAndLabels } from './matching.js';
 import { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES } from './countryNames.js';
-import { hasUsernameLikeIdentity } from '../autofill-utils.js';
+import { getUsernameLikeIdentity } from '../autofill-utils.js';
 
 // Matches strings like mm/yy, mm-yyyy, mm-aa, 12 / 2024
 const DATE_SEPARATOR_REGEX = /\b((.)\2{1,3}|\d+)(?<separator>\s?[/\s.\-_—–]\s?)((.)\5{1,3}|\d+)\b/i;
@@ -190,15 +190,15 @@ const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '');
 /**
  * Infer credentials from password and identities
  * @param {InternalDataStorageObject['credentials']} credentials
- * @param {InternalDataStorageObject['identities']} identities
- * @param {string|undefined} cardNumber
- * @return {InternalDataStorageObject['credentials'] | undefined}
+ * @param {InternalIdentityObject} identities
+ * @param {InternalCreditCardObject|undefined} creditCards
+ * @return InternalCredentialsObject|undefined
  */
-const inferCredentialsForPartialSave = (credentials, identities, cardNumber) => {
+const inferCredentialsForPartialSave = (credentials, identities, creditCards) => {
     // Try to infer username from identity or card number
-    if (!credentials.username && (hasUsernameLikeIdentity(identities) || cardNumber)) {
+    if (!credentials.username) {
         // @ts-ignore - We know that username is not a useful value here
-        credentials.username = identities.emailAddress || identities.phone || cardNumber;
+        credentials.username = getUsernameLikeIdentity(identities, creditCards);
     }
     // Discard empty credentials
     if (Object.keys(credentials ?? {}).length === 0) {
@@ -210,18 +210,18 @@ const inferCredentialsForPartialSave = (credentials, identities, cardNumber) => 
 /**
  * Infer credentials from password and identities
  * @param {InternalDataStorageObject['credentials']} credentials
- * @param {InternalDataStorageObject['identities']} identities
- * @param {string|undefined} cardNumber
- * @return {InternalDataStorageObject['credentials'] | undefined}
+ * @param {InternalIdentityObject} identities
+ * @param {InternalCreditCardObject|undefined} creditCards
+ * @return InternalCredentialsObject|undefined
  */
-const inferCredentials = (credentials, identities, cardNumber) => {
+const inferCredentials = (credentials, identities, creditCards) => {
     if (!credentials.password) {
         return undefined;
     }
     // Try to use email as username if password exists but username is missing
-    if (credentials.password && !credentials.username && (hasUsernameLikeIdentity(identities) || cardNumber)) {
+    if (credentials.password && !credentials.username) {
         // @ts-ignore - We know that username is not a useful value here
-        credentials.username = identities.emailAddress || identities.phone || cardNumber;
+        credentials.username = getUsernameLikeIdentity(identities, creditCards);
     }
     return credentials;
 };
@@ -230,6 +230,7 @@ const inferCredentials = (credentials, identities, cardNumber) => {
  * Formats form data into an object to send to the device for storage
  * If values are insufficient for a complete entry, they are discarded
  * @param {InternalDataStorageObject} formValues
+ * @param {boolean} canTriggerPartialSave
  * @return {DataStorageObject}
  */
 const prepareFormValuesForStorage = (formValues, canTriggerPartialSave = false) => {
@@ -254,8 +255,8 @@ const prepareFormValuesForStorage = (formValues, canTriggerPartialSave = false) 
      * revisit and remove the older logic.
      */
     credentials = canTriggerPartialSave
-        ? inferCredentialsForPartialSave(credentials, identities, creditCards.cardNumber)
-        : inferCredentials(credentials, identities, creditCards.cardNumber);
+        ? inferCredentialsForPartialSave(credentials, identities, creditCards)
+        : inferCredentials(credentials, identities, creditCards);
 
     /** Fixes for identities **/
     // Don't store if there isn't enough data
