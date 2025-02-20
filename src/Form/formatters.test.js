@@ -107,5 +107,98 @@ describe('prepareFormValuesForStorage()', () => {
             );
             expect(values.credentials).toEqual(inputCredentials);
         });
+
+        it('accepts email address as username when other identity data is present', () => {
+            const inputCredentials = { username: 'dax@example.com', password: '123456' };
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: { password: inputCredentials.password },
+                // @ts-ignore
+                creditCards: {},
+                // @ts-ignore
+                identities: { emailAddress: 'dax@example.com', firstName: 'Dax', lastName: 'McDax' },
+            });
+            expect(values.credentials).toEqual(inputCredentials);
+        });
+
+        it('accepts email address as username with identity and card data is present', () => {
+            const inputCredentials = { username: 'dax@example.com', password: '123456' };
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: { password: inputCredentials.password },
+                // @ts-ignore
+                creditCards: { cardNumber: '1234567890123456', cardName: 'Dax McDax' },
+                // @ts-ignore
+                identities: { emailAddress: 'dax@example.com', firstName: 'Dax', lastName: 'McDax', phone: '+133451234563' },
+            });
+            expect(values.credentials).toEqual(inputCredentials);
+        });
+
+        it('accepts phone as username', () => {
+            const inputCredentials = { username: '+133451234563', password: '123456' };
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: {
+                    password: inputCredentials.password,
+                },
+                // @ts-ignore
+                creditCards: {},
+                // @ts-ignore
+                identities: {
+                    phone: inputCredentials.username,
+                },
+            });
+            expect(values.credentials).toEqual(inputCredentials);
+        });
+
+        it("doesn't accept phone as username if other identity data is present", () => {
+            const inputCredentials = { username: '+133451234563', password: '123456' };
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: {
+                    password: inputCredentials.password,
+                },
+                // @ts-ignore
+                creditCards: {},
+                // @ts-ignore
+                identities: {
+                    phone: inputCredentials.username,
+                    firstName: 'Dax',
+                    lastName: 'McDax',
+                },
+            });
+            expect(values.credentials).toEqual({ password: inputCredentials.password });
+        });
+
+        it('accepts credit card number as username', () => {
+            const inputCredentials = { username: '1234567890123456', password: '123456' };
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: { password: inputCredentials.password },
+                // @ts-ignore
+                creditCards: {
+                    cardNumber: inputCredentials.username,
+                },
+                // @ts-ignore
+                identities: {},
+            });
+            expect(values.credentials).toEqual(inputCredentials);
+        });
+
+        it("doesn't accept credit card number as username if other card data is present", () => {
+            const inputCredentials = { username: '1234567890123456', password: '123456' };
+            const values = prepareFormValuesForStorage({
+                // @ts-ignore
+                credentials: { password: inputCredentials.password },
+                // @ts-ignore
+                creditCards: {
+                    cardNumber: inputCredentials.username,
+                    cardName: 'Dax McDax',
+                },
+                // @ts-ignore
+                identities: {},
+            });
+            expect(values.credentials).toEqual({ password: inputCredentials.password });
+        });
     });
 });
