@@ -10539,6 +10539,23 @@ class DefaultScanner {
         }
       }
     }
+    const selectors = [
+    // Explicit forms first
+    'form:not([role=search])',
+    // Authentication patterns
+    '[class*=auth-form]', '[class*=auth-container]', '[class*=auth-content]', '[class*=auth-modal]', '[class*=auth-wrapper]', '[class*=auth-stage]', '[id*=auth-form]', '[id*=auth-container]', '[id*=auth-content]', '[id*=auth-modal]', '[id*=auth-wrapper]', '[id*=authentication]',
+    // Login/signup specific patterns
+    '[class*=login-form]', '[class*=signup-form]', '[class*=sign-up-form]', '[class*=registration-form]', '[class*=register-form]', '[id*=login-form]', '[id*=login-container]', '[id*=signup-form]', '[id*=signup-container]', '[id*=registration-form]', '[id*=register-form]', '[id*=registration]', '[id*=register]', '[id*=login]', '[id*=signup]',
+    // Modal patterns
+    '[class*=modal-content]', '[class*=modal-body]', '[class*=modal-wrapper]', '[class*=modal-container]', '[class*=dialog-content]', '[class*=dialog-body]', '[id*=modal-content]', '[id*=modal-body]', '[id*=modal-wrapper]', '[id*=modal-container]', '[id*=dialog-content]', '[id*=dialog-body]', '[id*=modal]', '[id*=dialog]',
+    // Form wrapper patterns
+    '[class*=form-wrapper]', '[class*=form-container]', '[class*=form-content]', '[class*=form-body]', '[class*=form-group]', '[class*=form-row]', '[id*=form-wrapper]', '[id*=form-container]', '[id*=form-content]', '[id*=form-body]', '[id*=form-group]',
+    // Generic form patterns
+    '[class*=form]:not([role=search])', '[id*=form]:not([role=search])',
+    // Card patterns (common in modern UIs)
+    '[class*=card-body]', '[class*=card-content]', '[class*=card-container]', '[id*=card-body]', '[id*=card-content]', '[id*=card-container]',
+    // Semantic HTML
+    '[role=form]', '[role=dialog]'].join(',');
 
     /**
      * Max number of nodes we want to traverse upwards, critical to avoid enclosing large portions of the DOM
@@ -10555,6 +10572,15 @@ class DefaultScanner {
       }
       if (element instanceof HTMLFormElement) {
         return element;
+      }
+      const formLikeContainer = element.closest(selectors);
+      if (formLikeContainer && formLikeContainer !== element) {
+        const inputs = formLikeContainer.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+        const submitButtons = formLikeContainer.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+        if (inputs.length <= this.options.maxInputsPerForm && inputs.length > 1 && submitButtons.length > 0) {
+          return (/** @type {HTMLElement} */formLikeContainer
+          );
+        }
       }
       if (element.parentElement) {
         element = element.parentElement;
@@ -10581,6 +10607,54 @@ class DefaultScanner {
         }
       }
     }
+    return input;
+  }
+
+  /**
+   * Alternative implementation using closest() API to find form-like containers
+   * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
+   * @returns {HTMLFormElement|HTMLElement}
+   */
+  getParentFormV2(input) {
+    // First check for native form element
+    if ((input instanceof HTMLInputElement || input instanceof HTMLSelectElement) && input.form) {
+      // Use input.form unless it encloses most of the DOM
+      if (!(0, _autofillUtils.isFormLikelyToBeUsedAsPageWrapper)(input.form)) {
+        return input.form;
+      }
+    }
+
+    // Try using closest() with form-like selectors
+    const formSelectors = [
+    // Explicit forms first
+    'form:not([role=search])',
+    // Authentication patterns
+    '[class*=auth-form]', '[class*=auth-container]', '[class*=auth-content]', '[class*=auth-modal]', '[class*=auth-wrapper]', '[class*=auth-stage]', '[id*=auth-form]', '[id*=auth-container]', '[id*=auth-content]', '[id*=auth-modal]', '[id*=auth-wrapper]', '[id*=authentication]',
+    // Login/signup specific patterns
+    '[class*=login-form]', '[class*=signup-form]', '[class*=sign-up-form]', '[class*=registration-form]', '[class*=register-form]', '[id*=login-form]', '[id*=login-container]', '[id*=signup-form]', '[id*=signup-container]', '[id*=registration-form]', '[id*=register-form]', '[id*=registration]', '[id*=register]', '[id*=login]', '[id*=signup]',
+    // Modal patterns
+    '[class*=modal-content]', '[class*=modal-body]', '[class*=modal-wrapper]', '[class*=modal-container]', '[class*=dialog-content]', '[class*=dialog-body]', '[id*=modal-content]', '[id*=modal-body]', '[id*=modal-wrapper]', '[id*=modal-container]', '[id*=dialog-content]', '[id*=dialog-body]', '[id*=modal]', '[id*=dialog]',
+    // Form wrapper patterns
+    '[class*=form-wrapper]', '[class*=form-container]', '[class*=form-content]', '[class*=form-body]', '[class*=form-group]', '[class*=form-row]', '[id*=form-wrapper]', '[id*=form-container]', '[id*=form-content]', '[id*=form-body]', '[id*=form-group]',
+    // Generic form patterns
+    '[class*=form]:not([role=search])', '[id*=form]:not([role=search])',
+    // Card patterns (common in modern UIs)
+    '[class*=card-body]', '[class*=card-content]', '[class*=card-container]', '[id*=card-body]', '[id*=card-content]', '[id*=card-container]',
+    // Semantic HTML
+    '[role=form]', '[role=dialog]'].join(',');
+    const formLikeContainer = input.closest(formSelectors);
+
+    // If we found a container, verify it's not too large and has a submit button
+    if (formLikeContainer) {
+      const containerInputs = formLikeContainer.querySelectorAll(this.matching.cssSelector('formInputsSelector'));
+      const submitButtons = formLikeContainer.querySelectorAll(this.matching.cssSelector('submitButtonSelector'));
+      if (containerInputs.length <= this.options.maxInputsPerForm && submitButtons.length > 0) {
+        return (/** @type {HTMLElement} */formLikeContainer
+        );
+      }
+    }
+
+    // If no suitable container found, return the input itself
     return input;
   }
 
