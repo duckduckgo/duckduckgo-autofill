@@ -76,6 +76,9 @@ class DefaultScanner {
     /** @type {import("./Form/matching").Matching} matching */
     matching;
 
+    /** @type {import("./Settings").RemoteRules['formBoundarySettings']|null} */
+    formBoundarySettings = null;
+
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
@@ -86,6 +89,7 @@ class DefaultScanner {
         this.options = options;
         /** @type {number} A timestamp of the  */
         this.initTimeStamp = Date.now();
+        this.formBoundarySettings = device.settings.getRemoteRules().formBoundarySettings;
     }
 
     /**
@@ -141,6 +145,8 @@ class DefaultScanner {
     }
 
     /**
+     * Core logic for find inputs that are eligible for autofill. If they are,
+     * then call addInput which will attempt to add the input to a parent form.
      * @param context
      */
     findEligibleInputs(context) {
@@ -150,6 +156,28 @@ class DefaultScanner {
         }
 
         const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+
+        if (this.formBoundarySettings) {
+            const forms = [];
+            // Only if all forms are found, proceed with the ad hoc fixes. Otherwise
+            for (const setting of this.formBoundarySettings) {
+                const form = context.querySelector(setting.selector) || findElementsInShadowTree(context, setting.selector)[0];
+                if (form) {
+                    forms.push(form);
+                    const inputs = form.querySelectorAll(formInputsSelectorWithoutSelect);
+                    if (inputs.length > this.options.maxInputsPerPage) {
+                        this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
+                        return this;
+                    }
+                    inputs.forEach((input) => this.addInput(input, form));
+                }
+            }
+            if (forms.length === this.formBoundarySettings.length) {
+                return this;
+            } else {
+                console.log('Not all forms were found. Failling back to the default scanner for remaining');
+            }
+        }
 
         if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
@@ -285,6 +313,9 @@ class DefaultScanner {
      */
     addInput(input, form = null) {
         if (this.isStopped) return;
+
+        // If the input is already added in one of the forms, do not add it again
+        if (Array.from(this.forms.entries()).some(([_, formInstance]) => formInstance.inputs.all.has(input))) return;
 
         const parentForm = form || this.getParentForm(input);
 
@@ -429,8 +460,9 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped, just return
-        if (this.isStopped || !(event.target instanceof Element)) return;
+        // If the scanner is stopped, event target is messed up or ad hoc settings are enabled, just return
+        const adHocSettings = this.device.settings.getRemoteRules();
+        if (this.isStopped || !(event.target instanceof Element) || adHocSettings?.enabled) return;
 
         window.performance?.mark?.('scan_shadow:init:start');
 

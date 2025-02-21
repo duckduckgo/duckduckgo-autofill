@@ -5725,6 +5725,10 @@ class Form {
   form;
   /** @type {HTMLInputElement | null} */
   activeInput;
+
+  /** @type {any} */
+  formTypeSettings;
+
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
@@ -5738,7 +5742,8 @@ class Form {
     let hasShadowTree = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
     this.form = form;
     this.matching = matching || (0, _matching.createMatching)();
-    this.formAnalyzer = new _FormAnalyzer.default(form, input, matching);
+    this.formTypeSettings = deviceInterface.settings.getRemoteRules().formTypeSettings;
+    this.formAnalyzer = new _FormAnalyzer.default(form, input, matching, this.formTypeSettings);
     this.device = deviceInterface;
     this.hasShadowTree = hasShadowTree;
 
@@ -5786,7 +5791,7 @@ class Form {
           this.mutObs.disconnect();
           // If any known input has been removed from the DOM, reanalyze the whole form
           window.requestIdleCallback(() => {
-            this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+            this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching, this.formTypeSettings);
             this.recategorizeAllInputs();
           });
         }
@@ -6192,7 +6197,7 @@ class Form {
 
     // When new inputs are added after the initial scan, reanalyze the whole form
     if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-      this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching);
+      this.formAnalyzer = new _FormAnalyzer.default(this.form, input, this.matching, this.formTypeSettings);
       this.recategorizeAllInputs();
       return this;
     }
@@ -6635,15 +6640,19 @@ class FormAnalyzer {
   form;
   /** @type Matching */
   matching;
+  /** @type {string|null} */
+  forcedFormType = null;
+
   /**
    * @param {HTMLElement} form
    * @param {HTMLInputElement|HTMLSelectElement} input
    * @param {Matching} [matching]
+   * @param {any} [formTypeSettings]
    */
-  constructor(form, input, matching) {
+  constructor(form, input, matching, formTypeSettings) {
     this.form = form;
     this.matching = matching || new _matching.Matching(_compiledMatchingConfig.matchingConfiguration);
-
+    this.checkForcedFormType(formTypeSettings);
     /**
      * The signal is a continuum where negative values imply login and positive imply signup
      * @type {number}
@@ -6672,6 +6681,20 @@ class FormAnalyzer {
     }
     return this;
   }
+
+  /**
+   * Checks if there's a forced form type configuration for this form
+   * @param {any} formTypeSettings
+   * @private
+   */
+  checkForcedFormType(formTypeSettings) {
+    if (formTypeSettings?.enabled) {
+      const matchedFormConfig = formTypeSettings?.formTypeSettings.find(config => this.form.matches(config.selector));
+      if (matchedFormConfig) {
+        this.forcedFormType = matchedFormConfig.type;
+      }
+    }
+  }
   areLoginOrSignupSignalsWeak() {
     return Math.abs(this.autofillSignal) < 10;
   }
@@ -6681,15 +6704,16 @@ class FormAnalyzer {
    * @returns {boolean}
    */
   get isHybrid() {
-    // When marking for hybrid we also want to ensure other signals are weak
-
+    if (this.forcedFormType === 'hybrid') return true;
     return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
   }
   get isLogin() {
+    if (this.forcedFormType === 'login') return true;
     if (this.isHybrid) return false;
     return this.autofillSignal < 0;
   }
   get isSignup() {
+    if (this.forcedFormType === 'signup') return true;
     if (this.isHybrid) return false;
     return this.autofillSignal >= 0;
   }
@@ -10382,6 +10406,9 @@ class DefaultScanner {
   /** @type {import("./Form/matching").Matching} matching */
   matching;
 
+  /** @type {import("./Settings").RemoteRules['formBoundarySettings']|null} */
+  formBoundarySettings = null;
+
   /**
    * @param {import("./DeviceInterface/InterfacePrototype").default} device
    * @param {ScannerOptions} options
@@ -10392,6 +10419,7 @@ class DefaultScanner {
     this.options = options;
     /** @type {number} A timestamp of the  */
     this.initTimeStamp = Date.now();
+    this.formBoundarySettings = device.settings.getRemoteRules().formBoundarySettings;
   }
 
   /**
@@ -10454,6 +10482,8 @@ class DefaultScanner {
   }
 
   /**
+   * Core logic for find inputs that are eligible for autofill. If they are,
+   * then call addInput which will attempt to add the input to a parent form.
    * @param context
    */
   findEligibleInputs(context) {
@@ -10462,6 +10492,27 @@ class DefaultScanner {
       return this;
     }
     const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+    if (this.formBoundarySettings) {
+      const forms = [];
+      // Only if all forms are found, proceed with the ad hoc fixes. Otherwise
+      for (const setting of this.formBoundarySettings) {
+        const form = context.querySelector(setting.selector) || (0, _autofillUtils.findElementsInShadowTree)(context, setting.selector)[0];
+        if (form) {
+          forms.push(form);
+          const inputs = form.querySelectorAll(formInputsSelectorWithoutSelect);
+          if (inputs.length > this.options.maxInputsPerPage) {
+            this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
+            return this;
+          }
+          inputs.forEach(input => this.addInput(input, form));
+        }
+      }
+      if (forms.length === this.formBoundarySettings.length) {
+        return this;
+      } else {
+        console.log('Not all forms were found. Failling back to the default scanner for remaining');
+      }
+    }
     if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
       this.addInput(context);
     } else {
@@ -10591,6 +10642,12 @@ class DefaultScanner {
   addInput(input) {
     let form = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     if (this.isStopped) return;
+
+    // If the input is already added in one of the forms, do not add it again
+    if (Array.from(this.forms.entries()).some(_ref => {
+      let [_, formInstance] = _ref;
+      return formInstance.inputs.all.has(input);
+    })) return;
     const parentForm = form || this.getParentForm(input);
     if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
       const foundForm = this.forms.get(parentForm);
@@ -10730,8 +10787,9 @@ class DefaultScanner {
    * @param {FocusEvent | PointerEvent} event
    */
   scanOnClick(event) {
-    // If the scanner is stopped, just return
-    if (this.isStopped || !(event.target instanceof Element)) return;
+    // If the scanner is stopped, event target is messed up or ad hoc settings are enabled, just return
+    const adHocSettings = this.device.settings.getRemoteRules();
+    if (this.isStopped || !(event.target instanceof Element) || adHocSettings?.enabled) return;
     window.performance?.mark?.('scan_shadow:init:start');
 
     // If the target is an input, find the real target in case it's in a shadow tree
@@ -10785,6 +10843,13 @@ var _autofillUtils = require("./autofill-utils.js");
  * @typedef {import("../packages/device-api").DeviceApi} DeviceApi
  */
 
+/** @typedef {{
+ *   enabled: boolean,
+ *   formTypeSettings: { selector: string, path: string, type: string }[]
+ *   formBoundarySettings: { selector: string }[]
+ * }} RemoteRules
+ */
+
 /**
  * The Settings class encapsulates the concept of 1) feature toggles + 2) available input types.
  *
@@ -10819,6 +10884,88 @@ class Settings {
     this.deviceApi = deviceApi;
     this.globalConfig = config;
   }
+
+  /**
+   * @returns {RemoteRules}
+   */
+  getRemoteRules() {
+    return {
+      enabled: true,
+      formTypeSettings: [{
+        selector: 'form[class*="login"]',
+        path: '/login',
+        type: 'login'
+      }, {
+        selector: 'form[class*="signup"]',
+        path: '/signup',
+        type: 'signup'
+      }, {
+        selector: 'form[class*="hybrid"]',
+        path: '/hybrid',
+        type: 'hybrid'
+      }],
+      formBoundarySettings: [{
+        selector: '.MuiBox-root .css-13fcpt2'
+      }, {
+        selector: 'form[class*="login"]'
+      }]
+    };
+  }
+  /**
+   * @returns {{
+   *   enabled: boolean,
+   *   settings: {
+   *     domains: {
+   *       domain: string,
+   *       patchSettings: {
+   *         formTypeSettings: { selector: string, path: string, type: string }[],
+   *         formBoundarySettings: { selector: string }[]
+   *       }[]
+   *     }[]
+   *   }
+   * }}
+   */
+  // getRemoteRules() {
+  //     return {
+  //         enabled: false,
+  //         settings: {
+  //             domains: [
+  //                 {
+  //                     domain: 'fill.dev',
+  //                     patchSettings: [
+  //                         {
+  //                             formTypeSettings: [
+  //                                 {
+  //                                     selector: 'form[class*="login"]',
+  //                                     path: '/login',
+  //                                     type: 'login',
+  //                                 },
+  //                                 {
+  //                                     selector: 'form[class*="signup"]',
+  //                                     path: '/signup',
+  //                                     type: 'signup',
+  //                                 },
+  //                                 {
+  //                                     selector: 'form[class*="hybrid"]',
+  //                                     path: '/hybrid',
+  //                                     type: 'hybrid',
+  //                                 },
+  //                             ],
+  //                             formBoundarySettings: [
+  //                                 {
+  //                                     selector: 'form',
+  //                                 },
+  //                                 {
+  //                                     selector: 'form[class*="login"]',
+  //                                 },
+  //                             ],
+  //                         },
+  //                     ],
+  //                 },
+  //             ],
+  //         },
+  //     };
+  // }
 
   /**
    * Feature toggles are delivered as part of the Runtime Configuration - a flexible design that
