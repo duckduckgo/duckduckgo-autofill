@@ -14,15 +14,20 @@ class FormAnalyzer {
     form;
     /** @type Matching */
     matching;
+
+    /** @type {import('../site-specific-feature').default|undefined} */
+    siteSpecificFeature;
+
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
+     * @param {import('../site-specific-feature').default} [siteSpecificFeature]
      */
-    constructor(form, input, matching) {
+    constructor(form, input, matching, siteSpecificFeature) {
         this.form = form;
         this.matching = matching || new Matching(matchingConfiguration);
-
+        this.siteSpecificFeature = siteSpecificFeature;
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
@@ -62,20 +67,20 @@ class FormAnalyzer {
      * @returns {boolean}
      */
     get isHybrid() {
+        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'hybrid') return true;
         // When marking for hybrid we also want to ensure other signals are weak
-
         return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
 
     get isLogin() {
+        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'login') return true;
         if (this.isHybrid) return false;
-
         return this.autofillSignal < 0;
     }
 
     get isSignup() {
+        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'signup') return true;
         if (this.isHybrid) return false;
-
         return this.autofillSignal >= 0;
     }
 

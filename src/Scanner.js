@@ -141,6 +141,8 @@ class DefaultScanner {
     }
 
     /**
+     * Core logic for find inputs that are eligible for autofill. If they are,
+     * then call addInput which will attempt to add the input to a parent form.
      * @param context
      */
     findEligibleInputs(context) {
@@ -150,6 +152,9 @@ class DefaultScanner {
         }
 
         const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)) {
+            return this;
+        }
 
         if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
@@ -285,6 +290,9 @@ class DefaultScanner {
      */
     addInput(input, form = null) {
         if (this.isStopped) return;
+
+        // If the input is already added in one of the forms, do not add it again
+        if (Array.from(this.forms.entries()).some(([_, formInstance]) => formInstance.inputs.all.has(input))) return;
 
         const parentForm = form || this.getParentForm(input);
 
@@ -429,8 +437,9 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped, just return
-        if (this.isStopped || !(event.target instanceof Element)) return;
+        // If the scanner is stopped, event target is messed up or ad hoc settings are enabled, just return
+        if (this.isStopped || !(event.target instanceof Element) || this.device.settings.siteSpecificFeature?.formBoundarySettings?.length)
+            return;
 
         window.performance?.mark?.('scan_shadow:init:start');
 

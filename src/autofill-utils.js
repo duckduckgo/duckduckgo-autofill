@@ -1,6 +1,6 @@
 import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js';
 import { constants } from './constants.js';
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
 
 const SIGN_IN_MSG = { signMeIn: true };
 
@@ -51,6 +51,8 @@ const autofillEnabled = (globalConfig) => {
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
 
     // Check config on Apple platforms
+    // @ts-ignore at this point, userPreferences is not expected to be null but we need the
+    // types to be UserPreferences | null, since to make runtime replacement work.
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
 };

@@ -74,7 +74,7 @@
     let isDDGTestMode = false;
     isDDGTestMode = true;
     let contentScope = null;
-    let userUnprotectedDomains = null;
+    let userUnprotectedDomains = [];
     let userPreferences = null;
     // INJECT contentScope HERE
     // INJECT userUnprotectedDomains HERE
@@ -1328,21 +1328,63 @@ Source: "${matchedFrom}"`;
     return new Matching(matchingConfiguration);
   }
 
-  // node_modules/@duckduckgo/content-scope-scripts/src/apple-utils.js
-  function getTopLevelURL() {
+  // node_modules/@duckduckgo/content-scope-scripts/injected/src/captured-globals.js
+  var Set2 = globalThis.Set;
+  var Reflect2 = globalThis.Reflect;
+  var customElementsGet = globalThis.customElements?.get.bind(globalThis.customElements);
+  var customElementsDefine = globalThis.customElements?.define.bind(globalThis.customElements);
+  var URL2 = globalThis.URL;
+  var Proxy2 = globalThis.Proxy;
+  var functionToString = Function.prototype.toString;
+  var TypeError2 = globalThis.TypeError;
+  var Symbol2 = globalThis.Symbol;
+  var dispatchEvent = globalThis.dispatchEvent?.bind(globalThis);
+  var addEventListener = globalThis.addEventListener?.bind(globalThis);
+  var removeEventListener = globalThis.removeEventListener?.bind(globalThis);
+  var CustomEvent2 = globalThis.CustomEvent;
+  var Promise2 = globalThis.Promise;
+  var String2 = globalThis.String;
+  var Map2 = globalThis.Map;
+  var Error2 = globalThis.Error;
+  var randomUUID = globalThis.crypto?.randomUUID?.bind(globalThis.crypto);
+
+  // node_modules/@duckduckgo/content-scope-scripts/injected/src/utils.js
+  var globalObj = typeof window === "undefined" ? globalThis : window;
+  var Error3 = globalObj.Error;
+  var originalWindowDispatchEvent = typeof window === "undefined" ? null : window.dispatchEvent.bind(window);
+  function getTabHostname() {
+    let framingOrigin = null;
     try {
-      if (window.location !== window.parent.location) {
-        return new URL(window.location.href !== "about:blank" ? document.referrer : window.parent.location.href);
-      } else {
-        return new URL(window.location.href);
-      }
-    } catch (error) {
-      return new URL(location.href);
+      framingOrigin = globalThis.top.location.href;
+    } catch {
+      framingOrigin = globalThis.document.referrer;
     }
+    if ("ancestorOrigins" in globalThis.location && globalThis.location.ancestorOrigins.length) {
+      framingOrigin = globalThis.location.ancestorOrigins.item(globalThis.location.ancestorOrigins.length - 1);
+    }
+    try {
+      framingOrigin = new URL(framingOrigin).hostname;
+    } catch {
+      framingOrigin = null;
+    }
+    return framingOrigin;
   }
-  function isUnprotectedDomain(topLevelUrl, featureList) {
+  function matchHostname(hostname, exceptionDomain) {
+    return hostname === exceptionDomain || hostname.endsWith(`.${exceptionDomain}`);
+  }
+  function camelcase(dashCaseText) {
+    return dashCaseText.replace(/-(.)/g, (match, letter) => {
+      return letter.toUpperCase();
+    });
+  }
+  var DDGPromise = globalObj.Promise;
+  var DDGReflect = globalObj.Reflect;
+  function isUnprotectedDomain(topLevelHostname, featureList) {
     let unprotectedDomain = false;
-    const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split(".") : [];
+    if (!topLevelHostname) {
+      return false;
+    }
+    const domainParts = topLevelHostname.split(".");
     while (domainParts.length > 1 && !unprotectedDomain) {
       const partialDomain = domainParts.join(".");
       unprotectedDomain = featureList.filter((domain) => domain.domain === partialDomain).length > 0;
@@ -1350,22 +1392,100 @@ Source: "${matchedFrom}"`;
     }
     return unprotectedDomain;
   }
-  function processConfig(data, userList, preferences) {
-    const topLevelUrl = getTopLevelURL();
-    const allowlisted = userList.filter((domain) => domain === topLevelUrl.host).length > 0;
-    const enabledFeatures = Object.keys(data.features).filter((featureName) => {
-      const feature = data.features[featureName];
-      return feature.state === "enabled" && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
-    });
-    const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-    preferences.site = {
-      domain: topLevelUrl.hostname,
+  function computeLimitedSiteObject() {
+    const topLevelHostname = getTabHostname();
+    return {
+      domain: topLevelHostname
+    };
+  }
+  function getPlatformVersion(preferences) {
+    if (preferences.versionNumber) {
+      return preferences.versionNumber;
+    }
+    if (preferences.versionString) {
+      return preferences.versionString;
+    }
+    return void 0;
+  }
+  function parseVersionString(versionString) {
+    return versionString.split(".").map(Number);
+  }
+  function satisfiesMinVersion(minVersionString, applicationVersionString) {
+    const minVersions = parseVersionString(minVersionString);
+    const currentVersions = parseVersionString(applicationVersionString);
+    const maxLength = Math.max(minVersions.length, currentVersions.length);
+    for (let i = 0; i < maxLength; i++) {
+      const minNumberPart = minVersions[i] || 0;
+      const currentVersionPart = currentVersions[i] || 0;
+      if (currentVersionPart > minNumberPart) {
+        return true;
+      }
+      if (currentVersionPart < minNumberPart) {
+        return false;
+      }
+    }
+    return true;
+  }
+  function isSupportedVersion(minSupportedVersion, currentVersion) {
+    if (typeof currentVersion === "string" && typeof minSupportedVersion === "string") {
+      if (satisfiesMinVersion(minSupportedVersion, currentVersion)) {
+        return true;
+      }
+    } else if (typeof currentVersion === "number" && typeof minSupportedVersion === "number") {
+      if (minSupportedVersion <= currentVersion) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function processConfig(data, userList, preferences, platformSpecificFeatures = []) {
+    const topLevelHostname = getTabHostname();
+    const site = computeLimitedSiteObject();
+    const allowlisted = userList.filter((domain) => domain === topLevelHostname).length > 0;
+    const output = { ...preferences };
+    if (output.platform) {
+      const version = getPlatformVersion(preferences);
+      if (version) {
+        output.platform.version = version;
+      }
+    }
+    const enabledFeatures = computeEnabledFeatures(data, topLevelHostname, preferences.platform?.version, platformSpecificFeatures);
+    const isBroken = isUnprotectedDomain(topLevelHostname, data.unprotectedTemporary);
+    output.site = Object.assign(site, {
       isBroken,
       allowlisted,
       enabledFeatures
-    };
-    preferences.cookie = {};
-    return preferences;
+    });
+    output.featureSettings = parseFeatureSettings(data, enabledFeatures);
+    output.bundledConfig = data;
+    return output;
+  }
+  function computeEnabledFeatures(data, topLevelHostname, platformVersion, platformSpecificFeatures = []) {
+    const remoteFeatureNames = Object.keys(data.features);
+    const platformSpecificFeaturesNotInRemoteConfig = platformSpecificFeatures.filter(
+      (featureName) => !remoteFeatureNames.includes(featureName)
+    );
+    const enabledFeatures = remoteFeatureNames.filter((featureName) => {
+      const feature = data.features[featureName];
+      if (feature.minSupportedVersion && platformVersion) {
+        if (!isSupportedVersion(feature.minSupportedVersion, platformVersion)) {
+          return false;
+        }
+      }
+      return feature.state === "enabled" && !isUnprotectedDomain(topLevelHostname, feature.exceptions);
+    }).concat(platformSpecificFeaturesNotInRemoteConfig);
+    return enabledFeatures;
+  }
+  function parseFeatureSettings(data, enabledFeatures) {
+    const featureSettings = {};
+    const remoteFeatureNames = Object.keys(data.features);
+    remoteFeatureNames.forEach((featureName) => {
+      if (!enabledFeatures.includes(featureName)) {
+        return;
+      }
+      featureSettings[featureName] = data.features[featureName].settings;
+    });
+    return featureSettings;
   }
 
   // src/autofill-utils.js
@@ -4663,16 +4783,20 @@ Source: "${matchedFrom}"`;
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
+     * @param {import('../site-specific-feature').default} [siteSpecificFeature]
      */
-    constructor(form, input, matching) {
+    constructor(form, input, matching, siteSpecificFeature) {
       /** @type HTMLElement */
       __publicField(this, "form");
       /** @type Matching */
       __publicField(this, "matching");
+      /** @type {import('../site-specific-feature').default|undefined} */
+      __publicField(this, "siteSpecificFeature");
       /** @type {undefined|boolean} */
       __publicField(this, "_isCCForm");
       this.form = form;
       this.matching = matching || new Matching(matchingConfiguration);
+      this.siteSpecificFeature = siteSpecificFeature;
       this.autofillSignal = 0;
       this.hybridSignal = 0;
       this.signals = [];
@@ -4692,14 +4816,20 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     get isHybrid() {
+      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "hybrid")
+        return true;
       return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
     get isLogin() {
+      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "login")
+        return true;
       if (this.isHybrid)
         return false;
       return this.autofillSignal < 0;
     }
     get isSignup() {
+      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "signup")
+        return true;
       if (this.isHybrid)
         return false;
       return this.autofillSignal >= 0;
@@ -5273,7 +5403,7 @@ Source: "${matchedFrom}"`;
       __publicField(this, "activeInput");
       this.form = form;
       this.matching = matching || createMatching();
-      this.formAnalyzer = new FormAnalyzer_default(form, input, matching);
+      this.formAnalyzer = new FormAnalyzer_default(form, input, matching, deviceInterface.settings.siteSpecificFeature);
       this.device = deviceInterface;
       this.hasShadowTree = hasShadowTree;
       this.inputs = {
@@ -5308,7 +5438,7 @@ Source: "${matchedFrom}"`;
           if ([...this.inputs.all].some((input2) => !input2.isConnected)) {
             this.mutObs.disconnect();
             window.requestIdleCallback(() => {
-              this.formAnalyzer = new FormAnalyzer_default(this.form, input, this.matching);
+              this.formAnalyzer = new FormAnalyzer_default(this.form, input, this.matching, this.device.settings.siteSpecificFeature);
               this.recategorizeAllInputs();
             });
           }
@@ -5697,7 +5827,7 @@ Source: "${matchedFrom}"`;
         return this;
       }
       if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-        this.formAnalyzer = new FormAnalyzer_default(this.form, input, this.matching);
+        this.formAnalyzer = new FormAnalyzer_default(this.form, input, this.matching, this.device.settings.siteSpecificFeature);
         this.recategorizeAllInputs();
         return this;
       }
@@ -6200,6 +6330,9 @@ Source: "${matchedFrom}"`;
     return json.replace(/"([^"]+)":/g, "$1:");
   };
   var ZodError = class _ZodError extends Error {
+    get errors() {
+      return this.issues;
+    }
     constructor(issues) {
       super();
       this.issues = [];
@@ -6217,9 +6350,6 @@ Source: "${matchedFrom}"`;
       }
       this.name = "ZodError";
       this.issues = issues;
-    }
-    get errors() {
-      return this.issues;
     }
     format(_mapper) {
       const mapper = _mapper || function(issue) {
@@ -6431,8 +6561,11 @@ Source: "${matchedFrom}"`;
       path: ctx.path,
       errorMaps: [
         ctx.common.contextualErrorMap,
+        // contextual error map is first priority
         ctx.schemaErrorMap,
+        // then schema-bound map if available
         overrideMap,
+        // then global override map
         overrideMap === errorMap ? void 0 : errorMap
         // then global default map
       ].filter((x) => !!x)
@@ -6588,34 +6721,6 @@ Source: "${matchedFrom}"`;
     return { errorMap: customMap, description };
   }
   var ZodType = class {
-    constructor(def) {
-      this.spa = this.safeParseAsync;
-      this._def = def;
-      this.parse = this.parse.bind(this);
-      this.safeParse = this.safeParse.bind(this);
-      this.parseAsync = this.parseAsync.bind(this);
-      this.safeParseAsync = this.safeParseAsync.bind(this);
-      this.spa = this.spa.bind(this);
-      this.refine = this.refine.bind(this);
-      this.refinement = this.refinement.bind(this);
-      this.superRefine = this.superRefine.bind(this);
-      this.optional = this.optional.bind(this);
-      this.nullable = this.nullable.bind(this);
-      this.nullish = this.nullish.bind(this);
-      this.array = this.array.bind(this);
-      this.promise = this.promise.bind(this);
-      this.or = this.or.bind(this);
-      this.and = this.and.bind(this);
-      this.transform = this.transform.bind(this);
-      this.brand = this.brand.bind(this);
-      this.default = this.default.bind(this);
-      this.catch = this.catch.bind(this);
-      this.describe = this.describe.bind(this);
-      this.pipe = this.pipe.bind(this);
-      this.readonly = this.readonly.bind(this);
-      this.isNullable = this.isNullable.bind(this);
-      this.isOptional = this.isOptional.bind(this);
-    }
     get description() {
       return this._def.description;
     }
@@ -6678,6 +6783,43 @@ Source: "${matchedFrom}"`;
       };
       const result = this._parseSync({ data, path: ctx.path, parent: ctx });
       return handleResult(ctx, result);
+    }
+    "~validate"(data) {
+      var _a, _b;
+      const ctx = {
+        common: {
+          issues: [],
+          async: !!this["~standard"].async
+        },
+        path: [],
+        schemaErrorMap: this._def.errorMap,
+        parent: null,
+        data,
+        parsedType: getParsedType(data)
+      };
+      if (!this["~standard"].async) {
+        try {
+          const result = this._parseSync({ data, path: [], parent: ctx });
+          return isValid(result) ? {
+            value: result.value
+          } : {
+            issues: ctx.common.issues
+          };
+        } catch (err) {
+          if ((_b = (_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("encountered")) {
+            this["~standard"].async = true;
+          }
+          ctx.common = {
+            issues: [],
+            async: true
+          };
+        }
+      }
+      return this._parseAsync({ data, path: [], parent: ctx }).then((result) => isValid(result) ? {
+        value: result.value
+      } : {
+        issues: ctx.common.issues
+      });
     }
     async parseAsync(data, params) {
       const result = await this.safeParseAsync(data, params);
@@ -6756,6 +6898,39 @@ Source: "${matchedFrom}"`;
     superRefine(refinement) {
       return this._refinement(refinement);
     }
+    constructor(def) {
+      this.spa = this.safeParseAsync;
+      this._def = def;
+      this.parse = this.parse.bind(this);
+      this.safeParse = this.safeParse.bind(this);
+      this.parseAsync = this.parseAsync.bind(this);
+      this.safeParseAsync = this.safeParseAsync.bind(this);
+      this.spa = this.spa.bind(this);
+      this.refine = this.refine.bind(this);
+      this.refinement = this.refinement.bind(this);
+      this.superRefine = this.superRefine.bind(this);
+      this.optional = this.optional.bind(this);
+      this.nullable = this.nullable.bind(this);
+      this.nullish = this.nullish.bind(this);
+      this.array = this.array.bind(this);
+      this.promise = this.promise.bind(this);
+      this.or = this.or.bind(this);
+      this.and = this.and.bind(this);
+      this.transform = this.transform.bind(this);
+      this.brand = this.brand.bind(this);
+      this.default = this.default.bind(this);
+      this.catch = this.catch.bind(this);
+      this.describe = this.describe.bind(this);
+      this.pipe = this.pipe.bind(this);
+      this.readonly = this.readonly.bind(this);
+      this.isNullable = this.isNullable.bind(this);
+      this.isOptional = this.isOptional.bind(this);
+      this["~standard"] = {
+        version: 1,
+        vendor: "zod",
+        validate: (data) => this["~validate"](data)
+      };
+    }
     optional() {
       return ZodOptional.create(this, this._def);
     }
@@ -6766,7 +6941,7 @@ Source: "${matchedFrom}"`;
       return this.nullable().optional();
     }
     array() {
-      return ZodArray.create(this, this._def);
+      return ZodArray.create(this);
     }
     promise() {
       return ZodPromise.create(this, this._def);
@@ -6832,16 +7007,20 @@ Source: "${matchedFrom}"`;
   };
   var cuidRegex = /^c[^\s-]{8,}$/i;
   var cuid2Regex = /^[0-9a-z]+$/;
-  var ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+  var ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
   var uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
   var nanoidRegex = /^[a-z0-9_-]{21}$/i;
+  var jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
   var durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
   var emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
   var _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
   var emojiRegex;
   var ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
-  var ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+  var ipv4CidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/;
+  var ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+  var ipv6CidrRegex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
   var base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+  var base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
   var dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
   var dateRegex = new RegExp(`^${dateRegexSource}$`);
   function timeRegexSource(args) {
@@ -6870,6 +7049,33 @@ Source: "${matchedFrom}"`;
       return true;
     }
     if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+      return true;
+    }
+    return false;
+  }
+  function isValidJWT(jwt, alg) {
+    if (!jwtRegex.test(jwt))
+      return false;
+    try {
+      const [header] = jwt.split(".");
+      const base64 = header.replace(/-/g, "+").replace(/_/g, "/").padEnd(header.length + (4 - header.length % 4) % 4, "=");
+      const decoded = JSON.parse(atob(base64));
+      if (typeof decoded !== "object" || decoded === null)
+        return false;
+      if (!decoded.typ || !decoded.alg)
+        return false;
+      if (alg && decoded.alg !== alg)
+        return false;
+      return true;
+    } catch (_a) {
+      return false;
+    }
+  }
+  function isValidCidr(ip, version) {
+    if ((version === "v4" || !version) && ipv4CidrRegex.test(ip)) {
+      return true;
+    }
+    if ((version === "v6" || !version) && ipv6CidrRegex.test(ip)) {
       return true;
     }
     return false;
@@ -7130,11 +7336,41 @@ Source: "${matchedFrom}"`;
             });
             status.dirty();
           }
+        } else if (check.kind === "jwt") {
+          if (!isValidJWT(input.data, check.alg)) {
+            ctx = this._getOrReturnCtx(input, ctx);
+            addIssueToContext(ctx, {
+              validation: "jwt",
+              code: ZodIssueCode.invalid_string,
+              message: check.message
+            });
+            status.dirty();
+          }
+        } else if (check.kind === "cidr") {
+          if (!isValidCidr(input.data, check.version)) {
+            ctx = this._getOrReturnCtx(input, ctx);
+            addIssueToContext(ctx, {
+              validation: "cidr",
+              code: ZodIssueCode.invalid_string,
+              message: check.message
+            });
+            status.dirty();
+          }
         } else if (check.kind === "base64") {
           if (!base64Regex.test(input.data)) {
             ctx = this._getOrReturnCtx(input, ctx);
             addIssueToContext(ctx, {
               validation: "base64",
+              code: ZodIssueCode.invalid_string,
+              message: check.message
+            });
+            status.dirty();
+          }
+        } else if (check.kind === "base64url") {
+          if (!base64urlRegex.test(input.data)) {
+            ctx = this._getOrReturnCtx(input, ctx);
+            addIssueToContext(ctx, {
+              validation: "base64url",
               code: ZodIssueCode.invalid_string,
               message: check.message
             });
@@ -7186,8 +7422,20 @@ Source: "${matchedFrom}"`;
     base64(message) {
       return this._addCheck({ kind: "base64", ...errorUtil.errToObj(message) });
     }
+    base64url(message) {
+      return this._addCheck({
+        kind: "base64url",
+        ...errorUtil.errToObj(message)
+      });
+    }
+    jwt(options) {
+      return this._addCheck({ kind: "jwt", ...errorUtil.errToObj(options) });
+    }
     ip(options) {
       return this._addCheck({ kind: "ip", ...errorUtil.errToObj(options) });
+    }
+    cidr(options) {
+      return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
     }
     datetime(options) {
       var _a, _b;
@@ -7279,8 +7527,7 @@ Source: "${matchedFrom}"`;
       });
     }
     /**
-     * @deprecated Use z.string().min(1) instead.
-     * @see {@link ZodString.min}
+     * Equivalent to `.min(1)`
      */
     nonempty(message) {
       return this.min(1, errorUtil.errToObj(message));
@@ -7342,8 +7589,14 @@ Source: "${matchedFrom}"`;
     get isIP() {
       return !!this._def.checks.find((ch) => ch.kind === "ip");
     }
+    get isCIDR() {
+      return !!this._def.checks.find((ch) => ch.kind === "cidr");
+    }
     get isBase64() {
       return !!this._def.checks.find((ch) => ch.kind === "base64");
+    }
+    get isBase64url() {
+      return !!this._def.checks.find((ch) => ch.kind === "base64url");
     }
     get minLength() {
       let min = null;
@@ -7622,17 +7875,15 @@ Source: "${matchedFrom}"`;
     }
     _parse(input) {
       if (this._def.coerce) {
-        input.data = BigInt(input.data);
+        try {
+          input.data = BigInt(input.data);
+        } catch (_a) {
+          return this._getInvalidInput(input);
+        }
       }
       const parsedType = this._getType(input);
       if (parsedType !== ZodParsedType.bigint) {
-        const ctx2 = this._getOrReturnCtx(input);
-        addIssueToContext(ctx2, {
-          code: ZodIssueCode.invalid_type,
-          expected: ZodParsedType.bigint,
-          received: ctx2.parsedType
-        });
-        return INVALID;
+        return this._getInvalidInput(input);
       }
       let ctx = void 0;
       const status = new ParseStatus();
@@ -7678,6 +7929,15 @@ Source: "${matchedFrom}"`;
         }
       }
       return { status: status.value, value: input.data };
+    }
+    _getInvalidInput(input) {
+      const ctx = this._getOrReturnCtx(input);
+      addIssueToContext(ctx, {
+        code: ZodIssueCode.invalid_type,
+        expected: ZodParsedType.bigint,
+        received: ctx.parsedType
+      });
+      return INVALID;
     }
     gte(value, message) {
       return this.setLimit("min", value, true, errorUtil.toString(message));
@@ -9742,16 +10002,32 @@ Source: "${matchedFrom}"`;
       ...processCreateParams(params)
     });
   };
-  function custom(check, params = {}, fatal) {
+  function cleanParams(params, data) {
+    const p = typeof params === "function" ? params(data) : typeof params === "string" ? { message: params } : params;
+    const p2 = typeof p === "string" ? { message: p } : p;
+    return p2;
+  }
+  function custom(check, _params = {}, fatal) {
     if (check)
       return ZodAny.create().superRefine((data, ctx) => {
         var _a, _b;
-        if (!check(data)) {
-          const p = typeof params === "function" ? params(data) : typeof params === "string" ? { message: params } : params;
-          const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
-          const p2 = typeof p === "string" ? { message: p } : p;
-          ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
+        const r = check(data);
+        if (r instanceof Promise) {
+          return r.then((r2) => {
+            var _a2, _b2;
+            if (!r2) {
+              const params = cleanParams(_params, data);
+              const _fatal = (_b2 = (_a2 = params.fatal) !== null && _a2 !== void 0 ? _a2 : fatal) !== null && _b2 !== void 0 ? _b2 : true;
+              ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
+            }
+          });
         }
+        if (!r) {
+          const params = cleanParams(_params, data);
+          const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+          ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
+        }
+        return;
       });
     return ZodAny.create();
   }
@@ -10932,6 +11208,8 @@ Source: "${matchedFrom}"`;
       this.mutObs.observe(document.documentElement, { childList: true, subtree: true });
     }
     /**
+     * Core logic for find inputs that are eligible for autofill. If they are,
+     * then call addInput which will attempt to add the input to a parent form.
      * @param context
      */
     findEligibleInputs(context) {
@@ -10939,6 +11217,9 @@ Source: "${matchedFrom}"`;
         return this;
       }
       const formInputsSelectorWithoutSelect = this.matching.cssSelector("formInputsSelectorWithoutSelect");
+      if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)) {
+        return this;
+      }
       if ("matches" in context && context.matches?.(formInputsSelectorWithoutSelect)) {
         this.addInput(context);
       } else {
@@ -11043,6 +11324,8 @@ Source: "${matchedFrom}"`;
     addInput(input, form = null) {
       if (this.isStopped)
         return;
+      if (Array.from(this.forms.entries()).some(([_, formInstance]) => formInstance.inputs.all.has(input)))
+        return;
       const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
@@ -11141,7 +11424,7 @@ Source: "${matchedFrom}"`;
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-      if (this.isStopped || !(event.target instanceof Element))
+      if (this.isStopped || !(event.target instanceof Element) || this.device.settings.siteSpecificFeature?.formBoundarySettings?.length)
         return;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
@@ -11174,7 +11457,7 @@ Source: "${matchedFrom}"`;
      * @param {AttachArgs} _args
      * @returns {void}
      */
-    attach(_args) {
+    attach(_args2) {
       throw new Error("must implement attach");
     }
     /**
@@ -11778,6 +12061,491 @@ Source: "${matchedFrom}"`;
     };
   }
 
+  // node_modules/immutable-json-patch/lib/esm/typeguards.js
+  function isJSONArray(value) {
+    return Array.isArray(value);
+  }
+  function isJSONObject(value) {
+    return value !== null && typeof value === "object" && (value.constructor === void 0 || // for example Object.create(null)
+    value.constructor.name === "Object");
+  }
+
+  // node_modules/immutable-json-patch/lib/esm/utils.js
+  function isEqual(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+  function initial(array) {
+    return array.slice(0, array.length - 1);
+  }
+  function last(array) {
+    return array[array.length - 1];
+  }
+  function isObjectOrArray(value) {
+    return typeof value === "object" && value !== null;
+  }
+
+  // node_modules/immutable-json-patch/lib/esm/immutabilityHelpers.js
+  function shallowClone(value) {
+    if (isJSONArray(value)) {
+      const copy2 = value.slice();
+      Object.getOwnPropertySymbols(value).forEach((symbol) => {
+        copy2[symbol] = value[symbol];
+      });
+      return copy2;
+    } else if (isJSONObject(value)) {
+      const copy2 = {
+        ...value
+      };
+      Object.getOwnPropertySymbols(value).forEach((symbol) => {
+        copy2[symbol] = value[symbol];
+      });
+      return copy2;
+    } else {
+      return value;
+    }
+  }
+  function applyProp(object, key, value) {
+    if (object[key] === value) {
+      return object;
+    } else {
+      const updatedObject = shallowClone(object);
+      updatedObject[key] = value;
+      return updatedObject;
+    }
+  }
+  function getIn(object, path) {
+    let value = object;
+    let i = 0;
+    while (i < path.length) {
+      if (isJSONObject(value)) {
+        value = value[path[i]];
+      } else if (isJSONArray(value)) {
+        value = value[parseInt(path[i])];
+      } else {
+        value = void 0;
+      }
+      i++;
+    }
+    return value;
+  }
+  function setIn(object, path, value) {
+    let createPath = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : false;
+    if (path.length === 0) {
+      return value;
+    }
+    const key = path[0];
+    const updatedValue = setIn(object ? object[key] : void 0, path.slice(1), value, createPath);
+    if (isJSONObject(object) || isJSONArray(object)) {
+      return applyProp(object, key, updatedValue);
+    } else {
+      if (createPath) {
+        const newObject = IS_INTEGER_REGEX.test(key) ? [] : {};
+        newObject[key] = updatedValue;
+        return newObject;
+      } else {
+        throw new Error("Path does not exist");
+      }
+    }
+  }
+  var IS_INTEGER_REGEX = /^\d+$/;
+  function updateIn(object, path, transform) {
+    if (path.length === 0) {
+      return transform(object);
+    }
+    if (!isObjectOrArray(object)) {
+      throw new Error("Path doesn't exist");
+    }
+    const key = path[0];
+    const updatedValue = updateIn(object[key], path.slice(1), transform);
+    return applyProp(object, key, updatedValue);
+  }
+  function deleteIn(object, path) {
+    if (path.length === 0) {
+      return object;
+    }
+    if (!isObjectOrArray(object)) {
+      throw new Error("Path does not exist");
+    }
+    if (path.length === 1) {
+      const key2 = path[0];
+      if (!(key2 in object)) {
+        return object;
+      } else {
+        const updatedObject = shallowClone(object);
+        if (isJSONArray(updatedObject)) {
+          updatedObject.splice(parseInt(key2), 1);
+        }
+        if (isJSONObject(updatedObject)) {
+          delete updatedObject[key2];
+        }
+        return updatedObject;
+      }
+    }
+    const key = path[0];
+    const updatedValue = deleteIn(object[key], path.slice(1));
+    return applyProp(object, key, updatedValue);
+  }
+  function insertAt(document2, path, value) {
+    const parentPath = path.slice(0, path.length - 1);
+    const index = path[path.length - 1];
+    return updateIn(document2, parentPath, (items) => {
+      if (!Array.isArray(items)) {
+        throw new TypeError("Array expected at path " + JSON.stringify(parentPath));
+      }
+      const updatedItems = shallowClone(items);
+      updatedItems.splice(parseInt(index), 0, value);
+      return updatedItems;
+    });
+  }
+  function existsIn(document2, path) {
+    if (document2 === void 0) {
+      return false;
+    }
+    if (path.length === 0) {
+      return true;
+    }
+    if (document2 === null) {
+      return false;
+    }
+    return existsIn(document2[path[0]], path.slice(1));
+  }
+
+  // node_modules/immutable-json-patch/lib/esm/jsonPointer.js
+  function parseJSONPointer(pointer) {
+    const path = pointer.split("/");
+    path.shift();
+    return path.map((p) => p.replace(/~1/g, "/").replace(/~0/g, "~"));
+  }
+  function compileJSONPointer(path) {
+    return path.map(compileJSONPointerProp).join("");
+  }
+  function compileJSONPointerProp(pathProp) {
+    return "/" + String(pathProp).replace(/~/g, "~0").replace(/\//g, "~1");
+  }
+
+  // node_modules/immutable-json-patch/lib/esm/immutableJSONPatch.js
+  function immutableJSONPatch(document2, operations, options) {
+    let updatedDocument = document2;
+    for (let i = 0; i < operations.length; i++) {
+      validateJSONPatchOperation(operations[i]);
+      let operation = operations[i];
+      if (options && options.before) {
+        const result = options.before(updatedDocument, operation);
+        if (result !== void 0) {
+          if (result.document !== void 0) {
+            updatedDocument = result.document;
+          }
+          if (result.json !== void 0) {
+            throw new Error('Deprecation warning: returned object property ".json" has been renamed to ".document"');
+          }
+          if (result.operation !== void 0) {
+            operation = result.operation;
+          }
+        }
+      }
+      const previousDocument = updatedDocument;
+      const path = parsePath(updatedDocument, operation.path);
+      if (operation.op === "add") {
+        updatedDocument = add(updatedDocument, path, operation.value);
+      } else if (operation.op === "remove") {
+        updatedDocument = remove(updatedDocument, path);
+      } else if (operation.op === "replace") {
+        updatedDocument = replace(updatedDocument, path, operation.value);
+      } else if (operation.op === "copy") {
+        updatedDocument = copy(updatedDocument, path, parseFrom(operation.from));
+      } else if (operation.op === "move") {
+        updatedDocument = move(updatedDocument, path, parseFrom(operation.from));
+      } else if (operation.op === "test") {
+        test(updatedDocument, path, operation.value);
+      } else {
+        throw new Error("Unknown JSONPatch operation " + JSON.stringify(operation));
+      }
+      if (options && options.after) {
+        const result = options.after(updatedDocument, operation, previousDocument);
+        if (result !== void 0) {
+          updatedDocument = result;
+        }
+      }
+    }
+    return updatedDocument;
+  }
+  function replace(document2, path, value) {
+    return setIn(document2, path, value);
+  }
+  function remove(document2, path) {
+    return deleteIn(document2, path);
+  }
+  function add(document2, path, value) {
+    if (isArrayItem(document2, path)) {
+      return insertAt(document2, path, value);
+    } else {
+      return setIn(document2, path, value);
+    }
+  }
+  function copy(document2, path, from) {
+    const value = getIn(document2, from);
+    if (isArrayItem(document2, path)) {
+      return insertAt(document2, path, value);
+    } else {
+      const value2 = getIn(document2, from);
+      return setIn(document2, path, value2);
+    }
+  }
+  function move(document2, path, from) {
+    const value = getIn(document2, from);
+    const removedJson = deleteIn(document2, from);
+    return isArrayItem(removedJson, path) ? insertAt(removedJson, path, value) : setIn(removedJson, path, value);
+  }
+  function test(document2, path, value) {
+    if (value === void 0) {
+      throw new Error(`Test failed: no value provided (path: "${compileJSONPointer(path)}")`);
+    }
+    if (!existsIn(document2, path)) {
+      throw new Error(`Test failed: path not found (path: "${compileJSONPointer(path)}")`);
+    }
+    const actualValue = getIn(document2, path);
+    if (!isEqual(actualValue, value)) {
+      throw new Error(`Test failed, value differs (path: "${compileJSONPointer(path)}")`);
+    }
+  }
+  function isArrayItem(document2, path) {
+    if (path.length === 0) {
+      return false;
+    }
+    const parent = getIn(document2, initial(path));
+    return Array.isArray(parent);
+  }
+  function resolvePathIndex(document2, path) {
+    if (last(path) !== "-") {
+      return path;
+    }
+    const parentPath = initial(path);
+    const parent = getIn(document2, parentPath);
+    return parentPath.concat(parent.length);
+  }
+  function validateJSONPatchOperation(operation) {
+    const ops = ["add", "remove", "replace", "copy", "move", "test"];
+    if (!ops.includes(operation.op)) {
+      throw new Error("Unknown JSONPatch op " + JSON.stringify(operation.op));
+    }
+    if (typeof operation.path !== "string") {
+      throw new Error('Required property "path" missing or not a string in operation ' + JSON.stringify(operation));
+    }
+    if (operation.op === "copy" || operation.op === "move") {
+      if (typeof operation.from !== "string") {
+        throw new Error('Required property "from" missing or not a string in operation ' + JSON.stringify(operation));
+      }
+    }
+  }
+  function parsePath(document2, pointer) {
+    return resolvePathIndex(document2, parseJSONPointer(pointer));
+  }
+  function parseFrom(fromPointer) {
+    return parseJSONPointer(fromPointer);
+  }
+
+  // node_modules/@duckduckgo/content-scope-scripts/injected/src/config-feature.js
+  var _bundledConfig, _args;
+  var ConfigFeature = class {
+    /**
+     * @param {string} name
+     * @param {import('./content-scope-features.js').LoadArgs} args
+     */
+    constructor(name, args) {
+      /** @type {import('./utils.js').RemoteConfig | undefined} */
+      __privateAdd(this, _bundledConfig, void 0);
+      /** @type {string} */
+      __publicField(this, "name");
+      /** @type {{ debug?: boolean, desktopModeEnabled?: boolean, forcedZoomEnabled?: boolean, featureSettings?: Record<string, unknown>, assets?: import('./content-feature.js').AssetConfig | undefined, site: import('./content-feature.js').Site, messagingConfig?: import('@duckduckgo/messaging').MessagingConfig } | null} */
+      __privateAdd(this, _args, void 0);
+      this.name = name;
+      const { bundledConfig, site, platform } = args;
+      __privateSet(this, _bundledConfig, bundledConfig);
+      __privateSet(this, _args, args);
+      if (__privateGet(this, _bundledConfig) && __privateGet(this, _args)) {
+        const enabledFeatures = computeEnabledFeatures(bundledConfig, site.domain, platform.version);
+        __privateGet(this, _args).featureSettings = parseFeatureSettings(bundledConfig, enabledFeatures);
+      }
+    }
+    get args() {
+      return __privateGet(this, _args);
+    }
+    set args(args) {
+      __privateSet(this, _args, args);
+    }
+    get featureSettings() {
+      return __privateGet(this, _args)?.featureSettings;
+    }
+    /**
+     * Given a config key, interpret the value as a list of domain overrides, and return the elements that match the current page
+     * Consider using patchSettings instead as per `getFeatureSetting`.
+     * @param {string} featureKeyName
+     * @return {any[]}
+     * @protected
+     */
+    matchDomainFeatureSetting(featureKeyName) {
+      const domain = this.args?.site.domain;
+      if (!domain)
+        return [];
+      const domains = this._getFeatureSettings()?.[featureKeyName] || [];
+      return domains.filter((rule) => {
+        if (Array.isArray(rule.domain)) {
+          return rule.domain.some((domainRule) => {
+            return matchHostname(domain, domainRule);
+          });
+        }
+        return matchHostname(domain, rule.domain);
+      });
+    }
+    /**
+     * Return the settings object for a feature
+     * @param {string} [featureName] - The name of the feature to get the settings for; defaults to the name of the feature
+     * @returns {any}
+     */
+    _getFeatureSettings(featureName) {
+      const camelFeatureName = featureName || camelcase(this.name);
+      return this.featureSettings?.[camelFeatureName];
+    }
+    /**
+     * For simple boolean settings, return true if the setting is 'enabled'
+     * For objects, verify the 'state' field is 'enabled'.
+     * This allows for future forwards compatibility with more complex settings if required.
+     * For example:
+     * ```json
+     * {
+     *    "toggle": "enabled"
+     * }
+     * ```
+     * Could become later (without breaking changes):
+     * ```json
+     * {
+     *   "toggle": {
+     *       "state": "enabled",
+     *       "someOtherKey": 1
+     *   }
+     * }
+     * ```
+     * This also supports domain overrides as per `getFeatureSetting`.
+     * @param {string} featureKeyName
+     * @param {string} [featureName]
+     * @returns {boolean}
+     */
+    getFeatureSettingEnabled(featureKeyName, featureName) {
+      const result = this.getFeatureSetting(featureKeyName, featureName);
+      if (typeof result === "object") {
+        return result.state === "enabled";
+      }
+      return result === "enabled";
+    }
+    /**
+      * Return a specific setting from the feature settings
+      * If the "settings" key within the config has a "domains" key, it will be used to override the settings.
+      * This uses JSONPatch to apply the patches to settings before getting the setting value.
+      * For example.com getFeatureSettings('val') will return 1:
+      * ```json
+      *  {
+      *      "settings": {
+      *         "domains": [
+      *             {
+      *                "domain": "example.com",
+      *                "patchSettings": [
+      *                    { "op": "replace", "path": "/val", "value": 1 }
+      *                ]
+      *             }
+      *         ]
+      *      }
+      *  }
+      * ```
+      * "domain" can either be a string or an array of strings.
+    
+      * For boolean states you should consider using getFeatureSettingEnabled.
+      * @param {string} featureKeyName
+      * @param {string} [featureName]
+      * @returns {any}
+    */
+    getFeatureSetting(featureKeyName, featureName) {
+      let result = this._getFeatureSettings(featureName);
+      if (featureKeyName === "domains") {
+        throw new Error("domains is a reserved feature setting key name");
+      }
+      const domainMatch = [...this.matchDomainFeatureSetting("domains")].sort((a, b) => {
+        return a.domain.length - b.domain.length;
+      });
+      for (const match of domainMatch) {
+        if (match.patchSettings === void 0) {
+          continue;
+        }
+        try {
+          result = immutableJSONPatch(result, match.patchSettings);
+        } catch (e) {
+          console.error("Error applying patch settings", e);
+        }
+      }
+      return result?.[featureKeyName];
+    }
+    /**
+     * @returns {import('./utils.js').RemoteConfig | undefined}
+     **/
+    get bundledConfig() {
+      return __privateGet(this, _bundledConfig);
+    }
+  };
+  _bundledConfig = new WeakMap();
+  _args = new WeakMap();
+
+  // src/site-specific-feature.js
+  var FEATURE_NAME = "autofill_site_specific_rules";
+  var SiteSpecificFeature = class extends ConfigFeature {
+    constructor(args) {
+      super(FEATURE_NAME, args);
+    }
+    /**
+     * @returns {Array<FormTypeSettings>}
+     */
+    get formTypeSettings() {
+      return this.getFeatureSetting("formTypeSettings") ?? [];
+    }
+    /**
+     * @returns {Array<FormBoundarySettings>}
+     */
+    get formBoundarySettings() {
+      return this.getFeatureSetting("formBoundarySettings") ?? [];
+    }
+    /**
+     * Checks if there's a forced form type configuration for this form
+     * @param {HTMLElement} form
+     * @returns {string|null}
+     */
+    getForcedFormType(form) {
+      return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
+    }
+    /**
+     * @param {HTMLElement} context
+     * @param {string} formInputsSelectorWithoutSelect
+     * @param {(input: HTMLInputElement|HTMLSelectElement, form?: HTMLFormElement) => void} callback
+     * @returns {boolean}
+     */
+    attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, callback) {
+      let formCount = 0;
+      if (this.formBoundarySettings.length) {
+        for (const setting of this.formBoundarySettings) {
+          const form = context.querySelector(setting.selector) || findElementsInShadowTree(context, setting.selector)[0];
+          if (form) {
+            formCount++;
+            const inputs = (
+              /** @type NodeListOf<HTMLSelectElement|HTMLInputElement> */
+              form.querySelectorAll(formInputsSelectorWithoutSelect)
+            );
+            for (const input of inputs) {
+              callback(input, form);
+            }
+          }
+        }
+      }
+      return formCount === this.formBoundarySettings.length;
+    }
+  };
+
   // src/Settings.js
   var _Settings = class _Settings {
     /**
@@ -11799,6 +12567,8 @@ Source: "${matchedFrom}"`;
       __publicField(this, "_enabled", null);
       /** @type {string} */
       __publicField(this, "_language", "en");
+      /** @type {SiteSpecificFeature | null} */
+      __publicField(this, "_siteSpecificFeature", null);
       this.deviceApi = deviceApi;
       this.globalConfig = config;
     }
@@ -11912,6 +12682,23 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
+     * @returns {SiteSpecificFeature|undefined}
+     */
+    get siteSpecificFeature() {
+      return this._siteSpecificFeature ?? void 0;
+    }
+    async getsiteSpecificFeature() {
+      if (this._siteSpecificFeature)
+        return this._siteSpecificFeature;
+      const runtimeConfig = await this._getRuntimeConfiguration();
+      return new SiteSpecificFeature(runtimeConfig);
+    }
+    setsiteSpecificFeature(siteSpecificFeature) {
+      if (this._siteSpecificFeature)
+        return;
+      this._siteSpecificFeature = siteSpecificFeature;
+    }
+    /**
      * To 'refresh' settings means to re-call APIs to determine new state. This may
      * only occur once per page, but it must be done before any page scanning/decorating
      * or translation can happen.
@@ -11924,6 +12711,7 @@ Source: "${matchedFrom}"`;
      */
     async refresh() {
       this.setEnabled(await this.getEnabled());
+      this.setsiteSpecificFeature(await this.getsiteSpecificFeature());
       this.setFeatureToggles(await this.getFeatureToggles());
       this.setAvailableInputTypes(await this.getAvailableInputTypes());
       this.setLanguage(await this.getLanguage());
