@@ -4,23 +4,550 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.toString = exports.removeEventListener = exports.randomUUID = exports.objectKeys = exports.objectEntries = exports.objectDefineProperty = exports.hasOwnProperty = exports.getOwnPropertyDescriptors = exports.getOwnPropertyDescriptor = exports.functionToString = exports.dispatchEvent = exports.customElementsGet = exports.customElementsDefine = exports.addEventListener = exports.URL = exports.TypeError = exports.Symbol = exports.String = exports.Set = exports.Reflect = exports.Proxy = exports.Promise = exports.Map = exports.Error = exports.CustomEvent = void 0;
+/* eslint-disable no-redeclare */
+const Set = exports.Set = globalThis.Set;
+const Reflect = exports.Reflect = globalThis.Reflect;
+const customElementsGet = exports.customElementsGet = globalThis.customElements?.get.bind(globalThis.customElements);
+const customElementsDefine = exports.customElementsDefine = globalThis.customElements?.define.bind(globalThis.customElements);
+const getOwnPropertyDescriptor = exports.getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+const getOwnPropertyDescriptors = exports.getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors;
+const toString = exports.toString = Object.prototype.toString;
+const objectKeys = exports.objectKeys = Object.keys;
+const objectEntries = exports.objectEntries = Object.entries;
+const objectDefineProperty = exports.objectDefineProperty = Object.defineProperty;
+const URL = exports.URL = globalThis.URL;
+const Proxy = exports.Proxy = globalThis.Proxy;
+const functionToString = exports.functionToString = Function.prototype.toString;
+const TypeError = exports.TypeError = globalThis.TypeError;
+const Symbol = exports.Symbol = globalThis.Symbol;
+const hasOwnProperty = exports.hasOwnProperty = Object.prototype.hasOwnProperty;
+const dispatchEvent = exports.dispatchEvent = globalThis.dispatchEvent?.bind(globalThis);
+const addEventListener = exports.addEventListener = globalThis.addEventListener?.bind(globalThis);
+const removeEventListener = exports.removeEventListener = globalThis.removeEventListener?.bind(globalThis);
+const CustomEvent = exports.CustomEvent = globalThis.CustomEvent;
+const Promise = exports.Promise = globalThis.Promise;
+const String = exports.String = globalThis.String;
+const Map = exports.Map = globalThis.Map;
+const Error = exports.Error = globalThis.Error;
+const randomUUID = exports.randomUUID = globalThis.crypto?.randomUUID?.bind(globalThis.crypto);
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OriginalCustomEvent = exports.DDGReflect = exports.DDGProxy = exports.DDGPromise = void 0;
+exports.camelcase = camelcase;
+exports.computeEnabledFeatures = computeEnabledFeatures;
+exports.computeLimitedSiteObject = computeLimitedSiteObject;
+exports.createCustomEvent = createCustomEvent;
+exports.createStyleElement = createStyleElement;
+exports.getContextId = getContextId;
+exports.getInjectionElement = getInjectionElement;
+exports.getStack = getStack;
+exports.getStackTraceOrigins = getStackTraceOrigins;
+exports.getStackTraceUrls = getStackTraceUrls;
+exports.getTabHostname = getTabHostname;
+exports.hasThirdPartyOrigin = hasThirdPartyOrigin;
+exports.initStringExemptionLists = initStringExemptionLists;
+exports.injectGlobalStyles = injectGlobalStyles;
+exports.isBeingFramed = isBeingFramed;
+exports.isFeatureBroken = isFeatureBroken;
+exports.isGloballyDisabled = isGloballyDisabled;
+exports.isPlatformSpecificFeature = isPlatformSpecificFeature;
+exports.isThirdPartyFrame = isThirdPartyFrame;
+exports.isUnprotectedDomain = isUnprotectedDomain;
+exports.iterateDataKey = iterateDataKey;
+exports.legacySendMessage = legacySendMessage;
+exports.matchHostname = matchHostname;
+exports.nextRandom = nextRandom;
+exports.originalWindowDispatchEvent = void 0;
+exports.parseFeatureSettings = parseFeatureSettings;
+exports.platformSpecificFeatures = void 0;
+exports.postDebugMessage = postDebugMessage;
+exports.processAttr = processAttr;
 exports.processConfig = processConfig;
-function getTopLevelURL() {
-  try {
-    // FROM: https://stackoverflow.com/a/7739035/73479
-    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
-    if (window.location !== window.parent.location) {
-      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
-    } else {
-      return new URL(window.location.href);
+exports.registerMessageSecret = registerMessageSecret;
+exports.satisfiesMinVersion = satisfiesMinVersion;
+exports.setGlobal = setGlobal;
+exports.shouldExemptMethod = shouldExemptMethod;
+exports.shouldExemptUrl = shouldExemptUrl;
+exports.stripVersion = stripVersion;
+exports.withExponentialBackoff = withExponentialBackoff;
+var _capturedGlobals = require("./captured-globals.js");
+/* eslint-disable no-redeclare, no-global-assign */
+
+// Only use globalThis for testing this breaks window.wrappedJSObject code in Firefox
+
+let globalObj = typeof window === 'undefined' ? globalThis : window;
+let Error = globalObj.Error;
+let messageSecret;
+
+// save a reference to original CustomEvent amd dispatchEvent so they can't be overriden to forge messages
+const OriginalCustomEvent = exports.OriginalCustomEvent = typeof CustomEvent === 'undefined' ? null : CustomEvent;
+const originalWindowDispatchEvent = exports.originalWindowDispatchEvent = typeof window === 'undefined' ? null : window.dispatchEvent.bind(window);
+function registerMessageSecret(secret) {
+  messageSecret = secret;
+}
+
+/**
+ * @returns {HTMLElement} the element to inject the script into
+ */
+function getInjectionElement() {
+  return document.head || document.documentElement;
+}
+
+/**
+ * Creates a script element with the given code to avoid Firefox CSP restrictions.
+ * @param {string} css
+ * @returns {HTMLLinkElement | HTMLStyleElement}
+ */
+function createStyleElement(css) {
+  const style = document.createElement('style');
+  style.innerText = css;
+  return style;
+}
+
+/**
+ * Injects a script into the page, avoiding CSP restrictions if possible.
+ */
+function injectGlobalStyles(css) {
+  const style = createStyleElement(css);
+  getInjectionElement().appendChild(style);
+}
+
+/**
+ * Used for testing to override the globals used within this file.
+ * @param {window} globalObjIn
+ */
+function setGlobal(globalObjIn) {
+  globalObj = globalObjIn;
+  Error = globalObj.Error;
+}
+
+// linear feedback shift register to find a random approximation
+function nextRandom(v) {
+  return Math.abs(v >> 1 | (v << 62 ^ v << 61) & ~(~0 << 63) << 62);
+}
+const exemptionLists = {};
+function shouldExemptUrl(type, url) {
+  for (const regex of exemptionLists[type]) {
+    if (regex.test(url)) {
+      return true;
     }
-  } catch (error) {
-    return new URL(location.href);
+  }
+  return false;
+}
+let debug = false;
+function initStringExemptionLists(args) {
+  const {
+    stringExemptionLists
+  } = args;
+  debug = args.debug;
+  for (const type in stringExemptionLists) {
+    exemptionLists[type] = [];
+    for (const stringExemption of stringExemptionLists[type]) {
+      exemptionLists[type].push(new RegExp(stringExemption));
+    }
   }
 }
-function isUnprotectedDomain(topLevelUrl, featureList) {
+
+/**
+ * Best guess effort if the document is being framed
+ * @returns {boolean} if we infer the document is framed
+ */
+function isBeingFramed() {
+  if (globalThis.location && 'ancestorOrigins' in globalThis.location) {
+    return globalThis.location.ancestorOrigins.length > 0;
+  }
+  return globalThis.top !== globalThis.window;
+}
+
+/**
+ * Best guess effort if the document is third party
+ * @returns {boolean} if we infer the document is third party
+ */
+function isThirdPartyFrame() {
+  if (!isBeingFramed()) {
+    return false;
+  }
+  const tabHostname = getTabHostname();
+  // If we can't get the tab hostname, assume it's third party
+  if (!tabHostname) {
+    return true;
+  }
+  return !matchHostname(globalThis.location.hostname, tabHostname);
+}
+function isThirdPartyOrigin(hostname) {
+  return matchHostname(globalThis.location.hostname, hostname);
+}
+function hasThirdPartyOrigin(scriptOrigins) {
+  for (const origin of scriptOrigins) {
+    if (isThirdPartyOrigin(origin)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Best guess effort of the tabs hostname; where possible always prefer the args.site.domain
+ * @returns {string|null} inferred tab hostname
+ */
+function getTabHostname() {
+  let framingOrigin = null;
+  try {
+    // @ts-expect-error - globalThis.top is possibly 'null' here
+    framingOrigin = globalThis.top.location.href;
+  } catch {
+    framingOrigin = globalThis.document.referrer;
+  }
+
+  // Not supported in Firefox
+  if ('ancestorOrigins' in globalThis.location && globalThis.location.ancestorOrigins.length) {
+    // ancestorOrigins is reverse order, with the last item being the top frame
+    framingOrigin = globalThis.location.ancestorOrigins.item(globalThis.location.ancestorOrigins.length - 1);
+  }
+  try {
+    // @ts-expect-error - framingOrigin is possibly 'null' here
+    framingOrigin = new URL(framingOrigin).hostname;
+  } catch {
+    framingOrigin = null;
+  }
+  return framingOrigin;
+}
+
+/**
+ * Returns true if hostname is a subset of exceptionDomain or an exact match.
+ * @param {string} hostname
+ * @param {string} exceptionDomain
+ * @returns {boolean}
+ */
+function matchHostname(hostname, exceptionDomain) {
+  return hostname === exceptionDomain || hostname.endsWith(`.${exceptionDomain}`);
+}
+const lineTest = /(\()?(https?:[^)]+):[0-9]+:[0-9]+(\))?/;
+function getStackTraceUrls(stack) {
+  const urls = new _capturedGlobals.Set();
+  try {
+    const errorLines = stack.split('\n');
+    // Should cater for Chrome and Firefox stacks, we only care about https? resources.
+    for (const line of errorLines) {
+      const res = line.match(lineTest);
+      if (res) {
+        urls.add(new URL(res[2], location.href));
+      }
+    }
+  } catch (e) {
+    // Fall through
+  }
+  return urls;
+}
+function getStackTraceOrigins(stack) {
+  const urls = getStackTraceUrls(stack);
+  const origins = new _capturedGlobals.Set();
+  for (const url of urls) {
+    origins.add(url.hostname);
+  }
+  return origins;
+}
+
+// Checks the stack trace if there are known libraries that are broken.
+function shouldExemptMethod(type) {
+  // Short circuit stack tracing if we don't have checks
+  if (!(type in exemptionLists) || exemptionLists[type].length === 0) {
+    return false;
+  }
+  const stack = getStack();
+  const errorFiles = getStackTraceUrls(stack);
+  for (const path of errorFiles) {
+    if (shouldExemptUrl(type, path.href)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Iterate through the key, passing an item index and a byte to be modified
+function iterateDataKey(key, callback) {
+  let item = key.charCodeAt(0);
+  for (const i in key) {
+    let byte = key.charCodeAt(i);
+    for (let j = 8; j >= 0; j--) {
+      const res = callback(item, byte);
+      // Exit early if callback returns null
+      if (res === null) {
+        return;
+      }
+
+      // find next item to perturb
+      item = nextRandom(item);
+
+      // Right shift as we use the least significant bit of it
+      byte = byte >> 1;
+    }
+  }
+}
+function isFeatureBroken(args, feature) {
+  return isPlatformSpecificFeature(feature) ? !args.site.enabledFeatures.includes(feature) : args.site.isBroken || args.site.allowlisted || !args.site.enabledFeatures.includes(feature);
+}
+function camelcase(dashCaseText) {
+  return dashCaseText.replace(/-(.)/g, (match, letter) => {
+    return letter.toUpperCase();
+  });
+}
+
+// We use this method to detect M1 macs and set appropriate API values to prevent sites from detecting fingerprinting protections
+function isAppleSilicon() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl');
+
+  // Best guess if the device is an Apple Silicon
+  // https://stackoverflow.com/a/65412357
+  // @ts-expect-error - Object is possibly 'null'
+  return gl.getSupportedExtensions().indexOf('WEBGL_compressed_texture_etc') !== -1;
+}
+
+/**
+ * Take configSeting which should be an array of possible values.
+ * If a value contains a criteria that is a match for this environment then return that value.
+ * Otherwise return the first value that doesn't have a criteria.
+ *
+ * @param {ConfigSetting[]} configSetting - Config setting which should contain a list of possible values
+ * @returns {*|undefined} - The value from the list that best matches the criteria in the config
+ */
+function processAttrByCriteria(configSetting) {
+  let bestOption;
+  for (const item of configSetting) {
+    if (item.criteria) {
+      if (item.criteria.arch === 'AppleSilicon' && isAppleSilicon()) {
+        bestOption = item;
+        break;
+      }
+    } else {
+      bestOption = item;
+    }
+  }
+  return bestOption;
+}
+const functionMap = {
+  /** Useful for debugging APIs in the wild, shouldn't be used */
+  debug: function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    console.log('debugger', ...args);
+    // eslint-disable-next-line no-debugger
+    debugger;
+  },
+  noop: () => {}
+};
+
+/**
+ * @typedef {object} ConfigSetting
+ * @property {'undefined' | 'number' | 'string' | 'function' | 'boolean' | 'null' | 'array' | 'object'} type
+ * @property {string} [functionName]
+ * @property {boolean | string | number} value
+ * @property {object} [criteria]
+ * @property {string} criteria.arch
+ */
+
+/**
+ * Processes a structured config setting and returns the value according to its type
+ * @param {ConfigSetting} configSetting
+ * @param {*} [defaultValue]
+ * @returns
+ */
+function processAttr(configSetting, defaultValue) {
+  if (configSetting === undefined) {
+    return defaultValue;
+  }
+  const configSettingType = typeof configSetting;
+  switch (configSettingType) {
+    case 'object':
+      if (Array.isArray(configSetting)) {
+        configSetting = processAttrByCriteria(configSetting);
+        if (configSetting === undefined) {
+          return defaultValue;
+        }
+      }
+      if (!configSetting.type) {
+        return defaultValue;
+      }
+      if (configSetting.type === 'function') {
+        if (configSetting.functionName && functionMap[configSetting.functionName]) {
+          return functionMap[configSetting.functionName];
+        }
+      }
+      if (configSetting.type === 'undefined') {
+        return undefined;
+      }
+
+      // All JSON expressable types are handled here
+      return configSetting.value;
+    default:
+      return defaultValue;
+  }
+}
+function getStack() {
+  return new Error().stack;
+}
+function getContextId(scope) {
+  if (document?.currentScript && 'contextID' in document.currentScript) {
+    return document.currentScript.contextID;
+  }
+  if (scope.contextID) {
+    return scope.contextID;
+  }
+  // @ts-expect-error - contextID is a global variable
+  if (typeof contextID !== 'undefined') {
+    // @ts-expect-error - contextID is a global variable
+    // eslint-disable-next-line no-undef
+    return contextID;
+  }
+}
+
+/**
+ * @param {*[]} argsArray
+ * @returns {string}
+ */
+function debugSerialize(argsArray) {
+  const maxSerializedSize = 1000;
+  const serializedArgs = argsArray.map(arg => {
+    try {
+      const serializableOut = JSON.stringify(arg);
+      if (serializableOut.length > maxSerializedSize) {
+        return `<truncated, length: ${serializableOut.length}, value: ${serializableOut.substring(0, maxSerializedSize)}...>`;
+      }
+      return serializableOut;
+    } catch (e) {
+      // Sometimes this happens when we can't serialize an object to string but we still wish to log it and make other args readable
+      return '<unserializable>';
+    }
+  });
+  return JSON.stringify(serializedArgs);
+}
+
+/**
+ * @template {object} P
+ * @typedef {object} ProxyObject<P>
+ * @property {(target?: object, thisArg?: P, args?: object) => void} apply
+ */
+
+/**
+ * @template [P=object]
+ */
+class DDGProxy {
+  /**
+   * @param {import('./content-feature').default} feature
+   * @param {P} objectScope
+   * @param {string} property
+   * @param {ProxyObject<P>} proxyObject
+   */
+  constructor(feature, objectScope, property, proxyObject) {
+    var _this = this;
+    this.objectScope = objectScope;
+    this.property = property;
+    this.feature = feature;
+    this.featureName = feature.name;
+    this.camelFeatureName = camelcase(this.featureName);
+    const outputHandler = function () {
+      _this.feature.addDebugFlag();
+      const isExempt = shouldExemptMethod(_this.camelFeatureName);
+      // Keep this here as getStack() is expensive
+      if (debug) {
+        postDebugMessage(_this.camelFeatureName, {
+          isProxy: true,
+          action: isExempt ? 'ignore' : 'restrict',
+          kind: _this.property,
+          documentUrl: document.location.href,
+          stack: getStack(),
+          args: debugSerialize(arguments.length <= 2 ? undefined : arguments[2])
+        });
+      }
+      // The normal return value
+      if (isExempt) {
+        return DDGReflect.apply(arguments.length <= 0 ? undefined : arguments[0], arguments.length <= 1 ? undefined : arguments[1], arguments.length <= 2 ? undefined : arguments[2]);
+      }
+      return proxyObject.apply(...arguments);
+    };
+    const getMethod = (target, prop, receiver) => {
+      this.feature.addDebugFlag();
+      if (prop === 'toString') {
+        const method = Reflect.get(target, prop, receiver).bind(target);
+        Object.defineProperty(method, 'toString', {
+          value: String.toString.bind(String.toString),
+          enumerable: false
+        });
+        return method;
+      }
+      return DDGReflect.get(target, prop, receiver);
+    };
+    this._native = objectScope[property];
+    const handler = {};
+    handler.apply = outputHandler;
+    handler.get = getMethod;
+    this.internal = new globalObj.Proxy(objectScope[property], handler);
+  }
+
+  // Actually apply the proxy to the native property
+  overload() {
+    this.objectScope[this.property] = this.internal;
+  }
+  overloadDescriptor() {
+    // TODO: this is not always correct! Use wrap* or shim* methods instead
+    this.feature.defineProperty(this.objectScope, this.property, {
+      value: this.internal,
+      writable: true,
+      enumerable: true,
+      configurable: true
+    });
+  }
+}
+exports.DDGProxy = DDGProxy;
+const maxCounter = new Map();
+function numberOfTimesDebugged(feature) {
+  if (!maxCounter.has(feature)) {
+    maxCounter.set(feature, 1);
+  } else {
+    maxCounter.set(feature, maxCounter.get(feature) + 1);
+  }
+  return maxCounter.get(feature);
+}
+const DEBUG_MAX_TIMES = 5000;
+function postDebugMessage(feature, message) {
+  let allowNonDebug = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  if (!debug && !allowNonDebug) {
+    return;
+  }
+  if (numberOfTimesDebugged(feature) > DEBUG_MAX_TIMES) {
+    return;
+  }
+  if (message.stack) {
+    const scriptOrigins = [...getStackTraceOrigins(message.stack)];
+    message.scriptOrigins = scriptOrigins;
+  }
+  globalObj.postMessage({
+    action: feature,
+    message
+  });
+}
+const DDGPromise = exports.DDGPromise = globalObj.Promise;
+const DDGReflect = exports.DDGReflect = globalObj.Reflect;
+
+/**
+ * @param {string | null} topLevelHostname
+ * @param {object[]} featureList
+ * @returns {boolean}
+ */
+function isUnprotectedDomain(topLevelHostname, featureList) {
   let unprotectedDomain = false;
-  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : [];
+  if (!topLevelHostname) {
+    return false;
+  }
+  const domainParts = topLevelHostname.split('.');
 
   // walk up the domain to see if it's unprotected
   while (domainParts.length > 1 && !unprotectedDomain) {
@@ -30,26 +557,265 @@ function isUnprotectedDomain(topLevelUrl, featureList) {
   }
   return unprotectedDomain;
 }
-function processConfig(data, userList, preferences) {
-  const topLevelUrl = getTopLevelURL();
-  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
-  const enabledFeatures = Object.keys(data.features).filter(featureName => {
-    const feature = data.features[featureName];
-    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
+
+/**
+ * @typedef {object} Platform
+ * @property {'ios' | 'macos' | 'extension' | 'android' | 'windows'} name
+ * @property {string | number } [version]
+ */
+
+/**
+ * @typedef {object} UserPreferences
+ * @property {Platform} platform
+ * @property {boolean} [debug]
+ * @property {boolean} [globalPrivacyControl]
+ * @property {number} [versionNumber] - Android version number only
+ * @property {string} [versionString] - Non Android version string
+ * @property {string} sessionKey
+ */
+
+/**
+ * Used to inialize extension code in the load phase
+ */
+function computeLimitedSiteObject() {
+  const topLevelHostname = getTabHostname();
+  return {
+    domain: topLevelHostname
+  };
+}
+
+/**
+ * Expansion point to add platform specific versioning logic
+ * @param {UserPreferences} preferences
+ * @returns {string | number | undefined}
+ */
+function getPlatformVersion(preferences) {
+  if (preferences.versionNumber) {
+    return preferences.versionNumber;
+  }
+  if (preferences.versionString) {
+    return preferences.versionString;
+  }
+  return undefined;
+}
+
+/**
+ * Takes a version string and nullifies all its components except for the first `keepComponents` ones
+ * @param {string} version
+ * @returns string
+ */
+function stripVersion(version) {
+  let keepComponents = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  const splitVersion = version.split('.');
+  const filteredVersion = [];
+  let foundNonZero = false;
+  let keptComponents = 0;
+  splitVersion.forEach(v => {
+    if (v !== '0' && (!foundNonZero || keptComponents < keepComponents)) {
+      filteredVersion.push(v);
+      foundNonZero = true;
+      keptComponents++;
+    } else {
+      filteredVersion.push('0');
+    }
   });
-  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-  preferences.site = {
-    domain: topLevelUrl.hostname,
+  return filteredVersion.join('.');
+}
+function parseVersionString(versionString) {
+  return versionString.split('.').map(Number);
+}
+
+/**
+ * @param {string} minVersionString
+ * @param {string} applicationVersionString
+ * @returns {boolean}
+ */
+function satisfiesMinVersion(minVersionString, applicationVersionString) {
+  const minVersions = parseVersionString(minVersionString);
+  const currentVersions = parseVersionString(applicationVersionString);
+  const maxLength = Math.max(minVersions.length, currentVersions.length);
+  for (let i = 0; i < maxLength; i++) {
+    const minNumberPart = minVersions[i] || 0;
+    const currentVersionPart = currentVersions[i] || 0;
+    if (currentVersionPart > minNumberPart) {
+      return true;
+    }
+    if (currentVersionPart < minNumberPart) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * @param {string | number | undefined} minSupportedVersion
+ * @param {string | number | undefined} currentVersion
+ * @returns {boolean}
+ */
+function isSupportedVersion(minSupportedVersion, currentVersion) {
+  if (typeof currentVersion === 'string' && typeof minSupportedVersion === 'string') {
+    if (satisfiesMinVersion(minSupportedVersion, currentVersion)) {
+      return true;
+    }
+  } else if (typeof currentVersion === 'number' && typeof minSupportedVersion === 'number') {
+    if (minSupportedVersion <= currentVersion) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * @typedef RemoteConfig
+ * @property {Record<string, { state: string; settings: any; exceptions: { domain: string }[], minSupportedVersion?: string|number }>} features
+ * @property {string[]} unprotectedTemporary
+ */
+
+/**
+ * @param {RemoteConfig} data
+ * @param {string[]} userList
+ * @param {UserPreferences} preferences
+ * @param {string[]} platformSpecificFeatures
+ */
+function processConfig(data, userList, preferences) {
+  let platformSpecificFeatures = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  const topLevelHostname = getTabHostname();
+  const site = computeLimitedSiteObject();
+  const allowlisted = userList.filter(domain => domain === topLevelHostname).length > 0;
+  /** @type {Record<string, any>} */
+  const output = {
+    ...preferences
+  };
+  if (output.platform) {
+    const version = getPlatformVersion(preferences);
+    if (version) {
+      output.platform.version = version;
+    }
+  }
+  const enabledFeatures = computeEnabledFeatures(data, topLevelHostname, preferences.platform?.version, platformSpecificFeatures);
+  const isBroken = isUnprotectedDomain(topLevelHostname, data.unprotectedTemporary);
+  output.site = Object.assign(site, {
     isBroken,
     allowlisted,
     enabledFeatures
-  };
-  // TODO
-  preferences.cookie = {};
-  return preferences;
+  });
+
+  // Copy feature settings from remote config to preferences object
+  output.featureSettings = parseFeatureSettings(data, enabledFeatures);
+  output.trackerLookup = {};
+  output.bundledConfig = data;
+  return output;
 }
 
-},{}],2:[function(require,module,exports){
+/**
+ * Retutns a list of enabled features
+ * @param {RemoteConfig} data
+ * @param {string | null} topLevelHostname
+ * @param {Platform['version']} platformVersion
+ * @param {string[]} platformSpecificFeatures
+ * @returns {string[]}
+ */
+function computeEnabledFeatures(data, topLevelHostname, platformVersion) {
+  let platformSpecificFeatures = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  const remoteFeatureNames = Object.keys(data.features);
+  const platformSpecificFeaturesNotInRemoteConfig = platformSpecificFeatures.filter(featureName => !remoteFeatureNames.includes(featureName));
+  const enabledFeatures = remoteFeatureNames.filter(featureName => {
+    const feature = data.features[featureName];
+    // Check that the platform supports minSupportedVersion checks and that the feature has a minSupportedVersion
+    if (feature.minSupportedVersion && platformVersion) {
+      if (!isSupportedVersion(feature.minSupportedVersion, platformVersion)) {
+        return false;
+      }
+    }
+    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelHostname, feature.exceptions);
+  }).concat(platformSpecificFeaturesNotInRemoteConfig); // only disable platform specific features if it's explicitly disabled in remote config
+  return enabledFeatures;
+}
+
+/**
+ * Returns the relevant feature settings for the enabled features
+ * @param {RemoteConfig} data
+ * @param {string[]} enabledFeatures
+ * @returns {Record<string, unknown>}
+ */
+function parseFeatureSettings(data, enabledFeatures) {
+  /** @type {Record<string, unknown>} */
+  const featureSettings = {};
+  const remoteFeatureNames = Object.keys(data.features);
+  remoteFeatureNames.forEach(featureName => {
+    if (!enabledFeatures.includes(featureName)) {
+      return;
+    }
+    featureSettings[featureName] = data.features[featureName].settings;
+  });
+  return featureSettings;
+}
+function isGloballyDisabled(args) {
+  return args.site.allowlisted || args.site.isBroken;
+}
+
+/**
+ * @import {FeatureName} from "./features";
+ * @type {FeatureName[]}
+ */
+const platformSpecificFeatures = exports.platformSpecificFeatures = ['windowsPermissionUsage', 'messageBridge'];
+function isPlatformSpecificFeature(featureName) {
+  return platformSpecificFeatures.includes(featureName);
+}
+function createCustomEvent(eventName, eventDetail) {
+  // @ts-expect-error - possibly null
+  return new OriginalCustomEvent(eventName, eventDetail);
+}
+
+/** @deprecated */
+function legacySendMessage(messageType, options) {
+  // FF & Chrome
+  return originalWindowDispatchEvent && originalWindowDispatchEvent(createCustomEvent('sendMessageProxy' + messageSecret, {
+    detail: JSON.stringify({
+      messageType,
+      options
+    })
+  }));
+  // TBD other platforms
+}
+
+/**
+ * Takes a function that returns an element and tries to find it with exponential backoff.
+ * @param {number} delay
+ * @param {number} [maxAttempts=4] - The maximum number of attempts to find the element.
+ * @param {number} [delay=500] - The initial delay to be used to create the exponential backoff.
+ * @returns {Promise<Element|HTMLElement|null>}
+ */
+function withExponentialBackoff(fn) {
+  let maxAttempts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
+  let delay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 500;
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    const tryFn = () => {
+      attempts += 1;
+      const error = new Error('Element not found');
+      try {
+        const element = fn();
+        if (element) {
+          resolve(element);
+        } else if (attempts < maxAttempts) {
+          setTimeout(tryFn, delay * Math.pow(2, attempts));
+        } else {
+          reject(error);
+        }
+      } catch {
+        if (attempts < maxAttempts) {
+          setTimeout(tryFn, delay * Math.pow(2, attempts));
+        } else {
+          reject(error);
+        }
+      }
+    };
+    tryFn();
+  });
+}
+
+},{"./captured-globals.js":1}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -94,7 +860,7 @@ Object.defineProperty(exports, "validate", {
 var _deviceApiCall = require("./lib/device-api-call.js");
 var _deviceApi = require("./lib/device-api.js");
 
-},{"./lib/device-api-call.js":3,"./lib/device-api.js":4}],3:[function(require,module,exports){
+},{"./lib/device-api-call.js":4,"./lib/device-api.js":5}],4:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -360,7 +1126,7 @@ function validate(data) {
   return data;
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -422,7 +1188,7 @@ class DeviceApi {
 }
 exports.DeviceApi = DeviceApi;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -596,7 +1362,7 @@ class MissingHandler extends Error {
  */
 exports.MissingHandler = MissingHandler;
 
-},{"./webkit.js":6}],6:[function(require,module,exports){
+},{"./webkit.js":7}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -991,7 +1757,7 @@ function captureGlobals() {
   };
 }
 
-},{"./messaging.js":5}],7:[function(require,module,exports){
+},{"./messaging.js":6}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1122,7 +1888,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":8,"./lib/constants.js":9,"./lib/rules-parser.js":10}],8:[function(require,module,exports){
+},{"./lib/apple.password.js":9,"./lib/constants.js":10,"./lib/rules-parser.js":11}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1651,7 +2417,7 @@ class Password {
 }
 exports.Password = Password;
 
-},{"./constants.js":9,"./rules-parser.js":10}],9:[function(require,module,exports){
+},{"./constants.js":10,"./rules-parser.js":11}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1671,7 +2437,7 @@ const constants = exports.constants = {
   DEFAULT_UNAMBIGUOUS_CHARS
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2262,7 +3028,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -3357,7 +4123,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3425,7 +4191,7 @@ class CredentialsImport {
 }
 exports.CredentialsImport = CredentialsImport;
 
-},{"./deviceApiCalls/__generated__/deviceApiCalls.js":58}],13:[function(require,module,exports){
+},{"./deviceApiCalls/__generated__/deviceApiCalls.js":59}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3481,7 +4247,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api/index.js":2,"./DeviceInterface/AndroidInterface.js":14,"./DeviceInterface/AppleDeviceInterface.js":15,"./DeviceInterface/AppleOverlayDeviceInterface.js":16,"./DeviceInterface/ExtensionInterface.js":17,"./DeviceInterface/WindowsInterface.js":19,"./DeviceInterface/WindowsOverlayDeviceInterface.js":20,"./Settings.js":41,"./config.js":56,"./deviceApiCalls/transports/transports.js":64}],14:[function(require,module,exports){
+},{"../packages/device-api/index.js":3,"./DeviceInterface/AndroidInterface.js":15,"./DeviceInterface/AppleDeviceInterface.js":16,"./DeviceInterface/AppleOverlayDeviceInterface.js":17,"./DeviceInterface/ExtensionInterface.js":18,"./DeviceInterface/WindowsInterface.js":20,"./DeviceInterface/WindowsOverlayDeviceInterface.js":21,"./Settings.js":42,"./config.js":57,"./deviceApiCalls/transports/transports.js":65}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3629,7 +4395,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 }
 exports.AndroidInterface = AndroidInterface;
 
-},{"../InContextSignup.js":35,"../UI/controllers/NativeUIController.js":49,"../autofill-utils.js":54,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"./InterfacePrototype.js":18}],15:[function(require,module,exports){
+},{"../InContextSignup.js":36,"../UI/controllers/NativeUIController.js":50,"../autofill-utils.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./InterfacePrototype.js":19}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3985,7 +4751,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 }
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../Form/matching.js":34,"../InContextSignup.js":35,"../ThirdPartyProvider.js":42,"../UI/HTMLTooltip.js":47,"../UI/controllers/HTMLTooltipUIController.js":48,"../UI/controllers/NativeUIController.js":49,"../UI/controllers/OverlayUIController.js":50,"../autofill-utils.js":54,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"../deviceApiCalls/additionalDeviceApiCalls.js":60,"./InterfacePrototype.js":18}],16:[function(require,module,exports){
+},{"../../packages/device-api/index.js":3,"../Form/matching.js":35,"../InContextSignup.js":36,"../ThirdPartyProvider.js":43,"../UI/HTMLTooltip.js":48,"../UI/controllers/HTMLTooltipUIController.js":49,"../UI/controllers/NativeUIController.js":50,"../UI/controllers/OverlayUIController.js":51,"../autofill-utils.js":55,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"../deviceApiCalls/additionalDeviceApiCalls.js":61,"./InterfacePrototype.js":19}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4104,7 +4870,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 }
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":2,"../UI/controllers/HTMLTooltipUIController.js":48,"./AppleDeviceInterface.js":15,"./overlayApi.js":22}],17:[function(require,module,exports){
+},{"../../packages/device-api/index.js":3,"../UI/controllers/HTMLTooltipUIController.js":49,"./AppleDeviceInterface.js":16,"./overlayApi.js":23}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4323,7 +5089,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 }
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../Form/matching.js":34,"../InContextSignup.js":35,"../UI/HTMLTooltip.js":47,"../UI/controllers/HTMLTooltipUIController.js":48,"../autofill-utils.js":54,"./InterfacePrototype.js":18}],18:[function(require,module,exports){
+},{"../Form/matching.js":35,"../InContextSignup.js":36,"../UI/HTMLTooltip.js":48,"../UI/controllers/HTMLTooltipUIController.js":49,"../autofill-utils.js":55,"./InterfacePrototype.js":19}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5158,7 +5924,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":2,"../CredentialsImport.js":12,"../EmailProtection.js":23,"../Form/formatters.js":27,"../Form/matching.js":34,"../InputTypes/Credentials.js":36,"../PasswordGenerator.js":39,"../Scanner.js":40,"../Settings.js":41,"../UI/controllers/NativeUIController.js":49,"../autofill-utils.js":54,"../config.js":56,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"../deviceApiCalls/transports/transports.js":64,"../locales/strings.js":89,"./initFormSubmissionsApi.js":21}],19:[function(require,module,exports){
+},{"../../packages/device-api/index.js":3,"../CredentialsImport.js":13,"../EmailProtection.js":24,"../Form/formatters.js":28,"../Form/matching.js":35,"../InputTypes/Credentials.js":37,"../PasswordGenerator.js":40,"../Scanner.js":41,"../Settings.js":42,"../UI/controllers/NativeUIController.js":50,"../autofill-utils.js":55,"../config.js":57,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"../deviceApiCalls/transports/transports.js":65,"../locales/strings.js":90,"./initFormSubmissionsApi.js":22}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5324,7 +6090,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 }
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/controllers/OverlayUIController.js":50,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"./InterfacePrototype.js":18}],20:[function(require,module,exports){
+},{"../UI/controllers/OverlayUIController.js":51,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./InterfacePrototype.js":19}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5503,7 +6269,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 }
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController.js":48,"../deviceApiCalls/__generated__/deviceApiCalls.js":58,"./InterfacePrototype.js":18,"./overlayApi.js":22}],21:[function(require,module,exports){
+},{"../UI/controllers/HTMLTooltipUIController.js":49,"../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./InterfacePrototype.js":19,"./overlayApi.js":23}],22:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5603,7 +6369,7 @@ function initFormSubmissionsApi(forms, matching) {
   });
 }
 
-},{"../Form/label-util.js":30,"../autofill-utils.js":54}],22:[function(require,module,exports){
+},{"../Form/label-util.js":31,"../autofill-utils.js":55}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5661,7 +6427,7 @@ function overlayApi(device) {
   };
 }
 
-},{"../deviceApiCalls/__generated__/deviceApiCalls.js":58}],23:[function(require,module,exports){
+},{"../deviceApiCalls/__generated__/deviceApiCalls.js":59}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5696,7 +6462,7 @@ class EmailProtection {
 }
 exports.EmailProtection = EmailProtection;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6619,7 +7385,7 @@ class Form {
 }
 exports.Form = Form;
 
-},{"../InputTypes/Credentials.js":36,"../autofill-utils.js":54,"../constants.js":57,"./FormAnalyzer.js":25,"./formatters.js":27,"./inputStyles.js":28,"./inputTypeConfig.js":29,"./matching.js":34}],25:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../autofill-utils.js":55,"../constants.js":58,"./FormAnalyzer.js":26,"./formatters.js":28,"./inputStyles.js":29,"./inputTypeConfig.js":30,"./matching.js":35}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7045,7 +7811,7 @@ class FormAnalyzer {
 }
 var _default = exports.default = FormAnalyzer;
 
-},{"../autofill-utils.js":54,"../constants.js":57,"./matching-config/__generated__/compiled-matching-config.js":32,"./matching.js":34}],26:[function(require,module,exports){
+},{"../autofill-utils.js":55,"../constants.js":58,"./matching-config/__generated__/compiled-matching-config.js":33,"./matching.js":35}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7610,7 +8376,7 @@ const COUNTRY_NAMES_TO_CODES = exports.COUNTRY_NAMES_TO_CODES = {
   'Unknown Region': 'ZZ'
 };
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7949,7 +8715,7 @@ const prepareFormValuesForStorage = function (formValues) {
 };
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"../autofill-utils.js":54,"./countryNames.js":26,"./matching.js":34}],28:[function(require,module,exports){
+},{"../autofill-utils.js":55,"./countryNames.js":27,"./matching.js":35}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8040,7 +8806,7 @@ const getIconStylesAutofilled = (input, form) => {
 };
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":29}],29:[function(require,module,exports){
+},{"./inputTypeConfig.js":30}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8294,7 +9060,7 @@ const isFieldDecorated = input => {
 };
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":36,"../InputTypes/CreditCard.js":37,"../InputTypes/Identity.js":38,"../UI/img/ddgPasswordIcon.js":52,"../constants.js":57,"./logo-svg.js":31,"./matching.js":34}],30:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../InputTypes/CreditCard.js":38,"../InputTypes/Identity.js":39,"../UI/img/ddgPasswordIcon.js":53,"../constants.js":58,"./logo-svg.js":32,"./matching.js":35}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8342,7 +9108,7 @@ const extractElementStrings = element => {
 };
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching.js":34}],31:[function(require,module,exports){
+},{"./matching.js":35}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8375,7 +9141,7 @@ const daxGrayscaleSvg = `
 `.trim();
 const daxGrayscaleBase64 = exports.daxGrayscaleBase64 = `data:image/svg+xml;base64,${window.btoa(daxGrayscaleSvg)}`;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8831,7 +9597,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
   }
 };
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8906,7 +9672,7 @@ function logUnmatched(el, allStrings) {
   console.groupEnd();
 }
 
-},{"../autofill-utils.js":54,"./matching.js":34}],34:[function(require,module,exports){
+},{"../autofill-utils.js":55,"./matching.js":35}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9898,7 +10664,7 @@ function createMatching() {
   return new Matching(_compiledMatchingConfig.matchingConfiguration);
 }
 
-},{"../autofill-utils.js":54,"../constants.js":57,"./label-util.js":30,"./matching-config/__generated__/compiled-matching-config.js":32,"./matching-utils.js":33}],35:[function(require,module,exports){
+},{"../autofill-utils.js":55,"../constants.js":58,"./label-util.js":31,"./matching-config/__generated__/compiled-matching-config.js":33,"./matching-utils.js":34}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10030,7 +10796,7 @@ class InContextSignup {
 }
 exports.InContextSignup = InContextSignup;
 
-},{"./autofill-utils.js":54,"./deviceApiCalls/__generated__/deviceApiCalls.js":58}],36:[function(require,module,exports){
+},{"./autofill-utils.js":55,"./deviceApiCalls/__generated__/deviceApiCalls.js":59}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10186,7 +10952,7 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-},{"../autofill-utils.js":54}],37:[function(require,module,exports){
+},{"../autofill-utils.js":55}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10211,7 +10977,7 @@ class CreditCardTooltipItem {
 }
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10257,7 +11023,7 @@ class IdentityTooltipItem {
 }
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":27}],39:[function(require,module,exports){
+},{"../Form/formatters.js":28}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10299,7 +11065,7 @@ class PasswordGenerator {
 }
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password/index.js":7,"../packages/password/rules.json":11}],40:[function(require,module,exports){
+},{"../packages/password/index.js":8,"../packages/password/rules.json":12}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10766,7 +11532,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":24,"./Form/matching.js":34,"./autofill-utils.js":54,"./constants.js":57,"./deviceApiCalls/__generated__/deviceApiCalls.js":58}],41:[function(require,module,exports){
+},{"./Form/Form.js":25,"./Form/matching.js":35,"./autofill-utils.js":55,"./constants.js":58,"./deviceApiCalls/__generated__/deviceApiCalls.js":59}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11180,7 +11946,7 @@ class Settings {
 }
 exports.Settings = Settings;
 
-},{"../packages/device-api/index.js":2,"./autofill-utils.js":54,"./deviceApiCalls/__generated__/deviceApiCalls.js":58,"./deviceApiCalls/__generated__/validators.zod.js":59}],42:[function(require,module,exports){
+},{"../packages/device-api/index.js":3,"./autofill-utils.js":55,"./deviceApiCalls/__generated__/deviceApiCalls.js":59,"./deviceApiCalls/__generated__/validators.zod.js":60}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11270,7 +12036,7 @@ class ThirdPartyProvider {
 }
 exports.ThirdPartyProvider = ThirdPartyProvider;
 
-},{"../packages/device-api/index.js":2,"./Form/matching.js":34,"./deviceApiCalls/__generated__/deviceApiCalls.js":58,"./deviceApiCalls/__generated__/validators.zod.js":59}],43:[function(require,module,exports){
+},{"../packages/device-api/index.js":3,"./Form/matching.js":35,"./deviceApiCalls/__generated__/deviceApiCalls.js":59,"./deviceApiCalls/__generated__/validators.zod.js":60}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11321,7 +12087,7 @@ ${this.options.css}
 }
 var _default = exports.default = CredentialsImportTooltip;
 
-},{"./HTMLTooltip.js":47}],44:[function(require,module,exports){
+},{"./HTMLTooltip.js":48}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11472,7 +12238,7 @@ ${css}
 }
 var _default = exports.default = DataHTMLTooltip;
 
-},{"../InputTypes/Credentials.js":36,"../autofill-utils.js":54,"./HTMLTooltip.js":47}],45:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":37,"../autofill-utils.js":55,"./HTMLTooltip.js":48}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11554,7 +12320,7 @@ ${this.options.css}
 }
 var _default = exports.default = EmailHTMLTooltip;
 
-},{"../autofill-utils.js":54,"./HTMLTooltip.js":47}],46:[function(require,module,exports){
+},{"../autofill-utils.js":55,"./HTMLTooltip.js":48}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11607,7 +12373,7 @@ ${this.options.css}
 }
 var _default = exports.default = EmailSignupHTMLTooltip;
 
-},{"./HTMLTooltip.js":47}],47:[function(require,module,exports){
+},{"./HTMLTooltip.js":48}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11997,7 +12763,7 @@ class HTMLTooltip {
 exports.HTMLTooltip = HTMLTooltip;
 var _default = exports.default = HTMLTooltip;
 
-},{"../Form/matching.js":34,"../autofill-utils.js":54,"./styles/styles.js":53}],48:[function(require,module,exports){
+},{"../Form/matching.js":35,"../autofill-utils.js":55,"./styles/styles.js":54}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12370,7 +13136,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 }
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":29,"../../Form/matching.js":34,"../../autofill-utils.js":54,"../CredentialsImportTooltip.js":43,"../DataHTMLTooltip.js":44,"../EmailHTMLTooltip.js":45,"../EmailSignupHTMLTooltip.js":46,"../HTMLTooltip.js":47,"./UIController.js":51}],49:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":30,"../../Form/matching.js":35,"../../autofill-utils.js":55,"../CredentialsImportTooltip.js":44,"../DataHTMLTooltip.js":45,"../EmailHTMLTooltip.js":46,"../EmailSignupHTMLTooltip.js":47,"../HTMLTooltip.js":48,"./UIController.js":52}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12532,7 +13298,7 @@ class NativeUIController extends _UIController.UIController {
 }
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":34,"../../InputTypes/Credentials.js":36,"../../deviceApiCalls/__generated__/deviceApiCalls.js":58,"./UIController.js":51}],50:[function(require,module,exports){
+},{"../../Form/matching.js":35,"../../InputTypes/Credentials.js":37,"../../deviceApiCalls/__generated__/deviceApiCalls.js":59,"./UIController.js":52}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12769,7 +13535,7 @@ class OverlayUIController extends _UIController.UIController {
 }
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":34,"./UIController.js":51}],51:[function(require,module,exports){
+},{"../../Form/matching.js":35,"./UIController.js":52}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12853,7 +13619,7 @@ class UIController {
 }
 exports.UIController = UIController;
 
-},{}],52:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12870,7 +13636,7 @@ const ddgCcIconBase = exports.ddgCcIconBase = 'data:image/svg+xml;base64,PD94bWw
 const ddgCcIconFilled = exports.ddgCcIconFilled = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzc2NDMxMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjNzY0MzEwIi8+Cjwvc3ZnPgo=';
 const ddgIdentityIconBase = exports.ddgIdentityIconBase = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==`;
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12879,7 +13645,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.CSS_STYLES = void 0;
 const CSS_STYLES = exports.CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n.wrapper:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n    max-height: 290px;\n    overflow-y: auto;\n}\n.top-autofill .tooltip--data {\n    min-height: 100vh;\n}\n.tooltip--data.tooltip--incontext-signup {\n    width: 360px;\n}\n.wrapper:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    .wrapper:not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n.wrapper:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 48px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email__caret {\n    position: absolute;\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--email__caret::before,\n.tooltip--email__caret::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: -28px;\n}\n.tooltip--email__caret::before {\n    border-bottom-color: #D0D0D0;\n    top: -1px;\n}\n.tooltip--email__caret::after {\n    border-bottom-color: #FFFFFF;\n    top: 0px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 8px 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n    text-align: left;\n}\n.tooltip__button.currentFocus,\n.wrapper:not(.top-autofill) .tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n    border-radius: 3px;\n}\n.tooltip--data__item-container {\n    max-height: 220px;\n    overflow: auto;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 20px 20px;\n    background-repeat: no-repeat;\n    background-position: center center;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    font-size: 13px;\n    line-height: 1;\n}\n.label + .label {\n    margin-top: 2px;\n}\n.label.label--medium {\n    font-weight: 500;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9);\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.wrapper:not(.top-autofill) .tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n.tooltip__button--secondary {\n    font-size: 13px;\n    padding: 5px 9px;\n    border-radius: 3px;\n    margin: 0;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before,\n.tooltip__button--data--credentials__current::before {\n    background-size: 28px 28px;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4zMzQgNi42NjdhMiAyIDAgMSAwIDAgNCAyIDIgMCAwIDAgMC00Wm0tLjY2NyAyYS42NjcuNjY3IDAgMSAxIDEuMzMzIDAgLjY2Ny42NjcgMCAwIDEtMS4zMzMgMFoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuNjY3IDRhNS4zMzMgNS4zMzMgMCAwIDAtNS4xODggNi41NzhsLTUuMjg0IDUuMjg0YS42NjcuNjY3IDAgMCAwLS4xOTUuNDcxdjNjMCAuMzY5LjI5OC42NjcuNjY3LjY2N2gyLjY2NmMuNzM3IDAgMS4zMzQtLjU5NyAxLjMzNC0xLjMzM1YxOGguNjY2Yy43MzcgMCAxLjMzNC0uNTk3IDEuMzM0LTEuMzMzdi0xLjMzNEgxMmMuMTc3IDAgLjM0Ni0uMDcuNDcxLS4xOTVsLjY4OC0uNjg4QTUuMzMzIDUuMzMzIDAgMSAwIDE0LjY2NyA0Wm0tNCA1LjMzM2E0IDQgMCAxIDEgMi41NTUgMy43MzIuNjY3LjY2NyAwIDAgMC0uNzEzLjE1bC0uNzg1Ljc4NUgxMGEuNjY3LjY2NyAwIDAgMC0uNjY3LjY2N3YySDhhLjY2Ny42NjcgMCAwIDAtLjY2Ny42NjZ2MS4zMzRoLTJ2LTIuMDU4bDUuMzY1LTUuMzY0YS42NjcuNjY3IDAgMCAwIC4xNjMtLjY3NyAzLjk5NiAzLjk5NiAwIDAgMS0uMTk0LTEuMjM1WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--credentials__new::before {\n    background-size: 28px 28px;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOC0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODQtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjMtLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM5LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMS0yLjA5My41NzhhLjYzNi42MzYgMCAwIDEtLjY1NS0xLjA5IDUuMzQgNS4zNCAwIDEgMSAxLjMwMiA5LjcyMmwtLjc3NS43NzZhLjYzNi42MzYgMCAwIDEtLjQ1LjE4NmgtMS4zOTh2MS42NWMwIC40OTMtLjQuODkzLS44OTMuODkzSDguNTc4djEuMTQxYzAgLjQ5NC0uNC44OTMtLjg5NC44OTNINC42MzZBLjYzNi42MzYgMCAwIDEgNCAxOS4zMTNWMTYuMjZjMC0uMTY5LjA2Ny0uMzMuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUxLjI4NC0uNjM2LjYzNS0uNjM2aDEuNzcxbC44NjQtLjg2M2EuNjM2LjYzNiAwIDAgMSAuNjY4LS4xNDcgNC4wNjkgNC4wNjkgMCAxIDAgMS40MDItNy44OVoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEzLjYyNSA4LjQ5OWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI1YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,\n.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 9px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#incontextSignup::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    /* This is the same icon as `daxBase64` in `src/Form/logo-svg.js` */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTY0IDEyOGMzNS4zNDYgMCA2NC0yOC42NTQgNjQtNjRzLTI4LjY1NC02NC02NC02NC02NCAyOC42NTQtNjQgNjQgMjguNjU0IDY0IDY0IDY0eiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im03MyAxMTEuNzVjMC0uNS4xMjMtLjYxNC0xLjQ2Ni0zLjc4Mi00LjIyNC04LjQ1OS04LjQ3LTIwLjM4NC02LjU0LTI4LjA3NS4zNTMtMS4zOTctMy45NzgtNTEuNzQ0LTcuMDQtNTMuMzY1LTMuNDAyLTEuODEzLTcuNTg4LTQuNjktMTEuNDE4LTUuMzMtMS45NDMtLjMxLTQuNDktLjE2NC02LjQ4Mi4xMDUtLjM1My4wNDctLjM2OC42ODMtLjAzLjc5OCAxLjMwOC40NDMgMi44OTUgMS4yMTIgMy44MyAyLjM3NS4xNzguMjItLjA2LjU2Ni0uMzQyLjU3Ny0uODgyLjAzMi0yLjQ4Mi40MDItNC41OTMgMi4xOTUtLjI0NC4yMDctLjA0MS41OTIuMjczLjUzIDQuNTM2LS44OTcgOS4xNy0uNDU1IDExLjkgMi4wMjcuMTc3LjE2LjA4NC40NS0uMTQ3LjUxMi0yMy42OTQgNi40NC0xOS4wMDMgMjcuMDUtMTIuNjk2IDUyLjM0NCA1LjYxOSAyMi41MyA3LjczMyAyOS43OTIgOC40IDMyLjAwNGEuNzE4LjcxOCAwIDAgMCAuNDIzLjQ2N2M4LjE1NiAzLjI0OCAyNS45MjggMy4zOTIgMjUuOTI4LTIuMTMyeiIgZmlsbD0iI2RkZCIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBkPSJtNzYuMjUgMTE2LjVjLTIuODc1IDEuMTI1LTguNSAxLjYyNS0xMS43NSAxLjYyNS00Ljc2NCAwLTExLjYyNS0uNzUtMTQuMTI1LTEuODc1LTEuNTQ0LTQuNzUxLTYuMTY0LTE5LjQ4LTEwLjcyNy0zOC4xODVsLS40NDctMS44MjctLjAwNC0uMDE1Yy01LjQyNC0yMi4xNTctOS44NTUtNDAuMjUzIDE0LjQyNy00NS45MzguMjIyLS4wNTIuMzMtLjMxNy4xODQtLjQ5Mi0yLjc4Ni0zLjMwNS04LjAwNS00LjM4OC0xNC42MDUtMi4xMTEtLjI3LjA5My0uNTA2LS4xOC0uMzM3LS40MTIgMS4yOTQtMS43ODMgMy44MjMtMy4xNTUgNS4wNzEtMy43NTYuMjU4LS4xMjQuMjQyLS41MDItLjAzLS41ODhhMjcuODc3IDI3Ljg3NyAwIDAgMCAtMy43NzItLjljLS4zNy0uMDU5LS40MDMtLjY5My0uMDMyLS43NDMgOS4zNTYtMS4yNTkgMTkuMTI1IDEuNTUgMjQuMDI4IDcuNzI2YS4zMjYuMzI2IDAgMCAwIC4xODYuMTE0YzE3Ljk1MiAzLjg1NiAxOS4yMzggMzIuMjM1IDE3LjE3IDMzLjUyOC0uNDA4LjI1NS0xLjcxNS4xMDgtMy40MzgtLjA4NS02Ljk4Ni0uNzgxLTIwLjgxOC0yLjMyOS05LjQwMiAxOC45NDguMTEzLjIxLS4wMzYuNDg4LS4yNzIuNTI1LTYuNDM4IDEgMS44MTIgMjEuMTczIDcuODc1IDM0LjQ2MXoiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Im04NC4yOCA5MC42OThjLTEuMzY3LS42MzMtNi42MjEgMy4xMzUtMTAuMTEgNi4wMjgtLjcyOC0xLjAzMS0yLjEwMy0xLjc4LTUuMjAzLTEuMjQyLTIuNzEzLjQ3Mi00LjIxMSAxLjEyNi00Ljg4IDIuMjU0LTQuMjgzLTEuNjIzLTExLjQ4OC00LjEzLTEzLjIyOS0xLjcxLTEuOTAyIDIuNjQ2LjQ3NiAxNS4xNjEgMy4wMDMgMTYuNzg2IDEuMzIuODQ5IDcuNjMtMy4yMDggMTAuOTI2LTYuMDA1LjUzMi43NDkgMS4zODggMS4xNzggMy4xNDggMS4xMzcgMi42NjItLjA2MiA2Ljk3OS0uNjgxIDcuNjQ5LTEuOTIxLjA0LS4wNzUuMDc1LS4xNjQuMTA1LS4yNjYgMy4zODggMS4yNjYgOS4zNSAyLjYwNiAxMC42ODIgMi40MDYgMy40Ny0uNTIxLS40ODQtMTYuNzIzLTIuMDktMTcuNDY3eiIgZmlsbD0iIzNjYTgyYiIvPgogICAgPHBhdGggZD0ibTc0LjQ5IDk3LjA5N2MuMTQ0LjI1Ni4yNi41MjYuMzU4LjguNDgzIDEuMzUyIDEuMjcgNS42NDguNjc0IDYuNzA5LS41OTUgMS4wNjItNC40NTkgMS41NzQtNi44NDMgMS42MTVzLTIuOTItLjgzMS0zLjQwMy0yLjE4MWMtLjM4Ny0xLjA4MS0uNTc3LTMuNjIxLS41NzItNS4wNzUtLjA5OC0yLjE1OC42OS0yLjkxNiA0LjMzNC0zLjUwNiAyLjY5Ni0uNDM2IDQuMTIxLjA3MSA0Ljk0NC45NCAzLjgyOC0yLjg1NyAxMC4yMTUtNi44ODkgMTAuODM4LTYuMTUyIDMuMTA2IDMuNjc0IDMuNDk5IDEyLjQyIDIuODI2IDE1LjkzOS0uMjIgMS4xNTEtMTAuNTA1LTEuMTM5LTEwLjUwNS0yLjM4IDAtNS4xNTItMS4zMzctNi41NjUtMi42NS02Ljcxem0tMjIuNTMtMS42MDljLjg0My0xLjMzMyA3LjY3NC4zMjUgMTEuNDI0IDEuOTkzIDAgMC0uNzcgMy40OTEuNDU2IDcuNjA0LjM1OSAxLjIwMy04LjYyNyA2LjU1OC05LjggNS42MzctMS4zNTUtMS4wNjUtMy44NS0xMi40MzItMi4wOC0xNS4yMzR6IiBmaWxsPSIjNGNiYTNjIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im01NS4yNjkgNjguNDA2Yy41NTMtMi40MDMgMy4xMjctNi45MzIgMTIuMzIxLTYuODIyIDQuNjQ4LS4wMTkgMTAuNDIyLS4wMDIgMTQuMjUtLjQzNmE1MS4zMTIgNTEuMzEyIDAgMCAwIDEyLjcyNi0zLjA5NWMzLjk4LTEuNTE5IDUuMzkyLTEuMTggNS44ODctLjI3Mi41NDQuOTk5LS4wOTcgMi43MjItMS40ODggNC4zMDktMi42NTYgMy4wMy03LjQzMSA1LjM4LTE1Ljg2NSA2LjA3Ni04LjQzMy42OTgtMTQuMDItMS41NjUtMTYuNDI1IDIuMTE4LTEuMDM4IDEuNTg5LS4yMzYgNS4zMzMgNy45MiA2LjUxMiAxMS4wMiAxLjU5IDIwLjA3Mi0xLjkxNyAyMS4xOS4yMDEgMS4xMTkgMi4xMTgtNS4zMjMgNi40MjgtMTYuMzYyIDYuNTE4cy0xNy45MzQtMy44NjUtMjAuMzc5LTUuODNjLTMuMTAyLTIuNDk1LTQuNDktNi4xMzMtMy43NzUtOS4yNzl6IiBmaWxsPSIjZmMzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxnIGZpbGw9IiMxNDMwN2UiIG9wYWNpdHk9Ii44Ij4KICAgICAgPHBhdGggZD0ibTY5LjMyNyA0Mi4xMjdjLjYxNi0xLjAwOCAxLjk4MS0xLjc4NiA0LjIxNi0xLjc4NiAyLjIzNCAwIDMuMjg1Ljg4OSA0LjAxMyAxLjg4LjE0OC4yMDItLjA3Ni40NC0uMzA2LjM0YTU5Ljg2OSA1OS44NjkgMCAwIDEgLS4xNjgtLjA3M2MtLjgxNy0uMzU3LTEuODItLjc5NS0zLjU0LS44Mi0xLjgzOC0uMDI2LTIuOTk3LjQzNS0zLjcyNy44MzEtLjI0Ni4xMzQtLjYzNC0uMTMzLS40ODgtLjM3MnptLTI1LjE1NyAxLjI5YzIuMTctLjkwNyAzLjg3Ni0uNzkgNS4wODEtLjUwNC4yNTQuMDYuNDMtLjIxMy4yMjctLjM3Ny0uOTM1LS43NTUtMy4wMy0xLjY5Mi01Ljc2LS42NzQtMi40MzcuOTA5LTMuNTg1IDIuNzk2LTMuNTkyIDQuMDM4LS4wMDIuMjkyLjYuMzE3Ljc1Ni4wNy40Mi0uNjcgMS4xMi0xLjY0NiAzLjI4OS0yLjU1M3oiLz4KICAgICAgPHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtNzUuNDQgNTUuOTJhMy40NyAzLjQ3IDAgMCAxIC0zLjQ3NC0zLjQ2MiAzLjQ3IDMuNDcgMCAwIDEgMy40NzUtMy40NiAzLjQ3IDMuNDcgMCAwIDEgMy40NzQgMy40NiAzLjQ3IDMuNDcgMCAwIDEgLTMuNDc1IDMuNDYyem0yLjQ0Ny00LjYwOGEuODk5Ljg5OSAwIDAgMCAtMS43OTkgMGMwIC40OTQuNDA1Ljg5NS45Ljg5NS40OTkgMCAuOS0uNC45LS44OTV6bS0yNS40NjQgMy41NDJhNC4wNDIgNC4wNDIgMCAwIDEgLTQuMDQ5IDQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIC00LjA1LTQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIDQuMDUtNC4wMzcgNC4wNDUgNC4wNDUgMCAwIDEgNC4wNSA0LjAzN3ptLTEuMTkzLTEuMzM4YTEuMDUgMS4wNSAwIDAgMCAtMi4wOTcgMCAxLjA0OCAxLjA0OCAwIDAgMCAyLjA5NyAweiIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8L2c+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im02NCAxMTcuNzVjMjkuNjg1IDAgNTMuNzUtMjQuMDY1IDUzLjc1LTUzLjc1cy0yNC4wNjUtNTMuNzUtNTMuNzUtNTMuNzUtNTMuNzUgMjQuMDY1LTUzLjc1IDUzLjc1IDI0LjA2NSA1My43NSA1My43NSA1My43NXptMCA1YzMyLjQ0NyAwIDU4Ljc1LTI2LjMwMyA1OC43NS01OC43NXMtMjYuMzAzLTU4Ljc1LTU4Ljc1LTU4Ljc1LTU4Ljc1IDI2LjMwMy01OC43NSA1OC43NSAyNi4zMDMgNTguNzUgNTguNzUgNTguNzV6IiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n\n/* Email Protection signup notice */\n:not(.top-autofill) .tooltip--email-signup {\n    text-align: left;\n    color: #222222;\n    padding: 16px 20px;\n    width: 380px;\n}\n\n.tooltip--email-signup h1 {\n    font-weight: 700;\n    font-size: 16px;\n    line-height: 1.5;\n    margin: 0;\n}\n\n.tooltip--email-signup p {\n    font-weight: 400;\n    font-size: 14px;\n    line-height: 1.4;\n}\n\n.notice-controls {\n    display: flex;\n}\n\n.tooltip--email-signup .notice-controls > * {\n    border-radius: 8px;\n    border: 0;\n    cursor: pointer;\n    display: inline-block;\n    font-family: inherit;\n    font-style: normal;\n    font-weight: bold;\n    padding: 8px 12px;\n    text-decoration: none;\n}\n\n.notice-controls .ghost {\n    margin-left: 1rem;\n}\n\n.tooltip--email-signup a.primary {\n    background: #3969EF;\n    color: #fff;\n}\n\n.tooltip--email-signup a.primary:hover,\n.tooltip--email-signup a.primary:focus {\n    background: #2b55ca;\n}\n\n.tooltip--email-signup a.primary:active {\n    background: #1e42a4;\n}\n\n.tooltip--email-signup button.ghost {\n    background: transparent;\n    color: #3969EF;\n}\n\n.tooltip--email-signup button.ghost:hover,\n.tooltip--email-signup button.ghost:focus {\n    background-color: rgba(0, 0, 0, 0.06);\n    color: #2b55ca;\n}\n\n.tooltip--email-signup button.ghost:active {\n    background-color: rgba(0, 0, 0, 0.12);\n    color: #1e42a4;\n}\n\n.tooltip--email-signup button.close-tooltip {\n    background-color: transparent;\n    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMiAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5NCAwLjY1NjkwN0MwLjY4MzQxOCAwLjI2NjM4MyAxLjMxNjU4IDAuMjY2MzgzIDEuNzA3MTEgMC42NTY5MDdMNiA0Ljk0OThMMTAuMjkyOSAwLjY1NjkwN0MxMC42ODM0IDAuMjY2MzgzIDExLjMxNjYgMC4yNjYzODMgMTEuNzA3MSAwLjY1NjkwN0MxMi4wOTc2IDEuMDQ3NDMgMTIuMDk3NiAxLjY4MDYgMTEuNzA3MSAyLjA3MTEyTDcuNDE0MjEgNi4zNjQwMUwxMS43MDcxIDEwLjY1NjlDMTIuMDk3NiAxMS4wNDc0IDEyLjA5NzYgMTEuNjgwNiAxMS43MDcxIDEyLjA3MTFDMTEuMzE2NiAxMi40NjE2IDEwLjY4MzQgMTIuNDYxNiAxMC4yOTI5IDEyLjA3MTFMNiA3Ljc3ODIzTDEuNzA3MTEgMTIuMDcxMUMxLjMxNjU4IDEyLjQ2MTYgMC42ODM0MTcgMTIuNDYxNiAwLjI5Mjg5MyAxMi4wNzExQy0wLjA5NzYzMTEgMTEuNjgwNiAtMC4wOTc2MzExIDExLjA0NzQgMC4yOTI4OTMgMTAuNjU2OUw0LjU4NTc5IDYuMzY0MDFMMC4yOTI4OTQgMi4wNzExMkMtMC4wOTc2MzA2IDEuNjgwNiAtMC4wOTc2MzA2IDEuMDQ3NDMgMC4yOTI4OTQgMC42NTY5MDdaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0Ii8+Cjwvc3ZnPgo=);\n    background-position: center center;\n    background-repeat: no-repeat;\n    border: 0;\n    cursor: pointer;\n    padding: 16px;\n    position: absolute;\n    right: 12px;\n    top: 12px;\n}\n\n/* Import promotion prompt icon style */\n\n.tooltip__button--credentials-import::before {\n    content: \"\";\n    background-image: url(data:image/svg+xml;base64,Cjxzdmcgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik03Ljk3MjY5IDkuMDEzN0M3Ljk3MjY5IDUuMTQwMTQgMTEuMTEyOCAyIDE0Ljk4NjQgMkMxOC44NTk5IDIgMjIuMDAwMSA1LjE0MDE0IDIyLjAwMDEgOS4wMTM3QzIyLjAwMDEgOS44MDM5NyAyMS44Njk0IDEwLjU2MzcgMjEuNjI4NCAxMS4yNzI1QzIxLjQ2MDEgMTEuNzY3NiAyMC44NjU2IDExLjkxMzUgMjAuMzk3NyAxMS42OEMxOS45MjIxIDExLjQ0MjggMTkuNjc3OSAxMC44NjQ0IDE5LjgxOTUgMTAuMzUyQzE5LjkzNzIgOS45MjU5OSAyMC4wMDAxIDkuNDc3MTkgMjAuMDAwMSA5LjAxMzdDMjAuMDAwMSA2LjI0NDcxIDE3Ljc1NTQgNCAxNC45ODY0IDRDMTIuMjE3NCA0IDkuOTcyNjkgNi4yNDQ3MSA5Ljk3MjY5IDkuMDEzN0M5Ljk3MjY5IDkuNTU1NCAxMC4wNTgyIDEwLjA3NTIgMTAuMjE1OCAxMC41NjEzQzEwLjMzMTcgMTAuOTE4OCAxMC4yMzc0IDExLjMxMTEgOS45NzE2NSAxMS41NzY4TDMuOTk5OTQgMTcuNTQ4NVYyMC4wMDAyTDYuNDk5OTggMjAuMDAwMlYxOC4zMDAyQzYuNDk5OTggMTcuNzQ3OSA2Ljk0NzcgMTcuMzAwMiA3LjQ5OTk4IDE3LjMwMDJIOS4yMDAwMVYxNS42MDAxQzkuMjAwMDEgMTUuMDQ3OCA5LjY0NzczIDE0LjYwMDEgMTAuMiAxNC42MDAxSDEwLjVDMTEuMjEwNiAxNC41ODcgMTEuNDI1MiAxNS4zMzY5IDExLjMxNTYgMTUuNzMzMUMxMS4xNTY1IDE2LjMwODUgMTEgMTcuMDAxIDExIDE3LjVDMTEgMTcuNzI4NCAxMS4wMTE4IDE3Ljk1NCAxMS4wMzQ4IDE4LjE3NjNDMTAuNzM3OSAxOC44Mzg3IDEwLjA3MjkgMTkuMzAwMiA5LjMgMTkuMzAwMkg4LjQ5OTk4VjIwLjEwMDJDOC40OTk5OCAyMS4xNDk1IDcuNjQ5MzMgMjIuMDAwMiA2LjU5OTk5IDIyLjAwMDJMMi45OTk5NSAyMi4wMDAyQzIuNzM0NzMgMjIuMDAwMiAyLjQ4MDM3IDIxLjg5NDkgMi4yOTI4NCAyMS43MDczQzIuMTA1MyAyMS41MTk4IDEuOTk5OTQgMjEuMjY1NCAxLjk5OTk0IDIxLjAwMDJWMTcuMTM0M0MxLjk5OTk0IDE2Ljg2OTEgMi4xMDUzIDE2LjYxNDcgMi4yOTI4MyAxNi40MjcyTDguMTQ2ODkgMTAuNTczMUM4LjAzMjc5IDEwLjA3MDkgNy45NzI2OSA5LjU0ODgxIDcuOTcyNjkgOS4wMTM3WiIgZmlsbD0iYmxhY2siIC8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTMgOC40OTk4OUMxMyA3LjExOTE4IDE0LjExOTMgNS45OTk4OSAxNS41IDUuOTk5ODlDMTYuODgwNyA1Ljk5OTg5IDE4IDcuMTE5MTggMTggOC40OTk4OUMxOCA5Ljg4MDYgMTYuODgwNyAxMC45OTk5IDE1LjUgMTAuOTk5OUMxNC4xMTkzIDEwLjk5OTkgMTMgOS44ODA2IDEzIDguNDk5ODlaTTE1LjUgNy45OTk4OUMxNS4yMjM5IDcuOTk5ODkgMTUgOC4yMjM3NSAxNSA4LjQ5OTg5QzE1IDguNzc2MDQgMTUuMjIzOSA4Ljk5OTg5IDE1LjUgOC45OTk4OUMxNS43NzYyIDguOTk5ODkgMTYgOC43NzYwNCAxNiA4LjQ5OTg5QzE2IDguMjIzNzUgMTUuNzc2MiA3Ljk5OTg5IDE1LjUgNy45OTk4OVoiIGZpbGw9ImJsYWNrIiAvPgo8cGF0aCBkPSJNMTcgMTVMMTQuNSAxNy41TDE3IDIwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMjEuNSAxNy41TDE2IDE3LjUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=);\n    background-repeat: no-repeat;\n}\n";
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12914,7 +13680,7 @@ exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
 var _matching = require("./Form/matching.js");
 var _constants = require("./constants.js");
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
+var _utils = require("@duckduckgo/content-scope-scripts/injected/src/utils");
 const SIGN_IN_MSG = exports.SIGN_IN_MSG = {
   signMeIn: true
 };
@@ -12969,7 +13735,7 @@ const autofillEnabled = globalConfig => {
   } = globalConfig;
 
   // Check config on Apple platforms
-  const processedConfig = (0, _appleUtils.processConfig)(contentScope, userUnprotectedDomains, userPreferences);
+  const processedConfig = (0, _utils.processConfig)(contentScope, userUnprotectedDomains, userPreferences);
   return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
 exports.autofillEnabled = autofillEnabled;
@@ -13588,7 +14354,7 @@ function getUsernameLikeIdentity(identities, creditCards) {
   }
 }
 
-},{"./Form/matching.js":34,"./constants.js":57,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],55:[function(require,module,exports){
+},{"./Form/matching.js":35,"./constants.js":58,"@duckduckgo/content-scope-scripts/injected/src/utils":2}],56:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -13619,7 +14385,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":13,"./autofill-utils.js":54,"./requestIdleCallback.js":94}],56:[function(require,module,exports){
+},{"./DeviceInterface.js":14,"./autofill-utils.js":55,"./requestIdleCallback.js":95}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13706,7 +14472,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],57:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13723,7 +14489,7 @@ const constants = exports.constants = {
   MAX_FORM_RESCANS: 50
 };
 
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13983,7 +14749,7 @@ class ShowInContextEmailProtectionSignupPromptCall extends _deviceApi.DeviceApiC
 }
 exports.ShowInContextEmailProtectionSignupPromptCall = ShowInContextEmailProtectionSignupPromptCall;
 
-},{"../../../packages/device-api":2,"./validators.zod.js":59}],59:[function(require,module,exports){
+},{"../../../packages/device-api":3,"./validators.zod.js":60}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14030,7 +14796,7 @@ const runtimeConfigurationSchema = exports.runtimeConfigurationSchema = null;
 const getRuntimeConfigurationResponseSchema = exports.getRuntimeConfigurationResponseSchema = null;
 const apiSchema = exports.apiSchema = null;
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14056,7 +14822,7 @@ class GetAlias extends _index.DeviceApiCall {
 }
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":2,"./__generated__/validators.zod.js":59}],61:[function(require,module,exports){
+},{"../../packages/device-api/index.js":3,"./__generated__/validators.zod.js":60}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14199,7 +14965,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":2,"../__generated__/deviceApiCalls.js":58}],62:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":3,"../__generated__/deviceApiCalls.js":59}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14242,7 +15008,7 @@ class AppleTransport extends _index.DeviceApiTransport {
 }
 exports.AppleTransport = AppleTransport;
 
-},{"../../../packages/device-api/index.js":2,"../../../packages/messaging/messaging.js":5}],63:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":3,"../../../packages/messaging/messaging.js":6}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14396,7 +15162,7 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
   });
 }
 
-},{"../../../packages/device-api/index.js":2,"../../Settings.js":41,"../../autofill-utils.js":54,"../__generated__/deviceApiCalls.js":58}],64:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":3,"../../Settings.js":42,"../../autofill-utils.js":55,"../__generated__/deviceApiCalls.js":59}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14440,7 +15206,7 @@ function createTransport(globalConfig) {
   return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
-},{"./android.transport.js":61,"./apple.transport.js":62,"./extension.transport.js":63,"./windows.transport.js":65}],65:[function(require,module,exports){
+},{"./android.transport.js":62,"./apple.transport.js":63,"./extension.transport.js":64,"./windows.transport.js":66}],66:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14526,7 +15292,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":2}],66:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":3}],67:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14627,7 +15393,7 @@ module.exports={
   }
 }
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14728,7 +15494,7 @@ module.exports={
   }
 }
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14829,7 +15595,7 @@ module.exports={
   }
 }
 
-},{}],69:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -14930,7 +15696,7 @@ module.exports={
   }
 }
 
-},{}],70:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15031,7 +15797,7 @@ module.exports={
   }
 }
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -15133,7 +15899,7 @@ module.exports={
   }
 }
 
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15234,7 +16000,7 @@ module.exports={
   }
 }
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15335,7 +16101,7 @@ module.exports={
   }
 }
 
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15436,7 +16202,7 @@ module.exports={
   }
 }
 
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15537,7 +16303,7 @@ module.exports={
   }
 }
 
-},{}],76:[function(require,module,exports){
+},{}],77:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15638,7 +16404,7 @@ module.exports={
   }
 }
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15739,7 +16505,7 @@ module.exports={
   }
 }
 
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15840,7 +16606,7 @@ module.exports={
   }
 }
 
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -15941,7 +16707,7 @@ module.exports={
   }
 }
 
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16042,7 +16808,7 @@ module.exports={
   }
 }
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16143,7 +16909,7 @@ module.exports={
   }
 }
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16244,7 +17010,7 @@ module.exports={
   }
 }
 
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16345,7 +17111,7 @@ module.exports={
   }
 }
 
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16446,7 +17212,7 @@ module.exports={
   }
 }
 
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16547,7 +17313,7 @@ module.exports={
   }
 }
 
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16648,7 +17414,7 @@ module.exports={
   }
 }
 
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16749,7 +17515,7 @@ module.exports={
   }
 }
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -16850,7 +17616,7 @@ module.exports={
   }
 }
 
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16938,7 +17704,7 @@ function translateImpl(library, namespacedId, opts) {
   return out;
 }
 
-},{"./translations.js":92}],90:[function(require,module,exports){
+},{"./translations.js":93}],91:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -17039,7 +17805,7 @@ module.exports={
   }
 }
 
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -17140,7 +17906,7 @@ module.exports={
   }
 }
 
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17259,7 +18025,7 @@ var _default = exports.default = {
   }
 };
 
-},{"./bg/autofill.json":66,"./cs/autofill.json":67,"./da/autofill.json":68,"./de/autofill.json":69,"./el/autofill.json":70,"./en/autofill.json":71,"./es/autofill.json":72,"./et/autofill.json":73,"./fi/autofill.json":74,"./fr/autofill.json":75,"./hr/autofill.json":76,"./hu/autofill.json":77,"./it/autofill.json":78,"./lt/autofill.json":79,"./lv/autofill.json":80,"./nb/autofill.json":81,"./nl/autofill.json":82,"./pl/autofill.json":83,"./pt/autofill.json":84,"./ro/autofill.json":85,"./ru/autofill.json":86,"./sk/autofill.json":87,"./sl/autofill.json":88,"./sv/autofill.json":90,"./tr/autofill.json":91,"./xa/autofill.json":93}],93:[function(require,module,exports){
+},{"./bg/autofill.json":67,"./cs/autofill.json":68,"./da/autofill.json":69,"./de/autofill.json":70,"./el/autofill.json":71,"./en/autofill.json":72,"./es/autofill.json":73,"./et/autofill.json":74,"./fi/autofill.json":75,"./fr/autofill.json":76,"./hr/autofill.json":77,"./hu/autofill.json":78,"./it/autofill.json":79,"./lt/autofill.json":80,"./lv/autofill.json":81,"./nb/autofill.json":82,"./nl/autofill.json":83,"./pl/autofill.json":84,"./pt/autofill.json":85,"./ro/autofill.json":86,"./ru/autofill.json":87,"./sk/autofill.json":88,"./sl/autofill.json":89,"./sv/autofill.json":91,"./tr/autofill.json":92,"./xa/autofill.json":94}],94:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -17352,7 +18118,7 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17394,4 +18160,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 };
 var _default = exports.default = {};
 
-},{}]},{},[55]);
+},{}]},{},[56]);
