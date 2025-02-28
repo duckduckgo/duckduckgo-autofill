@@ -702,7 +702,6 @@ function processConfig(data, userList, preferences) {
 
   // Copy feature settings from remote config to preferences object
   output.featureSettings = parseFeatureSettings(data, enabledFeatures);
-  output.trackerLookup = {};
   output.bundledConfig = data;
   return output;
 }
@@ -1513,7 +1512,7 @@ class WebkitMessagingTransport {
       const {
         ciphertext,
         tag
-      } = await new this.globals.Promise(( /** @type {any} */resolve) => {
+      } = await new this.globals.Promise((/** @type {any} */resolve) => {
         this.generateRandomMethod(randMethodName, resolve);
         data.messageHandling = new SecureMessagingParams({
           methodName: randMethodName,
@@ -1789,6 +1788,7 @@ var _constants = require("./lib/constants.js");
  *   onError?: ((error: unknown) => void) | null | undefined;
  * }} GenerateOptions
  */
+
 /**
  * Generate a random password based on the following attempts
  *
@@ -1897,8 +1897,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.Password = void 0;
 var parser = _interopRequireWildcard(require("./rules-parser.js"));
 var _constants = require("./constants.js");
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /*
  *
  * NOTE:
@@ -1923,6 +1923,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  *     PasswordMaxLength?: number,
  * }} Requirements
  */
+
 /**
  * @typedef {{
  *     NumberOfRequiredRandomCharacters: number,
@@ -1930,6 +1931,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  *     RequiredCharacterSets: string[]
  * }} PasswordParameters
  */
+
 const defaults = Object.freeze({
   SCAN_SET_ORDER: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\"\'<>,.?/ ]',
   defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
@@ -4259,9 +4261,9 @@ var _autofillUtils = require("../autofill-utils.js");
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class AndroidInterface extends _InterfacePrototype.default {
-  inContextSignup = new _InContextSignup.InContextSignup(this);
+  inContextSignup = (() => new _InContextSignup.InContextSignup(this))();
 
   /**
    * @returns {Promise<string|undefined>}
@@ -4414,17 +4416,17 @@ var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js
 var _matching = require("../Form/matching.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _ThirdPartyProvider = require("../ThirdPartyProvider.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
  */
 
 class AppleDeviceInterface extends _InterfacePrototype.default {
-  inContextSignup = new _InContextSignup.InContextSignup(this);
+  inContextSignup = (() => new _InContextSignup.InContextSignup(this))();
 
   /** @override */
   initialSetupDelayMs = 300;
-  thirdPartyProvider = new _ThirdPartyProvider.ThirdPartyProvider(this);
+  thirdPartyProvider = (() => new _ThirdPartyProvider.ThirdPartyProvider(this))();
 
   /**
    * The default functionality of this class is to operate as an 'overlay controller' -
@@ -4779,7 +4781,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
   /**
    * overlay API helpers
    */
-  overlay = (0, _overlayApi.overlayApi)(this);
+  overlay = (() => (0, _overlayApi.overlayApi)(this))();
   previousX = 0;
   previousY = 0;
 
@@ -4792,7 +4794,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
    */
   createUIController() {
     return new _HTMLTooltipUIController.HTMLTooltipUIController({
-      tooltipKind: /** @type {const} */'modern',
+      tooltipKind: (/** @type {const} */'modern'),
       device: this
     }, {
       wrapperClass: 'top-autofill',
@@ -4883,7 +4885,7 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _matching = require("../Form/matching.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const TOOLTIP_TYPES = {
   EmailProtection: 'EmailProtection',
   EmailSignup: 'EmailSignup'
@@ -4892,7 +4894,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
   /**
    * Adding this here since only the extension currently supports this
    */
-  inContextSignup = new _InContextSignup.InContextSignup(this);
+  inContextSignup = (() => new _InContextSignup.InContextSignup(this))();
 
   /**
    * @override
@@ -5115,6 +5117,7 @@ var _CredentialsImport = require("../CredentialsImport.js");
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
  */
+
 /**
  * @implements {GlobalConfigImpl}
  * @implements {FormExtensionPoints}
@@ -5131,9 +5134,9 @@ class InterfacePrototype {
   autopromptFired = false;
 
   /** @type {PasswordGenerator} */
-  passwordGenerator = new _PasswordGenerator.PasswordGenerator();
-  emailProtection = new _EmailProtection.EmailProtection(this);
-  credentialsImport = new _CredentialsImport.CredentialsImport(this);
+  passwordGenerator = (() => new _PasswordGenerator.PasswordGenerator())();
+  emailProtection = (() => new _EmailProtection.EmailProtection(this))();
+  credentialsImport = (() => new _CredentialsImport.CredentialsImport(this))();
 
   /** @type {import("../InContextSignup.js").InContextSignup | null} */
   inContextSignup = null;
@@ -5231,12 +5234,12 @@ class InterfacePrototype {
   }
 
   /** @type { PMData } */
-  #data = {
+  #data = (() => ({
     credentials: [],
     creditCards: [],
     identities: [],
     topContextData: undefined
-  };
+  }))();
 
   /**
    * @returns {import('../Form/matching').SupportedTypes}
@@ -5934,7 +5937,7 @@ exports.WindowsInterface = void 0;
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 var _OverlayUIController = require("../UI/controllers/OverlayUIController.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
  */
@@ -6101,7 +6104,7 @@ var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.j
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 var _overlayApi = require("./overlayApi.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * This subclass is designed to separate code that *only* runs inside the
  * Windows Overlay into a single place.
@@ -6119,7 +6122,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
   /**
    * overlay API helpers
    */
-  overlay = (0, _overlayApi.overlayApi)(this);
+  overlay = (() => (0, _overlayApi.overlayApi)(this))();
   previousScreenX = 0;
   previousScreenY = 0;
 
@@ -6132,7 +6135,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
    */
   createUIController() {
     return new _HTMLTooltipUIController.HTMLTooltipUIController({
-      tooltipKind: /** @type {const} */'modern',
+      tooltipKind: (/** @type {const} */'modern'),
       device: this
     }, {
       wrapperClass: 'top-autofill',
@@ -6334,14 +6337,14 @@ function initFormSubmissionsApi(forms, matching) {
       if (hasRelevantText && text.length < 25) {
         // check if there's a form with values
         const filledForm = formsArray.find(form => form.hasValues());
-        if (filledForm && (0, _autofillUtils.buttonMatchesFormType)( /** @type HTMLElement */button, filledForm)) {
+        if (filledForm && (0, _autofillUtils.buttonMatchesFormType)(/** @type HTMLElement */button, filledForm)) {
           filledForm?.submitHandler('global pointerdown event + filled form');
         }
       }
 
       // TODO: Temporary hack to support Google signin in different languages
       // https://app.asana.com/0/1198964220583541/1201650539303898/f
-      if ( /** @type HTMLElement */realTarget?.closest('#passwordNext button, #identifierNext button')) {
+      if (/** @type HTMLElement */realTarget?.closest('#passwordNext button, #identifierNext button')) {
         // check if there's a form with values
         const filledForm = formsArray.find(form => form.hasValues());
         filledForm?.submitHandler('global pointerdown event + google escape hatch');
@@ -6477,7 +6480,7 @@ var _inputTypeConfig = require("./inputTypeConfig.js");
 var _formatters = require("./formatters.js");
 var _constants = require("../constants.js");
 var _Credentials = require("../InputTypes/Credentials.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
   ATTR_AUTOFILL,
   ATTR_INPUT_TYPE,
@@ -6598,7 +6601,7 @@ class Form {
    * @param {KeyboardEvent | null} [e]
    */
   hasFocus(e) {
-    return this.form.contains((0, _autofillUtils.getActiveElement)()) || this.form.contains( /** @type HTMLElement */e?.target);
+    return this.form.contains((0, _autofillUtils.getActiveElement)()) || this.form.contains(/** @type HTMLElement */e?.target);
   }
   submitHandler() {
     let via = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unknown';
@@ -6851,7 +6854,7 @@ class Form {
   get ambiguousInputs() {
     const hasUsernameInput = [...this.inputs.credentials].some(input => (0, _matching.getInputSubtype)(input) === 'username');
     if (hasUsernameInput) return null;
-    const hasPasswordInputs = [...this.inputs.credentials].filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password').length > 0;
+    const hasPasswordInputs = [...this.inputs.credentials].filter((/** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password').length > 0;
     if (!hasPasswordInputs) return null;
     const phoneInputs = [...this.inputs.identities].filter(input => (0, _matching.getInputSubtype)(input) === 'phone');
     const cardNumberInputs = [...this.inputs.creditCards].filter(input => (0, _matching.getInputSubtype)(input) === 'cardNumber');
@@ -7077,7 +7080,7 @@ class Form {
       // Get click co-ordinates for pointer events
       // We need click coordinates to position the tooltip when the field is in an iframe
       if (e.type === 'pointerdown') {
-        return getMainClickCoords( /** @type {PointerEvent} */e) || null;
+        return getMainClickCoords(/** @type {PointerEvent} */e) || null;
       }
 
       // Reuse a previous click co-ordinates if they exist for this element
@@ -7756,7 +7759,7 @@ class FormAnalyzer {
   }
 
   /** @type {undefined|boolean} */
-  _isCCForm = undefined;
+  _isCCForm = (() => undefined)();
   /**
    * Tries to infer if it's a credit card form
    * @returns {boolean}
@@ -8820,8 +8823,8 @@ var _Credentials = require("../InputTypes/Credentials.js");
 var _CreditCard = require("../InputTypes/CreditCard.js");
 var _Identity = require("../InputTypes/Identity.js");
 var _constants = require("../constants.js");
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
@@ -10292,7 +10295,7 @@ class Matching {
    * @param {HTMLElement} form
    * @returns {Record<MatchableStrings, string>}
    */
-  _elementStringCache = new WeakMap();
+  _elementStringCache = (() => new WeakMap())();
   getElementStrings(el, form) {
     if (this._elementStringCache.has(el)) {
       return this._elementStringCache.get(el);
@@ -11032,7 +11035,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.PasswordGenerator = void 0;
 var _index = require("../packages/password/index.js");
 var _rules = _interopRequireDefault(require("../packages/password/rules.json"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Create a password once and reuse it.
  */
@@ -11132,11 +11135,11 @@ const defaultScannerOptions = {
  */
 class DefaultScanner {
   /** @type Map<HTMLElement, Form> */
-  forms = new Map();
+  forms = (() => new Map())();
   /** @type {any|undefined} the timer to reset */
   debounceTimer;
   /** @type {Set<HTMLElement|Document>} stored changed elements until they can be processed */
-  changedElements = new Set();
+  changedElements = (() => new Set())();
   /** @type {ScannerOptions} */
   options;
   /** @type {HTMLInputElement | null} */
@@ -11463,7 +11466,7 @@ class DefaultScanner {
    * Watch for changes in the DOM, and enqueue elements to be scanned
    * @type {MutationObserver}
    */
-  mutObs = new MutationObserver(mutationList => {
+  mutObs = (() => new MutationObserver(mutationList => {
     /** @type {HTMLElement[]} */
     if (this.rescanAll) {
       // quick version if buffer full
@@ -11481,7 +11484,7 @@ class DefaultScanner {
       }
     }
     this.enqueue(outgoing);
-  });
+  }))();
   handleEvent(event) {
     switch (event.type) {
       case 'pointerdown':
@@ -11621,6 +11624,7 @@ class Settings {
   async getEnabled() {
     try {
       const runtimeConfig = await this._getRuntimeConfiguration();
+      console.log("DEEP runtimeConfig", runtimeConfig);
       const enabled = (0, _autofillUtils.autofillEnabled)(runtimeConfig);
       return enabled;
     } catch (e) {
@@ -12044,7 +12048,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class CredentialsImportTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../DeviceInterface/InterfacePrototype.js").default} device
@@ -12097,7 +12101,7 @@ exports.default = void 0;
 var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
 var _Credentials = require("../InputTypes/Credentials.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * A mapping of main autofill item type to the 'Manage XYZ…' string ID for that
  * item.
@@ -12247,7 +12251,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class EmailHTMLTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../DeviceInterface/InterfacePrototype").default} device
@@ -12328,7 +12332,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../DeviceInterface/InterfacePrototype").default} device
@@ -12672,9 +12676,9 @@ class HTMLTooltip {
       }
     }
   }
-  resObs = new ResizeObserver(entries => entries.forEach(() => this.checkPosition()));
-  mutObsCheckPositionWhenIdle = _autofillUtils.whenIdle.call(this, this.checkPosition);
-  mutObs = new MutationObserver(mutationList => {
+  resObs = (() => new ResizeObserver(entries => entries.forEach(() => this.checkPosition())))();
+  mutObsCheckPositionWhenIdle = (() => _autofillUtils.whenIdle.call(this, this.checkPosition))();
+  mutObs = (() => new MutationObserver(mutationList => {
     for (const mutationRecord of mutationList) {
       if (mutationRecord.type === 'childList') {
         // Only check added nodes
@@ -12685,14 +12689,14 @@ class HTMLTooltip {
       }
     }
     this.mutObsCheckPositionWhenIdle();
-  });
+  }))();
   setActiveButton(e) {
     this.activeButton = e.target;
   }
   unsetActiveButton() {
     this.activeButton = null;
   }
-  clickableButtons = new Map();
+  clickableButtons = (() => new Map())();
   registerClickableButton(btn, handler) {
     this.clickableButtons.set(btn, handler);
     // Needed because clicks within the shadow dom don't provide this info to the outside
@@ -12779,7 +12783,7 @@ var _EmailSignupHTMLTooltip = _interopRequireDefault(require("../EmailSignupHTML
 var _HTMLTooltip = require("../HTMLTooltip.js");
 var _CredentialsImportTooltip = _interopRequireDefault(require("../CredentialsImportTooltip.js"));
 var _UIController = require("./UIController.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * @typedef HTMLTooltipControllerOptions
  * @property {"modern" | "legacy" | "emailsignup"} tooltipKind - A choice between the newer Autofill UI vs the older ones used in the extension
@@ -13107,7 +13111,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
       default:
       // noop
     }
-
     this.removeTooltip();
   }
   _onIncontextSignupDismissed(_ref) {
@@ -14505,7 +14508,7 @@ var _deviceApi = require("../../../packages/device-api");
  */
 class AddDebugFlagCall extends _deviceApi.DeviceApiCall {
   method = "addDebugFlag";
-  paramsValidator = _validatorsZod.addDebugFlagParamsSchema;
+  paramsValidator = (() => _validatorsZod.addDebugFlagParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<getAutofillDataRequestSchema, getAutofillDataResponseSchema>} 
@@ -14514,8 +14517,8 @@ exports.AddDebugFlagCall = AddDebugFlagCall;
 class GetAutofillDataCall extends _deviceApi.DeviceApiCall {
   method = "getAutofillData";
   id = "getAutofillDataResponse";
-  paramsValidator = _validatorsZod.getAutofillDataRequestSchema;
-  resultValidator = _validatorsZod.getAutofillDataResponseSchema;
+  paramsValidator = (() => _validatorsZod.getAutofillDataRequestSchema)();
+  resultValidator = (() => _validatorsZod.getAutofillDataResponseSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getRuntimeConfigurationResponseSchema>} 
@@ -14524,7 +14527,7 @@ exports.GetAutofillDataCall = GetAutofillDataCall;
 class GetRuntimeConfigurationCall extends _deviceApi.DeviceApiCall {
   method = "getRuntimeConfiguration";
   id = "getRuntimeConfigurationResponse";
-  resultValidator = _validatorsZod.getRuntimeConfigurationResponseSchema;
+  resultValidator = (() => _validatorsZod.getRuntimeConfigurationResponseSchema)();
 }
 /**
  * @extends {DeviceApiCall<storeFormDataSchema, any>} 
@@ -14532,7 +14535,7 @@ class GetRuntimeConfigurationCall extends _deviceApi.DeviceApiCall {
 exports.GetRuntimeConfigurationCall = GetRuntimeConfigurationCall;
 class StoreFormDataCall extends _deviceApi.DeviceApiCall {
   method = "storeFormData";
-  paramsValidator = _validatorsZod.storeFormDataSchema;
+  paramsValidator = (() => _validatorsZod.storeFormDataSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
@@ -14541,7 +14544,7 @@ exports.StoreFormDataCall = StoreFormDataCall;
 class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
   method = "getAvailableInputTypes";
   id = "getAvailableInputTypesResponse";
-  resultValidator = _validatorsZod.getAvailableInputTypesResultSchema;
+  resultValidator = (() => _validatorsZod.getAvailableInputTypesResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getAutofillInitDataResponseSchema>} 
@@ -14550,7 +14553,7 @@ exports.GetAvailableInputTypesCall = GetAvailableInputTypesCall;
 class GetAutofillInitDataCall extends _deviceApi.DeviceApiCall {
   method = "getAutofillInitData";
   id = "getAutofillInitDataResponse";
-  resultValidator = _validatorsZod.getAutofillInitDataResponseSchema;
+  resultValidator = (() => _validatorsZod.getAutofillInitDataResponseSchema)();
 }
 /**
  * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, getAutofillCredentialsResultSchema>} 
@@ -14559,8 +14562,8 @@ exports.GetAutofillInitDataCall = GetAutofillInitDataCall;
 class GetAutofillCredentialsCall extends _deviceApi.DeviceApiCall {
   method = "getAutofillCredentials";
   id = "getAutofillCredentialsResponse";
-  paramsValidator = _validatorsZod.getAutofillCredentialsParamsSchema;
-  resultValidator = _validatorsZod.getAutofillCredentialsResultSchema;
+  paramsValidator = (() => _validatorsZod.getAutofillCredentialsParamsSchema)();
+  resultValidator = (() => _validatorsZod.getAutofillCredentialsResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<setSizeParamsSchema, any>} 
@@ -14568,7 +14571,7 @@ class GetAutofillCredentialsCall extends _deviceApi.DeviceApiCall {
 exports.GetAutofillCredentialsCall = GetAutofillCredentialsCall;
 class SetSizeCall extends _deviceApi.DeviceApiCall {
   method = "setSize";
-  paramsValidator = _validatorsZod.setSizeParamsSchema;
+  paramsValidator = (() => _validatorsZod.setSizeParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<selectedDetailParamsSchema, any>} 
@@ -14576,7 +14579,7 @@ class SetSizeCall extends _deviceApi.DeviceApiCall {
 exports.SetSizeCall = SetSizeCall;
 class SelectedDetailCall extends _deviceApi.DeviceApiCall {
   method = "selectedDetail";
-  paramsValidator = _validatorsZod.selectedDetailParamsSchema;
+  paramsValidator = (() => _validatorsZod.selectedDetailParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -14592,7 +14595,7 @@ exports.CloseAutofillParentCall = CloseAutofillParentCall;
 class AskToUnlockProviderCall extends _deviceApi.DeviceApiCall {
   method = "askToUnlockProvider";
   id = "askToUnlockProviderResponse";
-  resultValidator = _validatorsZod.askToUnlockProviderResultSchema;
+  resultValidator = (() => _validatorsZod.askToUnlockProviderResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, checkCredentialsProviderStatusResultSchema>} 
@@ -14601,7 +14604,7 @@ exports.AskToUnlockProviderCall = AskToUnlockProviderCall;
 class CheckCredentialsProviderStatusCall extends _deviceApi.DeviceApiCall {
   method = "checkCredentialsProviderStatus";
   id = "checkCredentialsProviderStatusResponse";
-  resultValidator = _validatorsZod.checkCredentialsProviderStatusResultSchema;
+  resultValidator = (() => _validatorsZod.checkCredentialsProviderStatusResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<sendJSPixelParamsSchema, any>} 
@@ -14609,7 +14612,7 @@ class CheckCredentialsProviderStatusCall extends _deviceApi.DeviceApiCall {
 exports.CheckCredentialsProviderStatusCall = CheckCredentialsProviderStatusCall;
 class SendJSPixelCall extends _deviceApi.DeviceApiCall {
   method = "sendJSPixel";
-  paramsValidator = _validatorsZod.sendJSPixelParamsSchema;
+  paramsValidator = (() => _validatorsZod.sendJSPixelParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<setIncontextSignupPermanentlyDismissedAtSchema, any>} 
@@ -14617,7 +14620,7 @@ class SendJSPixelCall extends _deviceApi.DeviceApiCall {
 exports.SendJSPixelCall = SendJSPixelCall;
 class SetIncontextSignupPermanentlyDismissedAtCall extends _deviceApi.DeviceApiCall {
   method = "setIncontextSignupPermanentlyDismissedAt";
-  paramsValidator = _validatorsZod.setIncontextSignupPermanentlyDismissedAtSchema;
+  paramsValidator = (() => _validatorsZod.setIncontextSignupPermanentlyDismissedAtSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getIncontextSignupDismissedAtSchema>} 
@@ -14626,7 +14629,7 @@ exports.SetIncontextSignupPermanentlyDismissedAtCall = SetIncontextSignupPermane
 class GetIncontextSignupDismissedAtCall extends _deviceApi.DeviceApiCall {
   method = "getIncontextSignupDismissedAt";
   id = "getIncontextSignupDismissedAt";
-  resultValidator = _validatorsZod.getIncontextSignupDismissedAtSchema;
+  resultValidator = (() => _validatorsZod.getIncontextSignupDismissedAtSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -14670,7 +14673,7 @@ exports.CredentialsImportFlowPermanentlyDismissedCall = CredentialsImportFlowPer
 class EmailProtectionStoreUserDataCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionStoreUserData";
   id = "emailProtectionStoreUserDataResponse";
-  paramsValidator = _validatorsZod.emailProtectionStoreUserDataParamsSchema;
+  paramsValidator = (() => _validatorsZod.emailProtectionStoreUserDataParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -14686,7 +14689,7 @@ exports.EmailProtectionRemoveUserDataCall = EmailProtectionRemoveUserDataCall;
 class EmailProtectionGetIsLoggedInCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetIsLoggedIn";
   id = "emailProtectionGetIsLoggedInResponse";
-  resultValidator = _validatorsZod.emailProtectionGetIsLoggedInResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetIsLoggedInResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionGetUserDataResultSchema>} 
@@ -14695,7 +14698,7 @@ exports.EmailProtectionGetIsLoggedInCall = EmailProtectionGetIsLoggedInCall;
 class EmailProtectionGetUserDataCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetUserData";
   id = "emailProtectionGetUserDataResponse";
-  resultValidator = _validatorsZod.emailProtectionGetUserDataResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetUserDataResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionGetCapabilitiesResultSchema>} 
@@ -14704,7 +14707,7 @@ exports.EmailProtectionGetUserDataCall = EmailProtectionGetUserDataCall;
 class EmailProtectionGetCapabilitiesCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetCapabilities";
   id = "emailProtectionGetCapabilitiesResponse";
-  resultValidator = _validatorsZod.emailProtectionGetCapabilitiesResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetCapabilitiesResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionGetAddressesResultSchema>} 
@@ -14713,7 +14716,7 @@ exports.EmailProtectionGetCapabilitiesCall = EmailProtectionGetCapabilitiesCall;
 class EmailProtectionGetAddressesCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetAddresses";
   id = "emailProtectionGetAddressesResponse";
-  resultValidator = _validatorsZod.emailProtectionGetAddressesResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetAddressesResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionRefreshPrivateAddressResultSchema>} 
@@ -14722,7 +14725,7 @@ exports.EmailProtectionGetAddressesCall = EmailProtectionGetAddressesCall;
 class EmailProtectionRefreshPrivateAddressCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionRefreshPrivateAddress";
   id = "emailProtectionRefreshPrivateAddressResponse";
-  resultValidator = _validatorsZod.emailProtectionRefreshPrivateAddressResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionRefreshPrivateAddressResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -14745,7 +14748,7 @@ exports.CloseEmailProtectionTabCall = CloseEmailProtectionTabCall;
 class ShowInContextEmailProtectionSignupPromptCall extends _deviceApi.DeviceApiCall {
   method = "ShowInContextEmailProtectionSignupPrompt";
   id = "ShowInContextEmailProtectionSignupPromptResponse";
-  resultValidator = _validatorsZod.showInContextEmailProtectionSignupPromptSchema;
+  resultValidator = (() => _validatorsZod.showInContextEmailProtectionSignupPromptSchema)();
 }
 exports.ShowInContextEmailProtectionSignupPromptCall = ShowInContextEmailProtectionSignupPromptCall;
 
@@ -14811,8 +14814,8 @@ var _validatorsZod = require("./__generated__/validators.zod.js");
 class GetAlias extends _index.DeviceApiCall {
   method = 'emailHandlerGetAlias';
   id = 'n/a';
-  paramsValidator = _validatorsZod.getAliasParamsSchema;
-  resultValidator = _validatorsZod.getAliasResultSchema;
+  paramsValidator = (() => _validatorsZod.getAliasParamsSchema)();
+  resultValidator = (() => _validatorsZod.getAliasResultSchema)();
   preResultValidation(response) {
     // convert to the correct format, because this is a legacy API
     return {
@@ -15049,7 +15052,6 @@ class ExtensionTransport extends _index.DeviceApiTransport {
     if (deviceApiCall instanceof _deviceApiCalls.CloseAutofillParentCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
       return; // noop
     }
-
     console.error('Send not implemented for ' + deviceApiCall.method);
   }
 }
@@ -17624,7 +17626,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getTranslator = getTranslator;
 var _translations = _interopRequireDefault(require("./translations.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /** @typedef {`autofill:${keyof typeof translations["en"]["autofill"]}`} AutofillKeys */
 
 /**
@@ -17939,7 +17941,7 @@ var _autofill23 = _interopRequireDefault(require("./sl/autofill.json"));
 var _autofill24 = _interopRequireDefault(require("./sv/autofill.json"));
 var _autofill25 = _interopRequireDefault(require("./tr/autofill.json"));
 var _autofill26 = _interopRequireDefault(require("./xa/autofill.json"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * This file is auto-generated by scripts/bundle-locales.mjs, based on the contents of the src/locales/ directory.
  * Any manual changes in here will be overwritten on build!
