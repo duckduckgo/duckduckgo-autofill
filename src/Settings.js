@@ -11,6 +11,13 @@ import { autofillEnabled } from './autofill-utils.js';
  * @typedef {import("../packages/device-api").DeviceApi} DeviceApi
  */
 
+/** @typedef {{
+ *   enabled: boolean,
+ *   formTypeSettings: { selector: string, path: string, type: string }[]
+ *   formBoundarySettings: { selector: string }[]
+ * }} RemoteRules
+ */
+
 /**
  * The Settings class encapsulates the concept of 1) feature toggles + 2) available input types.
  *
@@ -45,6 +52,95 @@ export class Settings {
         this.deviceApi = deviceApi;
         this.globalConfig = config;
     }
+
+    /**
+     * @returns {RemoteRules}
+     */
+    getRemoteRules() {
+        return {
+            enabled: true,
+            formTypeSettings: [
+                {
+                    selector: 'form[class*="login"]',
+                    path: '/login',
+                    type: 'login',
+                },
+                {
+                    selector: 'form[class*="signup"]',
+                    path: '/signup',
+                    type: 'signup',
+                },
+                {
+                    selector: 'form[class*="hybrid"]',
+                    path: '/hybrid',
+                    type: 'hybrid',
+                },
+            ],
+            formBoundarySettings: [
+                {
+                    selector: '.MuiBox-root .css-13fcpt2',
+                },
+                {
+                    selector: 'form[class*="login"]',
+                },
+            ],
+        };
+    }
+    /**
+     * @returns {{
+     *   enabled: boolean,
+     *   settings: {
+     *     domains: {
+     *       domain: string,
+     *       patchSettings: {
+     *         formTypeSettings: { selector: string, path: string, type: string }[],
+     *         formBoundarySettings: { selector: string }[]
+     *       }[]
+     *     }[]
+     *   }
+     * }}
+     */
+    // getRemoteRules() {
+    //     return {
+    //         enabled: false,
+    //         settings: {
+    //             domains: [
+    //                 {
+    //                     domain: 'fill.dev',
+    //                     patchSettings: [
+    //                         {
+    //                             formTypeSettings: [
+    //                                 {
+    //                                     selector: 'form[class*="login"]',
+    //                                     path: '/login',
+    //                                     type: 'login',
+    //                                 },
+    //                                 {
+    //                                     selector: 'form[class*="signup"]',
+    //                                     path: '/signup',
+    //                                     type: 'signup',
+    //                                 },
+    //                                 {
+    //                                     selector: 'form[class*="hybrid"]',
+    //                                     path: '/hybrid',
+    //                                     type: 'hybrid',
+    //                                 },
+    //                             ],
+    //                             formBoundarySettings: [
+    //                                 {
+    //                                     selector: 'form',
+    //                                 },
+    //                                 {
+    //                                     selector: 'form[class*="login"]',
+    //                                 },
+    //                             ],
+    //                         },
+    //                     ],
+    //                 },
+    //             ],
+    //         },
+    //     };
+    // }
 
     /**
      * Feature toggles are delivered as part of the Runtime Configuration - a flexible design that

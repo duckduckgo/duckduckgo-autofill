@@ -14,15 +14,19 @@ class FormAnalyzer {
     form;
     /** @type Matching */
     matching;
+    /** @type {string|null} */
+    forcedFormType = null;
+
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
+     * @param {any} [formTypeSettings]
      */
-    constructor(form, input, matching) {
+    constructor(form, input, matching, formTypeSettings) {
         this.form = form;
         this.matching = matching || new Matching(matchingConfiguration);
-
+        this.checkForcedFormType(formTypeSettings);
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
@@ -53,6 +57,20 @@ class FormAnalyzer {
         return this;
     }
 
+    /**
+     * Checks if there's a forced form type configuration for this form
+     * @param {any} formTypeSettings
+     * @private
+     */
+    checkForcedFormType(formTypeSettings) {
+        if (formTypeSettings?.enabled) {
+            const matchedFormConfig = formTypeSettings?.formTypeSettings.find((config) => this.form.matches(config.selector));
+            if (matchedFormConfig) {
+                this.forcedFormType = matchedFormConfig.type;
+            }
+        }
+    }
+
     areLoginOrSignupSignalsWeak() {
         return Math.abs(this.autofillSignal) < 10;
     }
@@ -62,20 +80,19 @@ class FormAnalyzer {
      * @returns {boolean}
      */
     get isHybrid() {
-        // When marking for hybrid we also want to ensure other signals are weak
-
+        if (this.forcedFormType === 'hybrid') return true;
         return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
 
     get isLogin() {
+        if (this.forcedFormType === 'login') return true;
         if (this.isHybrid) return false;
-
         return this.autofillSignal < 0;
     }
 
     get isSignup() {
+        if (this.forcedFormType === 'signup') return true;
         if (this.isHybrid) return false;
-
         return this.autofillSignal >= 0;
     }
 
