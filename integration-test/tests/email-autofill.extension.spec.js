@@ -12,7 +12,6 @@ import { emailAutofillPage } from '../helpers/pages/emailAutofillPage.js';
  *  Special setup is needed to load the extension, see testContext();
  */
 const test = testContext(base);
-
 test.describe('chrome extension', () => {
     test('should autofill the selected email @flaky', async ({ page }) => {
         const { personalAddress, privateAddress0, privateAddress1 } = constants.fields.email;
