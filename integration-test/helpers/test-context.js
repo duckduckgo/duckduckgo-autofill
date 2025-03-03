@@ -8,8 +8,6 @@ import { addMocksAsAttachments } from './harness.js';
 const DATA_DIR_PREFIX = 'ddg-temp-';
 
 /**
- * A single place
- * @param {typeof import("@playwright/test").test} test
  */
 export function testContext(test) {
     return test.extend({
