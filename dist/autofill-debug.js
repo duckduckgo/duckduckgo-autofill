@@ -4,23 +4,550 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.toString = exports.removeEventListener = exports.randomUUID = exports.objectKeys = exports.objectEntries = exports.objectDefineProperty = exports.hasOwnProperty = exports.getOwnPropertyDescriptors = exports.getOwnPropertyDescriptor = exports.functionToString = exports.dispatchEvent = exports.customElementsGet = exports.customElementsDefine = exports.addEventListener = exports.URL = exports.TypeError = exports.Symbol = exports.String = exports.Set = exports.Reflect = exports.Proxy = exports.Promise = exports.Map = exports.Error = exports.CustomEvent = void 0;
+/* eslint-disable no-redeclare */
+const Set = exports.Set = globalThis.Set;
+const Reflect = exports.Reflect = globalThis.Reflect;
+const customElementsGet = exports.customElementsGet = globalThis.customElements?.get.bind(globalThis.customElements);
+const customElementsDefine = exports.customElementsDefine = globalThis.customElements?.define.bind(globalThis.customElements);
+const getOwnPropertyDescriptor = exports.getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+const getOwnPropertyDescriptors = exports.getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors;
+const toString = exports.toString = Object.prototype.toString;
+const objectKeys = exports.objectKeys = Object.keys;
+const objectEntries = exports.objectEntries = Object.entries;
+const objectDefineProperty = exports.objectDefineProperty = Object.defineProperty;
+const URL = exports.URL = globalThis.URL;
+const Proxy = exports.Proxy = globalThis.Proxy;
+const functionToString = exports.functionToString = Function.prototype.toString;
+const TypeError = exports.TypeError = globalThis.TypeError;
+const Symbol = exports.Symbol = globalThis.Symbol;
+const hasOwnProperty = exports.hasOwnProperty = Object.prototype.hasOwnProperty;
+const dispatchEvent = exports.dispatchEvent = globalThis.dispatchEvent?.bind(globalThis);
+const addEventListener = exports.addEventListener = globalThis.addEventListener?.bind(globalThis);
+const removeEventListener = exports.removeEventListener = globalThis.removeEventListener?.bind(globalThis);
+const CustomEvent = exports.CustomEvent = globalThis.CustomEvent;
+const Promise = exports.Promise = globalThis.Promise;
+const String = exports.String = globalThis.String;
+const Map = exports.Map = globalThis.Map;
+const Error = exports.Error = globalThis.Error;
+const randomUUID = exports.randomUUID = globalThis.crypto?.randomUUID?.bind(globalThis.crypto);
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.OriginalCustomEvent = exports.DDGReflect = exports.DDGProxy = exports.DDGPromise = void 0;
+exports.camelcase = camelcase;
+exports.computeEnabledFeatures = computeEnabledFeatures;
+exports.computeLimitedSiteObject = computeLimitedSiteObject;
+exports.createCustomEvent = createCustomEvent;
+exports.createStyleElement = createStyleElement;
+exports.getContextId = getContextId;
+exports.getInjectionElement = getInjectionElement;
+exports.getStack = getStack;
+exports.getStackTraceOrigins = getStackTraceOrigins;
+exports.getStackTraceUrls = getStackTraceUrls;
+exports.getTabHostname = getTabHostname;
+exports.hasThirdPartyOrigin = hasThirdPartyOrigin;
+exports.initStringExemptionLists = initStringExemptionLists;
+exports.injectGlobalStyles = injectGlobalStyles;
+exports.isBeingFramed = isBeingFramed;
+exports.isFeatureBroken = isFeatureBroken;
+exports.isGloballyDisabled = isGloballyDisabled;
+exports.isPlatformSpecificFeature = isPlatformSpecificFeature;
+exports.isThirdPartyFrame = isThirdPartyFrame;
+exports.isUnprotectedDomain = isUnprotectedDomain;
+exports.iterateDataKey = iterateDataKey;
+exports.legacySendMessage = legacySendMessage;
+exports.matchHostname = matchHostname;
+exports.nextRandom = nextRandom;
+exports.originalWindowDispatchEvent = void 0;
+exports.parseFeatureSettings = parseFeatureSettings;
+exports.platformSpecificFeatures = void 0;
+exports.postDebugMessage = postDebugMessage;
+exports.processAttr = processAttr;
 exports.processConfig = processConfig;
-function getTopLevelURL() {
-  try {
-    // FROM: https://stackoverflow.com/a/7739035/73479
-    // FIX: Better capturing of top level URL so that trackers in embedded documents are not considered first party
-    if (window.location !== window.parent.location) {
-      return new URL(window.location.href !== 'about:blank' ? document.referrer : window.parent.location.href);
-    } else {
-      return new URL(window.location.href);
+exports.registerMessageSecret = registerMessageSecret;
+exports.satisfiesMinVersion = satisfiesMinVersion;
+exports.setGlobal = setGlobal;
+exports.shouldExemptMethod = shouldExemptMethod;
+exports.shouldExemptUrl = shouldExemptUrl;
+exports.stripVersion = stripVersion;
+exports.withExponentialBackoff = withExponentialBackoff;
+var _capturedGlobals = require("./captured-globals.js");
+/* eslint-disable no-redeclare, no-global-assign */
+
+// Only use globalThis for testing this breaks window.wrappedJSObject code in Firefox
+
+let globalObj = typeof window === 'undefined' ? globalThis : window;
+let Error = globalObj.Error;
+let messageSecret;
+
+// save a reference to original CustomEvent amd dispatchEvent so they can't be overriden to forge messages
+const OriginalCustomEvent = exports.OriginalCustomEvent = typeof CustomEvent === 'undefined' ? null : CustomEvent;
+const originalWindowDispatchEvent = exports.originalWindowDispatchEvent = typeof window === 'undefined' ? null : window.dispatchEvent.bind(window);
+function registerMessageSecret(secret) {
+  messageSecret = secret;
+}
+
+/**
+ * @returns {HTMLElement} the element to inject the script into
+ */
+function getInjectionElement() {
+  return document.head || document.documentElement;
+}
+
+/**
+ * Creates a script element with the given code to avoid Firefox CSP restrictions.
+ * @param {string} css
+ * @returns {HTMLLinkElement | HTMLStyleElement}
+ */
+function createStyleElement(css) {
+  const style = document.createElement('style');
+  style.innerText = css;
+  return style;
+}
+
+/**
+ * Injects a script into the page, avoiding CSP restrictions if possible.
+ */
+function injectGlobalStyles(css) {
+  const style = createStyleElement(css);
+  getInjectionElement().appendChild(style);
+}
+
+/**
+ * Used for testing to override the globals used within this file.
+ * @param {window} globalObjIn
+ */
+function setGlobal(globalObjIn) {
+  globalObj = globalObjIn;
+  Error = globalObj.Error;
+}
+
+// linear feedback shift register to find a random approximation
+function nextRandom(v) {
+  return Math.abs(v >> 1 | (v << 62 ^ v << 61) & ~(~0 << 63) << 62);
+}
+const exemptionLists = {};
+function shouldExemptUrl(type, url) {
+  for (const regex of exemptionLists[type]) {
+    if (regex.test(url)) {
+      return true;
     }
-  } catch (error) {
-    return new URL(location.href);
+  }
+  return false;
+}
+let debug = false;
+function initStringExemptionLists(args) {
+  const {
+    stringExemptionLists
+  } = args;
+  debug = args.debug;
+  for (const type in stringExemptionLists) {
+    exemptionLists[type] = [];
+    for (const stringExemption of stringExemptionLists[type]) {
+      exemptionLists[type].push(new RegExp(stringExemption));
+    }
   }
 }
-function isUnprotectedDomain(topLevelUrl, featureList) {
+
+/**
+ * Best guess effort if the document is being framed
+ * @returns {boolean} if we infer the document is framed
+ */
+function isBeingFramed() {
+  if (globalThis.location && 'ancestorOrigins' in globalThis.location) {
+    return globalThis.location.ancestorOrigins.length > 0;
+  }
+  return globalThis.top !== globalThis.window;
+}
+
+/**
+ * Best guess effort if the document is third party
+ * @returns {boolean} if we infer the document is third party
+ */
+function isThirdPartyFrame() {
+  if (!isBeingFramed()) {
+    return false;
+  }
+  const tabHostname = getTabHostname();
+  // If we can't get the tab hostname, assume it's third party
+  if (!tabHostname) {
+    return true;
+  }
+  return !matchHostname(globalThis.location.hostname, tabHostname);
+}
+function isThirdPartyOrigin(hostname) {
+  return matchHostname(globalThis.location.hostname, hostname);
+}
+function hasThirdPartyOrigin(scriptOrigins) {
+  for (const origin of scriptOrigins) {
+    if (isThirdPartyOrigin(origin)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Best guess effort of the tabs hostname; where possible always prefer the args.site.domain
+ * @returns {string|null} inferred tab hostname
+ */
+function getTabHostname() {
+  let framingOrigin = null;
+  try {
+    // @ts-expect-error - globalThis.top is possibly 'null' here
+    framingOrigin = globalThis.top.location.href;
+  } catch {
+    framingOrigin = globalThis.document.referrer;
+  }
+
+  // Not supported in Firefox
+  if ('ancestorOrigins' in globalThis.location && globalThis.location.ancestorOrigins.length) {
+    // ancestorOrigins is reverse order, with the last item being the top frame
+    framingOrigin = globalThis.location.ancestorOrigins.item(globalThis.location.ancestorOrigins.length - 1);
+  }
+  try {
+    // @ts-expect-error - framingOrigin is possibly 'null' here
+    framingOrigin = new URL(framingOrigin).hostname;
+  } catch {
+    framingOrigin = null;
+  }
+  return framingOrigin;
+}
+
+/**
+ * Returns true if hostname is a subset of exceptionDomain or an exact match.
+ * @param {string} hostname
+ * @param {string} exceptionDomain
+ * @returns {boolean}
+ */
+function matchHostname(hostname, exceptionDomain) {
+  return hostname === exceptionDomain || hostname.endsWith(`.${exceptionDomain}`);
+}
+const lineTest = /(\()?(https?:[^)]+):[0-9]+:[0-9]+(\))?/;
+function getStackTraceUrls(stack) {
+  const urls = new _capturedGlobals.Set();
+  try {
+    const errorLines = stack.split('\n');
+    // Should cater for Chrome and Firefox stacks, we only care about https? resources.
+    for (const line of errorLines) {
+      const res = line.match(lineTest);
+      if (res) {
+        urls.add(new URL(res[2], location.href));
+      }
+    }
+  } catch (e) {
+    // Fall through
+  }
+  return urls;
+}
+function getStackTraceOrigins(stack) {
+  const urls = getStackTraceUrls(stack);
+  const origins = new _capturedGlobals.Set();
+  for (const url of urls) {
+    origins.add(url.hostname);
+  }
+  return origins;
+}
+
+// Checks the stack trace if there are known libraries that are broken.
+function shouldExemptMethod(type) {
+  // Short circuit stack tracing if we don't have checks
+  if (!(type in exemptionLists) || exemptionLists[type].length === 0) {
+    return false;
+  }
+  const stack = getStack();
+  const errorFiles = getStackTraceUrls(stack);
+  for (const path of errorFiles) {
+    if (shouldExemptUrl(type, path.href)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Iterate through the key, passing an item index and a byte to be modified
+function iterateDataKey(key, callback) {
+  let item = key.charCodeAt(0);
+  for (const i in key) {
+    let byte = key.charCodeAt(i);
+    for (let j = 8; j >= 0; j--) {
+      const res = callback(item, byte);
+      // Exit early if callback returns null
+      if (res === null) {
+        return;
+      }
+
+      // find next item to perturb
+      item = nextRandom(item);
+
+      // Right shift as we use the least significant bit of it
+      byte = byte >> 1;
+    }
+  }
+}
+function isFeatureBroken(args, feature) {
+  return isPlatformSpecificFeature(feature) ? !args.site.enabledFeatures.includes(feature) : args.site.isBroken || args.site.allowlisted || !args.site.enabledFeatures.includes(feature);
+}
+function camelcase(dashCaseText) {
+  return dashCaseText.replace(/-(.)/g, (match, letter) => {
+    return letter.toUpperCase();
+  });
+}
+
+// We use this method to detect M1 macs and set appropriate API values to prevent sites from detecting fingerprinting protections
+function isAppleSilicon() {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl');
+
+  // Best guess if the device is an Apple Silicon
+  // https://stackoverflow.com/a/65412357
+  // @ts-expect-error - Object is possibly 'null'
+  return gl.getSupportedExtensions().indexOf('WEBGL_compressed_texture_etc') !== -1;
+}
+
+/**
+ * Take configSeting which should be an array of possible values.
+ * If a value contains a criteria that is a match for this environment then return that value.
+ * Otherwise return the first value that doesn't have a criteria.
+ *
+ * @param {ConfigSetting[]} configSetting - Config setting which should contain a list of possible values
+ * @returns {*|undefined} - The value from the list that best matches the criteria in the config
+ */
+function processAttrByCriteria(configSetting) {
+  let bestOption;
+  for (const item of configSetting) {
+    if (item.criteria) {
+      if (item.criteria.arch === 'AppleSilicon' && isAppleSilicon()) {
+        bestOption = item;
+        break;
+      }
+    } else {
+      bestOption = item;
+    }
+  }
+  return bestOption;
+}
+const functionMap = {
+  /** Useful for debugging APIs in the wild, shouldn't be used */
+  debug: function () {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    console.log('debugger', ...args);
+    // eslint-disable-next-line no-debugger
+    debugger;
+  },
+  noop: () => {}
+};
+
+/**
+ * @typedef {object} ConfigSetting
+ * @property {'undefined' | 'number' | 'string' | 'function' | 'boolean' | 'null' | 'array' | 'object'} type
+ * @property {string} [functionName]
+ * @property {boolean | string | number} value
+ * @property {object} [criteria]
+ * @property {string} criteria.arch
+ */
+
+/**
+ * Processes a structured config setting and returns the value according to its type
+ * @param {ConfigSetting} configSetting
+ * @param {*} [defaultValue]
+ * @returns
+ */
+function processAttr(configSetting, defaultValue) {
+  if (configSetting === undefined) {
+    return defaultValue;
+  }
+  const configSettingType = typeof configSetting;
+  switch (configSettingType) {
+    case 'object':
+      if (Array.isArray(configSetting)) {
+        configSetting = processAttrByCriteria(configSetting);
+        if (configSetting === undefined) {
+          return defaultValue;
+        }
+      }
+      if (!configSetting.type) {
+        return defaultValue;
+      }
+      if (configSetting.type === 'function') {
+        if (configSetting.functionName && functionMap[configSetting.functionName]) {
+          return functionMap[configSetting.functionName];
+        }
+      }
+      if (configSetting.type === 'undefined') {
+        return undefined;
+      }
+
+      // All JSON expressable types are handled here
+      return configSetting.value;
+    default:
+      return defaultValue;
+  }
+}
+function getStack() {
+  return new Error().stack;
+}
+function getContextId(scope) {
+  if (document?.currentScript && 'contextID' in document.currentScript) {
+    return document.currentScript.contextID;
+  }
+  if (scope.contextID) {
+    return scope.contextID;
+  }
+  // @ts-expect-error - contextID is a global variable
+  if (typeof contextID !== 'undefined') {
+    // @ts-expect-error - contextID is a global variable
+    // eslint-disable-next-line no-undef
+    return contextID;
+  }
+}
+
+/**
+ * @param {*[]} argsArray
+ * @returns {string}
+ */
+function debugSerialize(argsArray) {
+  const maxSerializedSize = 1000;
+  const serializedArgs = argsArray.map(arg => {
+    try {
+      const serializableOut = JSON.stringify(arg);
+      if (serializableOut.length > maxSerializedSize) {
+        return `<truncated, length: ${serializableOut.length}, value: ${serializableOut.substring(0, maxSerializedSize)}...>`;
+      }
+      return serializableOut;
+    } catch (e) {
+      // Sometimes this happens when we can't serialize an object to string but we still wish to log it and make other args readable
+      return '<unserializable>';
+    }
+  });
+  return JSON.stringify(serializedArgs);
+}
+
+/**
+ * @template {object} P
+ * @typedef {object} ProxyObject<P>
+ * @property {(target?: object, thisArg?: P, args?: object) => void} apply
+ */
+
+/**
+ * @template [P=object]
+ */
+class DDGProxy {
+  /**
+   * @param {import('./content-feature').default} feature
+   * @param {P} objectScope
+   * @param {string} property
+   * @param {ProxyObject<P>} proxyObject
+   */
+  constructor(feature, objectScope, property, proxyObject) {
+    var _this = this;
+    this.objectScope = objectScope;
+    this.property = property;
+    this.feature = feature;
+    this.featureName = feature.name;
+    this.camelFeatureName = camelcase(this.featureName);
+    const outputHandler = function () {
+      _this.feature.addDebugFlag();
+      const isExempt = shouldExemptMethod(_this.camelFeatureName);
+      // Keep this here as getStack() is expensive
+      if (debug) {
+        postDebugMessage(_this.camelFeatureName, {
+          isProxy: true,
+          action: isExempt ? 'ignore' : 'restrict',
+          kind: _this.property,
+          documentUrl: document.location.href,
+          stack: getStack(),
+          args: debugSerialize(arguments.length <= 2 ? undefined : arguments[2])
+        });
+      }
+      // The normal return value
+      if (isExempt) {
+        return DDGReflect.apply(arguments.length <= 0 ? undefined : arguments[0], arguments.length <= 1 ? undefined : arguments[1], arguments.length <= 2 ? undefined : arguments[2]);
+      }
+      return proxyObject.apply(...arguments);
+    };
+    const getMethod = (target, prop, receiver) => {
+      this.feature.addDebugFlag();
+      if (prop === 'toString') {
+        const method = Reflect.get(target, prop, receiver).bind(target);
+        Object.defineProperty(method, 'toString', {
+          value: String.toString.bind(String.toString),
+          enumerable: false
+        });
+        return method;
+      }
+      return DDGReflect.get(target, prop, receiver);
+    };
+    this._native = objectScope[property];
+    const handler = {};
+    handler.apply = outputHandler;
+    handler.get = getMethod;
+    this.internal = new globalObj.Proxy(objectScope[property], handler);
+  }
+
+  // Actually apply the proxy to the native property
+  overload() {
+    this.objectScope[this.property] = this.internal;
+  }
+  overloadDescriptor() {
+    // TODO: this is not always correct! Use wrap* or shim* methods instead
+    this.feature.defineProperty(this.objectScope, this.property, {
+      value: this.internal,
+      writable: true,
+      enumerable: true,
+      configurable: true
+    });
+  }
+}
+exports.DDGProxy = DDGProxy;
+const maxCounter = new Map();
+function numberOfTimesDebugged(feature) {
+  if (!maxCounter.has(feature)) {
+    maxCounter.set(feature, 1);
+  } else {
+    maxCounter.set(feature, maxCounter.get(feature) + 1);
+  }
+  return maxCounter.get(feature);
+}
+const DEBUG_MAX_TIMES = 5000;
+function postDebugMessage(feature, message) {
+  let allowNonDebug = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  if (!debug && !allowNonDebug) {
+    return;
+  }
+  if (numberOfTimesDebugged(feature) > DEBUG_MAX_TIMES) {
+    return;
+  }
+  if (message.stack) {
+    const scriptOrigins = [...getStackTraceOrigins(message.stack)];
+    message.scriptOrigins = scriptOrigins;
+  }
+  globalObj.postMessage({
+    action: feature,
+    message
+  });
+}
+const DDGPromise = exports.DDGPromise = globalObj.Promise;
+const DDGReflect = exports.DDGReflect = globalObj.Reflect;
+
+/**
+ * @param {string | null} topLevelHostname
+ * @param {object[]} featureList
+ * @returns {boolean}
+ */
+function isUnprotectedDomain(topLevelHostname, featureList) {
   let unprotectedDomain = false;
-  const domainParts = topLevelUrl && topLevelUrl.host ? topLevelUrl.host.split('.') : [];
+  if (!topLevelHostname) {
+    return false;
+  }
+  const domainParts = topLevelHostname.split('.');
 
   // walk up the domain to see if it's unprotected
   while (domainParts.length > 1 && !unprotectedDomain) {
@@ -30,26 +557,264 @@ function isUnprotectedDomain(topLevelUrl, featureList) {
   }
   return unprotectedDomain;
 }
-function processConfig(data, userList, preferences) {
-  const topLevelUrl = getTopLevelURL();
-  const allowlisted = userList.filter(domain => domain === topLevelUrl.host).length > 0;
-  const enabledFeatures = Object.keys(data.features).filter(featureName => {
-    const feature = data.features[featureName];
-    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelUrl, feature.exceptions);
+
+/**
+ * @typedef {object} Platform
+ * @property {'ios' | 'macos' | 'extension' | 'android' | 'windows'} name
+ * @property {string | number } [version]
+ */
+
+/**
+ * @typedef {object} UserPreferences
+ * @property {Platform} platform
+ * @property {boolean} [debug]
+ * @property {boolean} [globalPrivacyControl]
+ * @property {number} [versionNumber] - Android version number only
+ * @property {string} [versionString] - Non Android version string
+ * @property {string} sessionKey
+ */
+
+/**
+ * Used to inialize extension code in the load phase
+ */
+function computeLimitedSiteObject() {
+  const topLevelHostname = getTabHostname();
+  return {
+    domain: topLevelHostname
+  };
+}
+
+/**
+ * Expansion point to add platform specific versioning logic
+ * @param {UserPreferences} preferences
+ * @returns {string | number | undefined}
+ */
+function getPlatformVersion(preferences) {
+  if (preferences.versionNumber) {
+    return preferences.versionNumber;
+  }
+  if (preferences.versionString) {
+    return preferences.versionString;
+  }
+  return undefined;
+}
+
+/**
+ * Takes a version string and nullifies all its components except for the first `keepComponents` ones
+ * @param {string} version
+ * @returns string
+ */
+function stripVersion(version) {
+  let keepComponents = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  const splitVersion = version.split('.');
+  const filteredVersion = [];
+  let foundNonZero = false;
+  let keptComponents = 0;
+  splitVersion.forEach(v => {
+    if (v !== '0' && (!foundNonZero || keptComponents < keepComponents)) {
+      filteredVersion.push(v);
+      foundNonZero = true;
+      keptComponents++;
+    } else {
+      filteredVersion.push('0');
+    }
   });
-  const isBroken = isUnprotectedDomain(topLevelUrl, data.unprotectedTemporary);
-  preferences.site = {
-    domain: topLevelUrl.hostname,
+  return filteredVersion.join('.');
+}
+function parseVersionString(versionString) {
+  return versionString.split('.').map(Number);
+}
+
+/**
+ * @param {string} minVersionString
+ * @param {string} applicationVersionString
+ * @returns {boolean}
+ */
+function satisfiesMinVersion(minVersionString, applicationVersionString) {
+  const minVersions = parseVersionString(minVersionString);
+  const currentVersions = parseVersionString(applicationVersionString);
+  const maxLength = Math.max(minVersions.length, currentVersions.length);
+  for (let i = 0; i < maxLength; i++) {
+    const minNumberPart = minVersions[i] || 0;
+    const currentVersionPart = currentVersions[i] || 0;
+    if (currentVersionPart > minNumberPart) {
+      return true;
+    }
+    if (currentVersionPart < minNumberPart) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * @param {string | number | undefined} minSupportedVersion
+ * @param {string | number | undefined} currentVersion
+ * @returns {boolean}
+ */
+function isSupportedVersion(minSupportedVersion, currentVersion) {
+  if (typeof currentVersion === 'string' && typeof minSupportedVersion === 'string') {
+    if (satisfiesMinVersion(minSupportedVersion, currentVersion)) {
+      return true;
+    }
+  } else if (typeof currentVersion === 'number' && typeof minSupportedVersion === 'number') {
+    if (minSupportedVersion <= currentVersion) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * @typedef RemoteConfig
+ * @property {Record<string, { state: string; settings: any; exceptions: { domain: string }[], minSupportedVersion?: string|number }>} features
+ * @property {string[]} unprotectedTemporary
+ */
+
+/**
+ * @param {RemoteConfig} data
+ * @param {string[]} userList
+ * @param {UserPreferences} preferences
+ * @param {string[]} platformSpecificFeatures
+ */
+function processConfig(data, userList, preferences) {
+  let platformSpecificFeatures = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  const topLevelHostname = getTabHostname();
+  const site = computeLimitedSiteObject();
+  const allowlisted = userList.filter(domain => domain === topLevelHostname).length > 0;
+  /** @type {Record<string, any>} */
+  const output = {
+    ...preferences
+  };
+  if (output.platform) {
+    const version = getPlatformVersion(preferences);
+    if (version) {
+      output.platform.version = version;
+    }
+  }
+  const enabledFeatures = computeEnabledFeatures(data, topLevelHostname, preferences.platform?.version, platformSpecificFeatures);
+  const isBroken = isUnprotectedDomain(topLevelHostname, data.unprotectedTemporary);
+  output.site = Object.assign(site, {
     isBroken,
     allowlisted,
     enabledFeatures
-  };
-  // TODO
-  preferences.cookie = {};
-  return preferences;
+  });
+
+  // Copy feature settings from remote config to preferences object
+  output.featureSettings = parseFeatureSettings(data, enabledFeatures);
+  output.bundledConfig = data;
+  return output;
 }
 
-},{}],2:[function(require,module,exports){
+/**
+ * Retutns a list of enabled features
+ * @param {RemoteConfig} data
+ * @param {string | null} topLevelHostname
+ * @param {Platform['version']} platformVersion
+ * @param {string[]} platformSpecificFeatures
+ * @returns {string[]}
+ */
+function computeEnabledFeatures(data, topLevelHostname, platformVersion) {
+  let platformSpecificFeatures = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+  const remoteFeatureNames = Object.keys(data.features);
+  const platformSpecificFeaturesNotInRemoteConfig = platformSpecificFeatures.filter(featureName => !remoteFeatureNames.includes(featureName));
+  const enabledFeatures = remoteFeatureNames.filter(featureName => {
+    const feature = data.features[featureName];
+    // Check that the platform supports minSupportedVersion checks and that the feature has a minSupportedVersion
+    if (feature.minSupportedVersion && platformVersion) {
+      if (!isSupportedVersion(feature.minSupportedVersion, platformVersion)) {
+        return false;
+      }
+    }
+    return feature.state === 'enabled' && !isUnprotectedDomain(topLevelHostname, feature.exceptions);
+  }).concat(platformSpecificFeaturesNotInRemoteConfig); // only disable platform specific features if it's explicitly disabled in remote config
+  return enabledFeatures;
+}
+
+/**
+ * Returns the relevant feature settings for the enabled features
+ * @param {RemoteConfig} data
+ * @param {string[]} enabledFeatures
+ * @returns {Record<string, unknown>}
+ */
+function parseFeatureSettings(data, enabledFeatures) {
+  /** @type {Record<string, unknown>} */
+  const featureSettings = {};
+  const remoteFeatureNames = Object.keys(data.features);
+  remoteFeatureNames.forEach(featureName => {
+    if (!enabledFeatures.includes(featureName)) {
+      return;
+    }
+    featureSettings[featureName] = data.features[featureName].settings;
+  });
+  return featureSettings;
+}
+function isGloballyDisabled(args) {
+  return args.site.allowlisted || args.site.isBroken;
+}
+
+/**
+ * @import {FeatureName} from "./features";
+ * @type {FeatureName[]}
+ */
+const platformSpecificFeatures = exports.platformSpecificFeatures = ['windowsPermissionUsage', 'messageBridge'];
+function isPlatformSpecificFeature(featureName) {
+  return platformSpecificFeatures.includes(featureName);
+}
+function createCustomEvent(eventName, eventDetail) {
+  // @ts-expect-error - possibly null
+  return new OriginalCustomEvent(eventName, eventDetail);
+}
+
+/** @deprecated */
+function legacySendMessage(messageType, options) {
+  // FF & Chrome
+  return originalWindowDispatchEvent && originalWindowDispatchEvent(createCustomEvent('sendMessageProxy' + messageSecret, {
+    detail: JSON.stringify({
+      messageType,
+      options
+    })
+  }));
+  // TBD other platforms
+}
+
+/**
+ * Takes a function that returns an element and tries to find it with exponential backoff.
+ * @param {number} delay
+ * @param {number} [maxAttempts=4] - The maximum number of attempts to find the element.
+ * @param {number} [delay=500] - The initial delay to be used to create the exponential backoff.
+ * @returns {Promise<Element|HTMLElement|null>}
+ */
+function withExponentialBackoff(fn) {
+  let maxAttempts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
+  let delay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 500;
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    const tryFn = () => {
+      attempts += 1;
+      const error = new Error('Element not found');
+      try {
+        const element = fn();
+        if (element) {
+          resolve(element);
+        } else if (attempts < maxAttempts) {
+          setTimeout(tryFn, delay * Math.pow(2, attempts));
+        } else {
+          reject(error);
+        }
+      } catch {
+        if (attempts < maxAttempts) {
+          setTimeout(tryFn, delay * Math.pow(2, attempts));
+        } else {
+          reject(error);
+        }
+      }
+    };
+    tryFn();
+  });
+}
+
+},{"./captured-globals.js":1}],3:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -64,6 +829,9 @@ const quotelessJson = obj => {
 };
 exports.quotelessJson = quotelessJson;
 class ZodError extends Error {
+  get errors() {
+    return this.issues;
+  }
   constructor(issues) {
     var _this;
     super();
@@ -85,9 +853,6 @@ class ZodError extends Error {
     }
     this.name = "ZodError";
     this.issues = issues;
-  }
-  get errors() {
-    return this.issues;
   }
   format(_mapper) {
     const mapper = _mapper || function (issue) {
@@ -179,7 +944,7 @@ ZodError.create = issues => {
   return error;
 };
 
-},{"./helpers/util":8}],3:[function(require,module,exports){
+},{"./helpers/util":9}],4:[function(require,module,exports){
 "use strict";
 
 var __importDefault = void 0 && (void 0).__importDefault || function (mod) {
@@ -203,17 +968,21 @@ function getErrorMap() {
 }
 exports.getErrorMap = getErrorMap;
 
-},{"./locales/en":10}],4:[function(require,module,exports){
+},{"./locales/en":11}],5:[function(require,module,exports){
 "use strict";
 
 var __createBinding = void 0 && (void 0).__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
-  Object.defineProperty(o, k2, {
-    enumerable: true,
-    get: function () {
-      return m[k];
-    }
-  });
+  var desc = Object.getOwnPropertyDescriptor(m, k);
+  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    desc = {
+      enumerable: true,
+      get: function () {
+        return m[k];
+      }
+    };
+  }
+  Object.defineProperty(o, k2, desc);
 } : function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
@@ -231,7 +1000,7 @@ __exportStar(require("./helpers/util"), exports);
 __exportStar(require("./types"), exports);
 __exportStar(require("./ZodError"), exports);
 
-},{"./ZodError":2,"./errors":3,"./helpers/parseUtil":6,"./helpers/typeAliases":7,"./helpers/util":8,"./types":11}],5:[function(require,module,exports){
+},{"./ZodError":3,"./errors":4,"./helpers/parseUtil":7,"./helpers/typeAliases":8,"./helpers/util":9,"./types":12}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -244,9 +1013,9 @@ var errorUtil;
     message
   } : message || {};
   errorUtil.toString = message => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
-})(errorUtil = exports.errorUtil || (exports.errorUtil = {}));
+})(errorUtil || (exports.errorUtil = errorUtil = {}));
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 var __importDefault = void 0 && (void 0).__importDefault || function (mod) {
@@ -301,7 +1070,13 @@ function addIssueToContext(ctx, issueData) {
     issueData: issueData,
     data: ctx.data,
     path: ctx.path,
-    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, overrideMap, overrideMap === en_1.default ? undefined : en_1.default // then global default map
+    errorMaps: [ctx.common.contextualErrorMap,
+    // contextual error map is first priority
+    ctx.schemaErrorMap,
+    // then schema-bound map if available
+    overrideMap,
+    // then global override map
+    overrideMap === en_1.default ? undefined : en_1.default // then global default map
     ].filter(x => !!x)
   });
   ctx.common.issues.push(issue);
@@ -385,14 +1160,14 @@ exports.isValid = isValid;
 const isAsync = x => typeof Promise !== "undefined" && x instanceof Promise;
 exports.isAsync = isAsync;
 
-},{"../errors":3,"../locales/en":10}],7:[function(require,module,exports){
+},{"../errors":4,"../locales/en":11}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -458,7 +1233,7 @@ var util;
     }
     return value;
   };
-})(util = exports.util || (exports.util = {}));
+})(util || (exports.util = util = {}));
 var objectUtil;
 (function (objectUtil) {
   objectUtil.mergeShapes = (first, second) => {
@@ -467,7 +1242,7 @@ var objectUtil;
       ...second // second overwrites first
     };
   };
-})(objectUtil = exports.objectUtil || (exports.objectUtil = {}));
+})(objectUtil || (exports.objectUtil = objectUtil = {}));
 exports.ZodParsedType = util.arrayToEnum(["string", "nan", "number", "integer", "float", "boolean", "date", "bigint", "symbol", "function", "undefined", "null", "array", "object", "unknown", "promise", "void", "never", "map", "set"]);
 const getParsedType = data => {
   const t = typeof data;
@@ -512,17 +1287,21 @@ const getParsedType = data => {
 };
 exports.getParsedType = getParsedType;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 var __createBinding = void 0 && (void 0).__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
-  Object.defineProperty(o, k2, {
-    enumerable: true,
-    get: function () {
-      return m[k];
-    }
-  });
+  var desc = Object.getOwnPropertyDescriptor(m, k);
+  if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+    desc = {
+      enumerable: true,
+      get: function () {
+        return m[k];
+      }
+    };
+  }
+  Object.defineProperty(o, k2, desc);
 } : function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   o[k2] = m[k];
@@ -554,7 +1333,7 @@ exports.z = z;
 __exportStar(require("./external"), exports);
 exports.default = z;
 
-},{"./external":4}],10:[function(require,module,exports){
+},{"./external":5}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -644,7 +1423,7 @@ const errorMap = (issue, _ctx) => {
 };
 exports.default = errorMap;
 
-},{"../ZodError":2,"../helpers/util":8}],11:[function(require,module,exports){
+},{"../ZodError":3,"../helpers/util":9}],12:[function(require,module,exports){
 "use strict";
 
 var __classPrivateFieldGet = void 0 && (void 0).__classPrivateFieldGet || function (receiver, state, kind, f) {
@@ -752,35 +1531,6 @@ function processCreateParams(params) {
   };
 }
 class ZodType {
-  constructor(def) {
-    /** Alias of safeParseAsync */
-    this.spa = this.safeParseAsync;
-    this._def = def;
-    this.parse = this.parse.bind(this);
-    this.safeParse = this.safeParse.bind(this);
-    this.parseAsync = this.parseAsync.bind(this);
-    this.safeParseAsync = this.safeParseAsync.bind(this);
-    this.spa = this.spa.bind(this);
-    this.refine = this.refine.bind(this);
-    this.refinement = this.refinement.bind(this);
-    this.superRefine = this.superRefine.bind(this);
-    this.optional = this.optional.bind(this);
-    this.nullable = this.nullable.bind(this);
-    this.nullish = this.nullish.bind(this);
-    this.array = this.array.bind(this);
-    this.promise = this.promise.bind(this);
-    this.or = this.or.bind(this);
-    this.and = this.and.bind(this);
-    this.transform = this.transform.bind(this);
-    this.brand = this.brand.bind(this);
-    this.default = this.default.bind(this);
-    this.catch = this.catch.bind(this);
-    this.describe = this.describe.bind(this);
-    this.pipe = this.pipe.bind(this);
-    this.readonly = this.readonly.bind(this);
-    this.isNullable = this.isNullable.bind(this);
-    this.isOptional = this.isOptional.bind(this);
-  }
   get description() {
     return this._def.description;
   }
@@ -846,6 +1596,51 @@ class ZodType {
       parent: ctx
     });
     return handleResult(ctx, result);
+  }
+  "~validate"(data) {
+    var _a, _b;
+    const ctx = {
+      common: {
+        issues: [],
+        async: !!this["~standard"].async
+      },
+      path: [],
+      schemaErrorMap: this._def.errorMap,
+      parent: null,
+      data,
+      parsedType: (0, util_1.getParsedType)(data)
+    };
+    if (!this["~standard"].async) {
+      try {
+        const result = this._parseSync({
+          data,
+          path: [],
+          parent: ctx
+        });
+        return (0, parseUtil_1.isValid)(result) ? {
+          value: result.value
+        } : {
+          issues: ctx.common.issues
+        };
+      } catch (err) {
+        if ((_b = (_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("encountered")) {
+          this["~standard"].async = true;
+        }
+        ctx.common = {
+          issues: [],
+          async: true
+        };
+      }
+    }
+    return this._parseAsync({
+      data,
+      path: [],
+      parent: ctx
+    }).then(result => (0, parseUtil_1.isValid)(result) ? {
+      value: result.value
+    } : {
+      issues: ctx.common.issues
+    });
   }
   async parseAsync(data, params) {
     const result = await this.safeParseAsync(data, params);
@@ -932,6 +1727,40 @@ class ZodType {
   superRefine(refinement) {
     return this._refinement(refinement);
   }
+  constructor(def) {
+    /** Alias of safeParseAsync */
+    this.spa = this.safeParseAsync;
+    this._def = def;
+    this.parse = this.parse.bind(this);
+    this.safeParse = this.safeParse.bind(this);
+    this.parseAsync = this.parseAsync.bind(this);
+    this.safeParseAsync = this.safeParseAsync.bind(this);
+    this.spa = this.spa.bind(this);
+    this.refine = this.refine.bind(this);
+    this.refinement = this.refinement.bind(this);
+    this.superRefine = this.superRefine.bind(this);
+    this.optional = this.optional.bind(this);
+    this.nullable = this.nullable.bind(this);
+    this.nullish = this.nullish.bind(this);
+    this.array = this.array.bind(this);
+    this.promise = this.promise.bind(this);
+    this.or = this.or.bind(this);
+    this.and = this.and.bind(this);
+    this.transform = this.transform.bind(this);
+    this.brand = this.brand.bind(this);
+    this.default = this.default.bind(this);
+    this.catch = this.catch.bind(this);
+    this.describe = this.describe.bind(this);
+    this.pipe = this.pipe.bind(this);
+    this.readonly = this.readonly.bind(this);
+    this.isNullable = this.isNullable.bind(this);
+    this.isOptional = this.isOptional.bind(this);
+    this["~standard"] = {
+      version: 1,
+      vendor: "zod",
+      validate: data => this["~validate"](data)
+    };
+  }
   optional() {
     return ZodOptional.create(this, this._def);
   }
@@ -942,7 +1771,7 @@ class ZodType {
     return this.nullable().optional();
   }
   array() {
-    return ZodArray.create(this, this._def);
+    return ZodArray.create(this);
   }
   promise() {
     return ZodPromise.create(this, this._def);
@@ -1014,11 +1843,12 @@ exports.Schema = ZodType;
 exports.ZodSchema = ZodType;
 const cuidRegex = /^c[^\s-]{8,}$/i;
 const cuid2Regex = /^[0-9a-z]+$/;
-const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
 // const uuidRegex =
 //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
 const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
 const nanoidRegex = /^[a-z0-9_-]{21}$/i;
+const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
 const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
 // from https://stackoverflow.com/a/46181/1550155
 // old version: too slow, didn't support unicode
@@ -1040,9 +1870,15 @@ const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
 let emojiRegex;
 // faster, simpler, safer
 const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
-const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+const ipv4CidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/;
+// const ipv6Regex =
+// /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+const ipv6CidrRegex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
 // https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
 const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+// https://base64.guru/standards/base64url
+const base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
 // simple
 // const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
 // no leap year validation
@@ -1078,6 +1914,30 @@ function isValidIP(ip, version) {
     return true;
   }
   if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+    return true;
+  }
+  return false;
+}
+function isValidJWT(jwt, alg) {
+  if (!jwtRegex.test(jwt)) return false;
+  try {
+    const [header] = jwt.split(".");
+    // Convert base64url to base64
+    const base64 = header.replace(/-/g, "+").replace(/_/g, "/").padEnd(header.length + (4 - header.length % 4) % 4, "=");
+    const decoded = JSON.parse(atob(base64));
+    if (typeof decoded !== "object" || decoded === null) return false;
+    if (!decoded.typ || !decoded.alg) return false;
+    if (alg && decoded.alg !== alg) return false;
+    return true;
+  } catch (_a) {
+    return false;
+  }
+}
+function isValidCidr(ip, version) {
+  if ((version === "v4" || !version) && ipv4CidrRegex.test(ip)) {
+    return true;
+  }
+  if ((version === "v6" || !version) && ipv6CidrRegex.test(ip)) {
     return true;
   }
   return false;
@@ -1345,11 +2205,41 @@ class ZodString extends ZodType {
           });
           status.dirty();
         }
+      } else if (check.kind === "jwt") {
+        if (!isValidJWT(input.data, check.alg)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            validation: "jwt",
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            message: check.message
+          });
+          status.dirty();
+        }
+      } else if (check.kind === "cidr") {
+        if (!isValidCidr(input.data, check.version)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            validation: "cidr",
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            message: check.message
+          });
+          status.dirty();
+        }
       } else if (check.kind === "base64") {
         if (!base64Regex.test(input.data)) {
           ctx = this._getOrReturnCtx(input, ctx);
           (0, parseUtil_1.addIssueToContext)(ctx, {
             validation: "base64",
+            code: ZodError_1.ZodIssueCode.invalid_string,
+            message: check.message
+          });
+          status.dirty();
+        }
+      } else if (check.kind === "base64url") {
+        if (!base64urlRegex.test(input.data)) {
+          ctx = this._getOrReturnCtx(input, ctx);
+          (0, parseUtil_1.addIssueToContext)(ctx, {
+            validation: "base64url",
             code: ZodError_1.ZodIssueCode.invalid_string,
             message: check.message
           });
@@ -1431,9 +2321,28 @@ class ZodString extends ZodType {
       ...errorUtil_1.errorUtil.errToObj(message)
     });
   }
+  base64url(message) {
+    // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+    return this._addCheck({
+      kind: "base64url",
+      ...errorUtil_1.errorUtil.errToObj(message)
+    });
+  }
+  jwt(options) {
+    return this._addCheck({
+      kind: "jwt",
+      ...errorUtil_1.errorUtil.errToObj(options)
+    });
+  }
   ip(options) {
     return this._addCheck({
       kind: "ip",
+      ...errorUtil_1.errorUtil.errToObj(options)
+    });
+  }
+  cidr(options) {
+    return this._addCheck({
+      kind: "cidr",
       ...errorUtil_1.errorUtil.errToObj(options)
     });
   }
@@ -1533,8 +2442,7 @@ class ZodString extends ZodType {
     });
   }
   /**
-   * @deprecated Use z.string().min(1) instead.
-   * @see {@link ZodString.min}
+   * Equivalent to `.min(1)`
    */
   nonempty(message) {
     return this.min(1, errorUtil_1.errorUtil.errToObj(message));
@@ -1602,8 +2510,15 @@ class ZodString extends ZodType {
   get isIP() {
     return !!this._def.checks.find(ch => ch.kind === "ip");
   }
+  get isCIDR() {
+    return !!this._def.checks.find(ch => ch.kind === "cidr");
+  }
   get isBase64() {
     return !!this._def.checks.find(ch => ch.kind === "base64");
+  }
+  get isBase64url() {
+    // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+    return !!this._def.checks.find(ch => ch.kind === "base64url");
   }
   get minLength() {
     let min = null;
@@ -1880,17 +2795,15 @@ class ZodBigInt extends ZodType {
   }
   _parse(input) {
     if (this._def.coerce) {
-      input.data = BigInt(input.data);
+      try {
+        input.data = BigInt(input.data);
+      } catch (_a) {
+        return this._getInvalidInput(input);
+      }
     }
     const parsedType = this._getType(input);
     if (parsedType !== util_1.ZodParsedType.bigint) {
-      const ctx = this._getOrReturnCtx(input);
-      (0, parseUtil_1.addIssueToContext)(ctx, {
-        code: ZodError_1.ZodIssueCode.invalid_type,
-        expected: util_1.ZodParsedType.bigint,
-        received: ctx.parsedType
-      });
-      return parseUtil_1.INVALID;
+      return this._getInvalidInput(input);
     }
     let ctx = undefined;
     const status = new parseUtil_1.ParseStatus();
@@ -1939,6 +2852,15 @@ class ZodBigInt extends ZodType {
       status: status.value,
       value: input.data
     };
+  }
+  _getInvalidInput(input) {
+    const ctx = this._getOrReturnCtx(input);
+    (0, parseUtil_1.addIssueToContext)(ctx, {
+      code: ZodError_1.ZodIssueCode.invalid_type,
+      expected: util_1.ZodParsedType.bigint,
+      received: ctx.parsedType
+    });
+    return parseUtil_1.INVALID;
   }
   gte(value, message) {
     return this.setLimit("min", value, true, errorUtil_1.errorUtil.toString(message));
@@ -2585,7 +3507,6 @@ class ZodObject extends ZodType {
           },
           value: catchall._parse(new ParseInputLazyPath(ctx, value, ctx.path, key) //, ctx.child(key), value, getParsedType(value)
           ),
-
           alwaysSet: key in ctx.data
         });
       }
@@ -4224,8 +5145,24 @@ ZodReadonly.create = (type, params) => {
     ...processCreateParams(params)
   });
 };
+////////////////////////////////////////
+////////////////////////////////////////
+//////////                    //////////
+//////////      z.custom      //////////
+//////////                    //////////
+////////////////////////////////////////
+////////////////////////////////////////
+function cleanParams(params, data) {
+  const p = typeof params === "function" ? params(data) : typeof params === "string" ? {
+    message: params
+  } : params;
+  const p2 = typeof p === "string" ? {
+    message: p
+  } : p;
+  return p2;
+}
 function custom(check) {
-  let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  let _params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   let
   /**
    * @deprecated
@@ -4240,20 +5177,31 @@ function custom(check) {
   fatal = arguments.length > 2 ? arguments[2] : undefined;
   if (check) return ZodAny.create().superRefine((data, ctx) => {
     var _a, _b;
-    if (!check(data)) {
-      const p = typeof params === "function" ? params(data) : typeof params === "string" ? {
-        message: params
-      } : params;
-      const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
-      const p2 = typeof p === "string" ? {
-        message: p
-      } : p;
+    const r = check(data);
+    if (r instanceof Promise) {
+      return r.then(r => {
+        var _a, _b;
+        if (!r) {
+          const params = cleanParams(_params, data);
+          const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+          ctx.addIssue({
+            code: "custom",
+            ...params,
+            fatal: _fatal
+          });
+        }
+      });
+    }
+    if (!r) {
+      const params = cleanParams(_params, data);
+      const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
       ctx.addIssue({
         code: "custom",
-        ...p2,
+        ...params,
         fatal: _fatal
       });
     }
+    return;
   });
   return ZodAny.create();
 }
@@ -4299,7 +5247,7 @@ var ZodFirstPartyTypeKind;
   ZodFirstPartyTypeKind["ZodBranded"] = "ZodBranded";
   ZodFirstPartyTypeKind["ZodPipeline"] = "ZodPipeline";
   ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
-})(ZodFirstPartyTypeKind = exports.ZodFirstPartyTypeKind || (exports.ZodFirstPartyTypeKind = {}));
+})(ZodFirstPartyTypeKind || (exports.ZodFirstPartyTypeKind = ZodFirstPartyTypeKind = {}));
 // requires TS 4.4+
 class Class {
   constructor() {}
@@ -4412,7 +5360,7 @@ exports.coerce = {
 };
 exports.NEVER = parseUtil_1.INVALID;
 
-},{"./ZodError":2,"./errors":3,"./helpers/errorUtil":5,"./helpers/parseUtil":6,"./helpers/util":8}],12:[function(require,module,exports){
+},{"./ZodError":3,"./errors":4,"./helpers/errorUtil":6,"./helpers/parseUtil":7,"./helpers/util":9}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4457,7 +5405,7 @@ Object.defineProperty(exports, "validate", {
 var _deviceApiCall = require("./lib/device-api-call.js");
 var _deviceApi = require("./lib/device-api.js");
 
-},{"./lib/device-api-call.js":13,"./lib/device-api.js":14}],13:[function(require,module,exports){
+},{"./lib/device-api-call.js":14,"./lib/device-api.js":15}],14:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4723,7 +5671,7 @@ function validate(data) {
   return data;
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4785,7 +5733,7 @@ class DeviceApi {
 }
 exports.DeviceApi = DeviceApi;
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4959,7 +5907,7 @@ class MissingHandler extends Error {
  */
 exports.MissingHandler = MissingHandler;
 
-},{"./webkit.js":16}],16:[function(require,module,exports){
+},{"./webkit.js":17}],17:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5110,7 +6058,7 @@ class WebkitMessagingTransport {
       const {
         ciphertext,
         tag
-      } = await new this.globals.Promise(( /** @type {any} */resolve) => {
+      } = await new this.globals.Promise((/** @type {any} */resolve) => {
         this.generateRandomMethod(randMethodName, resolve);
         data.messageHandling = new SecureMessagingParams({
           methodName: randMethodName,
@@ -5354,7 +6302,7 @@ function captureGlobals() {
   };
 }
 
-},{"./messaging.js":15}],17:[function(require,module,exports){
+},{"./messaging.js":16}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5386,6 +6334,7 @@ var _constants = require("./lib/constants.js");
  *   onError?: ((error: unknown) => void) | null | undefined;
  * }} GenerateOptions
  */
+
 /**
  * Generate a random password based on the following attempts
  *
@@ -5485,7 +6434,7 @@ function _safeHostname(inputHostname) {
   }
 }
 
-},{"./lib/apple.password.js":18,"./lib/constants.js":19,"./lib/rules-parser.js":20}],18:[function(require,module,exports){
+},{"./lib/apple.password.js":19,"./lib/constants.js":20,"./lib/rules-parser.js":21}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5494,8 +6443,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.Password = void 0;
 var parser = _interopRequireWildcard(require("./rules-parser.js"));
 var _constants = require("./constants.js");
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /*
  *
  * NOTE:
@@ -5520,6 +6469,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  *     PasswordMaxLength?: number,
  * }} Requirements
  */
+
 /**
  * @typedef {{
  *     NumberOfRequiredRandomCharacters: number,
@@ -5527,6 +6477,7 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
  *     RequiredCharacterSets: string[]
  * }} PasswordParameters
  */
+
 const defaults = Object.freeze({
   SCAN_SET_ORDER: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-~!@#$%^&*_+=`|(){}[:;\\"\'<>,.?/ ]',
   defaultUnambiguousCharacters: 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ0123456789',
@@ -6014,7 +6965,7 @@ class Password {
 }
 exports.Password = Password;
 
-},{"./constants.js":19,"./rules-parser.js":20}],19:[function(require,module,exports){
+},{"./constants.js":20,"./rules-parser.js":21}],20:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6034,7 +6985,7 @@ const constants = exports.constants = {
   DEFAULT_UNAMBIGUOUS_CHARS
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6625,7 +7576,7 @@ function parsePasswordRules(input, formatRulesForMinifiedVersion) {
   return newPasswordRules;
 }
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports={
   "163.com": {
     "password-rules": "minlength: 6; maxlength: 16;"
@@ -7720,7 +8671,7 @@ module.exports={
     "password-rules": "minlength: 8; maxlength: 32; max-consecutive: 6; required: lower; required: upper; required: digit;"
   }
 }
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7788,7 +8739,7 @@ class CredentialsImport {
 }
 exports.CredentialsImport = CredentialsImport;
 
-},{"./deviceApiCalls/__generated__/deviceApiCalls.js":68}],23:[function(require,module,exports){
+},{"./deviceApiCalls/__generated__/deviceApiCalls.js":69}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7844,7 +8795,7 @@ function createDevice() {
   return new _ExtensionInterface.ExtensionInterface(globalConfig, deviceApi, settings);
 }
 
-},{"../packages/device-api/index.js":12,"./DeviceInterface/AndroidInterface.js":24,"./DeviceInterface/AppleDeviceInterface.js":25,"./DeviceInterface/AppleOverlayDeviceInterface.js":26,"./DeviceInterface/ExtensionInterface.js":27,"./DeviceInterface/WindowsInterface.js":29,"./DeviceInterface/WindowsOverlayDeviceInterface.js":30,"./Settings.js":51,"./config.js":66,"./deviceApiCalls/transports/transports.js":74}],24:[function(require,module,exports){
+},{"../packages/device-api/index.js":13,"./DeviceInterface/AndroidInterface.js":25,"./DeviceInterface/AppleDeviceInterface.js":26,"./DeviceInterface/AppleOverlayDeviceInterface.js":27,"./DeviceInterface/ExtensionInterface.js":28,"./DeviceInterface/WindowsInterface.js":30,"./DeviceInterface/WindowsOverlayDeviceInterface.js":31,"./Settings.js":52,"./config.js":67,"./deviceApiCalls/transports/transports.js":75}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7856,9 +8807,9 @@ var _autofillUtils = require("../autofill-utils.js");
 var _NativeUIController = require("../UI/controllers/NativeUIController.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class AndroidInterface extends _InterfacePrototype.default {
-  inContextSignup = new _InContextSignup.InContextSignup(this);
+  inContextSignup = (() => new _InContextSignup.InContextSignup(this))();
 
   /**
    * @returns {Promise<string|undefined>}
@@ -7992,7 +8943,7 @@ class AndroidInterface extends _InterfacePrototype.default {
 }
 exports.AndroidInterface = AndroidInterface;
 
-},{"../InContextSignup.js":45,"../UI/controllers/NativeUIController.js":59,"../autofill-utils.js":64,"../deviceApiCalls/__generated__/deviceApiCalls.js":68,"./InterfacePrototype.js":28}],25:[function(require,module,exports){
+},{"../InContextSignup.js":46,"../UI/controllers/NativeUIController.js":60,"../autofill-utils.js":65,"../deviceApiCalls/__generated__/deviceApiCalls.js":69,"./InterfacePrototype.js":29}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8011,17 +8962,17 @@ var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js
 var _matching = require("../Form/matching.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _ThirdPartyProvider = require("../ThirdPartyProvider.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
  */
 
 class AppleDeviceInterface extends _InterfacePrototype.default {
-  inContextSignup = new _InContextSignup.InContextSignup(this);
+  inContextSignup = (() => new _InContextSignup.InContextSignup(this))();
 
   /** @override */
   initialSetupDelayMs = 300;
-  thirdPartyProvider = new _ThirdPartyProvider.ThirdPartyProvider(this);
+  thirdPartyProvider = (() => new _ThirdPartyProvider.ThirdPartyProvider(this))();
 
   /**
    * The default functionality of this class is to operate as an 'overlay controller' -
@@ -8348,7 +9299,7 @@ class AppleDeviceInterface extends _InterfacePrototype.default {
 }
 exports.AppleDeviceInterface = AppleDeviceInterface;
 
-},{"../../packages/device-api/index.js":12,"../Form/matching.js":44,"../InContextSignup.js":45,"../ThirdPartyProvider.js":52,"../UI/HTMLTooltip.js":57,"../UI/controllers/HTMLTooltipUIController.js":58,"../UI/controllers/NativeUIController.js":59,"../UI/controllers/OverlayUIController.js":60,"../autofill-utils.js":64,"../deviceApiCalls/__generated__/deviceApiCalls.js":68,"../deviceApiCalls/additionalDeviceApiCalls.js":70,"./InterfacePrototype.js":28}],26:[function(require,module,exports){
+},{"../../packages/device-api/index.js":13,"../Form/matching.js":45,"../InContextSignup.js":46,"../ThirdPartyProvider.js":53,"../UI/HTMLTooltip.js":58,"../UI/controllers/HTMLTooltipUIController.js":59,"../UI/controllers/NativeUIController.js":60,"../UI/controllers/OverlayUIController.js":61,"../autofill-utils.js":65,"../deviceApiCalls/__generated__/deviceApiCalls.js":69,"../deviceApiCalls/additionalDeviceApiCalls.js":71,"./InterfacePrototype.js":29}],27:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8376,7 +9327,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
   /**
    * overlay API helpers
    */
-  overlay = (0, _overlayApi.overlayApi)(this);
+  overlay = (() => (0, _overlayApi.overlayApi)(this))();
   previousX = 0;
   previousY = 0;
 
@@ -8389,7 +9340,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
    */
   createUIController() {
     return new _HTMLTooltipUIController.HTMLTooltipUIController({
-      tooltipKind: /** @type {const} */'modern',
+      tooltipKind: (/** @type {const} */'modern'),
       device: this
     }, {
       wrapperClass: 'top-autofill',
@@ -8467,7 +9418,7 @@ class AppleOverlayDeviceInterface extends _AppleDeviceInterface.AppleDeviceInter
 }
 exports.AppleOverlayDeviceInterface = AppleOverlayDeviceInterface;
 
-},{"../../packages/device-api/index.js":12,"../UI/controllers/HTMLTooltipUIController.js":58,"./AppleDeviceInterface.js":25,"./overlayApi.js":32}],27:[function(require,module,exports){
+},{"../../packages/device-api/index.js":13,"../UI/controllers/HTMLTooltipUIController.js":59,"./AppleDeviceInterface.js":26,"./overlayApi.js":33}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8480,7 +9431,7 @@ var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIControlle
 var _HTMLTooltip = require("../UI/HTMLTooltip.js");
 var _InContextSignup = require("../InContextSignup.js");
 var _matching = require("../Form/matching.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const TOOLTIP_TYPES = {
   EmailProtection: 'EmailProtection',
   EmailSignup: 'EmailSignup'
@@ -8489,7 +9440,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
   /**
    * Adding this here since only the extension currently supports this
    */
-  inContextSignup = new _InContextSignup.InContextSignup(this);
+  inContextSignup = (() => new _InContextSignup.InContextSignup(this))();
 
   /**
    * @override
@@ -8686,7 +9637,7 @@ class ExtensionInterface extends _InterfacePrototype.default {
 }
 exports.ExtensionInterface = ExtensionInterface;
 
-},{"../Form/matching.js":44,"../InContextSignup.js":45,"../UI/HTMLTooltip.js":57,"../UI/controllers/HTMLTooltipUIController.js":58,"../autofill-utils.js":64,"./InterfacePrototype.js":28}],28:[function(require,module,exports){
+},{"../Form/matching.js":45,"../InContextSignup.js":46,"../UI/HTMLTooltip.js":58,"../UI/controllers/HTMLTooltipUIController.js":59,"../autofill-utils.js":65,"./InterfacePrototype.js":29}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8712,6 +9663,7 @@ var _CredentialsImport = require("../CredentialsImport.js");
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').StoreFormData} StoreFormData
  */
+
 /**
  * @implements {GlobalConfigImpl}
  * @implements {FormExtensionPoints}
@@ -8728,9 +9680,9 @@ class InterfacePrototype {
   autopromptFired = false;
 
   /** @type {PasswordGenerator} */
-  passwordGenerator = new _PasswordGenerator.PasswordGenerator();
-  emailProtection = new _EmailProtection.EmailProtection(this);
-  credentialsImport = new _CredentialsImport.CredentialsImport(this);
+  passwordGenerator = (() => new _PasswordGenerator.PasswordGenerator())();
+  emailProtection = (() => new _EmailProtection.EmailProtection(this))();
+  credentialsImport = (() => new _CredentialsImport.CredentialsImport(this))();
 
   /** @type {import("../InContextSignup.js").InContextSignup | null} */
   inContextSignup = null;
@@ -8828,12 +9780,12 @@ class InterfacePrototype {
   }
 
   /** @type { PMData } */
-  #data = {
+  #data = (() => ({
     credentials: [],
     creditCards: [],
     identities: [],
     topContextData: undefined
-  };
+  }))();
 
   /**
    * @returns {import('../Form/matching').SupportedTypes}
@@ -9521,7 +10473,7 @@ class InterfacePrototype {
 }
 var _default = exports.default = InterfacePrototype;
 
-},{"../../packages/device-api/index.js":12,"../CredentialsImport.js":22,"../EmailProtection.js":33,"../Form/formatters.js":37,"../Form/matching.js":44,"../InputTypes/Credentials.js":46,"../PasswordGenerator.js":49,"../Scanner.js":50,"../Settings.js":51,"../UI/controllers/NativeUIController.js":59,"../autofill-utils.js":64,"../config.js":66,"../deviceApiCalls/__generated__/deviceApiCalls.js":68,"../deviceApiCalls/transports/transports.js":74,"../locales/strings.js":99,"./initFormSubmissionsApi.js":31}],29:[function(require,module,exports){
+},{"../../packages/device-api/index.js":13,"../CredentialsImport.js":23,"../EmailProtection.js":34,"../Form/formatters.js":38,"../Form/matching.js":45,"../InputTypes/Credentials.js":47,"../PasswordGenerator.js":50,"../Scanner.js":51,"../Settings.js":52,"../UI/controllers/NativeUIController.js":60,"../autofill-utils.js":65,"../config.js":67,"../deviceApiCalls/__generated__/deviceApiCalls.js":69,"../deviceApiCalls/transports/transports.js":75,"../locales/strings.js":100,"./initFormSubmissionsApi.js":32}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9531,7 +10483,7 @@ exports.WindowsInterface = void 0;
 var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.js"));
 var _OverlayUIController = require("../UI/controllers/OverlayUIController.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
  */
@@ -9687,7 +10639,7 @@ class WindowsInterface extends _InterfacePrototype.default {
 }
 exports.WindowsInterface = WindowsInterface;
 
-},{"../UI/controllers/OverlayUIController.js":60,"../deviceApiCalls/__generated__/deviceApiCalls.js":68,"./InterfacePrototype.js":28}],30:[function(require,module,exports){
+},{"../UI/controllers/OverlayUIController.js":61,"../deviceApiCalls/__generated__/deviceApiCalls.js":69,"./InterfacePrototype.js":29}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9698,7 +10650,7 @@ var _InterfacePrototype = _interopRequireDefault(require("./InterfacePrototype.j
 var _HTMLTooltipUIController = require("../UI/controllers/HTMLTooltipUIController.js");
 var _deviceApiCalls = require("../deviceApiCalls/__generated__/deviceApiCalls.js");
 var _overlayApi = require("./overlayApi.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * This subclass is designed to separate code that *only* runs inside the
  * Windows Overlay into a single place.
@@ -9716,7 +10668,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
   /**
    * overlay API helpers
    */
-  overlay = (0, _overlayApi.overlayApi)(this);
+  overlay = (() => (0, _overlayApi.overlayApi)(this))();
   previousScreenX = 0;
   previousScreenY = 0;
 
@@ -9729,7 +10681,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
    */
   createUIController() {
     return new _HTMLTooltipUIController.HTMLTooltipUIController({
-      tooltipKind: /** @type {const} */'modern',
+      tooltipKind: (/** @type {const} */'modern'),
       device: this
     }, {
       wrapperClass: 'top-autofill',
@@ -9866,7 +10818,7 @@ class WindowsOverlayDeviceInterface extends _InterfacePrototype.default {
 }
 exports.WindowsOverlayDeviceInterface = WindowsOverlayDeviceInterface;
 
-},{"../UI/controllers/HTMLTooltipUIController.js":58,"../deviceApiCalls/__generated__/deviceApiCalls.js":68,"./InterfacePrototype.js":28,"./overlayApi.js":32}],31:[function(require,module,exports){
+},{"../UI/controllers/HTMLTooltipUIController.js":59,"../deviceApiCalls/__generated__/deviceApiCalls.js":69,"./InterfacePrototype.js":29,"./overlayApi.js":33}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9931,14 +10883,14 @@ function initFormSubmissionsApi(forms, matching) {
       if (hasRelevantText && text.length < 25) {
         // check if there's a form with values
         const filledForm = formsArray.find(form => form.hasValues());
-        if (filledForm && (0, _autofillUtils.buttonMatchesFormType)( /** @type HTMLElement */button, filledForm)) {
+        if (filledForm && (0, _autofillUtils.buttonMatchesFormType)(/** @type HTMLElement */button, filledForm)) {
           filledForm?.submitHandler('global pointerdown event + filled form');
         }
       }
 
       // TODO: Temporary hack to support Google signin in different languages
       // https://app.asana.com/0/1198964220583541/1201650539303898/f
-      if ( /** @type HTMLElement */realTarget?.closest('#passwordNext button, #identifierNext button')) {
+      if (/** @type HTMLElement */realTarget?.closest('#passwordNext button, #identifierNext button')) {
         // check if there's a form with values
         const filledForm = formsArray.find(form => form.hasValues());
         filledForm?.submitHandler('global pointerdown event + google escape hatch');
@@ -9966,7 +10918,7 @@ function initFormSubmissionsApi(forms, matching) {
   });
 }
 
-},{"../Form/label-util.js":40,"../autofill-utils.js":64}],32:[function(require,module,exports){
+},{"../Form/label-util.js":41,"../autofill-utils.js":65}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10024,7 +10976,7 @@ function overlayApi(device) {
   };
 }
 
-},{"../deviceApiCalls/__generated__/deviceApiCalls.js":68}],33:[function(require,module,exports){
+},{"../deviceApiCalls/__generated__/deviceApiCalls.js":69}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10059,7 +11011,7 @@ class EmailProtection {
 }
 exports.EmailProtection = EmailProtection;
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -10074,7 +11026,7 @@ var _inputTypeConfig = require("./inputTypeConfig.js");
 var _formatters = require("./formatters.js");
 var _constants = require("../constants.js");
 var _Credentials = require("../InputTypes/Credentials.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const {
   ATTR_AUTOFILL,
   ATTR_INPUT_TYPE,
@@ -10195,7 +11147,7 @@ class Form {
    * @param {KeyboardEvent | null} [e]
    */
   hasFocus(e) {
-    return this.form.contains((0, _autofillUtils.getActiveElement)()) || this.form.contains( /** @type HTMLElement */e?.target);
+    return this.form.contains((0, _autofillUtils.getActiveElement)()) || this.form.contains(/** @type HTMLElement */e?.target);
   }
   submitHandler() {
     let via = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'unknown';
@@ -10448,7 +11400,7 @@ class Form {
   get ambiguousInputs() {
     const hasUsernameInput = [...this.inputs.credentials].some(input => (0, _matching.getInputSubtype)(input) === 'username');
     if (hasUsernameInput) return null;
-    const hasPasswordInputs = [...this.inputs.credentials].filter(( /** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password').length > 0;
+    const hasPasswordInputs = [...this.inputs.credentials].filter((/** @type {HTMLInputElement} */input) => (0, _matching.getInputSubtype)(input) === 'password').length > 0;
     if (!hasPasswordInputs) return null;
     const phoneInputs = [...this.inputs.identities].filter(input => (0, _matching.getInputSubtype)(input) === 'phone');
     const cardNumberInputs = [...this.inputs.creditCards].filter(input => (0, _matching.getInputSubtype)(input) === 'cardNumber');
@@ -10674,7 +11626,7 @@ class Form {
       // Get click co-ordinates for pointer events
       // We need click coordinates to position the tooltip when the field is in an iframe
       if (e.type === 'pointerdown') {
-        return getMainClickCoords( /** @type {PointerEvent} */e) || null;
+        return getMainClickCoords(/** @type {PointerEvent} */e) || null;
       }
 
       // Reuse a previous click co-ordinates if they exist for this element
@@ -10982,7 +11934,7 @@ class Form {
 }
 exports.Form = Form;
 
-},{"../InputTypes/Credentials.js":46,"../autofill-utils.js":64,"../constants.js":67,"./FormAnalyzer.js":35,"./formatters.js":37,"./inputStyles.js":38,"./inputTypeConfig.js":39,"./matching.js":44}],35:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":47,"../autofill-utils.js":65,"../constants.js":68,"./FormAnalyzer.js":36,"./formatters.js":38,"./inputStyles.js":39,"./inputTypeConfig.js":40,"./matching.js":45}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11353,7 +12305,7 @@ class FormAnalyzer {
   }
 
   /** @type {undefined|boolean} */
-  _isCCForm = undefined;
+  _isCCForm = (() => undefined)();
   /**
    * Tries to infer if it's a credit card form
    * @returns {boolean}
@@ -11408,7 +12360,7 @@ class FormAnalyzer {
 }
 var _default = exports.default = FormAnalyzer;
 
-},{"../autofill-utils.js":64,"../constants.js":67,"./matching-config/__generated__/compiled-matching-config.js":42,"./matching.js":44}],36:[function(require,module,exports){
+},{"../autofill-utils.js":65,"../constants.js":68,"./matching-config/__generated__/compiled-matching-config.js":43,"./matching.js":45}],37:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11973,7 +12925,7 @@ const COUNTRY_NAMES_TO_CODES = exports.COUNTRY_NAMES_TO_CODES = {
   'Unknown Region': 'ZZ'
 };
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12312,7 +13264,7 @@ const prepareFormValuesForStorage = function (formValues) {
 };
 exports.prepareFormValuesForStorage = prepareFormValuesForStorage;
 
-},{"../autofill-utils.js":64,"./countryNames.js":36,"./matching.js":44}],38:[function(require,module,exports){
+},{"../autofill-utils.js":65,"./countryNames.js":37,"./matching.js":45}],39:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12403,7 +13355,7 @@ const getIconStylesAutofilled = (input, form) => {
 };
 exports.getIconStylesAutofilled = getIconStylesAutofilled;
 
-},{"./inputTypeConfig.js":39}],39:[function(require,module,exports){
+},{"./inputTypeConfig.js":40}],40:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12417,8 +13369,8 @@ var _Credentials = require("../InputTypes/Credentials.js");
 var _CreditCard = require("../InputTypes/CreditCard.js");
 var _Identity = require("../InputTypes/Identity.js");
 var _constants = require("../constants.js");
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 /**
  * Get the icon for the identities (currently only Dax for emails)
  * @param {HTMLInputElement} input
@@ -12657,7 +13609,7 @@ const isFieldDecorated = input => {
 };
 exports.isFieldDecorated = isFieldDecorated;
 
-},{"../InputTypes/Credentials.js":46,"../InputTypes/CreditCard.js":47,"../InputTypes/Identity.js":48,"../UI/img/ddgPasswordIcon.js":62,"../constants.js":67,"./logo-svg.js":41,"./matching.js":44}],40:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":47,"../InputTypes/CreditCard.js":48,"../InputTypes/Identity.js":49,"../UI/img/ddgPasswordIcon.js":63,"../constants.js":68,"./logo-svg.js":42,"./matching.js":45}],41:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12705,7 +13657,7 @@ const extractElementStrings = element => {
 };
 exports.extractElementStrings = extractElementStrings;
 
-},{"./matching.js":44}],41:[function(require,module,exports){
+},{"./matching.js":45}],42:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -12738,7 +13690,7 @@ const daxGrayscaleSvg = `
 `.trim();
 const daxGrayscaleBase64 = exports.daxGrayscaleBase64 = `data:image/svg+xml;base64,${window.btoa(daxGrayscaleSvg)}`;
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13194,7 +14146,7 @@ const matchingConfiguration = exports.matchingConfiguration = {
   }
 };
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13269,7 +14221,7 @@ function logUnmatched(el, allStrings) {
   console.groupEnd();
 }
 
-},{"../autofill-utils.js":64,"./matching.js":44}],44:[function(require,module,exports){
+},{"../autofill-utils.js":65,"./matching.js":45}],45:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -13889,7 +14841,7 @@ class Matching {
    * @param {HTMLElement} form
    * @returns {Record<MatchableStrings, string>}
    */
-  _elementStringCache = new WeakMap();
+  _elementStringCache = (() => new WeakMap())();
   getElementStrings(el, form) {
     if (this._elementStringCache.has(el)) {
       return this._elementStringCache.get(el);
@@ -14261,7 +15213,7 @@ function createMatching() {
   return new Matching(_compiledMatchingConfig.matchingConfiguration);
 }
 
-},{"../autofill-utils.js":64,"../constants.js":67,"./label-util.js":40,"./matching-config/__generated__/compiled-matching-config.js":42,"./matching-utils.js":43}],45:[function(require,module,exports){
+},{"../autofill-utils.js":65,"../constants.js":68,"./label-util.js":41,"./matching-config/__generated__/compiled-matching-config.js":43,"./matching-utils.js":44}],46:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14393,7 +15345,7 @@ class InContextSignup {
 }
 exports.InContextSignup = InContextSignup;
 
-},{"./autofill-utils.js":64,"./deviceApiCalls/__generated__/deviceApiCalls.js":68}],46:[function(require,module,exports){
+},{"./autofill-utils.js":65,"./deviceApiCalls/__generated__/deviceApiCalls.js":69}],47:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14549,7 +15501,7 @@ function createCredentialsTooltipItem(data) {
   return new CredentialsTooltipItem(data);
 }
 
-},{"../autofill-utils.js":64}],47:[function(require,module,exports){
+},{"../autofill-utils.js":65}],48:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14574,7 +15526,7 @@ class CreditCardTooltipItem {
 }
 exports.CreditCardTooltipItem = CreditCardTooltipItem;
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14620,7 +15572,7 @@ class IdentityTooltipItem {
 }
 exports.IdentityTooltipItem = IdentityTooltipItem;
 
-},{"../Form/formatters.js":37}],49:[function(require,module,exports){
+},{"../Form/formatters.js":38}],50:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14629,7 +15581,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.PasswordGenerator = void 0;
 var _index = require("../packages/password/index.js");
 var _rules = _interopRequireDefault(require("../packages/password/rules.json"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Create a password once and reuse it.
  */
@@ -14662,7 +15614,7 @@ class PasswordGenerator {
 }
 exports.PasswordGenerator = PasswordGenerator;
 
-},{"../packages/password/index.js":17,"../packages/password/rules.json":21}],50:[function(require,module,exports){
+},{"../packages/password/index.js":18,"../packages/password/rules.json":22}],51:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -14729,11 +15681,11 @@ const defaultScannerOptions = {
  */
 class DefaultScanner {
   /** @type Map<HTMLElement, Form> */
-  forms = new Map();
+  forms = (() => new Map())();
   /** @type {any|undefined} the timer to reset */
   debounceTimer;
   /** @type {Set<HTMLElement|Document>} stored changed elements until they can be processed */
-  changedElements = new Set();
+  changedElements = (() => new Set())();
   /** @type {ScannerOptions} */
   options;
   /** @type {HTMLInputElement | null} */
@@ -15060,7 +16012,7 @@ class DefaultScanner {
    * Watch for changes in the DOM, and enqueue elements to be scanned
    * @type {MutationObserver}
    */
-  mutObs = new MutationObserver(mutationList => {
+  mutObs = (() => new MutationObserver(mutationList => {
     /** @type {HTMLElement[]} */
     if (this.rescanAll) {
       // quick version if buffer full
@@ -15078,7 +16030,7 @@ class DefaultScanner {
       }
     }
     this.enqueue(outgoing);
-  });
+  }))();
   handleEvent(event) {
     switch (event.type) {
       case 'pointerdown':
@@ -15129,7 +16081,7 @@ function createScanner(device, scannerOptions) {
   });
 }
 
-},{"./Form/Form.js":34,"./Form/matching.js":44,"./autofill-utils.js":64,"./constants.js":67,"./deviceApiCalls/__generated__/deviceApiCalls.js":68}],51:[function(require,module,exports){
+},{"./Form/Form.js":35,"./Form/matching.js":45,"./autofill-utils.js":65,"./constants.js":68,"./deviceApiCalls/__generated__/deviceApiCalls.js":69}],52:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15543,7 +16495,7 @@ class Settings {
 }
 exports.Settings = Settings;
 
-},{"../packages/device-api/index.js":12,"./autofill-utils.js":64,"./deviceApiCalls/__generated__/deviceApiCalls.js":68,"./deviceApiCalls/__generated__/validators.zod.js":69}],52:[function(require,module,exports){
+},{"../packages/device-api/index.js":13,"./autofill-utils.js":65,"./deviceApiCalls/__generated__/deviceApiCalls.js":69,"./deviceApiCalls/__generated__/validators.zod.js":70}],53:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15633,7 +16585,7 @@ class ThirdPartyProvider {
 }
 exports.ThirdPartyProvider = ThirdPartyProvider;
 
-},{"../packages/device-api/index.js":12,"./Form/matching.js":44,"./deviceApiCalls/__generated__/deviceApiCalls.js":68,"./deviceApiCalls/__generated__/validators.zod.js":69}],53:[function(require,module,exports){
+},{"../packages/device-api/index.js":13,"./Form/matching.js":45,"./deviceApiCalls/__generated__/deviceApiCalls.js":69,"./deviceApiCalls/__generated__/validators.zod.js":70}],54:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15641,7 +16593,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class CredentialsImportTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../DeviceInterface/InterfacePrototype.js").default} device
@@ -15684,7 +16636,7 @@ ${this.options.css}
 }
 var _default = exports.default = CredentialsImportTooltip;
 
-},{"./HTMLTooltip.js":57}],54:[function(require,module,exports){
+},{"./HTMLTooltip.js":58}],55:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15694,7 +16646,7 @@ exports.default = void 0;
 var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
 var _Credentials = require("../InputTypes/Credentials.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * A mapping of main autofill item type to the 'Manage XYZ…' string ID for that
  * item.
@@ -15835,7 +16787,7 @@ ${css}
 }
 var _default = exports.default = DataHTMLTooltip;
 
-},{"../InputTypes/Credentials.js":46,"../autofill-utils.js":64,"./HTMLTooltip.js":57}],55:[function(require,module,exports){
+},{"../InputTypes/Credentials.js":47,"../autofill-utils.js":65,"./HTMLTooltip.js":58}],56:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15844,7 +16796,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _autofillUtils = require("../autofill-utils.js");
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class EmailHTMLTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../DeviceInterface/InterfacePrototype").default} device
@@ -15917,7 +16869,7 @@ ${this.options.css}
 }
 var _default = exports.default = EmailHTMLTooltip;
 
-},{"../autofill-utils.js":64,"./HTMLTooltip.js":57}],56:[function(require,module,exports){
+},{"../autofill-utils.js":65,"./HTMLTooltip.js":58}],57:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15925,7 +16877,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _HTMLTooltip = _interopRequireDefault(require("./HTMLTooltip.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 class EmailSignupHTMLTooltip extends _HTMLTooltip.default {
   /**
    * @param {import("../DeviceInterface/InterfacePrototype").default} device
@@ -15970,7 +16922,7 @@ ${this.options.css}
 }
 var _default = exports.default = EmailSignupHTMLTooltip;
 
-},{"./HTMLTooltip.js":57}],57:[function(require,module,exports){
+},{"./HTMLTooltip.js":58}],58:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16269,9 +17221,9 @@ class HTMLTooltip {
       }
     }
   }
-  resObs = new ResizeObserver(entries => entries.forEach(() => this.checkPosition()));
-  mutObsCheckPositionWhenIdle = _autofillUtils.whenIdle.call(this, this.checkPosition);
-  mutObs = new MutationObserver(mutationList => {
+  resObs = (() => new ResizeObserver(entries => entries.forEach(() => this.checkPosition())))();
+  mutObsCheckPositionWhenIdle = (() => _autofillUtils.whenIdle.call(this, this.checkPosition))();
+  mutObs = (() => new MutationObserver(mutationList => {
     for (const mutationRecord of mutationList) {
       if (mutationRecord.type === 'childList') {
         // Only check added nodes
@@ -16282,14 +17234,14 @@ class HTMLTooltip {
       }
     }
     this.mutObsCheckPositionWhenIdle();
-  });
+  }))();
   setActiveButton(e) {
     this.activeButton = e.target;
   }
   unsetActiveButton() {
     this.activeButton = null;
   }
-  clickableButtons = new Map();
+  clickableButtons = (() => new Map())();
   registerClickableButton(btn, handler) {
     this.clickableButtons.set(btn, handler);
     // Needed because clicks within the shadow dom don't provide this info to the outside
@@ -16360,7 +17312,7 @@ class HTMLTooltip {
 exports.HTMLTooltip = HTMLTooltip;
 var _default = exports.default = HTMLTooltip;
 
-},{"../Form/matching.js":44,"../autofill-utils.js":64,"./styles/styles.js":63}],58:[function(require,module,exports){
+},{"../Form/matching.js":45,"../autofill-utils.js":65,"./styles/styles.js":64}],59:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16376,7 +17328,7 @@ var _EmailSignupHTMLTooltip = _interopRequireDefault(require("../EmailSignupHTML
 var _HTMLTooltip = require("../HTMLTooltip.js");
 var _CredentialsImportTooltip = _interopRequireDefault(require("../CredentialsImportTooltip.js"));
 var _UIController = require("./UIController.js");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * @typedef HTMLTooltipControllerOptions
  * @property {"modern" | "legacy" | "emailsignup"} tooltipKind - A choice between the newer Autofill UI vs the older ones used in the extension
@@ -16704,7 +17656,6 @@ class HTMLTooltipUIController extends _UIController.UIController {
       default:
       // noop
     }
-
     this.removeTooltip();
   }
   _onIncontextSignupDismissed(_ref) {
@@ -16733,7 +17684,7 @@ class HTMLTooltipUIController extends _UIController.UIController {
 }
 exports.HTMLTooltipUIController = HTMLTooltipUIController;
 
-},{"../../Form/inputTypeConfig.js":39,"../../Form/matching.js":44,"../../autofill-utils.js":64,"../CredentialsImportTooltip.js":53,"../DataHTMLTooltip.js":54,"../EmailHTMLTooltip.js":55,"../EmailSignupHTMLTooltip.js":56,"../HTMLTooltip.js":57,"./UIController.js":61}],59:[function(require,module,exports){
+},{"../../Form/inputTypeConfig.js":40,"../../Form/matching.js":45,"../../autofill-utils.js":65,"../CredentialsImportTooltip.js":54,"../DataHTMLTooltip.js":55,"../EmailHTMLTooltip.js":56,"../EmailSignupHTMLTooltip.js":57,"../HTMLTooltip.js":58,"./UIController.js":62}],60:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16895,7 +17846,7 @@ class NativeUIController extends _UIController.UIController {
 }
 exports.NativeUIController = NativeUIController;
 
-},{"../../Form/matching.js":44,"../../InputTypes/Credentials.js":46,"../../deviceApiCalls/__generated__/deviceApiCalls.js":68,"./UIController.js":61}],60:[function(require,module,exports){
+},{"../../Form/matching.js":45,"../../InputTypes/Credentials.js":47,"../../deviceApiCalls/__generated__/deviceApiCalls.js":69,"./UIController.js":62}],61:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17132,7 +18083,7 @@ class OverlayUIController extends _UIController.UIController {
 }
 exports.OverlayUIController = OverlayUIController;
 
-},{"../../Form/matching.js":44,"./UIController.js":61}],61:[function(require,module,exports){
+},{"../../Form/matching.js":45,"./UIController.js":62}],62:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17216,7 +18167,7 @@ class UIController {
 }
 exports.UIController = UIController;
 
-},{}],62:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17233,7 +18184,7 @@ const ddgCcIconBase = exports.ddgCcIconBase = 'data:image/svg+xml;base64,PD94bWw
 const ddgCcIconFilled = exports.ddgCcIconFilled = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzc2NDMxMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjNzY0MzEwIi8+Cjwvc3ZnPgo=';
 const ddgIdentityIconBase = exports.ddgIdentityIconBase = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4KPHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMiAyMWMyLjE0MyAwIDQuMTExLS43NSA1LjY1Ny0yLS42MjYtLjUwNi0xLjMxOC0uOTI3LTIuMDYtMS4yNS0xLjEtLjQ4LTIuMjg1LS43MzUtMy40ODYtLjc1LTEuMi0uMDE0LTIuMzkyLjIxMS0zLjUwNC42NjQtLjgxNy4zMzMtMS41OC43ODMtMi4yNjQgMS4zMzYgMS41NDYgMS4yNSAzLjUxNCAyIDUuNjU3IDJ6bTQuMzk3LTUuMDgzYy45NjcuNDIyIDEuODY2Ljk4IDIuNjcyIDEuNjU1QzIwLjI3OSAxNi4wMzkgMjEgMTQuMTA0IDIxIDEyYzAtNC45Ny00LjAzLTktOS05cy05IDQuMDMtOSA5YzAgMi4xMDQuNzIyIDQuMDQgMS45MzIgNS41NzIuODc0LS43MzQgMS44Ni0xLjMyOCAyLjkyMS0xLjc2IDEuMzYtLjU1NCAyLjgxNi0uODMgNC4yODMtLjgxMSAxLjQ2Ny4wMTggMi45MTYuMzMgNC4yNi45MTZ6TTEyIDIzYzYuMDc1IDAgMTEtNC45MjUgMTEtMTFTMTguMDc1IDEgMTIgMSAxIDUuOTI1IDEgMTJzNC45MjUgMTEgMTEgMTF6bTMtMTNjMCAxLjY1Ny0xLjM0MyAzLTMgM3MtMy0xLjM0My0zLTMgMS4zNDMtMyAzLTMgMyAxLjM0MyAzIDN6bTIgMGMwIDIuNzYxLTIuMjM5IDUtNSA1cy01LTIuMjM5LTUtNSAyLjIzOS01IDUtNSA1IDIuMjM5IDUgNXoiIGZpbGw9IiMwMDAiLz4KPC9zdmc+Cg==`;
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17242,7 +18193,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.CSS_STYLES = void 0;
 const CSS_STYLES = exports.CSS_STYLES = ":root {\n    color-scheme: light dark;\n}\n\n.wrapper *, .wrapper *::before, .wrapper *::after {\n    box-sizing: border-box;\n}\n.wrapper {\n    position: fixed;\n    top: 0;\n    left: 0;\n    padding: 0;\n    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n    -webkit-font-smoothing: antialiased;\n    z-index: 2147483647;\n}\n.wrapper--data {\n    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',\n    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;\n}\n.wrapper:not(.top-autofill) .tooltip {\n    position: absolute;\n    width: 300px;\n    max-width: calc(100vw - 25px);\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--data, #topAutofill {\n    background-color: rgba(242, 240, 240, 1);\n    -webkit-backdrop-filter: blur(40px);\n    backdrop-filter: blur(40px);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data, #topAutofill {\n        background: rgb(100, 98, 102, .9);\n    }\n}\n.tooltip--data {\n    padding: 6px;\n    font-size: 13px;\n    line-height: 14px;\n    width: 315px;\n    max-height: 290px;\n    overflow-y: auto;\n}\n.top-autofill .tooltip--data {\n    min-height: 100vh;\n}\n.tooltip--data.tooltip--incontext-signup {\n    width: 360px;\n}\n.wrapper:not(.top-autofill) .tooltip--data {\n    top: 100%;\n    left: 100%;\n    border: 0.5px solid rgba(255, 255, 255, 0.2);\n    border-radius: 6px;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);\n}\n@media (prefers-color-scheme: dark) {\n    .wrapper:not(.top-autofill) .tooltip--data {\n        border: 1px solid rgba(255, 255, 255, 0.2);\n    }\n}\n.wrapper:not(.top-autofill) .tooltip--email {\n    top: calc(100% + 6px);\n    right: calc(100% - 48px);\n    padding: 8px;\n    border: 1px solid #D0D0D0;\n    border-radius: 10px;\n    background-color: #FFFFFF;\n    font-size: 14px;\n    line-height: 1.3;\n    color: #333333;\n    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);\n}\n.tooltip--email__caret {\n    position: absolute;\n    transform: translate(-1000px, -1000px);\n    z-index: 2147483647;\n}\n.tooltip--email__caret::before,\n.tooltip--email__caret::after {\n    content: \"\";\n    width: 0;\n    height: 0;\n    border-left: 10px solid transparent;\n    border-right: 10px solid transparent;\n    display: block;\n    border-bottom: 8px solid #D0D0D0;\n    position: absolute;\n    right: -28px;\n}\n.tooltip--email__caret::before {\n    border-bottom-color: #D0D0D0;\n    top: -1px;\n}\n.tooltip--email__caret::after {\n    border-bottom-color: #FFFFFF;\n    top: 0px;\n}\n\n/* Buttons */\n.tooltip__button {\n    display: flex;\n    width: 100%;\n    padding: 8px 8px 8px 0px;\n    font-family: inherit;\n    color: inherit;\n    background: transparent;\n    border: none;\n    border-radius: 6px;\n    text-align: left;\n}\n.tooltip__button.currentFocus,\n.wrapper:not(.top-autofill) .tooltip__button:hover {\n    background-color: #3969EF;\n    color: #FFFFFF;\n}\n\n/* Data autofill tooltip specific */\n.tooltip__button--data {\n    position: relative;\n    min-height: 48px;\n    flex-direction: row;\n    justify-content: flex-start;\n    font-size: inherit;\n    font-weight: 500;\n    line-height: 16px;\n    text-align: left;\n    border-radius: 3px;\n}\n.tooltip--data__item-container {\n    max-height: 220px;\n    overflow: auto;\n}\n.tooltip__button--data:first-child {\n    margin-top: 0;\n}\n.tooltip__button--data:last-child {\n    margin-bottom: 0;\n}\n.tooltip__button--data::before {\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 20px 20px;\n    background-repeat: no-repeat;\n    background-position: center center;\n}\n#provider_locked::after {\n    position: absolute;\n    content: '';\n    flex-shrink: 0;\n    display: block;\n    width: 32px;\n    height: 32px;\n    margin: 0 8px;\n    background-size: 11px 13px;\n    background-repeat: no-repeat;\n    background-position: right bottom;\n}\n.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,\n.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {\n    filter: invert(100%);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,\n    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {\n        filter: invert(100%);\n        opacity: .9;\n    }\n}\n.tooltip__button__text-container {\n    margin: auto 0;\n}\n.label {\n    display: block;\n    font-weight: 400;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.8);\n    font-size: 13px;\n    line-height: 1;\n}\n.label + .label {\n    margin-top: 2px;\n}\n.label.label--medium {\n    font-weight: 500;\n    letter-spacing: -0.25px;\n    color: rgba(0,0,0,.9);\n}\n.label.label--small {\n    font-size: 11px;\n    font-weight: 400;\n    letter-spacing: 0.06px;\n    color: rgba(0,0,0,0.6);\n}\n@media (prefers-color-scheme: dark) {\n    .tooltip--data .label {\n        color: #ffffff;\n    }\n    .tooltip--data .label--medium {\n        color: #ffffff;\n    }\n    .tooltip--data .label--small {\n        color: #cdcdcd;\n    }\n}\n.tooltip__button.currentFocus .label,\n.wrapper:not(.top-autofill) .tooltip__button:hover .label {\n    color: #FFFFFF;\n}\n\n.tooltip__button--secondary {\n    font-size: 13px;\n    padding: 5px 9px;\n    border-radius: 3px;\n    margin: 0;\n}\n\n/* Icons */\n.tooltip__button--data--credentials::before,\n.tooltip__button--data--credentials__current::before {\n    background-size: 28px 28px;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4zMzQgNi42NjdhMiAyIDAgMSAwIDAgNCAyIDIgMCAwIDAgMC00Wm0tLjY2NyAyYS42NjcuNjY3IDAgMSAxIDEuMzMzIDAgLjY2Ny42NjcgMCAwIDEtMS4zMzMgMFoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuNjY3IDRhNS4zMzMgNS4zMzMgMCAwIDAtNS4xODggNi41NzhsLTUuMjg0IDUuMjg0YS42NjcuNjY3IDAgMCAwLS4xOTUuNDcxdjNjMCAuMzY5LjI5OC42NjcuNjY3LjY2N2gyLjY2NmMuNzM3IDAgMS4zMzQtLjU5NyAxLjMzNC0xLjMzM1YxOGguNjY2Yy43MzcgMCAxLjMzNC0uNTk3IDEuMzM0LTEuMzMzdi0xLjMzNEgxMmMuMTc3IDAgLjM0Ni0uMDcuNDcxLS4xOTVsLjY4OC0uNjg4QTUuMzMzIDUuMzMzIDAgMSAwIDE0LjY2NyA0Wm0tNCA1LjMzM2E0IDQgMCAxIDEgMi41NTUgMy43MzIuNjY3LjY2NyAwIDAgMC0uNzEzLjE1bC0uNzg1Ljc4NUgxMGEuNjY3LjY2NyAwIDAgMC0uNjY3LjY2N3YySDhhLjY2Ny42NjcgMCAwIDAtLjY2Ny42NjZ2MS4zMzRoLTJ2LTIuMDU4bDUuMzY1LTUuMzY0YS42NjcuNjY3IDAgMCAwIC4xNjMtLjY3NyAzLjk5NiAzLjk5NiAwIDAgMS0uMTk0LTEuMjM1WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--credentials__new::before {\n    background-size: 28px 28px;\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOC0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODQtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjMtLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM5LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMS0yLjA5My41NzhhLjYzNi42MzYgMCAwIDEtLjY1NS0xLjA5IDUuMzQgNS4zNCAwIDEgMSAxLjMwMiA5LjcyMmwtLjc3NS43NzZhLjYzNi42MzYgMCAwIDEtLjQ1LjE4NmgtMS4zOTh2MS42NWMwIC40OTMtLjQuODkzLS44OTMuODkzSDguNTc4djEuMTQxYzAgLjQ5NC0uNC44OTMtLjg5NC44OTNINC42MzZBLjYzNi42MzYgMCAwIDEgNCAxOS4zMTNWMTYuMjZjMC0uMTY5LjA2Ny0uMzMuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUxLjI4NC0uNjM2LjYzNS0uNjM2aDEuNzcxbC44NjQtLjg2M2EuNjM2LjYzNiAwIDAgMSAuNjY4LS4xNDcgNC4wNjkgNC4wNjkgMCAxIDAgMS40MDItNy44OVoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEzLjYyNSA4LjQ5OWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI1YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--creditCards::before {\n    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');\n}\n.tooltip__button--data--identities::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');\n}\n.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,\n.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iOCIgZmlsbD0iIzE3NUREQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4LjU2OTYgNS40MzM1NUMxOC41MDg0IDUuMzc0NDIgMTguNDM0NyA1LjMyNzYzIDE4LjM1MzEgNS4yOTYxMUMxOC4yNzE1IDUuMjY0NiAxOC4xODM3IDUuMjQ5MDQgMTguMDk1MyA1LjI1MDQxSDUuOTIxOTFDNS44MzMyNiA1LjI0NzI5IDUuNzQ0OTMgNS4yNjIwNSA1LjY2MzA0IDUuMjkzNjdDNS41ODExNSA1LjMyNTI5IDUuNTA3NjUgNS4zNzMwMiA1LjQ0NzYyIDUuNDMzNTVDNS4zMjE3IDUuNTUwMTMgNS4yNTA2NSA1LjcwODE1IDUuMjUgNS44NzMxVjEzLjM4MjFDNS4yNTMzNiAxMy45NTM1IDUuMzc0MDggMTQuNTE5MSA1LjYwNTcyIDE1LjA0ODdDNS44MTkzMSAxNS41NzI4IDYuMTEyMDcgMTYuMDY2MSA2LjQ3NTI0IDE2LjUxMzlDNi44NDIgMTYuOTY4MyA3LjI1OTI5IDE3LjM4NTcgNy43MjAyNSAxNy43NTkzQzguMTQwNTMgMTguMTI1NiA4LjU4OTcxIDE4LjQ2MjMgOS4wNjQwNyAxOC43NjY2QzkuNDU5MzEgMTkuMDIzIDkuOTEzODMgMTkuMjc5NCAxMC4zNDg2IDE5LjUxNzVDMTAuNzgzNCAxOS43NTU2IDExLjA5OTYgMTkuOTIwNCAxMS4yNzc0IDE5Ljk5MzdDMTEuNDU1MyAyMC4wNjY5IDExLjYxMzQgMjAuMTQwMiAxMS43MTIyIDIwLjE5NTFDMTEuNzk5MiAyMC4yMzEzIDExLjg5MzUgMjAuMjUgMTEuOTg4OCAyMC4yNUMxMi4wODQyIDIwLjI1IDEyLjE3ODUgMjAuMjMxMyAxMi4yNjU1IDIwLjE5NTFDMTIuNDIxMiAyMC4xMzYzIDEyLjU3MjkgMjAuMDY5IDEyLjcyIDE5Ljk5MzdDMTIuNzcxMSAxOS45Njc0IDEyLjgzMzUgMTkuOTM2NiAxMi45MDY5IDE5LjkwMDRDMTMuMDg5MSAxOS44MTA1IDEzLjMzODggMTkuNjg3MiAxMy42NDg5IDE5LjUxNzVDMTQuMDgzNiAxOS4yNzk0IDE0LjUxODQgMTkuMDIzIDE0LjkzMzQgMTguNzY2NkMxNS40MDQgMTguNDU3NyAxNS44NTI4IDE4LjEyMTIgMTYuMjc3MiAxNy43NTkzQzE2LjczMzEgMTcuMzgwOSAxNy4xNDk5IDE2Ljk2NCAxNy41MjIyIDE2LjUxMzlDMTcuODc4IDE2LjA2MTcgMTguMTcwMiAxNS41NjkzIDE4LjM5MTcgMTUuMDQ4N0MxOC42MjM0IDE0LjUxOTEgMTguNzQ0MSAxMy45NTM1IDE4Ljc0NzQgMTMuMzgyMVY1Ljg3MzFDMTguNzU1NyA1Ljc5MjE0IDE4Ljc0MzkgNS43MTA1IDE4LjcxMzEgNS42MzQzNUMxOC42ODIzIDUuNTU4MiAxOC42MzMyIDUuNDg5NTQgMTguNTY5NiA1LjQzMzU1Wk0xNy4wMDg0IDEzLjQ1NTNDMTcuMDA4NCAxNi4xODQyIDEyLjAwODYgMTguNTI4NSAxMi4wMDg2IDE4LjUyODVWNi44NjIwOUgxNy4wMDg0VjEzLjQ1NTNaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K');\n}\n#provider_locked:after {\n    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMSAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgNy42MDA1N1Y3LjYwMjVWOS41MjI1QzEgMTAuMDgwMSAxLjIyMTUxIDEwLjYxNDkgMS42MTU4MSAxMS4wMDkyQzIuMDEwMSAxMS40MDM1IDIuNTQ0ODggMTEuNjI1IDMuMTAyNSAxMS42MjVINy4yNzI1QzcuNTQ4NjEgMTEuNjI1IDcuODIyMDEgMTEuNTcwNiA4LjA3NzA5IDExLjQ2NUM4LjMzMjE4IDExLjM1OTMgOC41NjM5NiAxMS4yMDQ0IDguNzU5MTkgMTEuMDA5MkM4Ljk1NDQzIDEwLjgxNCA5LjEwOTMgMTAuNTgyMiA5LjIxNDk2IDEwLjMyNzFDOS4zMjA2MiAxMC4wNzIgOS4zNzUgOS43OTg2MSA5LjM3NSA5LjUyMjVMOS4zNzUgNy42MDI1TDkuMzc1IDcuNjAwNTdDOS4zNzQxNSA3LjE2MTMxIDkuMjM1NzQgNi43MzMzNSA4Ljk3OTIyIDYuMzc2NzhDOC44NzY4MyA2LjIzNDQ2IDguNzU3NjggNi4xMDYzNyA4LjYyNSA1Ljk5NDg5VjUuMTg3NUM4LjYyNSA0LjI3NTgyIDguMjYyODQgMy40MDE0OCA3LjYxODE4IDIuNzU2ODJDNi45NzM1MiAyLjExMjE2IDYuMDk5MTggMS43NSA1LjE4NzUgMS43NUM0LjI3NTgyIDEuNzUgMy40MDE0OCAyLjExMjE2IDIuNzU2ODIgMi43NTY4MkMyLjExMjE2IDMuNDAxNDggMS43NSA0LjI3NTgyIDEuNzUgNS4xODc1VjUuOTk0ODlDMS42MTczMiA2LjEwNjM3IDEuNDk4MTcgNi4yMzQ0NiAxLjM5NTc4IDYuMzc2NzhDMS4xMzkyNiA2LjczMzM1IDEuMDAwODUgNy4xNjEzMSAxIDcuNjAwNTdaTTQuOTY4NyA0Ljk2ODdDNS4wMjY5NCA0LjkxMDQ3IDUuMTA1MzIgNC44NzY5OSA1LjE4NzUgNC44NzUwN0M1LjI2OTY4IDQuODc2OTkgNS4zNDgwNiA0LjkxMDQ3IDUuNDA2MyA0Ljk2ODdDNS40NjU0MiA1LjAyNzgzIDUuNDk5MDQgNS4xMDc3NCA1LjUgNS4xOTEzVjUuNUg0Ljg3NVY1LjE5MTNDNC44NzU5NiA1LjEwNzc0IDQuOTA5NTggNS4wMjc4MyA0Ljk2ODcgNC45Njg3WiIgZmlsbD0iIzIyMjIyMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=');\n}\n\nhr {\n    display: block;\n    margin: 5px 9px;\n    border: none; /* reset the border */\n    border-top: 1px solid rgba(0,0,0,.1);\n}\n\nhr:first-child {\n    display: none;\n}\n\n@media (prefers-color-scheme: dark) {\n    hr {\n        border-top: 1px solid rgba(255,255,255,.2);\n    }\n}\n\n#privateAddress {\n    align-items: flex-start;\n}\n#personalAddress::before,\n#privateAddress::before,\n#incontextSignup::before,\n#personalAddress.currentFocus::before,\n#personalAddress:hover::before,\n#privateAddress.currentFocus::before,\n#privateAddress:hover::before {\n    filter: none;\n    /* This is the same icon as `daxBase64` in `src/Form/logo-svg.js` */\n    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMTI4IDEyOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0ibTY0IDEyOGMzNS4zNDYgMCA2NC0yOC42NTQgNjQtNjRzLTI4LjY1NC02NC02NC02NC02NCAyOC42NTQtNjQgNjQgMjguNjU0IDY0IDY0IDY0eiIgZmlsbD0iI2RlNTgzMyIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im03MyAxMTEuNzVjMC0uNS4xMjMtLjYxNC0xLjQ2Ni0zLjc4Mi00LjIyNC04LjQ1OS04LjQ3LTIwLjM4NC02LjU0LTI4LjA3NS4zNTMtMS4zOTctMy45NzgtNTEuNzQ0LTcuMDQtNTMuMzY1LTMuNDAyLTEuODEzLTcuNTg4LTQuNjktMTEuNDE4LTUuMzMtMS45NDMtLjMxLTQuNDktLjE2NC02LjQ4Mi4xMDUtLjM1My4wNDctLjM2OC42ODMtLjAzLjc5OCAxLjMwOC40NDMgMi44OTUgMS4yMTIgMy44MyAyLjM3NS4xNzguMjItLjA2LjU2Ni0uMzQyLjU3Ny0uODgyLjAzMi0yLjQ4Mi40MDItNC41OTMgMi4xOTUtLjI0NC4yMDctLjA0MS41OTIuMjczLjUzIDQuNTM2LS44OTcgOS4xNy0uNDU1IDExLjkgMi4wMjcuMTc3LjE2LjA4NC40NS0uMTQ3LjUxMi0yMy42OTQgNi40NC0xOS4wMDMgMjcuMDUtMTIuNjk2IDUyLjM0NCA1LjYxOSAyMi41MyA3LjczMyAyOS43OTIgOC40IDMyLjAwNGEuNzE4LjcxOCAwIDAgMCAuNDIzLjQ2N2M4LjE1NiAzLjI0OCAyNS45MjggMy4zOTIgMjUuOTI4LTIuMTMyeiIgZmlsbD0iI2RkZCIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8cGF0aCBkPSJtNzYuMjUgMTE2LjVjLTIuODc1IDEuMTI1LTguNSAxLjYyNS0xMS43NSAxLjYyNS00Ljc2NCAwLTExLjYyNS0uNzUtMTQuMTI1LTEuODc1LTEuNTQ0LTQuNzUxLTYuMTY0LTE5LjQ4LTEwLjcyNy0zOC4xODVsLS40NDctMS44MjctLjAwNC0uMDE1Yy01LjQyNC0yMi4xNTctOS44NTUtNDAuMjUzIDE0LjQyNy00NS45MzguMjIyLS4wNTIuMzMtLjMxNy4xODQtLjQ5Mi0yLjc4Ni0zLjMwNS04LjAwNS00LjM4OC0xNC42MDUtMi4xMTEtLjI3LjA5My0uNTA2LS4xOC0uMzM3LS40MTIgMS4yOTQtMS43ODMgMy44MjMtMy4xNTUgNS4wNzEtMy43NTYuMjU4LS4xMjQuMjQyLS41MDItLjAzLS41ODhhMjcuODc3IDI3Ljg3NyAwIDAgMCAtMy43NzItLjljLS4zNy0uMDU5LS40MDMtLjY5My0uMDMyLS43NDMgOS4zNTYtMS4yNTkgMTkuMTI1IDEuNTUgMjQuMDI4IDcuNzI2YS4zMjYuMzI2IDAgMCAwIC4xODYuMTE0YzE3Ljk1MiAzLjg1NiAxOS4yMzggMzIuMjM1IDE3LjE3IDMzLjUyOC0uNDA4LjI1NS0xLjcxNS4xMDgtMy40MzgtLjA4NS02Ljk4Ni0uNzgxLTIwLjgxOC0yLjMyOS05LjQwMiAxOC45NDguMTEzLjIxLS4wMzYuNDg4LS4yNzIuNTI1LTYuNDM4IDEgMS44MTIgMjEuMTczIDcuODc1IDM0LjQ2MXoiIGZpbGw9IiNmZmYiLz4KICAgIDxwYXRoIGQ9Im04NC4yOCA5MC42OThjLTEuMzY3LS42MzMtNi42MjEgMy4xMzUtMTAuMTEgNi4wMjgtLjcyOC0xLjAzMS0yLjEwMy0xLjc4LTUuMjAzLTEuMjQyLTIuNzEzLjQ3Mi00LjIxMSAxLjEyNi00Ljg4IDIuMjU0LTQuMjgzLTEuNjIzLTExLjQ4OC00LjEzLTEzLjIyOS0xLjcxLTEuOTAyIDIuNjQ2LjQ3NiAxNS4xNjEgMy4wMDMgMTYuNzg2IDEuMzIuODQ5IDcuNjMtMy4yMDggMTAuOTI2LTYuMDA1LjUzMi43NDkgMS4zODggMS4xNzggMy4xNDggMS4xMzcgMi42NjItLjA2MiA2Ljk3OS0uNjgxIDcuNjQ5LTEuOTIxLjA0LS4wNzUuMDc1LS4xNjQuMTA1LS4yNjYgMy4zODggMS4yNjYgOS4zNSAyLjYwNiAxMC42ODIgMi40MDYgMy40Ny0uNTIxLS40ODQtMTYuNzIzLTIuMDktMTcuNDY3eiIgZmlsbD0iIzNjYTgyYiIvPgogICAgPHBhdGggZD0ibTc0LjQ5IDk3LjA5N2MuMTQ0LjI1Ni4yNi41MjYuMzU4LjguNDgzIDEuMzUyIDEuMjcgNS42NDguNjc0IDYuNzA5LS41OTUgMS4wNjItNC40NTkgMS41NzQtNi44NDMgMS42MTVzLTIuOTItLjgzMS0zLjQwMy0yLjE4MWMtLjM4Ny0xLjA4MS0uNTc3LTMuNjIxLS41NzItNS4wNzUtLjA5OC0yLjE1OC42OS0yLjkxNiA0LjMzNC0zLjUwNiAyLjY5Ni0uNDM2IDQuMTIxLjA3MSA0Ljk0NC45NCAzLjgyOC0yLjg1NyAxMC4yMTUtNi44ODkgMTAuODM4LTYuMTUyIDMuMTA2IDMuNjc0IDMuNDk5IDEyLjQyIDIuODI2IDE1LjkzOS0uMjIgMS4xNTEtMTAuNTA1LTEuMTM5LTEwLjUwNS0yLjM4IDAtNS4xNTItMS4zMzctNi41NjUtMi42NS02Ljcxem0tMjIuNTMtMS42MDljLjg0My0xLjMzMyA3LjY3NC4zMjUgMTEuNDI0IDEuOTkzIDAgMC0uNzcgMy40OTEuNDU2IDcuNjA0LjM1OSAxLjIwMy04LjYyNyA2LjU1OC05LjggNS42MzctMS4zNTUtMS4wNjUtMy44NS0xMi40MzItMi4wOC0xNS4yMzR6IiBmaWxsPSIjNGNiYTNjIi8+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im01NS4yNjkgNjguNDA2Yy41NTMtMi40MDMgMy4xMjctNi45MzIgMTIuMzIxLTYuODIyIDQuNjQ4LS4wMTkgMTAuNDIyLS4wMDIgMTQuMjUtLjQzNmE1MS4zMTIgNTEuMzEyIDAgMCAwIDEyLjcyNi0zLjA5NWMzLjk4LTEuNTE5IDUuMzkyLTEuMTggNS44ODctLjI3Mi41NDQuOTk5LS4wOTcgMi43MjItMS40ODggNC4zMDktMi42NTYgMy4wMy03LjQzMSA1LjM4LTE1Ljg2NSA2LjA3Ni04LjQzMy42OTgtMTQuMDItMS41NjUtMTYuNDI1IDIuMTE4LTEuMDM4IDEuNTg5LS4yMzYgNS4zMzMgNy45MiA2LjUxMiAxMS4wMiAxLjU5IDIwLjA3Mi0xLjkxNyAyMS4xOS4yMDEgMS4xMTkgMi4xMTgtNS4zMjMgNi40MjgtMTYuMzYyIDYuNTE4cy0xNy45MzQtMy44NjUtMjAuMzc5LTUuODNjLTMuMTAyLTIuNDk1LTQuNDktNi4xMzMtMy43NzUtOS4yNzl6IiBmaWxsPSIjZmMzIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxnIGZpbGw9IiMxNDMwN2UiIG9wYWNpdHk9Ii44Ij4KICAgICAgPHBhdGggZD0ibTY5LjMyNyA0Mi4xMjdjLjYxNi0xLjAwOCAxLjk4MS0xLjc4NiA0LjIxNi0xLjc4NiAyLjIzNCAwIDMuMjg1Ljg4OSA0LjAxMyAxLjg4LjE0OC4yMDItLjA3Ni40NC0uMzA2LjM0YTU5Ljg2OSA1OS44NjkgMCAwIDEgLS4xNjgtLjA3M2MtLjgxNy0uMzU3LTEuODItLjc5NS0zLjU0LS44Mi0xLjgzOC0uMDI2LTIuOTk3LjQzNS0zLjcyNy44MzEtLjI0Ni4xMzQtLjYzNC0uMTMzLS40ODgtLjM3MnptLTI1LjE1NyAxLjI5YzIuMTctLjkwNyAzLjg3Ni0uNzkgNS4wODEtLjUwNC4yNTQuMDYuNDMtLjIxMy4yMjctLjM3Ny0uOTM1LS43NTUtMy4wMy0xLjY5Mi01Ljc2LS42NzQtMi40MzcuOTA5LTMuNTg1IDIuNzk2LTMuNTkyIDQuMDM4LS4wMDIuMjkyLjYuMzE3Ljc1Ni4wNy40Mi0uNjcgMS4xMi0xLjY0NiAzLjI4OS0yLjU1M3oiLz4KICAgICAgPHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtNzUuNDQgNTUuOTJhMy40NyAzLjQ3IDAgMCAxIC0zLjQ3NC0zLjQ2MiAzLjQ3IDMuNDcgMCAwIDEgMy40NzUtMy40NiAzLjQ3IDMuNDcgMCAwIDEgMy40NzQgMy40NiAzLjQ3IDMuNDcgMCAwIDEgLTMuNDc1IDMuNDYyem0yLjQ0Ny00LjYwOGEuODk5Ljg5OSAwIDAgMCAtMS43OTkgMGMwIC40OTQuNDA1Ljg5NS45Ljg5NS40OTkgMCAuOS0uNC45LS44OTV6bS0yNS40NjQgMy41NDJhNC4wNDIgNC4wNDIgMCAwIDEgLTQuMDQ5IDQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIC00LjA1LTQuMDM3IDQuMDQ1IDQuMDQ1IDAgMCAxIDQuMDUtNC4wMzcgNC4wNDUgNC4wNDUgMCAwIDEgNC4wNSA0LjAzN3ptLTEuMTkzLTEuMzM4YTEuMDUgMS4wNSAwIDAgMCAtMi4wOTcgMCAxLjA0OCAxLjA0OCAwIDAgMCAyLjA5NyAweiIgZmlsbC1ydWxlPSJldmVub2RkIi8+CiAgICA8L2c+CiAgICA8cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Im02NCAxMTcuNzVjMjkuNjg1IDAgNTMuNzUtMjQuMDY1IDUzLjc1LTUzLjc1cy0yNC4wNjUtNTMuNzUtNTMuNzUtNTMuNzUtNTMuNzUgMjQuMDY1LTUzLjc1IDUzLjc1IDI0LjA2NSA1My43NSA1My43NSA1My43NXptMCA1YzMyLjQ0NyAwIDU4Ljc1LTI2LjMwMyA1OC43NS01OC43NXMtMjYuMzAzLTU4Ljc1LTU4Ljc1LTU4Ljc1LTU4Ljc1IDI2LjMwMy01OC43NSA1OC43NSAyNi4zMDMgNTguNzUgNTguNzUgNTguNzV6IiBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+');\n}\n\n/* Email tooltip specific */\n.tooltip__button--email {\n    flex-direction: column;\n    justify-content: center;\n    align-items: flex-start;\n    font-size: 14px;\n    padding: 4px 8px;\n}\n.tooltip__button--email__primary-text {\n    font-weight: bold;\n}\n.tooltip__button--email__secondary-text {\n    font-size: 12px;\n}\n\n/* Email Protection signup notice */\n:not(.top-autofill) .tooltip--email-signup {\n    text-align: left;\n    color: #222222;\n    padding: 16px 20px;\n    width: 380px;\n}\n\n.tooltip--email-signup h1 {\n    font-weight: 700;\n    font-size: 16px;\n    line-height: 1.5;\n    margin: 0;\n}\n\n.tooltip--email-signup p {\n    font-weight: 400;\n    font-size: 14px;\n    line-height: 1.4;\n}\n\n.notice-controls {\n    display: flex;\n}\n\n.tooltip--email-signup .notice-controls > * {\n    border-radius: 8px;\n    border: 0;\n    cursor: pointer;\n    display: inline-block;\n    font-family: inherit;\n    font-style: normal;\n    font-weight: bold;\n    padding: 8px 12px;\n    text-decoration: none;\n}\n\n.notice-controls .ghost {\n    margin-left: 1rem;\n}\n\n.tooltip--email-signup a.primary {\n    background: #3969EF;\n    color: #fff;\n}\n\n.tooltip--email-signup a.primary:hover,\n.tooltip--email-signup a.primary:focus {\n    background: #2b55ca;\n}\n\n.tooltip--email-signup a.primary:active {\n    background: #1e42a4;\n}\n\n.tooltip--email-signup button.ghost {\n    background: transparent;\n    color: #3969EF;\n}\n\n.tooltip--email-signup button.ghost:hover,\n.tooltip--email-signup button.ghost:focus {\n    background-color: rgba(0, 0, 0, 0.06);\n    color: #2b55ca;\n}\n\n.tooltip--email-signup button.ghost:active {\n    background-color: rgba(0, 0, 0, 0.12);\n    color: #1e42a4;\n}\n\n.tooltip--email-signup button.close-tooltip {\n    background-color: transparent;\n    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCAxMiAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0wLjI5Mjg5NCAwLjY1NjkwN0MwLjY4MzQxOCAwLjI2NjM4MyAxLjMxNjU4IDAuMjY2MzgzIDEuNzA3MTEgMC42NTY5MDdMNiA0Ljk0OThMMTAuMjkyOSAwLjY1NjkwN0MxMC42ODM0IDAuMjY2MzgzIDExLjMxNjYgMC4yNjYzODMgMTEuNzA3MSAwLjY1NjkwN0MxMi4wOTc2IDEuMDQ3NDMgMTIuMDk3NiAxLjY4MDYgMTEuNzA3MSAyLjA3MTEyTDcuNDE0MjEgNi4zNjQwMUwxMS43MDcxIDEwLjY1NjlDMTIuMDk3NiAxMS4wNDc0IDEyLjA5NzYgMTEuNjgwNiAxMS43MDcxIDEyLjA3MTFDMTEuMzE2NiAxMi40NjE2IDEwLjY4MzQgMTIuNDYxNiAxMC4yOTI5IDEyLjA3MTFMNiA3Ljc3ODIzTDEuNzA3MTEgMTIuMDcxMUMxLjMxNjU4IDEyLjQ2MTYgMC42ODM0MTcgMTIuNDYxNiAwLjI5Mjg5MyAxMi4wNzExQy0wLjA5NzYzMTEgMTEuNjgwNiAtMC4wOTc2MzExIDExLjA0NzQgMC4yOTI4OTMgMTAuNjU2OUw0LjU4NTc5IDYuMzY0MDFMMC4yOTI4OTQgMi4wNzExMkMtMC4wOTc2MzA2IDEuNjgwNiAtMC4wOTc2MzA2IDEuMDQ3NDMgMC4yOTI4OTQgMC42NTY5MDdaIiBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0Ii8+Cjwvc3ZnPgo=);\n    background-position: center center;\n    background-repeat: no-repeat;\n    border: 0;\n    cursor: pointer;\n    padding: 16px;\n    position: absolute;\n    right: 12px;\n    top: 12px;\n}\n\n/* Import promotion prompt icon style */\n\n.tooltip__button--credentials-import::before {\n    content: \"\";\n    background-image: url(data:image/svg+xml;base64,Cjxzdmcgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik03Ljk3MjY5IDkuMDEzN0M3Ljk3MjY5IDUuMTQwMTQgMTEuMTEyOCAyIDE0Ljk4NjQgMkMxOC44NTk5IDIgMjIuMDAwMSA1LjE0MDE0IDIyLjAwMDEgOS4wMTM3QzIyLjAwMDEgOS44MDM5NyAyMS44Njk0IDEwLjU2MzcgMjEuNjI4NCAxMS4yNzI1QzIxLjQ2MDEgMTEuNzY3NiAyMC44NjU2IDExLjkxMzUgMjAuMzk3NyAxMS42OEMxOS45MjIxIDExLjQ0MjggMTkuNjc3OSAxMC44NjQ0IDE5LjgxOTUgMTAuMzUyQzE5LjkzNzIgOS45MjU5OSAyMC4wMDAxIDkuNDc3MTkgMjAuMDAwMSA5LjAxMzdDMjAuMDAwMSA2LjI0NDcxIDE3Ljc1NTQgNCAxNC45ODY0IDRDMTIuMjE3NCA0IDkuOTcyNjkgNi4yNDQ3MSA5Ljk3MjY5IDkuMDEzN0M5Ljk3MjY5IDkuNTU1NCAxMC4wNTgyIDEwLjA3NTIgMTAuMjE1OCAxMC41NjEzQzEwLjMzMTcgMTAuOTE4OCAxMC4yMzc0IDExLjMxMTEgOS45NzE2NSAxMS41NzY4TDMuOTk5OTQgMTcuNTQ4NVYyMC4wMDAyTDYuNDk5OTggMjAuMDAwMlYxOC4zMDAyQzYuNDk5OTggMTcuNzQ3OSA2Ljk0NzcgMTcuMzAwMiA3LjQ5OTk4IDE3LjMwMDJIOS4yMDAwMVYxNS42MDAxQzkuMjAwMDEgMTUuMDQ3OCA5LjY0NzczIDE0LjYwMDEgMTAuMiAxNC42MDAxSDEwLjVDMTEuMjEwNiAxNC41ODcgMTEuNDI1MiAxNS4zMzY5IDExLjMxNTYgMTUuNzMzMUMxMS4xNTY1IDE2LjMwODUgMTEgMTcuMDAxIDExIDE3LjVDMTEgMTcuNzI4NCAxMS4wMTE4IDE3Ljk1NCAxMS4wMzQ4IDE4LjE3NjNDMTAuNzM3OSAxOC44Mzg3IDEwLjA3MjkgMTkuMzAwMiA5LjMgMTkuMzAwMkg4LjQ5OTk4VjIwLjEwMDJDOC40OTk5OCAyMS4xNDk1IDcuNjQ5MzMgMjIuMDAwMiA2LjU5OTk5IDIyLjAwMDJMMi45OTk5NSAyMi4wMDAyQzIuNzM0NzMgMjIuMDAwMiAyLjQ4MDM3IDIxLjg5NDkgMi4yOTI4NCAyMS43MDczQzIuMTA1MyAyMS41MTk4IDEuOTk5OTQgMjEuMjY1NCAxLjk5OTk0IDIxLjAwMDJWMTcuMTM0M0MxLjk5OTk0IDE2Ljg2OTEgMi4xMDUzIDE2LjYxNDcgMi4yOTI4MyAxNi40MjcyTDguMTQ2ODkgMTAuNTczMUM4LjAzMjc5IDEwLjA3MDkgNy45NzI2OSA5LjU0ODgxIDcuOTcyNjkgOS4wMTM3WiIgZmlsbD0iYmxhY2siIC8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTMgOC40OTk4OUMxMyA3LjExOTE4IDE0LjExOTMgNS45OTk4OSAxNS41IDUuOTk5ODlDMTYuODgwNyA1Ljk5OTg5IDE4IDcuMTE5MTggMTggOC40OTk4OUMxOCA5Ljg4MDYgMTYuODgwNyAxMC45OTk5IDE1LjUgMTAuOTk5OUMxNC4xMTkzIDEwLjk5OTkgMTMgOS44ODA2IDEzIDguNDk5ODlaTTE1LjUgNy45OTk4OUMxNS4yMjM5IDcuOTk5ODkgMTUgOC4yMjM3NSAxNSA4LjQ5OTg5QzE1IDguNzc2MDQgMTUuMjIzOSA4Ljk5OTg5IDE1LjUgOC45OTk4OUMxNS43NzYyIDguOTk5ODkgMTYgOC43NzYwNCAxNiA4LjQ5OTg5QzE2IDguMjIzNzUgMTUuNzc2MiA3Ljk5OTg5IDE1LjUgNy45OTk4OVoiIGZpbGw9ImJsYWNrIiAvPgo8cGF0aCBkPSJNMTcgMTVMMTQuNSAxNy41TDE3IDIwIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMjEuNSAxNy41TDE2IDE3LjUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=);\n    background-repeat: no-repeat;\n}\n";
 
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -17277,7 +18228,7 @@ exports.wasAutofilledByChrome = void 0;
 exports.whenIdle = whenIdle;
 var _matching = require("./Form/matching.js");
 var _constants = require("./constants.js");
-var _appleUtils = require("@duckduckgo/content-scope-scripts/src/apple-utils");
+var _utils = require("@duckduckgo/content-scope-scripts/injected/src/utils");
 const SIGN_IN_MSG = exports.SIGN_IN_MSG = {
   signMeIn: true
 };
@@ -17332,7 +18283,7 @@ const autofillEnabled = globalConfig => {
   } = globalConfig;
 
   // Check config on Apple platforms
-  const processedConfig = (0, _appleUtils.processConfig)(contentScope, userUnprotectedDomains, userPreferences);
+  const processedConfig = (0, _utils.processConfig)(contentScope, userUnprotectedDomains ?? [], userPreferences);
   return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
 exports.autofillEnabled = autofillEnabled;
@@ -17951,7 +18902,7 @@ function getUsernameLikeIdentity(identities, creditCards) {
   }
 }
 
-},{"./Form/matching.js":44,"./constants.js":67,"@duckduckgo/content-scope-scripts/src/apple-utils":1}],65:[function(require,module,exports){
+},{"./Form/matching.js":45,"./constants.js":68,"@duckduckgo/content-scope-scripts/injected/src/utils":2}],66:[function(require,module,exports){
 "use strict";
 
 require("./requestIdleCallback.js");
@@ -17982,7 +18933,7 @@ var _autofillUtils = require("./autofill-utils.js");
   }
 })();
 
-},{"./DeviceInterface.js":23,"./autofill-utils.js":64,"./requestIdleCallback.js":104}],66:[function(require,module,exports){
+},{"./DeviceInterface.js":24,"./autofill-utils.js":65,"./requestIdleCallback.js":105}],67:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18069,7 +19020,7 @@ function createGlobalConfig(overrides) {
   return config;
 }
 
-},{}],67:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18086,7 +19037,7 @@ const constants = exports.constants = {
   MAX_FORM_RESCANS: 50
 };
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18102,7 +19053,7 @@ var _deviceApi = require("../../../packages/device-api");
  */
 class AddDebugFlagCall extends _deviceApi.DeviceApiCall {
   method = "addDebugFlag";
-  paramsValidator = _validatorsZod.addDebugFlagParamsSchema;
+  paramsValidator = (() => _validatorsZod.addDebugFlagParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<getAutofillDataRequestSchema, getAutofillDataResponseSchema>} 
@@ -18111,8 +19062,8 @@ exports.AddDebugFlagCall = AddDebugFlagCall;
 class GetAutofillDataCall extends _deviceApi.DeviceApiCall {
   method = "getAutofillData";
   id = "getAutofillDataResponse";
-  paramsValidator = _validatorsZod.getAutofillDataRequestSchema;
-  resultValidator = _validatorsZod.getAutofillDataResponseSchema;
+  paramsValidator = (() => _validatorsZod.getAutofillDataRequestSchema)();
+  resultValidator = (() => _validatorsZod.getAutofillDataResponseSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getRuntimeConfigurationResponseSchema>} 
@@ -18121,7 +19072,7 @@ exports.GetAutofillDataCall = GetAutofillDataCall;
 class GetRuntimeConfigurationCall extends _deviceApi.DeviceApiCall {
   method = "getRuntimeConfiguration";
   id = "getRuntimeConfigurationResponse";
-  resultValidator = _validatorsZod.getRuntimeConfigurationResponseSchema;
+  resultValidator = (() => _validatorsZod.getRuntimeConfigurationResponseSchema)();
 }
 /**
  * @extends {DeviceApiCall<storeFormDataSchema, any>} 
@@ -18129,7 +19080,7 @@ class GetRuntimeConfigurationCall extends _deviceApi.DeviceApiCall {
 exports.GetRuntimeConfigurationCall = GetRuntimeConfigurationCall;
 class StoreFormDataCall extends _deviceApi.DeviceApiCall {
   method = "storeFormData";
-  paramsValidator = _validatorsZod.storeFormDataSchema;
+  paramsValidator = (() => _validatorsZod.storeFormDataSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getAvailableInputTypesResultSchema>} 
@@ -18138,7 +19089,7 @@ exports.StoreFormDataCall = StoreFormDataCall;
 class GetAvailableInputTypesCall extends _deviceApi.DeviceApiCall {
   method = "getAvailableInputTypes";
   id = "getAvailableInputTypesResponse";
-  resultValidator = _validatorsZod.getAvailableInputTypesResultSchema;
+  resultValidator = (() => _validatorsZod.getAvailableInputTypesResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getAutofillInitDataResponseSchema>} 
@@ -18147,7 +19098,7 @@ exports.GetAvailableInputTypesCall = GetAvailableInputTypesCall;
 class GetAutofillInitDataCall extends _deviceApi.DeviceApiCall {
   method = "getAutofillInitData";
   id = "getAutofillInitDataResponse";
-  resultValidator = _validatorsZod.getAutofillInitDataResponseSchema;
+  resultValidator = (() => _validatorsZod.getAutofillInitDataResponseSchema)();
 }
 /**
  * @extends {DeviceApiCall<getAutofillCredentialsParamsSchema, getAutofillCredentialsResultSchema>} 
@@ -18156,8 +19107,8 @@ exports.GetAutofillInitDataCall = GetAutofillInitDataCall;
 class GetAutofillCredentialsCall extends _deviceApi.DeviceApiCall {
   method = "getAutofillCredentials";
   id = "getAutofillCredentialsResponse";
-  paramsValidator = _validatorsZod.getAutofillCredentialsParamsSchema;
-  resultValidator = _validatorsZod.getAutofillCredentialsResultSchema;
+  paramsValidator = (() => _validatorsZod.getAutofillCredentialsParamsSchema)();
+  resultValidator = (() => _validatorsZod.getAutofillCredentialsResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<setSizeParamsSchema, any>} 
@@ -18165,7 +19116,7 @@ class GetAutofillCredentialsCall extends _deviceApi.DeviceApiCall {
 exports.GetAutofillCredentialsCall = GetAutofillCredentialsCall;
 class SetSizeCall extends _deviceApi.DeviceApiCall {
   method = "setSize";
-  paramsValidator = _validatorsZod.setSizeParamsSchema;
+  paramsValidator = (() => _validatorsZod.setSizeParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<selectedDetailParamsSchema, any>} 
@@ -18173,7 +19124,7 @@ class SetSizeCall extends _deviceApi.DeviceApiCall {
 exports.SetSizeCall = SetSizeCall;
 class SelectedDetailCall extends _deviceApi.DeviceApiCall {
   method = "selectedDetail";
-  paramsValidator = _validatorsZod.selectedDetailParamsSchema;
+  paramsValidator = (() => _validatorsZod.selectedDetailParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -18189,7 +19140,7 @@ exports.CloseAutofillParentCall = CloseAutofillParentCall;
 class AskToUnlockProviderCall extends _deviceApi.DeviceApiCall {
   method = "askToUnlockProvider";
   id = "askToUnlockProviderResponse";
-  resultValidator = _validatorsZod.askToUnlockProviderResultSchema;
+  resultValidator = (() => _validatorsZod.askToUnlockProviderResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, checkCredentialsProviderStatusResultSchema>} 
@@ -18198,7 +19149,7 @@ exports.AskToUnlockProviderCall = AskToUnlockProviderCall;
 class CheckCredentialsProviderStatusCall extends _deviceApi.DeviceApiCall {
   method = "checkCredentialsProviderStatus";
   id = "checkCredentialsProviderStatusResponse";
-  resultValidator = _validatorsZod.checkCredentialsProviderStatusResultSchema;
+  resultValidator = (() => _validatorsZod.checkCredentialsProviderStatusResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<sendJSPixelParamsSchema, any>} 
@@ -18206,7 +19157,7 @@ class CheckCredentialsProviderStatusCall extends _deviceApi.DeviceApiCall {
 exports.CheckCredentialsProviderStatusCall = CheckCredentialsProviderStatusCall;
 class SendJSPixelCall extends _deviceApi.DeviceApiCall {
   method = "sendJSPixel";
-  paramsValidator = _validatorsZod.sendJSPixelParamsSchema;
+  paramsValidator = (() => _validatorsZod.sendJSPixelParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<setIncontextSignupPermanentlyDismissedAtSchema, any>} 
@@ -18214,7 +19165,7 @@ class SendJSPixelCall extends _deviceApi.DeviceApiCall {
 exports.SendJSPixelCall = SendJSPixelCall;
 class SetIncontextSignupPermanentlyDismissedAtCall extends _deviceApi.DeviceApiCall {
   method = "setIncontextSignupPermanentlyDismissedAt";
-  paramsValidator = _validatorsZod.setIncontextSignupPermanentlyDismissedAtSchema;
+  paramsValidator = (() => _validatorsZod.setIncontextSignupPermanentlyDismissedAtSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, getIncontextSignupDismissedAtSchema>} 
@@ -18223,7 +19174,7 @@ exports.SetIncontextSignupPermanentlyDismissedAtCall = SetIncontextSignupPermane
 class GetIncontextSignupDismissedAtCall extends _deviceApi.DeviceApiCall {
   method = "getIncontextSignupDismissedAt";
   id = "getIncontextSignupDismissedAt";
-  resultValidator = _validatorsZod.getIncontextSignupDismissedAtSchema;
+  resultValidator = (() => _validatorsZod.getIncontextSignupDismissedAtSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -18267,7 +19218,7 @@ exports.CredentialsImportFlowPermanentlyDismissedCall = CredentialsImportFlowPer
 class EmailProtectionStoreUserDataCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionStoreUserData";
   id = "emailProtectionStoreUserDataResponse";
-  paramsValidator = _validatorsZod.emailProtectionStoreUserDataParamsSchema;
+  paramsValidator = (() => _validatorsZod.emailProtectionStoreUserDataParamsSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -18283,7 +19234,7 @@ exports.EmailProtectionRemoveUserDataCall = EmailProtectionRemoveUserDataCall;
 class EmailProtectionGetIsLoggedInCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetIsLoggedIn";
   id = "emailProtectionGetIsLoggedInResponse";
-  resultValidator = _validatorsZod.emailProtectionGetIsLoggedInResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetIsLoggedInResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionGetUserDataResultSchema>} 
@@ -18292,7 +19243,7 @@ exports.EmailProtectionGetIsLoggedInCall = EmailProtectionGetIsLoggedInCall;
 class EmailProtectionGetUserDataCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetUserData";
   id = "emailProtectionGetUserDataResponse";
-  resultValidator = _validatorsZod.emailProtectionGetUserDataResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetUserDataResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionGetCapabilitiesResultSchema>} 
@@ -18301,7 +19252,7 @@ exports.EmailProtectionGetUserDataCall = EmailProtectionGetUserDataCall;
 class EmailProtectionGetCapabilitiesCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetCapabilities";
   id = "emailProtectionGetCapabilitiesResponse";
-  resultValidator = _validatorsZod.emailProtectionGetCapabilitiesResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetCapabilitiesResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionGetAddressesResultSchema>} 
@@ -18310,7 +19261,7 @@ exports.EmailProtectionGetCapabilitiesCall = EmailProtectionGetCapabilitiesCall;
 class EmailProtectionGetAddressesCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionGetAddresses";
   id = "emailProtectionGetAddressesResponse";
-  resultValidator = _validatorsZod.emailProtectionGetAddressesResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionGetAddressesResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, emailProtectionRefreshPrivateAddressResultSchema>} 
@@ -18319,7 +19270,7 @@ exports.EmailProtectionGetAddressesCall = EmailProtectionGetAddressesCall;
 class EmailProtectionRefreshPrivateAddressCall extends _deviceApi.DeviceApiCall {
   method = "emailProtectionRefreshPrivateAddress";
   id = "emailProtectionRefreshPrivateAddressResponse";
-  resultValidator = _validatorsZod.emailProtectionRefreshPrivateAddressResultSchema;
+  resultValidator = (() => _validatorsZod.emailProtectionRefreshPrivateAddressResultSchema)();
 }
 /**
  * @extends {DeviceApiCall<any, any>} 
@@ -18342,11 +19293,11 @@ exports.CloseEmailProtectionTabCall = CloseEmailProtectionTabCall;
 class ShowInContextEmailProtectionSignupPromptCall extends _deviceApi.DeviceApiCall {
   method = "ShowInContextEmailProtectionSignupPrompt";
   id = "ShowInContextEmailProtectionSignupPromptResponse";
-  resultValidator = _validatorsZod.showInContextEmailProtectionSignupPromptSchema;
+  resultValidator = (() => _validatorsZod.showInContextEmailProtectionSignupPromptSchema)();
 }
 exports.ShowInContextEmailProtectionSignupPromptCall = ShowInContextEmailProtectionSignupPromptCall;
 
-},{"../../../packages/device-api":12,"./validators.zod.js":69}],69:[function(require,module,exports){
+},{"../../../packages/device-api":13,"./validators.zod.js":70}],70:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18756,7 +19707,7 @@ const apiSchema = exports.apiSchema = _zod.z.object({
   })).optional()
 });
 
-},{"zod":9}],70:[function(require,module,exports){
+},{"zod":10}],71:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18771,8 +19722,8 @@ var _validatorsZod = require("./__generated__/validators.zod.js");
 class GetAlias extends _index.DeviceApiCall {
   method = 'emailHandlerGetAlias';
   id = 'n/a';
-  paramsValidator = _validatorsZod.getAliasParamsSchema;
-  resultValidator = _validatorsZod.getAliasResultSchema;
+  paramsValidator = (() => _validatorsZod.getAliasParamsSchema)();
+  resultValidator = (() => _validatorsZod.getAliasResultSchema)();
   preResultValidation(response) {
     // convert to the correct format, because this is a legacy API
     return {
@@ -18782,7 +19733,7 @@ class GetAlias extends _index.DeviceApiCall {
 }
 exports.GetAlias = GetAlias;
 
-},{"../../packages/device-api/index.js":12,"./__generated__/validators.zod.js":69}],71:[function(require,module,exports){
+},{"../../packages/device-api/index.js":13,"./__generated__/validators.zod.js":70}],72:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18925,7 +19876,7 @@ function androidSpecificAvailableInputTypes(globalConfig) {
   };
 }
 
-},{"../../../packages/device-api/index.js":12,"../__generated__/deviceApiCalls.js":68}],72:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":13,"../__generated__/deviceApiCalls.js":69}],73:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -18968,7 +19919,7 @@ class AppleTransport extends _index.DeviceApiTransport {
 }
 exports.AppleTransport = AppleTransport;
 
-},{"../../../packages/device-api/index.js":12,"../../../packages/messaging/messaging.js":15}],73:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":13,"../../../packages/messaging/messaging.js":16}],74:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19009,7 +19960,6 @@ class ExtensionTransport extends _index.DeviceApiTransport {
     if (deviceApiCall instanceof _deviceApiCalls.CloseAutofillParentCall || deviceApiCall instanceof _deviceApiCalls.StartEmailProtectionSignupCall) {
       return; // noop
     }
-
     console.error('Send not implemented for ' + deviceApiCall.method);
   }
 }
@@ -19122,7 +20072,7 @@ async function extensionSpecificSetIncontextSignupPermanentlyDismissedAtCall(par
   });
 }
 
-},{"../../../packages/device-api/index.js":12,"../../Settings.js":51,"../../autofill-utils.js":64,"../__generated__/deviceApiCalls.js":68}],74:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":13,"../../Settings.js":52,"../../autofill-utils.js":65,"../__generated__/deviceApiCalls.js":69}],75:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19166,7 +20116,7 @@ function createTransport(globalConfig) {
   return new _extensionTransport.ExtensionTransport(globalConfig);
 }
 
-},{"./android.transport.js":71,"./apple.transport.js":72,"./extension.transport.js":73,"./windows.transport.js":75}],75:[function(require,module,exports){
+},{"./android.transport.js":72,"./apple.transport.js":73,"./extension.transport.js":74,"./windows.transport.js":76}],76:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -19252,7 +20202,7 @@ function waitForWindowsResponse(responseId, options) {
   });
 }
 
-},{"../../../packages/device-api/index.js":12}],76:[function(require,module,exports){
+},{"../../../packages/device-api/index.js":13}],77:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -19353,7 +20303,7 @@ module.exports={
   }
 }
 
-},{}],77:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -19454,7 +20404,7 @@ module.exports={
   }
 }
 
-},{}],78:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -19555,7 +20505,7 @@ module.exports={
   }
 }
 
-},{}],79:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -19656,7 +20606,7 @@ module.exports={
   }
 }
 
-},{}],80:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -19757,7 +20707,7 @@ module.exports={
   }
 }
 
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -19859,7 +20809,7 @@ module.exports={
   }
 }
 
-},{}],82:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -19960,7 +20910,7 @@ module.exports={
   }
 }
 
-},{}],83:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20061,7 +21011,7 @@ module.exports={
   }
 }
 
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20162,7 +21112,7 @@ module.exports={
   }
 }
 
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20263,7 +21213,7 @@ module.exports={
   }
 }
 
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20364,7 +21314,7 @@ module.exports={
   }
 }
 
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20465,7 +21415,7 @@ module.exports={
   }
 }
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20566,7 +21516,7 @@ module.exports={
   }
 }
 
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20667,7 +21617,7 @@ module.exports={
   }
 }
 
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20768,7 +21718,7 @@ module.exports={
   }
 }
 
-},{}],91:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20869,7 +21819,7 @@ module.exports={
   }
 }
 
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -20970,7 +21920,7 @@ module.exports={
   }
 }
 
-},{}],93:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21071,7 +22021,7 @@ module.exports={
   }
 }
 
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21172,7 +22122,7 @@ module.exports={
   }
 }
 
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21273,7 +22223,7 @@ module.exports={
   }
 }
 
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21374,7 +22324,7 @@ module.exports={
   }
 }
 
-},{}],97:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21475,7 +22425,7 @@ module.exports={
   }
 }
 
-},{}],98:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21576,7 +22526,7 @@ module.exports={
   }
 }
 
-},{}],99:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21584,7 +22534,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getTranslator = getTranslator;
 var _translations = _interopRequireDefault(require("./translations.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /** @typedef {`autofill:${keyof typeof translations["en"]["autofill"]}`} AutofillKeys */
 
 /**
@@ -21664,7 +22614,7 @@ function translateImpl(library, namespacedId, opts) {
   return out;
 }
 
-},{"./translations.js":102}],100:[function(require,module,exports){
+},{"./translations.js":103}],101:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21765,7 +22715,7 @@ module.exports={
   }
 }
 
-},{}],101:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 module.exports={
   "smartling" : {
     "string_format" : "icu",
@@ -21866,7 +22816,7 @@ module.exports={
   }
 }
 
-},{}],102:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21899,7 +22849,7 @@ var _autofill23 = _interopRequireDefault(require("./sl/autofill.json"));
 var _autofill24 = _interopRequireDefault(require("./sv/autofill.json"));
 var _autofill25 = _interopRequireDefault(require("./tr/autofill.json"));
 var _autofill26 = _interopRequireDefault(require("./xa/autofill.json"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * This file is auto-generated by scripts/bundle-locales.mjs, based on the contents of the src/locales/ directory.
  * Any manual changes in here will be overwritten on build!
@@ -21985,7 +22935,7 @@ var _default = exports.default = {
   }
 };
 
-},{"./bg/autofill.json":76,"./cs/autofill.json":77,"./da/autofill.json":78,"./de/autofill.json":79,"./el/autofill.json":80,"./en/autofill.json":81,"./es/autofill.json":82,"./et/autofill.json":83,"./fi/autofill.json":84,"./fr/autofill.json":85,"./hr/autofill.json":86,"./hu/autofill.json":87,"./it/autofill.json":88,"./lt/autofill.json":89,"./lv/autofill.json":90,"./nb/autofill.json":91,"./nl/autofill.json":92,"./pl/autofill.json":93,"./pt/autofill.json":94,"./ro/autofill.json":95,"./ru/autofill.json":96,"./sk/autofill.json":97,"./sl/autofill.json":98,"./sv/autofill.json":100,"./tr/autofill.json":101,"./xa/autofill.json":103}],103:[function(require,module,exports){
+},{"./bg/autofill.json":77,"./cs/autofill.json":78,"./da/autofill.json":79,"./de/autofill.json":80,"./el/autofill.json":81,"./en/autofill.json":82,"./es/autofill.json":83,"./et/autofill.json":84,"./fi/autofill.json":85,"./fr/autofill.json":86,"./hr/autofill.json":87,"./hu/autofill.json":88,"./it/autofill.json":89,"./lt/autofill.json":90,"./lv/autofill.json":91,"./nb/autofill.json":92,"./nl/autofill.json":93,"./pl/autofill.json":94,"./pt/autofill.json":95,"./ro/autofill.json":96,"./ru/autofill.json":97,"./sk/autofill.json":98,"./sl/autofill.json":99,"./sv/autofill.json":101,"./tr/autofill.json":102,"./xa/autofill.json":104}],104:[function(require,module,exports){
 module.exports={
   "smartling": {
     "string_format": "icu",
@@ -22078,7 +23028,7 @@ module.exports={
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
   }
 }
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22120,4 +23070,4 @@ window.cancelIdleCallback = window.cancelIdleCallback || function (id) {
 };
 var _default = exports.default = {};
 
-},{}]},{},[65]);
+},{}]},{},[66]);
