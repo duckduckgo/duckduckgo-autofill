@@ -1,6 +1,5 @@
 src/**/*.d.ts
 dist/*
-swift-package/Resources/assets/*
 integration-test/extension/autofill.js
 integration-test/extension/autofill-debug.js
 shared/js/content-scope/sjcl.js
