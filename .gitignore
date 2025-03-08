@@ -23,3 +23,5 @@ playwright-report/
 
 .swiftpm/
 .vscode
+/.index-build
+/.build

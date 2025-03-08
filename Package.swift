@@ -15,10 +15,20 @@ let package = Package(
     targets: [
         .target(
             name: "Autofill",
-            path: "swift-package/Resources/",
-            resources: [
-                .copy("assets"),
-            ]
+            dependencies: [.target(name: "AutofillResources")],
+            path: "swift-package/Resources"
         ),
+        .target(
+            name: "AutofillResources",
+            path: "dist",
+            exclude: ["autofill-host-styles_chrome.css", "autofill-host-styles_firefox.css"],
+            resources: [
+                .copy("autofill.js"),
+                .copy("autofill-debug.js"),
+                .copy("autofill.css"),
+                .copy("shared-credentials.json"),
+                .copy("TopAutofill.html"),
+            ]
+        )
     ]
 )
