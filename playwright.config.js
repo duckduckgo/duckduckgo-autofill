@@ -46,7 +46,7 @@ const config = {
     webServer: {
         port: 3210,
         reuseExistingServer: true,
-        command: 'npm run serve',
+        command: 'npm run build && npm run serve',
         ignoreHTTPSErrors: true,
     },
 
