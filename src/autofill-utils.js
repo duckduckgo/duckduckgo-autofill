@@ -1,6 +1,7 @@
 import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js';
 import { constants } from './constants.js';
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
+import RemoteRules from './remote-rules.js';
 
 const SIGN_IN_MSG = { signMeIn: true };
 
@@ -49,9 +50,52 @@ const autofillEnabled = (globalConfig) => {
     }
 
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
+    // Temporary hack, untill we have native pass-through
+    contentScope.features.autofill.settings = {
+        enabled: true,
+        domains: [
+                {
+                    domain: 'fill.dev', // can be a string or an array
+                    formTypeSettings: [
+                        {
+                            selector: 'form[class*="login"]',
+                            type: 'login',
+                        },
+                        {
+                            selector: 'form[class*="signup"]',
+                            type: 'signup',
+                        },
+                        {
+                            selector: 'form[class*="hybrid"]',
+                            type: 'hybrid',
+                        },
+                    ],
+                    formBoundarySettings: [
+                        {
+                            selector: '.MuiBox-root .css-13fcpt2',
+                        },
+                        {
+                            selector: 'form[class*="login"]',
+                        },
+                    ],
+                },
+        ],
+    }
 
     // Check config on Apple platforms
+    // @ts-ignore
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+    console.log('DEEP processedConfig', contentScope);
+    /** @type {import('@duckduckgo/content-scope-scripts/injected/src/content-scope-features').LoadArgs} */
+    const loadArgs = {
+        platform: processedConfig.platform,
+        site: processedConfig.site,
+        bundledConfig: processedConfig.bundledConfig,
+        messagingConfig: processedConfig.messagingConfig,
+        messageSecret: processedConfig.messageSecret,
+    }
+    const remoteRules = new RemoteRules('autofill', loadArgs)
+    console.log('DEEP remoteRules', remoteRules.getFeatureSetting('formBoundarySettings'));
     return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
 

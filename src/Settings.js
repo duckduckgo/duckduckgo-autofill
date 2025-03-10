@@ -81,6 +81,7 @@ export class Settings {
     async getEnabled() {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
+            console.log('DEEP runtimeConfig', runtimeConfig);
             const enabled = autofillEnabled(runtimeConfig);
             return enabled;
         } catch (e) {
