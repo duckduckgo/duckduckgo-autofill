@@ -3699,6 +3699,9 @@ Source: "${matchedFrom}"`;
     "callofduty.com": {
       "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 2; required: lower, upper; required: digit;"
     },
+    "candyrect.com": {
+      "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
+    },
     "capitalone.com": {
       "password-rules": "minlength: 8; maxlength: 32; required: lower, upper; required: digit; allowed: [-_./\\@$*&!#];"
     },
@@ -4298,6 +4301,9 @@ Source: "${matchedFrom}"`;
     },
     "naver.com": {
       "password-rules": "minlength: 6; maxlength: 16;"
+    },
+    "nekochat.cn": {
+      "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit;"
     },
     "nelnet.net": {
       "password-rules": "minlength: 8; maxlength: 15; required: lower; required: upper; required: digit, [!@#$&*];"
