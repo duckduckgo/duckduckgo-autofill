@@ -1373,7 +1373,7 @@ Source: "${matchedFrom}"`;
     return hostname === exceptionDomain || hostname.endsWith(`.${exceptionDomain}`);
   }
   function camelcase(dashCaseText) {
-    return dashCaseText.replace(/-(.)/g, (match, letter) => {
+    return dashCaseText.replace(/-(.)/g, (_, letter) => {
       return letter.toUpperCase();
     });
   }
@@ -12691,7 +12691,17 @@ Source: "${matchedFrom}"`;
       if (this._siteSpecificFeature)
         return this._siteSpecificFeature;
       const runtimeConfig = await this._getRuntimeConfiguration();
-      return new SiteSpecificFeature(runtimeConfig);
+      const args = processConfig(
+        // @ts-expect-error TODO: incompatibility with zod types
+        runtimeConfig.contentScope,
+        runtimeConfig.userUnprotectedDomains,
+        runtimeConfig.userPreferences
+      );
+      return new SiteSpecificFeature({
+        site: args.site,
+        platform: args.platform,
+        bundledConfig: args.bundledConfig
+      });
     }
     setsiteSpecificFeature(siteSpecificFeature) {
       if (this._siteSpecificFeature)

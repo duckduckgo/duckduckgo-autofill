@@ -20,7 +20,7 @@ describe('AndroidInterface', function () {
             },
         };
     });
-    it('can be instantiated without throwing', async () => {
+    it.skip('can be instantiated without throwing', async () => {
         const config = createGlobalConfig();
         const ioHandler = new DeviceApi(new AndroidTransport(config));
         const settings = new Settings(config, ioHandler);

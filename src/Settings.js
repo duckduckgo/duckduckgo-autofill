@@ -3,6 +3,7 @@ import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './devic
 import { autofillSettingsSchema } from './deviceApiCalls/__generated__/validators.zod.js';
 import { autofillEnabled } from './autofill-utils.js';
 import SiteSpecificFeature from './site-specific-feature.js';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils.js';
 
 /**
  * Some Type helpers to prevent duplication
@@ -180,7 +181,17 @@ export class Settings {
         if (this._siteSpecificFeature) return this._siteSpecificFeature;
 
         const runtimeConfig = await this._getRuntimeConfiguration();
-        return new SiteSpecificFeature(runtimeConfig);
+        const args = processConfig(
+            // @ts-expect-error TODO: incompatibility with zod types
+            runtimeConfig.contentScope,
+            runtimeConfig.userUnprotectedDomains,
+            runtimeConfig.userPreferences,
+        );
+        return new SiteSpecificFeature({
+            site: args.site,
+            platform: args.platform,
+            bundledConfig: args.bundledConfig,
+        });
     }
 
     setsiteSpecificFeature(siteSpecificFeature) {
