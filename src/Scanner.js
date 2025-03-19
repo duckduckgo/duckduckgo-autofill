@@ -152,9 +152,6 @@ class DefaultScanner {
         }
 
         const formInputsSelectorWithoutSelect = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-        if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)) {
-            return this;
-        }
 
         if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
@@ -164,6 +161,13 @@ class DefaultScanner {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
+
+            if (
+                this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)
+            ) {
+                return this;
+            }
+
             inputs.forEach((input) => this.addInput(input));
             if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
                 findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {

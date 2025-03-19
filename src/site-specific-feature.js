@@ -53,17 +53,18 @@ export default class SiteSpecificFeature extends ConfigFeature {
             for (const setting of this.formBoundarySettings) {
                 const form = context.querySelector(setting.selector) || findElementsInShadowTree(context, setting.selector)[0];
                 if (form) {
-                    formCount++;
                     const inputs = /** @type NodeListOf<HTMLSelectElement|HTMLInputElement> */ (
                         form.querySelectorAll(formInputsSelectorWithoutSelect)
                     );
                     for (const input of inputs) {
                         // @ts-ignore input can be an arbitrary element type
                         callback(input, form);
+                        formCount++;
                     }
                 }
             }
+            return formCount === this.formBoundarySettings.length;
         }
-        return formCount === this.formBoundarySettings.length;
+        return false;
     }
 }

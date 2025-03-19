@@ -183,18 +183,25 @@ export class Settings {
         // Do not run for extension
         if (this.globalConfig.isExtension) return null;
 
-        const runtimeConfig = await this._getRuntimeConfiguration();
-        const args = processConfig(
-            // @ts-expect-error TODO: incompatibility with zod types
-            runtimeConfig.contentScope,
-            runtimeConfig.userUnprotectedDomains,
-            runtimeConfig.userPreferences,
-        );
-        return new SiteSpecificFeature({
-            site: args.site,
-            platform: args.platform,
-            bundledConfig: args.bundledConfig,
-        });
+        try {
+            const runtimeConfig = await this._getRuntimeConfiguration();
+            const args = processConfig(
+                // @ts-expect-error TODO: incompatibility with zod types
+                runtimeConfig.contentScope,
+                runtimeConfig.userUnprotectedDomains,
+                runtimeConfig.userPreferences,
+            );
+            return new SiteSpecificFeature({
+                site: args.site,
+                platform: args.platform,
+                bundledConfig: args.bundledConfig,
+            });
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getsiteSpecificFeature: ❌', e);
+            }
+            return Settings.defaults.siteSpecificFeature;
+        }
     }
 
     setsiteSpecificFeature(siteSpecificFeature) {
@@ -361,6 +368,8 @@ export class Settings {
     }
 
     static defaults = {
+        /** @type {SiteSpecificFeature | null} */
+        siteSpecificFeature: null,
         /** @type {AutofillFeatureToggles} */
         featureToggles: {
             credentials_saving: false,

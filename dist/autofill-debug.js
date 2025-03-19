@@ -11217,15 +11217,15 @@ Source: "${matchedFrom}"`;
         return this;
       }
       const formInputsSelectorWithoutSelect = this.matching.cssSelector("formInputsSelectorWithoutSelect");
-      if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)) {
-        return this;
-      }
       if ("matches" in context && context.matches?.(formInputsSelectorWithoutSelect)) {
         this.addInput(context);
       } else {
         const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
         if (inputs.length > this.options.maxInputsPerPage) {
           this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
+          return this;
+        }
+        if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)) {
           return this;
         }
         inputs.forEach((input) => this.addInput(input));
@@ -12531,18 +12531,19 @@ Source: "${matchedFrom}"`;
         for (const setting of this.formBoundarySettings) {
           const form = context.querySelector(setting.selector) || findElementsInShadowTree(context, setting.selector)[0];
           if (form) {
-            formCount++;
             const inputs = (
               /** @type NodeListOf<HTMLSelectElement|HTMLInputElement> */
               form.querySelectorAll(formInputsSelectorWithoutSelect)
             );
             for (const input of inputs) {
               callback(input, form);
+              formCount++;
             }
           }
         }
+        return formCount === this.formBoundarySettings.length;
       }
-      return formCount === this.formBoundarySettings.length;
+      return false;
     }
   };
 
@@ -12692,18 +12693,25 @@ Source: "${matchedFrom}"`;
         return this._siteSpecificFeature;
       if (this.globalConfig.isExtension)
         return null;
-      const runtimeConfig = await this._getRuntimeConfiguration();
-      const args = processConfig(
-        // @ts-expect-error TODO: incompatibility with zod types
-        runtimeConfig.contentScope,
-        runtimeConfig.userUnprotectedDomains,
-        runtimeConfig.userPreferences
-      );
-      return new SiteSpecificFeature({
-        site: args.site,
-        platform: args.platform,
-        bundledConfig: args.bundledConfig
-      });
+      try {
+        const runtimeConfig = await this._getRuntimeConfiguration();
+        const args = processConfig(
+          // @ts-expect-error TODO: incompatibility with zod types
+          runtimeConfig.contentScope,
+          runtimeConfig.userUnprotectedDomains,
+          runtimeConfig.userPreferences
+        );
+        return new SiteSpecificFeature({
+          site: args.site,
+          platform: args.platform,
+          bundledConfig: args.bundledConfig
+        });
+      } catch (e) {
+        if (this.globalConfig.isDDGTestMode) {
+          console.log("isDDGTestMode: getsiteSpecificFeature: \u274C", e);
+        }
+        return _Settings.defaults.siteSpecificFeature;
+      }
     }
     setsiteSpecificFeature(siteSpecificFeature) {
       if (this._siteSpecificFeature)
@@ -12865,6 +12873,8 @@ Source: "${matchedFrom}"`;
     }
   };
   __publicField(_Settings, "defaults", {
+    /** @type {SiteSpecificFeature | null} */
+    siteSpecificFeature: null,
     /** @type {AutofillFeatureToggles} */
     featureToggles: {
       credentials_saving: false,
