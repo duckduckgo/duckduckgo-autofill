@@ -12690,6 +12690,8 @@ Source: "${matchedFrom}"`;
     async getsiteSpecificFeature() {
       if (this._siteSpecificFeature)
         return this._siteSpecificFeature;
+      if (this.globalConfig.isExtension)
+        return null;
       const runtimeConfig = await this._getRuntimeConfiguration();
       const args = processConfig(
         // @ts-expect-error TODO: incompatibility with zod types

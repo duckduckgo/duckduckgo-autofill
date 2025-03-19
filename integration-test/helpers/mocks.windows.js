@@ -30,7 +30,7 @@ export function createWindowsMocks() {
                         exceptions: [],
                     },
                     autofillSiteSpecificFixes: {
-                        state: 'enabled',
+                        state: 'disabled',
                         exceptions: [],
                         settings: {
                             domains: [],

@@ -164,7 +164,7 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
             contentScope: {
                 features: {
                     autofillSiteSpecificFixes: {
-                        state: 'enabled',
+                        state: 'disabled',
                         exceptions: [],
                         settings: {
                             domains: [],

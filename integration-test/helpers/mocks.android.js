@@ -23,7 +23,7 @@ export function androidStringReplacements(overrides = {}) {
         contentScope: {
             features: {
                 autofillSiteSpecificFixes: {
-                    state: 'enabled',
+                    state: 'disabled',
                     exceptions: [],
                     settings: {
                         domains: [],
