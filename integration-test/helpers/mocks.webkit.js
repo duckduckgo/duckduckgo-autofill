@@ -21,13 +21,6 @@ export const iosContentScopeReplacements = (overrides = {}) => {
     return {
         contentScope: {
             features: {
-                autofillSiteSpecificFixes: {
-                    exceptions: [],
-                    state: 'disabled',
-                    settings: {
-                        domains: [],
-                    },
-                },
                 autofill: {
                     exceptions: [],
                     state: 'enabled',

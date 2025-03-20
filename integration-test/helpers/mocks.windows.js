@@ -29,13 +29,6 @@ export function createWindowsMocks() {
                         state: 'enabled',
                         exceptions: [],
                     },
-                    autofillSiteSpecificFixes: {
-                        state: 'disabled',
-                        exceptions: [],
-                        settings: {
-                            domains: [],
-                        },
-                    },
                 },
                 unprotectedTemporary: [],
             },
