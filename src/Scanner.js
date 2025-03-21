@@ -444,6 +444,9 @@ class DefaultScanner {
             realTarget.matches(this.matching.cssSelector('genericTextInputField')) &&
             !realTarget.hasAttribute(ATTR_INPUT_TYPE)
         ) {
+            // Helpful to debug if this code is being executed when it shouldn't
+            if (shouldLog()) console.log('scanOnClick executing for target', realTarget);
+
             const parentForm = this.getParentForm(realTarget);
 
             // If the parent form is an input element we bail.
