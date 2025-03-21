@@ -1,5 +1,4 @@
 import HTMLTooltip, { defaultOptions } from './HTMLTooltip.js';
-import { getInputConfigFromType } from '../Form/inputTypeConfig.js';
 
 describe('HTMLTooltip', () => {
     const o1 = global.ResizeObserver;
@@ -31,8 +30,7 @@ describe('HTMLTooltip', () => {
      * @link {https://app.asana.com/0/1177771139624306/1202412384393015/f}
      */
     it('works with default values', () => {
-        const config = getInputConfigFromType('credentials.username');
-        const tooltip = new HTMLTooltip(config, 'credentials.username', () => {}, defaultOptions);
+        const tooltip = new HTMLTooltip('credentials.username', () => {}, defaultOptions);
         const spy = jest.spyOn(tooltip, 'setupSizeListener');
         tooltip.init();
         expect(spy).not.toHaveBeenCalled();

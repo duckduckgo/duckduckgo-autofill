@@ -14,6 +14,7 @@ export default [
             'playwright-report/*',
             '.index-build/*',
             '.build/*',
+            'debug/*',
         ],
     },
     ...ddgConfig,

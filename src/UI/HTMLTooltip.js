@@ -6,6 +6,7 @@ import CSS_STYLES from './styles/autofill-tooltip-styles.css';
  * @typedef {object} HTMLTooltipOptions
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
+ * @property {boolean} isTopAutofill
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
  * @property {(top: number, left: number, isAboveInput: boolean) => string} [caretPositionClass]
  * @property {(details: {height: number, width: number}) => void} [setSize] - if this is set, it will be called initially once + every times the size changes
@@ -46,6 +47,7 @@ export const defaultOptions = {
     testMode: false,
     checkVisibility: true,
     hasCaret: false,
+    isTopAutofill: false,
     isIncontextSignupAvailable: () => false,
 };
 
@@ -54,18 +56,16 @@ export class HTMLTooltip {
     /** @type {HTMLTooltipOptions} */
     options;
     /**
-     * @param config
      * @param inputType
      * @param getPosition
      * @param {HTMLTooltipOptions} options
      */
-    constructor(config, inputType, getPosition, options) {
+    constructor(inputType, getPosition, options) {
         this.options = options;
         this.shadow = document.createElement('ddg-autofill').attachShadow({
             mode: options.testMode ? 'open' : 'closed',
         });
         this.host = this.shadow.host;
-        this.config = config;
         this.subtype = getSubtypeFromType(inputType);
         this.variant = getVariantFromType(inputType);
         this.tooltip = null;

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autofill UI debugging</title>
+    <style>
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #333;
+                color: #ffffff;
+            }
+        }
+
+        body {
+            padding: 1rem 2rem;
+        }
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 1rem;
+        }
+        code {
+            display: block;
+            padding: 1rem 0;
+            margin-bottom: 140px;
+        }
+    </style>
+</head>
+<body>
+<main></main>
+<script type="module" src="dist/ui-debug.js"></script>
+</body>
+</html>

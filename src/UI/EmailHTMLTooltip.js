@@ -68,4 +68,4 @@ ${this.options.css}
     }
 }
 
-export default EmailHTMLTooltip;
+export { EmailHTMLTooltip };
