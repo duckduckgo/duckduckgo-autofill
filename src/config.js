@@ -29,9 +29,11 @@ function createGlobalConfig(overrides) {
     let isDDGTestMode = false;
     //! INJECT isDDGTestMode HERE
 
+    /** @type {import('@duckduckgo/content-scope-scripts/injected/src/utils').RemoteConfig | null} */
     let contentScope = null;
-    let userUnprotectedDomains = null;
+    let userUnprotectedDomains = [];
     /** @type {Record<string, any> | null} */
+
     let userPreferences = null;
     //! INJECT contentScope HERE
     //! INJECT userUnprotectedDomains HERE

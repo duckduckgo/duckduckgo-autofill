@@ -100,9 +100,9 @@ interface GlobalConfig {
     secret: string;
     supportsTopFrame: boolean;
     hasModernWebkitAPI: boolean;
-    contentScope: Record<string, any> | null;
-    userUnprotectedDomains: string[] | null;
-    userPreferences: Record<string, any> | null;
+    contentScope: import('@duckduckgo/content-scope-scripts/injected/src/utils').RemoteConfig | null;
+    userUnprotectedDomains: string[];
+    userPreferences: import('@duckduckgo/content-scope-scripts/injected/src/utils').UserPreferences | null;
     isDDGTestMode: boolean;
     isDDGDomain: boolean;
     availableInputTypes: import('./deviceApiCalls/__generated__/validators-ts').AvailableInputTypes | null;

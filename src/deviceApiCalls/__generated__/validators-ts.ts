@@ -357,22 +357,24 @@ export interface RuntimeConfiguration {
 export interface ContentScope {
   features: {
     [k: string]: {
-      exceptions: unknown[];
+      exceptions: {
+        domain: string;
+      }[];
       state: "enabled" | "disabled";
-      settings?: {
+      settings: {
         [k: string]: unknown;
       };
     };
   };
-  unprotectedTemporary: unknown[];
+  unprotectedTemporary: string[];
 }
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;
-  sessionKey?: string;
+  sessionKey: string;
   debug: boolean;
   language?: string;
   platform: {
-    name: "ios" | "macos" | "windows" | "extension" | "android" | "unknown";
+    name: "ios" | "macos" | "windows" | "extension" | "android";
   };
   features: {
     [k: string]: {
