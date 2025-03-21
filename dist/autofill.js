@@ -6851,6 +6851,8 @@ Source: "${matchedFrom}"`;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
       if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
+        if (shouldLog())
+          console.log("scanOnClick executing for target", realTarget);
         const parentForm = this.getParentForm(realTarget);
         if (parentForm instanceof HTMLInputElement)
           return;
