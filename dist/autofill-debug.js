@@ -11044,9 +11044,9 @@ Source: "${matchedFrom}"`;
       if (this.isStopped)
         return;
       const parentForm = form || this.getParentForm(input);
-      const foundForm = this.forms.get(parentForm);
-      if (parentForm instanceof HTMLFormElement && foundForm) {
-        if (foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
+      if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+        const foundForm = this.forms.get(parentForm);
+        if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
           foundForm.addInput(input);
         } else {
           this.setMode("stopped", "The form has too many inputs, destroying.");
