@@ -49,4 +49,4 @@ ${this.options.css}
     }
 }
 
-export default EmailSignupHTMLTooltip;
+export { EmailSignupHTMLTooltip };

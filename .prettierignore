@@ -1,5 +1,6 @@
 src/**/*.d.ts
 dist/*
+debug/*
 integration-test/extension/autofill.js
 integration-test/extension/autofill-debug.js
 shared/js/content-scope/sjcl.js
