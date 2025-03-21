@@ -6857,11 +6857,14 @@ Source: "${matchedFrom}"`;
         if (parentForm instanceof HTMLInputElement)
           return;
         const hasShadowTree = event.target?.shadowRoot != null;
-        if (!this.forms.get(parentForm)) {
+        const form = this.forms.get(parentForm);
+        if (!form) {
           this.forms.set(
             parentForm,
             new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
           );
+        } else {
+          form.addInput(realTarget);
         }
         this.findEligibleInputs(parentForm);
       }

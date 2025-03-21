@@ -454,12 +454,15 @@ class DefaultScanner {
             if (parentForm instanceof HTMLInputElement) return;
 
             const hasShadowTree = event.target?.shadowRoot != null;
-            if (!this.forms.get(parentForm)) {
+            const form = this.forms.get(parentForm);
+            if (!form) {
                 // Only create a new one if none exists
                 this.forms.set(
                     parentForm,
                     new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree),
                 );
+            } else {
+                form.addInput(realTarget);
             }
             this.findEligibleInputs(parentForm);
         }
