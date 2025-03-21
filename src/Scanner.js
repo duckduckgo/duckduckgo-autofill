@@ -438,16 +438,32 @@ class DefaultScanner {
         const realTarget = pierceShadowTree(event, HTMLInputElement);
 
         // If it's an input we haven't already scanned,
+        // and it's not of type 'submit',
         // find the enclosing parent form, and scan it.
-        if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
+        if (
+            realTarget instanceof HTMLInputElement &&
+            realTarget.getAttribute('type') !== 'submit' &&
+            !realTarget.hasAttribute(ATTR_INPUT_TYPE)
+        ) {
+            // Helpful to debug if this code is being executed when it shouldn't
+            if (shouldLog()) console.log('scanOnClick executing for target', realTarget);
+
             const parentForm = this.getParentForm(realTarget);
 
             // If the parent form is an input element we bail.
             if (parentForm instanceof HTMLInputElement) return;
 
             const hasShadowTree = event.target?.shadowRoot != null;
-            const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-            this.forms.set(parentForm, form);
+            const form = this.forms.get(parentForm);
+            if (!form) {
+                // Only create a new one if none exists
+                this.forms.set(
+                    parentForm,
+                    new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree),
+                );
+            } else {
+                form.addInput(realTarget);
+            }
             this.findEligibleInputs(parentForm);
         }
 
