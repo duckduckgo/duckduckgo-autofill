@@ -108,20 +108,22 @@ export const genericErrorSchema = z.object({
 
 export const contentScopeSchema = z.object({
     features: z.record(z.object({
-        exceptions: z.array(z.unknown()),
+        exceptions: z.array(z.object({
+            domain: z.string()
+        })),
         state: z.union([z.literal("enabled"), z.literal("disabled")]),
-        settings: z.record(z.unknown()).optional()
+        settings: z.record(z.unknown())
     })),
-    unprotectedTemporary: z.array(z.unknown())
+    unprotectedTemporary: z.array(z.string())
 });
 
 export const userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
-    sessionKey: z.string().optional(),
+    sessionKey: z.string(),
     debug: z.boolean(),
     language: z.string().optional(),
     platform: z.object({
-        name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android"), z.literal("unknown")])
+        name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android")])
     }),
     features: z.record(z.object({
         settings: z.record(z.unknown())

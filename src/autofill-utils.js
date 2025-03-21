@@ -50,9 +50,11 @@ const autofillEnabled = (globalConfig) => {
 
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
 
+    // Note: This cannot occur, but this check helps Typescript
+    // todo: to be fixed in GlobalConfig
+    if (!userPreferences) return false;
+
     // Check config on Apple platforms
-    // @ts-ignore at this point, userPreferences is not expected to be null but we need the
-    // types to be UserPreferences | null, since to make runtime replacement work.
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
