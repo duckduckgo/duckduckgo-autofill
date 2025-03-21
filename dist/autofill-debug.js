@@ -11044,9 +11044,9 @@ Source: "${matchedFrom}"`;
       if (this.isStopped)
         return;
       const parentForm = form || this.getParentForm(input);
-      if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
-        const foundForm = this.forms.get(parentForm);
-        if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
+      const foundForm = this.forms.get(parentForm);
+      if (parentForm instanceof HTMLFormElement && foundForm) {
+        if (foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
           foundForm.addInput(input);
         } else {
           this.setMode("stopped", "The form has too many inputs, destroying.");
@@ -11145,13 +11145,17 @@ Source: "${matchedFrom}"`;
         return;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
-      if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
+      if (realTarget instanceof HTMLInputElement && realTarget.getAttribute("type") !== "submit" && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
         const parentForm = this.getParentForm(realTarget);
         if (parentForm instanceof HTMLInputElement)
           return;
         const hasShadowTree = event.target?.shadowRoot != null;
-        const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-        this.forms.set(parentForm, form);
+        if (!this.forms.get(parentForm)) {
+          this.forms.set(
+            parentForm,
+            new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
+          );
+        }
         this.findEligibleInputs(parentForm);
       }
       window.performance?.mark?.("scan_shadow:init:end");

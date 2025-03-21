@@ -288,10 +288,10 @@ class DefaultScanner {
 
         const parentForm = form || this.getParentForm(input);
 
-        if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
-            const foundForm = this.forms.get(parentForm);
+        const foundForm = this.forms.get(parentForm);
+        if (parentForm instanceof HTMLFormElement && foundForm) {
             // We've met the form, add the input provided it's below the max input limit
-            if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
+            if (foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
                 foundForm.addInput(input);
             } else {
                 this.setMode('stopped', 'The form has too many inputs, destroying.');
@@ -438,16 +438,26 @@ class DefaultScanner {
         const realTarget = pierceShadowTree(event, HTMLInputElement);
 
         // If it's an input we haven't already scanned,
+        // and it's not of type 'submit',
         // find the enclosing parent form, and scan it.
-        if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
+        if (
+            realTarget instanceof HTMLInputElement &&
+            realTarget.getAttribute('type') !== 'submit' &&
+            !realTarget.hasAttribute(ATTR_INPUT_TYPE)
+        ) {
             const parentForm = this.getParentForm(realTarget);
 
             // If the parent form is an input element we bail.
             if (parentForm instanceof HTMLInputElement) return;
 
             const hasShadowTree = event.target?.shadowRoot != null;
-            const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-            this.forms.set(parentForm, form);
+            if (!this.forms.get(parentForm)) {
+                // Only create a new one if none exists
+                this.forms.set(
+                    parentForm,
+                    new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree),
+                );
+            }
             this.findEligibleInputs(parentForm);
         }
 
