@@ -24,6 +24,7 @@ class ExtensionInterface extends InterfacePrototype {
         /** @type {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} */
         const htmlTooltipOptions = {
             ...defaultOptions,
+            platform: 'extension',
             css: `<link rel="stylesheet" href="${chrome.runtime.getURL('public/css/autofill.css')}" crossOrigin="anonymous">`,
             testMode: this.isTestMode(),
             hasCaret: true,

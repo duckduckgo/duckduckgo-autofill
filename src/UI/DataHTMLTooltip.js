@@ -56,7 +56,7 @@ class DataHTMLTooltip extends HTMLTooltip {
      */
     render(device, config, items, callbacks) {
         const t = device.t;
-        const { wrapperClass, css, isTopAutofill } = this.options;
+        const { wrapperClass, css, isTopAutofill, platform } = this.options;
         let hasAddedSeparator = false;
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId, index) => {
@@ -77,7 +77,7 @@ class DataHTMLTooltip extends HTMLTooltip {
         const dataTypeClass = `tooltip__button--data--${config.type}${this.variant ? '__' + this.variant : ''}`;
         this.shadow.innerHTML = `
 ${css}
-<div class="wrapper wrapper--data ${topClass}" hidden>
+<div class="wrapper wrapper--data ${topClass}" hidden data-platform=${platform}>
     <div class="tooltip tooltip--data${this.options.isIncontextSignupAvailable() ? ' tooltip--incontext-signup' : ''}">
         ${items
             .map((item, index) => {

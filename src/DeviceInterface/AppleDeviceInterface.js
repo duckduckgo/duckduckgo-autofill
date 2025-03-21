@@ -42,6 +42,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         if (!this.globalConfig.supportsTopFrame) {
             const options = {
                 ...defaultOptions,
+                platform: 'macos',
                 testMode: this.isTestMode(),
             };
             return new HTMLTooltipUIController(
