@@ -11819,16 +11819,16 @@ Source: "${matchedFrom}"`;
     testMode: false,
     checkVisibility: true,
     hasCaret: false,
+    isTopAutofill: false,
     isIncontextSignupAvailable: () => false
   };
   var HTMLTooltip = class {
     /**
-     * @param config
      * @param inputType
      * @param getPosition
      * @param {HTMLTooltipOptions} options
      */
-    constructor(config, inputType, getPosition, options) {
+    constructor(inputType, getPosition, options) {
       __publicField(this, "isAboveInput", false);
       /** @type {HTMLTooltipOptions} */
       __publicField(this, "options");
@@ -11852,7 +11852,6 @@ Source: "${matchedFrom}"`;
         mode: options.testMode ? "open" : "closed"
       });
       this.host = this.shadow.host;
-      this.config = config;
       this.subtype = getSubtypeFromType(inputType);
       this.variant = getVariantFromType(inputType);
       this.tooltip = null;
@@ -12124,8 +12123,7 @@ Source: "${matchedFrom}"`;
      */
     render(device, config, items, callbacks) {
       const t = device.t;
-      const { wrapperClass, css } = this.options;
-      const isTopAutofill = wrapperClass?.includes("top-autofill");
+      const { wrapperClass, css, isTopAutofill } = this.options;
       let hasAddedSeparator = false;
       const shouldShowSeparator = (dataId, index) => {
         const shouldShow = ["personalAddress", "privateAddress"].includes(dataId) && !hasAddedSeparator;
@@ -12198,7 +12196,6 @@ ${css}
       return this;
     }
   };
-  var DataHTMLTooltip_default = DataHTMLTooltip;
 
   // src/UI/EmailHTMLTooltip.js
   var EmailHTMLTooltip = class extends HTMLTooltip_default {
@@ -12260,7 +12257,6 @@ ${this.options.css}
       this.device?.selectedDetail({ email: formattedAddress, id }, "email");
     }
   };
-  var EmailHTMLTooltip_default = EmailHTMLTooltip;
 
   // src/UI/EmailSignupHTMLTooltip.js
   var EmailSignupHTMLTooltip = class extends HTMLTooltip_default {
@@ -12305,7 +12301,6 @@ ${this.options.css}
       return this;
     }
   };
-  var EmailSignupHTMLTooltip_default = EmailSignupHTMLTooltip;
 
   // src/UI/CredentialsImportTooltip.js
   var CredentialsImportTooltip = class extends HTMLTooltip_default {
@@ -12318,7 +12313,7 @@ ${this.options.css}
       const t = device.t;
       this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--data top-autofill" hidden>
+<div class="wrapper wrapper--data ${this.options.isTopAutofill ? "top-autofill" : ""}" hidden>
     <div class="tooltip tooltip--data">
         <button class="tooltip__button tooltip__button--data tooltip__button--credentials-import js-promo-wrapper">
             <span class="tooltip__button__text-container">
@@ -12348,7 +12343,6 @@ ${this.options.css}
       return this;
     }
   };
-  var CredentialsImportTooltip_default = CredentialsImportTooltip;
 
   // src/UI/controllers/HTMLTooltipUIController.js
   var HTMLTooltipUIController = class extends UIController {
@@ -12424,29 +12418,26 @@ ${this.options.css}
       const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0;
       if (topContextData.credentialsImport && hasNoCredentialsData) {
         this._options.device.firePixel({ pixelName: "autofill_import_credentials_prompt_shown" });
-        return new CredentialsImportTooltip_default(config, topContextData.inputType, getPosition, tooltipOptions).render(
-          this._options.device,
-          {
-            onStarted: () => {
-              this._options.device.credentialsImport.started();
-            },
-            onDismissed: () => {
-              this._options.device.credentialsImport.dismissed();
-            }
+        return new CredentialsImportTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
+          onStarted: () => {
+            this._options.device.credentialsImport.started();
+          },
+          onDismissed: () => {
+            this._options.device.credentialsImport.dismissed();
           }
-        );
+        });
       }
       if (this._options.tooltipKind === "legacy") {
         this._options.device.firePixel({ pixelName: "autofill_show" });
-        return new EmailHTMLTooltip_default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+        return new EmailHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
       }
       if (this._options.tooltipKind === "emailsignup") {
         this._options.device.firePixel({ pixelName: "incontext_show" });
-        return new EmailSignupHTMLTooltip_default(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+        return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
       }
       const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
       const asRenderers = data.map((d) => config.tooltipItem(d));
-      return new DataHTMLTooltip_default(config, topContextData.inputType, getPosition, tooltipOptions).render(
+      return new DataHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(
         this._options.device,
         config,
         asRenderers,
@@ -12472,7 +12463,7 @@ ${this.options.css}
       const config = getInputConfigFromType(this._activeInputType);
       const asRenderers = data.map((d) => config.tooltipItem(d));
       const activeTooltip = this.getActiveTooltip();
-      if (activeTooltip instanceof DataHTMLTooltip_default) {
+      if (activeTooltip instanceof DataHTMLTooltip) {
         activeTooltip?.render(this._options.device, config, asRenderers, {
           onSelect: (id) => {
             this._onSelect(this._activeInputType, data, id);
@@ -13423,6 +13414,7 @@ ${this.options.css}
         },
         {
           wrapperClass: "top-autofill",
+          isTopAutofill: true,
           tooltipPositionClass: () => ".wrapper { transform: none; }",
           setSize: (details) => this.deviceApi.notify(createNotification("setSize", details)),
           remove: async () => this._closeAutofillParent(),
@@ -13649,6 +13641,7 @@ ${this.options.css}
         },
         {
           wrapperClass: "top-autofill",
+          isTopAutofill: true,
           tooltipPositionClass: () => ".wrapper { transform: none; }",
           setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
           remove: async () => this._closeAutofillParent(),
