@@ -13,13 +13,14 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
  */
 (async () => {
     // default build
-    await bundle({});
-
-    // debug build
-    await bundle({
-        plugins: [],
-        outfile: join(ROOT, 'dist/autofill-debug.js'),
-    });
+    Promise.all([
+        bundle({}),
+        bundle({
+            plugins: [],
+            outfile: join(ROOT, 'dist/autofill-debug.js'),
+        }),
+        uiPreview(),
+    ]);
 })();
 
 /**
@@ -75,6 +76,23 @@ async function bundle(buildOptions = {}) {
     if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
         console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
     }
+}
+
+async function uiPreview() {
+    /** @type {import("esbuild").BuildOptions} */
+    const config = {
+        entryPoints: [join(ROOT, 'debug/ui-debug.js')],
+        target: 'es2021',
+        bundle: true,
+        format: 'iife',
+        legalComments: 'inline',
+        outfile: join(ROOT, 'debug/dist/ui-debug.js'),
+        metafile: true,
+        loader: {
+            '.css': 'text',
+        },
+    };
+    await esbuild.build(config);
 }
 
 /**

@@ -25,3 +25,4 @@ playwright-report/
 .vscode
 /.index-build
 /.build
+/debug/dist
