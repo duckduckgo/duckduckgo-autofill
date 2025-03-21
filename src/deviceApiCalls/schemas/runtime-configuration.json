@@ -18,7 +18,16 @@
             "properties": {
               "exceptions": {
                 "type": "array",
-                "items": {}
+                "items": {
+                  "type": "object",
+                  "required": ["domain"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "domain": {
+                      "type": "string"
+                    }
+                  }
+                }
               },
               "state": {
                 "type": "string",
@@ -30,13 +39,16 @@
             },
             "required": [
               "exceptions",
-              "state"
+              "state",
+              "settings"
             ]
           }
         },
         "unprotectedTemporary": {
           "type": "array",
-          "items": {}
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
@@ -78,8 +90,7 @@
                 "macos",
                 "windows",
                 "extension",
-                "android",
-                "unknown"
+                "android"
               ]
             }
           },
@@ -107,7 +118,8 @@
       "required": [
         "debug",
         "features",
-        "platform"
+        "platform",
+        "sessionKey"
       ]
     }
   },

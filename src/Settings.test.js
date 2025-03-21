@@ -166,6 +166,7 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
                     autofill: {
                         state: 'enabled',
                         exceptions: [],
+                        settings: {},
                     },
                 },
                 unprotectedTemporary: [],
@@ -177,6 +178,7 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
                 features: {
                     autofill: { settings: { featureToggles } },
                 },
+                sessionKey: 'abc123',
             },
         },
     });

@@ -1520,6 +1520,8 @@ Source: "${matchedFrom}"`;
       return enabled;
     }
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
+    if (!userPreferences)
+      return false;
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
   };
@@ -8258,12 +8260,7 @@ Source: "${matchedFrom}"`;
         return null;
       try {
         const runtimeConfig = await this._getRuntimeConfiguration();
-        const args = processConfig(
-          // @ts-expect-error TODO: incompatibility with zod types
-          runtimeConfig.contentScope,
-          runtimeConfig.userUnprotectedDomains,
-          runtimeConfig.userPreferences
-        );
+        const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
         return new SiteSpecificFeature({
           site: args.site,
           platform: args.platform,
