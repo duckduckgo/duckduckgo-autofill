@@ -1,0 +1,43 @@
+[
+  {
+    "title": "random input field",
+    "data":  {
+      "page_title": "Nike shoes",
+      "page_heading": "Find a model",
+      "form_action": "/sku-lookup",
+      "input_fields": [
+        {
+          "type": "text",
+          "name": "code",
+          "attributes": {
+            "placeholder": "SKU (look in your trainers)"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "title": "login form",
+    "data": {
+      "page_title": "Login",
+      "page_heading": "Login",
+      "form_action": "/login",
+      "input_fields": [
+        {
+          "type": "text",
+          "name": "email",
+          "attributes": {
+            "placeholder": "Your email"
+          }
+        },
+        {
+          "type": "password",
+          "name": "password",
+          "attributes": {
+            "placeholder": "Your password"
+          }
+        }
+      ]
+    }
+  }
+]

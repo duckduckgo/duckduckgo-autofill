@@ -1,0 +1,30 @@
+[
+  {
+    "page_title": "Login",
+    "page_heading": "Get Started",
+    "form_action": "/login",
+    "input_fields_json": "[{\"type\":\"text\",\"name\":\"email\",\"attributes\":{\"placeholder\":\"Your email\"}},{\"type\":\"password\",\"name\":\"password\",\"attributes\":{\"placeholder\":\"Your password\"}}]",
+    "type": "login"
+  },
+  {
+    "page_title": "Welcome",
+    "page_heading": "Get Started",
+    "form_action": "/abc",
+    "input_fields_json": "[{\"type\":\"text\",\"name\":\"email\",\"attributes\":{\"placeholder\":\"Your email\"}},{\"type\":\"password\",\"name\":\"password\",\"attributes\":{\"placeholder\":\"Your password\"}}]",
+    "type": "login"
+  },
+  {
+    "page_title": "Sign Up",
+    "page_heading": "Create Account",
+    "form_action": "/register",
+    "input_fields_json": "[\n  {\n    \"type\": \"text\",\n    \"name\": \"name\",\n    \"attributes\": {\n      \"placeholder\": \"Your full name\"\n    }\n  },\n  {\n    \"type\": \"text\",\n    \"name\": \"email\",\n    \"attributes\": {\n      \"placeholder\": \"Your email\"\n    }\n  },\n  {\n    \"type\": \"password\",\n    \"name\": \"password\",\n    \"attributes\": {\n      \"placeholder\": \"Choose a password\"\n    }\n  },\n  {\n    \"type\": \"password\",\n    \"name\": \"confirmPassword\",\n    \"attributes\": {\n      \"placeholder\": \"Confirm password\"\n    }\n  }\n]",
+    "type": "signup"
+  },
+  {
+    "page_title": "Hello",
+    "page_heading": "Hi there Shane!",
+    "form_action": "/giftcards",
+    "input_fields_json": "[\n  {\n    \"type\": \"text\",\n    \"name\": \"name\",\n    \"attributes\": {\n      \"placeholder\": \"Your full name\"\n    }\n  },\n  {\n    \"type\": \"text\",\n    \"name\": \"email\",\n    \"attributes\": {\n      \"placeholder\": \"Your email\"\n    }\n  },\n  {\n    \"type\": \"text\",\n    \"name\": \"code\",\n    \"attributes\": {\n      \"placeholder\": \"Enter the code\"\n    }\n  }\n]",
+    "type": "unknown"
+  }
+]

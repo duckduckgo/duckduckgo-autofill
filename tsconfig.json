@@ -33,6 +33,7 @@
     "integration-test",
     "packages/device-api",
     "packages/messaging",
+    "packages/classification",
     "*.js",
     "types.d.ts"
   ],

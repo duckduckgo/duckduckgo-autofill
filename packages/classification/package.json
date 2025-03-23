@@ -1,0 +1,18 @@
+{
+  "name": "classification",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "train+predict": "node train.mjs && node predict.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "zod": "^3.24.2"
+  }
+}
