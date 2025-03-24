@@ -8059,7 +8059,7 @@ Source: "${matchedFrom}"`;
   _args = new WeakMap();
 
   // src/site-specific-feature.js
-  var FEATURE_NAME = "autofill_site_specific_rules";
+  var FEATURE_NAME = "autofill-site-specific-fixes";
   var SiteSpecificFeature = class extends ConfigFeature {
     constructor(args) {
       super(FEATURE_NAME, args);
