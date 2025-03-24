@@ -1,7 +1,6 @@
 // loadModel.mjs
 import * as tf from '@tensorflow/tfjs-node';
 import path from 'path';
-import z from 'zod';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import { intoBooleans } from './utils.mjs';
@@ -27,7 +26,7 @@ model.summary();
  */
 async function loadModelAndPredict(example) {
     try {
-        console.log('Loading model...');
+        console.log('Loading model...', example.meta.name);
         const v = await predictFormType(model, example, meta.metadata, meta.labelClasses);
         console.log(v);
     } catch (error) {
@@ -37,11 +36,10 @@ async function loadModelAndPredict(example) {
 
 // Execute the function
 const examples = JSON.parse(readFileSync('./test-data/01.json', 'utf8'));
-const parsed = z.array(predictionSchema).parse(examples);
+const parsed = predictionSchema.parse(examples);
 
 for (const example of parsed) {
-    console.log('-->', example.title);
-    await loadModelAndPredict(example.data).catch(console.error);
+    await loadModelAndPredict(example).catch(console.error);
 }
 
 /**

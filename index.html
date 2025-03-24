@@ -1,0 +1,139 @@
+<meta name="bslive serve-dir" content="--path=/ --dir=." />
+<link rel="stylesheet" href="/reset.css">
+<style>
+    body {
+        /*padding: 1rem;*/
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+    }
+    main {
+        display: grid;
+        height: 100vh;
+        width: 100%;
+        border: 3px solid red;
+        grid-template-columns: 50% 50%;
+        grid-template-rows: 50% 50%;
+        grid-template-areas:
+          'iframe debug'
+          'html debug';
+    }
+    iframe {
+        width: 100%;
+        height: 100%;
+        grid-area: iframe;
+    }
+    .html {
+        width: 100%;
+        height: 100%;
+        grid-area: html;
+        overflow: auto;
+        font-family: monospace;
+        font-size: .8em;
+    }
+    .debug {
+        padding: 1rem;
+        grid-area: debug;
+    }
+</style>
+<main>
+    <iframe></iframe>
+    <div class="html" id="html"></div>
+    <div class="debug" id="debug">
+        <h2>Name</h2>
+        <small id="index"></small>
+        <h3>Manual scoring</h3>
+        <pre><code></code></pre>
+    </div>
+</main>
+<script>
+    const f = /** @type {HTMLIFrameElement} */(document.getElementsByTagName('iframe'))[0];
+    const debug = /** @type {HTMLDivElement} */(document.getElementById('debug'));
+    const html = /** @type {HTMLDivElement} */(document.getElementById('html'));
+    const indexElem = /** @type {HTMLDivElement} */(document.getElementById('index'));
+    const nameElem = debug.querySelector('h2');
+    const codeElem = debug.querySelector('code');
+
+    window.results = [];
+    const url = new URL(window.location.href);
+
+    fetch("/all.json").then(c=>c.json()).then(async (items) => {
+        let subset;
+        if (url.searchParams.has('name')) {
+            const mapping = Object.fromEntries(items.map(x=>[x.name, x]))
+            const match =  mapping[url.searchParams.get("name")];
+            subset = [match]
+        } else {
+            subset = items.slice(430, 450);
+        }
+        let index = 0;
+        for (let sliceElement of subset) {
+            const output = await load(sliceElement, index);
+            window.results.push(output);
+            index+=1;
+        }
+    });
+
+    async function load(item, index) {
+        return new Promise((resolve) => {
+            f.srcdoc = item.content;
+            f.onload = () => {
+                nameElem.innerText = item.name
+                html.innerText = item.content
+                codeElem.innerText = '';
+                indexElem.innerText = 'index: ' + index;
+
+                const fields = [];
+                let type = 'unknown';
+
+                if (item.name.endsWith('_login.html')) type = 'login'
+                if (item.name.endsWith('_signup.html')) type = 'signup'
+
+                const forms = f.contentDocument.forms;
+                const [firstForm] = forms
+                const actionAttr = firstForm?.action
+
+                f.contentDocument.querySelectorAll('[data-manual-scoring]:not([data-manual-scoring="unknown"])').forEach((/** @type {HTMLInputElement} */elem) => {
+
+                    let label = elem.labels?.[0]?.innerText;
+
+                    const ph = elem.getAttribute('placeholder');
+
+                    if (!label && !ph) {
+                        const maybelabel = elem.previousElementSibling?.textContent;
+                        if (maybelabel) label = maybelabel.slice(0, 100).trim()
+                    }
+
+                    fields.push({
+                        type: elem.type,
+                        label: label || 'unknown label',
+                        attributes: {
+                            placeholder: elem.getAttribute('placeholder') || 'unknown placeholder'
+                        }
+                    })
+                });
+
+                const heading = f.contentDocument.querySelector('h1')?.textContent || 'unknown heading';
+
+                const next = {
+                    "page_title": f.contentDocument.title || type,
+                    'page_heading': heading.trim(),
+                    "form_action": asUrl(actionAttr),
+                    "input_fields": fields,
+                    "type": type,
+                    meta: { name: item.name }
+                }
+                codeElem.innerText = JSON.stringify(next, null, 2)
+                resolve(next);
+            }
+        })
+    }
+
+    function asUrl(actionAttr) {
+        try {
+            return (actionAttr && actionAttr !== "about:srcdoc") ? new URL(actionAttr)?.pathname : "unknown action"
+        } catch(e) {
+            return "unknown action"
+        }
+    }
+</script>

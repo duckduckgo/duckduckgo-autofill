@@ -2,7 +2,7 @@ import tf from '@tensorflow/tfjs-node';
 import { readFileSync } from 'fs';
 import { writeFileSync } from 'node:fs';
 import { intoBooleans } from './utils.mjs';
-import { inputFieldsSchema, trainingDataSchema } from './schema.mjs';
+import { trainingDataSchema } from './schema.mjs';
 
 /**
  * @import json from './data/training-data.json';
@@ -10,9 +10,9 @@ import { inputFieldsSchema, trainingDataSchema } from './schema.mjs';
  */
 
 /**
- * @type {typeof json}
+ *
  */
-const trainingData = JSON.parse(readFileSync('./data/training-data.json', 'utf8'));
+const trainingData = JSON.parse(readFileSync('./data/training-data-02.json', 'utf8'));
 const parsed = trainingDataSchema.parse(trainingData);
 
 /**
@@ -43,9 +43,7 @@ function extractFeatures(data) {
         const formActionIndex = formActionVocab.indexOf(example.form_action.toLowerCase());
 
         // Create simple features from the form fields
-        const formFields = inputFieldsSchema.parse(JSON.parse(example.input_fields_json));
-
-        const booleans = intoBooleans(formFields);
+        const booleans = intoBooleans(example.input_fields);
 
         // Return feature vector
         return [pageTitleIndex, pageHeadingIndex, formActionIndex, ...booleans];
@@ -69,10 +67,8 @@ function extractFeatures(data) {
 
 // Create and train model
 async function trainModel(features, labels) {
-    // Create a model
     const model = tf.sequential();
 
-    // Add layers
     model.add(
         tf.layers.dense({
             units: 16,
@@ -95,14 +91,12 @@ async function trainModel(features, labels) {
         }),
     );
 
-    // Compile model
     model.compile({
         optimizer: 'adam',
         loss: 'categoricalCrossentropy',
         metrics: ['accuracy'],
     });
 
-    // Train model
     const history = await model.fit(features, labels, {
         epochs: 100,
         batchSize: 4,
@@ -128,31 +122,6 @@ async function run() {
         // Save model
         await model.save('file://./form-classifier-model');
         writeFileSync('./form-classifier-model/meta.json', JSON.stringify({ labelClasses, metadata }, null, 2));
-        //
-        //         console.log('Model trained and saved successfully!');
-        //
-        //         // Test prediction with an example
-        //         const testYaml = `
-        // page_title: 'Sign In'
-        // page_heading: 'Welcome Back'
-        // form:
-        //   attributes:
-        //     action: "/auth"
-        //   elements:
-        //     - type: 'input'
-        //       attributes:
-        //         name: 'email'
-        //         placeholder: 'Email Address'
-        //     - type: 'password'
-        //       attributes:
-        //         name: 'password'
-        //         placeholder: 'Password'
-        //     `;
-        //
-        //         console.log('Testing prediction with example form...');
-        // const input = JSON.parse(readFileSync('./'));
-        // const prediction = await predictFormType(model, input, metadata, labelClasses);
-        // console.log('Prediction:', prediction);
     } catch (error) {
         console.error('Error:', error);
     }

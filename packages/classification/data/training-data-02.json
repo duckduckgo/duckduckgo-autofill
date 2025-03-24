@@ -1,0 +1,7281 @@
+[
+  {
+    "page_title": "Sign In to your 123RF account - 123RF",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "USERNAME / EMAIL",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "PASSWORD",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "123rf_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "USERNAME",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "COMPANY EMAIL",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "PASSWORD",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "123rf_signup.html"
+    }
+  },
+  {
+    "page_title": "Login as Member | 1337x",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "1337x_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Retype Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "1337x_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/loyalty/login/submit",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "AAdvantage # or username , required. ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name , required. ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password , required.  ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "aa_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/checklogin.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Domain"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "access_dotvndns_vn_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Identificador d'estudiant (DNI, NIE o passaport)"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Contrasenya"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accesuniversitat_gencat_cat_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/identification/identify.action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Loyalty or subscription number 16-digit number on your card",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "accor_hotel-booking.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Account:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "account_99_com_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/signup.aspx",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "*Account:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "* Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "* Re-enter Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "* Region:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "account_asus_com_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/cgi-bin/auth",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Имя",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Пароль",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "account_mail_ru_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/signup/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Phone number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Repeat password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Repeat password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "account_my_com_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login/redirector",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Login Email Address / Phone Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "account_nicovideo_jp_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/signin",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "account_qnap_com_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone number"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "account_qnap_com_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "UWin Account",
+    "form_action": "/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "UWin ID"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "******************"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "account_uwindsor_ca_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/sign_in",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email address or phone number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "account_vkplay_ru_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accounts_hindustantimes_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login/index.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Google Apps Account",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accounts_kmutt_ac_th_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accounts_oneplus_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Mobile Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Mobile Number\n        \n\n        +91\n\n        \n          \n            \n              Mobile",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Create Paytm Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email ID (optional)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accounts_paytm_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "tel",
+        "label": "Membership number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "PIN",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accounts_qantas_com_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "Create Your @UKR.NET Mailbox",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Think up your mailbox name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Create a password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm your password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Your name",
+        "attributes": {
+          "placeholder": "First name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Optional recovery e-mail",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Mobile phone number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "accounts_ukr_net_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Se connecter",
+    "form_action": "/identifiantunique/securite-garantie/securiteGarantieProcess",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Identifiant",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Mot de passe",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "accweb_mouv_desjardins_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/applicantportal/Auth/Login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "UCSB Perm Number",
+        "attributes": {
+          "placeholder": "Please enter your 7-character UCSB Perm Number"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "admissions_sa_ucsb_edu_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Log in",
+    "form_action": "/s/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username *",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password *",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "admissions_utexas_edu_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Welcome to Appian",
+    "form_action": "/secure/QuickSearch.jspa",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "agile_appian_com_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "airbnb_login_signup.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/create",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First name on ID",
+        "attributes": {
+          "placeholder": "First name on ID"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name on ID",
+        "attributes": {
+          "placeholder": "Last name on ID"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "airbnb_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/LoginAction.do",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "aisjapan_mlit_go_jp_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Currency converter",
+    "form_action": "/booking/payment",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address line 1",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address line 2",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Zip/postal code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State/province",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State/province",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State/province",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "State/province",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Phone (with area code)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "alaskaair_checkout.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/account/sign-in-success",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email address",
+        "attributes": {
+          "placeholder": "yourname@example.com"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "allrecipes_login_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/auth.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "alrincon_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Full name (First and Last name)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Phone number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address",
+        "attributes": {
+          "placeholder": "Street address or P.O. Box"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Apt, suite, unit, building, floor, etc."
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "ZIP Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "amazon_address.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Enter the email you'd like to use for your business account",
+        "attributes": {
+          "placeholder": "Enter email"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "amazon_business_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "tel",
+        "label": "Card number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Name on card",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Expiration date",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "amazon_card.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/ap/cnep",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "Current password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "New password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Reenter new password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "amazon_change-password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign-In",
+    "form_action": "/ap/signin",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email or mobile phone number ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "amazon_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "Create account",
+    "form_action": "/ap/register",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Your name ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password ",
+        "attributes": {
+          "placeholder": "At least 6 characters"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Re-enter password ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "amazon_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "apartments_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email Address ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "apartments_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Where should we send your order?",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "apple_checkout.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Sign in to Apple Store Apple ID",
+        "attributes": {
+          "placeholder": "Apple ID"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "apple_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "ID de Apple",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Inicia sesión con tu ID de Apple",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Contraseña",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "apple_login_spanish.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "Create Your Apple ID",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country Options",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "apple_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Password",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "appleid_change-password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/internships/WHIP_App_Login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "apply_whitehouse_gov_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/public/api/logadoUnico/v1/orange/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Usuario"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Contraseña"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "areaclientes_orange_es_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "O-I Meta Project (Passwords and Sync)",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "asana_board_title.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "asana_search.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "asana_tasklist.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Логин"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Пароль"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "auth_keydisk_ru_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "auth_wetransfer_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "PMI Login",
+    "form_action": "/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "authentication_pmi_org_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/pkmslogin.form",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "autostrade_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/do_login_secure.htm",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "babycenter_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/register.htm",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password (6-20 characters)"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "babycenter_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email Address\nPlease enter an email address.",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Credit Card or Debit Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Security Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "First Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Apt #, Suite, Floor (optional)"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State\nSelect\nAL\nAK\nAS\nAZ\nAR\nAA\nAE\nAP\nCA\nCO\nCT\nDE\nFL\nGA\nGU\nHI\nID\nIL\nIN\nIA\nKS\nKY\nLA\nME\nMD\nMA\nMI\nMN\nMS\nMO\nMT\nNE\nNV\nNH\nNJ\nNM\nNY\nNC\nND\nOH\nOK\nOR\nPA\nPR\nRI\nSC\nSD\nTN\nTX\nUT\nVT\nVI\nVA\nWA\nDC\nWV\nWI\nWY",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "ZIP Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "bestbuy_checkout.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": " "
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "bestbuy_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "password",
+        "label": "Passwordex. \"Nine+twelve=21\"",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm Password",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Mobile Phone Number",
+        "attributes": {
+          "placeholder": " "
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "bestbuy_signup.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/index.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "bitcointalk_org_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "Master password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "bitwarden_com_account-locked.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "EmailInvalid E-mail ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password Invalid Password ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "blazetv_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/s/All+Users",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Your email"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "blazetv_newsletter.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "blazetv_signup.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Choose a username"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your email address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Choose password"
+        }
+      },
+      {
+        "type": "date",
+        "label": "Birthdate of your child",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Please remember me",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Choose a username"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "{YOUR_EMAIL}"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email address or username"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "boardgamearena_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username or Email",
+        "attributes": {
+          "placeholder": "Username or email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "britannica_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "text",
+        "label": "First Name",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Create Username",
+        "attributes": {
+          "placeholder": "Create Username"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Create Password",
+        "attributes": {
+          "placeholder": "Create Password"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "britannica_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Apuesta\n            en vivo",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Usuario:"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Contraseña:"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "caliente_mx_login.html"
+    }
+  },
+  {
+    "page_title": "Replicating camelcamelcamel.com's login page, which has a password reset message in a label, linked to the password field",
+    "page_heading": "unknown heading",
+    "form_action": "/sessions/create",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username or Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password (Forgot your password? Reset it.)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "camelcamelcamel_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/search/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "username",
+        "attributes": {
+          "placeholder": "Username/Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "password",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "Chat Nickname"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "ZIP or Postal Code",
+        "attributes": {
+          "placeholder": "ZIP/Postal code"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Credit Card Number"
+        }
+      },
+      {
+        "type": "text",
+        "label": "cvv number\nCard Verification(CVV2)\nThe CVV2 number is a special number printed on your credit card and provides extra fraud protection",
+        "attributes": {
+          "placeholder": "CVV2"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "ZIP/Postal code"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Address"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "City"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Zip"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "cams_xnxx_com_signup.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm password*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "First name*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Primary phone*",
+        "attributes": {
+          "placeholder": "(201) 555-0123"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address 1*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address 2",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Zip/Postal code*",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "candidguidestar_checkout_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "carmax_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "Register for a MyCarMax account",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": " "
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "carmax_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "eCAC - Centro Virtual de Atendimento",
+    "form_action": "/autenticacao/Login/CodigoAcesso",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Código de Acesso",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Senha",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cav_receita_fazenda_gov_br_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Jméno"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Heslo"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "centrum_cz_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Get verified Step 2 of 2",
+    "form_action": "void(0);",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "Error:Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "chase_2fa-verification-step.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Full Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Street Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Apt / Suite / Other",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "ZIP Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Name on Card",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Exp. Month",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Exp. Year",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "CVV",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "chewy_checkout.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in or register",
+    "form_action": "/app/login",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "chewy_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/app/register",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Full Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "chewy_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "WELCOME TO CIBC\n                                PERSONAL BANKING",
+    "form_action": "/en/search-results.html",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Card number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Card number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cibc_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/default.aspx",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cinportal_iarc_fr_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "Current password:",
+        "attributes": {
+          "placeholder": "•••••••••••"
+        }
+      },
+      {
+        "type": "password",
+        "label": "New password:",
+        "attributes": {
+          "placeholder": "•••••••••••"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "cleanshotcloud_change-password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login.aspx",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "clientssp_fnfis_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "クロネコID",
+        "attributes": {
+          "placeholder": "半角英数記号"
+        }
+      },
+      {
+        "type": "password",
+        "label": "パスワード",
+        "attributes": {
+          "placeholder": "半角英数記号"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cmypage_kuronekoyamato_co_jp_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cnbc_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "cnbc_newsletter.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "cnbc_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email address"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "cnn_newsletter.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email address..."
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your password..."
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "coinmarketcap_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email address"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "coinmarketcap_newsletter.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email address..."
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your password..."
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "coinmarketcap_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/enter.pl",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Login"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "combats_com_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "College",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Current City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "community_toppr_com_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "User ID",
+        "attributes": {
+          "placeholder": "Username/Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "connect_sonypictures_com_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address Line 1",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Zip Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone Number ",
+        "attributes": {
+          "placeholder": "( ___ )  ___ - ____"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "1234 1234 1234 1234"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "MM/YY"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "..."
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "containerstore_checkout.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/profile/forgotPassword.htm",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "containerstore_forgot_password.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/servlet/servlet.WebToCase",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Full name"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your phone number"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email address"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "containerstore_hidden_contact.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/loginProcess",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "containerstore_login_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/pop/subscribe.htm",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Your email",
+        "attributes": {
+          "placeholder": "Sign Up for Emails"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "containerstore_newsletter.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Enter the verification code sent to your email",
+    "form_action": "/us/email_verification_codes/fa9d14f5-1c08-4fd4-b17e-6208925bdc5a/verifications",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "cookpad_email-confirmation-code.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/us/sessions/identity_authentications",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cookpad_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/us/accounts/emails",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Username (this will be public)"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password confirmation"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "cookpad_signup-second-step.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/us/email_verification_codes",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email address"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "cookpad_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Street Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Apt., Suite, Unit, Etc. (optional)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "ZIP Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Phone Number (optional)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Card\n                            Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Card Holder Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry Month",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry\n                    Year",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiration Date",
+        "attributes": {
+          "placeholder": "MM/YY"
+        }
+      },
+      {
+        "type": "text",
+        "label": "CVV Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Security\n                            Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Security Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Cardholder Name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "costco_checkout.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "void(0);",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "costco_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "void(0);",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "costco_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cp_kwai_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Личный кабинет",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "c12345"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Пароль\n                            \n                              Напом",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "cp_masterhost_ru_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Log in",
+    "form_action": "/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email / Handle",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "PasswordForgot password?",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "craigslist_account.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Log In",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your Email address"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "customer_globeandmail_ca_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Sign in name ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "customerportal_mastercard_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Identifier",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "dasso_kzn_as8677_net_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/home",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "dcsync_com_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "What are your biggest challenges while using the password manager feature in the DuckDuckGo browser?",
+    "form_action": "/survey/selfserve/32ab/240308",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "decipherinc_survey.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "New Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "deltamath_reset_password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Repeat password:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "E-mail:",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "depositfiles_com_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name required",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name required",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone Number required",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email Address (name@domain.com) required",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "disneyworld_help.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name ",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Middle Name (optional) ",
+        "attributes": {
+          "placeholder": "Middle Name (optional)"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name ",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email Address ",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password \n1\n2\n3\n4\n5\n6\nWeak OK Strong Invalid\nEnter at least 6 characters.\nDon't use the password from another account.\nUse letters together with spaces, numbers, or symbols (!@#$%^&*).",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country/Region",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address ",
+        "attributes": {
+          "placeholder": "Address"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Line 2 (optional) ",
+        "attributes": {
+          "placeholder": "Line 2 (optional)"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Town/City"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "County\nCounty\nAlabama\nAlaska\nArizona\nArkansas\nCalifornia\nColorado\nConnecticut\nDelaware\nDistrict of Columbia\nFlorida\nGeorgia\nHawaii\nIdaho\nIllinois\nIndiana\nIowa\nKansas\nKentucky\nLouisiana\nMaine\nMaryland\nMassachusetts\nMichigan\nMinnesota\nMississippi\nMissouri\nMontana\nNebraska\nNevada\nNew Hampshire\nNew Jersey\nNew Mexico\nNew York\nNorth Carolina\nNorth Dakota\nOhio\nOklahoma\nOregon\nPennsylvania\nRhode Island\nSouth Carolina\nSouth Dakota\nTennessee\nTexas\nUtah\nVermont\nVirginia\nWashington\nWest Virginia\nWisconsin\nWyoming",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "County"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Postcode"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "disneyworld_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "dropbox_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "dropbox_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter a passphrase"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter a passphrase"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "duckduckgo_cloudsave-passphrase.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "tel",
+        "label": "Card number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Expiration date",
+        "attributes": {
+          "placeholder": "MM / YY"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Security code",
+        "attributes": {
+          "placeholder": "3 or 4 digits"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "ebay_checkout.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/signin/s",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email or username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "ebay_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "ebay_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "ETtoday 編採系統 |",
+    "form_action": "/login_do.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "editor_ettoday_net_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Forge of Empires",
+    "form_action": "/glps/login_check",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "E-mail / player name"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Choose your username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Choose your password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "en_forgeofempires_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Iranians start marking victory anniversary of Islamic\n                      Revolution",
+    "form_action": "/search",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Name",
+        "attributes": {
+          "placeholder": "Name"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "en_irna_ir_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Free signup",
+    "form_action": "/searchgate.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "en_luxuretv_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/ibg/dfw/APLIN/loginib/login",
+    "input_fields": [
+      {
+        "type": "tel",
+        "label": "ご契約番号半角数字",
+        "attributes": {
+          "placeholder": "半角数字"
+        }
+      },
+      {
+        "type": "password",
+        "label": "ログインパスワード半角英数字・記号 4~16桁",
+        "attributes": {
+          "placeholder": "半角英数字・記号 4~16桁"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "entry11_bk_mufg_jp_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "登录账号",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "密码",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "epaper_zaobao_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Username or Email Address ",
+        "attributes": {
+          "placeholder": "Username or Email Address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password (case sensitive) ",
+        "attributes": {
+          "placeholder": "Password (case sensitive)"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "espn_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First Name \nPlease enter your first name.",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last Name ",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email Address ",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password (case sensitive) \n1\n2\n3\n4\n5\n6\nWeak OK Strong Invalid\nEnter at least 6 characters.\nDon't use the password from another account.\nUse letters together with spaces, numbers, or symbols (!@#$%^&*).",
+        "attributes": {
+          "placeholder": "Password (case sensitive)"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "espn_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "esquire_newsletter.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Name on card ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Card number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "> Credit card expiration month ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Credit card expiration year ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Full name ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Street address ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Flat/Other (optional) ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Postal code (optional)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "etsy_checkout.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email address ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "etsy_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "New Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Re-enter Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "etsy_password-reset.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Sign in",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "etsy_security-step.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "Create your account",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email address * ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "First name * ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password * ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "etsy_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First name *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email address *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Confirm email *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "First name *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email address *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Cell phone *(required)",
+        "attributes": {
+          "placeholder": "(555) 555-5555"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "eventbrite_checkout-signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email address *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Confirm email *(required)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "eventbrite_fake-signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/9929092/checkouts/f425c60311d7bbd6bce853b3693152bf",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "First name",
+        "attributes": {
+          "placeholder": "First name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name",
+        "attributes": {
+          "placeholder": "Last name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Address",
+        "attributes": {
+          "placeholder": "Address"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Apartment, suite, etc. (optional)",
+        "attributes": {
+          "placeholder": "Apartment, suite, etc. (optional)"
+        }
+      },
+      {
+        "type": "text",
+        "label": "City",
+        "attributes": {
+          "placeholder": "City"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "Country/region",
+        "attributes": {
+          "placeholder": "Country/region"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "State",
+        "attributes": {
+          "placeholder": "State"
+        }
+      },
+      {
+        "type": "text",
+        "label": "ZIP code",
+        "attributes": {
+          "placeholder": "ZIP code"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone",
+        "attributes": {
+          "placeholder": "Phone"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Card number",
+        "attributes": {
+          "placeholder": "Card number"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Name on card",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry month",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry year",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry date (MM / YY)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Security code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Credit Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Name on card"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry month",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry year",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry date (MM / YY)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Security code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Credit Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Name on card",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry month",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry year",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Expiration date (MM / YY)"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Security code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Credit Card Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Name on card",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry month",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry year",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Expiry date (MM / YY)",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Security code"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "everydayoil_checkout.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your password"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "evite_checkout-login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email Address"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Confirm Email Address"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Zip Code"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "evite_checkout-signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Forgot password\n        Next",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "expensify.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email or phone number"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "facebook_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/reg/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "First name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Last name",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Mobile number or email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Re-enter email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "New password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "JanFebMarAprMayJunJulAugSepOctNovDec",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "12345678910111213141516171819202122232425262728293031",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "facebook_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/signin",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "fandom_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/user-registration/users",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Birthdate",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "fandom_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "fanfiction_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Username"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "fanfiction_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Popular Faphouse videos",
+    "form_action": "/search/videos",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Username / Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Username / Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "E-mail"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "E-mail"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your Email"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Username / Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your Password"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your Email"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Username / Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Your Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "faphouse_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "User ID",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "fedex_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Книга фанфиков",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Имя пользователя",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Пароль",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "ficbook_net_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email address  ",
+        "attributes": {
+          "placeholder": "Enter your email address"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "financialtimes_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email or Client Number (TP)",
+        "attributes": {
+          "placeholder": " "
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": " "
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "flytap_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign In",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "fox_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "fox_signup.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/users",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "freelance_habr_com_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "freshdirect_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/customer/account/loginPost/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Email Address or Account Number",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "fullcolor_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Dein Name oder deine E-Mail-Adresse",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Passwort",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "gartenforum_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "ihre@mail.de"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "gartenjournal_newsletter.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/Login.aspx",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "gculegacyportal_gcu_edu_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/index.php",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "gelbooru_com_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "T.C. Kimlik No",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "e-Devlet Şifresi",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "giris_turkiye_gov_tr_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "github_assign-reviewer.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/account/password",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "Old password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "New password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm new password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "New password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "github_change-password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/session",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username or email address ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "github_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/signup",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Enter your email e.g. monalisa@github.com",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Create a password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "\n                Enter a username\n            ",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "github_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/j_security_check",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "givesmart_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "Register",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Gmarket ID"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "E-mail"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Confirm password"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "gmemberssl_gmarket_co_kr_signup.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username or Customer #",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "godaddy_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Username",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "godaddy_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "New passwordvisibility_off",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Confirm new passwordvisibility_off",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "google_change-password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Forgot email?",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "google_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "google_password_manager_search.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "google_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Provide contact email",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "State",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Country"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Name"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "ZIP code"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone number"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "google_store_checkout.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "googlecalendar_eventnotification.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Gmarket (Korea No.1 Shopping site)",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "ID",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "gsigninssl_gmarket_co_kr_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/en/user/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Username *",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password *",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "gsw_gda_pl_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Name ",
+        "attributes": {
+          "placeholder": "First and Last Name"
+        }
+      },
+      {
+        "type": "tel",
+        "label": "Phone Number ",
+        "attributes": {
+          "placeholder": "Phone Number"
+        }
+      },
+      {
+        "type": "email",
+        "label": "Email ",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "gunderassociates_contacts.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password (min 6 characters & 1 lowercase)"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "gunscom_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "Stay in the Know",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter Your Email"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "gunscom_newsletter.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "gunscom_newsletter_2.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/register",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "First Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Last Name"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Street"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "City"
+        }
+      },
+      {
+        "type": "select-one",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Zip"
+        }
+      },
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Email"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password (min 6 characters & 1 lowercase)"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Confirm Password"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "gunscom_signup.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "/login",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "hackernews_login_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Enter your email"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "healthline_newsletter.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "I can't sign in to my account",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "+1",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "name@example.com"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "help_uber_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/siteminderagent/fcc/shim.fcc",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "Please enter your BT ID",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Please enter your password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "home_bt_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "homedepot_login.html"
+    }
+  },
+  {
+    "page_title": "signup",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email\n                Address",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Zip Code",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Phone",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "signup",
+    "meta": {
+      "name": "homedepot_signup.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "unknown action",
+    "input_fields": [],
+    "type": "unknown",
+    "meta": {
+      "name": "hulu_account-pin.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Welcome to Johnson Controls",
+    "form_action": "/",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "ibs_johnsoncontrols_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone/Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "id_oppo_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone"
+        }
+      },
+      {
+        "type": "text",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Phone/Email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "Password"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "id_realme_com_login.html"
+    }
+  },
+  {
+    "page_title": "unknown",
+    "page_heading": "unknown heading",
+    "form_action": "/profiles/101093876849/change_password",
+    "input_fields": [
+      {
+        "type": "password",
+        "label": "Current password * ",
+        "attributes": {
+          "placeholder": "Type old password"
+        }
+      },
+      {
+        "type": "password",
+        "label": "New password * ",
+        "attributes": {
+          "placeholder": "Create a new password"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Re-enter new password * ",
+        "attributes": {
+          "placeholder": "Type new password"
+        }
+      }
+    ],
+    "type": "unknown",
+    "meta": {
+      "name": "identita-gov-mt_change-password.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "unknown heading",
+    "form_action": "/mga/sps/authsvc",
+    "input_fields": [
+      {
+        "type": "search",
+        "label": "User ID",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "identity_directv_com_login.html"
+    }
+  },
+  {
+    "page_title": "login",
+    "page_heading": "Sign in to ID.me",
+    "form_action": "unknown action",
+    "input_fields": [
+      {
+        "type": "email",
+        "label": "Email",
+        "attributes": {
+          "placeholder": "Enter your email"
+        }
+      },
+      {
+        "type": "password",
+        "label": "Password",
+        "attributes": {
+          "placeholder": "Enter your password"
+        }
+      },
+      {
+        "type": "text",
+        "label": "Facebook\n        Google\n        LinkedIn\n        View more options",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      },
+      {
+        "type": "password",
+        "label": "unknown label",
+        "attributes": {
+          "placeholder": "unknown placeholder"
+        }
+      }
+    ],
+    "type": "login",
+    "meta": {
+      "name": "idme_login.html"
+    }
+  }
+]
