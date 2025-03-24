@@ -9,7 +9,8 @@ const FEATURE_NAME = 'autofill-site-specific-fixes';
  */
 
 /** @typedef {Object} FormBoundarySettings
- * @property {string} selector
+ * @property {string} formSelector
+ * @property {string[]} inputsSelectors
  */
 
 export default class SiteSpecificFeature extends ConfigFeature {
@@ -41,6 +42,20 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
+     * @param {Element} form
+     * @param {FormBoundarySettings} settings
+     * @param {string} formInputsSelectorWithoutSelect
+     * @returns {Element[]|NodeListOf<HTMLSelectElement|HTMLInputElement>}
+     */
+    getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
+        // We only expect one input per selector, so we can just return the first one
+        const inputs = settings.inputsSelectors.map((selector) => form.querySelectorAll(selector)[0]);
+        return inputs.length
+            ? inputs
+            : /** @type {NodeListOf<HTMLSelectElement|HTMLInputElement>} */ (form.querySelectorAll(formInputsSelectorWithoutSelect));
+    }
+
+    /**
      * @param {HTMLElement} context
      * @param {string} formInputsSelectorWithoutSelect
      * @param {(input: HTMLInputElement|HTMLSelectElement, form?: HTMLFormElement) => void} callback
@@ -51,11 +66,9 @@ export default class SiteSpecificFeature extends ConfigFeature {
         if (this.formBoundarySettings.length) {
             // Only if all forms are found, proceed with the ad hoc fixes. Otherwise
             for (const setting of this.formBoundarySettings) {
-                const form = context.querySelector(setting.selector) || findElementsInShadowTree(context, setting.selector)[0];
+                const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
                 if (form) {
-                    const inputs = /** @type NodeListOf<HTMLSelectElement|HTMLInputElement> */ (
-                        form.querySelectorAll(formInputsSelectorWithoutSelect)
-                    );
+                    const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
                     for (const input of inputs) {
                         // @ts-ignore input can be an arbitrary element type
                         callback(input, form);

@@ -8085,6 +8085,19 @@ Source: "${matchedFrom}"`;
       return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
     }
     /**
+     * @param {Element} form
+     * @param {FormBoundarySettings} settings
+     * @param {string} formInputsSelectorWithoutSelect
+     * @returns {Element[]|NodeListOf<HTMLSelectElement|HTMLInputElement>}
+     */
+    getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
+      const inputs = settings.inputsSelectors.map((selector) => form.querySelectorAll(selector)[0]);
+      return inputs.length ? inputs : (
+        /** @type {NodeListOf<HTMLSelectElement|HTMLInputElement>} */
+        form.querySelectorAll(formInputsSelectorWithoutSelect)
+      );
+    }
+    /**
      * @param {HTMLElement} context
      * @param {string} formInputsSelectorWithoutSelect
      * @param {(input: HTMLInputElement|HTMLSelectElement, form?: HTMLFormElement) => void} callback
@@ -8094,12 +8107,9 @@ Source: "${matchedFrom}"`;
       let formCount = 0;
       if (this.formBoundarySettings.length) {
         for (const setting of this.formBoundarySettings) {
-          const form = context.querySelector(setting.selector) || findElementsInShadowTree(context, setting.selector)[0];
+          const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
           if (form) {
-            const inputs = (
-              /** @type NodeListOf<HTMLSelectElement|HTMLInputElement> */
-              form.querySelectorAll(formInputsSelectorWithoutSelect)
-            );
+            const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
             for (const input of inputs) {
               callback(input, form);
               formCount++;
