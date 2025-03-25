@@ -37,7 +37,7 @@ We have GitHub Action to facilitate releases. Remember to test on all platforms 
 
 1. [Draft a new release in GitHub](https://github.com/duckduckgo/duckduckgo-autofill/releases/new)
 2. Add a tag using the [semver convention](https://semver.org/) (like `3.2.4`) and use the same tag as a title
-3. Add release notes (these will be included in the Asa`na task)
+3. Add release notes (these will be included in the Asana task)
 4. Publish!
 
 This will create the relevant tasks in the [Autofill Project](https://app.asana.com/0/1198964220583541/1200878329826704) in Asana, add the subtasks to relevant projects, and create PRs in all client repos.
