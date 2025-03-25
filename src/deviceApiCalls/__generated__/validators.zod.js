@@ -112,7 +112,8 @@ export const contentScopeSchema = z.object({
             domain: z.string()
         })),
         state: z.union([z.literal("enabled"), z.literal("disabled")]),
-        settings: z.record(z.unknown())
+        settings: z.record(z.unknown()),
+        features: z.record(z.record(z.unknown())).optional()
     })),
     unprotectedTemporary: z.array(z.string())
 });

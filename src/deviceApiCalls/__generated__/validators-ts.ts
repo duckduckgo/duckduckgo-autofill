@@ -364,6 +364,11 @@ export interface ContentScope {
       settings: {
         [k: string]: unknown;
       };
+      features?: {
+        [k: string]: {
+          [k: string]: unknown;
+        };
+      };
     };
   };
   unprotectedTemporary: string[];

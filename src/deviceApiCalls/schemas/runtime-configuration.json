@@ -20,7 +20,9 @@
                 "type": "array",
                 "items": {
                   "type": "object",
-                  "required": ["domain"],
+                  "required": [
+                    "domain"
+                  ],
                   "additionalProperties": false,
                   "properties": {
                     "domain": {
@@ -31,16 +33,26 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["enabled", "disabled"]
+                "enum": [
+                  "enabled",
+                  "disabled"
+                ]
               },
               "settings": {
                 "type": "object"
+              },
+              "features": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
               }
             },
             "required": [
+              "settings",
               "exceptions",
-              "state",
-              "settings"
+              "state"
             ]
           }
         },

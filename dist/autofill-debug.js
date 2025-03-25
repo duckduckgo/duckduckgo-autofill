@@ -10339,7 +10339,8 @@ Source: "${matchedFrom}"`;
         domain: z.string()
       })),
       state: z.union([z.literal("enabled"), z.literal("disabled")]),
-      settings: z.record(z.unknown())
+      settings: z.record(z.unknown()),
+      features: z.record(z.record(z.unknown())).optional()
     })),
     unprotectedTemporary: z.array(z.string())
   });
@@ -12527,19 +12528,21 @@ Source: "${matchedFrom}"`;
      * @param {Element} form
      * @param {FormBoundarySettings} settings
      * @param {string} formInputsSelectorWithoutSelect
-     * @returns {Element[]|NodeListOf<HTMLSelectElement|HTMLInputElement>}
+     * @returns {Array<HTMLSelectElement|HTMLInputElement>}
      */
     getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
-      const inputs = settings.inputsSelectors.map((selector) => form.querySelectorAll(selector)[0]);
-      return inputs.length ? inputs : (
-        /** @type {NodeListOf<HTMLSelectElement|HTMLInputElement>} */
-        form.querySelectorAll(formInputsSelectorWithoutSelect)
+      const inputs = settings.inputsSelectors.map(
+        (selector) => (
+          /** @type {HTMLSelectElement|HTMLInputElement} */
+          form.querySelectorAll(selector)[0]
+        )
       );
+      return inputs.length ? inputs : Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
     }
     /**
      * @param {HTMLElement} context
      * @param {string} formInputsSelectorWithoutSelect
-     * @param {(input: HTMLInputElement|HTMLSelectElement, form?: HTMLFormElement) => void} callback
+     * @param {(input: HTMLInputElement|HTMLSelectElement, form?: any) => void} callback
      * @returns {boolean}
      */
     attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, callback) {
@@ -12702,6 +12705,36 @@ Source: "${matchedFrom}"`;
     get siteSpecificFeature() {
       return this._siteSpecificFeature ?? void 0;
     }
+    /**
+     * WORKAROUND: Currently C-S-S only suppports parsing top level features, so we need to manually allow
+     * setting top level features in the content scope from nested features.
+     * @param {RuntimeConfiguration} runtimeConfig
+     * @param {string} name
+     * @returns {RuntimeConfiguration}
+     */
+    setTopLevelFeatureInContentScope(runtimeConfig, name) {
+      const feature = runtimeConfig.contentScope.features.autofill.features?.[name];
+      if (feature) {
+        runtimeConfig.contentScope.features = {
+          ...runtimeConfig.contentScope.features,
+          [`autofill${name[0].toUpperCase() + name.slice(1)}`]: {
+            settings: feature.settings?.javascriptConfig,
+            exceptions: [],
+            // TODO: add types for this in runtime-configuration.json
+            state: feature.state
+            // TODO: add types for this in runtime-configuration.json
+          }
+        };
+      }
+      return runtimeConfig;
+    }
+    /**
+     * @param {RuntimeConfiguration} runtimeConfig
+     * @returns {boolean}
+     */
+    isSiteSpecificFeatureEnabled(runtimeConfig) {
+      return runtimeConfig.contentScope.features.autofill.features?.siteSpecificFixes?.state === "enabled";
+    }
     async getsiteSpecificFeature() {
       if (this._siteSpecificFeature)
         return this._siteSpecificFeature;
@@ -12709,6 +12742,9 @@ Source: "${matchedFrom}"`;
         return null;
       try {
         const runtimeConfig = await this._getRuntimeConfiguration();
+        if (this.isSiteSpecificFeatureEnabled(runtimeConfig)) {
+          this.setTopLevelFeatureInContentScope(runtimeConfig, "siteSpecificFixes");
+        }
         const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
         return new SiteSpecificFeature({
           site: args.site,

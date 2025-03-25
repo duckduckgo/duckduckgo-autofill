@@ -176,6 +176,37 @@ export class Settings {
         return this._siteSpecificFeature ?? undefined;
     }
 
+    /**
+     * WORKAROUND: Currently C-S-S only suppports parsing top level features, so we need to manually allow
+     * setting top level features in the content scope from nested features.
+     * @param {RuntimeConfiguration} runtimeConfig
+     * @param {string} name
+     * @returns {RuntimeConfiguration}
+     */
+    setTopLevelFeatureInContentScope(runtimeConfig, name) {
+        /** @type {any} */
+        const feature = runtimeConfig.contentScope.features.autofill.features?.[name];
+        if (feature) {
+            runtimeConfig.contentScope.features = {
+                ...runtimeConfig.contentScope.features,
+                [`autofill${name[0].toUpperCase() + name.slice(1)}`]: {
+                    settings: feature.settings?.javascriptConfig,
+                    exceptions: [], // TODO: add types for this in runtime-configuration.json
+                    state: feature.state, // TODO: add types for this in runtime-configuration.json
+                },
+            };
+        }
+        return runtimeConfig;
+    }
+
+    /**
+     * @param {RuntimeConfiguration} runtimeConfig
+     * @returns {boolean}
+     */
+    isSiteSpecificFeatureEnabled(runtimeConfig) {
+        return runtimeConfig.contentScope.features.autofill.features?.siteSpecificFixes?.state === 'enabled';
+    }
+
     async getsiteSpecificFeature() {
         if (this._siteSpecificFeature) return this._siteSpecificFeature;
 
@@ -184,6 +215,10 @@ export class Settings {
 
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
+            if (this.isSiteSpecificFeatureEnabled(runtimeConfig)) {
+                this.setTopLevelFeatureInContentScope(runtimeConfig, 'siteSpecificFixes');
+            }
+            // @ts-ignore TODO: on Mac (and likely windows) the 'settings' key is optional, so we cannot make it required without changing it on the native side.
             const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
             return new SiteSpecificFeature({
                 site: args.site,

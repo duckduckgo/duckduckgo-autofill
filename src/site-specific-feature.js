@@ -45,20 +45,20 @@ export default class SiteSpecificFeature extends ConfigFeature {
      * @param {Element} form
      * @param {FormBoundarySettings} settings
      * @param {string} formInputsSelectorWithoutSelect
-     * @returns {Element[]|NodeListOf<HTMLSelectElement|HTMLInputElement>}
+     * @returns {Array<HTMLSelectElement|HTMLInputElement>}
      */
     getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
         // We only expect one input per selector, so we can just return the first one
-        const inputs = settings.inputsSelectors.map((selector) => form.querySelectorAll(selector)[0]);
-        return inputs.length
-            ? inputs
-            : /** @type {NodeListOf<HTMLSelectElement|HTMLInputElement>} */ (form.querySelectorAll(formInputsSelectorWithoutSelect));
+        const inputs = settings.inputsSelectors.map(
+            (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelectorAll(selector)[0]),
+        );
+        return inputs.length ? inputs : Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
     }
 
     /**
      * @param {HTMLElement} context
      * @param {string} formInputsSelectorWithoutSelect
-     * @param {(input: HTMLInputElement|HTMLSelectElement, form?: HTMLFormElement) => void} callback
+     * @param {(input: HTMLInputElement|HTMLSelectElement, form?: any) => void} callback
      * @returns {boolean}
      */
     attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, callback) {
@@ -70,7 +70,6 @@ export default class SiteSpecificFeature extends ConfigFeature {
                 if (form) {
                     const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
                     for (const input of inputs) {
-                        // @ts-ignore input can be an arbitrary element type
                         callback(input, form);
                         formCount++;
                     }
