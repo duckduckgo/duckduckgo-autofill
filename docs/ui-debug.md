@@ -4,7 +4,7 @@ The `debug/ui-debug.js` file can be used to test and iterate on any web UI displ
 
 ### Steps to build and view the tooltips:
 
-```
+```bash
 npm install
 npm run build
 npm run serve
