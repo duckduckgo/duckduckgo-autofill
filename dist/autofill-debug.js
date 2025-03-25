@@ -11433,13 +11433,22 @@ Source: "${matchedFrom}"`;
         return;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
-      if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
+      if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
+        if (shouldLog())
+          console.log("scanOnClick executing for target", realTarget);
         const parentForm = this.getParentForm(realTarget);
         if (parentForm instanceof HTMLInputElement)
           return;
         const hasShadowTree = event.target?.shadowRoot != null;
-        const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-        this.forms.set(parentForm, form);
+        const form = this.forms.get(parentForm);
+        if (!form) {
+          this.forms.set(
+            parentForm,
+            new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
+          );
+        } else {
+          form.addInput(realTarget);
+        }
         this.findEligibleInputs(parentForm);
       }
       window.performance?.mark?.("scan_shadow:init:end");
@@ -12499,7 +12508,7 @@ Source: "${matchedFrom}"`;
   _args = new WeakMap();
 
   // src/site-specific-feature.js
-  var FEATURE_NAME = "autofill-site-specific-fixes";
+  var FEATURE_NAME = "site-specific-fixes";
   var SiteSpecificFeature = class extends ConfigFeature {
     constructor(args) {
       super(FEATURE_NAME, args);
@@ -12712,12 +12721,14 @@ Source: "${matchedFrom}"`;
      * @param {string} name
      * @returns {RuntimeConfiguration}
      */
-    setTopLevelFeatureInContentScope(runtimeConfig, name) {
+    setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
+      if (runtimeConfig.contentScope.features.autofill.features?.[name]?.state !== "enabled" || runtimeConfig.contentScope.features[name])
+        return runtimeConfig;
       const feature = runtimeConfig.contentScope.features.autofill.features?.[name];
       if (feature) {
         runtimeConfig.contentScope.features = {
           ...runtimeConfig.contentScope.features,
-          [`autofill${name[0].toUpperCase() + name.slice(1)}`]: {
+          [name]: {
             settings: feature.settings?.javascriptConfig,
             exceptions: [],
             // TODO: add types for this in runtime-configuration.json
@@ -12728,13 +12739,6 @@ Source: "${matchedFrom}"`;
       }
       return runtimeConfig;
     }
-    /**
-     * @param {RuntimeConfiguration} runtimeConfig
-     * @returns {boolean}
-     */
-    isSiteSpecificFeatureEnabled(runtimeConfig) {
-      return runtimeConfig.contentScope.features.autofill.features?.siteSpecificFixes?.state === "enabled";
-    }
     async getsiteSpecificFeature() {
       if (this._siteSpecificFeature)
         return this._siteSpecificFeature;
@@ -12742,9 +12746,7 @@ Source: "${matchedFrom}"`;
         return null;
       try {
         const runtimeConfig = await this._getRuntimeConfiguration();
-        if (this.isSiteSpecificFeatureEnabled(runtimeConfig)) {
-          this.setTopLevelFeatureInContentScope(runtimeConfig, "siteSpecificFixes");
-        }
+        this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, "siteSpecificFixes");
         const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
         return new SiteSpecificFeature({
           site: args.site,

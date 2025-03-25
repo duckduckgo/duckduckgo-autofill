@@ -1,7 +1,7 @@
 import ConfigFeature from '@duckduckgo/content-scope-scripts/injected/src/config-feature';
 import { findElementsInShadowTree } from './autofill-utils.js';
 
-const FEATURE_NAME = 'autofill-site-specific-fixes';
+const FEATURE_NAME = 'site-specific-fixes';
 
 /** @typedef {Object} FormTypeSettings
  * @property {string} selector
