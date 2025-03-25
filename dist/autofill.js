@@ -6850,13 +6850,20 @@ Source: "${matchedFrom}"`;
         return;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
-      if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
+      if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
         const parentForm = this.getParentForm(realTarget);
         if (parentForm instanceof HTMLInputElement)
           return;
         const hasShadowTree = event.target?.shadowRoot != null;
-        const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-        this.forms.set(parentForm, form);
+        const form = this.forms.get(parentForm);
+        if (!form) {
+          this.forms.set(
+            parentForm,
+            new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
+          );
+        } else {
+          form.addInput(realTarget);
+        }
         this.findEligibleInputs(parentForm);
       }
       window.performance?.mark?.("scan_shadow:init:end");
