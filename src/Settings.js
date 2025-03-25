@@ -211,7 +211,6 @@ export class Settings {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
             this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, 'siteSpecificFixes');
-            // @ts-ignore TODO: on Mac (and likely windows) the 'settings' key is optional, so we cannot make it required without changing it on the native side.
             const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
             return new SiteSpecificFeature({
                 site: args.site,
