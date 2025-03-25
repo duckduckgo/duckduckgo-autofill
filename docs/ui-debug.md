@@ -11,4 +11,8 @@ npm run serve
 then visit http://127.0.0.1:3210/debug?locale=<locale>
 ```
 
-Translations can also be tested by passing the `locale` parameter. For example: `http://127.0.0.1:3210/debug?locale=fr`.
+Translations can also be tested by passing the `locale` parameter.
+For example: `http://127.0.0.1:3210/debug?locale=fr`.
+
+Platforms can be also tested with the `platform` parameter.
+For example: `http://127.0.0.1:3210/debug?platform=windows`.

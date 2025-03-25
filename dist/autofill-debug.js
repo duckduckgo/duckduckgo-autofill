@@ -16094,12 +16094,20 @@ Source: "${matchedFrom}"`;
 }
 
 :host {
-    --bg: pink;
+    /* default: MacOS */
+    --bg: rgba(242, 240, 240, 1);
+    --border-radius: 8px;
+    --border: none;
+    --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
+    --backdrop-filter: blur(76px);
 
     [data-platform="windows"] {
-        --bg: cyan;
+        --bg: white;
+        --border-radius: 3px;
+        --border: 0.5px solid rgba(0, 0, 0, 0.10);
+        --box-shadow: 0px 0px 0px 1px rgba(28, 31, 33, 0.12), 0px 8px 8px 0px rgba(28, 31, 33, 0.12), 0px 2px 4px 0px rgba(28, 31, 33, 0.12);
+        --backdrop-filter: blur(48x);
     }
-}
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
@@ -16129,8 +16137,8 @@ Source: "${matchedFrom}"`;
 }
 .tooltip--data, #topAutofill {
     background-color: var(--bg);
-    -webkit-backdrop-filter: blur(40px);
-    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
@@ -16154,9 +16162,9 @@ Source: "${matchedFrom}"`;
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-    border: 0.5px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
+    border: var(--border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 @media (prefers-color-scheme: dark) {
     .wrapper:not(.top-autofill) .tooltip--data {
