@@ -437,17 +437,32 @@ class DefaultScanner {
         // If the target is an input, find the real target in case it's in a shadow tree
         const realTarget = pierceShadowTree(event, HTMLInputElement);
 
-        // If it's an input we haven't already scanned,
-        // find the enclosing parent form, and scan it.
-        if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
+        // If the target is a generic text input field, and it's not attributed with a type,
+        // find the parent form and scan it.
+        if (
+            realTarget instanceof HTMLInputElement &&
+            realTarget.matches(this.matching.cssSelector('genericTextInputField')) &&
+            !realTarget.hasAttribute(ATTR_INPUT_TYPE)
+        ) {
+            // Helpful to debug if this code is being executed when it shouldn't
+            if (shouldLog()) console.log('scanOnClick executing for target', realTarget);
+
             const parentForm = this.getParentForm(realTarget);
 
             // If the parent form is an input element we bail.
             if (parentForm instanceof HTMLInputElement) return;
 
             const hasShadowTree = event.target?.shadowRoot != null;
-            const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-            this.forms.set(parentForm, form);
+            const form = this.forms.get(parentForm);
+            if (!form) {
+                // Only create a new one if none exists
+                this.forms.set(
+                    parentForm,
+                    new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree),
+                );
+            } else {
+                form.addInput(realTarget);
+            }
             this.findEligibleInputs(parentForm);
         }
 
