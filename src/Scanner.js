@@ -163,7 +163,11 @@ class DefaultScanner {
             }
 
             if (
-                this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)
+                this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(
+                    context,
+                    formInputsSelectorWithoutSelect,
+                    this.addInput.bind(this),
+                )
             ) {
                 return this;
             }
@@ -441,7 +445,7 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped, event target is messed up or ad hoc settings are enabled, just return
+        // If the scanner is stopped, event target is messed up or site-specific settings are enabled, just return
         if (this.isStopped || !(event.target instanceof Element) || this.device.settings.siteSpecificFeature?.formBoundarySettings?.length)
             return;
 

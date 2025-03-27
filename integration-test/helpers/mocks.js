@@ -27,6 +27,7 @@ export const constants = {
         selectInput: `${localPagesPrefix}/select-input.html`,
         shadowInputsLogin: `${localPagesPrefix}/shadow-inputs-login.html`,
         unknownUsernameLogin: `${localPagesPrefix}/unknown-username-login.html`,
+        singleStepForm: `${localPagesPrefix}/single-step-form.html`,
     },
     forms: {
         'www_ulisboa_pt_login.html': `${testFormsPrefix}/www_ulisboa_pt_login.html`,
