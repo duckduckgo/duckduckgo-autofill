@@ -57,6 +57,7 @@ class DataHTMLTooltip extends HTMLTooltip {
     render(device, config, items, callbacks) {
         const t = device.t;
         const { wrapperClass, css, isTopAutofill, platform } = this.options;
+
         let hasAddedSeparator = false;
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId, index) => {

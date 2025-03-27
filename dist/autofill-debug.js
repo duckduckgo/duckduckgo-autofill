@@ -16091,23 +16091,30 @@ Source: "${matchedFrom}"`;
   // src/UI/styles/autofill-tooltip-styles.css
   var autofill_tooltip_styles_default = `:root {
     color-scheme: light dark;
+    /* Global Colors & Styles */
+    --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
+    --T-Surface-Tertiary: #F9FAFA;
+    --T-Text-Primary: #1C1F21;
+    --T-Text-Secondary: rgba(28, 31, 33, 0.72);
 }
 
 :host {
     /* default: MacOS */
-    --bg: rgba(242, 240, 240, 1);
+    --bg: #F2F0F0;
     --border-radius: 8px;
-    --border: none;
     --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
     --backdrop-filter: blur(76px);
 
+    /* dark mode - MacOS */
+    --bg-dark: rgb(100, 98, 102, .9);
+
     [data-platform="windows"] {
-        --bg: white;
+        --bg: var(--T-Surface-Tertiary, #F9FAFA);
         --border-radius: 3px;
-        --border: 1px solid rgba(0, 0, 0, 0.10);
-        --box-shadow: 0px 0px 0px 1px rgba(28, 31, 33, 0.12), 0px 8px 8px 0px rgba(28, 31, 33, 0.12), 0px 2px 4px 0px rgba(28, 31, 33, 0.12);
+        --box-shadow: 0px 0px 0px 1px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12)), 0px 8px 8px 0px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12)), 0px 2px 4px 0px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12));
         --backdrop-filter: blur(48x);
     }
+}
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
@@ -16142,7 +16149,7 @@ Source: "${matchedFrom}"`;
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
-        background: rgb(100, 98, 102, .9);
+        background: var(--bg-dark);
     }
 }
 .tooltip--data {
@@ -16162,7 +16169,6 @@ Source: "${matchedFrom}"`;
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-    border: var(--border);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
 }
@@ -16290,7 +16296,7 @@ Source: "${matchedFrom}"`;
     display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
-    color: rgba(0,0,0,.8);
+    color: var(--T-Text-Primary, #1C1F21);
     font-size: 13px;
     line-height: 1;
 }
@@ -16300,13 +16306,12 @@ Source: "${matchedFrom}"`;
 .label.label--medium {
     font-weight: 500;
     letter-spacing: -0.25px;
-    color: rgba(0,0,0,.9);
 }
 .label.label--small {
     font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: rgba(0,0,0,0.6);
+    color: var(--T-Text-Secondary, rgba(28, 31, 33, 0.72));
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
