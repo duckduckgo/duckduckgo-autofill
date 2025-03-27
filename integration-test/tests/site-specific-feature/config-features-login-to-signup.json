@@ -31,20 +31,7 @@
                                                 ]
                                             }
                                         ],
-                                        "formBoundarySettings": [
-                                            {
-                                                "formSelector": ".MuiBox-root .css-13fcpt2",
-                                                "inputsSelectors": [
-                                                    ".MuiInputBase-root .MuiOutlinedInput-root .MuiOutlinedInput-input"
-                                                ]
-                                            },
-                                            {
-                                                "formSelector": "form[class*=\"login\"]",
-                                                "inputsSelectors": [
-                                                    ".MuiInputBase-root .MuiOutlinedInput-root .MuiOutlinedInput-input"
-                                                ]
-                                            }
-                                        ]
+                                        "formBoundarySettings": []
                                     }
                                 }
                             ]

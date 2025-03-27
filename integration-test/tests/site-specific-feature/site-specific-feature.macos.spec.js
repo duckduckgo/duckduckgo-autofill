@@ -10,19 +10,21 @@ import { readFileSync } from 'fs';
  */
 const test = testContext(base);
 
-test.describe('site-specific-fixes', () => {
-    test.only('login form can be forced to be a signup form', async ({ page }) => {
+function loginToSignupConfig() {
+    return JSON.parse(readFileSync('integration-test/tests/site-specific-feature/config-features-login-to-signup.json', 'utf8'));
+}
+
+test.describe('site-specific-fixes on login form', () => {
+    test('login form can be forced to be a signup form', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page);
 
-        const config = JSON.parse(readFileSync('integration-test/tests/site-specific-feature/config-features.json', 'utf8'));
-        console.log('config', config);
 
         await createWebkitMocks('macos')
             .withAvailableInputTypes({ email: true })
             .withPersonalEmail('0')
             .withPrivateEmail('0')
-            .withContentScopeFeatures(config.features)
+            .withContentScopeFeatures(loginToSignupConfig().features)
             .applyTo(page);
 
         // Load the autofill.js script
