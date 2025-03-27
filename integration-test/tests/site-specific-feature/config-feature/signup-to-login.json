@@ -1,0 +1,44 @@
+{
+    "features": {
+        "siteSpecificFixes": {
+            "state": "enabled",
+            "anyOtherSettingForNative": "anyValue",
+            "settings": {
+                "javascriptConfig": {
+                    "domains": [
+                        {
+                            "domain": [
+                                "localhost"
+                            ],
+                            "patchSettings": [
+                                {
+                                    "path": "",
+                                    "op": "add",
+                                    "value": {
+                                        "formTypeSettings": [
+                                            {
+                                                "selector": "form[id*=\"signup\"]",
+                                                "type": "login",
+                                                "inputs": [
+                                                    {
+                                                        "selector": "input[id=\"email\"]",
+                                                        "type": "credentials.username"
+                                                    },
+                                                    {
+                                                        "selector": "input[id=\"password\"]",
+                                                        "type": "credentials.password"
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        "formBoundarySettings": []
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

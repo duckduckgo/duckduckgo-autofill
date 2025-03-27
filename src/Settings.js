@@ -188,10 +188,10 @@ export class Settings {
         const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
             runtimeConfig.contentScope
         );
-        // If the feature is not enabled or already exists, do nothing
-        if (contentScope.features.autofill.features?.[name]?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
-        /** @type {any} */
         const feature = contentScope.features.autofill.features?.[name];
+        // If the feature is not enabled or already exists, do nothing
+        if (feature?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
+        /** @type {any} */
         if (feature) {
             runtimeConfig.contentScope.features = {
                 ...contentScope.features,

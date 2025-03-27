@@ -4809,6 +4809,7 @@ Source: "${matchedFrom}"`;
       this.form = form;
       this.siteSpecificFeature = siteSpecificFeature;
       this.matching = matching || new Matching(matchingConfiguration);
+      console.log("DEEP siteSpecificFeature", siteSpecificFeature?.isEnabled());
       if (this.siteSpecificFeature?.isEnabled()) {
         this.siteSpecificFeature.setForcedFormInputTypes(form, this.matching);
         return this;
@@ -12525,7 +12526,7 @@ Source: "${matchedFrom}"`;
       super(FEATURE_NAME, args);
     }
     isEnabled() {
-      return this.getFeatureSetting("enabled") ?? false;
+      return this.bundledConfig?.features?.siteSpecificFixes?.state === "enabled";
     }
     /**
      * @returns {Array<FormTypeSettings>}
@@ -12765,9 +12766,9 @@ Source: "${matchedFrom}"`;
         /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
         runtimeConfig.contentScope
       );
-      if (contentScope.features.autofill.features?.[name]?.state !== "enabled" || contentScope.features[name])
-        return runtimeConfig;
       const feature = contentScope.features.autofill.features?.[name];
+      if (feature?.state !== "enabled" || contentScope.features[name])
+        return runtimeConfig;
       if (feature) {
         runtimeConfig.contentScope.features = {
           ...contentScope.features,

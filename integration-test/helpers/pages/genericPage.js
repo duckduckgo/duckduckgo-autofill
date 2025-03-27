@@ -19,6 +19,20 @@ export function genericPage(page) {
             await expect(passwordStyle).toContain(constants.iconMatchers.keyFill);
         }
 
+        async usernameFieldShowsDaxIcon(selector = '#username') {
+            const field = page.locator(selector);
+            await expect(field).toHaveAttribute('data-ddg-inputtype');
+            const usernameStyle = await page.locator(selector).getAttribute('style');
+            await expect(usernameStyle).toContain(constants.iconMatchers.dax);
+        }
+
+        async usernameFieldShowsFillKey(selector = '#username') {
+            const field = page.locator(selector);
+            await expect(field).toHaveAttribute('data-ddg-inputtype');
+            const usernameStyle = await page.locator(selector).getAttribute('style');
+            await expect(usernameStyle).toContain(constants.iconMatchers.keyFill);
+        }
+
         /**
          * @param {import('../../../src/deviceApiCalls/__generated__/validators-ts').SendJSPixelParams[]} pixels
          */

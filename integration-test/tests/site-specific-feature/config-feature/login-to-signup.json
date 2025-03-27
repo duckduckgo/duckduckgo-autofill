@@ -1,6 +1,6 @@
 {
     "features": {
-        "siteSpecificRules": {
+        "siteSpecificFixes": {
             "state": "enabled",
             "anyOtherSettingForNative": "anyValue",
             "settings": {
@@ -21,11 +21,11 @@
                                                 "type": "signup",
                                                 "inputs": [
                                                     {
-                                                        "selector": "input[name=\"username\"]",
-                                                        "type": "credentials.username.new"
+                                                        "selector": "input[id*=\"email\"]",
+                                                        "type": "identities.emailAddress"
                                                     },
                                                     {
-                                                        "selector": "input[name=\"password\"]",
+                                                        "selector": "input[id*=\"password\"]",
                                                         "type": "credentials.password.new"
                                                     }
                                                 ]

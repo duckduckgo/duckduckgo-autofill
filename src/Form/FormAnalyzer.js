@@ -33,6 +33,7 @@ class FormAnalyzer {
         this.form = form;
         this.siteSpecificFeature = siteSpecificFeature;
         this.matching = matching || new Matching(matchingConfiguration);
+        console.log('DEEP siteSpecificFeature', siteSpecificFeature?.isEnabled());
         if (this.siteSpecificFeature?.isEnabled()) {
             this.siteSpecificFeature.setForcedFormInputTypes(form, this.matching);
             return this;

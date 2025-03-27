@@ -4,14 +4,21 @@ import { createWebkitMocks, macosContentScopeReplacements } from '../../helpers/
 import { testContext } from '../../helpers/test-context.js';
 import { loginPage } from '../../helpers/pages/loginPage.js';
 import { readFileSync } from 'fs';
+import { genericPage } from '../../helpers/pages/genericPage.js';
+import { signupPage } from '../../helpers/pages/signupPage.js';
 
 /**
  *  Tests for email autofill on ios tooltipHandler
  */
 const test = testContext(base);
+const BASE_CONFIG_PATH = 'integration-test/tests/site-specific-feature/config-feature/';
 
 function loginToSignupConfig() {
-    return JSON.parse(readFileSync('integration-test/tests/site-specific-feature/config-features-login-to-signup.json', 'utf8'));
+    return JSON.parse(readFileSync(`${BASE_CONFIG_PATH}login-to-signup.json`, 'utf8'));
+}
+
+function signupToLoginConfig() {
+    return JSON.parse(readFileSync(`${BASE_CONFIG_PATH}signup-to-login.json`, 'utf8'));
 }
 
 test.describe('site-specific-fixes on login form', () => {
@@ -31,5 +38,34 @@ test.describe('site-specific-fixes on login form', () => {
         await page.pause();
         const login = loginPage(page);
         await login.navigate();
+        await genericPage(page).passwordFieldShowsGenKey();
+        await genericPage(page).usernameFieldShowsDaxIcon('#email');
+    });
+
+    test('signup form can be forced to be a login form', async ({ page }) => {
+        await forwardConsoleMessages(page);
+
+        await createWebkitMocks('macos')
+            .withCredentials({
+                id: 'test',
+                username: 'test@example.com',
+                password: 'password',
+            })
+            .withAvailableInputTypes({
+                credentials: {
+                    username: true,
+                    password: true,
+                },
+            })
+            .withContentScopeFeatures(signupToLoginConfig().features)
+            .applyTo(page);
+
+        // Load the autofill.js script
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page);
+        await page.pause();
+        const signup = signupPage(page);
+        await signup.navigate();
+        await genericPage(page).passwordFieldShowsFillKey('#password');
+        await genericPage(page).usernameFieldShowsFillKey('#email');
     });
 });

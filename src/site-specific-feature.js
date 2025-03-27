@@ -20,7 +20,7 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     isEnabled() {
-        return this.getFeatureSetting('enabled') ?? false;
+        return this.bundledConfig?.features?.siteSpecificFixes?.state === 'enabled';
     }
 
     /**
