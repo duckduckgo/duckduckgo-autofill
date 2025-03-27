@@ -19,7 +19,6 @@ test.describe('site-specific-fixes on login form', () => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page);
 
-
         await createWebkitMocks('macos')
             .withAvailableInputTypes({ email: true })
             .withPersonalEmail('0')
