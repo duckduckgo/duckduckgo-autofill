@@ -18,7 +18,7 @@
     --bg-dark: rgb(100, 98, 102, .9);
 
     [data-platform="windows"] {
-        --bg: var(--T-Surface-Tertiary, #F9FAFA);
+        /* --bg: var(--T-Surface-Tertiary, #F9FAFA); */
         --border-radius: 3px;
         --box-shadow: 0px 0px 0px 1px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12)), 0px 8px 8px 0px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12)), 0px 2px 4px 0px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12));
         --backdrop-filter: blur(48x);
