@@ -3585,6 +3585,9 @@ Source: "${matchedFrom}"`;
     "americanexpress.com": {
       "password-rules": "minlength: 8; maxlength: 20; max-consecutive: 4; required: lower, upper; required: digit; allowed: [%&_?#=];"
     },
+    "amnh.org": {
+      "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower; allowed: ascii-printable;"
+    },
     "ana.co.jp": {
       "password-rules": "minlength: 8; maxlength: 16; required: digit; required: upper,lower;"
     },
