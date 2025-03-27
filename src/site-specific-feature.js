@@ -19,6 +19,10 @@ export default class SiteSpecificFeature extends ConfigFeature {
         super(FEATURE_NAME, args);
     }
 
+    isEnabled() {
+        return this.getFeatureSetting('enabled') ?? false;
+    }
+
     /**
      * @returns {Array<FormTypeSettings>}
      */

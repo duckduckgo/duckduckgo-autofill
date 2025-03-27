@@ -4809,7 +4809,7 @@ Source: "${matchedFrom}"`;
       this.form = form;
       this.siteSpecificFeature = siteSpecificFeature;
       this.matching = matching || new Matching(matchingConfiguration);
-      if (this.siteSpecificFeature) {
+      if (this.siteSpecificFeature?.isEnabled()) {
         this.siteSpecificFeature.setForcedFormInputTypes(form, this.matching);
         return this;
       }
@@ -12523,6 +12523,9 @@ Source: "${matchedFrom}"`;
   var SiteSpecificFeature = class extends ConfigFeature {
     constructor(args) {
       super(FEATURE_NAME, args);
+    }
+    isEnabled() {
+      return this.getFeatureSetting("enabled") ?? false;
     }
     /**
      * @returns {Array<FormTypeSettings>}
