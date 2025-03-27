@@ -55,10 +55,11 @@ export default class SiteSpecificFeature extends ConfigFeature {
     /**
      * @param {HTMLElement} form
      * @param {import('./Form/matching').Matching} matching
+     * @returns {boolean}
      */
-    setForcedFormInputTypes(form, matching) {
+    attemptForceFormInputTypes(form, matching) {
         const forcedFormType = this.getForcedFormType(form);
-        if (!forcedFormType) return null;
+        if (!forcedFormType) return false;
         const inputs = this.getForcedInputs(form) ?? [];
         // For each input in the forced form type, set the input type
         for (const input of inputs) {
@@ -66,6 +67,7 @@ export default class SiteSpecificFeature extends ConfigFeature {
             if (!inputEl) console.error(`Input element not found for forced input type: ${input.selector}`);
             matching.setInputType(inputEl, form, { forcedInputType: input.type });
         }
+        return true;
     }
 
     /**

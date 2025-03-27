@@ -4809,9 +4809,7 @@ Source: "${matchedFrom}"`;
       this.form = form;
       this.siteSpecificFeature = siteSpecificFeature;
       this.matching = matching || new Matching(matchingConfiguration);
-      console.log("DEEP siteSpecificFeature", siteSpecificFeature?.isEnabled());
-      if (this.siteSpecificFeature?.isEnabled()) {
-        this.siteSpecificFeature.setForcedFormInputTypes(form, this.matching);
+      if (this.siteSpecificFeature?.isEnabled() && this.siteSpecificFeature.attemptForceFormInputTypes(form, this.matching)) {
         return this;
       }
       this.autofillSignal = 0;
@@ -6809,7 +6807,11 @@ Source: "${matchedFrom}"`;
           this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
           return this;
         }
-        if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, this.addInput)) {
+        if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(
+          context,
+          formInputsSelectorWithoutSelect,
+          this.addInput.bind(this)
+        )) {
           return this;
         }
         inputs.forEach((input) => this.addInput(input));
@@ -8128,11 +8130,12 @@ Source: "${matchedFrom}"`;
     /**
      * @param {HTMLElement} form
      * @param {import('./Form/matching').Matching} matching
+     * @returns {boolean}
      */
-    setForcedFormInputTypes(form, matching) {
+    attemptForceFormInputTypes(form, matching) {
       const forcedFormType = this.getForcedFormType(form);
       if (!forcedFormType)
-        return null;
+        return false;
       const inputs = this.getForcedInputs(form) ?? [];
       for (const input of inputs) {
         const inputEl = (
@@ -8143,6 +8146,7 @@ Source: "${matchedFrom}"`;
           console.error(`Input element not found for forced input type: ${input.selector}`);
         matching.setInputType(inputEl, form, { forcedInputType: input.type });
       }
+      return true;
     }
     /**
      * @param {Element} form
