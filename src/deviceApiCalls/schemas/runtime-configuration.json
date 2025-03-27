@@ -6,67 +6,8 @@
   "description": "Required Properties to enable an instance of RuntimeConfiguration",
   "properties": {
     "contentScope": {
-      "title": "ContentScope",
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "features": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "exceptions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": [
-                    "domain"
-                  ],
-                  "additionalProperties": false,
-                  "properties": {
-                    "domain": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "state": {
-                "type": "string",
-                "enum": [
-                  "enabled",
-                  "disabled"
-                ]
-              },
-              "settings": {
-                "type": "object"
-              },
-              "features": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            },
-            "required": [
-              "settings",
-              "exceptions",
-              "state"
-            ]
-          }
-        },
-        "unprotectedTemporary": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "required": [
-        "features",
-        "unprotectedTemporary"
-      ]
+      "additionalProperties": true
     },
     "userUnprotectedDomains": {
       "type": "array",

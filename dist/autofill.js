@@ -888,8 +888,10 @@ Source: "${matchedFrom}"`;
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
      *   isCCForm?: boolean,
+     *   isSignup?: boolean,
      *   hasCredentials?: boolean,
-     *   supportsIdentitiesAutofill?: boolean
+     *   supportsIdentitiesAutofill?: boolean,
+     *   forcedInputType?: SupportedTypes
      * }} SetInputTypeOpts
      */
     /**
@@ -900,6 +902,10 @@ Source: "${matchedFrom}"`;
      * @returns {SupportedSubTypes | string}
      */
     setInputType(input, formEl, opts = {}) {
+      if (opts.forcedInputType) {
+        input.setAttribute(ATTR_INPUT_TYPE, opts.forcedInputType);
+        return opts.forcedInputType;
+      }
       const type = this.inferInputType(input, formEl, opts);
       input.setAttribute(ATTR_INPUT_TYPE, type);
       return type;
@@ -4794,11 +4800,19 @@ Source: "${matchedFrom}"`;
       __publicField(this, "matching");
       /** @type {import('../site-specific-feature').default|undefined} */
       __publicField(this, "siteSpecificFeature");
+      /**
+       * @type {Set<'login'|'signup'>}
+       */
+      __publicField(this, "forcedInputTypes", /* @__PURE__ */ new Set());
       /** @type {undefined|boolean} */
       __publicField(this, "_isCCForm");
       this.form = form;
-      this.matching = matching || new Matching(matchingConfiguration);
       this.siteSpecificFeature = siteSpecificFeature;
+      this.matching = matching || new Matching(matchingConfiguration);
+      if (this.siteSpecificFeature) {
+        this.siteSpecificFeature.setForcedFormInputTypes(form, this.matching);
+        return this;
+      }
       this.autofillSignal = 0;
       this.hybridSignal = 0;
       this.signals = [];
@@ -4823,15 +4837,19 @@ Source: "${matchedFrom}"`;
       return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
     get isLogin() {
-      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "login")
+      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "login") {
+        this.forcedInputTypes.add("login");
         return true;
+      }
       if (this.isHybrid)
         return false;
       return this.autofillSignal < 0;
     }
     get isSignup() {
-      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "signup")
+      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "signup") {
+        this.forcedInputTypes.add("signup");
         return true;
+      }
       if (this.isHybrid)
         return false;
       return this.autofillSignal >= 0;
@@ -5453,6 +5471,9 @@ Source: "${matchedFrom}"`;
         this.promptLoginIfNeeded();
       }
     }
+    get forcedInputTypes() {
+      return this.formAnalyzer.forcedInputTypes;
+    }
     get isLogin() {
       return this.formAnalyzer.isLogin;
     }
@@ -5840,6 +5861,7 @@ Source: "${matchedFrom}"`;
         isLogin: this.isLogin,
         isHybrid: this.isHybrid,
         isCCForm: this.isCCForm,
+        isSignup: this.isSignup,
         hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
         supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
       };
@@ -8093,6 +8115,31 @@ Source: "${matchedFrom}"`;
     getForcedFormType(form) {
       return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
     }
+    getForcedInputs(form) {
+      const forcedFormType = this.getForcedFormType(form);
+      if (!forcedFormType)
+        return null;
+      return this.formTypeSettings?.find((config) => config.type === forcedFormType)?.inputs ?? null;
+    }
+    /**
+     * @param {HTMLElement} form
+     * @param {import('./Form/matching').Matching} matching
+     */
+    setForcedFormInputTypes(form, matching) {
+      const forcedFormType = this.getForcedFormType(form);
+      if (!forcedFormType)
+        return null;
+      const inputs = this.getForcedInputs(form) ?? [];
+      for (const input of inputs) {
+        const inputEl = (
+          /** @type {HTMLInputElement} */
+          form.querySelector(input.selector) ?? document.querySelector(input.selector)
+        );
+        if (!inputEl)
+          console.error(`Input element not found for forced input type: ${input.selector}`);
+        matching.setInputType(inputEl, form, { forcedInputType: input.type });
+      }
+    }
     /**
      * @param {Element} form
      * @param {FormBoundarySettings} settings
@@ -8282,12 +8329,16 @@ Source: "${matchedFrom}"`;
      * @returns {RuntimeConfiguration}
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
-      if (runtimeConfig.contentScope.features.autofill.features?.[name]?.state !== "enabled" || runtimeConfig.contentScope.features[name])
+      const contentScope = (
+        /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
+        runtimeConfig.contentScope
+      );
+      if (contentScope.features.autofill.features?.[name]?.state !== "enabled" || contentScope.features[name])
         return runtimeConfig;
-      const feature = runtimeConfig.contentScope.features.autofill.features?.[name];
+      const feature = contentScope.features.autofill.features?.[name];
       if (feature) {
         runtimeConfig.contentScope.features = {
-          ...runtimeConfig.contentScope.features,
+          ...contentScope.features,
           [name]: {
             settings: feature.settings?.javascriptConfig,
             exceptions: [],

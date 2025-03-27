@@ -8,7 +8,6 @@
                     "domains": [
                         {
                             "domain": [
-                                "google.com",
                                 "localhost"
                             ],
                             "patchSettings": [
@@ -18,16 +17,18 @@
                                     "value": {
                                         "formTypeSettings": [
                                             {
-                                                "selector": "form[class*=\"login\"]",
-                                                "type": "login"
-                                            },
-                                            {
-                                                "selector": "form[class*=\"signup\"]",
-                                                "type": "signup"
-                                            },
-                                            {
-                                                "selector": "form[class*=\"hybrid\"]",
-                                                "type": "hybrid"
+                                                "selector": "form[id*=\"login\"]",
+                                                "type": "signup",
+                                                "inputs": [
+                                                    {
+                                                        "selector": "input[name=\"username\"]",
+                                                        "type": "credentials.username.new"
+                                                    },
+                                                    {
+                                                        "selector": "input[name=\"password\"]",
+                                                        "type": "credentials.password.new"
+                                                    }
+                                                ]
                                             }
                                         ],
                                         "formBoundarySettings": [

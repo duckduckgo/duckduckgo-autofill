@@ -106,18 +106,6 @@ export const genericErrorSchema = z.object({
     message: z.string()
 });
 
-export const contentScopeSchema = z.object({
-    features: z.record(z.object({
-        exceptions: z.array(z.object({
-            domain: z.string()
-        })),
-        state: z.union([z.literal("enabled"), z.literal("disabled")]),
-        settings: z.record(z.unknown()),
-        features: z.record(z.record(z.unknown())).optional()
-    })),
-    unprotectedTemporary: z.array(z.string())
-});
-
 export const userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
     sessionKey: z.string(),
@@ -330,7 +318,7 @@ export const autofillSettingsSchema = z.object({
 });
 
 export const runtimeConfigurationSchema = z.object({
-    contentScope: contentScopeSchema,
+    contentScope: z.record(z.unknown()),
     userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
 });

@@ -6,6 +6,7 @@ const FEATURE_NAME = 'site-specific-fixes';
 /** @typedef {Object} FormTypeSettings
  * @property {string} selector
  * @property {string} type
+ * @property {Array<{selector: string, type: import('./Form/matching').SupportedTypes}>} inputs
  */
 
 /** @typedef {Object} FormBoundarySettings
@@ -39,6 +40,28 @@ export default class SiteSpecificFeature extends ConfigFeature {
      */
     getForcedFormType(form) {
         return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
+    }
+
+    getForcedInputs(form) {
+        const forcedFormType = this.getForcedFormType(form);
+        if (!forcedFormType) return null;
+        return this.formTypeSettings?.find((config) => config.type === forcedFormType)?.inputs ?? null;
+    }
+
+    /**
+     * @param {HTMLElement} form
+     * @param {import('./Form/matching').Matching} matching
+     */
+    setForcedFormInputTypes(form, matching) {
+        const forcedFormType = this.getForcedFormType(form);
+        if (!forcedFormType) return null;
+        const inputs = this.getForcedInputs(form) ?? [];
+        // For each input in the forced form type, set the input type
+        for (const input of inputs) {
+            const inputEl = /** @type {HTMLInputElement} */ (form.querySelector(input.selector) ?? document.querySelector(input.selector));
+            if (!inputEl) console.error(`Input element not found for forced input type: ${input.selector}`);
+            matching.setInputType(inputEl, form, { forcedInputType: input.type });
+        }
     }
 
     /**

@@ -350,28 +350,11 @@ export interface GetRuntimeConfigurationResponse {
  * This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json
  */
 export interface RuntimeConfiguration {
-  contentScope: ContentScope;
+  contentScope: {
+    [k: string]: unknown;
+  };
   userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
-}
-export interface ContentScope {
-  features: {
-    [k: string]: {
-      exceptions: {
-        domain: string;
-      }[];
-      state: "enabled" | "disabled";
-      settings: {
-        [k: string]: unknown;
-      };
-      features?: {
-        [k: string]: {
-          [k: string]: unknown;
-        };
-      };
-    };
-  };
-  unprotectedTemporary: string[];
 }
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;

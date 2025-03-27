@@ -55,6 +55,7 @@ const autofillEnabled = (globalConfig) => {
     if (!userPreferences) return false;
 
     // Check config on Apple platforms
+    // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
 };

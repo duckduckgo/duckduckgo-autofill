@@ -88,6 +88,7 @@ export class Settings {
             const runtimeConfig = await this._getRuntimeConfiguration();
             // Also we might not need zod anymore for defining runtime config? We should simply rely on the
             // C-S-S types.
+            // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
             const enabled = autofillEnabled(runtimeConfig);
             return enabled;
         } catch (e) {
@@ -184,14 +185,16 @@ export class Settings {
      * @returns {RuntimeConfiguration}
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
+        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
+            runtimeConfig.contentScope
+        );
         // If the feature is not enabled or already exists, do nothing
-        if (runtimeConfig.contentScope.features.autofill.features?.[name]?.state !== 'enabled' || runtimeConfig.contentScope.features[name])
-            return runtimeConfig;
+        if (contentScope.features.autofill.features?.[name]?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
         /** @type {any} */
-        const feature = runtimeConfig.contentScope.features.autofill.features?.[name];
+        const feature = contentScope.features.autofill.features?.[name];
         if (feature) {
             runtimeConfig.contentScope.features = {
-                ...runtimeConfig.contentScope.features,
+                ...contentScope.features,
                 [name]: {
                     settings: feature.settings?.javascriptConfig,
                     exceptions: [], // TODO: add types for this in runtime-configuration.json
@@ -211,6 +214,7 @@ export class Settings {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
             this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, 'siteSpecificFixes');
+            // @ts-ignore
             const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
             return new SiteSpecificFeature({
                 site: args.site,

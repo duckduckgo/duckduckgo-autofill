@@ -19,6 +19,11 @@ class FormAnalyzer {
     siteSpecificFeature;
 
     /**
+     * @type {Set<'login'|'signup'>}
+     */
+    forcedInputTypes = new Set();
+
+    /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
@@ -26,8 +31,12 @@ class FormAnalyzer {
      */
     constructor(form, input, matching, siteSpecificFeature) {
         this.form = form;
-        this.matching = matching || new Matching(matchingConfiguration);
         this.siteSpecificFeature = siteSpecificFeature;
+        this.matching = matching || new Matching(matchingConfiguration);
+        if (this.siteSpecificFeature) {
+            this.siteSpecificFeature.setForcedFormInputTypes(form, this.matching);
+            return this;
+        }
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
@@ -73,13 +82,19 @@ class FormAnalyzer {
     }
 
     get isLogin() {
-        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'login') return true;
+        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'login') {
+            this.forcedInputTypes.add('login');
+            return true;
+        }
         if (this.isHybrid) return false;
         return this.autofillSignal < 0;
     }
 
     get isSignup() {
-        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'signup') return true;
+        if (this.siteSpecificFeature?.getForcedFormType(this.form) === 'signup') {
+            this.forcedInputTypes.add('signup');
+            return true;
+        }
         if (this.isHybrid) return false;
         return this.autofillSignal >= 0;
     }

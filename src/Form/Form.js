@@ -118,6 +118,10 @@ class Form {
         }
     }
 
+    get forcedInputTypes() {
+        return this.formAnalyzer.forcedInputTypes;
+    }
+
     get isLogin() {
         return this.formAnalyzer.isLogin;
     }
@@ -561,6 +565,7 @@ class Form {
             isLogin: this.isLogin,
             isHybrid: this.isHybrid,
             isCCForm: this.isCCForm,
+            isSignup: this.isSignup,
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
             supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities,
         };
