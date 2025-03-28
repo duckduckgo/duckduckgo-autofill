@@ -121,7 +121,7 @@ function waitForResponse(expectedResponse, config) {
 
 /**
  * @param {GlobalConfig} globalConfig
- * @returns {{success: import('../__generated__/validators-ts').RuntimeConfiguration}}
+ * @returns {{success: import('../../Settings.js').RuntimeConfiguration}}
  */
 function androidSpecificRuntimeConfiguration(globalConfig) {
     if (!globalConfig.userPreferences) {

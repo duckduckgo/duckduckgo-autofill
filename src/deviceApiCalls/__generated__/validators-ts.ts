@@ -343,13 +343,16 @@ export interface GetRuntimeConfigurationResponse {
    * Required on Android + Windows devices, optional on iOS
    */
   type?: "getRuntimeConfigurationResponse";
-  success?: RuntimeConfiguration;
+  success?: BaseRuntimeConfiguration;
   error?: GenericError;
 }
 /**
  * This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json
  */
-export interface RuntimeConfiguration {
+export interface BaseRuntimeConfiguration {
+  /**
+   * This is left as 'unknown' since the types will be imported from the privacy-configuration repo
+   */
   contentScope: {
     [k: string]: unknown;
   };

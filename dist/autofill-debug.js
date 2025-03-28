@@ -1528,7 +1528,15 @@ Source: "${matchedFrom}"`;
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
     if (!userPreferences)
       return false;
-    const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+    const contentScopeAsAny = (
+      /** @type {any} */
+      contentScope
+    );
+    const cssUserPreferences = (
+      /** @type {any} */
+      userPreferences
+    );
+    const processedConfig = processConfig(contentScopeAsAny, userUnprotectedDomains, cssUserPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
   };
   var isAutofillEnabledFromProcessedConfig = (processedConfig) => {
@@ -10545,14 +10553,14 @@ Source: "${matchedFrom}"`;
   var autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
   });
-  var runtimeConfigurationSchema = z.object({
+  var baseRuntimeConfigurationSchema = z.object({
     contentScope: z.record(z.unknown()),
     userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
   });
   var getRuntimeConfigurationResponseSchema = z.object({
     type: z.literal("getRuntimeConfigurationResponse").optional(),
-    success: runtimeConfigurationSchema.optional(),
+    success: baseRuntimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
   });
   var apiSchema = z.object({
@@ -12730,7 +12738,9 @@ Source: "${matchedFrom}"`;
       if (this._runtimeConfiguration)
         return this._runtimeConfiguration;
       const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null));
-      this._runtimeConfiguration = runtimeConfig;
+      this._runtimeConfiguration = /** @type {RuntimeConfiguration} */
+      /** @type {any} */
+      runtimeConfig;
       return this._runtimeConfiguration;
     }
     /**
@@ -12766,22 +12776,18 @@ Source: "${matchedFrom}"`;
      * @returns {RuntimeConfiguration}
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
-      const contentScope = (
-        /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
-        runtimeConfig.contentScope
-      );
+      const contentScope = runtimeConfig.contentScope;
       const feature = contentScope.features.autofill.features?.[name];
       if (feature?.state !== "enabled" || contentScope.features[name])
         return runtimeConfig;
       if (feature) {
-        runtimeConfig.contentScope.features = {
+        contentScope.features = {
           ...contentScope.features,
           [name]: {
             settings: feature.settings?.javascriptConfig,
             exceptions: [],
-            // TODO: add types for this in runtime-configuration.json
-            state: feature.state
-            // TODO: add types for this in runtime-configuration.json
+            state: feature.state,
+            hash: ""
           }
         };
       }

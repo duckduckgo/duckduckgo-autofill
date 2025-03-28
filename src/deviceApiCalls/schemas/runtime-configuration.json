@@ -2,12 +2,11 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": false,
-  "title": "RuntimeConfiguration",
+  "title": "BaseRuntimeConfiguration",
   "description": "Required Properties to enable an instance of RuntimeConfiguration",
   "properties": {
     "contentScope": {
-      "type": "object",
-      "additionalProperties": true
+      "description": "This is left as 'unknown' since the types will be imported from the privacy-configuration repo"
     },
     "userUnprotectedDomains": {
       "type": "array",
