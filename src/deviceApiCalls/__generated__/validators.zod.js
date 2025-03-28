@@ -317,7 +317,7 @@ export const autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
 });
 
-export const runtimeConfigurationSchema = z.object({
+export const baseRuntimeConfigurationSchema = z.object({
     contentScope: z.record(z.unknown()),
     userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
@@ -325,7 +325,7 @@ export const runtimeConfigurationSchema = z.object({
 
 export const getRuntimeConfigurationResponseSchema = z.object({
     type: z.literal("getRuntimeConfigurationResponse").optional(),
-    success: runtimeConfigurationSchema.optional(),
+    success: baseRuntimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
 });
 

@@ -9,7 +9,12 @@ import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/ut
  * Some Type helpers to prevent duplication
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} AvailableInputTypes
- * @typedef {import("./deviceApiCalls/__generated__/validators-ts").RuntimeConfiguration} RuntimeConfiguration
+ * @typedef {import("./deviceApiCalls/__generated__/validators-ts").BaseRuntimeConfiguration} BaseRuntimeConfiguration
+ * @typedef {{
+ *   contentScope: import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>;
+ *   userPreferences: BaseRuntimeConfiguration['userPreferences'];
+ *   userUnprotectedDomains: BaseRuntimeConfiguration['userUnprotectedDomains'];
+ * }} RuntimeConfiguration
  * @typedef {import("../packages/device-api").DeviceApi} DeviceApi
  */
 
@@ -86,9 +91,6 @@ export class Settings {
     async getEnabled() {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
-            // Also we might not need zod anymore for defining runtime config? We should simply rely on the
-            // C-S-S types.
-            // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
             const enabled = autofillEnabled(runtimeConfig);
             return enabled;
         } catch (e) {
@@ -145,7 +147,11 @@ export class Settings {
     async _getRuntimeConfiguration() {
         if (this._runtimeConfiguration) return this._runtimeConfiguration;
         const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null));
-        this._runtimeConfiguration = runtimeConfig;
+        /**
+         * This casting is done to erase the 'unknown' type for `contentScope`, since it now
+         * comes from the privacy-configuration repo
+         */
+        this._runtimeConfiguration = /** @type {RuntimeConfiguration} */ (/** @type {any} */ runtimeConfig);
         return this._runtimeConfiguration;
     }
 
@@ -185,20 +191,19 @@ export class Settings {
      * @returns {RuntimeConfiguration}
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
-        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
-            runtimeConfig.contentScope
-        );
+        const contentScope = runtimeConfig.contentScope;
         const feature = contentScope.features.autofill.features?.[name];
         // If the feature is not enabled or already exists, do nothing
         if (feature?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
-        /** @type {any} */
+
         if (feature) {
-            runtimeConfig.contentScope.features = {
+            contentScope.features = {
                 ...contentScope.features,
                 [name]: {
                     settings: feature.settings?.javascriptConfig,
-                    exceptions: [], // TODO: add types for this in runtime-configuration.json
-                    state: feature.state, // TODO: add types for this in runtime-configuration.json
+                    exceptions: [],
+                    state: feature.state,
+                    hash: '',
                 },
             };
         }

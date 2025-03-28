@@ -102,7 +102,7 @@ interface GlobalConfig {
     hasModernWebkitAPI: boolean;
     contentScope: import('@duckduckgo/privacy-configuration/schema/config').ConfigV4<number> | null;
     userUnprotectedDomains: string[];
-    userPreferences: Record<string, any> | null;
+    userPreferences: import('./deviceApiCalls/__generated__/validators-ts').UserPreferences | null;
     isDDGTestMode: boolean;
     isDDGDomain: boolean;
     availableInputTypes: import('./deviceApiCalls/__generated__/validators-ts').AvailableInputTypes | null;
