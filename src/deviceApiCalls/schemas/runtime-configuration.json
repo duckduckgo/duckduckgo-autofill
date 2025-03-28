@@ -6,43 +6,8 @@
   "description": "Required Properties to enable an instance of RuntimeConfiguration",
   "properties": {
     "contentScope": {
-      "title": "ContentScope",
       "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "features": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "exceptions": {
-                "type": "array",
-                "items": {}
-              },
-              "state": {
-                "type": "string",
-                "enum": ["enabled", "disabled"]
-              },
-              "settings": {
-                "type": "object"
-              }
-            },
-            "required": [
-              "exceptions",
-              "state"
-            ]
-          }
-        },
-        "unprotectedTemporary": {
-          "type": "array",
-          "items": {}
-        }
-      },
-      "required": [
-        "features",
-        "unprotectedTemporary"
-      ]
+      "additionalProperties": true
     },
     "userUnprotectedDomains": {
       "type": "array",
@@ -78,8 +43,7 @@
                 "macos",
                 "windows",
                 "extension",
-                "android",
-                "unknown"
+                "android"
               ]
             }
           },
@@ -107,7 +71,8 @@
       "required": [
         "debug",
         "features",
-        "platform"
+        "platform",
+        "sessionKey"
       ]
     }
   },

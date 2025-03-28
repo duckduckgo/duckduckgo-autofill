@@ -126,6 +126,10 @@ export function createWindowsMocks() {
         withDataType: function (data) {
             return withDataType(this, data);
         },
+        withContentScopeFeatures(features) {
+            Object.assign(mocks.getRuntimeConfiguration.contentScope.features.autofill.features, features);
+            return this;
+        },
         tap() {
             return this;
         },

@@ -113,6 +113,9 @@ export function createAndroidMocks() {
         withFeatureToggles(_featureToggles) {
             throw new Error('cannot set mock withFeatureToggles on Android, use string replacements instead');
         },
+        withContentScopeFeatures(_contentScopeFeatures) {
+            throw new Error('cannot set mock withContentScopeFeatures on Android, use string replacements instead');
+        },
         /**
          * @param credentials
          * @returns {MockBuilder}
