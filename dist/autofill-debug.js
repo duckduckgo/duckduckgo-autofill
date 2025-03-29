@@ -16091,16 +16091,17 @@ Source: "${matchedFrom}"`;
   // src/UI/styles/autofill-tooltip-styles.css
   var autofill_tooltip_styles_default = `:root {
     color-scheme: light dark;
+}
+
+:host {
     /* Global Colors & Styles */
     --T-Text-Primary: #1C1F21;
     --T-Text-Secondary: rgba(28, 31, 33, 0.72);
     --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
     --T-Surface-Tertiary: #F9FAFA;
-}
 
-:host {
     /* default: MacOS */
-    --bg: #00AA00;
+    --bg: #F2F0F0;
     --border-radius: 8px;
     --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
 
@@ -16109,8 +16110,9 @@ Source: "${matchedFrom}"`;
 }
 
 :host:has([data-platform="windows"]) {
-    --bg: #f9fafa;
+    --bg: var(--T-Surface-Tertiary);
 }
+
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
