@@ -16106,11 +16106,12 @@ Source: "${matchedFrom}"`;
 
     /* dark mode - MacOS */
     --bg-dark: rgb(100, 98, 102, .9);
-
-    [data-platform="windows"] {
-        --bg: #0000EE;
-    }
 }
+
+:host:has([data-platform="windows"]) {
+    --bg: #AA00EE;
+}
+
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
