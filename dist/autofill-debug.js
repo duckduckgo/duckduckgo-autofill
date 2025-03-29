@@ -16092,10 +16092,10 @@ Source: "${matchedFrom}"`;
   var autofill_tooltip_styles_default = `:root {
     color-scheme: light dark;
     /* Global Colors & Styles */
-    --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
-    --T-Surface-Tertiary: #F9FAFA;
     --T-Text-Primary: #1C1F21;
     --T-Text-Secondary: rgba(28, 31, 33, 0.72);
+    --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
+    --T-Surface-Tertiary: #F9FAFA;
 }
 
 :host {
@@ -16109,9 +16109,9 @@ Source: "${matchedFrom}"`;
     --bg-dark: rgb(100, 98, 102, .9);
 
     [data-platform="windows"] {
-        /* --bg: var(--T-Surface-Tertiary, #F9FAFA); */
+        --bg: var(--T-Surface-Tertiary);
         --border-radius: 3px;
-        --box-shadow: 0px 0px 0px 1px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12)), 0px 8px 8px 0px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12)), 0px 2px 4px 0px var(--T-Shadow-Secondary, rgba(28, 31, 33, 0.12));
+        --box-shadow: 0px 0px 0px 1px var(--T-Shadow-Secondary), 0px 8px 8px 0px var(--T-Shadow-Secondary), 0px 2px 4px 0px var(--T-Shadow-Secondary);
         --backdrop-filter: blur(48x);
     }
 }
