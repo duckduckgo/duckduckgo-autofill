@@ -8722,19 +8722,19 @@ Source: "${matchedFrom}"`;
       note: 'Button subtitle (paired with "hideEmailAndBlockTrackers") explaining that by creating a randomly-generated address, trackers within emails will also be blocked.'
     },
     manageSavedItems: {
-      title: "Manage saved items\u2026",
+      title: "Manage Saved Items\u2026",
       note: 'Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than "manageCreditCards", "manageIdentities", and "managePassworeds". "Manage" is an imperative verb.'
     },
     manageCreditCards: {
-      title: "Manage credit cards\u2026",
+      title: "Manage Credit Cards\u2026",
       note: 'Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. "Manage" is an imperative verb.'
     },
     manageIdentities: {
-      title: "Manage identities\u2026",
+      title: "Manage Identities\u2026",
       note: 'Button that when clicked allows users to add, edit, or delete one or more identities. "Manage" is an imperative verb. An "Identity" (singular of "identities") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page.'
     },
     managePasswords: {
-      title: "Manage passwords\u2026",
+      title: "Manage Passwords\u2026",
       note: 'Button that when clicked allows users to add, edit, or delete one or more saved passwords used to fill forms on a web page. "Manage" is an imperative verb.'
     },
     generateDuckAddr: {
@@ -11800,40 +11800,35 @@ Source: "${matchedFrom}"`;
   // src/UI/styles/autofill-tooltip-styles.css
   var autofill_tooltip_styles_default = `:root {
     color-scheme: light dark;
+}
+
+:host {
     /* Global Colors & Styles */
     --T-Text-Primary: #1C1F21;
     --T-Text-Secondary: rgba(28, 31, 33, 0.72);
-    --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
-    --T-Surface-Tertiary: #F9FAFA;
-
+    --Dialog-Mac-Backdrop: #F2F0F0;
+    --Dialog-Windows-Backdrop: #F9FAFA;
+    --Dialog-Mac-Backdrop-dark: #646264;
+    --Dialog-Windows-Backdrop-dark: #404145;
 
     /* default: MacOS */
-    --bg: #F2F0F0;
+    --bg: var(--Dialog-Mac-Backdrop);
     --border-radius: 8px;
     --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
 
-    /* dark mode - MacOS */
-    --bg-dark: rgb(100, 98, 102, .9);
+    --bg-dark: var(--Dialog-Mac-Backdrop-dark);
+
+    --font-size: 13px;
+    --color: var(--T-Text-Primary);  /* default text color for both platforms */
 }
 
-/* :host { */
-    /* default: MacOS */
-    /* --bg: #F2F0F0;
-    --border-radius: 8px;
-    --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32); */
+:host:has([data-platform="windows"]) {
+    --bg: var(--Dialog-Windows-Backdrop);
 
-    /* dark mode - MacOS */
-    /* --bg-dark: rgb(100, 98, 102, .9); */
+    --bg-dark: var(--Dialog-Windows-Backdrop-dark);
 
-    /* [data-platform="windows"] {
-        --bg: var(--T-Surface-Tertiary);
-    } */
-/* } */
-
-:root:has([data-platform="windows"]) {
-    --bg: var(--T-Surface-Tertiary);
+    --font-size: 14px;
 }
-
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
@@ -11871,7 +11866,7 @@ Source: "${matchedFrom}"`;
 }
 .tooltip--data {
     padding: 6px;
-    font-size: 13px;
+    font-size: var(--font-size);
     line-height: 14px;
     width: 315px;
     max-height: 290px;
@@ -12013,8 +12008,8 @@ Source: "${matchedFrom}"`;
     display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
-    color: var(--T-Text-Primary, #1C1F21);
-    font-size: 13px;
+    color: var(--color);
+    font-size: var(--font-size);
     line-height: 1;
 }
 .label + .label {
@@ -12028,7 +12023,7 @@ Source: "${matchedFrom}"`;
     font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: var(--T-Text-Secondary, rgba(28, 31, 33, 0.72));
+    color: var(--T-Text-Secondary);
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
