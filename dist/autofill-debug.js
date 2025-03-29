@@ -16109,7 +16109,7 @@ Source: "${matchedFrom}"`;
 }
 
 :host:has([data-platform="windows"]) {
-    --bg: var(--T-Surface-Tertiary);
+    --bg: #f9fafa;
 }
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
