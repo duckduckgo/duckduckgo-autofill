@@ -2,6 +2,29 @@
     color-scheme: light dark;
 }
 
+:host {
+    /* Global Colors & Styles */
+    --T-Text-Primary: #1C1F21;
+    --T-Text-Secondary: rgba(28, 31, 33, 0.72);
+    --Dialog-Mac-Backdrop: #F2F0F0;
+    --Dialog-Windows-Backdrop: #F9FAFA;
+    --Dialog-Mac-Backdrop-dark: rgb(100, 98, 102);
+    --Dialog-Windows-Backdrop-dark: #404145;
+    --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
+
+    /* default: MacOS */
+    --bg: var(--Dialog-Mac-Backdrop);
+    --border-radius: 8px;
+    --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
+
+    --bg-dark: var(--Dialog-Mac-Backdrop-dark);
+}
+
+:host:has([data-platform="windows"]) {
+    --bg: var(--Dialog-Windows-Backdrop);
+    --bg-dark: var(--Dialog-Windows-Backdrop-dark);
+}
+
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
@@ -15,6 +38,8 @@
     -webkit-font-smoothing: antialiased;
     z-index: 2147483647;
 }
+
+
 .wrapper--data {
     font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -27,13 +52,11 @@
     z-index: 2147483647;
 }
 .tooltip--data, #topAutofill {
-    background-color: rgba(242, 240, 240, 1);
-    -webkit-backdrop-filter: blur(40px);
-    backdrop-filter: blur(40px);
+    background-color: var(--bg);
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
-        background: rgb(100, 98, 102, .9);
+        background: var(--bg-dark);
     }
 }
 .tooltip--data {
@@ -53,9 +76,8 @@
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-    border: 0.5px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 }
 @media (prefers-color-scheme: dark) {
     .wrapper:not(.top-autofill) .tooltip--data {
@@ -181,7 +203,7 @@
     display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
-    color: rgba(0,0,0,.8);
+    color: var(--T-Text-Primary);
     font-size: 13px;
     line-height: 1;
 }
@@ -191,13 +213,12 @@
 .label.label--medium {
     font-weight: 500;
     letter-spacing: -0.25px;
-    color: rgba(0,0,0,.9);
 }
 .label.label--small {
     font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: rgba(0,0,0,0.6);
+    color: var(--T-Text-Secondary);
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {

@@ -13,6 +13,7 @@ import { CreditCardTooltipItem } from '../src/InputTypes/CreditCard.js';
 
 const url = new URL(window.location.href);
 const locale = url.searchParams.get('locale') || 'en';
+const platform = url.searchParams.get('platform') || 'macos';
 
 const credentials = [
     {
@@ -136,6 +137,7 @@ function createTooltip(item, index) {
         ...defaultOptions,
         ...item.options,
         isTopAutofill: true,
+        platform,
     });
 
     main?.appendChild(elem);
