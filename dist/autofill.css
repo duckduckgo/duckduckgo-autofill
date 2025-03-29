@@ -6,22 +6,24 @@
     /* Global Colors & Styles */
     --T-Text-Primary: #1C1F21;
     --T-Text-Secondary: rgba(28, 31, 33, 0.72);
+    --Dialog-Mac-Backdrop: #F2F0F0;
+    --Dialog-Windows-Backdrop: #F9FAFA;
+    --Dialog-Mac-Backdrop-dark: rgb(100, 98, 102);
+    --Dialog-Windows-Backdrop-dark: #404145;
     --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
-    --T-Surface-Tertiary: #F9FAFA;
 
     /* default: MacOS */
-    --bg: #F2F0F0;
+    --bg: var(--Dialog-Mac-Backdrop);
     --border-radius: 8px;
     --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
 
-    /* dark mode - MacOS */
-    --bg-dark: rgb(100, 98, 102, .9);
+    --bg-dark: var(--Dialog-Mac-Backdrop-dark);
 }
 
 :host:has([data-platform="windows"]) {
-    --bg: var(--T-Surface-Tertiary);
+    --bg: var(--Dialog-Windows-Backdrop);
+    --bg-dark: var(--Dialog-Windows-Backdrop-dark);
 }
-
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
@@ -201,7 +203,7 @@
     display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
-    color: var(--T-Text-Primary, #1C1F21);
+    color: var(--T-Text-Primary);
     font-size: 13px;
     line-height: 1;
 }
@@ -216,7 +218,7 @@
     font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: var(--T-Text-Secondary, rgba(28, 31, 33, 0.72));
+    color: var(--T-Text-Secondary);
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
