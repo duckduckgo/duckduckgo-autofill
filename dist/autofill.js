@@ -11818,9 +11818,8 @@ Source: "${matchedFrom}"`;
 }
 
 :host:has([data-platform="windows"]) {
-    --bg: #AA00EE;
+    --bg: var(--T-Surface-Tertiary);
 }
-
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
