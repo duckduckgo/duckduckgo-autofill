@@ -16096,8 +16096,9 @@ Source: "${matchedFrom}"`;
     --T-Text-Secondary: rgba(28, 31, 33, 0.72);
     --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
     --T-Surface-Tertiary: #F9FAFA;
+}
 
-
+:host {
     /* default: MacOS */
     --bg: #00AA00;
     --border-radius: 8px;
@@ -16105,12 +16106,11 @@ Source: "${matchedFrom}"`;
 
     /* dark mode - MacOS */
     --bg-dark: rgb(100, 98, 102, .9);
-}
 
-:root:has([data-platform="windows"]) {
-    --bg: #0000AA;
+    [data-platform="windows"] {
+        --bg: #0000EE;
+    }
 }
-
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
