@@ -16096,25 +16096,35 @@ Source: "${matchedFrom}"`;
     --T-Text-Secondary: rgba(28, 31, 33, 0.72);
     --T-Shadow-Secondary: rgba(28, 31, 33, 0.12);
     --T-Surface-Tertiary: #F9FAFA;
-}
 
-:host {
+
     /* default: MacOS */
     --bg: #F2F0F0;
     --border-radius: 8px;
     --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
-    --backdrop-filter: blur(76px);
 
     /* dark mode - MacOS */
     --bg-dark: rgb(100, 98, 102, .9);
-
-    [data-platform="windows"] {
-        --bg: var(--T-Surface-Tertiary);
-        --border-radius: 3px;
-        --box-shadow: 0px 0px 0px 1px var(--T-Shadow-Secondary), 0px 8px 8px 0px var(--T-Shadow-Secondary), 0px 2px 4px 0px var(--T-Shadow-Secondary);
-        --backdrop-filter: blur(48x);
-    }
 }
+
+/* :host { */
+    /* default: MacOS */
+    /* --bg: #F2F0F0;
+    --border-radius: 8px;
+    --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32); */
+
+    /* dark mode - MacOS */
+    /* --bg-dark: rgb(100, 98, 102, .9); */
+
+    /* [data-platform="windows"] {
+        --bg: var(--T-Surface-Tertiary);
+    } */
+/* } */
+
+:root:has([data-platform="windows"]) {
+    --bg: var(--T-Surface-Tertiary);
+}
+
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
@@ -16144,8 +16154,6 @@ Source: "${matchedFrom}"`;
 }
 .tooltip--data, #topAutofill {
     background-color: var(--bg);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
 }
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
