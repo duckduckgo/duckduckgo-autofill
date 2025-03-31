@@ -313,6 +313,7 @@ export class HTMLTooltip {
         // Shouldn't be possible
         if (!innerNode) return;
         const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+        console.log(`DEEP setSize: shadow=${this.shadow}, innerNode=${innerNode}, details=${details}`);
         this.options.setSize?.(details);
     }
     init() {
