@@ -5022,7 +5022,7 @@ Source: "${matchedFrom}"`;
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelSmall", (t) => {
         const { displayNumber, expirationMonth, expirationYear } = __privateGet(this, _data4);
-        const expiration = expirationMonth && expirationYear ? ` ${t("autofill:expires")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
+        const expiration = expirationMonth && expirationYear ? `\xA0 ${t("autofill:expires")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
         return `\u2022\u2022\u2022\u2022 ${displayNumber}${expiration}`;
       });
       __privateSet(this, _data4, data);
