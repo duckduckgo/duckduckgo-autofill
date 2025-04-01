@@ -12543,6 +12543,12 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySettings") ?? [];
     }
     /**
+     * @returns {Array<FormInputTypeSettings>}
+     */
+    get formInputTypeSettings() {
+      return this.getFeatureSetting("formInputTypeSettings") ?? [];
+    }
+    /**
      * Checks if there's a forced form type configuration for this form
      * @param {HTMLElement} form
      * @returns {string|null}
@@ -12550,23 +12556,13 @@ Source: "${matchedFrom}"`;
     getForcedFormType(form) {
       return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
     }
-    getForcedInputs(form) {
-      const forcedFormType = this.getForcedFormType(form);
-      if (!forcedFormType)
-        return null;
-      return this.formTypeSettings?.find((config) => config.type === forcedFormType)?.inputs ?? null;
-    }
     /**
      * @param {HTMLElement} form
      * @param {import('./Form/matching').Matching} matching
      * @returns {boolean}
      */
     attemptForceFormInputTypes(form, matching) {
-      const forcedFormType = this.getForcedFormType(form);
-      if (!forcedFormType)
-        return false;
-      const inputs = this.getForcedInputs(form) ?? [];
-      for (const input of inputs) {
+      for (const input of this.formInputTypeSettings) {
         const inputEl = (
           /** @type {HTMLInputElement} */
           form.querySelector(input.selector) ?? document.querySelector(input.selector)
@@ -12575,7 +12571,7 @@ Source: "${matchedFrom}"`;
           console.error(`Input element not found for forced input type: ${input.selector}`);
         matching.setInputType(inputEl, form, { forcedInputType: input.type });
       }
-      return true;
+      return false;
     }
     /**
      * @param {Element} form
@@ -12584,12 +12580,12 @@ Source: "${matchedFrom}"`;
      * @returns {Array<HTMLSelectElement|HTMLInputElement>}
      */
     getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
-      const inputs = settings.inputsSelectors.map(
+      const inputs = settings.inputsSelectors?.map(
         (selector) => (
           /** @type {HTMLSelectElement|HTMLInputElement} */
           form.querySelectorAll(selector)[0]
         )
-      );
+      ) ?? [];
       return inputs.length ? inputs : Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
     }
     /**
@@ -12604,10 +12600,10 @@ Source: "${matchedFrom}"`;
         for (const setting of this.formBoundarySettings) {
           const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
           if (form) {
+            formCount++;
             const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
             for (const input of inputs) {
               callback(input, form);
-              formCount++;
             }
           }
         }

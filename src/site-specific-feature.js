@@ -14,6 +14,11 @@ const FEATURE_NAME = 'site-specific-fixes';
  * @property {string[]} inputsSelectors
  */
 
+/** @typedef {Object} FormInputTypeSettings
+ * @property {string} selector
+ * @property {import('./Form/matching').SupportedTypes} type
+ */
+
 export default class SiteSpecificFeature extends ConfigFeature {
     constructor(args) {
         super(FEATURE_NAME, args);
@@ -38,6 +43,13 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
+     * @returns {Array<FormInputTypeSettings>}
+     */
+    get formInputTypeSettings() {
+        return this.getFeatureSetting('formInputTypeSettings') ?? [];
+    }
+
+    /**
      * Checks if there's a forced form type configuration for this form
      * @param {HTMLElement} form
      * @returns {string|null}
@@ -46,28 +58,19 @@ export default class SiteSpecificFeature extends ConfigFeature {
         return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
     }
 
-    getForcedInputs(form) {
-        const forcedFormType = this.getForcedFormType(form);
-        if (!forcedFormType) return null;
-        return this.formTypeSettings?.find((config) => config.type === forcedFormType)?.inputs ?? null;
-    }
-
     /**
      * @param {HTMLElement} form
      * @param {import('./Form/matching').Matching} matching
      * @returns {boolean}
      */
     attemptForceFormInputTypes(form, matching) {
-        const forcedFormType = this.getForcedFormType(form);
-        if (!forcedFormType) return false;
-        const inputs = this.getForcedInputs(form) ?? [];
         // For each input in the forced form type, set the input type
-        for (const input of inputs) {
+        for (const input of this.formInputTypeSettings) {
             const inputEl = /** @type {HTMLInputElement} */ (form.querySelector(input.selector) ?? document.querySelector(input.selector));
             if (!inputEl) console.error(`Input element not found for forced input type: ${input.selector}`);
             matching.setInputType(inputEl, form, { forcedInputType: input.type });
         }
-        return true;
+        return false;
     }
 
     /**
@@ -78,9 +81,10 @@ export default class SiteSpecificFeature extends ConfigFeature {
      */
     getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
         // We only expect one input per selector, so we can just return the first one
-        const inputs = settings.inputsSelectors.map(
-            (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelectorAll(selector)[0]),
-        );
+        const inputs =
+            settings.inputsSelectors?.map(
+                (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelectorAll(selector)[0]),
+            ) ?? [];
         return inputs.length ? inputs : Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
     }
 
@@ -96,10 +100,10 @@ export default class SiteSpecificFeature extends ConfigFeature {
             for (const setting of this.formBoundarySettings) {
                 const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
                 if (form) {
+                    formCount++;
                     const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
                     for (const input of inputs) {
                         callback(input, form);
-                        formCount++;
                     }
                 }
             }
