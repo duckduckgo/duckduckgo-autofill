@@ -5019,7 +5019,12 @@ Source: "${matchedFrom}"`;
       __privateAdd(this, _data4, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data4).id));
       __publicField(this, "labelMedium", () => __privateGet(this, _data4).title);
-      __publicField(this, "labelSmall", () => __privateGet(this, _data4).displayNumber);
+      /** @param {import('../locales/strings.js').TranslateFn} t */
+      __publicField(this, "labelSmall", (t) => {
+        const { displayNumber, expirationMonth, expirationYear } = __privateGet(this, _data4);
+        const expiration = expirationMonth && expirationYear ? ` ${t("autofill:expires")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
+        return `\u2022\u2022\u2022\u2022 ${displayNumber}${expiration}`;
+      });
       __privateSet(this, _data4, data);
     }
   };
@@ -8726,7 +8731,7 @@ Source: "${matchedFrom}"`;
       note: 'Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than "manageCreditCards", "manageIdentities", and "managePassworeds". "Manage" is an imperative verb.'
     },
     manageCreditCards: {
-      title: "Manage Credit Cards\u2026",
+      title: "Manage Payment Methods\u2026",
       note: 'Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. "Manage" is an imperative verb.'
     },
     manageIdentities: {
@@ -8760,6 +8765,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Quickly and securely transfer your passwords from another browser or password manager.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expires: {
+      title: "Expires",
+      note: "Label that indicates the expiration date of payment method."
     }
   };
 

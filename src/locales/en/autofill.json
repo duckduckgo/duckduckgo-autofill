@@ -62,7 +62,7 @@
     "note": "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards": {
-    "title": "Manage Credit Cards…",
+    "title": "Manage Payment Methods…",
     "note": "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities": {
@@ -96,5 +96,9 @@
   "credentialsImportText": {
     "title": "Quickly and securely transfer your passwords from another browser or password manager.",
     "note": "Subtitle that explains the purpose of the import dialog"
+  },
+  "expires": {
+    "title": "Expires",
+    "note": "Label that indicates the expiration date of payment method."
   }
 }
