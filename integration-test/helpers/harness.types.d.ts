@@ -51,9 +51,6 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withFeatureToggles(
         featureToggles: Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AutofillFeatureToggles>,
     ): MockBuilder<State, Mocks>;
-    withContentScopeFeatures(
-        features: Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').ContentScope['features']>,
-    ): MockBuilder<State, Mocks>;
     // Allow remote config to be overridden
     withRemoteAutofillState?(handlers: 'enabled' | 'disabled'): MockBuilder<State, Mocks>;
     withAskToUnlockProvider?(): MockBuilder<State, Mocks>;

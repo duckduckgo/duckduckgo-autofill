@@ -408,13 +408,6 @@ export function createWebkitMocks(platform = 'macos') {
             ];
             return this;
         },
-        withContentScopeFeatures: function (features) {
-            webkitBase.getRuntimeConfiguration.success.contentScope.features.autofill.features = {
-                ...webkitBase.getRuntimeConfiguration.success.contentScope.features.autofill.features,
-                ...features,
-            };
-            return this;
-        },
         tap(fn) {
             fn(webkitBase);
             return this;
