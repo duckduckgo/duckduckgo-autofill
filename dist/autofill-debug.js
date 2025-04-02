@@ -891,7 +891,6 @@ Source: "${matchedFrom}"`;
      *   isSignup?: boolean,
      *   hasCredentials?: boolean,
      *   supportsIdentitiesAutofill?: boolean,
-     *   forcedInputType?: SupportedTypes
      * }} SetInputTypeOpts
      */
     /**
@@ -902,10 +901,6 @@ Source: "${matchedFrom}"`;
      * @returns {SupportedSubTypes | string}
      */
     setInputType(input, formEl, opts = {}) {
-      if (opts.forcedInputType) {
-        input.setAttribute(ATTR_INPUT_TYPE, opts.forcedInputType);
-        return opts.forcedInputType;
-      }
       const type = this.inferInputType(input, formEl, opts);
       input.setAttribute(ATTR_INPUT_TYPE, type);
       return type;
@@ -4800,18 +4795,11 @@ Source: "${matchedFrom}"`;
       __publicField(this, "matching");
       /** @type {import('../site-specific-feature').default|undefined} */
       __publicField(this, "siteSpecificFeature");
-      /**
-       * @type {Set<'login'|'signup'>}
-       */
-      __publicField(this, "forcedInputTypes", /* @__PURE__ */ new Set());
       /** @type {undefined|boolean} */
       __publicField(this, "_isCCForm");
       this.form = form;
       this.siteSpecificFeature = siteSpecificFeature;
       this.matching = matching || new Matching(matchingConfiguration);
-      if (this.siteSpecificFeature?.isEnabled() && this.siteSpecificFeature.attemptForceFormInputTypes(form, this.matching)) {
-        return this;
-      }
       this.autofillSignal = 0;
       this.hybridSignal = 0;
       this.signals = [];
@@ -4831,27 +4819,29 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     get isHybrid() {
-      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "hybrid")
-        return true;
-      return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
+      const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+      if (!forcedFormType) {
+        return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
+      }
+      return forcedFormType === "hybrid";
     }
     get isLogin() {
-      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "login") {
-        this.forcedInputTypes.add("login");
-        return true;
+      const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+      if (!forcedFormType) {
+        if (this.isHybrid)
+          return false;
+        return this.autofillSignal < 0;
       }
-      if (this.isHybrid)
-        return false;
-      return this.autofillSignal < 0;
+      return forcedFormType === "login";
     }
     get isSignup() {
-      if (this.siteSpecificFeature?.getForcedFormType(this.form) === "signup") {
-        this.forcedInputTypes.add("signup");
-        return true;
+      const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+      if (!forcedFormType) {
+        if (this.isHybrid)
+          return false;
+        return this.autofillSignal >= 0;
       }
-      if (this.isHybrid)
-        return false;
-      return this.autofillSignal >= 0;
+      return forcedFormType === "signup";
     }
     /**
      * Tilts the scoring towards Signup
@@ -5469,9 +5459,6 @@ Source: "${matchedFrom}"`;
       if (shouldAutoprompt) {
         this.promptLoginIfNeeded();
       }
-    }
-    get forcedInputTypes() {
-      return this.formAnalyzer.forcedInputTypes;
     }
     get isLogin() {
       return this.formAnalyzer.isLogin;
@@ -11235,16 +11222,16 @@ Source: "${matchedFrom}"`;
       if ("matches" in context && context.matches?.(formInputsSelectorWithoutSelect)) {
         this.addInput(context);
       } else {
-        const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-        if (inputs.length > this.options.maxInputsPerPage) {
-          this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
-          return this;
-        }
         if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(
           context,
           formInputsSelectorWithoutSelect,
           this.addInput.bind(this)
         )) {
+          return this;
+        }
+        const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
+        if (inputs.length > this.options.maxInputsPerPage) {
+          this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
           return this;
         }
         inputs.forEach((input) => this.addInput(input));
@@ -12432,7 +12419,8 @@ Source: "${matchedFrom}"`;
      */
     _getFeatureSettings(featureName) {
       const camelFeatureName = featureName || camelcase(this.name);
-      return this.featureSettings?.[camelFeatureName];
+      const result = this.featureSettings?.[camelFeatureName];
+      return result;
     }
     /**
      * For simple boolean settings, return true if the setting is 'enabled'
@@ -12531,6 +12519,42 @@ Source: "${matchedFrom}"`;
       return this.bundledConfig?.features?.siteSpecificFixes?.state === "enabled";
     }
     /**
+     * @param {HTMLElement} form
+     * @returns {boolean}
+     */
+    isForcedLoginForm(form) {
+      const forcedFormType = this.getForcedFormType(form);
+      if (forcedFormType === "login") {
+        return true;
+      } else if (forcedFormType) {
+        return false;
+      }
+      return false;
+    }
+    /**
+     * @param {HTMLElement} form
+     * @returns {boolean}
+     */
+    isForcedSignupForm(form) {
+      const forcedFormType = this.getForcedFormType(form);
+      if (!forcedFormType)
+        return false;
+      return forcedFormType === "signup";
+    }
+    /**
+     * @param {HTMLElement} form
+     * @returns {boolean}
+     */
+    isForcedHybridForm(form) {
+      const forcedFormType = this.getForcedFormType(form);
+      if (forcedFormType === "hybrid") {
+        return true;
+      } else if (forcedFormType) {
+        return false;
+      }
+      return false;
+    }
+    /**
      * @returns {Array<FormTypeSettings>}
      */
     get formTypeSettings() {
@@ -12557,36 +12581,17 @@ Source: "${matchedFrom}"`;
       return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
     }
     /**
-     * @param {HTMLElement} form
-     * @param {import('./Form/matching').Matching} matching
-     * @returns {boolean}
-     */
-    attemptForceFormInputTypes(form, matching) {
-      for (const input of this.formInputTypeSettings) {
-        const inputEl = (
-          /** @type {HTMLInputElement} */
-          form.querySelector(input.selector) ?? document.querySelector(input.selector)
-        );
-        if (!inputEl)
-          console.error(`Input element not found for forced input type: ${input.selector}`);
-        matching.setInputType(inputEl, form, { forcedInputType: input.type });
-      }
-      return false;
-    }
-    /**
      * @param {Element} form
      * @param {FormBoundarySettings} settings
-     * @param {string} formInputsSelectorWithoutSelect
-     * @returns {Array<HTMLSelectElement|HTMLInputElement>}
+     * @returns {Array<HTMLSelectElement|HTMLInputElement> | null}
      */
-    getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
-      const inputs = settings.inputsSelectors?.map(
+    getFormInputsFromSettings(form, settings) {
+      return settings.inputsSelectors?.map(
         (selector) => (
           /** @type {HTMLSelectElement|HTMLInputElement} */
           form.querySelectorAll(selector)[0]
         )
-      ) ?? [];
-      return inputs.length ? inputs : Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
+      );
     }
     /**
      * @param {HTMLElement} context
@@ -12601,7 +12606,7 @@ Source: "${matchedFrom}"`;
           const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
           if (form) {
             formCount++;
-            const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
+            const inputs = this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
             for (const input of inputs) {
               callback(input, form);
             }
@@ -18420,6 +18425,7 @@ ${this.options.css}
      */
     async _getAutofillInitData() {
       const response = await this.deviceApi.request(createRequest("pmHandlerGetAutofillInitData"));
+      console.log("response", response);
       this.storeLocalData(response.success);
       return response;
     }

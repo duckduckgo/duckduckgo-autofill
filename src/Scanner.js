@@ -156,12 +156,6 @@ class DefaultScanner {
         if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
         } else {
-            const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-            if (inputs.length > this.options.maxInputsPerPage) {
-                this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
-                return this;
-            }
-
             if (
                 this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(
                     context,
@@ -169,6 +163,12 @@ class DefaultScanner {
                     this.addInput.bind(this),
                 )
             ) {
+                return this;
+            }
+
+            const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
+            if (inputs.length > this.options.maxInputsPerPage) {
+                this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
 

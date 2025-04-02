@@ -1,3 +1,8 @@
+import { readFileSync } from 'fs';
+import SiteSpecificFeature from './site-specific-feature.js';
+import path from 'path';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
+
 /**
  * Creates a given or generic form element, overwrites the DOM with it and returns it
  * You can also pass a div or other as the container, but it must have id=form
@@ -44,5 +49,37 @@ const attachAndReturnGenericLoginForm = () => {
 </form>`;
     return attachAndReturnGenericForm(loginForm);
 };
+/**
+ * Creates mock SiteSpecificFixes class in the device interface, based on test config
+ * @param {import("./DeviceInterface/InterfacePrototype").default} deviceInterface
+ * @param {string} file
+ */
+const setMockSiteSpecificFixes = (deviceInterface, file) => {
+    /** @type {import("./Settings").RuntimeConfiguration} */
+    const mockRuntimeConfig = {
+        contentScope: {
+            features: {
+                autofill: {
+                    state: 'enabled',
+                    features: JSON.parse(readFileSync(path.join(__dirname, `testConfig/siteSpecificFixes/${file}.json`)).toString('utf-8')),
+                },
+            },
+        },
+        userUnprotectedDomains: [],
+        userPreferences: {
+            sessionKey: 'test',
+            debug: false,
+            platform: {
+                name: 'macos',
+            },
+            features: {},
+        },
+    };
+    deviceInterface.settings.setTopLevelFeatureInContentScopeIfNeeded(mockRuntimeConfig, 'siteSpecificFixes');
+    const { contentScope, userPreferences, userUnprotectedDomains } = mockRuntimeConfig;
+    // @ts-expect-error - inconsitent types between C-S-S and autofill
+    const args = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+    deviceInterface.settings.setsiteSpecificFeature(new SiteSpecificFeature(args));
+};
 
-export { attachAndReturnGenericForm, attachAndReturnGenericLoginForm };
+export { attachAndReturnGenericForm, attachAndReturnGenericLoginForm, setMockSiteSpecificFixes };

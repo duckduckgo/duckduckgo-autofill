@@ -200,6 +200,7 @@ class AppleDeviceInterface extends InterfacePrototype {
      */
     async _getAutofillInitData() {
         const response = await this.deviceApi.request(createRequest('pmHandlerGetAutofillInitData'));
+        console.log('response', response);
         this.storeLocalData(response.success);
         return response;
     }

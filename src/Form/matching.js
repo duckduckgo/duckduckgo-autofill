@@ -316,7 +316,6 @@ class Matching {
      *   isSignup?: boolean,
      *   hasCredentials?: boolean,
      *   supportsIdentitiesAutofill?: boolean,
-     *   forcedInputType?: SupportedTypes
      * }} SetInputTypeOpts
      */
 
@@ -328,10 +327,6 @@ class Matching {
      * @returns {SupportedSubTypes | string}
      */
     setInputType(input, formEl, opts = {}) {
-        if (opts.forcedInputType) {
-            input.setAttribute(ATTR_INPUT_TYPE, opts.forcedInputType);
-            return opts.forcedInputType;
-        }
         const type = this.inferInputType(input, formEl, opts);
         input.setAttribute(ATTR_INPUT_TYPE, type);
         return type;

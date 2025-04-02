@@ -118,10 +118,6 @@ class Form {
         }
     }
 
-    get forcedInputTypes() {
-        return this.formAnalyzer.forcedInputTypes;
-    }
-
     get isLogin() {
         return this.formAnalyzer.isLogin;
     }

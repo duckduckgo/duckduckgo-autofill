@@ -29,6 +29,45 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
+     * @param {HTMLElement} form
+     * @returns {boolean}
+     */
+    isForcedLoginForm(form) {
+        const forcedFormType = this.getForcedFormType(form);
+        if (forcedFormType === 'login') {
+            return true;
+        } else if (forcedFormType) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * @param {HTMLElement} form
+     * @returns {boolean}
+     */
+    isForcedSignupForm(form) {
+        const forcedFormType = this.getForcedFormType(form);
+        if (!forcedFormType) return false;
+
+        return forcedFormType === 'signup';
+    }
+
+    /**
+     * @param {HTMLElement} form
+     * @returns {boolean}
+     */
+    isForcedHybridForm(form) {
+        const forcedFormType = this.getForcedFormType(form);
+        if (forcedFormType === 'hybrid') {
+            return true;
+        } else if (forcedFormType) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
      * @returns {Array<FormTypeSettings>}
      */
     get formTypeSettings() {
@@ -59,33 +98,15 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @param {HTMLElement} form
-     * @param {import('./Form/matching').Matching} matching
-     * @returns {boolean}
-     */
-    attemptForceFormInputTypes(form, matching) {
-        // For each input in the forced form type, set the input type
-        for (const input of this.formInputTypeSettings) {
-            const inputEl = /** @type {HTMLInputElement} */ (form.querySelector(input.selector) ?? document.querySelector(input.selector));
-            if (!inputEl) console.error(`Input element not found for forced input type: ${input.selector}`);
-            matching.setInputType(inputEl, form, { forcedInputType: input.type });
-        }
-        return false;
-    }
-
-    /**
      * @param {Element} form
      * @param {FormBoundarySettings} settings
-     * @param {string} formInputsSelectorWithoutSelect
-     * @returns {Array<HTMLSelectElement|HTMLInputElement>}
+     * @returns {Array<HTMLSelectElement|HTMLInputElement> | null}
      */
-    getFormInputsFromSettings(form, settings, formInputsSelectorWithoutSelect) {
+    getFormInputsFromSettings(form, settings) {
         // We only expect one input per selector, so we can just return the first one
-        const inputs =
-            settings.inputsSelectors?.map(
-                (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelectorAll(selector)[0]),
-            ) ?? [];
-        return inputs.length ? inputs : Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
+        return settings.inputsSelectors?.map(
+            (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelectorAll(selector)[0]),
+        );
     }
 
     /**
@@ -101,12 +122,14 @@ export default class SiteSpecificFeature extends ConfigFeature {
                 const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
                 if (form) {
                     formCount++;
-                    const inputs = this.getFormInputsFromSettings(form, setting, formInputsSelectorWithoutSelect);
+                    const inputs =
+                        this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
                     for (const input of inputs) {
                         callback(input, form);
                     }
                 }
             }
+            // If we found all the form boundary settings, return true
             return formCount === this.formBoundarySettings.length;
         }
         return false;
