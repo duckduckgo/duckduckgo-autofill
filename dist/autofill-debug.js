@@ -5850,7 +5850,6 @@ Source: "${matchedFrom}"`;
         isLogin: this.isLogin,
         isHybrid: this.isHybrid,
         isCCForm: this.isCCForm,
-        isSignup: this.isSignup,
         hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
         supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
       };
@@ -12422,8 +12421,7 @@ Source: "${matchedFrom}"`;
      */
     _getFeatureSettings(featureName) {
       const camelFeatureName = featureName || camelcase(this.name);
-      const result = this.featureSettings?.[camelFeatureName];
-      return result;
+      return this.featureSettings?.[camelFeatureName];
     }
     /**
      * For simple boolean settings, return true if the setting is 'enabled'
