@@ -8728,7 +8728,7 @@ Source: "${matchedFrom}"`;
     },
     manageSavedItems: {
       title: "Manage Saved Items\u2026",
-      note: 'Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than "manageCreditCards", "manageIdentities", and "managePassworeds". "Manage" is an imperative verb.'
+      note: 'Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than "manageCreditCards", "manageIdentities", and "managePasswords". "Manage" is an imperative verb.'
     },
     manageCreditCards: {
       title: "Manage Payment Methods\u2026",
@@ -8736,7 +8736,7 @@ Source: "${matchedFrom}"`;
     },
     manageIdentities: {
       title: "Manage Identities\u2026",
-      note: 'Button that when clicked allows users to add, edit, or delete one or more identities. "Manage" is an imperative verb. An "Identity" (singular of "identities") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page.'
+      note: 'Button that when clicked allows users to add, edit, or delete one or more identities. "Manage" is an imperative verb. An "Identity" (singular of "identities") is a noun representing the combination of name, birthday, physical address, email address, and phone number used to fill forms on a web page.'
     },
     managePasswords: {
       title: "Manage Passwords\u2026",
