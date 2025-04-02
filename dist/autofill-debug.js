@@ -12556,19 +12556,19 @@ Source: "${matchedFrom}"`;
       return false;
     }
     /**
-     * @returns {Array<FormTypeSettings>}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
     get formTypeSettings() {
       return this.getFeatureSetting("formTypeSettings") ?? [];
     }
     /**
-     * @returns {Array<FormBoundarySettings>}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySettings']}
      */
     get formBoundarySettings() {
       return this.getFeatureSetting("formBoundarySettings") ?? [];
     }
     /**
-     * @returns {Array<FormInputTypeSettings>}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
     get formInputTypeSettings() {
       return this.getFeatureSetting("formInputTypeSettings") ?? [];
@@ -12583,7 +12583,7 @@ Source: "${matchedFrom}"`;
     }
     /**
      * @param {Element} form
-     * @param {FormBoundarySettings} settings
+     * @param {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySettings'][number]} settings
      * @returns {Array<HTMLSelectElement|HTMLInputElement> | null}
      */
     getFormInputsFromSettings(form, settings) {

@@ -3,22 +3,6 @@ import { findElementsInShadowTree } from './autofill-utils.js';
 
 const FEATURE_NAME = 'site-specific-fixes';
 
-/** @typedef {Object} FormTypeSettings
- * @property {string} selector
- * @property {string} type
- * @property {Array<{selector: string, type: import('./Form/matching').SupportedTypes}>} inputs
- */
-
-/** @typedef {Object} FormBoundarySettings
- * @property {string} formSelector
- * @property {string[]} inputsSelectors
- */
-
-/** @typedef {Object} FormInputTypeSettings
- * @property {string} selector
- * @property {import('./Form/matching').SupportedTypes} type
- */
-
 export default class SiteSpecificFeature extends ConfigFeature {
     constructor(args) {
         super(FEATURE_NAME, args);
@@ -68,21 +52,21 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {Array<FormTypeSettings>}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
     get formTypeSettings() {
         return this.getFeatureSetting('formTypeSettings') ?? [];
     }
 
     /**
-     * @returns {Array<FormBoundarySettings>}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySettings']}
      */
     get formBoundarySettings() {
         return this.getFeatureSetting('formBoundarySettings') ?? [];
     }
 
     /**
-     * @returns {Array<FormInputTypeSettings>}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
     get formInputTypeSettings() {
         return this.getFeatureSetting('formInputTypeSettings') ?? [];
@@ -99,7 +83,7 @@ export default class SiteSpecificFeature extends ConfigFeature {
 
     /**
      * @param {Element} form
-     * @param {FormBoundarySettings} settings
+     * @param {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySettings'][number]} settings
      * @returns {Array<HTMLSelectElement|HTMLInputElement> | null}
      */
     getFormInputsFromSettings(form, settings) {
