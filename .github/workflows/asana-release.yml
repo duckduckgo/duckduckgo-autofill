@@ -141,7 +141,7 @@ jobs:
               id: create-pr
               with:
                   path: apple-monorepo/
-                  add-paths: BrowserServicesKit/Package.swift,BrowserServicesKit/Package.resolved
+                  add-paths: SharedPackages/BrowserServicesKit/Package.swift,SharedPackages/BrowserServicesKit/Package.resolved
                   commit-message: Update autofill to ${{ env.VERSION }}
                   branch: update-autofill-${{ env.VERSION }}
                   title: Update autofill to ${{ env.VERSION }}
