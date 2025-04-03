@@ -8,49 +8,6 @@ export default class SiteSpecificFeature extends ConfigFeature {
         super(FEATURE_NAME, args);
     }
 
-    isEnabled() {
-        return this.bundledConfig?.features?.siteSpecificFixes?.state === 'enabled';
-    }
-
-    /**
-     * @param {HTMLElement} form
-     * @returns {boolean}
-     */
-    isForcedLoginForm(form) {
-        const forcedFormType = this.getForcedFormType(form);
-        if (forcedFormType === 'login') {
-            return true;
-        } else if (forcedFormType) {
-            return false;
-        }
-        return false;
-    }
-
-    /**
-     * @param {HTMLElement} form
-     * @returns {boolean}
-     */
-    isForcedSignupForm(form) {
-        const forcedFormType = this.getForcedFormType(form);
-        if (!forcedFormType) return false;
-
-        return forcedFormType === 'signup';
-    }
-
-    /**
-     * @param {HTMLElement} form
-     * @returns {boolean}
-     */
-    isForcedHybridForm(form) {
-        const forcedFormType = this.getForcedFormType(form);
-        if (forcedFormType === 'hybrid') {
-            return true;
-        } else if (forcedFormType) {
-            return false;
-        }
-        return false;
-    }
-
     /**
      * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
