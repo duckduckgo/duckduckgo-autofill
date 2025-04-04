@@ -16102,6 +16102,12 @@ Source: "${matchedFrom}"`;
     color-scheme: light dark;
 }
 
+/**
+NB:  box-shadows and border-radius properties are not visible on both Windows and macOS platforms.
+This is due to the use of a native solution for rendering the autofill tooltip within a webview,
+which has its own box-shadow and border-radius settings.
+*/
+
 :host {
     /* Global Colors & Styles */
     --T-Text-Primary: #1C1F21;
@@ -16111,22 +16117,18 @@ Source: "${matchedFrom}"`;
     --Dialog-Mac-Backdrop-dark: #646264;
     --Dialog-Windows-Backdrop-dark: #404145;
 
+    /* default text color for both platforms */
+    --color: var(--T-Text-Primary);  
+
     /* default: MacOS */
     --bg: var(--Dialog-Mac-Backdrop);
-    --border-radius: 8px;
-    --box-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.2) inset, 0px 0px 0px 0.5px rgba(0, 0, 0, 0.20), 0px 10px 24px 0px rgba(0, 0, 0, 0.32);
-
     --bg-dark: var(--Dialog-Mac-Backdrop-dark);
-
     --font-size: 13px;
-    --color: var(--T-Text-Primary);  /* default text color for both platforms */
 }
 
 :host:has([data-platform="windows"]) {
     --bg: var(--Dialog-Windows-Backdrop);
-
     --bg-dark: var(--Dialog-Windows-Backdrop-dark);
-
     --font-size: 14px;
 }
 
@@ -16181,8 +16183,6 @@ Source: "${matchedFrom}"`;
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
 }
 @media (prefers-color-scheme: dark) {
     .wrapper:not(.top-autofill) .tooltip--data {
