@@ -24,12 +24,14 @@ which has its own box-shadow and border-radius settings.
     --bg: var(--Dialog-Mac-Backdrop);
     --bg-dark: var(--Dialog-Mac-Backdrop-dark);
     --font-size: 13px;
+    --font-weight: 500;
 }
 
 :host:has([data-platform="windows"]) {
     --bg: var(--Dialog-Windows-Backdrop);
     --bg-dark: var(--Dialog-Windows-Backdrop-dark);
     --font-size: 14px;
+    --font-weight: 400;
 }
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
@@ -146,7 +148,7 @@ which has its own box-shadow and border-radius settings.
     flex-direction: row;
     justify-content: flex-start;
     font-size: inherit;
-    font-weight: 500;
+    font-weight: var(--font-weight);
     line-height: 16px;
     text-align: left;
     border-radius: 3px;
@@ -210,7 +212,7 @@ which has its own box-shadow and border-radius settings.
     margin-top: 2px;
 }
 .label.label--medium {
-    font-weight: 500;
+    font-weight: var(--font-weight);
     letter-spacing: -0.25px;
 }
 .label.label--small {
