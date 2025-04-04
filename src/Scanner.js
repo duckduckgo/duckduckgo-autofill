@@ -76,6 +76,9 @@ class DefaultScanner {
     /** @type {import("./Form/matching").Matching} matching */
     matching;
 
+    /** @type {boolean} A flag to indicate the forced form has been added */
+    forcedFormAdded = false;
+
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
@@ -156,16 +159,6 @@ class DefaultScanner {
         if ('matches' in context && context.matches?.(formInputsSelectorWithoutSelect)) {
             this.addInput(context);
         } else {
-            if (
-                this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(
-                    context,
-                    formInputsSelectorWithoutSelect,
-                    this.addInput.bind(this),
-                )
-            ) {
-                return this;
-            }
-
             const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
             if (inputs.length > this.options.maxInputsPerPage) {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
@@ -228,10 +221,22 @@ class DefaultScanner {
     }
 
     /**
+     * @returns {HTMLFormElement|null}
+     */
+    get forcedForm() {
+        return this.device.settings.siteSpecificFeature?.getForcedForm() ?? null;
+    }
+
+    /**
      * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
      * @returns {HTMLFormElement|HTMLElement}
      */
     getParentForm(input) {
+        // Check if the input belongs to a forced form, return the forced form
+        if (this.forcedForm && this.forcedForm.contains(input)) {
+            return this.forcedForm;
+        }
+
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
             if (input.form) {
                 // Use input.form unless it encloses most of the DOM
@@ -299,10 +304,11 @@ class DefaultScanner {
     addInput(input, form = null) {
         if (this.isStopped) return;
 
-        // If the input is already added in one of the forms, do not add it again
-        if (Array.from(this.forms.entries()).some(([_, formInstance]) => formInstance.inputs.all.has(input))) return;
+        const forcedForm = this.forcedFormAdded ? null : this.forcedForm;
+        this.forcedFormAdded = true;
+        const parentForm = forcedForm || form || this.getParentForm(input);
 
-        const parentForm = form || this.getParentForm(input);
+        if (this.forcedForm && parentForm.contains(this.forcedForm) && this.forcedForm !== parentForm) return;
 
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm);
@@ -355,7 +361,6 @@ class DefaultScanner {
             // Only add the form if below the limit of forms per page
             if (this.forms.size < this.options.maxFormsPerPage) {
                 this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
-                // Also only add the form if it hasn't self-destructed due to having too few fields
             } else {
                 this.setMode('on-click', 'The page has too many forms, stop adding them.');
             }

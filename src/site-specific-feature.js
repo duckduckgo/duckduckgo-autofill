@@ -44,10 +44,16 @@ export default class SiteSpecificFeature extends ConfigFeature {
      * @returns {Array<HTMLSelectElement|HTMLInputElement> | null}
      */
     getFormInputsFromSettings(form, settings) {
-        // We only expect one input per selector, so we can just return the first one
         return settings.inputsSelectors?.map(
-            (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelectorAll(selector)[0]),
+            (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelector(selector)),
         );
+    }
+
+    /**
+     * @returns {HTMLFormElement|null}
+     */
+    getForcedForm() {
+        return this.formBoundarySettings.length ? document.querySelector(this.formBoundarySettings[0]?.formSelector) : null;
     }
 
     /**
@@ -58,21 +64,17 @@ export default class SiteSpecificFeature extends ConfigFeature {
      */
     attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, callback) {
         let formCount = 0;
-        if (this.formBoundarySettings.length) {
-            for (const setting of this.formBoundarySettings) {
-                const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
-                if (form) {
-                    formCount++;
-                    const inputs =
-                        this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
-                    for (const input of inputs) {
-                        callback(input, form);
-                    }
+        for (const setting of this.formBoundarySettings) {
+            const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
+            if (form) {
+                formCount++;
+                const inputs =
+                    this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
+                for (const input of inputs) {
+                    callback(input, form);
                 }
             }
-            // If we found all the form boundary settings, return true
-            return formCount === this.formBoundarySettings.length;
         }
-        return false;
+        return formCount === this.formBoundarySettings.length;
     }
 }

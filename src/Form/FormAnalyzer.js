@@ -15,16 +15,16 @@ class FormAnalyzer {
     /** @type Matching */
     matching;
 
-    /** @type {import('../site-specific-feature').default|undefined} */
+    /** @type {import('../site-specific-feature').default|null} */
     siteSpecificFeature;
 
     /**
      * @param {HTMLElement} form
+     * @param {import('../site-specific-feature').default|null} siteSpecificFeature
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
-     * @param {import('../site-specific-feature').default} [siteSpecificFeature]
      */
-    constructor(form, input, matching, siteSpecificFeature) {
+    constructor(form, siteSpecificFeature, input, matching) {
         this.form = form;
         this.siteSpecificFeature = siteSpecificFeature;
         this.matching = matching || new Matching(matchingConfiguration);
@@ -68,29 +68,29 @@ class FormAnalyzer {
      */
     get isHybrid() {
         const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
-        if (!forcedFormType) {
-            // When marking for hybrid we also want to ensure other signals are weak
-            return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
+        if (forcedFormType) {
+            return forcedFormType === 'hybrid';
         }
-        return forcedFormType === 'hybrid';
+        // When marking for hybrid we also want to ensure other signals are weak
+        return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
 
     get isLogin() {
         const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
-        if (!forcedFormType) {
-            if (this.isHybrid) return false;
-            return this.autofillSignal < 0;
+        if (forcedFormType) {
+            return forcedFormType === 'login';
         }
-        return forcedFormType === 'login';
+        if (this.isHybrid) return false;
+        return this.autofillSignal < 0;
     }
 
     get isSignup() {
         const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
-        if (!forcedFormType) {
-            if (this.isHybrid) return false;
-            return this.autofillSignal >= 0;
+        if (forcedFormType) {
+            return forcedFormType === 'signup';
         }
-        return forcedFormType === 'signup';
+        if (this.isHybrid) return false;
+        return this.autofillSignal >= 0;
     }
 
     /**

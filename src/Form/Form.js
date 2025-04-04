@@ -54,7 +54,7 @@ class Form {
     constructor(form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.form = form;
         this.matching = matching || createMatching();
-        this.formAnalyzer = new FormAnalyzer(form, input, matching, deviceInterface.settings.siteSpecificFeature);
+        this.formAnalyzer = new FormAnalyzer(form, deviceInterface.settings.siteSpecificFeature, input, matching);
         this.device = deviceInterface;
         this.hasShadowTree = hasShadowTree;
 
@@ -101,7 +101,7 @@ class Form {
                     this.mutObs.disconnect();
                     // If any known input has been removed from the DOM, reanalyze the whole form
                     window.requestIdleCallback(() => {
-                        this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching, this.device.settings.siteSpecificFeature);
+                        this.formAnalyzer = new FormAnalyzer(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
                         this.recategorizeAllInputs();
                     });
                 }
@@ -547,7 +547,7 @@ class Form {
 
         // When new inputs are added after the initial scan, reanalyze the whole form
         if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching, this.device.settings.siteSpecificFeature);
+            this.formAnalyzer = new FormAnalyzer(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
             this.recategorizeAllInputs();
             return this;
         }

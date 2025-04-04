@@ -4787,16 +4787,16 @@ Source: "${matchedFrom}"`;
   var FormAnalyzer = class {
     /**
      * @param {HTMLElement} form
+     * @param {import('../site-specific-feature').default|null} siteSpecificFeature
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
-     * @param {import('../site-specific-feature').default} [siteSpecificFeature]
      */
-    constructor(form, input, matching, siteSpecificFeature) {
+    constructor(form, siteSpecificFeature, input, matching) {
       /** @type HTMLElement */
       __publicField(this, "form");
       /** @type Matching */
       __publicField(this, "matching");
-      /** @type {import('../site-specific-feature').default|undefined} */
+      /** @type {import('../site-specific-feature').default|null} */
       __publicField(this, "siteSpecificFeature");
       /** @type {undefined|boolean} */
       __publicField(this, "_isCCForm");
@@ -4823,28 +4823,28 @@ Source: "${matchedFrom}"`;
      */
     get isHybrid() {
       const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
-      if (!forcedFormType) {
-        return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
+      if (forcedFormType) {
+        return forcedFormType === "hybrid";
       }
-      return forcedFormType === "hybrid";
+      return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
     get isLogin() {
       const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
-      if (!forcedFormType) {
-        if (this.isHybrid)
-          return false;
-        return this.autofillSignal < 0;
+      if (forcedFormType) {
+        return forcedFormType === "login";
       }
-      return forcedFormType === "login";
+      if (this.isHybrid)
+        return false;
+      return this.autofillSignal < 0;
     }
     get isSignup() {
       const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
-      if (!forcedFormType) {
-        if (this.isHybrid)
-          return false;
-        return this.autofillSignal >= 0;
+      if (forcedFormType) {
+        return forcedFormType === "signup";
       }
-      return forcedFormType === "signup";
+      if (this.isHybrid)
+        return false;
+      return this.autofillSignal >= 0;
     }
     /**
      * Tilts the scoring towards Signup
@@ -5415,7 +5415,7 @@ Source: "${matchedFrom}"`;
       __publicField(this, "activeInput");
       this.form = form;
       this.matching = matching || createMatching();
-      this.formAnalyzer = new FormAnalyzer_default(form, input, matching, deviceInterface.settings.siteSpecificFeature);
+      this.formAnalyzer = new FormAnalyzer_default(form, deviceInterface.settings.siteSpecificFeature, input, matching);
       this.device = deviceInterface;
       this.hasShadowTree = hasShadowTree;
       this.inputs = {
@@ -5450,7 +5450,7 @@ Source: "${matchedFrom}"`;
           if ([...this.inputs.all].some((input2) => !input2.isConnected)) {
             this.mutObs.disconnect();
             window.requestIdleCallback(() => {
-              this.formAnalyzer = new FormAnalyzer_default(this.form, input, this.matching, this.device.settings.siteSpecificFeature);
+              this.formAnalyzer = new FormAnalyzer_default(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
               this.recategorizeAllInputs();
             });
           }
@@ -5839,7 +5839,7 @@ Source: "${matchedFrom}"`;
         return this;
       }
       if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-        this.formAnalyzer = new FormAnalyzer_default(this.form, input, this.matching, this.device.settings.siteSpecificFeature);
+        this.formAnalyzer = new FormAnalyzer_default(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
         this.recategorizeAllInputs();
         return this;
       }
@@ -11141,6 +11141,8 @@ Source: "${matchedFrom}"`;
       __publicField(this, "mode", "scanning");
       /** @type {import("./Form/matching").Matching} matching */
       __publicField(this, "matching");
+      /** @type {boolean} A flag to indicate the forced form has been added */
+      __publicField(this, "forcedFormAdded", false);
       /**
        * Watch for changes in the DOM, and enqueue elements to be scanned
        * @type {MutationObserver}
@@ -11224,13 +11226,6 @@ Source: "${matchedFrom}"`;
       if ("matches" in context && context.matches?.(formInputsSelectorWithoutSelect)) {
         this.addInput(context);
       } else {
-        if (this.device.settings.siteSpecificFeature?.attemptForceFormBoundary(
-          context,
-          formInputsSelectorWithoutSelect,
-          this.addInput.bind(this)
-        )) {
-          return this;
-        }
         const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
         if (inputs.length > this.options.maxInputsPerPage) {
           this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
@@ -11282,10 +11277,19 @@ Source: "${matchedFrom}"`;
       return this.mode === "stopped";
     }
     /**
+     * @returns {HTMLFormElement|null}
+     */
+    get forcedForm() {
+      return this.device.settings.siteSpecificFeature?.getForcedForm() ?? null;
+    }
+    /**
      * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
      * @returns {HTMLFormElement|HTMLElement}
      */
     getParentForm(input) {
+      if (this.forcedForm && this.forcedForm.contains(input)) {
+        return this.forcedForm;
+      }
       if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
         if (input.form) {
           if (this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
@@ -11332,9 +11336,11 @@ Source: "${matchedFrom}"`;
     addInput(input, form = null) {
       if (this.isStopped)
         return;
-      if (Array.from(this.forms.entries()).some(([_, formInstance]) => formInstance.inputs.all.has(input)))
+      const forcedForm = this.forcedFormAdded ? null : this.forcedForm;
+      this.forcedFormAdded = true;
+      const parentForm = forcedForm || form || this.getParentForm(input);
+      if (this.forcedForm && parentForm.contains(this.forcedForm) && this.forcedForm !== parentForm)
         return;
-      const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
         if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
@@ -12551,9 +12557,15 @@ Source: "${matchedFrom}"`;
       return settings.inputsSelectors?.map(
         (selector) => (
           /** @type {HTMLSelectElement|HTMLInputElement} */
-          form.querySelectorAll(selector)[0]
+          form.querySelector(selector)
         )
       );
+    }
+    /**
+     * @returns {HTMLFormElement|null}
+     */
+    getForcedForm() {
+      return this.formBoundarySettings.length ? document.querySelector(this.formBoundarySettings[0]?.formSelector) : null;
     }
     /**
      * @param {HTMLElement} context
@@ -12563,20 +12575,17 @@ Source: "${matchedFrom}"`;
      */
     attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, callback) {
       let formCount = 0;
-      if (this.formBoundarySettings.length) {
-        for (const setting of this.formBoundarySettings) {
-          const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
-          if (form) {
-            formCount++;
-            const inputs = this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
-            for (const input of inputs) {
-              callback(input, form);
-            }
+      for (const setting of this.formBoundarySettings) {
+        const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
+        if (form) {
+          formCount++;
+          const inputs = this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
+          for (const input of inputs) {
+            callback(input, form);
           }
         }
-        return formCount === this.formBoundarySettings.length;
       }
-      return false;
+      return formCount === this.formBoundarySettings.length;
     }
   };
 
@@ -12716,10 +12725,10 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
-     * @returns {SiteSpecificFeature|undefined}
+     * @returns {SiteSpecificFeature|null}
      */
     get siteSpecificFeature() {
-      return this._siteSpecificFeature ?? void 0;
+      return this._siteSpecificFeature;
     }
     /**
      * WORKAROUND: Currently C-S-S only suppports parsing top level features, so we need to manually allow
@@ -12759,11 +12768,7 @@ Source: "${matchedFrom}"`;
         const runtimeConfig = await this._getRuntimeConfiguration();
         this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, "siteSpecificFixes");
         const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
-        return new SiteSpecificFeature({
-          site: args.site,
-          platform: args.platform,
-          bundledConfig: args.bundledConfig
-        });
+        return new SiteSpecificFeature(args);
       } catch (e) {
         if (this.globalConfig.isDDGTestMode) {
           console.log("isDDGTestMode: getsiteSpecificFeature: \u274C", e);

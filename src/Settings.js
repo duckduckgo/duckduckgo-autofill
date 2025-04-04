@@ -171,10 +171,10 @@ export class Settings {
     }
 
     /**
-     * @returns {SiteSpecificFeature|undefined}
+     * @returns {SiteSpecificFeature|null}
      */
     get siteSpecificFeature() {
-        return this._siteSpecificFeature ?? undefined;
+        return this._siteSpecificFeature;
     }
 
     /**
@@ -216,11 +216,7 @@ export class Settings {
             this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, 'siteSpecificFixes');
             // @ts-ignore
             const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
-            return new SiteSpecificFeature({
-                site: args.site,
-                platform: args.platform,
-                bundledConfig: args.bundledConfig,
-            });
+            return new SiteSpecificFeature(args);
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
                 console.log('isDDGTestMode: getsiteSpecificFeature: ❌', e);
