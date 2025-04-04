@@ -14,12 +14,7 @@
                                 "path": "",
                                 "op": "add",
                                 "value": {
-                                    "formTypeSettings": [],
-                                    "formBoundarySettings": [
-                                        {
-                                            "formSelector": "#form-boundary"
-                                        }
-                                    ]
+                                    "formBoundarySelector": "#form-boundary"
                                 }
                             }
                         ]

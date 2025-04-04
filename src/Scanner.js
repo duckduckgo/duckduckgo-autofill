@@ -232,11 +232,6 @@ class DefaultScanner {
      * @returns {HTMLFormElement|HTMLElement}
      */
     getParentForm(input) {
-        // Check if the input belongs to a forced form, return the forced form
-        if (this.forcedForm && this.forcedForm.contains(input)) {
-            return this.forcedForm;
-        }
-
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
             if (input.form) {
                 // Use input.form unless it encloses most of the DOM
@@ -299,10 +294,19 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @returns {boolean}
+     */
+    inputExistsInForms(input) {
+        return [...this.forms.values()].some((form) => form.inputs.all.has(input));
+    }
+
+    /**
+     * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement|null} form
      */
     addInput(input, form = null) {
         if (this.isStopped) return;
+        if (this.inputExistsInForms(input)) return;
 
         const forcedForm = this.forcedFormAdded ? null : this.forcedForm;
         this.forcedFormAdded = true;
@@ -450,9 +454,8 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped, event target is messed up or site-specific settings are enabled, just return
-        if (this.isStopped || !(event.target instanceof Element) || this.device.settings.siteSpecificFeature?.formBoundarySettings?.length)
-            return;
+        // If the scanner is stopped or event target is messed up, just return
+        if (this.isStopped || !(event.target instanceof Element)) return;
 
         window.performance?.mark?.('scan_shadow:init:start');
 

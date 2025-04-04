@@ -1,5 +1,4 @@
 import ConfigFeature from '@duckduckgo/content-scope-scripts/injected/src/config-feature';
-import { findElementsInShadowTree } from './autofill-utils.js';
 
 const FEATURE_NAME = 'site-specific-fixes';
 
@@ -16,10 +15,10 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySettings']}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySelector'] | null}
      */
-    get formBoundarySettings() {
-        return this.getFeatureSetting('formBoundarySettings') ?? [];
+    get formBoundarySelector() {
+        return this.getFeatureSetting('formBoundarySelector');
     }
 
     /**
@@ -39,42 +38,9 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @param {Element} form
-     * @param {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySettings'][number]} settings
-     * @returns {Array<HTMLSelectElement|HTMLInputElement> | null}
-     */
-    getFormInputsFromSettings(form, settings) {
-        return settings.inputsSelectors?.map(
-            (selector) => /** @type {HTMLSelectElement|HTMLInputElement} */ (form.querySelector(selector)),
-        );
-    }
-
-    /**
      * @returns {HTMLFormElement|null}
      */
     getForcedForm() {
-        return this.formBoundarySettings.length ? document.querySelector(this.formBoundarySettings[0]?.formSelector) : null;
-    }
-
-    /**
-     * @param {HTMLElement} context
-     * @param {string} formInputsSelectorWithoutSelect
-     * @param {(input: HTMLInputElement|HTMLSelectElement, form?: any) => void} callback
-     * @returns {boolean}
-     */
-    attemptForceFormBoundary(context, formInputsSelectorWithoutSelect, callback) {
-        let formCount = 0;
-        for (const setting of this.formBoundarySettings) {
-            const form = context.querySelector(setting.formSelector) || findElementsInShadowTree(context, setting.formSelector)[0];
-            if (form) {
-                formCount++;
-                const inputs =
-                    this.getFormInputsFromSettings(form, setting) ?? Array.from(form.querySelectorAll(formInputsSelectorWithoutSelect));
-                for (const input of inputs) {
-                    callback(input, form);
-                }
-            }
-        }
-        return formCount === this.formBoundarySettings.length;
+        return this.formBoundarySelector ? document.querySelector(this.formBoundarySelector) : null;
     }
 }

@@ -208,9 +208,6 @@ export class Settings {
     async getsiteSpecificFeature() {
         if (this._siteSpecificFeature) return this._siteSpecificFeature;
 
-        // Do not run for extension
-        if (this.globalConfig.isExtension) return null;
-
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
             this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, 'siteSpecificFixes');
