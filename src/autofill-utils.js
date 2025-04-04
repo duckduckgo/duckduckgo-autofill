@@ -1,6 +1,6 @@
 import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js';
 import { constants } from './constants.js';
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
 
 const SIGN_IN_MSG = { signMeIn: true };
 
@@ -50,7 +50,12 @@ const autofillEnabled = (globalConfig) => {
 
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
 
+    // Note: This cannot occur, but this check helps Typescript
+    // todo: to be fixed in GlobalConfig
+    if (!userPreferences) return false;
+
     // Check config on Apple platforms
+    // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
 };

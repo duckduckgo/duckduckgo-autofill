@@ -76,6 +76,9 @@ class DefaultScanner {
     /** @type {import("./Form/matching").Matching} matching */
     matching;
 
+    /** @type {boolean} A flag to indicate the forced form has been retrieved */
+    hasRetrievedForcedForm = false;
+
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
@@ -141,6 +144,8 @@ class DefaultScanner {
     }
 
     /**
+     * Core logic for find inputs that are eligible for autofill. If they are,
+     * then call addInput which will attempt to add the input to a parent form.
      * @param context
      */
     findEligibleInputs(context) {
@@ -159,6 +164,7 @@ class DefaultScanner {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
+
             inputs.forEach((input) => this.addInput(input));
             if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
                 findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {
@@ -212,6 +218,13 @@ class DefaultScanner {
 
     get isStopped() {
         return this.mode === 'stopped';
+    }
+
+    /**
+     * @returns {HTMLFormElement|null}
+     */
+    get forcedForm() {
+        return this.device.settings.siteSpecificFeature?.getForcedForm() || null;
     }
 
     /**
@@ -281,12 +294,25 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @returns {boolean}
+     */
+    inputExistsInForms(input) {
+        return [...this.forms.values()].some((form) => form.inputs.all.has(input));
+    }
+
+    /**
+     * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement|null} form
      */
     addInput(input, form = null) {
         if (this.isStopped) return;
+        if (this.inputExistsInForms(input)) return;
 
-        const parentForm = form || this.getParentForm(input);
+        const forcedForm = this.hasRetrievedForcedForm ? null : this.forcedForm;
+        this.hasRetrievedForcedForm = true;
+        const parentForm = forcedForm || form || this.getParentForm(input);
+
+        if (this.forcedForm && parentForm.contains(this.forcedForm) && this.forcedForm !== parentForm) return;
 
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm);
@@ -339,7 +365,6 @@ class DefaultScanner {
             // Only add the form if below the limit of forms per page
             if (this.forms.size < this.options.maxFormsPerPage) {
                 this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
-                // Also only add the form if it hasn't self-destructed due to having too few fields
             } else {
                 this.setMode('on-click', 'The page has too many forms, stop adding them.');
             }
@@ -429,7 +454,7 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped, just return
+        // If the scanner is stopped event target is messed up, just return
         if (this.isStopped || !(event.target instanceof Element)) return;
 
         window.performance?.mark?.('scan_shadow:init:start');

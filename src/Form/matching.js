@@ -313,8 +313,9 @@ class Matching {
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
      *   isCCForm?: boolean,
+     *   isSignup?: boolean,
      *   hasCredentials?: boolean,
-     *   supportsIdentitiesAutofill?: boolean
+     *   supportsIdentitiesAutofill?: boolean,
      * }} SetInputTypeOpts
      */
 

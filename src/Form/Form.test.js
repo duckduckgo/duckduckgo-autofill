@@ -1,6 +1,6 @@
 import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js';
 import { createScanner } from '../Scanner.js';
-import { attachAndReturnGenericForm } from '../test-utils.js';
+import { attachAndReturnGenericForm, setMockSiteSpecificFixes } from '../test-utils.js';
 import { constants } from '../constants.js';
 
 afterEach(() => {
@@ -561,6 +561,91 @@ describe('Form re-categorizes inputs', () => {
             expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
             expect(form?.inputs.unknown.size).toBe(1);
             expect(form?.inputs.credentials.size).toBe(1);
+        });
+    });
+});
+
+describe('site specific fixes', () => {
+    describe('Form force boundary', () => {
+        beforeEach(() => {
+            document.body.innerHTML = '';
+        });
+        test('when a forced form is present in the config', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <div id="form-boundary">
+                <form id="original-form">
+                    <input type="text" value="testUsername" autocomplete="username" />  
+                </form>
+            </div>`);
+
+            // Given a runtime config with forced form boundary
+            const deviceInterface = InterfacePrototype.default();
+            setMockSiteSpecificFixes(deviceInterface, 'form-boundary');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const forcedForm = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            if (!forcedForm) {
+                throw new Error('Form boundary not found');
+            }
+            expect(scanner.forms.get(forcedForm)).toBeDefined();
+            expect(scanner.forms.get(formEl)).toBeUndefined();
+        });
+        test("when form doesn't have a forced boundary", () => {
+            const formEl = attachAndReturnGenericForm(`
+            <div id="form-boundary">
+                <form id="original-form">
+                    <input type="text" value="testUsername" autocomplete="username" />  
+                </form>
+            </div>`);
+
+            // given a runtime config without a forced form boundary (using a config that doesn't have a forced form boundary)
+            const deviceInterface = InterfacePrototype.default();
+            setMockSiteSpecificFixes(deviceInterface, 'login-to-signup');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const forcedForm = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            if (!forcedForm) {
+                throw new Error('Form boundary not found');
+            }
+            const form = scanner.forms.get(formEl);
+            expect(form?.form.getAttribute('id')).toBe('original-form');
+        });
+    });
+
+    describe('Force form type', () => {
+        test('when a forced form (login) type is present in the config', () => {
+            // Given a signup form
+            const formEl = attachAndReturnGenericForm(`
+            <form id="signup">
+                <input type="text" value="testUsername" autocomplete="username" />
+                <input type="password" value="testPassword" autocomplete="new-password" />
+                <button type="submit">Sign up</button>
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+            // And a signup to login config, that forces the form to be a login form
+            setMockSiteSpecificFixes(deviceInterface, 'signup-to-login');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            // Then the form is a login form, instead of signup
+            expect(form?.isLogin).toBeTruthy();
+            expect(form?.isSignup).toBeFalsy();
+        });
+        test('when a forced form (signup) type is present in the config', () => {
+            // Given a login form
+            const formEl = attachAndReturnGenericForm(`
+            <form id="login">
+                <input type="text" value="testUsername" autocomplete="username" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Login</button>
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+            // And a login to signup config, that forces the form to be a signup form
+            setMockSiteSpecificFixes(deviceInterface, 'login-to-signup');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            // Then the form is a signup form, instead of login
+            expect(form?.isLogin).toBeFalsy();
+            expect(form?.isSignup).toBeTruthy();
         });
     });
 });

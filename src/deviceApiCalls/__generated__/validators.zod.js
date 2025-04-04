@@ -106,22 +106,13 @@ export const genericErrorSchema = z.object({
     message: z.string()
 });
 
-export const contentScopeSchema = z.object({
-    features: z.record(z.object({
-        exceptions: z.array(z.unknown()),
-        state: z.union([z.literal("enabled"), z.literal("disabled")]),
-        settings: z.record(z.unknown()).optional()
-    })),
-    unprotectedTemporary: z.array(z.unknown())
-});
-
 export const userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
-    sessionKey: z.string().optional(),
+    sessionKey: z.string(),
     debug: z.boolean(),
     language: z.string().optional(),
     platform: z.object({
-        name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android"), z.literal("unknown")])
+        name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android")])
     }),
     features: z.record(z.object({
         settings: z.record(z.unknown())
@@ -327,7 +318,7 @@ export const autofillSettingsSchema = z.object({
 });
 
 export const runtimeConfigurationSchema = z.object({
-    contentScope: contentScopeSchema,
+    contentScope: z.record(z.unknown()),
     userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
 });
