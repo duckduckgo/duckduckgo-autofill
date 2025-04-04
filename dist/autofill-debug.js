@@ -16140,7 +16140,7 @@ which has its own box-shadow and border-radius settings.
     --font-size-primary: 14px;
     --font-size-secondary: 12px;
     --font-weight: 400;
-    --padding: 0px;
+    --padding: 2px;
     --hr-margin: 3px 4px;
     --hover-color: inherit;
     --hover-bg: #e0e1e1;
