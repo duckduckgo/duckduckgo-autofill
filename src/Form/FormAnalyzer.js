@@ -71,6 +71,7 @@ class FormAnalyzer {
         if (forcedFormType) {
             return forcedFormType === 'hybrid';
         }
+
         // When marking for hybrid we also want to ensure other signals are weak
         return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
@@ -80,7 +81,9 @@ class FormAnalyzer {
         if (forcedFormType) {
             return forcedFormType === 'login';
         }
+
         if (this.isHybrid) return false;
+
         return this.autofillSignal < 0;
     }
 
@@ -89,7 +92,9 @@ class FormAnalyzer {
         if (forcedFormType) {
             return forcedFormType === 'signup';
         }
+
         if (this.isHybrid) return false;
+
         return this.autofillSignal >= 0;
     }
 

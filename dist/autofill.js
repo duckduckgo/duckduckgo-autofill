@@ -6712,8 +6712,8 @@ Source: "${matchedFrom}"`;
       __publicField(this, "mode", "scanning");
       /** @type {import("./Form/matching").Matching} matching */
       __publicField(this, "matching");
-      /** @type {boolean} A flag to indicate the forced form has been added */
-      __publicField(this, "forcedFormAdded", false);
+      /** @type {boolean} A flag to indicate the forced form has been retrieved */
+      __publicField(this, "hasRetrievedForcedForm", false);
       /**
        * Watch for changes in the DOM, and enqueue elements to be scanned
        * @type {MutationObserver}
@@ -6851,7 +6851,7 @@ Source: "${matchedFrom}"`;
      * @returns {HTMLFormElement|null}
      */
     get forcedForm() {
-      return this.device.settings.siteSpecificFeature?.getForcedForm() ?? null;
+      return this.device.settings.siteSpecificFeature?.getForcedForm() || null;
     }
     /**
      * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
@@ -6913,8 +6913,8 @@ Source: "${matchedFrom}"`;
         return;
       if (this.inputExistsInForms(input))
         return;
-      const forcedForm = this.forcedFormAdded ? null : this.forcedForm;
-      this.forcedFormAdded = true;
+      const forcedForm = this.hasRetrievedForcedForm ? null : this.forcedForm;
+      this.hasRetrievedForcedForm = true;
       const parentForm = forcedForm || form || this.getParentForm(input);
       if (this.forcedForm && parentForm.contains(this.forcedForm) && this.forcedForm !== parentForm)
         return;
@@ -8098,7 +8098,7 @@ Source: "${matchedFrom}"`;
   _args = new WeakMap();
 
   // src/site-specific-feature.js
-  var FEATURE_NAME = "site-specific-fixes";
+  var FEATURE_NAME = "siteSpecificFixes";
   var SiteSpecificFeature = class extends ConfigFeature {
     constructor(args) {
       super(FEATURE_NAME, args);
@@ -8107,7 +8107,7 @@ Source: "${matchedFrom}"`;
      * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
     get formTypeSettings() {
-      return this.getFeatureSetting("formTypeSettings") ?? [];
+      return this.getFeatureSetting("formTypeSettings") || [];
     }
     /**
      * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySelector'] | null}
@@ -8116,18 +8116,12 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySelector");
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
-     */
-    get formInputTypeSettings() {
-      return this.getFeatureSetting("formInputTypeSettings") ?? [];
-    }
-    /**
-     * Checks if there's a forced form type configuration for this form
+     * Checks if there's a forced form type configuration for the given form element
      * @param {HTMLElement} form
-     * @returns {string|null}
+     * @returns {string|null|undefined}
      */
     getForcedFormType(form) {
-      return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
+      return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type;
     }
     /**
      * @returns {HTMLFormElement|null}

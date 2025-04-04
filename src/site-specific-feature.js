@@ -1,6 +1,6 @@
 import ConfigFeature from '@duckduckgo/content-scope-scripts/injected/src/config-feature';
 
-const FEATURE_NAME = 'site-specific-fixes';
+const FEATURE_NAME = 'siteSpecificFixes';
 
 export default class SiteSpecificFeature extends ConfigFeature {
     constructor(args) {
@@ -11,7 +11,7 @@ export default class SiteSpecificFeature extends ConfigFeature {
      * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
      */
     get formTypeSettings() {
-        return this.getFeatureSetting('formTypeSettings') ?? [];
+        return this.getFeatureSetting('formTypeSettings') || [];
     }
 
     /**
@@ -22,19 +22,12 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
-     */
-    get formInputTypeSettings() {
-        return this.getFeatureSetting('formInputTypeSettings') ?? [];
-    }
-
-    /**
-     * Checks if there's a forced form type configuration for this form
+     * Checks if there's a forced form type configuration for the given form element
      * @param {HTMLElement} form
-     * @returns {string|null}
+     * @returns {string|null|undefined}
      */
     getForcedFormType(form) {
-        return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type ?? null;
+        return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type;
     }
 
     /**

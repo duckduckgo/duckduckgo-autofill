@@ -76,8 +76,8 @@ class DefaultScanner {
     /** @type {import("./Form/matching").Matching} matching */
     matching;
 
-    /** @type {boolean} A flag to indicate the forced form has been added */
-    forcedFormAdded = false;
+    /** @type {boolean} A flag to indicate the forced form has been retrieved */
+    hasRetrievedForcedForm = false;
 
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
@@ -224,7 +224,7 @@ class DefaultScanner {
      * @returns {HTMLFormElement|null}
      */
     get forcedForm() {
-        return this.device.settings.siteSpecificFeature?.getForcedForm() ?? null;
+        return this.device.settings.siteSpecificFeature?.getForcedForm() || null;
     }
 
     /**
@@ -308,8 +308,8 @@ class DefaultScanner {
         if (this.isStopped) return;
         if (this.inputExistsInForms(input)) return;
 
-        const forcedForm = this.forcedFormAdded ? null : this.forcedForm;
-        this.forcedFormAdded = true;
+        const forcedForm = this.hasRetrievedForcedForm ? null : this.forcedForm;
+        this.hasRetrievedForcedForm = true;
         const parentForm = forcedForm || form || this.getParentForm(input);
 
         if (this.forcedForm && parentForm.contains(this.forcedForm) && this.forcedForm !== parentForm) return;
@@ -454,7 +454,7 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped or event target is messed up, just return
+        // If the scanner is stopped event target is messed up, just return
         if (this.isStopped || !(event.target instanceof Element)) return;
 
         window.performance?.mark?.('scan_shadow:init:start');
