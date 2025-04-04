@@ -11825,6 +11825,7 @@ which has its own box-shadow and border-radius settings.
     --dialog-windows-backdrop: #F9FAFA;
     --dialog-mac-backdrop-dark: #646264;
     --dialog-windows-backdrop-dark: #404145;
+    
 
     /* Default text color for both platforms */
     --color: var(--t-text-primary);  
@@ -11835,6 +11836,11 @@ which has its own box-shadow and border-radius settings.
     --font-size-primary: 13px;
     --font-size-secondary: 11px;
     --font-weight: 500;
+    --padding: 6px;
+    --hr-margin: 5px 9px;
+    --hover-color: #FFF;
+    --hover-bg: #3969EF;
+    --hover-effect: invert(100%);
 }
 
 :host:has([data-platform="windows"]) {
@@ -11843,6 +11849,11 @@ which has its own box-shadow and border-radius settings.
     --font-size-primary: 14px;
     --font-size-secondary: 12px;
     --font-weight: 400;
+    --padding: 4px;
+    --hr-margin: 3px 4px;
+    --hover-color: inherit;
+    --hover-bg: #e0e1e1;
+    --hover-effect: none;
 }
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
@@ -11878,7 +11889,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .tooltip--data {
-    padding: 6px;
+    padding: var(--padding);
     font-size: var(--font-size-primary);
     line-height: 14px;
     width: 315px;
@@ -11962,8 +11973,8 @@ which has its own box-shadow and border-radius settings.
 
 .tooltip__button.currentFocus,
 .wrapper:not(.top-autofill) .tooltip__button:hover {
-    background-color: #3969EF;
-    color: #FFFFFF;
+    background-color: var(--hover-bg);
+    color: var(--hover-color);
 }
 
 /* Data autofill tooltip specific */
@@ -12019,7 +12030,7 @@ which has its own box-shadow and border-radius settings.
 
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
 .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-    filter: invert(100%);
+    filter: var(--hover-effect)
 }
 
 @media (prefers-color-scheme: dark) {
@@ -12044,7 +12055,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .label + .label {
-    margin-top: 2px;
+    margin-top: 8px;
 }
 
 .label.label--medium {
@@ -12075,7 +12086,7 @@ which has its own box-shadow and border-radius settings.
 
 .tooltip__button.currentFocus .label,
 .wrapper:not(.top-autofill) .tooltip__button:hover .label {
-    color: #FFFFFF;
+    color: var(--hover-color);
 }
 
 .tooltip__button--secondary {
@@ -12111,7 +12122,7 @@ which has its own box-shadow and border-radius settings.
 
 hr {
     display: block;
-    margin: 5px 9px;
+    margin: var(--hr-margin);
     border: none; /* reset the border */
     border-top: 1px solid rgba(0,0,0,.1);
 }
