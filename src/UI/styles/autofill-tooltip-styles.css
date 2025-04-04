@@ -40,17 +40,11 @@ which has its own box-shadow and border-radius settings.
     top: 0;
     left: 0;
     padding: 0;
-    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: system-ui;
     -webkit-font-smoothing: antialiased;
     z-index: 2147483647;
 }
 
-
-.wrapper--data {
-    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-}
 .wrapper:not(.top-autofill) .tooltip {
     position: absolute;
     width: 300px;
