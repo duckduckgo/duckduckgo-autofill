@@ -16110,27 +16110,27 @@ which has its own box-shadow and border-radius settings.
 
 :host {
     /* Global Colors & Styles */
-    --T-Text-Primary: #1C1F21;
-    --T-Text-Secondary: rgba(28, 31, 33, 0.72);
-    --Dialog-Mac-Backdrop: #F2F0F0;
-    --Dialog-Windows-Backdrop: #F9FAFA;
-    --Dialog-Mac-Backdrop-dark: #646264;
-    --Dialog-Windows-Backdrop-dark: #404145;
+    --t-text-primary: #1C1F21;
+    --t-text-secondary: rgba(28, 31, 33, 0.72);
+    --dialog-mac-backdrop: #F2F0F0;
+    --dialog-windows-backdrop: #F9FAFA;
+    --dialog-mac-backdrop-dark: #646264;
+    --dialog-windows-backdrop-dark: #404145;
 
-    /* default text color for both platforms */
-    --color: var(--T-Text-Primary);  
+    /* Default text color for both platforms */
+    --color: var(--t-text-primary);  
 
-    /* default: MacOS */
-    --bg: var(--Dialog-Mac-Backdrop);
-    --bg-dark: var(--Dialog-Mac-Backdrop-dark);
+    /* Default: macOS */
+    --bg: var(--dialog-mac-backdrop);
+    --bg-dark: var(--dialog-mac-backdrop-dark);
     --font-size-primary: 13px;
     --font-size-secondary: 11px;
     --font-weight: 500;
 }
 
 :host:has([data-platform="windows"]) {
-    --bg: var(--Dialog-Windows-Backdrop);
-    --bg-dark: var(--Dialog-Windows-Backdrop-dark);
+    --bg: var(--dialog-windows-backdrop);
+    --bg-dark: var(--dialog-windows-backdrop-dark);
     --font-size-primary: 14px;
     --font-size-secondary: 12px;
     --font-weight: 400;
@@ -16139,6 +16139,7 @@ which has its own box-shadow and border-radius settings.
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
+
 .wrapper {
     position: fixed;
     top: 0;
@@ -16156,14 +16157,17 @@ which has its own box-shadow and border-radius settings.
     transform: translate(-1000px, -1000px);
     z-index: 2147483647;
 }
+
 .tooltip--data, #topAutofill {
     background-color: var(--bg);
 }
+
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
         background: var(--bg-dark);
     }
 }
+
 .tooltip--data {
     padding: 6px;
     font-size: var(--font-size-primary);
@@ -16172,21 +16176,26 @@ which has its own box-shadow and border-radius settings.
     max-height: 290px;
     overflow-y: auto;
 }
+
 .top-autofill .tooltip--data {
     min-height: 100vh;
 }
+
 .tooltip--data.tooltip--incontext-signup {
     width: 360px;
 }
+
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
 }
+
 @media (prefers-color-scheme: dark) {
     .wrapper:not(.top-autofill) .tooltip--data {
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
 }
+
 .wrapper:not(.top-autofill) .tooltip--email {
     top: calc(100% + 6px);
     right: calc(100% - 48px);
@@ -16199,11 +16208,13 @@ which has its own box-shadow and border-radius settings.
     color: #333333;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
+
 .tooltip--email__caret {
     position: absolute;
     transform: translate(-1000px, -1000px);
     z-index: 2147483647;
 }
+
 .tooltip--email__caret::before,
 .tooltip--email__caret::after {
     content: "";
@@ -16216,10 +16227,12 @@ which has its own box-shadow and border-radius settings.
     position: absolute;
     right: -28px;
 }
+
 .tooltip--email__caret::before {
     border-bottom-color: #D0D0D0;
     top: -1px;
 }
+
 .tooltip--email__caret::after {
     border-bottom-color: #FFFFFF;
     top: 0px;
@@ -16237,6 +16250,7 @@ which has its own box-shadow and border-radius settings.
     border-radius: 6px;
     text-align: left;
 }
+
 .tooltip__button.currentFocus,
 .wrapper:not(.top-autofill) .tooltip__button:hover {
     background-color: #3969EF;
@@ -16255,16 +16269,20 @@ which has its own box-shadow and border-radius settings.
     text-align: left;
     border-radius: 3px;
 }
+
 .tooltip--data__item-container {
     max-height: 220px;
     overflow: auto;
 }
+
 .tooltip__button--data:first-child {
     margin-top: 0;
 }
+
 .tooltip__button--data:last-child {
     margin-bottom: 0;
 }
+
 .tooltip__button--data::before {
     content: '';
     flex-shrink: 0;
@@ -16276,6 +16294,7 @@ which has its own box-shadow and border-radius settings.
     background-repeat: no-repeat;
     background-position: center center;
 }
+
 #provider_locked::after {
     position: absolute;
     content: '';
@@ -16288,10 +16307,12 @@ which has its own box-shadow and border-radius settings.
     background-repeat: no-repeat;
     background-position: right bottom;
 }
+
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
 .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
     filter: invert(100%);
 }
+
 @media (prefers-color-scheme: dark) {
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
@@ -16299,9 +16320,11 @@ which has its own box-shadow and border-radius settings.
         opacity: .9;
     }
 }
+
 .tooltip__button__text-container {
     margin: auto 0;
 }
+
 .label {
     display: block;
     font-weight: 400;
@@ -16310,30 +16333,37 @@ which has its own box-shadow and border-radius settings.
     font-size: var(--font-size-primary);
     line-height: 1;
 }
+
 .label + .label {
     margin-top: 2px;
 }
+
 .label.label--medium {
     font-weight: var(--font-weight);
     letter-spacing: -0.25px;
 }
+
 .label.label--small {
     font-size: var(--font-size-secondary);
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: var(--T-Text-Secondary);
+    color: var(--t-text-secondary);
 }
+
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
-        color: #ffffff;
+        color: #FFFFFF;
     }
+
     .tooltip--data .label--medium {
-        color: #ffffff;
+        color: #FFFFFF;
     }
+
     .tooltip--data .label--small {
-        color: #cdcdcd;
+        color: #CDCDCD;
     }
 }
+
 .tooltip__button.currentFocus .label,
 .wrapper:not(.top-autofill) .tooltip__button:hover .label {
     color: #FFFFFF;
