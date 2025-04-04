@@ -16123,14 +16123,16 @@ which has its own box-shadow and border-radius settings.
     /* default: MacOS */
     --bg: var(--Dialog-Mac-Backdrop);
     --bg-dark: var(--Dialog-Mac-Backdrop-dark);
-    --font-size: 13px;
+    --font-size-primary: 13px;
+    --font-size-secondary: 11px;
     --font-weight: 500;
 }
 
 :host:has([data-platform="windows"]) {
     --bg: var(--Dialog-Windows-Backdrop);
     --bg-dark: var(--Dialog-Windows-Backdrop-dark);
-    --font-size: 14px;
+    --font-size-primary: 14px;
+    --font-size-secondary: 12px;
     --font-weight: 400;
 }
 
@@ -16164,7 +16166,7 @@ which has its own box-shadow and border-radius settings.
 }
 .tooltip--data {
     padding: 6px;
-    font-size: var(--font-size);
+    font-size: var(--font-size-primary);
     line-height: 14px;
     width: 315px;
     max-height: 290px;
@@ -16305,7 +16307,7 @@ which has its own box-shadow and border-radius settings.
     font-weight: 400;
     letter-spacing: -0.25px;
     color: var(--color);
-    font-size: var(--font-size);
+    font-size: var(--font-size-primary);
     line-height: 1;
 }
 .label + .label {
@@ -16316,7 +16318,7 @@ which has its own box-shadow and border-radius settings.
     letter-spacing: -0.25px;
 }
 .label.label--small {
-    font-size: 11px;
+    font-size: var(--font-size-secondary);
     font-weight: 400;
     letter-spacing: 0.06px;
     color: var(--T-Text-Secondary);
