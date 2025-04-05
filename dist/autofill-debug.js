@@ -13022,7 +13022,7 @@ Source: "${matchedFrom}"`;
       note: 'Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than "manageCreditCards", "manageIdentities", and "managePasswords". "Manage" is an imperative verb.'
     },
     manageCreditCards: {
-      title: "Manage Payment Methods\u2026",
+      title: "Manage Credit Cards\u2026",
       note: 'Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. "Manage" is an imperative verb.'
     },
     manageIdentities: {
