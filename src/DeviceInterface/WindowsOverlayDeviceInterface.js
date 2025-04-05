@@ -11,6 +11,7 @@ import {
     CloseAutofillParentCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
+import { defaultOptions } from '../UI/HTMLTooltip.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -48,6 +49,8 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
                 device: this,
             },
             {
+                ...defaultOptions,
+                platform: 'windows',
                 wrapperClass: 'top-autofill',
                 isTopAutofill: true,
                 tooltipPositionClass: () => '.wrapper { transform: none; }',

@@ -2,6 +2,7 @@ import { AppleDeviceInterface } from './AppleDeviceInterface.js';
 import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js';
 import { overlayApi } from './overlayApi.js';
 import { createNotification } from '../../packages/device-api/index.js';
+import { defaultOptions } from '../UI/HTMLTooltip.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -39,6 +40,8 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
                 device: this,
             },
             {
+                ...defaultOptions,
+                platform: 'macos',
                 wrapperClass: 'top-autofill',
                 isTopAutofill: true,
                 tooltipPositionClass: () => '.wrapper { transform: none; }',

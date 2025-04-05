@@ -2,23 +2,65 @@
     color-scheme: light dark;
 }
 
+/**
+NB:  box-shadows and border-radius properties are not visible on both Windows and macOS platforms.
+This is due to the use of a native solution for rendering the autofill tooltip within a webview,
+which has its own box-shadow and border-radius settings.
+*/
+
+:host {
+    /* Global Colors & Styles */
+    --t-text-primary: #1C1F21;
+    --t-text-secondary: rgba(28, 31, 33, 0.72);
+    --dialog-mac-backdrop: #F2F0F0;
+    --dialog-windows-backdrop: #F9FAFA;
+    --dialog-mac-backdrop-dark: #646264;
+    --dialog-windows-backdrop-dark: #404145;
+    
+
+    /* Default text color for both platforms */
+    --color: var(--t-text-primary);  
+
+    /* Default: macOS */
+    --bg: var(--dialog-mac-backdrop);
+    --bg-dark: var(--dialog-mac-backdrop-dark);
+    --font-size-primary: 13px;
+    --font-size-secondary: 11px;
+    --font-weight: 500;
+    --padding: 6px;
+    --hr-margin: 5px 9px;
+    --hover-color: #FFF;
+    --hover-bg: #3969EF;
+    --hover-effect: invert(100%);
+}
+
+:host:has([data-platform="windows"]) {
+    --bg: var(--dialog-windows-backdrop);
+    --bg-dark: var(--dialog-windows-backdrop-dark);
+    --font-size-primary: 14px;
+    --font-size-secondary: 12px;
+    --font-weight: 400;
+    --padding: 2px;
+    --hr-margin: 3px 0px;
+    --hover-color: inherit;
+    --hover-bg: #e0e1e1;
+    --hover-effect: none;
+}
+
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
 }
+
 .wrapper {
     position: fixed;
     top: 0;
     left: 0;
     padding: 0;
-    font-family: 'DDG_ProximaNova', 'Proxima Nova', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: system-ui;
     -webkit-font-smoothing: antialiased;
     z-index: 2147483647;
 }
-.wrapper--data {
-    font-family: 'SF Pro Text', system-ui, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-}
+
 .wrapper:not(.top-autofill) .tooltip {
     position: absolute;
     width: 300px;
@@ -26,42 +68,45 @@
     transform: translate(-1000px, -1000px);
     z-index: 2147483647;
 }
+
 .tooltip--data, #topAutofill {
-    background-color: rgba(242, 240, 240, 1);
-    -webkit-backdrop-filter: blur(40px);
-    backdrop-filter: blur(40px);
+    background-color: var(--bg);
 }
+
 @media (prefers-color-scheme: dark) {
     .tooltip--data, #topAutofill {
-        background: rgb(100, 98, 102, .9);
+        background: var(--bg-dark);
     }
 }
+
 .tooltip--data {
-    padding: 6px;
-    font-size: 13px;
+    padding: var(--padding);
+    font-size: var(--font-size-primary);
     line-height: 14px;
     width: 315px;
     max-height: 290px;
     overflow-y: auto;
 }
+
 .top-autofill .tooltip--data {
     min-height: 100vh;
 }
+
 .tooltip--data.tooltip--incontext-signup {
     width: 360px;
 }
+
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-    border: 0.5px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.32);
 }
+
 @media (prefers-color-scheme: dark) {
     .wrapper:not(.top-autofill) .tooltip--data {
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
 }
+
 .wrapper:not(.top-autofill) .tooltip--email {
     top: calc(100% + 6px);
     right: calc(100% - 48px);
@@ -74,11 +119,13 @@
     color: #333333;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
+
 .tooltip--email__caret {
     position: absolute;
     transform: translate(-1000px, -1000px);
     z-index: 2147483647;
 }
+
 .tooltip--email__caret::before,
 .tooltip--email__caret::after {
     content: "";
@@ -91,10 +138,12 @@
     position: absolute;
     right: -28px;
 }
+
 .tooltip--email__caret::before {
     border-bottom-color: #D0D0D0;
     top: -1px;
 }
+
 .tooltip--email__caret::after {
     border-bottom-color: #FFFFFF;
     top: 0px;
@@ -112,10 +161,11 @@
     border-radius: 6px;
     text-align: left;
 }
+
 .tooltip__button.currentFocus,
 .wrapper:not(.top-autofill) .tooltip__button:hover {
-    background-color: #3969EF;
-    color: #FFFFFF;
+    background-color: var(--hover-bg);
+    color: var(--hover-color);
 }
 
 /* Data autofill tooltip specific */
@@ -125,21 +175,25 @@
     flex-direction: row;
     justify-content: flex-start;
     font-size: inherit;
-    font-weight: 500;
+    font-weight: var(--font-weight);
     line-height: 16px;
     text-align: left;
     border-radius: 3px;
 }
+
 .tooltip--data__item-container {
     max-height: 220px;
     overflow: auto;
 }
+
 .tooltip__button--data:first-child {
     margin-top: 0;
 }
+
 .tooltip__button--data:last-child {
     margin-bottom: 0;
 }
+
 .tooltip__button--data::before {
     content: '';
     flex-shrink: 0;
@@ -151,6 +205,7 @@
     background-repeat: no-repeat;
     background-position: center center;
 }
+
 #provider_locked::after {
     position: absolute;
     content: '';
@@ -163,10 +218,12 @@
     background-repeat: no-repeat;
     background-position: right bottom;
 }
+
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
 .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-    filter: invert(100%);
+    filter: var(--hover-effect)
 }
+
 @media (prefers-color-scheme: dark) {
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
@@ -174,45 +231,53 @@
         opacity: .9;
     }
 }
+
 .tooltip__button__text-container {
     margin: auto 0;
 }
+
 .label {
     display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
-    color: rgba(0,0,0,.8);
-    font-size: 13px;
+    color: var(--color);
+    font-size: var(--font-size-primary);
     line-height: 1;
 }
+
 .label + .label {
-    margin-top: 2px;
+    margin-top: 8px;
 }
+
 .label.label--medium {
-    font-weight: 500;
+    font-weight: var(--font-weight);
     letter-spacing: -0.25px;
-    color: rgba(0,0,0,.9);
 }
+
 .label.label--small {
-    font-size: 11px;
+    font-size: var(--font-size-secondary);
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: rgba(0,0,0,0.6);
+    color: var(--t-text-secondary);
 }
+
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
-        color: #ffffff;
+        color: #FFFFFF;
     }
+
     .tooltip--data .label--medium {
-        color: #ffffff;
+        color: #FFFFFF;
     }
+
     .tooltip--data .label--small {
-        color: #cdcdcd;
+        color: #CDCDCD;
     }
 }
+
 .tooltip__button.currentFocus .label,
 .wrapper:not(.top-autofill) .tooltip__button:hover .label {
-    color: #FFFFFF;
+    color: var(--hover-color);
 }
 
 .tooltip__button--secondary {
@@ -248,7 +313,7 @@
 
 hr {
     display: block;
-    margin: 5px 9px;
+    margin: var(--hr-margin);
     border: none; /* reset the border */
     border-top: 1px solid rgba(0,0,0,.1);
 }
