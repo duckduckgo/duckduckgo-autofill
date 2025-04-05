@@ -387,7 +387,7 @@ test.describe('Auto-fill a login form on macOS', () => {
             {
                 description: 'with credit card',
                 creditCard: constants.fields.creditCard,
-                expectedLabel: 'Manage Payment Methods…',
+                expectedLabel: 'Manage Credit Cards…',
                 expectedCall: 'pmHandlerOpenManageCreditCards',
             },
         ];
