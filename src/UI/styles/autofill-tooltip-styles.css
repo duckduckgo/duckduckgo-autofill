@@ -1,39 +1,5 @@
 :root {
     color-scheme: light dark;
-
-    /* --- Core Colors --- */
-    --t-text-primary: #1C1F21;
-    --t-text-secondary: rgba(28, 31, 33, 0.72);
-
-    /* Backdrop Colors */
-    --dialog-mac-backdrop: #F2F0F0;
-    --dialog-windows-backdrop: #F9FAFA;
-    --dialog-mac-backdrop-dark: #646264;
-    --dialog-windows-backdrop-dark: #404145;
-
-    /* --- MacOS Default Theme --- */
-    --mac-bg: var(--dialog-mac-backdrop);
-    --mac-bg-dark: var(--dialog-mac-backdrop-dark);
-    --mac-font-size-primary: 13px;
-    --mac-font-size-secondary: 11px;
-    --mac-font-weight: 500;
-    --mac-padding: 6px;
-    --mac-hr-margin: 5px 9px;
-    --mac-hover-color: #FFF;
-    --mac-hover-bg: #3969EF;
-    --mac-hover-effect: invert(100%);
-    
-    /* --- Windows Default Theme --- */
-    --windows-bg: var(--dialog-windows-backdrop);
-    --windows-bg-dark: var(--dialog-windows-backdrop-dark);
-    --windows-font-size-primary: 14px;
-    --windows-font-size-secondary: 12px;
-    --windows-font-weight: 400;
-    --windows-padding: 2px;
-    --windows-hr-margin: 3px 0px;
-    --windows-hover-color: inherit;
-    --windows-hover-bg: #e0e1e1;
-    --windows-hover-effect: none;
 }
 
 /**
@@ -42,49 +8,65 @@ This is due to the use of a native solution for rendering the autofill tooltip w
 which has its own box-shadow and border-radius settings.
 */
 
-/* MacOS Theme (Default) */
 :host {
+    /* --- Design Tokens --- */
+    /* Colors - Text */
+    --t-text-primary: #1C1F21;
+    --t-text-secondary: rgba(28, 31, 33, 0.72);
+
+    /* Colors - Backgrounds */
+    --t-backdrop-mac: #F2F0F0;
+    --t-backdrop-mac-dark: #646264;
+    --t-backdrop-windows: #F9FAFA;
+    --t-backdrop-windows-dark: #404145;
+
+    /* Colors - Interactive States */
+    --t-mac-interactive: #3969EF;
+    --t-mac-interactive-text: #FFFFFF;
+    --t-windows-interactive: #e0e1e1;
+    --t-windows-interactive-text: inherit;
+
+    /* --- PLATFORM BASE SETTINGS (MacOS default) --- */
     /* Colors */
     --color: var(--t-text-primary);
-    --bg: var(--mac-bg);
-    --bg-dark: var(--mac-bg-dark);
+    --bg: var(--t-backdrop-mac);
+    --bg-dark: var(--t-backdrop-mac-dark);
 
     /* Typography */
-    --font-size-primary: var(--mac-font-size-primary);
-    --font-size-secondary: var(--mac-font-size-secondary);
-    --font-weight: var(--mac-font-weight);
+    --font-size-primary: 13px;
+    --font-size-secondary: 11px;
+    --font-weight: 500;
 
-    /* Spacing */
-    --padding: var(--mac-padding);
-    --hr-margin: var(--mac-hr-margin);
+    /* Layout & Spacing */
+    --padding: 6px;
+    --hr-margin: 5px 9px;
 
-    /* Hover Effects */
-    --hover-color: var(--mac-hover-color);
-    --hover-bg: var(--mac-hover-bg);
-    --hover-effect: var(--mac-hover-effect);
+    /* Interactive Elements */
+    --hover-color: var(--t-mac-interactive-text);
+    --hover-bg: var(--t-mac-interactive);
+    --hover-effect: invert(100%);
 }
 
-/* Windows Theme */
+/* --- PLATFORM OVERRIDES - Windows --- */
 :host:has([data-platform="windows"]) {
     /* Colors */
-    --bg: var(--windows-bg);
-    --bg-dark: var(--windows-bg-dark);
-
+    --bg: var(--t-backdrop-windows);
+    --bg-dark: var(--t-backdrop-windows-dark);
+    
     /* Typography */
-    --font-size-primary: var(--windows-font-size-primary);
-    --font-size-secondary: var(--windows-font-size-secondary);
-    --font-weight: var(--windows-font-weight);
-
-    /* Spacing */
-    --padding: var(--windows-padding);
-    --hr-margin: var(--windows-hr-margin);
-
-    /* Hover Effects */
-    --hover-color: var(--windows-hover-color);
-    --hover-bg: var(--windows-hover-bg);
-    --hover-effect: var(--windows-hover-effect);
+    --font-size-primary: 14px;
+    --font-size-secondary: 12px;
+    --font-weight: 400;
+    
+    /* Layout & Spacing */
+    --padding: 2px;
+    --hr-margin: 3px 0px;
+    
+    /* Interactive Elements */
+    --hover-color: var(--t-windows-interactive-text);
+    --hover-bg: var(--t-windows-interactive);
+    --hover-effect: none;
 }
-
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
