@@ -16109,39 +16109,44 @@ which has its own box-shadow and border-radius settings.
 */
 
 :host {
-    /* Global Colors & Styles */
+    /* Colors */
     --t-text-primary: #1C1F21;
     --t-text-secondary: rgba(28, 31, 33, 0.72);
     --dialog-mac-backdrop: #F2F0F0;
     --dialog-windows-backdrop: #F9FAFA;
     --dialog-mac-backdrop-dark: #646264;
     --dialog-windows-backdrop-dark: #404145;
-    
 
-    /* Default text color for both platforms */
-    --color: var(--t-text-primary);  
-
-    /* Default: macOS */
-    --bg: var(--dialog-mac-backdrop);
-    --bg-dark: var(--dialog-mac-backdrop-dark);
+    /* Typography */
     --font-size-primary: 13px;
     --font-size-secondary: 11px;
     --font-weight: 500;
+
+    /* Spacing */
     --padding: 6px;
     --hr-margin: 5px 9px;
+
+    /* Hover Effects */
     --hover-color: #FFF;
     --hover-bg: #3969EF;
     --hover-effect: invert(100%);
 }
 
 :host:has([data-platform="windows"]) {
+    /* Colors */
     --bg: var(--dialog-windows-backdrop);
     --bg-dark: var(--dialog-windows-backdrop-dark);
+
+    /* Typography */
     --font-size-primary: 14px;
     --font-size-secondary: 12px;
     --font-weight: 400;
+
+    /* Spacing */
     --padding: 2px;
     --hr-margin: 3px 0px;
+
+    /* Hover Effects */
     --hover-color: inherit;
     --hover-bg: #e0e1e1;
     --hover-effect: none;
@@ -16155,10 +16160,10 @@ which has its own box-shadow and border-radius settings.
     position: fixed;
     top: 0;
     left: 0;
+    z-index: 2147483647;
     padding: 0;
     font-family: system-ui;
     -webkit-font-smoothing: antialiased;
-    z-index: 2147483647;
 }
 
 .wrapper:not(.top-autofill) .tooltip {
@@ -16180,11 +16185,11 @@ which has its own box-shadow and border-radius settings.
 }
 
 .tooltip--data {
+    width: 315px;
+    max-height: 290px;
     padding: var(--padding);
     font-size: var(--font-size-primary);
     line-height: 14px;
-    width: 315px;
-    max-height: 290px;
     overflow-y: auto;
 }
 
@@ -16229,13 +16234,13 @@ which has its own box-shadow and border-radius settings.
 .tooltip--email__caret::before,
 .tooltip--email__caret::after {
     content: "";
+    display: block;
     width: 0;
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    display: block;
-    border-bottom: 8px solid #D0D0D0;
     position: absolute;
+    border-bottom: 8px solid #D0D0D0;
     right: -28px;
 }
 
@@ -16296,8 +16301,8 @@ which has its own box-shadow and border-radius settings.
 
 .tooltip__button--data::before {
     content: '';
-    flex-shrink: 0;
     display: block;
+    flex-shrink: 0;
     width: 32px;
     height: 32px;
     margin: 0 8px;
@@ -16309,8 +16314,8 @@ which has its own box-shadow and border-radius settings.
 #provider_locked::after {
     position: absolute;
     content: '';
-    flex-shrink: 0;
     display: block;
+    flex-shrink: 0;
     width: 32px;
     height: 32px;
     margin: 0 8px;
