@@ -67,7 +67,6 @@ const creditCards = [
     {
         data: [
             new CreditCardTooltipItem({ id: 'a', displayNumber: '1234', cardName: 'monzo', title: 'Monzo', expirationMonth: '1', expirationYear: '2025' }),
-            new CreditCardTooltipItem({ id: 'b', displayNumber: '8891', cardName: 'wise', title: 'Wise', expirationMonth: '03', expirationYear: '2025' }),
             new CreditCardTooltipItem({ id: 'c', displayNumber: '2312', cardName: 'revolut', title: 'Revolut' }),
         ],
         type: 'creditCards.cardNumber',

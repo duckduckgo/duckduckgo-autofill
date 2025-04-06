@@ -1,5 +1,39 @@
 :root {
     color-scheme: light dark;
+
+    /* --- Core Colors --- */
+    --t-text-primary: #1C1F21;
+    --t-text-secondary: rgba(28, 31, 33, 0.72);
+
+    /* Backdrop Colors */
+    --dialog-mac-backdrop: #F2F0F0;
+    --dialog-windows-backdrop: #F9FAFA;
+    --dialog-mac-backdrop-dark: #646264;
+    --dialog-windows-backdrop-dark: #404145;
+
+    /* --- MacOS Default Theme --- */
+    --mac-bg: var(--dialog-mac-backdrop);
+    --mac-bg-dark: var(--dialog-mac-backdrop-dark);
+    --mac-font-size-primary: 13px;
+    --mac-font-size-secondary: 11px;
+    --mac-font-weight: 500;
+    --mac-padding: 6px;
+    --mac-hr-margin: 5px 9px;
+    --mac-hover-color: #FFF;
+    --mac-hover-bg: #3969EF;
+    --mac-hover-effect: invert(100%);
+    
+    /* --- Windows Default Theme --- */
+    --windows-bg: var(--dialog-windows-backdrop);
+    --windows-bg-dark: var(--dialog-windows-backdrop-dark);
+    --windows-font-size-primary: 14px;
+    --windows-font-size-secondary: 12px;
+    --windows-font-weight: 400;
+    --windows-padding: 2px;
+    --windows-hr-margin: 3px 0px;
+    --windows-hover-color: inherit;
+    --windows-hover-bg: #e0e1e1;
+    --windows-hover-effect: none;
 }
 
 /**
@@ -8,49 +42,49 @@ This is due to the use of a native solution for rendering the autofill tooltip w
 which has its own box-shadow and border-radius settings.
 */
 
+/* MacOS Theme (Default) */
 :host {
     /* Colors */
-    --t-text-primary: #1C1F21;
-    --t-text-secondary: rgba(28, 31, 33, 0.72);
-    --dialog-mac-backdrop: #F2F0F0;
-    --dialog-windows-backdrop: #F9FAFA;
-    --dialog-mac-backdrop-dark: #646264;
-    --dialog-windows-backdrop-dark: #404145;
+    --color: var(--t-text-primary);
+    --bg: var(--mac-bg);
+    --bg-dark: var(--mac-bg-dark);
 
     /* Typography */
-    --font-size-primary: 13px;
-    --font-size-secondary: 11px;
-    --font-weight: 500;
+    --font-size-primary: var(--mac-font-size-primary);
+    --font-size-secondary: var(--mac-font-size-secondary);
+    --font-weight: var(--mac-font-weight);
 
     /* Spacing */
-    --padding: 6px;
-    --hr-margin: 5px 9px;
+    --padding: var(--mac-padding);
+    --hr-margin: var(--mac-hr-margin);
 
     /* Hover Effects */
-    --hover-color: #FFF;
-    --hover-bg: #3969EF;
-    --hover-effect: invert(100%);
+    --hover-color: var(--mac-hover-color);
+    --hover-bg: var(--mac-hover-bg);
+    --hover-effect: var(--mac-hover-effect);
 }
 
+/* Windows Theme */
 :host:has([data-platform="windows"]) {
     /* Colors */
-    --bg: var(--dialog-windows-backdrop);
-    --bg-dark: var(--dialog-windows-backdrop-dark);
+    --bg: var(--windows-bg);
+    --bg-dark: var(--windows-bg-dark);
 
     /* Typography */
-    --font-size-primary: 14px;
-    --font-size-secondary: 12px;
-    --font-weight: 400;
+    --font-size-primary: var(--windows-font-size-primary);
+    --font-size-secondary: var(--windows-font-size-secondary);
+    --font-weight: var(--windows-font-weight);
 
     /* Spacing */
-    --padding: 2px;
-    --hr-margin: 3px 0px;
+    --padding: var(--windows-padding);
+    --hr-margin: var(--windows-hr-margin);
 
     /* Hover Effects */
-    --hover-color: inherit;
-    --hover-bg: #e0e1e1;
-    --hover-effect: none;
+    --hover-color: var(--windows-hover-color);
+    --hover-bg: var(--windows-hover-bg);
+    --hover-effect: var(--windows-hover-effect);
 }
+
 
 .wrapper *, .wrapper *::before, .wrapper *::after {
     box-sizing: border-box;
