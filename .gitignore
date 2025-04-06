@@ -26,6 +26,3 @@ playwright-report/
 /.index-build
 /.build
 /debug/dist
-
-# Local Netlify folder
-.netlify
