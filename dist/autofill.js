@@ -11812,7 +11812,7 @@ Source: "${matchedFrom}"`;
 }
 
 /**
-NB:  box-shadows and border-radius properties are not visible on both Windows and macOS platforms.
+NB: box-shadows and border-radius properties are not visible on both Windows and macOS platforms.
 This is due to the use of a native solution for rendering the autofill tooltip within a webview,
 which has its own box-shadow and border-radius settings.
 */
@@ -11822,22 +11822,34 @@ which has its own box-shadow and border-radius settings.
     /* Colors - Text */
     --t-text-primary: #1C1F21;
     --t-text-secondary: rgba(28, 31, 33, 0.72);
+    --t-text-primary-dark: rgba(255, 255, 255, .84);
+    --t-text-secondary-dark: rgba(255, 255, 255, .60);
 
     /* Colors - Backgrounds */
     --t-backdrop-mac: #F2F0F0;
     --t-backdrop-mac-dark: #646264;
-    --t-backdrop-windows: #FFFFFF;
-    --t-backdrop-windows-dark: #404145;
+    --t-backdrop-windows: #FFF;
+    --t-backdrop-windows-dark: #333;
 
     /* Colors - Interactive States */
     --t-mac-interactive: #3969EF;
-    --t-mac-interactive-text: #FFFFFF;
+    --t-mac-interactive-text: #FFF;
     --t-windows-interactive: #f0f0f0;
-    --t-windows-interactive-text: inherit;
+    --t-windows-interactive-dark: #3f3f3f;
+    
+
+    /* ICON COLORS -- LIGHT*/
+    /* PRIMARY 1C1F21 84% */
+
+    /* ICON COLORS -- DARK */
+    /* PRIMARY FFF 84% */
 
     /* --- PLATFORM BASE SETTINGS (MacOS default) --- */
     /* Colors */
-    --color: var(--t-text-primary);
+    --color-primary: var(--t-text-primary);
+    --color-secondary: var(--t-text-secondary);
+    --color-primary-dark: var(--t-text-primary-dark);
+    --color-secondary-dark: var(--t-text-secondary-dark);
     --bg: var(--t-backdrop-mac);
     --bg-dark: var(--t-backdrop-mac-dark);
 
@@ -11849,11 +11861,17 @@ which has its own box-shadow and border-radius settings.
     /* Layout & Spacing */
     --padding: 6px;
     --hr-margin: 5px 9px;
+    --border-radius: 4px;
 
     /* Interactive Elements */
-    --hover-color: var(--t-mac-interactive-text);
+    --hover-color-primary: var(--t-mac-interactive-text);
+    --hover-color-secondary: var(--t-mac-interactive-text);
+    --hover-color-primary-dark: var(--t-mac-interactive-text);
+    --hover-color-secondary-dark: var(--t-mac-interactive-text);
     --hover-bg: var(--t-mac-interactive);
+    --hover-bg-dark: var(--t-mac-interactive);
     --hover-effect: invert(100%);
+    --hover-effect-dark: invert(100%);
 }
 
 /* --- PLATFORM OVERRIDES - Windows --- */
@@ -11868,16 +11886,24 @@ which has its own box-shadow and border-radius settings.
     --font-weight: 400;
     
     /* Layout & Spacing */
-    --padding: 2px;
-    --hr-margin: 3px 0px;
+    --padding: 0px;
+    --hr-margin: 4px 0px;
+    --border-radius: 3px;
     
     /* Interactive Elements */
-    --hover-color: var(--t-windows-interactive-text);
+    --hover-color-primary: var(--t-text-primary);
+    --hover-color-secondary: var(--t-text-secondary);
+    --hover-color-primary-dark: var(--t-text-primary-dark);
+    --hover-color-secondary-dark: var(--t-text-secondary-dark);
     --hover-bg: var(--t-windows-interactive);
+    --hover-bg-dark: var(--t-windows-interactive-dark);
     --hover-effect: none;
+    --hover-effect-dark: invert(100%);
 }
 
-.wrapper *, .wrapper *::before, .wrapper *::after {
+.wrapper *,
+.wrapper *::before,
+.wrapper *::after {
     box-sizing: border-box;
 }
 
@@ -11929,12 +11955,6 @@ which has its own box-shadow and border-radius settings.
 .wrapper:not(.top-autofill) .tooltip--data {
     top: 100%;
     left: 100%;
-}
-
-@media (prefers-color-scheme: dark) {
-    .wrapper:not(.top-autofill) .tooltip--data {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
 }
 
 .wrapper:not(.top-autofill) .tooltip--email {
@@ -11995,7 +12015,14 @@ which has its own box-shadow and border-radius settings.
 .tooltip__button.currentFocus,
 .wrapper:not(.top-autofill) .tooltip__button:hover {
     background-color: var(--hover-bg);
-    color: var(--hover-color);
+    color: var(--hover-color-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+    .tooltip__button.currentFocus,
+    .wrapper:not(.top-autofill) .tooltip__button:hover {
+        background-color: var(--hover-bg-dark);
+    }
 }
 
 /* Data autofill tooltip specific */
@@ -12008,7 +12035,7 @@ which has its own box-shadow and border-radius settings.
     font-weight: var(--font-weight);
     line-height: 16px;
     text-align: left;
-    border-radius: 4px; /* TODO: Macos is going to be 3px */
+    border-radius: var(--border-radius);
 }
 
 .tooltip--data__item-container {
@@ -12054,11 +12081,16 @@ which has its own box-shadow and border-radius settings.
     filter: var(--hover-effect)
 }
 
+/* Icon effects */
 @media (prefers-color-scheme: dark) {
-    .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before,
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
         filter: invert(100%);
         opacity: .9;
+    }
+
+    .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
+    .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
+        filter: var(--hover-effect-dark)
     }
 }
 
@@ -12070,7 +12102,7 @@ which has its own box-shadow and border-radius settings.
     display: block;
     font-weight: 400;
     letter-spacing: -0.25px;
-    color: var(--color);
+    color: var(--color-primary);
     font-size: var(--font-size-primary);
     line-height: 1;
 }
@@ -12088,32 +12120,47 @@ which has its own box-shadow and border-radius settings.
     font-size: var(--font-size-secondary);
     font-weight: 400;
     letter-spacing: 0.06px;
-    color: var(--t-text-secondary);
+    color: var(--color-secondary);
 }
 
 @media (prefers-color-scheme: dark) {
     .tooltip--data .label {
-        color: #FFFFFF;
+        color: var(--color-primary-dark);
     }
 
     .tooltip--data .label--medium {
-        color: #FFFFFF;
+        color: var(--color-primary-dark);
     }
 
     .tooltip--data .label--small {
-        color: #CDCDCD;
+        color: var(--color-secondary-dark);
     }
 }
 
 .tooltip__button.currentFocus .label,
 .wrapper:not(.top-autofill) .tooltip__button:hover .label {
-    color: var(--hover-color);
+    color: var(--hover-color-primary);
+    
+    &.label--small {
+        color: var(--hover-color-secondary);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .tooltip__button.currentFocus .label,
+    .wrapper:not(.top-autofill) .tooltip__button:hover .label {
+        color: var(--hover-color-primary-dark);
+        
+        &.label--small {
+            color: var(--hover-color-secondary-dark);
+        }
+    }
 }
 
 .tooltip__button--secondary {
     font-size: 13px;
     padding: 5px 9px;
-    border-radius: 4px;   /* TODO: Macos is going to be 3px */
+    border-radius: var(--border-radius);
     margin: 0;
 }
 
