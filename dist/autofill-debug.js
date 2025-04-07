@@ -16117,13 +16117,13 @@ which has its own box-shadow and border-radius settings.
     /* Colors - Backgrounds */
     --t-backdrop-mac: #F2F0F0;
     --t-backdrop-mac-dark: #646264;
-    --t-backdrop-windows: #F9FAFA;
+    --t-backdrop-windows: #FFFFFF;
     --t-backdrop-windows-dark: #404145;
 
     /* Colors - Interactive States */
     --t-mac-interactive: #3969EF;
     --t-mac-interactive-text: #FFFFFF;
-    --t-windows-interactive: #e0e1e1;
+    --t-windows-interactive: #f0f0f0;
     --t-windows-interactive-text: inherit;
 
     /* --- PLATFORM BASE SETTINGS (MacOS default) --- */
@@ -16299,7 +16299,7 @@ which has its own box-shadow and border-radius settings.
     font-weight: var(--font-weight);
     line-height: 16px;
     text-align: left;
-    border-radius: 3px;
+    border-radius: 4px; /* TODO: Macos is going to be 3px */
 }
 
 .tooltip--data__item-container {
@@ -16367,7 +16367,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .label + .label {
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .label.label--medium {
@@ -16404,7 +16404,7 @@ which has its own box-shadow and border-radius settings.
 .tooltip__button--secondary {
     font-size: 13px;
     padding: 5px 9px;
-    border-radius: 3px;
+    border-radius: 4px;   /* TODO: Macos is going to be 3px */
     margin: 0;
 }
 
