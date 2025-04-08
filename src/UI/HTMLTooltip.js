@@ -6,7 +6,7 @@ import CSS_STYLES from './styles/autofill-tooltip-styles.css';
  * @typedef {object} HTMLTooltipOptions
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
- * @property {string} platform
+ * @property {string | null} [platform]
  * @property {boolean} isTopAutofill
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
  * @property {(top: number, left: number, isAboveInput: boolean) => string} [caretPositionClass]

@@ -174,6 +174,7 @@ importTooltips.forEach((iden, index) => {
         ...defaultOptions,
         ...iden.options,
         isTopAutofill: false,
+        platform,
         // isIncontextSignupAvailable: () => true
     });
 

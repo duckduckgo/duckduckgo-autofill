@@ -99,6 +99,6 @@
   },
   "expires": {
     "title": "Expires",
-    "note": "Label that indicates the expiration date of payment method."
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }

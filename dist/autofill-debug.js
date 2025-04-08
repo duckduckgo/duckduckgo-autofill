@@ -13059,7 +13059,7 @@ Source: "${matchedFrom}"`;
     },
     expires: {
       title: "Expires",
-      note: "Label that indicates the expiration date of payment method."
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -17131,9 +17131,10 @@ ${this.options.css}
     render(device, callbacks) {
       this.device = device;
       const t = device.t;
+      console.log("==============", this);
       this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--data ${this.options.isTopAutofill ? "top-autofill" : ""}" hidden>
+<div class="wrapper wrapper--data ${this.options.isTopAutofill ? "top-autofill" : ""}" hidden data-platform=${this.options.platform}>
     <div class="tooltip tooltip--data">
         <button class="tooltip__button tooltip__button--data tooltip__button--credentials-import js-promo-wrapper">
             <span class="tooltip__button__text-container">
