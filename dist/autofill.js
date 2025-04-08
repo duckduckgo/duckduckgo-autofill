@@ -11963,10 +11963,10 @@ which has its own box-shadow and border-radius settings.
     padding: 8px;
     border: 1px solid #D0D0D0;
     border-radius: 10px;
-    background-color: #FFFFFF;
+    background-color: #FFF;
     font-size: 14px;
     line-height: 1.3;
-    color: #333333;
+    color: #333;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -11995,7 +11995,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .tooltip--email__caret::after {
-    border-bottom-color: #FFFFFF;
+    border-bottom-color: #FFF;
     top: 0px;
 }
 
