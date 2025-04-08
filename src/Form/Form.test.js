@@ -608,6 +608,65 @@ describe('site specific fixes', () => {
             const form = scanner.forms.get(formEl);
             expect(form?.form.getAttribute('id')).toBe('original-form');
         });
+
+        test('when form element is a page container, the actual form is within a div and there are no site-specific-fixes, the child form gets destroyed', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <form id="container-form">
+                <div id="form-boundary">
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Login</button>
+                </div>
+                <input type="text" value="testUsername2" autocomplete="username" />
+            </form>`);
+
+            // Given a runtime config without forced form boundary
+            const deviceInterface = InterfacePrototype.default();
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+
+            // Check that scanner actually contains the real form boundary
+            const formBoundaryElement = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            expect(scanner.forms.has(formBoundaryElement)).toBeFalsy();
+
+            // Username input belongs to the parent form instead of the form boundary
+            const usernameInput = /** @type {HTMLInputElement} */ (
+                document.querySelector('#container-form input[type="text"]:first-child')
+            );
+            const form = scanner.forms.get(formEl);
+            expect(form?.inputs.all.has(usernameInput)).toBeTruthy();
+
+            // Input doesn't belong to the form boundary
+            const formBoundaryForm = scanner.forms.get(formBoundaryElement);
+            expect(formBoundaryForm?.inputs.all.has(usernameInput)).toBeFalsy();
+        });
+
+        test("when form element is a page container, the actual form is within a div and site-specific-fixes are present, the child form doesn't get destroyed", () => {
+            attachAndReturnGenericForm(`
+            <form id="container-form">
+                <div id="form-boundary">
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Login</button>
+                </div>
+                <input type="text" value="testUsername2" autocomplete="username" />
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+
+            // Given a runtime config with forced form boundary
+            setMockSiteSpecificFixes(deviceInterface, 'form-boundary');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+
+            // Check that scanner actually contains the real form boundary
+            const formBoundaryElement = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            expect(scanner.forms.has(formBoundaryElement)).toBeTruthy();
+
+            const usernameInput = /** @type {HTMLInputElement} */ (document.querySelector('#form-boundary input[type="text"]:first-child'));
+
+            // Username input belongs to the form boundary
+            const formBoundaryForm = scanner.forms.get(formBoundaryElement);
+            expect(formBoundaryForm?.inputs.all.has(usernameInput)).toBeTruthy();
+        });
     });
 
     describe('Force form type', () => {

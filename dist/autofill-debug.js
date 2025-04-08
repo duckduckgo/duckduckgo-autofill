@@ -11145,8 +11145,10 @@ Source: "${matchedFrom}"`;
       __publicField(this, "mode", "scanning");
       /** @type {import("./Form/matching").Matching} matching */
       __publicField(this, "matching");
-      /** @type {boolean} A flag to indicate the forced form has been retrieved */
-      __publicField(this, "hasRetrievedForcedForm", false);
+      /** @type {HTMLFormElement|HTMLElement|null} */
+      __publicField(this, "_forcedForm", null);
+      /** @type {boolean} */
+      __publicField(this, "_hasUsedForcedForm", false);
       /**
        * Watch for changes in the DOM, and enqueue elements to be scanned
        * @type {MutationObserver}
@@ -11281,10 +11283,17 @@ Source: "${matchedFrom}"`;
       return this.mode === "stopped";
     }
     /**
-     * @returns {HTMLFormElement|null}
+     * Gets the forced form only for the first call, subsequent calls return null
+     * @returns {HTMLFormElement|HTMLElement|null}
      */
-    get forcedForm() {
-      return this.device.settings.siteSpecificFeature?.getForcedForm() || null;
+    getAndClearForcedForm() {
+      if (this._hasUsedForcedForm)
+        return null;
+      if (this._forcedForm === null) {
+        this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
+      }
+      this._hasUsedForcedForm = true;
+      return this._forcedForm;
     }
     /**
      * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
@@ -11346,11 +11355,7 @@ Source: "${matchedFrom}"`;
         return;
       if (this.inputExistsInForms(input))
         return;
-      const forcedForm = this.hasRetrievedForcedForm ? null : this.forcedForm;
-      this.hasRetrievedForcedForm = true;
-      const parentForm = forcedForm || form || this.getParentForm(input);
-      if (this.forcedForm && parentForm.contains(this.forcedForm) && this.forcedForm !== parentForm)
-        return;
+      const parentForm = this.getAndClearForcedForm() || form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
         if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
@@ -11384,7 +11389,8 @@ Source: "${matchedFrom}"`;
           this.forms.get(previouslyFoundParent)?.addInput(input);
         }
       } else {
-        if (childForm) {
+        const forcedFormInConfig = this.device.settings.siteSpecificFeature?.getForcedForm();
+        if (childForm && childForm !== forcedFormInConfig) {
           this.forms.get(childForm)?.destroy();
           this.forms.delete(childForm);
         }
