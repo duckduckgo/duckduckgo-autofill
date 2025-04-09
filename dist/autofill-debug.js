@@ -17131,7 +17131,6 @@ ${this.options.css}
     render(device, callbacks) {
       this.device = device;
       const t = device.t;
-      console.log("==============", this);
       this.shadow.innerHTML = `
 ${this.options.css}
 <div class="wrapper wrapper--data ${this.options.isTopAutofill ? "top-autofill" : ""}" hidden data-platform=${this.options.platform}>
