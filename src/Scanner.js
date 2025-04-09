@@ -227,7 +227,7 @@ class DefaultScanner {
     getParentForm(input) {
         this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
         if (this._forcedForm?.contains(input)) {
-            return this._forcedForm
+            return this._forcedForm;
         }
 
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
