@@ -79,9 +79,6 @@ class DefaultScanner {
     /** @type {HTMLElement|null} */
     _forcedForm = null;
 
-    /** @type {boolean} */
-    _hasUsedForcedForm = false;
-
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
@@ -224,25 +221,15 @@ class DefaultScanner {
     }
 
     /**
-     * Gets the forced form only for the first call, subsequent calls return null
-     * @returns {HTMLElement|null}
-     */
-    getAndClearForcedForm() {
-        if (this._hasUsedForcedForm) return null;
-
-        if (this._forcedForm === null) {
-            this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
-        }
-
-        this._hasUsedForcedForm = true;
-        return this._forcedForm;
-    }
-
-    /**
      * @param {HTMLElement} input
      * @returns {HTMLElement}
      */
     getParentForm(input) {
+        this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
+        if (this._forcedForm?.contains(input)) {
+            return this._forcedForm;
+        }
+
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
             if (input.form) {
                 // Use input.form unless it encloses most of the DOM
@@ -319,7 +306,7 @@ class DefaultScanner {
         if (this.isStopped) return;
         if (this.inputExistsInForms(input)) return;
 
-        const parentForm = this.getAndClearForcedForm() || form || this.getParentForm(input);
+        const parentForm = form || this.getParentForm(input);
 
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm);
@@ -365,8 +352,7 @@ class DefaultScanner {
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
             // unless it's the forced form, in that case we want to keep it.
-            const forcedFormInConfig = this.device.settings.siteSpecificFeature?.getForcedForm();
-            if (childForm && childForm !== forcedFormInConfig) {
+            if (childForm && childForm !== this._forcedForm) {
                 this.forms.get(childForm)?.destroy();
                 this.forms.delete(childForm);
             }
