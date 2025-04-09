@@ -8285,11 +8285,9 @@ Source: "${matchedFrom}"`;
         runtimeConfig.contentScope.features = {
           ...contentScope.features,
           [name]: {
-            settings: feature.settings?.javascriptConfig,
+            ...feature,
             exceptions: [],
-            // TODO: add types for this in runtime-configuration.json
-            state: feature.state
-            // TODO: add types for this in runtime-configuration.json
+            hash: ""
           }
         };
       }

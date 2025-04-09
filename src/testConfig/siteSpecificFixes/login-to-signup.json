@@ -3,29 +3,27 @@
         "state": "enabled",
         "anyOtherSettingForNative": "anyValue",
         "settings": {
-            "javascriptConfig": {
-                "domains": [
-                    {
-                        "domain": [
-                            "localhost"
-                        ],
-                        "patchSettings": [
-                            {
-                                "path": "",
-                                "op": "add",
-                                "value": {
-                                    "formTypeSettings": [
-                                        {
-                                            "selector": "form[id*=\"login\"]",
-                                            "type": "signup"
-                                        }
-                                    ]
-                                }
+            "domains": [
+                {
+                    "domain": [
+                        "localhost"
+                    ],
+                    "patchSettings": [
+                        {
+                            "path": "",
+                            "op": "add",
+                            "value": {
+                                "formTypeSettings": [
+                                    {
+                                        "selector": "form[id*=\"login\"]",
+                                        "type": "signup"
+                                    }
+                                ]
                             }
-                        ]
-                    }
-                ]
-            }
+                        }
+                    ]
+                }
+            ]
         }
     }
 }

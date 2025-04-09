@@ -3,24 +3,22 @@
         "state": "enabled",
         "anyOtherSettingForNative": "anyValue",
         "settings": {
-            "javascriptConfig": {
-                "domains": [
-                    {
-                        "domain": [
-                            "localhost"
-                        ],
-                        "patchSettings": [
-                            {
-                                "path": "",
-                                "op": "add",
-                                "value": {
-                                    "formBoundarySelector": "#form-boundary"
-                                }
+            "domains": [
+                {
+                    "domain": [
+                        "localhost"
+                    ],
+                    "patchSettings": [
+                        {
+                            "path": "",
+                            "op": "add",
+                            "value": {
+                                "formBoundarySelector": "#form-boundary"
                             }
-                        ]
-                    }
-                ]
-            }
+                        }
+                    ]
+                }
+            ]
         }
     }
 }

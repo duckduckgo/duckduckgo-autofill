@@ -191,14 +191,14 @@ export class Settings {
         const feature = contentScope.features.autofill.features?.[name];
         // If the feature is not enabled or already exists, do nothing
         if (feature?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
-        /** @type {any} */
+
         if (feature) {
             runtimeConfig.contentScope.features = {
                 ...contentScope.features,
                 [name]: {
-                    settings: feature.settings?.javascriptConfig,
-                    exceptions: [], // TODO: add types for this in runtime-configuration.json
-                    state: feature.state, // TODO: add types for this in runtime-configuration.json
+                    ...feature,
+                    exceptions: [],
+                    hash: '',
                 },
             };
         }
