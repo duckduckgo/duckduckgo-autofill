@@ -6714,8 +6714,6 @@ Source: "${matchedFrom}"`;
       __publicField(this, "matching");
       /** @type {HTMLElement|null} */
       __publicField(this, "_forcedForm", null);
-      /** @type {boolean} */
-      __publicField(this, "_hasUsedForcedForm", false);
       /**
        * Watch for changes in the DOM, and enqueue elements to be scanned
        * @type {MutationObserver}
@@ -6848,21 +6846,6 @@ Source: "${matchedFrom}"`;
     }
     get isStopped() {
       return this.mode === "stopped";
-    }
-    /**
-     * Gets the forced form only for the first call, subsequent calls return null
-     * @returns {HTMLElement|null}
-     */
-    getAndClearForcedForm() {
-      if (this._hasUsedForcedForm)
-        return null;
-      if (this._forcedForm === null) {
-        this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
-      }
-      if (this._forcedForm) {
-        this._hasUsedForcedForm = true;
-      }
-      return this._forcedForm;
     }
     /**
      * @param {HTMLElement} input
