@@ -16399,7 +16399,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .label + .label {
-    margin-top: 6px;
+    margin-top: 3px;
 }
 
 .label.label--medium {
