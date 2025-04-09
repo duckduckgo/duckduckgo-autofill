@@ -76,7 +76,7 @@ class DefaultScanner {
     /** @type {import("./Form/matching").Matching} matching */
     matching;
 
-    /** @type {HTMLFormElement|HTMLElement|null} */
+    /** @type {HTMLElement|null} */
     _forcedForm = null;
 
     /** @type {boolean} */
@@ -225,7 +225,7 @@ class DefaultScanner {
 
     /**
      * Gets the forced form only for the first call, subsequent calls return null
-     * @returns {HTMLFormElement|HTMLElement|null}
+     * @returns {HTMLElement|null}
      */
     getAndClearForcedForm() {
         if (this._hasUsedForcedForm) return null;
@@ -239,8 +239,8 @@ class DefaultScanner {
     }
 
     /**
-     * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
-     * @returns {HTMLFormElement|HTMLElement}
+     * @param {HTMLElement} input
+     * @returns {HTMLElement}
      */
     getParentForm(input) {
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {

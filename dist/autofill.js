@@ -6712,7 +6712,7 @@ Source: "${matchedFrom}"`;
       __publicField(this, "mode", "scanning");
       /** @type {import("./Form/matching").Matching} matching */
       __publicField(this, "matching");
-      /** @type {HTMLFormElement|HTMLElement|null} */
+      /** @type {HTMLElement|null} */
       __publicField(this, "_forcedForm", null);
       /** @type {boolean} */
       __publicField(this, "_hasUsedForcedForm", false);
@@ -6851,7 +6851,7 @@ Source: "${matchedFrom}"`;
     }
     /**
      * Gets the forced form only for the first call, subsequent calls return null
-     * @returns {HTMLFormElement|HTMLElement|null}
+     * @returns {HTMLElement|null}
      */
     getAndClearForcedForm() {
       if (this._hasUsedForcedForm)
@@ -6863,8 +6863,8 @@ Source: "${matchedFrom}"`;
       return this._forcedForm;
     }
     /**
-     * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
-     * @returns {HTMLFormElement|HTMLElement}
+     * @param {HTMLElement} input
+     * @returns {HTMLElement}
      */
     getParentForm(input) {
       if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
