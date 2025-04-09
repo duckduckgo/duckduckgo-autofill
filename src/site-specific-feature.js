@@ -31,7 +31,7 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {HTMLFormElement|null}
+     * @returns {HTMLElement|null}
      */
     getForcedForm() {
         return this.formBoundarySelector ? document.querySelector(this.formBoundarySelector) : null;

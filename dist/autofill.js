@@ -6859,7 +6859,9 @@ Source: "${matchedFrom}"`;
       if (this._forcedForm === null) {
         this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
       }
-      this._hasUsedForcedForm = true;
+      if (this._forcedForm) {
+        this._hasUsedForcedForm = true;
+      }
       return this._forcedForm;
     }
     /**
@@ -6867,6 +6869,10 @@ Source: "${matchedFrom}"`;
      * @returns {HTMLElement}
      */
     getParentForm(input) {
+      this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
+      if (this._forcedForm?.contains(input)) {
+        return this._forcedForm;
+      }
       if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
         if (input.form) {
           if (this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
@@ -6922,7 +6928,7 @@ Source: "${matchedFrom}"`;
         return;
       if (this.inputExistsInForms(input))
         return;
-      const parentForm = this.getAndClearForcedForm() || form || this.getParentForm(input);
+      const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
         if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
@@ -6956,8 +6962,7 @@ Source: "${matchedFrom}"`;
           this.forms.get(previouslyFoundParent)?.addInput(input);
         }
       } else {
-        const forcedFormInConfig = this.device.settings.siteSpecificFeature?.getForcedForm();
-        if (childForm && childForm !== forcedFormInConfig) {
+        if (childForm && childForm !== this._forcedForm) {
           this.forms.get(childForm)?.destroy();
           this.forms.delete(childForm);
         }
@@ -8130,7 +8135,7 @@ Source: "${matchedFrom}"`;
       return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type;
     }
     /**
-     * @returns {HTMLFormElement|null}
+     * @returns {HTMLElement|null}
      */
     getForcedForm() {
       return this.formBoundarySelector ? document.querySelector(this.formBoundarySelector) : null;
