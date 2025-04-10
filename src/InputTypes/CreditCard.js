@@ -12,14 +12,5 @@ export class CreditCardTooltipItem {
     }
     id = () => String(this.#data.id);
     labelMedium = () => this.#data.title;
-    /** @param {import('../locales/strings.js').TranslateFn} t */
-    labelSmall = (t) => {
-        const { displayNumber, expirationMonth, expirationYear } = this.#data;
-        const expiration =
-            expirationMonth && expirationYear
-                ? `\u00A0 ${t('autofill:expires')}: ${String(expirationMonth).padStart(2, '0')}/${expirationYear}`
-                : '';
-
-        return `•••• ${displayNumber}${expiration}`;
-    };
+    labelSmall = () => this.#data.displayNumber;
 }

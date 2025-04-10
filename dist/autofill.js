@@ -5019,12 +5019,7 @@ Source: "${matchedFrom}"`;
       __privateAdd(this, _data4, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data4).id));
       __publicField(this, "labelMedium", () => __privateGet(this, _data4).title);
-      /** @param {import('../locales/strings.js').TranslateFn} t */
-      __publicField(this, "labelSmall", (t) => {
-        const { displayNumber, expirationMonth, expirationYear } = __privateGet(this, _data4);
-        const expiration = expirationMonth && expirationYear ? `\xA0 ${t("autofill:expires")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
-        return `\u2022\u2022\u2022\u2022 ${displayNumber}${expiration}`;
-      });
+      __publicField(this, "labelSmall", () => __privateGet(this, _data4).displayNumber);
       __privateSet(this, _data4, data);
     }
   };
