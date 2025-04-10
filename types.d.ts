@@ -86,3 +86,16 @@ interface Window {
 type ToBoolean<T extends Record<string, any>> = {
     [K in keyof T]: boolean;
 };
+
+// Copied from @duckduckgo/content-scope-scripts, as a workaround.
+// TODO: We need to make content-scope-scripts types exportable, where they are currently not.
+
+declare module '@duckduckgo/messaging' {
+    export interface MessagingConfig {
+        context: string;
+        featureName: string;
+        method?: string;
+        subscriptionName?: string;
+        params?: Record<string, any>;
+    }
+}

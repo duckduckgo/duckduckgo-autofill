@@ -222,6 +222,7 @@ export function createWebkitMocks(platform = 'macos') {
                         autofill: {
                             state: 'enabled',
                             exceptions: [],
+                            features: {},
                         },
                     },
                     unprotectedTemporary: [],

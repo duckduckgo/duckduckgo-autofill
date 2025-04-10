@@ -1,0 +1,29 @@
+{
+    "siteSpecificFixes": {
+        "state": "enabled",
+        "anyOtherSettingForNative": "anyValue",
+        "settings": {
+            "domains": [
+                {
+                    "domain": [
+                        "localhost"
+                    ],
+                    "patchSettings": [
+                        {
+                            "path": "",
+                            "op": "add",
+                            "value": {
+                                "formTypeSettings": [
+                                    {
+                                        "selector": "form[id*=\"login\"]",
+                                        "type": "signup"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
