@@ -13,6 +13,7 @@ import { CreditCardTooltipItem } from '../src/InputTypes/CreditCard.js';
 
 const url = new URL(window.location.href);
 const locale = url.searchParams.get('locale') || 'en';
+const platform = url.searchParams.get('platform') || 'macos';
 
 const credentials = [
     {
@@ -25,7 +26,7 @@ const credentials = [
     {
         title: "password only",
         data: [
-            createCredentialsTooltipItem({ id: 'def', password: '1234567', username: 'Password for fill.dev', origin: { url: 'fill.dev' } })
+            createCredentialsTooltipItem({ id: 'def', password: '1234567', username: 'mscott@dundermifflinonline.com', origin: { url: 'fill.dev' } })
         ],
         type: 'credentials.password',
     },
@@ -65,8 +66,8 @@ const identities = [
 const creditCards = [
     {
         data: [
-            new CreditCardTooltipItem({ id: 'a', displayNumber: '1234', cardName: 'monzo', title: 'Monzo' }),
-            new CreditCardTooltipItem({ id: 'b', displayNumber: '8891', cardName: 'monzo', title: 'Mastercard' }),
+            new CreditCardTooltipItem({ id: 'a', displayNumber: '1234', cardName: 'monzo', title: 'Monzo', expirationMonth: '1', expirationYear: '2025' }),
+            new CreditCardTooltipItem({ id: 'c', displayNumber: '2312', cardName: 'revolut', title: 'Revolut' }),
         ],
         type: 'creditCards.cardNumber',
     },
@@ -136,6 +137,7 @@ function createTooltip(item, index) {
         ...defaultOptions,
         ...item.options,
         isTopAutofill: true,
+        platform,
     });
 
     main?.appendChild(elem);
@@ -172,6 +174,7 @@ importTooltips.forEach((iden, index) => {
         ...defaultOptions,
         ...iden.options,
         isTopAutofill: false,
+        platform,
         // isIncontextSignupAvailable: () => true
     });
 
