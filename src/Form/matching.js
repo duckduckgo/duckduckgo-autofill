@@ -323,11 +323,12 @@ class Matching {
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {SupportedTypes | null} forcedInputType
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-        const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, forcedInputType, opts = {}) {
+        const type = forcedInputType || this.inferInputType(input, formEl, opts);
         input.setAttribute(ATTR_INPUT_TYPE, type);
         return type;
     }

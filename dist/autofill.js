@@ -897,11 +897,12 @@ Source: "${matchedFrom}"`;
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {SupportedTypes | null} forcedInputType
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-      const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, forcedInputType, opts = {}) {
+      const type = forcedInputType || this.inferInputType(input, formEl, opts);
       input.setAttribute(ATTR_INPUT_TYPE, type);
       return type;
     }
@@ -5857,7 +5858,8 @@ Source: "${matchedFrom}"`;
         hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
         supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
       };
-      this.matching.setInputType(input, this.form, opts);
+      const forcedInputType = this.device.settings.siteSpecificFeature?.getForcedInputType(input) || null;
+      this.matching.setInputType(input, this.form, forcedInputType, opts);
       const mainInputType = getInputMainType(input);
       this.inputs[mainInputType].add(input);
       this.decorateInput(input);
@@ -8096,6 +8098,22 @@ Source: "${matchedFrom}"`;
   var SiteSpecificFeature = class extends ConfigFeature {
     constructor(args) {
       super(FEATURE_NAME, args);
+    }
+    /**
+     * @returns {ForcedInputTypes}
+     */
+    get forcedInputTypes() {
+      return this.getFeatureSetting("forcedInputTypes") || [];
+    }
+    /**
+     * @param {HTMLInputElement} input
+     * @returns {import('./Form/matching').SupportedTypes | null}
+     */
+    getForcedInputType(input) {
+      return (
+        /** @type {import('./Form/matching').SupportedTypes} */
+        this.forcedInputTypes.find((config) => input.matches(config.selector))?.type || null
+      );
     }
     /**
      * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}

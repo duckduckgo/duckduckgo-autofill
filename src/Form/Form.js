@@ -570,7 +570,10 @@ class Form {
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
             supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities,
         };
-        this.matching.setInputType(input, this.form, opts);
+        // Seems like the the type is inferred as undefined when using the forcedInputType, seems like some TSC limitation.
+        // Hence we force it to null.
+        const forcedInputType = this.device.settings.siteSpecificFeature?.getForcedInputType(input) || null;
+        this.matching.setInputType(input, this.form, forcedInputType, opts);
 
         const mainInputType = getInputMainType(input);
         this.inputs[mainInputType].add(input);
