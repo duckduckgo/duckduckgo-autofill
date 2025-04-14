@@ -3,7 +3,7 @@ import ConfigFeature from '@duckduckgo/content-scope-scripts/injected/src/config
 const FEATURE_NAME = 'siteSpecificFixes';
 
 // TMP: will come from privacy-configuration
-/** @typedef {Array<{selector: string, type: string}>} ForcedInputTypes */
+/** @typedef {Array<{selector: string, type: import('./Form/matching').SupportedTypes}>} InputTypeSettings */
 
 export default class SiteSpecificFeature extends ConfigFeature {
     constructor(args) {
@@ -11,10 +11,10 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {ForcedInputTypes}
+     * @returns {InputTypeSettings}
      */
-    get forcedInputTypes() {
-        return this.getFeatureSetting('forcedInputTypes') || [];
+    get inputTypeSettings() {
+        return this.getFeatureSetting('inputTypeSettings') || [];
     }
 
     /**
@@ -22,11 +22,7 @@ export default class SiteSpecificFeature extends ConfigFeature {
      * @returns {import('./Form/matching').SupportedTypes | null}
      */
     getForcedInputType(input) {
-        return (
-            /** @type {import('./Form/matching').SupportedTypes} */ (
-                this.forcedInputTypes.find((config) => input.matches(config.selector))?.type
-            ) || null
-        );
+        return this.inputTypeSettings.find((config) => input.matches(config.selector))?.type || null;
     }
 
     /**

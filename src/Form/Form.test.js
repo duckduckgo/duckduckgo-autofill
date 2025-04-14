@@ -707,4 +707,31 @@ describe('site specific fixes', () => {
             expect(form?.isSignup).toBeTruthy();
         });
     });
+
+    describe('Force input type', () => {
+        beforeEach(() => {
+            document.body.innerHTML = '';
+            attachAndReturnGenericForm(`
+                <form id="login">
+                    <input id="username-input" type="text" value="username" autocomplete="username" />
+                </form>`);
+        });
+
+        test('when a forced input type is not present in the config', () => {
+            const deviceInterface = InterfacePrototype.default();
+            // Setting a forced form type, but no forced input type
+            setMockSiteSpecificFixes(deviceInterface, 'form-boundary');
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const input = /** @type {HTMLInputElement} */ (document.getElementById('username-input'));
+            expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+        });
+
+        test('when a forced input type is present in the config', () => {
+            const deviceInterface = InterfacePrototype.default();
+            setMockSiteSpecificFixes(deviceInterface, 'input-type');
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const input = /** @type {HTMLInputElement} */ (document.getElementById('username-input'));
+            expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
+        });
+    });
 });
