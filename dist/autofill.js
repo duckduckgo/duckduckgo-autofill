@@ -8100,7 +8100,7 @@ Source: "${matchedFrom}"`;
       super(FEATURE_NAME, args);
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['inputTypeSettings']}
+     * @returns {InputTypeSetting[]}
      */
     get inputTypeSettings() {
       return this.getFeatureSetting("inputTypeSettings") || [];
@@ -8110,19 +8110,19 @@ Source: "${matchedFrom}"`;
      * @returns {import('./Form/matching').SupportedTypes | null}
      */
     getForcedInputType(input) {
-      return (
-        /** @type {import('./Form/matching').SupportedTypes} */
-        this.inputTypeSettings?.find((config) => input.matches(config.selector))?.type || null
-      );
+      const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
+      if (!isValidSupportedType(setting?.type))
+        return null;
+      return setting?.type;
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
+     * @returns {FormTypeSetting[]}
      */
     get formTypeSettings() {
       return this.getFeatureSetting("formTypeSettings") || [];
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySelector'] | null}
+     * @returns {FormBoundarySelector|null}
      */
     get formBoundarySelector() {
       return this.getFeatureSetting("formBoundarySelector");
@@ -8133,7 +8133,7 @@ Source: "${matchedFrom}"`;
      * @returns {string|null|undefined}
      */
     getForcedFormType(form) {
-      return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type;
+      return this.formTypeSettings.find((config) => form.matches(config.selector))?.type;
     }
     /**
      * @returns {HTMLElement|null}

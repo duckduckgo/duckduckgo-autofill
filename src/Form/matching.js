@@ -1023,4 +1023,5 @@ export {
     checkPlaceholderAndLabels,
     Matching,
     createMatching,
+    isValidSupportedType,
 };
