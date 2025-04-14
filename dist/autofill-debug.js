@@ -897,11 +897,12 @@ Source: "${matchedFrom}"`;
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
-     * @param {SupportedTypes | null} forcedInputType
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, forcedInputType, opts = {}) {
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+      const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
       const type = forcedInputType || this.inferInputType(input, formEl, opts);
       input.setAttribute(ATTR_INPUT_TYPE, type);
       return type;
@@ -5858,8 +5859,7 @@ Source: "${matchedFrom}"`;
         hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
         supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
       };
-      const forcedInputType = this.device.settings.siteSpecificFeature?.getForcedInputType(input) || null;
-      this.matching.setInputType(input, this.form, forcedInputType, opts);
+      this.matching.setInputType(input, this.form, this.device.settings.siteSpecificFeature, opts);
       const mainInputType = getInputMainType(input);
       this.inputs[mainInputType].add(input);
       this.decorateInput(input);
