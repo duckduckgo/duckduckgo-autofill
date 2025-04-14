@@ -12529,7 +12529,7 @@ Source: "${matchedFrom}"`;
       super(FEATURE_NAME, args);
     }
     /**
-     * @returns {InputTypeSettings}
+     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['inputTypeSettings']}
      */
     get inputTypeSettings() {
       return this.getFeatureSetting("inputTypeSettings") || [];
@@ -12539,7 +12539,10 @@ Source: "${matchedFrom}"`;
      * @returns {import('./Form/matching').SupportedTypes | null}
      */
     getForcedInputType(input) {
-      return this.inputTypeSettings.find((config) => input.matches(config.selector))?.type || null;
+      return (
+        /** @type {import('./Form/matching').SupportedTypes} */
+        this.inputTypeSettings?.find((config) => input.matches(config.selector))?.type || null
+      );
     }
     /**
      * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
