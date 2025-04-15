@@ -84,6 +84,48 @@ const creditCards = [
                 title: 'Monzo',
                 expirationMonth: '1',
                 expirationYear: '2025',
+                paymentProvider: 'whatever',
+            }),
+            new CreditCardTooltipItem({
+                id: 'c',
+                displayNumber: '2312',
+                cardName: 'dinersClub',
+                title: 'dinersClub',
+                paymentProvider: 'dinersClub',
+            }),
+            new CreditCardTooltipItem({
+                id: 'd',
+                displayNumber: '9876',
+                cardName: 'discover',
+                title: 'discover',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'discover',
+            }),
+            new CreditCardTooltipItem({
+                id: 'd',
+                displayNumber: '9876',
+                cardName: 'jcb',
+                title: 'jcb',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'jcb',
+            }),
+        ],
+        type: 'creditCards.cardNumber',
+    },
+];
+
+const creditCardsMore = [
+    {
+        data: [
+            new CreditCardTooltipItem({
+                id: 'a',
+                displayNumber: '1234',
+                cardName: 'monzo',
+                title: 'Monzo',
+                expirationMonth: '1',
+                expirationYear: '2025',
                 paymentProvider: 'visa',
             }),
             new CreditCardTooltipItem({
@@ -96,11 +138,20 @@ const creditCards = [
             new CreditCardTooltipItem({
                 id: 'd',
                 displayNumber: '9876',
-                cardName: 'amex',
+                cardName: 'Amex',
                 title: 'American Express',
                 expirationMonth: '6',
                 expirationYear: '2026',
                 paymentProvider: 'amex',
+            }),
+            new CreditCardTooltipItem({
+                id: 'd',
+                displayNumber: '9876',
+                cardName: 'unionPay',
+                title: 'unionPay',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'unionPay',
             }),
         ],
         type: 'creditCards.cardNumber',
@@ -162,6 +213,7 @@ if (showAutofill.showIdentities) {
 }
 if (showAutofill.showCreditCards) {
     creditCards.forEach((item, index) => createTooltip(item, `creditCards-${index}`));
+    creditCardsMore.forEach((item, index) => createTooltip(item, `creditCardsMore-${index}`));
 }
 if (showAutofill.showEmails) {
     emails.forEach((item, index) => createTooltip(item, `emails-${index}`));
