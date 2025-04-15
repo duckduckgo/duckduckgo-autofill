@@ -22,4 +22,5 @@ export class CreditCardTooltipItem {
 
         return `•••• ${displayNumber}${expiration}`;
     };
+    paymentProvider = () => this.#data.paymentProvider || '';
 }

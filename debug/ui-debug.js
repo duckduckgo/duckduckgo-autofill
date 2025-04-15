@@ -77,12 +77,35 @@ const identities = [
 const creditCards = [
     {
         data: [
-            new CreditCardTooltipItem({ id: 'a', displayNumber: '1234', cardName: 'monzo', title: 'Monzo', expirationMonth: '1', expirationYear: '2025' }),
-            new CreditCardTooltipItem({ id: 'c', displayNumber: '2312', cardName: 'revolut', title: 'Revolut' }),
+            new CreditCardTooltipItem({
+                id: 'a',
+                displayNumber: '1234',
+                cardName: 'monzo',
+                title: 'Monzo',
+                expirationMonth: '1',
+                expirationYear: '2025',
+                paymentProvider: 'visa',
+            }),
+            new CreditCardTooltipItem({
+                id: 'c',
+                displayNumber: '2312',
+                cardName: 'revolut',
+                title: 'Revolut',
+                paymentProvider: 'mastercard',
+            }),
+            new CreditCardTooltipItem({
+                id: 'd',
+                displayNumber: '9876',
+                cardName: 'amex',
+                title: 'American Express',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'amex',
+            }),
         ],
         type: 'creditCards.cardNumber',
     },
-]
+];
 
 const emails = [
     {

@@ -84,13 +84,15 @@ ${css}
             .map((item, index) => {
                 const credentialsProvider = item.credentialsProvider?.();
                 const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : '';
+                const paymentProvider = item.paymentProvider?.();
+                const paymentProviderIconClass = paymentProvider ? `tooltip__button--data--provider__${paymentProvider}` : '';
                 // these 2 are optional
                 const labelSmall = item.labelSmall?.(t, this.subtype);
                 const label = item.label?.(t, this.subtype);
 
                 return `
             ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
-            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button">
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${paymentProviderIconClass} ${providerIconClass} js-autofill-button">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
