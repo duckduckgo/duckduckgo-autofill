@@ -11,6 +11,17 @@ import { CreditCardTooltipItem } from '../src/InputTypes/CreditCard.js';
  * @import InterfacePrototype from './DeviceInterface/InterfacePrototype.js';
  */
 
+/** --- CONFIG --- */
+/** show/hide autofill components */
+const showAutofill = {
+    showCredentials: false,
+    showIdentities: false,
+    showCreditCards: true,
+    showEmails: false,
+    showImportTooltips: false,
+};
+/** --- /CONFIG --- */
+
 const url = new URL(window.location.href);
 const locale = url.searchParams.get('locale') || 'en';
 const platform = url.searchParams.get('platform') || 'macos';
@@ -114,18 +125,33 @@ const emails = [
     },
 ];
 
+const importTooltips = [
+    { type: 'import', title: 'import' }
+];
+
 const main = document.querySelector('main');
 
-credentials.forEach((iden, index) => createTooltip(iden, index));
-identities.forEach((iden, index) => createTooltip(iden, index));
-creditCards.forEach((iden, index) => createTooltip(iden, index));
-emails.forEach((iden, index) => createTooltip(iden, index));
+if (showAutofill.showCredentials) {
+    credentials.forEach((item, index) => createTooltip(item, `credentials-${index}`));
+}
+if (showAutofill.showIdentities) {
+    identities.forEach((item, index) => createTooltip(item, `identities-${index}`));
+}
+if (showAutofill.showCreditCards) {
+    creditCards.forEach((item, index) => createTooltip(item, `creditCards-${index}`));
+}
+if (showAutofill.showEmails) {
+    emails.forEach((item, index) => createTooltip(item, `emails-${index}`));
+}
+if (showAutofill.showImportTooltips) {
+    importTooltips.forEach((item, index) => createImportTooltip(item, `importTooltips-${index}`));
+}
 
-function createTooltip(item, index) {
+function createTooltip(item, uniqueId) {
     const elem = document.createElement('code');
     elem.textContent = item.title || item.type;
     elem.style.position = 'relative';
-    elem.id = `iden-${index}`;
+    elem.id = uniqueId;
     elem.dataset.length = String(item.data.length);
 
     const getPosition = () => {
@@ -155,24 +181,17 @@ function createTooltip(item, index) {
         },
     });
 }
-
-const importTooltips = [
-    { type: 'import', title: 'import' }
-];
-
-importTooltips.forEach((iden, index) => {
+function createImportTooltip(item, uniqueId) {
     const elem = document.createElement('code');
-    elem.textContent = iden.title || iden.type;
+    elem.textContent = item.title || item.type;
     elem.style.position = 'relative';
-    elem.id = `iden-importTooltips-${index}`;
+    elem.id = uniqueId;
 
-    const getPosition = () => {
-        return elem.getBoundingClientRect();
-    };
+    const getPosition = () => elem.getBoundingClientRect();
 
-    const d = new CredentialsImportTooltip(iden.type, getPosition, {
+    const d = new CredentialsImportTooltip(item.type, getPosition, {
         ...defaultOptions,
-        ...iden.options,
+        ...item.options,
         isTopAutofill: false,
         platform,
         // isIncontextSignupAvailable: () => true
@@ -190,4 +209,4 @@ importTooltips.forEach((iden, index) => {
             throw new Error('Function not implemented.');
         },
     });
-});
+}
