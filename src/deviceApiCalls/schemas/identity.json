@@ -19,8 +19,8 @@
       "type": "string",
       "description": "Middle name of the individual"
     },
-        "lastName": {
-        "type": "string",
+    "lastName": {
+      "type": "string",
       "description": "Last name of the individual"
     },
     "birthdayDay": {
@@ -68,6 +68,9 @@
       "description": "Email address"
     }
   },
-  "required": ["id", "title"],
+  "required": [
+    "id",
+    "title"
+  ],
   "additionalProperties": false
 }
