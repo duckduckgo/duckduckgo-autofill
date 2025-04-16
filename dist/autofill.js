@@ -12503,7 +12503,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // src/UI/styles/autofill-tooltip-styles.css
+  // css-plugin:./styles/autofill-tooltip-styles.css
   var autofill_tooltip_styles_default = `:root {
     color-scheme: light dark;
 }
