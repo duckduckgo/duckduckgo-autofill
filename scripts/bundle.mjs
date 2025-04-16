@@ -16,7 +16,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
     Promise.all([
         bundle({}),
         bundle({
-            plugins: [cssPlugin(false)],
+            plugins: [],
             outfile: join(ROOT, 'dist/autofill-debug.js'),
         }),
         uiPreview(),
@@ -37,10 +37,11 @@ async function bundle(buildOptions = {}) {
         outfile: join(ROOT, 'dist/autofill.js'),
         metafile: true,
         write: false,
-        plugins: [
-            zodReplacerPlugin(),
-            cssPlugin(),
-        ],
+        loader: {
+            // import css files as text
+            '.css': 'text',
+        },
+        plugins: [zodReplacerPlugin()],
         ...buildOptions,
     };
 
@@ -148,103 +149,4 @@ export function replaceConstExports(fileAsString) {
         .flat();
 
     return asNames.join('\n');
-}
-
-/**
- * Plugin to handle CSS files and transform url() calls into data URLs
- * @param {boolean} [transformUrls=true] - Whether to transform url() calls into data URLs
- */
-function cssPlugin(transformUrls = true) {
-    return {
-        name: 'css-plugin',
-        setup(build) {
-            build.onResolve({ filter: /\.css$/ }, (args) => {
-                return {
-                    path: args.path,
-                    namespace: 'css-plugin',
-                    pluginData: {
-                        resolveDir: args.resolveDir,
-                        transformUrls,
-                    },
-                };
-            });
-
-            build.onLoad({ filter: /.*/, namespace: 'css-plugin' }, async (args) => {
-                const filePath = join(args.pluginData.resolveDir, args.path);
-                const cssContent = readFileSync(filePath, 'utf-8');
-                
-                // Only transform URLs if transformUrls is true
-                const transformedContent = args.pluginData.transformUrls 
-                    ? await transformCssUrls(cssContent, filePath)
-                    : cssContent;
-                
-                return {
-                    contents: transformedContent,
-                    loader: 'text',
-                };
-            });
-        },
-    };
-}
-
-/**
- * Transforms CSS url() calls into data URLs
- * @param {string} cssContent - The CSS content to transform
- * @param {string} cssFilePath - The absolute path to the CSS file
- * @returns {Promise<string>} - The transformed CSS content
- */
-async function transformCssUrls(cssContent, cssFilePath) {
-    const urlRegex = /url\(['"]?([^'"()]+)['"]?\)/g;
-    let transformedContent = cssContent;
-    
-    // Find all url() calls
-    const matches = [...cssContent.matchAll(urlRegex)];
-    
-    for (const match of matches) {
-        const url = match[1];
-        // Skip data URLs and absolute URLs
-        if (url.startsWith('data:') || url.startsWith('http') || url.startsWith('//')) {
-            continue;
-        }
-        
-        try {
-            // Get the directory of the CSS file
-            const cssDir = join(cssFilePath, '..');
-            // Resolve the URL relative to the CSS file's directory
-            const absolutePath = join(cssDir, url);
-            
-            const fileContent = readFileSync(absolutePath);
-            const base64 = fileContent.toString('base64');
-            const mimeType = getMimeType(url);
-            const dataUrl = `url(data:${mimeType};base64,${base64})`;
-            
-            transformedContent = transformedContent.replace(match[0], dataUrl);
-        } catch (error) {
-            console.warn(`Failed to transform URL in CSS: ${url}`, error);
-        }
-    }
-    
-    return transformedContent;
-}
-
-/**
- * Gets the MIME type based on file extension
- * @param {string} url - The URL to get MIME type for
- * @returns {string} - The MIME type
- */
-function getMimeType(url) {
-    const extension = url.split('.').pop()?.toLowerCase();
-    const mimeTypes = {
-        'png': 'image/png',
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg',
-        'gif': 'image/gif',
-        'svg': 'image/svg+xml',
-        'woff': 'font/woff',
-        'woff2': 'font/woff2',
-        'ttf': 'font/ttf',
-        'eot': 'application/vnd.ms-fontobject',
-    };
-    
-    return mimeTypes[extension] || 'application/octet-stream';
 }
