@@ -36,6 +36,9 @@ export class DeviceApi {
     async request(deviceApiCall, options) {
         deviceApiCall.validateParams();
         const result = await this.transport.send(deviceApiCall, options);
+
+        console.log('======> request', result);
+
         const processed = deviceApiCall.preResultValidation(result);
         return deviceApiCall.validateResult(processed);
     }
@@ -47,6 +50,9 @@ export class DeviceApi {
      */
     async notify(deviceApiCall, options) {
         deviceApiCall.validateParams();
+
+        console.log('======> deviceApiCall', deviceApiCall, options);
+
         return this.transport.send(deviceApiCall, options);
     }
 }

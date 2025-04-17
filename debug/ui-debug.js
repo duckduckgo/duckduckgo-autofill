@@ -14,11 +14,11 @@ import { CreditCardTooltipItem } from '../src/InputTypes/CreditCard.js';
 /** --- CONFIG --- */
 /** show/hide autofill components */
 const showAutofill = {
-    showCredentials: false,
-    showIdentities: false,
+    showCredentials: true,
+    showIdentities: true,
     showCreditCards: true,
-    showEmails: false,
-    showImportTooltips: false,
+    showEmails: true,
+    showImportTooltips: true,
 };
 /** --- /CONFIG --- */
 

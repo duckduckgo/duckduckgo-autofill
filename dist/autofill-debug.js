@@ -10876,6 +10876,7 @@ Source: "${matchedFrom}"`;
     async request(deviceApiCall, options) {
       deviceApiCall.validateParams();
       const result = await this.transport.send(deviceApiCall, options);
+      console.log("======> request", result);
       const processed = deviceApiCall.preResultValidation(result);
       return deviceApiCall.validateResult(processed);
     }
@@ -10887,6 +10888,7 @@ Source: "${matchedFrom}"`;
      */
     async notify(deviceApiCall, options) {
       deviceApiCall.validateParams();
+      console.log("======> deviceApiCall", deviceApiCall, options);
       return this.transport.send(deviceApiCall, options);
     }
   };
@@ -17202,23 +17204,39 @@ which has its own box-shadow and border-radius settings.
     background-position: right bottom;
 }
 
+/* FIXME: find a better way to address :not bitwarden */
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
 .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-    filter: var(--hover-effect)
+    filter: var(--hover-effect);
+}
+
+.wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
+    filter: none;
 }
 
 /* Icon effects */
 @media (prefers-color-scheme: dark) {
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
-        filter: invert(100%);
+        filter: var(--hover-effect);
         opacity: .9;
+    }
+
+    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before {
+        filter: none;
+        opacity: 1;
     }
 
     .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
     .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
         filter: var(--hover-effect-dark)
     }
+
+    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
+        filter: none;
+    }
 }
+
+
 
 .tooltip__button__text-container {
     margin: auto 0;
@@ -17304,6 +17322,7 @@ which has its own box-shadow and border-radius settings.
 .tooltip__button--data--creditCards::before {
     background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMjYgNGMzLjMxMzcgMCA2IDIuNjg2MjkgNiA2djEyYzAgMy4zMTM3LTIuNjg2MyA2LTYgNmgtMjBjLTMuMzEzNzEgMC01Ljk5OTk5OTAyLTIuNjg2My01Ljk5OTk5ODg4LTZsLjAwMDAwMDUzLTEyYy4wMDAwMDAxNC0zLjMxMzcxIDIuNjg2Mjg4MzUtNiA1Ljk5OTk5ODM1LTZ6IiBmaWxsPSIjZmZmIi8+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMzAgMjJ2LTEyYzAtMi4yMDkxNC0xLjc5MDktNC00LTRoLTIwYy0yLjIwOTE0IDAtNCAxLjc5MDg2LTQgNHYxMmMwIDIuMjA5MSAxLjc5MDg2IDQgNCA0aDIwYzIuMjA5MSAwIDQtMS43OTA5IDQtNHptMi0xMmMwLTMuMzEzNzEtMi42ODYzLTYtNi02aC0yMGMtMy4zMTM3MSAwLTUuOTk5OTk4MjEgMi42ODYyOS01Ljk5OTk5ODM1IDZsLS4wMDAwMDA1MyAxMmMtLjAwMDAwMDE0IDMuMzEzNyAyLjY4NjI4ODg4IDYgNS45OTk5OTg4OCA2aDIwYzMuMzEzNyAwIDYtMi42ODYzIDYtNnoiIGZpbGw9IiNjY2MiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Im00IDEzYzAtLjU1MjMuNDQ3NzItMSAxLTFoNGMuNTUyMjggMCAxIC40NDc3IDEgMXYyYzAgLjU1MjMtLjQ0NzcyIDEtMSAxaC00Yy0uNTUyMjggMC0xLS40NDc3LTEtMXoiIGZpbGw9IiNmZmQ2NWMiLz48ZyBmaWxsPSIjYWFhIj48cGF0aCBkPSJtNCAyMGMwLS41NTIzLjQ0NzcyLTEgMS0xaDVjLjU1MjMgMCAxIC40NDc3IDEgMXMtLjQ0NzcgMS0xIDFoLTVjLS41NTIyOCAwLTEtLjQ0NzctMS0xeiIvPjxwYXRoIGQ9Im0xMiAyMGMwLS41NTIzLjQ0NzctMSAxLTFoMWMuNTUyMyAwIDEgLjQ0NzcgMSAxcy0uNDQ3NyAxLTEgMWgtMWMtLjU1MjMgMC0xLS40NDc3LTEtMXoiLz48cGF0aCBkPSJtMTYgMjBjMC0uNTUyMy40NDc3LTEgMS0xaDEwYy41NTIzIDAgMSAuNDQ3NyAxIDFzLS40NDc3IDEtMSAxaC0xMGMtLjU1MjMgMC0xLS40NDc3LTEtMXoiLz48L2c+PC9zdmc+');
 }
+
 .tooltip__button--data--provider__generic::before {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI2IDRDMjkuMzEzNyA0IDMyIDYuNjg2MjkgMzIgMTBMMzIgMjJDMzIgMjUuMzEzNyAyOS4zMTM3IDI4IDI2IDI4TDYgMjhDMi42ODYyOSAyOCA5Ljc1Njk3ZS0wNyAyNS4zMTM3IDEuMTIwNTRlLTA2IDIyTDEuNjQ1MDhlLTA2IDEwQzEuNzg5OTNlLTA2IDYuNjg2MjkgMi42ODYyOSA0IDYgNEwyNiA0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zMCAyMkwzMCAxMEMzMCA3Ljc5MDg2IDI4LjIwOTEgNiAyNiA2TDYgNkMzLjc5MDg2IDYgMiA3Ljc5MDg2IDIgMTBMMiAyMkMyIDI0LjIwOTEgMy43OTA4NiAyNiA2IDI2TDI2IDI2QzI4LjIwOTEgMjYgMzAgMjQuMjA5MSAzMCAyMlpNMzIgMTBDMzIgNi42ODYyOSAyOS4zMTM3IDQgMjYgNEw2IDRDMi42ODYyOSA0IDEuNzg5OTNlLTA2IDYuNjg2MjkgMS42NDUwOGUtMDYgMTBMMS4xMjA1NGUtMDYgMjJDOS43NTY5N2UtMDcgMjUuMzEzNyAyLjY4NjI5IDI4IDYgMjhMMjYgMjhDMjkuMzEzNyAyOCAzMiAyNS4zMTM3IDMyIDIyTDMyIDEwWiIgZmlsbD0iI0NDQ0NDQyIvPgo8cGF0aCBkPSJNNCAxM0M0IDEyLjQ0NzcgNC40NDc3MiAxMiA1IDEySDlDOS41NTIyOCAxMiAxMCAxMi40NDc3IDEwIDEzVjE1QzEwIDE1LjU1MjMgOS41NTIyOCAxNiA5IDE2SDVDNC40NDc3MiAxNiA0IDE1LjU1MjMgNCAxNVYxM1oiIGZpbGw9IiNGRkQ2NUMiLz4KPHBhdGggZD0iTTQgMjBDNCAxOS40NDc3IDQuNDQ3NzIgMTkgNSAxOUgxMEMxMC41NTIzIDE5IDExIDE5LjQ0NzcgMTEgMjBDMTEgMjAuNTUyMyAxMC41NTIzIDIxIDEwIDIxSDVDNC40NDc3MiAyMSA0IDIwLjU1MjMgNCAyMFoiIGZpbGw9IiNBQUFBQUEiLz4KPHBhdGggZD0iTTEyIDIwQzEyIDE5LjQ0NzcgMTIuNDQ3NyAxOSAxMyAxOUgxNEMxNC41NTIzIDE5IDE1IDE5LjQ0NzcgMTUgMjBDMTUgMjAuNTUyMyAxNC41NTIzIDIxIDE0IDIxSDEzQzEyLjQ0NzcgMjEgMTIgMjAuNTUyMyAxMiAyMFoiIGZpbGw9IiNBQUFBQUEiLz4KPHBhdGggZD0iTTE2IDIwQzE2IDE5LjQ0NzcgMTYuNDQ3NyAxOSAxNyAxOUgyN0MyNy41NTIzIDE5IDI4IDE5LjQ0NzcgMjggMjBDMjggMjAuNTUyMyAyNy41NTIzIDIxIDI3IDIxSDE3QzE2LjQ0NzcgMjEgMTYgMjAuNTUyMyAxNiAyMFoiIGZpbGw9IiNBQUFBQUEiLz4KPC9zdmc+Cg==');
 }
@@ -17357,6 +17376,7 @@ hr:first-child {
         border-top: 1px solid rgba(255,255,255,.2);
     }
 }
+
 
 #privateAddress {
     align-items: flex-start;
@@ -17826,11 +17846,12 @@ ${css}
         const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : "";
         const paymentProvider = item.paymentProvider?.();
         const paymentProviderIconClass = paymentProvider ? `tooltip__button--data--provider__${paymentProvider}` : "";
+        const disableHoverEffectClass = paymentProvider ? "no-hover-effect" : "";
         const labelSmall = item.labelSmall?.(t, this.subtype);
         const label = item.label?.(t, this.subtype);
         return `
             ${shouldShowSeparator(item.id(), index) ? "<hr />" : ""}
-            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${paymentProviderIconClass} ${providerIconClass} js-autofill-button">
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${paymentProviderIconClass} ${providerIconClass} js-autofill-button ${disableHoverEffectClass}">
                 <span class="tooltip__button__text-container">
                     <span class="label label--medium">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ""}
