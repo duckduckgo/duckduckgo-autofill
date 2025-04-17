@@ -19318,14 +19318,6 @@ ${this.options.css}
       this.storeLocalAddresses(addresses);
       return addresses;
     }
-    /**
-     * Gets a single complete credit card obj once the user requests it
-     * @param {CreditCardObject['id']} id
-     * @returns {APIResponse<CreditCardObject>}
-     */
-    async getAutofillCreditCard(id) {
-      return this.deviceApi.request(new GetCreditCardCall({ id }));
-    }
   };
 
   // src/DeviceInterface/WindowsOverlayDeviceInterface.js
@@ -19467,6 +19459,14 @@ ${this.options.css}
     getAutofillIdentity(id) {
       const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
       return Promise.resolve({ success: identity });
+    }
+    /**
+     * Gets a single complete credit card obj once the user requests it
+     * @param {CreditCardObject['id']} id
+     * @returns {APIResponse<CreditCardObject>}
+     */
+    async getAutofillCreditCard(id) {
+      return this.deviceApi.request(new GetCreditCardCall({ id }));
     }
   };
 
