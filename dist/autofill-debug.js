@@ -19323,7 +19323,7 @@ ${this.options.css}
      * @param {CreditCardObject['id']} id
      * @returns {APIResponse<CreditCardObject>}
      */
-    getAutofillCreditCard(id) {
+    async getAutofillCreditCard(id) {
       return this.deviceApi.request(new GetCreditCardCall({ id }));
     }
   };
