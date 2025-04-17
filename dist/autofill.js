@@ -6599,6 +6599,13 @@ Source: "${matchedFrom}"`;
       __publicField(this, "method", "startCredentialsImportFlow");
     }
   };
+  var GetCreditCardCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "GetCreditCard");
+      __publicField(this, "id", "creditCardResponse");
+    }
+  };
   var CredentialsImportFlowPermanentlyDismissedCall = class extends DeviceApiCall {
     constructor() {
       super(...arguments);
@@ -14882,6 +14889,14 @@ ${this.options.css}
       const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}));
       this.storeLocalAddresses(addresses);
       return addresses;
+    }
+    /**
+     * Gets a single complete credit card obj once the user requests it
+     * @param {CreditCardObject['id']} id
+     * @returns {APIResponse<CreditCardObject>}
+     */
+    getAutofillCreditCard(id) {
+      return this.deviceApi.request(new GetCreditCardCall({ id }));
     }
   };
 

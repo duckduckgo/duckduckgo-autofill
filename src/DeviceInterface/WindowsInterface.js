@@ -10,6 +10,7 @@ import {
     EmailProtectionRefreshPrivateAddressCall,
     EmailProtectionGetAddressesCall,
     EmailProtectionGetIsLoggedInCall,
+    GetCreditCardCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 
 /**
@@ -166,5 +167,13 @@ export class WindowsInterface extends InterfacePrototype {
 
         this.storeLocalAddresses(addresses);
         return addresses;
+    }
+    /**
+     * Gets a single complete credit card obj once the user requests it
+     * @param {CreditCardObject['id']} id
+     * @returns {APIResponse<CreditCardObject>}
+     */
+    getAutofillCreditCard(id) {
+        return this.deviceApi.request(new GetCreditCardCall({ id }));
     }
 }

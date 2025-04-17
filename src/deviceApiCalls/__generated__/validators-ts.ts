@@ -169,6 +169,13 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * (Windows) User clicked on the credit card from the autofill popup
+   */
+  GetCreditCard?: {
+    id?: "creditCardResponse";
+    [k: string]: unknown;
+  };
+  /**
    * (macOS/Windows) User clicked on the password import flow prompt
    */
   credentialsImportFlowPermanentlyDismissed?: {

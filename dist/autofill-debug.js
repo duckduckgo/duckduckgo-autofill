@@ -10621,6 +10621,9 @@ Source: "${matchedFrom}"`;
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    GetCreditCard: z.record(z.unknown()).and(z.object({
+      id: z.literal("creditCardResponse").optional()
+    })).optional(),
     credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
       id: z.literal("emailProtectionStoreUserDataResponse").optional(),
@@ -11030,6 +11033,13 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "startCredentialsImportFlow");
+    }
+  };
+  var GetCreditCardCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "GetCreditCard");
+      __publicField(this, "id", "creditCardResponse");
     }
   };
   var CredentialsImportFlowPermanentlyDismissedCall = class extends DeviceApiCall {
@@ -19307,6 +19317,14 @@ ${this.options.css}
       const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}));
       this.storeLocalAddresses(addresses);
       return addresses;
+    }
+    /**
+     * Gets a single complete credit card obj once the user requests it
+     * @param {CreditCardObject['id']} id
+     * @returns {APIResponse<CreditCardObject>}
+     */
+    getAutofillCreditCard(id) {
+      return this.deviceApi.request(new GetCreditCardCall({ id }));
     }
   };
 

@@ -167,6 +167,13 @@ export class StartCredentialsImportFlowCall extends DeviceApiCall {
 /**
  * @extends {DeviceApiCall<any, any>} 
  */
+export class GetCreditCardCall extends DeviceApiCall {
+  method = "GetCreditCard"
+  id = "creditCardResponse"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
 export class CredentialsImportFlowPermanentlyDismissedCall extends DeviceApiCall {
   method = "credentialsImportFlowPermanentlyDismissed"
 }

@@ -396,6 +396,9 @@ export const apiSchema = z.object({
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    GetCreditCard: z.record(z.unknown()).and(z.object({
+        id: z.literal("creditCardResponse").optional()
+    })).optional(),
     credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionStoreUserDataResponse").optional(),

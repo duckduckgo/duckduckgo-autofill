@@ -207,6 +207,16 @@
       "type": "object",
       "description": "(macOS/Windows) Opens the native password import flow UI"
     },
+    "GetCreditCard": {
+      "type": "object",
+      "description": "(Windows) User clicked on the credit card from the autofill popup",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "creditCardResponse"
+        }
+      }
+    },
     "credentialsImportFlowPermanentlyDismissed": {
       "type": "object",
       "description": "(macOS/Windows) User clicked on the password import flow prompt"
