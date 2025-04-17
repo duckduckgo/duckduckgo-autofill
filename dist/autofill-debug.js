@@ -17217,7 +17217,7 @@ which has its own box-shadow and border-radius settings.
 /* Icon effects */
 @media (prefers-color-scheme: dark) {
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
-        filter: var(--hover-effect);
+        filter: var(--hover-effect-dark);
         opacity: .9;
     }
 
@@ -17235,8 +17235,6 @@ which has its own box-shadow and border-radius settings.
         filter: none;
     }
 }
-
-
 
 .tooltip__button__text-container {
     margin: auto 0;
