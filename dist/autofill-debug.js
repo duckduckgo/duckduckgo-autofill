@@ -10408,14 +10408,14 @@ Source: "${matchedFrom}"`;
     credentialsImport: z.boolean().optional()
   });
   var identityObjectSchema = z.object({
-    id: z.number(),
+    id: z.string(),
     title: z.string(),
     firstName: z.string().optional(),
     middleName: z.string().optional(),
     lastName: z.string().optional(),
-    birthdayDay: z.number().optional(),
-    birthdayMonth: z.number().optional(),
-    birthdayYear: z.number().optional(),
+    birthdayDay: z.string().optional(),
+    birthdayMonth: z.string().optional(),
+    birthdayYear: z.string().optional(),
     addressStreet: z.string().optional(),
     addressStreet2: z.string().optional(),
     addressCity: z.string().optional(),

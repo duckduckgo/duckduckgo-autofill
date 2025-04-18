@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "integer",
+      "type": "string",
       "description": "Unique identifier for the identity"
     },
     "title": {
@@ -24,15 +24,15 @@
       "description": "Last name of the individual"
     },
     "birthdayDay": {
-      "type": "integer",
+      "type": "string",
       "description": "Day of birth"
     },
     "birthdayMonth": {
-      "type": "integer",
+      "type": "string",
       "description": "Month of birth"
     },
     "birthdayYear": {
-      "type": "integer",
+      "type": "string",
       "description": "Year of birth"
     },
     "addressStreet": {

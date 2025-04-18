@@ -484,7 +484,7 @@ export interface IdentityObject {
   /**
    * Unique identifier for the identity
    */
-  id: number;
+  id: string;
   /**
    * Title or name of the identity
    */
@@ -504,15 +504,15 @@ export interface IdentityObject {
   /**
    * Day of birth
    */
-  birthdayDay?: number;
+  birthdayDay?: string;
   /**
    * Month of birth
    */
-  birthdayMonth?: number;
+  birthdayMonth?: string;
   /**
    * Year of birth
    */
-  birthdayYear?: number;
+  birthdayYear?: string;
   /**
    * Street address
    */
