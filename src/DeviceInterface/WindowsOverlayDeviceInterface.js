@@ -9,6 +9,8 @@ import {
     OpenManageCreditCardsCall,
     OpenManageIdentitiesCall,
     CloseAutofillParentCall,
+    GetCreditCardCall,
+    GetIdentityCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
@@ -181,8 +183,20 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @param {Number} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity(id) {
-        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
-        return Promise.resolve({ success: identity });
+    async getAutofillIdentity(id) {
+        // FIXME: do we need to check the local identities - getLocalIdentities?
+        // const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
+        const result = await this.deviceApi.request(new GetIdentityCall({ id }));
+        return { success: result };
+    }
+
+    /**
+     * Gets a single complete credit card obj once the user requests it
+     * @param {CreditCardObject['id']} id
+     * @returns {APIResponseSingle<CreditCardObject>}
+     */
+    async getAutofillCreditCard(id) {
+        const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+        return { success: result };
     }
 }

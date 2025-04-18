@@ -1,4 +1,4 @@
-## Links 
+## Links
 
 - [Privacy Test Pages, Form Submissions](https://privacy-test-pages.site/autofill/form-submission.html)
 
@@ -60,7 +60,7 @@ Where `event.data` is:
 }
 ```
 
---- 
+---
 
 ## `getAvailableInputTypes()`
 
@@ -76,7 +76,7 @@ This represents which input types we can autofill for the current user.
 windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })
 ```
 
-**`response`** example, via: 
+**`response`** example, via:
 
 ```js
 windowsInteropAddEventListener('message', (event) => {...})
@@ -188,7 +188,7 @@ see:
 }
 ```
 
---- 
+---
 
 ## `overlay -> setSize()`
 
@@ -229,13 +229,69 @@ see:
 }
 ```
 
---- 
+## `overlay -> getAutofillIdentity()`
+
+see:
+
+- [../src/schemas/getIdentity.params.json](../src/schemas/getIdentity.params.json)
+- [../src/schemas/getIdentity.result.json](../src/schemas/getIdentity.result.json)
+
+```json
+{
+  "type": "getAutofillIdentity",
+  "success": {
+    "identities": {
+      "id": "1",
+      "firstName": "John",
+      "lastName": "Doe",
+      "emailAddress": "john.doe@example.com",
+      "phone": "+1234567890",
+      "addressStreet": "123 Main St",
+      "addressStreet2": "Apt 4B",
+      "addressCity": "Springfield",
+      "addressProvince": "IL",
+      "addressPostalCode": "62701",
+      "addressCountryCode": "US"
+    }
+  }
+}
+```
+
+## `overlay -> getAutofillCreditCard()`
+
+see:
+
+- [../src/schemas/getCreditCard.params.json](../src/schemas/getCreditCard.params.json)
+- [../src/schemas/getCreditCard.result.json](../src/schemas/getCreditCard.result.json)
+
+**response example**
+
+```json
+{
+  "type": "getAutofillCreditCard",
+  "success": {
+    "creditCards": {
+      "id": "1",
+      "title": "My Card",
+      "displayNumber": "1234",
+      "cardName": "John Doe",
+      "expirationMonth": "12",
+      "expirationYear": "2025",
+      "cardNumber": "4111111111111111",
+      "paymentProvider": "Visa"
+    }
+  }
+}
+```
+
+---
 
 ## `overlay -> selectedDetail({ id: 01 })`
 
---- 
+---
 
 ## `overlay -> closeAutofillParent()`
+
 ## `webpage -> closeAutofillParent()`
 
 ---
@@ -297,7 +353,7 @@ windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: da
 
 String replacements
 
-```
+```cs
 isTopFrame = true
 // INJECT isTopFrame HERE
 

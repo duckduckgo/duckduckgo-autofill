@@ -41,6 +41,7 @@ interface CreditCardObject {
     expirationMonth?: string;
     expirationYear?: string;
     cardNumber?: string;
+    paymentProvider?: string;
 }
 
 interface InternalCreditCardObject extends CreditCardObject {

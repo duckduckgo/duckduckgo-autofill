@@ -701,7 +701,7 @@ class InterfacePrototype {
         return this.deviceApi.request(new GetAutofillCredentialsCall({ id: String(id) }));
     }
 
-    /** @returns {APIResponse<CreditCardObject>} */
+    /** @returns {APIResponseSingle<CreditCardObject>} */
     async getAutofillCreditCard(_id) {
         throw new Error('getAutofillCreditCard unimplemented');
     }

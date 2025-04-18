@@ -22,13 +22,13 @@
         "identities": {
           "type": "array",
           "items": {
-            "type": "object"
+            "$ref": "./identity.json"
           }
         },
         "creditCards": {
           "type": "array",
           "items": {
-            "type": "object"
+            "$ref": "./creditCard.json"
           }
         },
         "serializedInputContext": {

@@ -11,6 +11,17 @@ import { CreditCardTooltipItem } from '../src/InputTypes/CreditCard.js';
  * @import InterfacePrototype from './DeviceInterface/InterfacePrototype.js';
  */
 
+/** --- CONFIG --- */
+/** show/hide autofill components */
+const showAutofill = {
+    showCredentials: true,
+    showIdentities: true,
+    showCreditCards: true,
+    showEmails: true,
+    showImportTooltips: true,
+};
+/** --- /CONFIG --- */
+
 const url = new URL(window.location.href);
 const locale = url.searchParams.get('locale') || 'en';
 const platform = url.searchParams.get('platform') || 'macos';
@@ -66,12 +77,86 @@ const identities = [
 const creditCards = [
     {
         data: [
-            new CreditCardTooltipItem({ id: 'a', displayNumber: '1234', cardName: 'monzo', title: 'Monzo', expirationMonth: '1', expirationYear: '2025' }),
-            new CreditCardTooltipItem({ id: 'c', displayNumber: '2312', cardName: 'revolut', title: 'Revolut' }),
+            new CreditCardTooltipItem({
+                id: 'a',
+                displayNumber: '1234',
+                cardName: 'monzo',
+                title: 'Monzo',
+                expirationMonth: '1',
+                expirationYear: '2025',
+                paymentProvider: 'whatever',
+            }),
+            new CreditCardTooltipItem({
+                id: 'c',
+                displayNumber: '2312',
+                cardName: 'dinersClub',
+                title: 'dinersClub',
+                paymentProvider: 'dinersClub',
+            }),
+            new CreditCardTooltipItem({
+                id: 'd',
+                displayNumber: '9876',
+                cardName: 'discover',
+                title: 'discover',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'discover',
+            }),
+            new CreditCardTooltipItem({
+                id: 'e',
+                displayNumber: '9876',
+                cardName: 'jcb',
+                title: 'jcb',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'jcb',
+            }),
         ],
         type: 'creditCards.cardNumber',
     },
-]
+];
+
+const creditCardsMore = [
+    {
+        data: [
+            new CreditCardTooltipItem({
+                id: 'd',
+                displayNumber: '1234',
+                cardName: 'monzo',
+                title: 'Monzo',
+                expirationMonth: '1',
+                expirationYear: '2025',
+                paymentProvider: 'visa',
+            }),
+            new CreditCardTooltipItem({
+                id: 'e',
+                displayNumber: '2312',
+                cardName: 'revolut',
+                title: 'Revolut',
+                paymentProvider: 'mastercard',
+            }),
+            new CreditCardTooltipItem({
+                id: 'f',
+                displayNumber: '9876',
+                cardName: 'Amex',
+                title: 'American Express',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'amex',
+            }),
+            new CreditCardTooltipItem({
+                id: 'g',
+                displayNumber: '9876',
+                cardName: 'unionPay',
+                title: 'unionPay',
+                expirationMonth: '6',
+                expirationYear: '2026',
+                paymentProvider: 'unionPay',
+            }),
+        ],
+        type: 'creditCards.cardNumber',
+    },
+];
 
 const emails = [
     {
@@ -114,18 +199,34 @@ const emails = [
     },
 ];
 
+const importTooltips = [
+    { type: 'import', title: 'import' }
+];
+
 const main = document.querySelector('main');
 
-credentials.forEach((iden, index) => createTooltip(iden, index));
-identities.forEach((iden, index) => createTooltip(iden, index));
-creditCards.forEach((iden, index) => createTooltip(iden, index));
-emails.forEach((iden, index) => createTooltip(iden, index));
+if (showAutofill.showCredentials) {
+    credentials.forEach((item, index) => createTooltip(item, `credentials-${index}`));
+}
+if (showAutofill.showIdentities) {
+    identities.forEach((item, index) => createTooltip(item, `identities-${index}`));
+}
+if (showAutofill.showCreditCards) {
+    creditCards.forEach((item, index) => createTooltip(item, `creditCards-${index}`));
+    creditCardsMore.forEach((item, index) => createTooltip(item, `creditCardsMore-${index}`));
+}
+if (showAutofill.showEmails) {
+    emails.forEach((item, index) => createTooltip(item, `emails-${index}`));
+}
+if (showAutofill.showImportTooltips) {
+    importTooltips.forEach((item, index) => createImportTooltip(item, `importTooltips-${index}`));
+}
 
-function createTooltip(item, index) {
+function createTooltip(item, uniqueId) {
     const elem = document.createElement('code');
     elem.textContent = item.title || item.type;
     elem.style.position = 'relative';
-    elem.id = `iden-${index}`;
+    elem.id = uniqueId;
     elem.dataset.length = String(item.data.length);
 
     const getPosition = () => {
@@ -155,24 +256,17 @@ function createTooltip(item, index) {
         },
     });
 }
-
-const importTooltips = [
-    { type: 'import', title: 'import' }
-];
-
-importTooltips.forEach((iden, index) => {
+function createImportTooltip(item, uniqueId) {
     const elem = document.createElement('code');
-    elem.textContent = iden.title || iden.type;
+    elem.textContent = item.title || item.type;
     elem.style.position = 'relative';
-    elem.id = `iden-importTooltips-${index}`;
+    elem.id = uniqueId;
 
-    const getPosition = () => {
-        return elem.getBoundingClientRect();
-    };
+    const getPosition = () => elem.getBoundingClientRect();
 
-    const d = new CredentialsImportTooltip(iden.type, getPosition, {
+    const d = new CredentialsImportTooltip(item.type, getPosition, {
         ...defaultOptions,
-        ...iden.options,
+        ...item.options,
         isTopAutofill: false,
         platform,
         // isIncontextSignupAvailable: () => true
@@ -190,4 +284,4 @@ importTooltips.forEach((iden, index) => {
             throw new Error('Function not implemented.');
         },
     });
-});
+}

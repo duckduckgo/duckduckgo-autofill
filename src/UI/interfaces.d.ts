@@ -10,6 +10,7 @@ interface TooltipItemRenderer {
     label?(t: TranslateFn, subtype: string): string | null | undefined;
     labelSmall?(t: TranslateFn, subtype: string): string | null | undefined;
     credentialsProvider?(): CredentialsObject['credentialsProvider'];
+    paymentProvider?(): CreditCardObject['paymentProvider'];
 }
 
 type PosFn = () => { x: number; y: number; height: number; width: number };
