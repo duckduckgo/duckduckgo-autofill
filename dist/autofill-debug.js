@@ -10319,6 +10319,9 @@ Source: "${matchedFrom}"`;
       alias: z.string().optional()
     })
   });
+  var getIdentityParamSchema = z.object({
+    id: z.string()
+  });
   var getCreditCardParamSchema = z.object({
     id: z.string()
   });
@@ -10404,15 +10407,34 @@ Source: "${matchedFrom}"`;
     credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
     credentialsImport: z.boolean().optional()
   });
-  var getAutofillInitDataResponseSchema = z.object({
-    type: z.literal("getAutofillInitDataResponse").optional(),
-    success: z.object({
-      credentials: z.array(credentialsSchema),
-      identities: z.array(z.record(z.unknown())),
-      creditCards: z.array(z.record(z.unknown())),
-      serializedInputContext: z.string()
-    }).optional(),
-    error: genericErrorSchema.optional()
+  var identityObjectSchema = z.object({
+    id: z.number(),
+    title: z.string(),
+    firstName: z.string().optional(),
+    middleName: z.string().optional(),
+    lastName: z.string().optional(),
+    birthdayDay: z.number().optional(),
+    birthdayMonth: z.number().optional(),
+    birthdayYear: z.number().optional(),
+    addressStreet: z.string().optional(),
+    addressStreet2: z.string().optional(),
+    addressCity: z.string().optional(),
+    addressProvince: z.string().optional(),
+    addressPostalCode: z.string().optional(),
+    addressCountryCode: z.string().optional(),
+    phone: z.string().optional(),
+    emailAddress: z.string().optional()
+  });
+  var creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
   });
   var getAutofillCredentialsResultSchema = z.object({
     type: z.literal("getAutofillCredentialsResponse").optional(),
@@ -10474,16 +10496,11 @@ Source: "${matchedFrom}"`;
     unknown_username_categorization: z.boolean().optional(),
     partial_form_saves: z.boolean().optional()
   });
-  var creditCardObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    displayNumber: z.string(),
-    cardName: z.string().optional(),
-    cardSecurityCode: z.string().optional(),
-    expirationMonth: z.string().optional(),
-    expirationYear: z.string().optional(),
-    cardNumber: z.string().optional(),
-    paymentProvider: z.string().optional()
+  var getIdentityResultSchema = z.object({
+    success: identityObjectSchema
+  });
+  var getCreditCardResultSchema = z.object({
+    success: creditCardObjectSchema
   });
   var emailProtectionGetIsLoggedInResultSchema = z.object({
     success: z.boolean().optional(),
@@ -10545,6 +10562,16 @@ Source: "${matchedFrom}"`;
     success: availableInputTypesSchema,
     error: genericErrorSchema.optional()
   });
+  var getAutofillInitDataResponseSchema = z.object({
+    type: z.literal("getAutofillInitDataResponse").optional(),
+    success: z.object({
+      credentials: z.array(credentialsSchema),
+      identities: z.array(identityObjectSchema),
+      creditCards: z.array(creditCardObjectSchema),
+      serializedInputContext: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+  });
   var askToUnlockProviderResultSchema = z.object({
     type: z.literal("askToUnlockProviderResponse").optional(),
     success: providerStatusUpdatedSchema,
@@ -10557,9 +10584,6 @@ Source: "${matchedFrom}"`;
   });
   var autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
-  });
-  var getCreditCardResultSchema = z.object({
-    success: creditCardObjectSchema
   });
   var runtimeConfigurationSchema = z.object({
     contentScope: z.record(z.unknown()),
@@ -10638,6 +10662,11 @@ Source: "${matchedFrom}"`;
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    getIdentity: z.record(z.unknown()).and(z.object({
+      id: z.literal("getIdentity").optional(),
+      paramValidator: getIdentityParamSchema.optional(),
+      resultValidator: getIdentityResultSchema.optional()
+    })).optional(),
     getCreditCard: z.record(z.unknown()).and(z.object({
       id: z.literal("getCreditCard").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
@@ -11052,6 +11081,14 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "startCredentialsImportFlow");
+    }
+  };
+  var GetIdentityCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getIdentity");
+      __publicField(this, "id", "getIdentity");
+      __publicField(this, "resultValidator", getIdentityResultSchema);
     }
   };
   var GetCreditCardCall = class extends DeviceApiCall {
@@ -19476,9 +19513,9 @@ ${this.options.css}
      * @param {Number} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity(id) {
-      const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
-      return Promise.resolve({ success: identity });
+    async getAutofillIdentity(id) {
+      const result = await this.deviceApi.request(new GetIdentityCall({ id }));
+      return { success: result };
     }
     /**
      * Gets a single complete credit card obj once the user requests it

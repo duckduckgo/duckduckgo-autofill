@@ -10,14 +10,14 @@ interface CredentialsObject {
 }
 
 interface IdentityObject {
-    id: string;
+    id: number;
     title: string;
     firstName?: string;
     middleName?: string;
     lastName?: string;
-    birthdayDay?: string;
-    birthdayMonth?: string;
-    birthdayYear?: string;
+    birthdayDay?: number;
+    birthdayMonth?: number;
+    birthdayYear?: number;
     addressStreet?: string;
     addressStreet2?: string;
     addressCity?: string;

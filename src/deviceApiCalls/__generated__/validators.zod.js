@@ -66,6 +66,10 @@ export const getAliasResultSchema = z.object({
     })
 });
 
+export const getIdentityParamSchema = z.object({
+    id: z.string()
+});
+
 export const getCreditCardParamSchema = z.object({
     id: z.string()
 });
@@ -161,15 +165,35 @@ export const availableInputTypesSchema = z.object({
     credentialsImport: z.boolean().optional()
 });
 
-export const getAutofillInitDataResponseSchema = z.object({
-    type: z.literal("getAutofillInitDataResponse").optional(),
-    success: z.object({
-        credentials: z.array(credentialsSchema),
-        identities: z.array(z.record(z.unknown())),
-        creditCards: z.array(z.record(z.unknown())),
-        serializedInputContext: z.string()
-    }).optional(),
-    error: genericErrorSchema.optional()
+export const identityObjectSchema = z.object({
+    id: z.number(),
+    title: z.string(),
+    firstName: z.string().optional(),
+    middleName: z.string().optional(),
+    lastName: z.string().optional(),
+    birthdayDay: z.number().optional(),
+    birthdayMonth: z.number().optional(),
+    birthdayYear: z.number().optional(),
+    addressStreet: z.string().optional(),
+    addressStreet2: z.string().optional(),
+    addressCity: z.string().optional(),
+    addressProvince: z.string().optional(),
+    addressPostalCode: z.string().optional(),
+    addressCountryCode: z.string().optional(),
+    phone: z.string().optional(),
+    emailAddress: z.string().optional()
+});
+
+export const creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
 });
 
 export const getAutofillCredentialsResultSchema = z.object({
@@ -236,16 +260,12 @@ export const autofillFeatureTogglesSchema = z.object({
     partial_form_saves: z.boolean().optional()
 });
 
-export const creditCardObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    displayNumber: z.string(),
-    cardName: z.string().optional(),
-    cardSecurityCode: z.string().optional(),
-    expirationMonth: z.string().optional(),
-    expirationYear: z.string().optional(),
-    cardNumber: z.string().optional(),
-    paymentProvider: z.string().optional()
+export const getIdentityResultSchema = z.object({
+    success: identityObjectSchema
+});
+
+export const getCreditCardResultSchema = z.object({
+    success: creditCardObjectSchema
 });
 
 export const emailProtectionGetIsLoggedInResultSchema = z.object({
@@ -317,6 +337,17 @@ export const getAvailableInputTypesResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
+export const getAutofillInitDataResponseSchema = z.object({
+    type: z.literal("getAutofillInitDataResponse").optional(),
+    success: z.object({
+        credentials: z.array(credentialsSchema),
+        identities: z.array(identityObjectSchema),
+        creditCards: z.array(creditCardObjectSchema),
+        serializedInputContext: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
+});
+
 export const askToUnlockProviderResultSchema = z.object({
     type: z.literal("askToUnlockProviderResponse").optional(),
     success: providerStatusUpdatedSchema,
@@ -331,10 +362,6 @@ export const checkCredentialsProviderStatusResultSchema = z.object({
 
 export const autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
-});
-
-export const getCreditCardResultSchema = z.object({
-    success: creditCardObjectSchema
 });
 
 export const runtimeConfigurationSchema = z.object({
@@ -416,6 +443,11 @@ export const apiSchema = z.object({
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    getIdentity: z.record(z.unknown()).and(z.object({
+        id: z.literal("getIdentity").optional(),
+        paramValidator: getIdentityParamSchema.optional(),
+        resultValidator: getIdentityResultSchema.optional()
+    })).optional(),
     getCreditCard: z.record(z.unknown()).and(z.object({
         id: z.literal("getCreditCard").optional(),
         paramValidator: getCreditCardParamSchema.optional(),

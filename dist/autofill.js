@@ -6207,8 +6207,9 @@ Source: "${matchedFrom}"`;
   var getIncontextSignupDismissedAtSchema = null;
   var emailProtectionStoreUserDataParamsSchema = null;
   var showInContextEmailProtectionSignupPromptSchema = null;
-  var getAutofillInitDataResponseSchema = null;
   var getAutofillCredentialsResultSchema = null;
+  var getIdentityResultSchema = null;
+  var getCreditCardResultSchema = null;
   var emailProtectionGetIsLoggedInResultSchema = null;
   var emailProtectionGetUserDataResultSchema = null;
   var emailProtectionGetCapabilitiesResultSchema = null;
@@ -6218,9 +6219,9 @@ Source: "${matchedFrom}"`;
   var getAutofillDataResponseSchema = null;
   var storeFormDataSchema = null;
   var getAvailableInputTypesResultSchema = null;
+  var getAutofillInitDataResponseSchema = null;
   var askToUnlockProviderResultSchema = null;
   var checkCredentialsProviderStatusResultSchema = null;
-  var getCreditCardResultSchema = null;
   var getRuntimeConfigurationResponseSchema = null;
 
   // packages/device-api/lib/device-api-call.js
@@ -6598,6 +6599,14 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "startCredentialsImportFlow");
+    }
+  };
+  var GetIdentityCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getIdentity");
+      __publicField(this, "id", "getIdentity");
+      __publicField(this, "resultValidator", getIdentityResultSchema);
     }
   };
   var GetCreditCardCall = class extends DeviceApiCall {
@@ -15030,9 +15039,9 @@ ${this.options.css}
      * @param {Number} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity(id) {
-      const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
-      return Promise.resolve({ success: identity });
+    async getAutofillIdentity(id) {
+      const result = await this.deviceApi.request(new GetIdentityCall({ id }));
+      return { success: result };
     }
     /**
      * Gets a single complete credit card obj once the user requests it

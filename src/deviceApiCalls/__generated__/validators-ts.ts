@@ -169,6 +169,15 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * (Windows) Get a single identity
+   */
+  getIdentity?: {
+    id?: "getIdentity";
+    paramValidator?: GetIdentityParam;
+    resultValidator?: GetIdentityResult;
+    [k: string]: unknown;
+  };
+  /**
    * (Windows) Get a single credit card
    */
   getCreditCard?: {
@@ -462,18 +471,118 @@ export interface GetAutofillInitDataResponse {
   type?: "getAutofillInitDataResponse";
   success?: {
     credentials: Credentials[];
-    identities: {
-      [k: string]: unknown;
-    }[];
-    creditCards: {
-      [k: string]: unknown;
-    }[];
+    identities: IdentityObject[];
+    creditCards: CreditCardObject[];
     /**
      * A clone of the `serializedInputContext` that was sent in the request
      */
     serializedInputContext: string;
   };
   error?: GenericError;
+}
+export interface IdentityObject {
+  /**
+   * Unique identifier for the identity
+   */
+  id: number;
+  /**
+   * Title or name of the identity
+   */
+  title: string;
+  /**
+   * First name of the individual
+   */
+  firstName?: string;
+  /**
+   * Middle name of the individual
+   */
+  middleName?: string;
+  /**
+   * Last name of the individual
+   */
+  lastName?: string;
+  /**
+   * Day of birth
+   */
+  birthdayDay?: number;
+  /**
+   * Month of birth
+   */
+  birthdayMonth?: number;
+  /**
+   * Year of birth
+   */
+  birthdayYear?: number;
+  /**
+   * Street address
+   */
+  addressStreet?: string;
+  /**
+   * Additional street address information
+   */
+  addressStreet2?: string;
+  /**
+   * City of the address
+   */
+  addressCity?: string;
+  /**
+   * Province or state of the address
+   */
+  addressProvince?: string;
+  /**
+   * Postal or ZIP code of the address
+   */
+  addressPostalCode?: string;
+  /**
+   * Country code of the address
+   */
+  addressCountryCode?: string;
+  /**
+   * Phone number
+   */
+  phone?: string;
+  /**
+   * Email address
+   */
+  emailAddress?: string;
+}
+export interface CreditCardObject {
+  /**
+   * Unique identifier for the credit card
+   */
+  id: string;
+  /**
+   * Title or name of the credit card
+   */
+  title: string;
+  /**
+   * Formatted display number of the credit card
+   */
+  displayNumber: string;
+  /**
+   * Name on the credit card
+   */
+  cardName?: string;
+  /**
+   * Security code (CVV/CVC) of the credit card
+   */
+  cardSecurityCode?: string;
+  /**
+   * Expiration month of the credit card
+   */
+  expirationMonth?: string;
+  /**
+   * Expiration year of the credit card
+   */
+  expirationYear?: string;
+  /**
+   * Full number of the credit card
+   */
+  cardNumber?: string;
+  /**
+   * Payment provider associated with the credit card
+   */
+  paymentProvider?: string;
 }
 /**
  * This describes the argument given to `getAutofillCredentials`
@@ -643,49 +752,17 @@ export interface GetAliasResult {
     alias?: string;
   };
 }
+export interface GetIdentityParam {
+  id: string;
+}
+export interface GetIdentityResult {
+  success: IdentityObject;
+}
 export interface GetCreditCardParam {
   id: string;
 }
 export interface GetCreditCardResult {
   success: CreditCardObject;
-}
-export interface CreditCardObject {
-  /**
-   * Unique identifier for the credit card
-   */
-  id: string;
-  /**
-   * Title or name of the credit card
-   */
-  title: string;
-  /**
-   * Formatted display number of the credit card
-   */
-  displayNumber: string;
-  /**
-   * Name on the credit card
-   */
-  cardName?: string;
-  /**
-   * Security code (CVV/CVC) of the credit card
-   */
-  cardSecurityCode?: string;
-  /**
-   * Expiration month of the credit card
-   */
-  expirationMonth?: string;
-  /**
-   * Expiration year of the credit card
-   */
-  expirationYear?: string;
-  /**
-   * Full number of the credit card
-   */
-  cardNumber?: string;
-  /**
-   * Payment provider associated with the credit card
-   */
-  paymentProvider?: string;
 }
 /**
  * Used to store Email Protection auth credentials.

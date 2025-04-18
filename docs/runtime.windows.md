@@ -229,6 +229,34 @@ see:
 }
 ```
 
+## `overlay -> getAutofillIdentity()`
+
+see:
+
+- [../src/schemas/getIdentity.params.json](../src/schemas/getIdentity.params.json)
+- [../src/schemas/getIdentity.result.json](../src/schemas/getIdentity.result.json)
+
+```json
+{
+  "type": "getAutofillIdentity",
+  "success": {
+    "identities": {
+      "id": "1",
+      "firstName": "John",
+      "lastName": "Doe",
+      "emailAddress": "john.doe@example.com",
+      "phone": "+1234567890",
+      "addressStreet": "123 Main St",
+      "addressStreet2": "Apt 4B",
+      "addressCity": "Springfield",
+      "addressProvince": "IL",
+      "addressPostalCode": "62701",
+      "addressCountryCode": "US"
+    }
+  }
+}
+```
+
 ## `overlay -> getAutofillCreditCard()`
 
 see:
@@ -240,7 +268,7 @@ see:
 
 ```json
 {
-  "type": "getAutofillInitDataResponse",
+  "type": "getAutofillCreditCard",
   "success": {
     "creditCards": {
       "id": "1",
