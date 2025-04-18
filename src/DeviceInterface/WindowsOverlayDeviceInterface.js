@@ -9,6 +9,7 @@ import {
     OpenManageCreditCardsCall,
     OpenManageIdentitiesCall,
     CloseAutofillParentCall,
+    GetCreditCardCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
@@ -108,6 +109,16 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
     openManagePasswords() {
         return this.deviceApi.notify(new OpenManagePasswordsCall({}));
     }
+
+    /**
+     * @param {string} id
+     * @returns {APIResponseSingle<CreditCardObject>}
+     */
+    async getAutofillCreditCard(id) {
+        const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+        return { success: result };
+    }
+
     /**
      * @returns {Promise<any>}
      */

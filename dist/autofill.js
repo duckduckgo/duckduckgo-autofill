@@ -6216,6 +6216,7 @@ Source: "${matchedFrom}"`;
   var getAvailableInputTypesResultSchema = null;
   var askToUnlockProviderResultSchema = null;
   var checkCredentialsProviderStatusResultSchema = null;
+  var getCreditCardResultSchema = null;
   var getRuntimeConfigurationResponseSchema = null;
 
   // packages/device-api/lib/device-api-call.js
@@ -6585,6 +6586,14 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "openManageIdentities");
+    }
+  };
+  var GetCreditCardCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getCreditCard");
+      __publicField(this, "id", "getCreditCard");
+      __publicField(this, "resultValidator", getCreditCardResultSchema);
     }
   };
   var StartCredentialsImportFlowCall = class extends DeviceApiCall {
@@ -12179,7 +12188,7 @@ Source: "${matchedFrom}"`;
     async getAutofillCredentials(id) {
       return this.deviceApi.request(new GetAutofillCredentialsCall({ id: String(id) }));
     }
-    /** @returns {APIResponse<CreditCardObject>} */
+    /** @returns {APIResponseSingle<CreditCardObject>} */
     async getAutofillCreditCard(_id) {
       throw new Error("getAutofillCreditCard unimplemented");
     }
@@ -14513,7 +14522,7 @@ ${this.options.css}
     /**
      * Gets a single complete credit card obj once the user requests it
      * @param {CreditCardObject['id']} id
-     * @returns {APIResponse<CreditCardObject>}
+     * @returns {APIResponseSingle<CreditCardObject>}
      */
     getAutofillCreditCard(id) {
       return this.deviceApi.request(createRequest("pmHandlerGetCreditCard", { id }));
@@ -14923,6 +14932,14 @@ ${this.options.css}
      */
     openManagePasswords() {
       return this.deviceApi.notify(new OpenManagePasswordsCall({}));
+    }
+    /**
+     * @param {string} id
+     * @returns {APIResponseSingle<CreditCardObject>}
+     */
+    async getAutofillCreditCard(id) {
+      const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+      return { success: result };
     }
     /**
      * @returns {Promise<any>}

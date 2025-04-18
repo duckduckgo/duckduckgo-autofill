@@ -16,6 +16,7 @@ import {
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
     getIncontextSignupDismissedAtSchema,
+    getCreditCardResultSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
     emailProtectionGetUserDataResultSchema,
@@ -157,6 +158,14 @@ export class OpenManageCreditCardsCall extends DeviceApiCall {
  */
 export class OpenManageIdentitiesCall extends DeviceApiCall {
   method = "openManageIdentities"
+}
+/**
+ * @extends {DeviceApiCall<any, getCreditCardResultSchema>} 
+ */
+export class GetCreditCardCall extends DeviceApiCall {
+  method = "getCreditCard"
+  id = "getCreditCard"
+  resultValidator = getCreditCardResultSchema
 }
 /**
  * @extends {DeviceApiCall<any, any>} 

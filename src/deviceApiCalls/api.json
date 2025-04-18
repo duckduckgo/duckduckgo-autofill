@@ -203,6 +203,22 @@
       "type": "object",
       "description": "Opens the native identities management UI from the autofill popup"
     },
+    "getCreditCard": {
+      "type": "object",
+      "description": "Get a single credit card",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getCreditCard"
+        },
+        "paramValidator": {
+          "$ref": "./schemas/getCreditCard.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getCreditCard.result.json"
+        }
+      }
+    },
     "startCredentialsImportFlow": {
       "type": "object",
       "description": "(macOS/Windows) Opens the native password import flow UI"

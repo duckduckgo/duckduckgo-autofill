@@ -10315,6 +10315,9 @@ Source: "${matchedFrom}"`;
       alias: z.string().optional()
     })
   });
+  var getCreditCardParamSchema = z.object({
+    id: z.string()
+  });
   var emailProtectionStoreUserDataParamsSchema = z.object({
     token: z.string(),
     userName: z.string(),
@@ -10467,6 +10470,16 @@ Source: "${matchedFrom}"`;
     unknown_username_categorization: z.boolean().optional(),
     partial_form_saves: z.boolean().optional()
   });
+  var creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional()
+  });
   var emailProtectionGetIsLoggedInResultSchema = z.object({
     success: z.boolean().optional(),
     error: genericErrorSchema.optional()
@@ -10539,6 +10552,9 @@ Source: "${matchedFrom}"`;
   });
   var autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
+  });
+  var getCreditCardResultSchema = z.object({
+    success: creditCardObjectSchema
   });
   var runtimeConfigurationSchema = z.object({
     contentScope: z.record(z.unknown()),
@@ -10616,6 +10632,11 @@ Source: "${matchedFrom}"`;
     openManagePasswords: z.record(z.unknown()).optional(),
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
+    getCreditCard: z.record(z.unknown()).and(z.object({
+      id: z.literal("getCreditCard").optional(),
+      paramValidator: getCreditCardParamSchema.optional(),
+      resultValidator: getCreditCardResultSchema.optional()
+    })).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
     credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
@@ -11018,6 +11039,14 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "openManageIdentities");
+    }
+  };
+  var GetCreditCardCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getCreditCard");
+      __publicField(this, "id", "getCreditCard");
+      __publicField(this, "resultValidator", getCreditCardResultSchema);
     }
   };
   var StartCredentialsImportFlowCall = class extends DeviceApiCall {
@@ -16608,7 +16637,7 @@ Source: "${matchedFrom}"`;
     async getAutofillCredentials(id) {
       return this.deviceApi.request(new GetAutofillCredentialsCall({ id: String(id) }));
     }
-    /** @returns {APIResponse<CreditCardObject>} */
+    /** @returns {APIResponseSingle<CreditCardObject>} */
     async getAutofillCreditCard(_id) {
       throw new Error("getAutofillCreditCard unimplemented");
     }
@@ -18938,7 +18967,7 @@ ${this.options.css}
     /**
      * Gets a single complete credit card obj once the user requests it
      * @param {CreditCardObject['id']} id
-     * @returns {APIResponse<CreditCardObject>}
+     * @returns {APIResponseSingle<CreditCardObject>}
      */
     getAutofillCreditCard(id) {
       return this.deviceApi.request(createRequest("pmHandlerGetCreditCard", { id }));
@@ -19348,6 +19377,14 @@ ${this.options.css}
      */
     openManagePasswords() {
       return this.deviceApi.notify(new OpenManagePasswordsCall({}));
+    }
+    /**
+     * @param {string} id
+     * @returns {APIResponseSingle<CreditCardObject>}
+     */
+    async getAutofillCreditCard(id) {
+      const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+      return { success: result };
     }
     /**
      * @returns {Promise<any>}

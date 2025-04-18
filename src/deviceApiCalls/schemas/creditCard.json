@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CreditCardObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the credit card"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title or name of the credit card"
+    },
+    "displayNumber": {
+      "type": "string",
+      "description": "Formatted display number of the credit card"
+    },
+    "cardName": {
+      "type": "string",
+      "description": "Name on the credit card"
+    },
+    "cardSecurityCode": {
+      "type": "string",
+      "description": "Security code (CVV/CVC) of the credit card"
+    },
+    "expirationMonth": {
+      "type": "string",
+      "description": "Expiration month of the credit card"
+    },
+    "expirationYear": {
+      "type": "string",
+      "description": "Expiration year of the credit card"
+    },
+    "cardNumber": {
+      "type": "string",
+      "description": "Full number of the credit card"
+    }
+  },
+  "required": ["id", "title", "displayNumber"],
+  "additionalProperties": false
+}

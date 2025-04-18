@@ -66,6 +66,10 @@ export const getAliasResultSchema = z.object({
     })
 });
 
+export const getCreditCardParamSchema = z.object({
+    id: z.string()
+});
+
 export const emailProtectionStoreUserDataParamsSchema = z.object({
     token: z.string(),
     userName: z.string(),
@@ -232,6 +236,17 @@ export const autofillFeatureTogglesSchema = z.object({
     partial_form_saves: z.boolean().optional()
 });
 
+export const creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional()
+});
+
 export const emailProtectionGetIsLoggedInResultSchema = z.object({
     success: z.boolean().optional(),
     error: genericErrorSchema.optional()
@@ -317,6 +332,10 @@ export const autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
 });
 
+export const getCreditCardResultSchema = z.object({
+    success: creditCardObjectSchema
+});
+
 export const runtimeConfigurationSchema = z.object({
     contentScope: z.record(z.unknown()),
     userUnprotectedDomains: z.array(z.string()),
@@ -395,6 +414,11 @@ export const apiSchema = z.object({
     openManagePasswords: z.record(z.unknown()).optional(),
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
+    getCreditCard: z.record(z.unknown()).and(z.object({
+        id: z.literal("getCreditCard").optional(),
+        paramValidator: getCreditCardParamSchema.optional(),
+        resultValidator: getCreditCardResultSchema.optional()
+    })).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
     credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
