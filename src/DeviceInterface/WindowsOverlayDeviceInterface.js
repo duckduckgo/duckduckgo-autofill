@@ -193,6 +193,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {APIResponseSingle<CreditCardObject>}
      */
     async getAutofillCreditCard(id) {
-        return this.deviceApi.request(new GetCreditCardCall({ id }));
+        const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+        return { success: result };
     }
 }

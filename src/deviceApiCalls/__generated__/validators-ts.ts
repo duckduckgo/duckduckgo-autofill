@@ -169,10 +169,12 @@ export interface API {
     [k: string]: unknown;
   };
   /**
-   * (Windows) User clicked on the credit card from the autofill popup
+   * (Windows) Get a single credit card
    */
-  GetCreditCard?: {
-    id?: "creditCardResponse";
+  getCreditCard?: {
+    id?: "getCreditCard";
+    paramValidator?: GetCreditCardParam;
+    resultValidator?: GetCreditCardResult;
     [k: string]: unknown;
   };
   /**
@@ -640,6 +642,50 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
+}
+export interface GetCreditCardParam {
+  id: string;
+}
+export interface GetCreditCardResult {
+  success: CreditCardObject;
+}
+export interface CreditCardObject {
+  /**
+   * Unique identifier for the credit card
+   */
+  id: string;
+  /**
+   * Title or name of the credit card
+   */
+  title: string;
+  /**
+   * Formatted display number of the credit card
+   */
+  displayNumber: string;
+  /**
+   * Name on the credit card
+   */
+  cardName?: string;
+  /**
+   * Security code (CVV/CVC) of the credit card
+   */
+  cardSecurityCode?: string;
+  /**
+   * Expiration month of the credit card
+   */
+  expirationMonth?: string;
+  /**
+   * Expiration year of the credit card
+   */
+  expirationYear?: string;
+  /**
+   * Full number of the credit card
+   */
+  cardNumber?: string;
+  /**
+   * Payment provider associated with the credit card
+   */
+  paymentProvider?: string;
 }
 /**
  * Used to store Email Protection auth credentials.

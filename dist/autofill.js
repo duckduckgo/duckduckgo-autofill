@@ -6220,6 +6220,7 @@ Source: "${matchedFrom}"`;
   var getAvailableInputTypesResultSchema = null;
   var askToUnlockProviderResultSchema = null;
   var checkCredentialsProviderStatusResultSchema = null;
+  var getCreditCardResultSchema = null;
   var getRuntimeConfigurationResponseSchema = null;
 
   // packages/device-api/lib/device-api-call.js
@@ -6602,8 +6603,9 @@ Source: "${matchedFrom}"`;
   var GetCreditCardCall = class extends DeviceApiCall {
     constructor() {
       super(...arguments);
-      __publicField(this, "method", "GetCreditCard");
-      __publicField(this, "id", "creditCardResponse");
+      __publicField(this, "method", "getCreditCard");
+      __publicField(this, "id", "getCreditCard");
+      __publicField(this, "resultValidator", getCreditCardResultSchema);
     }
   };
   var CredentialsImportFlowPermanentlyDismissedCall = class extends DeviceApiCall {
@@ -15038,7 +15040,8 @@ ${this.options.css}
      * @returns {APIResponseSingle<CreditCardObject>}
      */
     async getAutofillCreditCard(id) {
-      return this.deviceApi.request(new GetCreditCardCall({ id }));
+      const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+      return { success: result };
     }
   };
 

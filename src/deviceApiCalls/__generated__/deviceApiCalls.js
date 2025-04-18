@@ -16,6 +16,7 @@ import {
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
     getIncontextSignupDismissedAtSchema,
+    getCreditCardResultSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
     emailProtectionGetUserDataResultSchema,
@@ -165,11 +166,12 @@ export class StartCredentialsImportFlowCall extends DeviceApiCall {
   method = "startCredentialsImportFlow"
 }
 /**
- * @extends {DeviceApiCall<any, any>} 
+ * @extends {DeviceApiCall<any, getCreditCardResultSchema>} 
  */
 export class GetCreditCardCall extends DeviceApiCall {
-  method = "GetCreditCard"
-  id = "creditCardResponse"
+  method = "getCreditCard"
+  id = "getCreditCard"
+  resultValidator = getCreditCardResultSchema
 }
 /**
  * @extends {DeviceApiCall<any, any>} 

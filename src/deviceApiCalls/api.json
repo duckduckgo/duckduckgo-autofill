@@ -207,13 +207,19 @@
       "type": "object",
       "description": "(macOS/Windows) Opens the native password import flow UI"
     },
-    "GetCreditCard": {
+    "getCreditCard": {
       "type": "object",
-      "description": "(Windows) User clicked on the credit card from the autofill popup",
+      "description": "(Windows) Get a single credit card",
       "properties": {
         "id": {
           "type": "string",
-          "const": "creditCardResponse"
+          "const": "getCreditCard"
+        },
+        "paramValidator": {
+          "$ref": "./schemas/getCreditCard.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getCreditCard.result.json"
         }
       }
     },
