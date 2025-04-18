@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IdentityObject",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the identity"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title or name of the identity"
+    },
+    "firstName": {
+      "type": "string",
+      "description": "First name of the individual"
+    },
+    "middleName": {
+      "type": "string",
+      "description": "Middle name of the individual"
+    },
+    "lastName": {
+      "type": "string",
+      "description": "Last name of the individual"
+    },
+    "birthdayDay": {
+      "type": "integer",
+      "description": "Day of birth"
+    },
+    "birthdayMonth": {
+      "type": "integer",
+      "description": "Month of birth"
+    },
+    "birthdayYear": {
+      "type": "integer",
+      "description": "Year of birth"
+    },
+    "addressStreet": {
+      "type": "string",
+      "description": "Street address"
+    },
+    "addressStreet2": {
+      "type": "string",
+      "description": "Additional street address information"
+    },
+    "addressCity": {
+      "type": "string",
+      "description": "City of the address"
+    },
+    "addressProvince": {
+      "type": "string",
+      "description": "Province or state of the address"
+    },
+    "addressPostalCode": {
+      "type": "string",
+      "description": "Postal or ZIP code of the address"
+    },
+    "addressCountryCode": {
+      "type": "string",
+      "description": "Country code of the address"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "emailAddress": {
+      "type": "string",
+      "description": "Email address"
+    }
+  },
+  "required": ["id", "title"],
+  "additionalProperties": false
+}
