@@ -12176,7 +12176,7 @@ Source: "${matchedFrom}"`;
     async getAutofillCredentials(id) {
       return this.deviceApi.request(new GetAutofillCredentialsCall({ id: String(id) }));
     }
-    /** @returns {APIResponse<CreditCardObject>} */
+    /** @returns {APIResponseSingle<CreditCardObject>} */
     async getAutofillCreditCard(_id) {
       throw new Error("getAutofillCreditCard unimplemented");
     }
@@ -14556,7 +14556,7 @@ ${this.options.css}
     /**
      * Gets a single complete credit card obj once the user requests it
      * @param {CreditCardObject['id']} id
-     * @returns {APIResponse<CreditCardObject>}
+     * @returns {APIResponseSingle<CreditCardObject>}
      */
     getAutofillCreditCard(id) {
       return this.deviceApi.request(createRequest("pmHandlerGetCreditCard", { id }));
@@ -15035,7 +15035,7 @@ ${this.options.css}
     /**
      * Gets a single complete credit card obj once the user requests it
      * @param {CreditCardObject['id']} id
-     * @returns {APIResponse<CreditCardObject>}
+     * @returns {APIResponseSingle<CreditCardObject>}
      */
     async getAutofillCreditCard(id) {
       return this.deviceApi.request(new GetCreditCardCall({ id }));
