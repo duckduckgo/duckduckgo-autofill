@@ -29,6 +29,7 @@
   "include": [
     "src",
     "scripts",
+    "debug",
     "packages/password",
     "integration-test",
     "packages/device-api",
@@ -39,6 +40,7 @@
   "exclude": [
     "jest-test-environment.js",
     "integration-test/extension",
-    "scripts/precompile-regexes.js"
+    "scripts/precompile-regexes.js",
+    "debug/dist"
   ]
 }

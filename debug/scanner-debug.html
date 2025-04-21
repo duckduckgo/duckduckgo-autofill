@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Scanner Test</title>
+    <style>
+        *, *:before, *:after {
+            box-sizing: border-box;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            padding: 1em;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+            grid-area: header;
+        }
+        .layout {
+            border: 1px solid red;
+            height: 100vh;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 50% 50%;
+            grid-template-rows: min-content 40% 1fr;
+            grid-template-areas:
+                'header  header'
+                'preview results'
+                'code    results'
+                ;
+        }
+        .preview {
+            grid-area: preview;
+            border: 1px solid green;
+        }
+        iframe {
+            width: 100%;
+            min-height: 100%;
+        }
+        .code {
+            grid-area: code;
+            border: 1px solid blue;
+        }
+        .results {
+            grid-area: results;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <header class="header">
+        <label>
+            Select a form:
+            <select name="html-list">
+                <option disabled selected></option>
+            </select>
+        </label>
+    </header>
+    <main class="preview">
+        <iframe frameborder="0"></iframe>
+    </main>
+    <textarea class="code" id="code">
+
+    </textarea>
+    <aside class="results">
+        <h2>Signals</h2>
+        <pre><code id="signals"></code></pre>
+        <h2>Inputs</h2>
+        <pre><code id="inputs"></code></pre>
+    </aside>
+</div>
+<script type="module" src="dist/scanner-debug.js"></script>
+</body>
+</html>
