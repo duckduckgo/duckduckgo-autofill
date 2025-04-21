@@ -497,10 +497,13 @@ export interface IdentityObject {
    * Middle name of the individual
    */
   middleName?: string;
+  type?: "string";
   /**
    * Last name of the individual
    */
-  lastName?: string;
+  lastName?: {
+    [k: string]: unknown;
+  };
   /**
    * Day of birth
    */
