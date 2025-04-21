@@ -12794,12 +12794,15 @@ which has its own box-shadow and border-radius settings.
 }
 
 /* FIXME: find a better way to address :not bitwarden */
+/* NB: .currentFocus is used by MacOS */
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
 .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
     filter: var(--hover-effect);
 }
 
-.wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
+.tooltip__button--data.currentFocus.no-hover-effect::before,
+.wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before,
+.tooltip__button--data.no-hover-effect:hover::before {
     filter: none;
 }
 
@@ -12810,8 +12813,8 @@ which has its own box-shadow and border-radius settings.
         opacity: .9;
     }
 
-    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before
-    .tooltip__button--data.no-hover-effect::before {
+    .tooltip__button--data.no-hover-effect::before,
+    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before {
         filter: none;
         opacity: 1;
     }
@@ -12821,6 +12824,8 @@ which has its own box-shadow and border-radius settings.
         filter: var(--hover-effect-dark)
     }
 
+    .tooltip__button--data.currentFocus.no-hover-effect::before,
+    .tooltip__button--data.no-hover-effect:hover::before,
     .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
         filter: none;
     }
