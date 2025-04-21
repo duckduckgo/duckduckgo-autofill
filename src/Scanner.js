@@ -4,9 +4,10 @@ import { createMatching } from './Form/matching.js';
 import {
     logPerformance,
     isFormLikelyToBeUsedAsPageWrapper,
-    shouldLog, pierceShadowTree,
-    findElementsInShadowTree
-} from './autofill-utils.js'
+    shouldLog,
+    pierceShadowTree,
+    findElementsInShadowTree,
+} from './autofill-utils.js';
 
 const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants;
 
