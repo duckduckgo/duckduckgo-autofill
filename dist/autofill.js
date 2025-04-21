@@ -12810,7 +12810,8 @@ which has its own box-shadow and border-radius settings.
         opacity: .9;
     }
 
-    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before {
+    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before
+    .tooltip__button--data.no-hover-effect::before {
         filter: none;
         opacity: 1;
     }
