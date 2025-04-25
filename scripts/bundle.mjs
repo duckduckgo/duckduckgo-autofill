@@ -20,6 +20,8 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
             outfile: join(ROOT, 'dist/autofill-debug.js'),
         }),
         uiPreview(),
+        scannerDebug(),
+        scannerRunner(),
     ]);
 })();
 
@@ -87,6 +89,40 @@ async function uiPreview() {
         format: 'iife',
         legalComments: 'inline',
         outfile: join(ROOT, 'debug/dist/ui-debug.js'),
+        metafile: true,
+        loader: {
+            '.css': 'text',
+        },
+    };
+    await esbuild.build(config);
+}
+
+async function scannerDebug() {
+    /** @type {import("esbuild").BuildOptions} */
+    const config = {
+        entryPoints: [join(ROOT, 'debug/scanner-debug.js')],
+        target: 'es2021',
+        bundle: true,
+        format: 'iife',
+        legalComments: 'inline',
+        outfile: join(ROOT, 'debug/dist/scanner-debug.js'),
+        metafile: true,
+        loader: {
+            '.css': 'text',
+        },
+    };
+    await esbuild.build(config);
+}
+
+async function scannerRunner() {
+    /** @type {import("esbuild").BuildOptions} */
+    const config = {
+        entryPoints: [join(ROOT, 'debug/scanner-runner.js')],
+        target: 'es2021',
+        bundle: true,
+        format: 'iife',
+        legalComments: 'inline',
+        outfile: join(ROOT, 'debug/dist/scanner-runner.js'),
         metafile: true,
         loader: {
             '.css': 'text',
