@@ -16,7 +16,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
     Promise.all([
         bundle({}),
         bundle({
-            plugins: [],
+            plugins: [cssPlugin()],
             outfile: join(ROOT, 'dist/autofill-debug.js'),
         }),
         uiPreview(),
@@ -37,11 +37,7 @@ async function bundle(buildOptions = {}) {
         outfile: join(ROOT, 'dist/autofill.js'),
         metafile: true,
         write: false,
-        loader: {
-            // import css files as text
-            '.css': 'text',
-        },
-        plugins: [zodReplacerPlugin()],
+        plugins: [zodReplacerPlugin(), cssPlugin()],
         ...buildOptions,
     };
 
@@ -149,4 +145,38 @@ export function replaceConstExports(fileAsString) {
         .flat();
 
     return asNames.join('\n');
+}
+
+/**
+ * Plugin to handle CSS files and transform url() calls into data URLs
+ */
+function cssPlugin() {
+    return {
+        name: 'css-plugin',
+        setup(build) {
+            build.onLoad({ filter: /\.css$/ }, async (args) => {
+                // Load the CSS file and all the assets it references, converting them to data URLs
+                const result = esbuild.buildSync({
+                    entryPoints: [args.path],
+                    bundle: true,
+                    write: false,
+                    loader: {
+                        '.css': 'css',
+                        '.svg': 'base64',
+                        '.png': 'base64',
+                    },
+                });
+
+                if (!result.outputFiles?.[0]) {
+                    throw new Error('No output files generated');
+                }
+
+                // Replace the original CSS file with the transformed version
+                return {
+                    contents: result.outputFiles[0].text,
+                    loader: 'text',
+                };
+            });
+        },
+    };
 }
