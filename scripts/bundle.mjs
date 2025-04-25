@@ -20,6 +20,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
             outfile: join(ROOT, 'dist/autofill-debug.js'),
         }),
         uiPreview(),
+        bundleCSSForExtension(),
     ]);
 })();
 
@@ -68,6 +69,30 @@ async function bundle(buildOptions = {}) {
         writeFileSync(file.path, file.replaced);
         console.log('✅', relative(ROOT, file.path));
     }
+
+    if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
+        console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
+    }
+}
+
+async function bundleCSSForExtension() {
+    const outFile = join(ROOT, 'dist/autofill.css');
+    /** @type {import("esbuild").BuildOptions} */
+    const config = {
+        entryPoints: [join(ROOT, 'src/UI/styles/autofill-tooltip-styles.css')],
+        target: 'es2021',
+        bundle: true,
+        outfile: outFile,
+        metafile: true,
+        loader: {
+            '.css': 'css',
+            '.svg': 'base64',
+            '.png': 'base64',
+        },
+    };
+
+    const buildOutput = await esbuild.build(config);
+    console.log('✅', relative(ROOT, outFile));
 
     if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
         console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
