@@ -6,11 +6,7 @@ export class AppleTransport extends DeviceApiTransport {
     constructor(globalConfig) {
         super();
         this.config = globalConfig;
-        const webkitConfig = new WebkitMessagingConfig({
-            hasModernWebkitAPI: this.config.hasModernWebkitAPI,
-            webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
-            secret: this.config.secret,
-        });
+        const webkitConfig = new WebkitMessagingConfig();
         this.messaging = new Messaging(webkitConfig);
     }
 

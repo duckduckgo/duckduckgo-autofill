@@ -23,8 +23,6 @@ class CredentialsImport {
     }
 
     init() {
-        if (!this.device.globalConfig.hasModernWebkitAPI) return;
-
         try {
             // Set up a function which can be called from the native layer after completed sign-up or sign-in.
             Object.defineProperty(window, 'credentialsImportFinished', {

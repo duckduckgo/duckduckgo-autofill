@@ -17,15 +17,7 @@
  * ```js
  * import { Messaging, WebkitMessagingConfig } from "@duckduckgo/content-scope-scripts/lib/messaging.js"
  *
- * // This config would be injected into the UserScript
- * const injectedConfig = {
- *   hasModernWebkitAPI: true,
- *   webkitMessageHandlerNames: ["foo", "bar", "baz"],
- *   secret: "dax",
- * };
- *
- * // Then use that config to construct platform-specific configuration
- * const config = new WebkitMessagingConfig(injectedConfig);
+ * const config = new WebkitMessagingConfig({});
  *
  * // finally, get an instance of Messaging and start sending messages in a unified way 🚀
  * const messaging = new Messaging(config);

@@ -105,7 +105,6 @@ export function createAutofillScript() {
     const replacements = {
         isDDGTestMode: true,
         supportsTopFrame: false,
-        hasModernWebkitAPI: true,
     };
 
     /** @type {Platform} */

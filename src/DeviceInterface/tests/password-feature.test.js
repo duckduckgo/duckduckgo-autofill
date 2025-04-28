@@ -22,7 +22,6 @@ function storeFormDataSpy() {
 /** @type {GlobalConfig} */
 const APPLE_GLOBAL_CONFIG = {
     ...createGlobalConfig(),
-    hasModernWebkitAPI: true,
     isApp: true,
 };
 
@@ -137,9 +136,6 @@ describe('AppleDeviceInterface: postAutofill', () => {
             creditCards: undefined,
             identities: undefined,
             trigger: 'passwordGeneration',
-            messageHandling: {
-                secret: 'PLACEHOLDER_SECRET',
-            },
         });
     });
     it("does NOT perform a save when autofill wasn't for a generated password", () => {
@@ -231,9 +227,6 @@ describe('AppleDeviceInterface: postSubmit', () => {
                 id: '',
             },
             trigger: 'formSubmission',
-            messageHandling: {
-                secret: 'PLACEHOLDER_SECRET',
-            },
         };
         device.postSubmit(formValues, form);
         expect(spy).toHaveBeenCalledTimes(1);
