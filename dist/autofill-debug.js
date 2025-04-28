@@ -1720,7 +1720,7 @@ Source: "${matchedFrom}"`;
     }
   };
   function shouldLog() {
-    return true;
+    return readDebugSetting("ddg-autofill-debug");
   }
   function shouldLogPerformance() {
     return readDebugSetting("ddg-autofill-perf");
@@ -10938,7 +10938,6 @@ Source: "${matchedFrom}"`;
      */
     async notify(deviceApiCall, options) {
       deviceApiCall.validateParams();
-      console.log("======> deviceApiCall", deviceApiCall, options);
       return this.transport.send(deviceApiCall, options);
     }
   };

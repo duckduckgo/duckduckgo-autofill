@@ -48,7 +48,6 @@ export class DeviceApi {
      */
     async notify(deviceApiCall, options) {
         deviceApiCall.validateParams();
-        console.log('======> deviceApiCall', deviceApiCall, options);
         return this.transport.send(deviceApiCall, options);
     }
 }
