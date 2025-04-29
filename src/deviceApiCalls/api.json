@@ -213,7 +213,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "const": "getIdentity"
+          "const": "getIdentityResponse"
         },
         "paramValidator": {
           "$ref": "./schemas/getIdentity.params.json"
@@ -229,7 +229,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "const": "getCreditCard"
+          "const": "getCreditCardResponse"
         },
         "paramValidator": {
           "$ref": "./schemas/getCreditCard.params.json"

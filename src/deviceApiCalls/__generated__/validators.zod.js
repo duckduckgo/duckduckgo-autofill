@@ -444,12 +444,12 @@ export const apiSchema = z.object({
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
     getIdentity: z.record(z.unknown()).and(z.object({
-        id: z.literal("getIdentity").optional(),
+        id: z.literal("getIdentityResponse").optional(),
         paramValidator: getIdentityParamSchema.optional(),
         resultValidator: getIdentityResultSchema.optional()
     })).optional(),
     getCreditCard: z.record(z.unknown()).and(z.object({
-        id: z.literal("getCreditCard").optional(),
+        id: z.literal("getCreditCardResponse").optional(),
         paramValidator: getCreditCardParamSchema.optional(),
         resultValidator: getCreditCardResultSchema.optional()
     })).optional(),

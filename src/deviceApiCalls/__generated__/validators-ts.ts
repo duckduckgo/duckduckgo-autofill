@@ -172,7 +172,7 @@ export interface API {
    * (Windows) Get a single identity
    */
   getIdentity?: {
-    id?: "getIdentity";
+    id?: "getIdentityResponse";
     paramValidator?: GetIdentityParam;
     resultValidator?: GetIdentityResult;
     [k: string]: unknown;
@@ -181,7 +181,7 @@ export interface API {
    * (Windows) Get a single credit card
    */
   getCreditCard?: {
-    id?: "getCreditCard";
+    id?: "getCreditCardResponse";
     paramValidator?: GetCreditCardParam;
     resultValidator?: GetCreditCardResult;
     [k: string]: unknown;
