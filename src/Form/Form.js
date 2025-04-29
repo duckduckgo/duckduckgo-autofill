@@ -527,11 +527,14 @@ class Form {
     /**
      * Executes a function on input elements. Can be limited to certain element types
      * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
-     * @param {'all' | SupportedMainTypes} inputType
+     * @param {'all' | SupportedMainTypes | SupportedMainTypes[]} inputType
      * @param {boolean} shouldCheckForDecorate
      */
     execOnInputs(fn, inputType = 'all', shouldCheckForDecorate = true) {
-        const inputs = this.inputs[inputType];
+        // FIXME: This is a hack to support multiple input types, but I think we can work with just an array
+        // Doing this as a quick hack to avoid changing all calling signatures at once.
+        const inputTypes = Array.isArray(inputType) ? inputType : [inputType];
+        const inputs = inputTypes.flatMap((inputType) => [...this.inputs[inputType]]);
         for (const input of inputs) {
             let canExecute = true;
             // sometimes we want to execute even if we didn't decorate
@@ -950,15 +953,16 @@ class Form {
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
 
-    getFirstViableCredentialsInput() {
-        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
+    getFirstViableInputForType(dataType) {
+        return [...this.inputs[dataType]].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
 
     async promptLoginIfNeeded() {
-        if (document.visibilityState !== 'visible' || !this.isLogin) return;
+        const isMobileCCForm = this.isCCForm && this.device.globalConfig.isMobileApp;
+        if (document.visibilityState !== 'visible' || !(this.isLogin || isMobileCCForm)) return;
 
-        const firstCredentialInput = this.getFirstViableCredentialsInput();
-        const input = this.activeInput || firstCredentialInput;
+        const firstViableInput = this.getFirstViableInputForType('credentials') || this.getFirstViableInputForType('creditCards');
+        const input = this.activeInput || firstViableInput;
         if (!input) return;
 
         const mainType = getInputMainType(input);
@@ -979,11 +983,14 @@ class Form {
                     // This checks that the form is not covered by anything else
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
                     if (this.form.contains(topMostElementFromPoint)) {
-                        this.execOnInputs((input) => {
-                            if (isPotentiallyViewable(input)) {
-                                this.touched.add(input);
-                            }
-                        }, 'credentials');
+                        this.execOnInputs(
+                            (input) => {
+                                if (isPotentiallyViewable(input)) {
+                                    this.touched.add(input);
+                                }
+                            },
+                            ['credentials', 'creditCards'],
+                        );
                         this.device.attachTooltip({
                             form: this,
                             input,

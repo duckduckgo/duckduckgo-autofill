@@ -152,8 +152,14 @@ const inputTypeConfig = {
     creditCards: {
         type: 'creditCards',
         displayName: 'credit cards',
-        getIconBase: () => '',
-        getIconFilled: () => '',
+        getIconBase: (input, form) => {
+            const { device } = form;
+            const subtype = getInputSubtype(input);
+            const isValidInputSubType = subtype === 'cardName' || subtype === 'cardNumber' || subtype === 'cardSecurityCode';
+            if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && isValidInputSubType) return ddgPasswordIcons.ddgCcIconBase;
+            return '';
+        },
+        getIconFilled: () => ddgPasswordIcons.ddgCcIconFilled,
         getIconAlternate: () => '',
         shouldDecorate: async (input, { device }) => {
             return canBeAutofilled(input, device);
