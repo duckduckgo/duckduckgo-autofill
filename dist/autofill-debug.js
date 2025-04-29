@@ -10663,12 +10663,12 @@ Source: "${matchedFrom}"`;
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
     getIdentity: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAutofillIdentityResponse").optional(),
+      id: z.literal("getIdentityResponse").optional(),
       paramValidator: getIdentityParamSchema.optional(),
       resultValidator: getIdentityResultSchema.optional()
     })).optional(),
     getCreditCard: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAutofillCreditCardResponse").optional(),
+      id: z.literal("getCreditCardResponse").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
       resultValidator: getCreditCardResultSchema.optional()
     })).optional(),
@@ -11085,7 +11085,7 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "getIdentity");
-      __publicField(this, "id", "getAutofillIdentityResponse");
+      __publicField(this, "id", "getIdentityResponse");
       __publicField(this, "resultValidator", getIdentityResultSchema);
     }
   };
@@ -11093,7 +11093,7 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "getCreditCard");
-      __publicField(this, "id", "getAutofillCreditCardResponse");
+      __publicField(this, "id", "getCreditCardResponse");
       __publicField(this, "resultValidator", getCreditCardResultSchema);
     }
   };

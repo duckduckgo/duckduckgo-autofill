@@ -6603,7 +6603,7 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "getIdentity");
-      __publicField(this, "id", "getAutofillIdentityResponse");
+      __publicField(this, "id", "getIdentityResponse");
       __publicField(this, "resultValidator", getIdentityResultSchema);
     }
   };
@@ -6611,7 +6611,7 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "getCreditCard");
-      __publicField(this, "id", "getAutofillCreditCardResponse");
+      __publicField(this, "id", "getCreditCardResponse");
       __publicField(this, "resultValidator", getCreditCardResultSchema);
     }
   };
