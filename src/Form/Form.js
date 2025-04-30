@@ -527,14 +527,11 @@ class Form {
     /**
      * Executes a function on input elements. Can be limited to certain element types
      * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
-     * @param {'all' | SupportedMainTypes | SupportedMainTypes[]} inputType
+     * @param {'all' | SupportedMainTypes} inputType
      * @param {boolean} shouldCheckForDecorate
      */
     execOnInputs(fn, inputType = 'all', shouldCheckForDecorate = true) {
-        // FIXME: This is a hack to support multiple input types, but I think we can work with just an array
-        // Doing this as a quick hack to avoid changing all calling signatures at once.
-        const inputTypes = Array.isArray(inputType) ? inputType : [inputType];
-        const inputs = inputTypes.flatMap((inputType) => [...this.inputs[inputType]]);
+        const inputs = [...this.inputs[inputType]];
         for (const input of inputs) {
             let canExecute = true;
             // sometimes we want to execute even if we didn't decorate
@@ -982,15 +979,16 @@ class Form {
                     const elVCenter = y + height / 2;
                     // This checks that the form is not covered by anything else
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
+                    const dataTypeForExec = this.isCCForm ? 'creditCards' : this.isLogin ? 'credentials' : null;
+
                     if (this.form.contains(topMostElementFromPoint)) {
-                        this.execOnInputs(
-                            (input) => {
+                        // Add inputs to the touched set only for the dataTypeForExec, which currentl
+                        dataTypeForExec &&
+                            this.execOnInputs((input) => {
                                 if (isPotentiallyViewable(input)) {
                                     this.touched.add(input);
                                 }
-                            },
-                            ['credentials', 'creditCards'],
-                        );
+                            }, dataTypeForExec);
                         this.device.attachTooltip({
                             form: this,
                             input,

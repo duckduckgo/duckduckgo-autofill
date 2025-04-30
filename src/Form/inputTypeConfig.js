@@ -155,11 +155,21 @@ const inputTypeConfig = {
         getIconBase: (input, form) => {
             const { device } = form;
             const subtype = getInputSubtype(input);
-            const isValidInputSubType = subtype === 'cardName' || subtype === 'cardNumber' || subtype === 'cardSecurityCode';
+            const isValidInputSubType = subtype === 'cardNumber' || subtype === 'cardSecurityCode';
+
             if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && isValidInputSubType) return ddgPasswordIcons.ddgCcIconBase;
+
             return '';
         },
-        getIconFilled: () => ddgPasswordIcons.ddgCcIconFilled,
+        getIconFilled: (input, form) => {
+            const { device } = form;
+            const subtype = getInputSubtype(input);
+            const isValidInputSubType = subtype === 'cardNumber' || subtype === 'cardSecurityCode';
+
+            if (device.globalConfig.isMobileApp && isValidInputSubType) return ddgPasswordIcons.ddgCcIconFilled;
+
+            return '';
+        },
         getIconAlternate: () => '',
         shouldDecorate: async (input, { device }) => {
             return canBeAutofilled(input, device);

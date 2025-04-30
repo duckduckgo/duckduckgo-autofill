@@ -5307,12 +5307,19 @@ Source: "${matchedFrom}"`;
       getIconBase: (input, form) => {
         const { device } = form;
         const subtype = getInputSubtype(input);
-        const isValidInputSubType = subtype === "cardName" || subtype === "cardNumber" || subtype === "cardSecurityCode";
+        const isValidInputSubType = subtype === "cardNumber" || subtype === "cardSecurityCode";
         if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && isValidInputSubType)
           return ddgCcIconBase;
         return "";
       },
-      getIconFilled: () => ddgCcIconFilled,
+      getIconFilled: (input, form) => {
+        const { device } = form;
+        const subtype = getInputSubtype(input);
+        const isValidInputSubType = subtype === "cardNumber" || subtype === "cardSecurityCode";
+        if (device.globalConfig.isMobileApp && isValidInputSubType)
+          return ddgCcIconFilled;
+        return "";
+      },
       getIconAlternate: () => "",
       shouldDecorate: async (input, { device }) => {
         return canBeAutofilled(input, device);
@@ -5832,12 +5839,11 @@ Source: "${matchedFrom}"`;
     /**
      * Executes a function on input elements. Can be limited to certain element types
      * @param {(input: HTMLInputElement|HTMLSelectElement) => void} fn
-     * @param {'all' | SupportedMainTypes | SupportedMainTypes[]} inputType
+     * @param {'all' | SupportedMainTypes} inputType
      * @param {boolean} shouldCheckForDecorate
      */
     execOnInputs(fn, inputType = "all", shouldCheckForDecorate = true) {
-      const inputTypes = Array.isArray(inputType) ? inputType : [inputType];
-      const inputs = inputTypes.flatMap((inputType2) => [...this.inputs[inputType2]]);
+      const inputs = [...this.inputs[inputType]];
       for (const input of inputs) {
         let canExecute = true;
         if (shouldCheckForDecorate) {
@@ -6182,15 +6188,13 @@ Source: "${matchedFrom}"`;
             const elHCenter = x + width / 2;
             const elVCenter = y + height / 2;
             const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
+            const dataTypeForExec = this.isCCForm ? "creditCards" : this.isLogin ? "credentials" : null;
             if (this.form.contains(topMostElementFromPoint)) {
-              this.execOnInputs(
-                (input2) => {
-                  if (isPotentiallyViewable(input2)) {
-                    this.touched.add(input2);
-                  }
-                },
-                ["credentials", "creditCards"]
-              );
+              dataTypeForExec && this.execOnInputs((input2) => {
+                if (isPotentiallyViewable(input2)) {
+                  this.touched.add(input2);
+                }
+              }, dataTypeForExec);
               this.device.attachTooltip({
                 form: this,
                 input,
