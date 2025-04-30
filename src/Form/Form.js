@@ -979,9 +979,9 @@ class Form {
                     const elVCenter = y + height / 2;
                     // This checks that the form is not covered by anything else
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
-                    const dataTypeForExec = this.isCCForm ? 'creditCards' : this.isLogin ? 'credentials' : null;
 
                     if (this.form.contains(topMostElementFromPoint)) {
+                        const dataTypeForExec = this.isCCForm ? 'creditCards' : this.isLogin ? 'credentials' : null;
                         // Add inputs to the touched set only for the dataTypeForExec, which currentl
                         dataTypeForExec &&
                             this.execOnInputs((input) => {
