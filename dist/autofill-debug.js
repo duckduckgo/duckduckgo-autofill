@@ -19515,10 +19515,14 @@ ${this.options.css}
     }
     /**
      * Gets a single identity obj once the user requests it
-     * @param {Number} id
+     * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     async getAutofillIdentity(id) {
+      if (id === "privateAddress" || id === "personalAddress") {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
+        return { success: identity };
+      }
       const result = await this.deviceApi.request(new GetIdentityCall({ id }));
       return { success: result };
     }
