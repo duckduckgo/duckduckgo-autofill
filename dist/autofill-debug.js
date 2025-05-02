@@ -18950,7 +18950,9 @@ ${this.options.css}
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     async getAutofillIdentity(id) {
-      if (id === "privateAddress" || id === "personalAddress") {
+      const PRIVATE_ADDRESS_ID = "privateAddress";
+      const PERSONAL_ADDRESS_ID = "personalAddress";
+      if (id === PRIVATE_ADDRESS_ID || id === PERSONAL_ADDRESS_ID) {
         const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
         return { success: identity };
       }
