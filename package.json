@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "postinstall": "cd packages/password && npm install",
-    "start": "chokidar 'src' 'debug' -i 'src/deviceApiCalls/__generated__' -i 'debug/dist' -c 'npm run build' --initial",
+    "start": "chokidar 'src' 'debug' -i 'src/deviceApiCalls/__generated__' -i 'src/Form/matching-config/__generated__' -i 'debug/dist' -c 'npm run build' --initial",
     "build": "npm run precompile-regexes && npm run schema:generate && node scripts/bundle.mjs && npm run copy-assets",
     "build:translations": "node scripts/bundle-locales.mjs",
     "lint": "eslint . && prettier . --check",
