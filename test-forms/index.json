@@ -498,7 +498,7 @@
   { "html": "joybird_com.html" },
   { "html": "ikea_signup-verification.html", "expectedSubmitFalsePositives": 2 },
   { "html": "chase_2fa-verification-step.html", "expectedFailures": ["unknown"] },
-  { "html": "alaskaair_checkout.html", "expectedFailures": ["phone"], "expectedSubmitFalsePositives": 4 },
+  { "html": "alaskaair_checkout.html", "expectedSubmitFalsePositives": 4 },
   { "html": "autostrade_login.html" },
   { "html": "morningstar_login.html" },
   { "html": "alrincon_login.html" },
