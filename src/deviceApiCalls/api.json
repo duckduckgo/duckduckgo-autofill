@@ -9,7 +9,9 @@
       "type": "object",
       "description": "Register a new debug flag that will be included in breakage reports",
       "properties": {
-        "paramsValidator": { "$ref":  "./schemas/addDebugFlag.params.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/addDebugFlag.params.json"
+        }
       }
     },
     "getAutofillData": {
@@ -19,59 +21,91 @@
           "type": "string",
           "const": "getAutofillDataResponse"
         },
-        "paramsValidator": { "$ref":  "./schemas/getAutofillData.params.json" },
-        "resultValidator": { "$ref":  "./schemas/getAutofillData.result.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/getAutofillData.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAutofillData.result.json"
+        }
       }
     },
     "getRuntimeConfiguration": {
       "type": "object",
       "properties": {
-        "id": { "type": "string", "const":  "getRuntimeConfigurationResponse"},
-        "resultValidator": { "$ref":  "./schemas/getRuntimeConfiguration.result.json" }
+        "id": {
+          "type": "string",
+          "const": "getRuntimeConfigurationResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getRuntimeConfiguration.result.json"
+        }
       }
     },
     "storeFormData": {
       "type": "object",
       "properties": {
-        "paramsValidator": { "$ref":  "./schemas/storeFormData.params.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/storeFormData.params.json"
+        }
       }
     },
     "getAvailableInputTypes": {
       "type": "object",
       "properties": {
-        "id": { "type": "string", "const":  "getAvailableInputTypesResponse"},
-        "resultValidator": { "$ref":  "./schemas/getAvailableInputTypes.result.json" }
+        "id": {
+          "type": "string",
+          "const": "getAvailableInputTypesResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAvailableInputTypes.result.json"
+        }
       }
     },
     "getAutofillInitData": {
       "type": "object",
       "description": "This is called inside an overlay (eg: on Windows or soon also on macOS) to retrieve available data",
       "properties": {
-        "id": { "type": "string", "const":  "getAutofillInitDataResponse"},
-        "resultValidator": { "$ref":  "./schemas/getAutofillInitData.result.json" }
+        "id": {
+          "type": "string",
+          "const": "getAutofillInitDataResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAutofillInitData.result.json"
+        }
       }
     },
     "getAutofillCredentials": {
       "type": "object",
       "description": "Used to retrieve a specific set of credentials",
       "properties": {
-        "id": { "type": "string", "const":  "getAutofillCredentialsResponse"},
-        "paramsValidator": { "$ref":  "./schemas/getAutofillCredentials.params.json" },
-        "resultValidator": { "$ref":  "./schemas/getAutofillCredentials.result.json" }
+        "id": {
+          "type": "string",
+          "const": "getAutofillCredentialsResponse"
+        },
+        "paramsValidator": {
+          "$ref": "./schemas/getAutofillCredentials.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAutofillCredentials.result.json"
+        }
       }
     },
     "setSize": {
       "type": "object",
       "description": "Used by Windows to communicate the desired size of the overlay to the native side",
       "properties": {
-        "paramsValidator": { "$ref":  "./schemas/setSize.params.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/setSize.params.json"
+        }
       }
     },
     "selectedDetail": {
       "type": "object",
       "description": "Used by Windows to communicate a selected autofill item to the native side",
       "properties": {
-        "paramsValidator": { "$ref":  "./schemas/selectedDetail.params.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/selectedDetail.params.json"
+        }
       }
     },
     "closeAutofillParent": {
@@ -81,34 +115,53 @@
     "askToUnlockProvider": {
       "type": "object",
       "properties": {
-        "id": { "type": "string", "const":  "askToUnlockProviderResponse"},
-        "resultValidator": { "$ref":  "./schemas/askToUnlockProvider.result.json" }
+        "id": {
+          "type": "string",
+          "const": "askToUnlockProviderResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/askToUnlockProvider.result.json"
+        }
       }
     },
     "checkCredentialsProviderStatus": {
       "type": "object",
       "properties": {
-        "id": { "type": "string", "const":  "checkCredentialsProviderStatusResponse"},
-        "resultValidator": { "$ref":  "./schemas/checkCredentialsProviderStatus.result.json" }
+        "id": {
+          "type": "string",
+          "const": "checkCredentialsProviderStatusResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/checkCredentialsProviderStatus.result.json"
+        }
       }
     },
     "sendJSPixel": {
       "type": "object",
       "properties": {
-        "paramsValidator": { "$ref":  "./schemas/sendJSPixel.params.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/sendJSPixel.params.json"
+        }
       }
     },
     "setIncontextSignupPermanentlyDismissedAt": {
       "type": "object",
       "properties": {
-        "paramsValidator": { "$ref":  "./schemas/setIncontextSignupPermanentlyDismissedAt.params.json" }
+        "paramsValidator": {
+          "$ref": "./schemas/setIncontextSignupPermanentlyDismissedAt.params.json"
+        }
       }
     },
     "getIncontextSignupDismissedAt": {
       "type": "object",
       "properties": {
-        "id": { "type": "string", "const":  "getIncontextSignupDismissedAt"},
-        "resultValidator": { "$ref":  "./schemas/getIncontextSignupDismissedAt.result.json" }
+        "id": {
+          "type": "string",
+          "const": "getIncontextSignupDismissedAt"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getIncontextSignupDismissedAt.result.json"
+        }
       }
     },
     "autofillSettings": {
@@ -118,7 +171,9 @@
           "type": "boolean",
           "const": true
         },
-        "resultValidator": { "$ref": "./schemas/autofill-settings.json" }
+        "resultValidator": {
+          "$ref": "./schemas/autofill-settings.json"
+        }
       }
     },
     "getAlias": {
@@ -128,8 +183,12 @@
           "type": "boolean",
           "const": true
         },
-        "paramValidator": { "$ref": "./schemas/getAlias.params.json" },
-        "resultValidator": { "$ref": "./schemas/getAlias.result.json" }
+        "paramValidator": {
+          "$ref": "./schemas/getAlias.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAlias.result.json"
+        }
       }
     },
     "openManagePasswords": {
@@ -144,12 +203,25 @@
       "type": "object",
       "description": "Opens the native identities management UI from the autofill popup"
     },
+    "startCredentialsImportFlow": {
+      "type": "object",
+      "description": "(macOS/Windows) Opens the native password import flow UI"
+    },
+    "credentialsImportFlowPermanentlyDismissed": {
+      "type": "object",
+      "description": "(macOS/Windows) User clicked on the password import flow prompt"
+    },
     "emailProtectionStoreUserData": {
       "type": "object",
       "description": "Used to store Email Protection auth credentials (logging in)",
       "properties": {
-        "id": { "type": "string", "const":  "emailProtectionStoreUserDataResponse"},
-        "paramsValidator": { "$ref":  "./schemas/emailProtectionStoreUserData.params.json" }
+        "id": {
+          "type": "string",
+          "const": "emailProtectionStoreUserDataResponse"
+        },
+        "paramsValidator": {
+          "$ref": "./schemas/emailProtectionStoreUserData.params.json"
+        }
       }
     },
     "emailProtectionRemoveUserData": {
@@ -160,40 +232,65 @@
       "type": "object",
       "description": "Used to get check if a user is logged in to Email Protection",
       "properties": {
-        "id": { "type": "string", "const":  "emailProtectionGetIsLoggedInResponse"},
-        "resultValidator": { "$ref":  "./schemas/emailProtectionGetIsLoggedIn.result.json" }
+        "id": {
+          "type": "string",
+          "const": "emailProtectionGetIsLoggedInResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/emailProtectionGetIsLoggedIn.result.json"
+        }
       }
     },
     "emailProtectionGetUserData": {
       "type": "object",
       "description": "Used to get Email Protection auth credentials",
       "properties": {
-        "id": { "type": "string", "const":  "emailProtectionGetUserDataResponse"},
-        "resultValidator": { "$ref":  "./schemas/emailProtectionGetUserData.result.json" }
+        "id": {
+          "type": "string",
+          "const": "emailProtectionGetUserDataResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/emailProtectionGetUserData.result.json"
+        }
       }
     },
     "emailProtectionGetCapabilities": {
       "type": "object",
       "description": "Used by the Email Protection web app to determine which API functionality is available",
       "properties": {
-        "id": { "type": "string", "const":  "emailProtectionGetCapabilitiesResponse"},
-        "resultValidator": { "$ref":  "./schemas/emailProtectionGetCapabilities.result.json" }
+        "id": {
+          "type": "string",
+          "const": "emailProtectionGetCapabilitiesResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/emailProtectionGetCapabilities.result.json"
+        }
       }
     },
     "emailProtectionGetAddresses": {
       "type": "object",
       "description": "Used to get both Email Protection addresses (personal and private)",
       "properties": {
-        "id": { "type": "string", "const":  "emailProtectionGetAddressesResponse"},
-        "resultValidator": { "$ref":  "./schemas/emailProtectionGetAddresses.result.json" }
+        "id": {
+          "type": "string",
+          "const": "emailProtectionGetAddressesResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/emailProtectionGetAddresses.result.json"
+        }
       }
     },
     "emailProtectionRefreshPrivateAddress": {
       "type": "object",
       "description": "Used to refresh Email Protection private address and get both Email Protection addresses (personal and private)",
       "properties": {
-        "id": { "type": "string", "const":  "emailProtectionRefreshPrivateAddressResponse"},
-        "resultValidator": { "$ref":  "./schemas/emailProtectionRefreshPrivateAddress.result.json" }
+        "id": {
+          "type": "string",
+          "const": "emailProtectionRefreshPrivateAddressResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/emailProtectionRefreshPrivateAddress.result.json"
+        }
       }
     },
     "startEmailProtectionSignup": {
@@ -208,8 +305,13 @@
       "type": "object",
       "description": "Used by Android to open the in-context signup prompt and report back when completed",
       "properties": {
-        "id": { "type": "string", "const":  "ShowInContextEmailProtectionSignupPromptResponse"},
-        "resultValidator": { "$ref":  "./schemas/showInContextEmailProtectionSignupPrompt.result.json" }
+        "id": {
+          "type": "string",
+          "const": "ShowInContextEmailProtectionSignupPromptResponse"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/showInContextEmailProtectionSignupPrompt.result.json"
+        }
       }
     }
   }

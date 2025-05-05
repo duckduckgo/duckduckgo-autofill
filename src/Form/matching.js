@@ -1,15 +1,15 @@
-import {constants} from '../constants.js'
-import {EXCLUDED_TAGS, extractElementStrings} from './label-util.js'
-import {matchingConfiguration} from './matching-config/__generated__/compiled-matching-config.js'
-import {logMatching, logUnmatched} from './matching-utils.js'
-import {safeRegexTest, shouldLog} from '../autofill-utils.js'
+import { constants } from '../constants.js';
+import { EXCLUDED_TAGS, extractElementStrings } from './label-util.js';
+import { matchingConfiguration } from './matching-config/__generated__/compiled-matching-config.js';
+import { logMatching, logUnmatched } from './matching-utils.js';
+import { safeRegexTest, shouldLog } from '../autofill-utils.js';
 
-const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants
+const { TEXT_LENGTH_CUTOFF, ATTR_INPUT_TYPE } = constants;
 
 /** @type {{[K in keyof MatcherLists]?: { minWidth: number }} } */
 const dimensionBounds = {
-    emailAddress: { minWidth: 35 }
-}
+    emailAddress: { minWidth: 35 },
+};
 
 /**
  * An abstraction around the concept of classifying input fields.
@@ -18,25 +18,25 @@ const dimensionBounds = {
  */
 class Matching {
     /** @type {MatchingConfiguration} */
-    #config
+    #config;
 
     /** @type {CssSelectorConfiguration['selectors']} */
-    #cssSelectors
+    #cssSelectors;
 
     /** @type {Record<string, DDGMatcher>} */
-    #ddgMatchers
+    #ddgMatchers;
 
     /**
      * This acts as an internal cache for the larger vendorRegexes
      * @type {VendorRegexConfiguration['rules']}
      */
-    #vendorRegexRules
+    #vendorRegexRules;
 
     /** @type {MatcherLists} */
-    #matcherLists
+    #matcherLists;
 
     /** @type {Array<StrategyNames>} */
-    #defaultStrategyOrder = ['cssSelector', 'ddgMatcher', 'vendorRegex']
+    #defaultStrategyOrder = ['cssSelector', 'ddgMatcher', 'vendorRegex'];
 
     /** @type {Record<MatchableStrings, string>} */
     activeElementStrings = {
@@ -44,18 +44,18 @@ class Matching {
         labelText: '',
         placeholderAttr: '',
         relatedText: '',
-        id: ''
-    }
+        id: '',
+    };
 
     /**
      * @param {MatchingConfiguration} config
      */
-    constructor (config) {
-        this.#config = config
+    constructor(config) {
+        this.#config = config;
 
-        this.#vendorRegexRules = this.#config.strategies.vendorRegex.rules
-        this.#cssSelectors = this.#config.strategies.cssSelector.selectors
-        this.#ddgMatchers = this.#config.strategies.ddgMatcher.matchers
+        this.#vendorRegexRules = this.#config.strategies.vendorRegex.rules;
+        this.#cssSelectors = this.#config.strategies.cssSelector.selectors;
+        this.#ddgMatchers = this.#config.strategies.ddgMatcher.matchers;
 
         this.#matcherLists = {
             unknown: [],
@@ -63,8 +63,8 @@ class Matching {
             id: [],
             password: [],
             username: [],
-            emailAddress: []
-        }
+            emailAddress: [],
+        };
 
         /**
          * Convert the raw config data into actual references.
@@ -73,12 +73,12 @@ class Matching {
          *
          * `email: [{type: "email", strategies: {cssSelector: "email", ... etc}]`
          */
-        for (let [listName, matcherNames] of Object.entries(this.#config.matchers.lists)) {
-            for (let fieldName of matcherNames) {
+        for (const [listName, matcherNames] of Object.entries(this.#config.matchers.lists)) {
+            for (const fieldName of matcherNames) {
                 if (!this.#matcherLists[listName]) {
-                    this.#matcherLists[listName] = []
+                    this.#matcherLists[listName] = [];
                 }
-                this.#matcherLists[listName].push(this.#config.matchers.fields[fieldName])
+                this.#matcherLists[listName].push(this.#config.matchers.fields[fieldName]);
             }
         }
     }
@@ -87,8 +87,8 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLElement} formEl
      */
-    setActiveElementStrings (input, formEl) {
-        this.activeElementStrings = this.getElementStrings(input, formEl)
+    setActiveElementStrings(input, formEl) {
+        this.activeElementStrings = this.getElementStrings(input, formEl);
     }
 
     /**
@@ -96,13 +96,13 @@ class Matching {
      * @param {string} regexName
      * @returns {RegExp | undefined}
      */
-    vendorRegex (regexName) {
-        const match = this.#vendorRegexRules[regexName]
+    vendorRegex(regexName) {
+        const match = this.#vendorRegexRules[regexName];
         if (!match) {
-            console.warn('Vendor Regex not found for', regexName)
-            return undefined
+            console.warn('Vendor Regex not found for', regexName);
+            return undefined;
         }
-        return match
+        return match;
     }
 
     /**
@@ -111,8 +111,8 @@ class Matching {
      * @param {StrategyNames} vendorRegex
      * @returns {MatcherTypeNames}
      */
-    getStrategyLookupByType (matcherName, vendorRegex) {
-        return this.#config.matchers.fields[matcherName]?.strategies[vendorRegex]
+    getStrategyLookupByType(matcherName, vendorRegex) {
+        return this.#config.matchers.fields[matcherName]?.strategies[vendorRegex];
     }
 
     /**
@@ -120,13 +120,13 @@ class Matching {
      * @param {RequiredCssSelectors | string} selectorName
      * @returns {string};
      */
-    cssSelector (selectorName) {
-        const match = this.#cssSelectors[selectorName]
+    cssSelector(selectorName) {
+        const match = this.#cssSelectors[selectorName];
         if (!match) {
-            console.warn('CSS selector not found for %s, using a default value', selectorName)
-            return ''
+            console.warn('CSS selector not found for %s, using a default value', selectorName);
+            return '';
         }
-        return match
+        return match;
     }
 
     /**
@@ -134,13 +134,13 @@ class Matching {
      * @param {MatcherTypeNames | string} matcherName
      * @returns {DDGMatcher | undefined}
      */
-    ddgMatcher (matcherName) {
-        const match = this.#ddgMatchers[matcherName]
+    ddgMatcher(matcherName) {
+        const match = this.#ddgMatchers[matcherName];
         if (!match) {
-            console.warn('DDG matcher not found for', matcherName)
-            return undefined
+            console.warn('DDG matcher not found for', matcherName);
+            return undefined;
         }
-        return match
+        return match;
     }
 
     /**
@@ -148,13 +148,13 @@ class Matching {
      * @param {AllDDGMatcherNames} matcherName
      * @returns {RegExp|undefined}
      */
-    getDDGMatcherRegex (matcherName) {
-        const matcher = this.ddgMatcher(matcherName)
+    getDDGMatcherRegex(matcherName) {
+        const matcher = this.ddgMatcher(matcherName);
         if (!matcher || !matcher.match) {
-            console.warn('DDG matcher has unexpected format')
-            return undefined
+            console.warn('DDG matcher has unexpected format');
+            return undefined;
         }
-        return matcher?.match
+        return matcher?.match;
     }
 
     /**
@@ -162,13 +162,13 @@ class Matching {
      * @param {keyof MatcherLists} listName
      * @return {Matcher[]}
      */
-    matcherList (listName) {
-        const matcherList = this.#matcherLists[listName]
+    matcherList(listName) {
+        const matcherList = this.#matcherLists[listName];
         if (!matcherList) {
-            console.warn('MatcherList not found for ', listName)
-            return []
+            console.warn('MatcherList not found for ', listName);
+            return [];
         }
-        return matcherList
+        return matcherList;
     }
 
     /**
@@ -180,28 +180,28 @@ class Matching {
      * @param {keyof MatcherLists} listName
      * @returns {string | undefined}
      */
-    joinCssSelectors (listName) {
-        const matcherList = this.matcherList(listName)
+    joinCssSelectors(listName) {
+        const matcherList = this.matcherList(listName);
         if (!matcherList) {
-            console.warn('Matcher list not found for', listName)
-            return undefined
+            console.warn('Matcher list not found for', listName);
+            return undefined;
         }
 
         /**
          * @type {string[]}
          */
-        const selectors = []
+        const selectors = [];
 
-        for (let matcher of matcherList) {
+        for (const matcher of matcherList) {
             if (matcher.strategies.cssSelector) {
-                const css = this.cssSelector(matcher.strategies.cssSelector)
+                const css = this.cssSelector(matcher.strategies.cssSelector);
                 if (css) {
-                    selectors.push(css)
+                    selectors.push(css);
                 }
             }
         }
 
-        return selectors.join(', ')
+        return selectors.join(', ');
     }
 
     /**
@@ -210,18 +210,18 @@ class Matching {
      * @param {HTMLInputElement} input
      * @returns {boolean}
      */
-    isInputLargeEnough (matchedType, input) {
-        const expectedDimensionBounds = dimensionBounds[matchedType]
-        if (!expectedDimensionBounds) return true
+    isInputLargeEnough(matchedType, input) {
+        const expectedDimensionBounds = dimensionBounds[matchedType];
+        if (!expectedDimensionBounds) return true;
 
-        const width = input.offsetWidth
-        const height = input.offsetHeight
+        const width = input.offsetWidth;
+        const height = input.offsetHeight;
 
         // Ignore hidden elements as we can't determine their dimensions
-        const isHidden = height === 0 && width === 0
-        if (isHidden) return true
+        const isHidden = height === 0 && width === 0;
+        if (isHidden) return true;
 
-        return width >= expectedDimensionBounds.minWidth
+        return width >= expectedDimensionBounds.minWidth;
     }
 
     /**
@@ -232,45 +232,43 @@ class Matching {
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedTypes}
      */
-    inferInputType (input, formEl, opts = {}) {
-        const presetType = getInputType(input)
+    inferInputType(input, formEl, opts = {}) {
+        const presetType = getInputType(input);
         if (presetType !== 'unknown') {
-            return presetType
+            return presetType;
         }
 
-        this.setActiveElementStrings(input, formEl)
+        this.setActiveElementStrings(input, formEl);
 
-        if (this.subtypeFromMatchers('unknown', input)) return 'unknown'
+        if (this.subtypeFromMatchers('unknown', input)) return 'unknown';
 
         // For CC forms we run aggressive matches, so we want to make sure we only
         // run them on actual CC forms to avoid false positives and expensive loops
         if (opts.isCCForm) {
-            const subtype = this.subtypeFromMatchers('cc', input)
+            const subtype = this.subtypeFromMatchers('cc', input);
             if (subtype && isValidCreditCardSubtype(subtype)) {
-                return `creditCards.${subtype}`
+                return `creditCards.${subtype}`;
             }
         }
-
         if (input instanceof HTMLInputElement) {
             if (this.subtypeFromMatchers('password', input)) {
                 // Any other input type is likely a false match
-                // Arguably "text" should be as well, but it can be used for password reveal fields
                 if (
-                    ['password', 'text'].includes(input.type) &&
+                    input.type === 'password' &&
                     input.name !== 'email' &&
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
                 ) {
-                    return this.inferPasswordVariant(input, opts)
+                    return this.inferPasswordVariant(input, opts);
                 }
             }
 
             if (this.subtypeFromMatchers('emailAddress', input)) {
                 if (!this.isInputLargeEnough('emailAddress', input)) {
                     if (shouldLog()) {
-                        console.log('Field matched for Email Address, but discarded because too small when scanned')
+                        console.log('Field matched for Email Address, but discarded because too small when scanned');
                     }
-                    return 'unknown'
+                    return 'unknown';
                 }
                 if (opts.isLogin || opts.isHybrid) {
                     // TODO: Bring this support back in the future
@@ -280,7 +278,7 @@ class Matching {
                     //     return 'identities.emailAddress'
                     // }
 
-                    return 'credentials.username'
+                    return 'credentials.username';
                 }
 
                 // TODO: Temporary hack to support Google signin in different languages
@@ -289,25 +287,25 @@ class Matching {
                     window.location.href.includes('https://accounts.google.com/v3/signin/identifier') &&
                     input.matches('[type=email][autocomplete=username]')
                 ) {
-                    return 'credentials.username'
+                    return 'credentials.username';
                 }
 
-                return 'identities.emailAddress'
+                return 'identities.emailAddress';
             }
 
             if (this.subtypeFromMatchers('username', input)) {
-                return 'credentials.username'
+                return 'credentials.username';
             }
         }
 
-        const idSubtype = this.subtypeFromMatchers('id', input)
+        const idSubtype = this.subtypeFromMatchers('id', input);
 
         if (idSubtype && isValidIdentitiesSubtype(idSubtype)) {
-            return `identities.${idSubtype}`
+            return `identities.${idSubtype}`;
         }
 
-        logUnmatched(input, this.activeElementStrings)
-        return 'unknown'
+        logUnmatched(input, this.activeElementStrings);
+        return 'unknown';
     }
 
     /**
@@ -315,8 +313,9 @@ class Matching {
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
      *   isCCForm?: boolean,
+     *   isSignup?: boolean,
      *   hasCredentials?: boolean,
-     *   supportsIdentitiesAutofill?: boolean
+     *   supportsIdentitiesAutofill?: boolean,
      * }} SetInputTypeOpts
      */
 
@@ -324,13 +323,15 @@ class Matching {
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType (input, formEl, opts = {}) {
-        const type = this.inferInputType(input, formEl, opts)
-        input.setAttribute(ATTR_INPUT_TYPE, type)
-        return type
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+        const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
+        const type = forcedInputType || this.inferInputType(input, formEl, opts);
+        input.setAttribute(ATTR_INPUT_TYPE, type);
+        return type;
     }
 
     /**
@@ -339,40 +340,40 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} el
      * @return {MatcherTypeNames|undefined}
      */
-    subtypeFromMatchers (listName, el) {
-        const matchers = this.matcherList(listName)
+    subtypeFromMatchers(listName, el) {
+        const matchers = this.matcherList(listName);
 
         /**
          * Loop through each strategy in order
          */
-        for (let strategyName of this.#defaultStrategyOrder) {
-            let result
+        for (const strategyName of this.#defaultStrategyOrder) {
+            let result;
             /**
              * Now loop through each matcher in the list.
              */
-            for (let matcher of matchers) {
+            for (const matcher of matchers) {
                 /**
                  * for each `strategyName` (such as cssSelector), check
                  * if the current matcher implements it.
                  */
-                const lookup = matcher.strategies[strategyName]
+                const lookup = matcher.strategies[strategyName];
                 /**
                  * Sometimes a matcher may not implement the current strategy,
                  * so we skip it
                  */
-                if (!lookup) continue
+                if (!lookup) continue;
 
                 /**
                  * Now perform the matching
                  */
                 if (strategyName === 'cssSelector') {
-                    result = this.execCssSelector(lookup, el)
+                    result = this.execCssSelector(lookup, el);
                 }
                 if (strategyName === 'ddgMatcher') {
-                    result = this.execDDGMatcher(lookup)
+                    result = this.execDDGMatcher(lookup);
                 }
                 if (strategyName === 'vendorRegex') {
-                    result = this.execVendorRegex(lookup)
+                    result = this.execVendorRegex(lookup);
                 }
 
                 /**
@@ -382,8 +383,8 @@ class Matching {
                  * it matched the current element, then we'd return 'username'
                  */
                 if (result?.matched) {
-                    logMatching(el, result)
-                    return matcher.type
+                    logMatching(el, result);
+                    return matcher.type;
                 }
 
                 /**
@@ -391,18 +392,18 @@ class Matching {
                  * it would return { matched: false, proceed: false }
                  */
                 if (!result?.matched && result?.proceed === false) {
-                    logMatching(el, result)
+                    logMatching(el, result);
                     // If we get here, do not allow subsequent strategies to continue
-                    return undefined
+                    return undefined;
                 }
             }
 
             if (result?.skip) {
-                logMatching(el, result)
-                break
+                logMatching(el, result);
+                break;
             }
         }
-        return undefined
+        return undefined;
     }
 
     /**
@@ -411,38 +412,35 @@ class Matching {
      * @param opts
      * @returns {'credentials.password.new'|'credentials.password.current'}
      */
-    inferPasswordVariant (input, opts) {
+    inferPasswordVariant(input, opts) {
         // Check attributes first
         // This is done mainly to ensure coverage for all languages, since attributes are usually in English
-        const attrsToCheck = [input.autocomplete, input.name, input.id]
-        if (
-            opts.isSignup &&
-            attrsToCheck.some(str => safeRegexTest(/new.?password|password.?new/i, str))
-        ) {
-            return 'credentials.password.new'
+        const attrsToCheck = [input.autocomplete, input.name, input.id];
+        if (opts.isSignup && attrsToCheck.some((str) => safeRegexTest(/new.?password|password.?new/i, str))) {
+            return 'credentials.password.new';
         }
         if (
             (opts.isLogin || opts.isHybrid) &&
-            attrsToCheck.some(str => safeRegexTest(/(current|old|previous).?password|password.?(current|old|previous)/i, str))
+            attrsToCheck.some((str) => safeRegexTest(/(current|old|previous).?password|password.?(current|old|previous)/i, str))
         ) {
-            return 'credentials.password.current'
+            return 'credentials.password.current';
         }
 
         // Check strings using the usual DDG matcher
-        const newPasswordMatch = this.execDDGMatcher('newPassword')
+        const newPasswordMatch = this.execDDGMatcher('newPassword');
         if (newPasswordMatch.matched) {
-            return 'credentials.password.new'
+            return 'credentials.password.new';
         }
-        const currentPasswordMatch = this.execDDGMatcher('currentPassword')
+        const currentPasswordMatch = this.execDDGMatcher('currentPassword');
         if (currentPasswordMatch.matched) {
-            return 'credentials.password.current'
+            return 'credentials.password.current';
         }
 
         // Otherwise, rely on the passed form type
         if (opts.isLogin || opts.isHybrid) {
-            return 'credentials.password.current'
+            return 'credentials.password.current';
         }
-        return 'credentials.password.new'
+        return 'credentials.password.new';
     }
 
     /**
@@ -452,13 +450,13 @@ class Matching {
      * @param {HTMLInputElement|HTMLSelectElement} el
      * @returns {MatchingResult}
      */
-    execCssSelector (lookup, el) {
-        const selector = this.cssSelector(lookup)
+    execCssSelector(lookup, el) {
+        const selector = this.cssSelector(lookup);
         return {
             matched: el.matches(selector),
             strategyName: 'cssSelector',
-            matcherType: lookup
-        }
+            matcherType: lookup,
+        };
     }
 
     /**
@@ -471,86 +469,86 @@ class Matching {
      * @param {MatcherTypeNames} lookup
      * @returns {MatchingResult}
      */
-    execDDGMatcher (lookup) {
+    execDDGMatcher(lookup) {
         /** @type {MatchingResult} */
-        const defaultResult = { matched: false, strategyName: 'ddgMatcher', matcherType: lookup }
+        const defaultResult = { matched: false, strategyName: 'ddgMatcher', matcherType: lookup };
 
-        const ddgMatcher = this.ddgMatcher(lookup)
+        const ddgMatcher = this.ddgMatcher(lookup);
         if (!ddgMatcher || !ddgMatcher.match) {
-            return defaultResult
+            return defaultResult;
         }
-        let matchRexExp = this.getDDGMatcherRegex(lookup)
+        const matchRexExp = this.getDDGMatcherRegex(lookup);
         if (!matchRexExp) {
-            return defaultResult
+            return defaultResult;
         }
 
-        let requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter(ddgMatcherProp => ddgMatcherProp in ddgMatcher).length
+        const requiredScore = ['match', 'forceUnknown', 'maxDigits'].filter((ddgMatcherProp) => ddgMatcherProp in ddgMatcher).length;
 
         /** @type {MatchableStrings[]} */
-        const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText']
+        const matchableStrings = ddgMatcher.matchableStrings || ['labelText', 'placeholderAttr', 'relatedText'];
 
-        for (let stringName of matchableStrings) {
-            let elementString = this.activeElementStrings[stringName]
-            if (!elementString) continue
+        for (const stringName of matchableStrings) {
+            const elementString = this.activeElementStrings[stringName];
+            if (!elementString) continue;
 
             // Scoring to ensure all DDG tests are valid
-            let score = 0
+            let score = 0;
 
             /** @type {MatchingResult} */
             const result = {
                 ...defaultResult,
                 matchedString: elementString,
-                matchedFrom: stringName
-            }
+                matchedFrom: stringName,
+            };
 
             // If a negated regex was provided, ensure it does not match
             // If it DOES match - then we need to prevent any future strategies from continuing
             if (ddgMatcher.forceUnknown) {
-                let notRegex = ddgMatcher.forceUnknown
+                const notRegex = ddgMatcher.forceUnknown;
                 if (!notRegex) {
-                    return { ...result, matched: false }
+                    return { ...result, matched: false };
                 }
                 if (safeRegexTest(notRegex, elementString)) {
-                    return { ...result, matched: false, proceed: false }
+                    return { ...result, matched: false, proceed: false };
                 } else {
                     // All good here, increment the score
-                    score++
+                    score++;
                 }
             }
 
             if (ddgMatcher.skip) {
-                let skipRegex = ddgMatcher.skip
+                const skipRegex = ddgMatcher.skip;
                 if (!skipRegex) {
-                    return { ...result, matched: false }
+                    return { ...result, matched: false };
                 }
                 if (safeRegexTest(skipRegex, elementString)) {
-                    return { ...result, matched: false, skip: true }
+                    return { ...result, matched: false, skip: true };
                 }
             }
 
             // if the `match` regex fails, moves onto the next string
             if (!safeRegexTest(matchRexExp, elementString)) {
-                continue
+                continue;
             }
 
             // Otherwise, increment the score
-            score++
+            score++;
 
             // If a 'maxDigits' rule was provided, validate it
             if (ddgMatcher.maxDigits) {
-                const digitLength = elementString.replace(/[^0-9]/g, '').length
+                const digitLength = elementString.replace(/[^0-9]/g, '').length;
                 if (digitLength > ddgMatcher.maxDigits) {
-                    return { ...result, matched: false }
+                    return { ...result, matched: false };
                 } else {
-                    score++
+                    score++;
                 }
             }
 
             if (score === requiredScore) {
-                return { ...result, matched: true }
+                return { ...result, matched: true };
             }
         }
-        return defaultResult
+        return defaultResult;
     }
 
     /**
@@ -559,29 +557,29 @@ class Matching {
      * @param {MatcherTypeNames} lookup
      * @return {MatchingResult}
      */
-    execVendorRegex (lookup) {
+    execVendorRegex(lookup) {
         /** @type {MatchingResult} */
-        const defaultResult = { matched: false, strategyName: 'vendorRegex', matcherType: lookup }
+        const defaultResult = { matched: false, strategyName: 'vendorRegex', matcherType: lookup };
 
-        const regex = this.vendorRegex(lookup)
+        const regex = this.vendorRegex(lookup);
         if (!regex) {
-            return defaultResult
+            return defaultResult;
         }
         /** @type {MatchableStrings[]} */
-        const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText']
-        for (let stringName of stringsToMatch) {
-            let elementString = this.activeElementStrings[stringName]
-            if (!elementString) continue
+        const stringsToMatch = ['placeholderAttr', 'nameAttr', 'labelText', 'id', 'relatedText'];
+        for (const stringName of stringsToMatch) {
+            const elementString = this.activeElementStrings[stringName];
+            if (!elementString) continue;
             if (safeRegexTest(regex, elementString)) {
                 return {
                     ...defaultResult,
                     matched: true,
                     matchedString: elementString,
-                    matchedFrom: stringName
-                }
+                    matchedFrom: stringName,
+                };
             }
         }
-        return defaultResult
+        return defaultResult;
     }
 
     /**
@@ -602,13 +600,13 @@ class Matching {
      * @param {HTMLElement} form
      * @returns {Record<MatchableStrings, string>}
      */
-    _elementStringCache = new WeakMap()
-    getElementStrings (el, form) {
+    _elementStringCache = new WeakMap();
+    getElementStrings(el, form) {
         if (this._elementStringCache.has(el)) {
-            return this._elementStringCache.get(el)
+            return this._elementStringCache.get(el);
         }
 
-        const explicitLabelsText = getExplicitLabelsText(el)
+        const explicitLabelsText = getExplicitLabelsText(el);
 
         /** @type {Record<MatchableStrings, string>} */
         const next = {
@@ -616,13 +614,13 @@ class Matching {
             labelText: explicitLabelsText,
             placeholderAttr: el.placeholder || '',
             id: el.id,
-            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector'))
-        }
-        this._elementStringCache.set(el, next)
-        return next
+            relatedText: explicitLabelsText ? '' : getRelatedText(el, form, this.cssSelector('formInputsSelector')),
+        };
+        this._elementStringCache.set(el, next);
+        return next;
     }
-    clear () {
-        this._elementStringCache = new WeakMap()
+    clear() {
+        this._elementStringCache = new WeakMap();
     }
 
     /**
@@ -631,9 +629,9 @@ class Matching {
      * @param {HTMLElement} form
      * @returns {Matching}
      */
-    forInput (input, form) {
-        this.setActiveElementStrings(input, form)
-        return this
+    forInput(input, form) {
+        this.setActiveElementStrings(input, form);
+        return this;
     }
 
     /**
@@ -642,32 +640,32 @@ class Matching {
     static emptyConfig = {
         matchers: {
             lists: {},
-            fields: {}
+            fields: {},
         },
         strategies: {
-            'vendorRegex': {
+            vendorRegex: {
                 rules: {},
-                ruleSets: []
+                ruleSets: [],
             },
-            'ddgMatcher': {
-                matchers: {}
+            ddgMatcher: {
+                matchers: {},
             },
-            'cssSelector': {
-                selectors: {}
-            }
-        }
-    }
+            cssSelector: {
+                selectors: {},
+            },
+        },
+    };
 }
 
 /**
  *  @returns {SupportedTypes}
  */
-function getInputType (input) {
-    const attr = input?.getAttribute(ATTR_INPUT_TYPE)
+function getInputType(input) {
+    const attr = input?.getAttribute(ATTR_INPUT_TYPE);
     if (isValidSupportedType(attr)) {
-        return attr
+        return attr;
     }
-    return 'unknown'
+    return 'unknown';
 }
 
 /**
@@ -675,15 +673,15 @@ function getInputType (input) {
  * @param {SupportedTypes | string} type
  * @returns {SupportedMainTypes}
  */
-function getMainTypeFromType (type) {
-    const mainType = type.split('.')[0]
+function getMainTypeFromType(type) {
+    const mainType = type.split('.')[0];
     switch (mainType) {
-    case 'credentials':
-    case 'creditCards':
-    case 'identities':
-        return mainType
+        case 'credentials':
+        case 'creditCards':
+        case 'identities':
+            return mainType;
     }
-    return 'unknown'
+    return 'unknown';
 }
 
 /**
@@ -691,8 +689,7 @@ function getMainTypeFromType (type) {
  * @param {HTMLInputElement} input
  * @returns {SupportedMainTypes}
  */
-const getInputMainType = (input) =>
-    getMainTypeFromType(getInputType(input))
+const getInputMainType = (input) => getMainTypeFromType(getInputType(input));
 
 /** @typedef {supportedIdentitiesSubtypes[number]} SupportedIdentitiesSubTypes */
 const supportedIdentitiesSubtypes = /** @type {const} */ ([
@@ -710,15 +707,15 @@ const supportedIdentitiesSubtypes = /** @type {const} */ ([
     'addressCountryCode',
     'birthdayDay',
     'birthdayMonth',
-    'birthdayYear'
-])
+    'birthdayYear',
+]);
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedIdentitiesSubTypes}
  */
-function isValidIdentitiesSubtype (supportedType) {
-    return supportedIdentitiesSubtypes.includes(supportedType)
+function isValidIdentitiesSubtype(supportedType) {
+    return supportedIdentitiesSubtypes.includes(supportedType);
 }
 
 /** @typedef {supportedCreditCardSubtypes[number]} SupportedCreditCardSubTypes */
@@ -728,37 +725,29 @@ const supportedCreditCardSubtypes = /** @type {const} */ ([
     'cardSecurityCode',
     'expirationMonth',
     'expirationYear',
-    'expiration'
-])
+    'expiration',
+]);
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedCreditCardSubTypes}
  */
-function isValidCreditCardSubtype (supportedType) {
-    return supportedCreditCardSubtypes.includes(supportedType)
+function isValidCreditCardSubtype(supportedType) {
+    return supportedCreditCardSubtypes.includes(supportedType);
 }
 
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
-const supportedCredentialsSubtypes = /** @type {const} */ ([
-    'password',
-    'password.new',
-    'password.current',
-    'username'
-])
+const supportedCredentialsSubtypes = /** @type {const} */ (['password', 'password.new', 'password.current', 'username']);
 
 /** @typedef {supportedVariants[number]} SupportedVariants */
-const supportedVariants = /** @type {const} */ ([
-    'new',
-    'current'
-])
+const supportedVariants = /** @type {const} */ (['new', 'current']);
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedCredentialsSubTypes}
  */
-function isValidCredentialsSubtype (supportedType) {
-    return supportedCredentialsSubtypes.includes(supportedType)
+function isValidCredentialsSubtype(supportedType) {
+    return supportedCredentialsSubtypes.includes(supportedType);
 }
 
 /** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
@@ -767,18 +756,18 @@ function isValidCredentialsSubtype (supportedType) {
 const supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
-    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
-]
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`),
+];
 
 /**
  * Retrieves the subtype
  * @param {SupportedTypes | string} type
  * @returns {SupportedSubTypes | 'unknown'}
  */
-function getSubtypeFromType (type) {
-    const subType = type?.split('.')[1]
-    const validType = isValidSubtype(subType)
-    return validType ? subType : 'unknown'
+function getSubtypeFromType(type) {
+    const subType = type?.split('.')[1];
+    const validType = isValidSubtype(subType);
+    return validType ? subType : 'unknown';
 }
 
 /**
@@ -786,36 +775,38 @@ function getSubtypeFromType (type) {
  * @param {SupportedTypes | string} type
  * @returns {SupportedVariants | ''}
  */
-function getVariantFromType (type) {
-    const variant = type?.split('.')[2]
-    const validVariant = isValidVariant(variant)
-    return validVariant ? variant : ''
+function getVariantFromType(type) {
+    const variant = type?.split('.')[2];
+    const validVariant = isValidVariant(variant);
+    return validVariant ? variant : '';
 }
 
 /**
  * @param {SupportedSubTypes | any} supportedSubType
  * @returns {supportedSubType is SupportedSubTypes}
  */
-function isValidSubtype (supportedSubType) {
-    return isValidIdentitiesSubtype(supportedSubType) ||
+function isValidSubtype(supportedSubType) {
+    return (
+        isValidIdentitiesSubtype(supportedSubType) ||
         isValidCreditCardSubtype(supportedSubType) ||
         isValidCredentialsSubtype(supportedSubType)
+    );
 }
 
 /**
  * @param {SupportedTypes | any} supportedType
  * @returns {supportedType is SupportedTypes}
  */
-function isValidSupportedType (supportedType) {
-    return supportedTypes.includes(supportedType)
+function isValidSupportedType(supportedType) {
+    return supportedTypes.includes(supportedType);
 }
 
 /**
  * @param {SupportedVariants | any} supportedVariant
  * @returns {supportedVariant is SupportedVariants}
  */
-function isValidVariant (supportedVariant) {
-    return supportedVariants.includes(supportedVariant)
+function isValidVariant(supportedVariant) {
+    return supportedVariants.includes(supportedVariant);
 }
 
 /**
@@ -823,9 +814,9 @@ function isValidVariant (supportedVariant) {
  * @param {HTMLInputElement|Element} input
  * @returns {SupportedSubTypes | 'unknown'}
  */
-function getInputSubtype (input) {
-    const type = getInputType(input)
-    return getSubtypeFromType(type)
+function getInputSubtype(input) {
+    const type = getInputType(input);
+    return getSubtypeFromType(type);
 }
 
 /**
@@ -833,9 +824,9 @@ function getInputSubtype (input) {
  * @param {HTMLInputElement|Element} input
  * @returns {SupportedVariants | ''}
  */
-function getInputVariant (input) {
-    const type = getInputType(input)
-    return getVariantFromType(type)
+function getInputVariant(input) {
+    const type = getInputType(input);
+    return getVariantFromType(type);
 }
 
 /**
@@ -843,15 +834,13 @@ function getInputVariant (input) {
  * @param {string | null} string
  * @return {string}
  */
-const removeExcessWhitespace = (string = '') => {
-    string = string?.trim() || ''
+const removeExcessWhitespace = (string = '', textLengthCutoff = TEXT_LENGTH_CUTOFF) => {
+    string = string?.trim() || '';
     // The length check is extra safety to avoid trimming strings that would be discarded anyway
-    if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return ''
+    if (!string || string.length > textLengthCutoff + 50) return '';
 
-    return (string)
-        .replace(/\n/g, ' ')
-        .replace(/\s{2,}/g, ' ')
-}
+    return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ');
+};
 
 /**
  * Get text from all explicit labels
@@ -859,33 +848,33 @@ const removeExcessWhitespace = (string = '') => {
  * @return {string}
  */
 const getExplicitLabelsText = (el) => {
-    const labelTextCandidates = []
-    for (let label of el.labels || []) {
-        labelTextCandidates.push(...extractElementStrings(label))
+    const labelTextCandidates = [];
+    for (const label of el.labels || []) {
+        labelTextCandidates.push(...extractElementStrings(label));
     }
     if (el.hasAttribute('aria-label')) {
-        labelTextCandidates.push(removeExcessWhitespace(el.getAttribute('aria-label')))
+        labelTextCandidates.push(removeExcessWhitespace(el.getAttribute('aria-label')));
     }
 
     // Try to access another element if it was marked as the label for this input/select
-    const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'))
+    const ariaLabelAttr = removeExcessWhitespace(el.getAttribute('aria-labelled') || el.getAttribute('aria-labelledby'));
 
     if (ariaLabelAttr) {
-        const labelledByElement = document.getElementById(ariaLabelAttr)
+        const labelledByElement = document.getElementById(ariaLabelAttr);
         if (labelledByElement) {
-            labelTextCandidates.push(...extractElementStrings(labelledByElement))
+            labelTextCandidates.push(...extractElementStrings(labelledByElement));
         }
     }
 
     // Labels with long text are likely to be noisy and lead to false positives
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65)
+    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65);
 
     if (filteredLabels.length > 0) {
-        return filteredLabels.join(' ')
+        return filteredLabels.join(' ');
     }
 
-    return ''
-}
+    return '';
+};
 
 /**
  * Tries to get a relevant previous Element sibling, excluding certain tags
@@ -893,15 +882,15 @@ const getExplicitLabelsText = (el) => {
  * @returns {Element|null}
  */
 const recursiveGetPreviousElSibling = (el) => {
-    const previousEl = el.previousElementSibling
-    if (!previousEl) return null
+    const previousEl = el.previousElementSibling;
+    if (!previousEl) return null;
 
     // Skip elements with no childNodes
     if (EXCLUDED_TAGS.includes(previousEl.tagName)) {
-        return recursiveGetPreviousElSibling(previousEl)
+        return recursiveGetPreviousElSibling(previousEl);
     }
-    return previousEl
-}
+    return previousEl;
+};
 
 /**
  * Get all text close to the input (useful when no labels are defined)
@@ -911,48 +900,48 @@ const recursiveGetPreviousElSibling = (el) => {
  * @return {string}
  */
 const getRelatedText = (el, form, cssSelector) => {
-    let scope = getLargestMeaningfulContainer(el, form, cssSelector)
+    let scope = getLargestMeaningfulContainer(el, form, cssSelector);
 
     // TODO: We should try and simplify this, the logic has become very hard to follow over time
 
     // If we didn't find a container, try looking for an adjacent label
     if (scope === el) {
-        let previousEl = recursiveGetPreviousElSibling(el)
+        const previousEl = recursiveGetPreviousElSibling(el);
         if (previousEl instanceof HTMLElement) {
-            scope = previousEl
+            scope = previousEl;
         }
         // If there is still no meaningful container return empty string
         if (scope === el || scope instanceof HTMLSelectElement) {
             if (el.previousSibling instanceof Text) {
-                return removeExcessWhitespace(el.previousSibling.textContent)
+                return removeExcessWhitespace(el.previousSibling.textContent);
             }
-            return ''
+            return '';
         }
     }
 
     // If there is still no meaningful container return empty string
     if (scope === el || scope instanceof HTMLSelectElement) {
         if (el.previousSibling instanceof Text) {
-            return removeExcessWhitespace(el.previousSibling.textContent)
+            return removeExcessWhitespace(el.previousSibling.textContent);
         }
-        return ''
+        return '';
     }
 
-    let trimmedText = ''
-    const label = scope.querySelector('label')
+    let trimmedText = '';
+    const label = scope.querySelector('label');
     if (label) {
         // Try searching for a label first
-        trimmedText = extractElementStrings(label).join(' ')
+        trimmedText = extractElementStrings(label).join(' ');
     } else {
         // If the container has a select element, remove its contents to avoid noise
-        trimmedText = extractElementStrings(scope).join(' ')
+        trimmedText = extractElementStrings(scope).join(' ');
     }
 
     // If the text is longer than n chars it's too noisy and likely to yield false positives, so return ''
-    if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText
+    if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText;
 
-    return ''
-}
+    return '';
+};
 
 /**
  * Find a container for the input field that won't contain other inputs (useful to get elements related to the field)
@@ -964,23 +953,23 @@ const getRelatedText = (el, form, cssSelector) => {
 const getLargestMeaningfulContainer = (el, form, cssSelector) => {
     /* TODO: there could be more than one select el for the same label, in that case we should
         change how we compute the container */
-    const parentElement = el.parentElement
-    if (!parentElement || el === form || !cssSelector) return el
+    const parentElement = el.parentElement;
+    if (!parentElement || el === form || !cssSelector) return el;
 
-    const inputsInParentsScope = parentElement.querySelectorAll(cssSelector)
+    const inputsInParentsScope = parentElement.querySelectorAll(cssSelector);
     // To avoid noise, ensure that our input is the only in scope
     if (inputsInParentsScope.length === 1) {
         // If the parent has only 1 input and a label with text, we've found our meaningful container
-        const labelInParentScope = parentElement.querySelector('label')
+        const labelInParentScope = parentElement.querySelector('label');
         if (labelInParentScope?.textContent?.trim()) {
-            return parentElement
+            return parentElement;
         }
 
-        return getLargestMeaningfulContainer(parentElement, form, cssSelector)
+        return getLargestMeaningfulContainer(parentElement, form, cssSelector);
     }
 
-    return el
-}
+    return el;
+};
 
 /**
  * Find a regex match for a given input
@@ -991,10 +980,12 @@ const getLargestMeaningfulContainer = (el, form, cssSelector) => {
  * @returns {RegExpMatchArray|null}
  */
 const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
-    return input.placeholder?.match(regex) ||
+    return (
+        input.placeholder?.match(regex) ||
         getExplicitLabelsText(input).match(regex) ||
         getRelatedText(input, form, cssSelector).match(regex)
-}
+    );
+};
 
 /**
  * Check if a given input matches a regex
@@ -1005,16 +996,16 @@ const matchInPlaceholderAndLabels = (input, regex, form, cssSelector) => {
  * @returns {boolean}
  */
 const checkPlaceholderAndLabels = (input, regex, form, cssSelector) => {
-    return !!matchInPlaceholderAndLabels(input, regex, form, cssSelector)
-}
+    return !!matchInPlaceholderAndLabels(input, regex, form, cssSelector);
+};
 
 /**
  * Factory for instances of Matching
  *
  * @return {Matching}
  */
-function createMatching () {
-    return new Matching(matchingConfiguration)
+function createMatching() {
+    return new Matching(matchingConfiguration);
 }
 
 export {
@@ -1031,5 +1022,6 @@ export {
     matchInPlaceholderAndLabels,
     checkPlaceholderAndLabels,
     Matching,
-    createMatching
-}
+    createMatching,
+    isValidSupportedType,
+};

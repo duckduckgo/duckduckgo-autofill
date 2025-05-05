@@ -5,18 +5,18 @@
  */
 export class DeviceApiCall {
     /** @type {string} */
-    method = 'unknown'
+    method = 'unknown';
     /**
      * An optional 'id' - used to indicate if a request requires a response.
      * @type {string|null}
      */
-    id = null
+    id = null;
     /** @type {Params | null | undefined} */
-    paramsValidator = null
+    paramsValidator = null;
     /** @type {Result | null | undefined} */
-    resultValidator = null
+    resultValidator = null;
     /** @type {import("zod").infer<Params>} */
-    params
+    params;
     /**
      * This is a carve-out for legacy messages that are not typed yet.
      * If you set this to 'true', then the response will not be checked to conform
@@ -24,7 +24,7 @@ export class DeviceApiCall {
      * @deprecated this is here to aid migration, should be removed ASAP
      * @type {boolean}
      */
-    throwOnResultKeysMissing = true
+    throwOnResultKeysMissing = true;
     /**
      * New messages should be in a particular format, eg: { success: T },
      * but you can set this to false if you want to access the result as-is,
@@ -32,53 +32,53 @@ export class DeviceApiCall {
      * @deprecated this is here to aid migration, should be removed ASAP
      * @type {boolean}
      */
-    unwrapResult = true
+    unwrapResult = true;
     /**
      * @param {import("zod").infer<Params>} data
      */
-    constructor (data) {
-        this.params = data
+    constructor(data) {
+        this.params = data;
     }
 
     /**
      * @returns {import("zod").infer<Params>|undefined}
      */
-    validateParams () {
+    validateParams() {
         if (this.params === undefined) {
-            return undefined
+            return undefined;
         }
-        this._validate(this.params, this.paramsValidator)
-        return this.params
+        this._validate(this.params, this.paramsValidator);
+        return this.params;
     }
 
     /**
      * @param {any|null} incoming
      * @returns {import("zod").infer<Result>}
      */
-    validateResult (incoming) {
-        this._validate(incoming, this.resultValidator)
+    validateResult(incoming) {
+        this._validate(incoming, this.resultValidator);
         if (!incoming) {
-            return incoming
+            return incoming;
         }
         if (!this.unwrapResult) {
-            return incoming
+            return incoming;
         }
         if ('data' in incoming) {
-            console.warn('response had `data` property. Please migrate to `success`')
-            return incoming.data
+            console.warn('response had `data` property. Please migrate to `success`');
+            return incoming.data;
         }
         if ('success' in incoming) {
-            return incoming.success
+            return incoming.success;
         }
         if ('error' in incoming) {
             if (typeof incoming.error.message === 'string') {
-                throw new DeviceApiCallError(`${this.method}: ${incoming.error.message}`)
+                throw new DeviceApiCallError(`${this.method}: ${incoming.error.message}`);
             }
         }
         if (this.throwOnResultKeysMissing) {
-            throw new Error('unreachable. Response did not contain `success` or `data`')
+            throw new Error('unreachable. Response did not contain `success` or `data`');
         }
-        return incoming
+        return incoming;
     }
 
     /**
@@ -86,18 +86,18 @@ export class DeviceApiCall {
      * @param {import("zod").ZodType|undefined|null} [validator]
      * @private
      */
-    _validate (data, validator) {
-        if (!validator) return data
+    _validate(data, validator) {
+        if (!validator) return data;
         if (validator) {
-            const result = validator?.safeParse(data)
+            const result = validator?.safeParse(data);
             if (!result) {
-                throw new Error('unreachable, data failure', data)
+                throw new Error('unreachable, data failure', data);
             }
             if (!result.success) {
                 if ('error' in result) {
-                    this.throwError(result.error.issues)
+                    this.throwError(result.error.issues);
                 } else {
-                    console.error('unknown error from validate')
+                    console.error('unknown error from validate');
                 }
             }
         }
@@ -106,9 +106,9 @@ export class DeviceApiCall {
     /**
      * @param {import('zod').ZodIssue[]} errors
      */
-    throwError (errors) {
-        const error = SchemaValidationError.fromZodErrors(errors, this.constructor.name)
-        throw error
+    throwError(errors) {
+        const error = SchemaValidationError.fromZodErrors(errors, this.constructor.name);
+        throw error;
     }
 
     /**
@@ -124,14 +124,14 @@ export class DeviceApiCall {
      * @param {import("zod").infer<Result>} response
      * @returns {import("zod").infer<Result>}
      */
-    result (response) {
-        return response
+    result(response) {
+        return response;
     }
     /**
      * @returns {import("zod").infer<Result>}
      */
-    preResultValidation (response) {
-        return response
+    preResultValidation(response) {
+        return response;
     }
 }
 
@@ -142,42 +142,42 @@ export class DeviceApiCallError extends Error {}
  */
 export class SchemaValidationError extends Error {
     /** @type {import("zod").ZodIssue[]} */
-    validationErrors = []
+    validationErrors = [];
 
     /**
      * @param {import("zod").ZodIssue[]} errors
      * @param {string} name
      * @returns {SchemaValidationError}
      */
-    static fromZodErrors (errors, name) {
-        const heading = `${errors.length} SchemaValidationError(s) errors for ` + name
-        function log (issue) {
+    static fromZodErrors(errors, name) {
+        const heading = `${errors.length} SchemaValidationError(s) errors for ` + name;
+        function log(issue) {
             switch (issue.code) {
-            case 'invalid_literal':
-            case 'invalid_type': {
-                console.log(`${name}. Path: '${issue.path.join('.')}', Error: '${issue.message}'`)
-                break
-            }
-            case 'invalid_union': {
-                for (let unionError of issue.unionErrors) {
-                    for (let issue1 of unionError.issues) {
-                        log(issue1)
-                    }
+                case 'invalid_literal':
+                case 'invalid_type': {
+                    console.log(`${name}. Path: '${issue.path.join('.')}', Error: '${issue.message}'`);
+                    break;
                 }
-                break
-            }
-            default: {
-                console.log(name, 'other issue:', issue)
-            }
+                case 'invalid_union': {
+                    for (const unionError of issue.unionErrors) {
+                        for (const issue1 of unionError.issues) {
+                            log(issue1);
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    console.log(name, 'other issue:', issue);
+                }
             }
         }
-        for (let error of errors) {
-            log(error)
+        for (const error of errors) {
+            log(error);
         }
-        const message = [heading, 'please see the details above'].join('\n    ')
-        const error = new SchemaValidationError(message)
-        error.validationErrors = errors
-        return error
+        const message = [heading, 'please see the details above'].join('\n    ');
+        const error = new SchemaValidationError(message);
+        error.validationErrors = errors;
+        return error;
     }
 }
 
@@ -193,15 +193,15 @@ export class SchemaValidationError extends Error {
  * @param {Result|null} [resultValidator]
  * @returns {DeviceApiCall<Params, Result>}
  */
-export function createDeviceApiCall (method, params, paramsValidator = null, resultValidator = null) {
+export function createDeviceApiCall(method, params, paramsValidator = null, resultValidator = null) {
     /** @type {DeviceApiCall<Params, Result>} */
-    const deviceApiCall = new DeviceApiCall(params)
-    deviceApiCall.paramsValidator = paramsValidator
-    deviceApiCall.resultValidator = resultValidator
-    deviceApiCall.method = method
-    deviceApiCall.throwOnResultKeysMissing = false
-    deviceApiCall.unwrapResult = false
-    return deviceApiCall
+    const deviceApiCall = new DeviceApiCall(params);
+    deviceApiCall.paramsValidator = paramsValidator;
+    deviceApiCall.resultValidator = resultValidator;
+    deviceApiCall.method = method;
+    deviceApiCall.throwOnResultKeysMissing = false;
+    deviceApiCall.unwrapResult = false;
+    return deviceApiCall;
 }
 
 /**
@@ -220,13 +220,13 @@ export function createDeviceApiCall (method, params, paramsValidator = null, res
  * @param {Result|null} [resultValidator]
  * @returns {DeviceApiCall<Params, Result>}
  */
-export function createRequest (method, params, id = 'n/a', paramsValidator = null, resultValidator = null) {
-    const call = createDeviceApiCall(method, params, paramsValidator, resultValidator)
-    call.id = id
-    return call
+export function createRequest(method, params, id = 'n/a', paramsValidator = null, resultValidator = null) {
+    const call = createDeviceApiCall(method, params, paramsValidator, resultValidator);
+    call.id = id;
+    return call;
 }
 
-export const createNotification = createDeviceApiCall
+export const createNotification = createDeviceApiCall;
 
 /**
  * Validate any arbitrary data with any Zod validator
@@ -236,9 +236,9 @@ export const createNotification = createDeviceApiCall
  * @param {Validator | null} [validator]
  * @returns {import("zod").infer<Validator>}
  */
-export function validate (data, validator = null) {
+export function validate(data, validator = null) {
     if (validator) {
-        return validator.parse(data)
+        return validator.parse(data);
     }
-    return data
+    return data;
 }

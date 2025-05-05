@@ -1,6 +1,6 @@
-import {Password} from './lib/apple.password.js'
-import {ParserError} from './lib/rules-parser.js'
-import {constants} from './lib/constants.js'
+import { Password } from './lib/apple.password.js';
+import { ParserError } from './lib/rules-parser.js';
+import { constants } from './lib/constants.js';
 
 /**
  * @typedef {{
@@ -23,35 +23,35 @@ import {constants} from './lib/constants.js'
  *
  * @param {GenerateOptions} [options]
  */
-function generate (options = {}) {
+function generate(options = {}) {
     try {
         if (typeof options?.input === 'string') {
-            return Password.generateOrThrow(options.input)
+            return Password.generateOrThrow(options.input);
         }
         if (typeof options?.domain === 'string') {
             if (options?.rules) {
-                const rules = _selectPasswordRules(options.domain, options.rules)
+                const rules = _selectPasswordRules(options.domain, options.rules);
                 if (rules) {
-                    return Password.generateOrThrow(rules)
+                    return Password.generateOrThrow(rules);
                 }
             }
         }
     } catch (e) {
         // if an 'onError' callback was provided, forward all errors
         if (options?.onError && typeof options?.onError === 'function') {
-            options.onError(e)
+            options.onError(e);
         } else {
             // otherwise, only console.error unknown errors (which could be implementation bugs)
-            const isKnownError = e instanceof ParserError || e instanceof HostnameInputError
+            const isKnownError = e instanceof ParserError || e instanceof HostnameInputError;
             if (!isKnownError) {
-                console.error(e)
+                console.error(e);
             }
         }
     }
 
     // At this point, we have to trust the generation will not throw
     // as it is NOT using any user/page-provided data
-    return Password.generateDefault()
+    return Password.generateDefault();
 }
 
 // An extension type to differentiate between known errors
@@ -68,23 +68,23 @@ class HostnameInputError extends Error {}
  * @returns {string | undefined}
  * @throws {HostnameInputError}
  */
-function _selectPasswordRules (inputHostname, rules) {
-    const hostname = _safeHostname(inputHostname)
+function _selectPasswordRules(inputHostname, rules) {
+    const hostname = _safeHostname(inputHostname);
     // direct match
     if (rules[hostname]) {
-        return rules[hostname]['password-rules']
+        return rules[hostname]['password-rules'];
     }
 
     // otherwise, start chopping off subdomains and re-joining to compare
-    const pieces = hostname.split('.')
+    const pieces = hostname.split('.');
     while (pieces.length > 1) {
-        pieces.shift()
-        const joined = pieces.join('.')
+        pieces.shift();
+        const joined = pieces.join('.');
         if (rules[joined]) {
-            return rules[joined]['password-rules']
+            return rules[joined]['password-rules'];
         }
     }
-    return undefined
+    return undefined;
 }
 
 /**
@@ -93,25 +93,19 @@ function _selectPasswordRules (inputHostname, rules) {
  * @throws {HostnameInputError}
  * @returns {string}
  */
-function _safeHostname (inputHostname) {
+function _safeHostname(inputHostname) {
     if (inputHostname.startsWith('http:') || inputHostname.startsWith('https:')) {
-        throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a scheme')
+        throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a scheme');
     }
     if (inputHostname.includes(':')) {
-        throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a :port')
+        throw new HostnameInputError('invalid input, you can only provide a hostname but you gave a :port');
     }
     try {
-        const asUrl = new URL('https://' + inputHostname)
-        return asUrl.hostname
+        const asUrl = new URL('https://' + inputHostname);
+        return asUrl.hostname;
     } catch (e) {
-        throw new HostnameInputError(`could not instantiate a URL from that hostname ${inputHostname}`)
+        throw new HostnameInputError(`could not instantiate a URL from that hostname ${inputHostname}`);
     }
 }
 
-export {
-    generate,
-    _selectPasswordRules,
-    HostnameInputError,
-    ParserError,
-    constants
-}
+export { generate, _selectPasswordRules, HostnameInputError, ParserError, constants };

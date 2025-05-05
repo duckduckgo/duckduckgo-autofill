@@ -20,6 +20,9 @@ export type SendJSPixelParams =
       pixelName: "autofill_show";
     }
   | {
+      pixelName: "autofill_import_credentials_prompt_shown";
+    }
+  | {
       pixelName: "autofill_personal_address";
     }
   | {
@@ -160,6 +163,18 @@ export interface API {
     [k: string]: unknown;
   };
   /**
+   * (macOS/Windows) Opens the native password import flow UI
+   */
+  startCredentialsImportFlow?: {
+    [k: string]: unknown;
+  };
+  /**
+   * (macOS/Windows) User clicked on the password import flow prompt
+   */
+  credentialsImportFlowPermanentlyDismissed?: {
+    [k: string]: unknown;
+  };
+  /**
    * Used to store Email Protection auth credentials (logging in)
    */
   emailProtectionStoreUserData?: {
@@ -291,7 +306,13 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
-    action: "fill" | "focus" | "none" | "acceptGeneratedPassword" | "rejectGeneratedPassword";
+    action:
+      | "fill"
+      | "focus"
+      | "none"
+      | "refreshAvailableInputTypes"
+      | "acceptGeneratedPassword"
+      | "rejectGeneratedPassword";
   };
   error?: GenericError;
 }
@@ -329,29 +350,19 @@ export interface GetRuntimeConfigurationResponse {
  * This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json
  */
 export interface RuntimeConfiguration {
-  contentScope: ContentScope;
+  contentScope: {
+    [k: string]: unknown;
+  };
   userUnprotectedDomains: string[];
   userPreferences: UserPreferences;
 }
-export interface ContentScope {
-  features: {
-    [k: string]: {
-      exceptions: unknown[];
-      state: "enabled" | "disabled";
-      settings?: {
-        [k: string]: unknown;
-      };
-    };
-  };
-  unprotectedTemporary: unknown[];
-}
 export interface UserPreferences {
   globalPrivacyControlValue?: boolean;
-  sessionKey?: string;
+  sessionKey: string;
   debug: boolean;
   language?: string;
   platform: {
-    name: "ios" | "macos" | "windows" | "extension" | "android" | "unknown";
+    name: "ios" | "macos" | "windows" | "extension" | "android";
   };
   features: {
     [k: string]: {
@@ -368,7 +379,7 @@ export interface UserPreferences {
  */
 export interface StoreFormData {
   credentials?: OutgoingCredentials;
-  trigger?: "formSubmission" | "passwordGeneration" | "emailProtection";
+  trigger?: "partialSave" | "formSubmission" | "passwordGeneration" | "emailProtection";
 }
 export interface OutgoingCredentials {
   /**
@@ -433,6 +444,7 @@ export interface AvailableInputTypes {
    */
   email?: boolean;
   credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
 }
 export interface GetAutofillInitDataResponse {
   /**
@@ -556,6 +568,7 @@ export interface AvailableInputTypes1 {
    */
   email?: boolean;
   credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
 }
 /**
  * This is only used in macOS 10.15 Catalina
@@ -602,6 +615,14 @@ export interface AutofillFeatureToggles {
   credentials_saving?: boolean;
   inlineIcon_credentials?: boolean;
   third_party_credentials_provider?: boolean;
+  /**
+   * If true, we will attempt categorizaing username, based on the rest of the input fields in the form
+   */
+  unknown_username_categorization?: boolean;
+  /**
+   * If true, then username only form saves will be allowed
+   */
+  partial_form_saves?: boolean;
 }
 export interface GetAliasParams {
   requiresUserPermission: boolean;

@@ -159,6 +159,18 @@ export class OpenManageIdentitiesCall extends DeviceApiCall {
   method = "openManageIdentities"
 }
 /**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class StartCredentialsImportFlowCall extends DeviceApiCall {
+  method = "startCredentialsImportFlow"
+}
+/**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class CredentialsImportFlowPermanentlyDismissedCall extends DeviceApiCall {
+  method = "credentialsImportFlowPermanentlyDismissed"
+}
+/**
  * @extends {DeviceApiCall<emailProtectionStoreUserDataParamsSchema, any>} 
  */
 export class EmailProtectionStoreUserDataCall extends DeviceApiCall {

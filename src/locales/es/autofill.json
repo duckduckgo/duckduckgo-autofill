@@ -61,11 +61,11 @@
     "note" : "Button that when clicked allows users to add, edit, or delete one or more saved items used to fill forms on web pages. The type of item is indeterminate, so this is intentionally more vague than \"manageCreditCards\", \"manageIdentities\", and \"managePassworeds\". \"Manage\" is an imperative verb."
   },
   "manageCreditCards" : {
-    "title" : "Gestionar tarjetas de crédito…",
+    "title" : "Administrar tarjetas de crédito…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more credit cards used to fill forms on a web page. \"Manage\" is an imperative verb."
   },
   "manageIdentities" : {
-    "title" : "Gestionar identidades…",
+    "title" : "Administrar identidades…",
     "note" : "Button that when clicked allows users to add, edit, or delete one or more identities. \"Manage\" is an imperative verb. An \"Identity\" (singular of \"identities\") is a noun representing the combiantion of name, birthday, physical address, email address, and phone number used to fill forms on a web page."
   },
   "managePasswords" : {
@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "No volver a mostrar",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importar contraseñas a DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Transfiere tus contraseñas de forma rápida y segura desde otro navegador o administrador de contraseñas.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }

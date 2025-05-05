@@ -1,13 +1,13 @@
-import {getInputSubtype, removeExcessWhitespace} from './Form/matching.js'
-import {constants} from './constants.js'
-import {processConfig} from '@duckduckgo/content-scope-scripts/src/apple-utils'
+import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js';
+import { constants } from './constants.js';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
 
-const SIGN_IN_MSG = { signMeIn: true }
+const SIGN_IN_MSG = { signMeIn: true };
 
 // Send a message to the web app (only on DDG domains)
 const notifyWebApp = (message) => {
-    window.postMessage(message, window.origin)
-}
+    window.postMessage(message, window.origin);
+};
 /**
  * Sends a message and returns a Promise that resolves with the response
  * @param {{} | Function} msgOrFn - a fn to call or an object to send via postMessage
@@ -16,22 +16,22 @@ const notifyWebApp = (message) => {
  */
 const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
     if (typeof msgOrFn === 'function') {
-        msgOrFn()
+        msgOrFn();
     } else {
-        window.postMessage(msgOrFn, window.origin)
+        window.postMessage(msgOrFn, window.origin);
     }
 
     return new Promise((resolve) => {
-        const handler = e => {
-            if (e.origin !== window.origin) return
-            if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) return
+        const handler = (e) => {
+            if (e.origin !== window.origin) return;
+            if (!e.data || (e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))) return;
 
-            resolve(e.data)
-            window.removeEventListener('message', handler)
-        }
-        window.addEventListener('message', handler)
-    })
-}
+            resolve(e.data);
+            window.removeEventListener('message', handler);
+        };
+        window.addEventListener('message', handler);
+    });
+};
 
 /**
  * @param {Pick<GlobalConfig, 'contentScope' | 'userUnprotectedDomains' | 'userPreferences'>} globalConfig
@@ -40,48 +40,53 @@ const sendAndWaitForAnswer = (msgOrFn, expectedResponse) => {
 const autofillEnabled = (globalConfig) => {
     if (!globalConfig.contentScope) {
         // Return enabled for platforms that haven't implemented the config yet
-        return true
+        return true;
     }
     // already processed? this handles an edgecase in the extension where the config is already processed
     if ('site' in globalConfig.contentScope) {
-        const enabled = isAutofillEnabledFromProcessedConfig(globalConfig.contentScope)
-        return enabled
+        const enabled = isAutofillEnabledFromProcessedConfig(globalConfig.contentScope);
+        return enabled;
     }
 
-    const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig
+    const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
+
+    // Note: This cannot occur, but this check helps Typescript
+    // todo: to be fixed in GlobalConfig
+    if (!userPreferences) return false;
 
     // Check config on Apple platforms
-    const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences)
-    return isAutofillEnabledFromProcessedConfig(processedConfig)
-}
+    // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
+    const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
+    return isAutofillEnabledFromProcessedConfig(processedConfig);
+};
 
 const isAutofillEnabledFromProcessedConfig = (processedConfig) => {
-    const site = processedConfig.site
+    const site = processedConfig.site;
     if (site.isBroken || !site.enabledFeatures.includes('autofill')) {
         if (shouldLog()) {
-            console.log('⚠️ Autofill disabled by remote config')
+            console.log('⚠️ Autofill disabled by remote config');
         }
-        return false
+        return false;
     }
 
-    return true
-}
+    return true;
+};
 
 const isIncontextSignupEnabledFromProcessedConfig = (processedConfig) => {
-    const site = processedConfig.site
+    const site = processedConfig.site;
     if (site.isBroken || !site.enabledFeatures.includes('incontextSignup')) {
         if (shouldLog()) {
-            console.log('⚠️ In-context signup disabled by remote config')
+            console.log('⚠️ In-context signup disabled by remote config');
         }
-        return false
+        return false;
     }
 
-    return true
-}
+    return true;
+};
 
 // Access the original setter (needed to bypass React's implementation on mobile)
 // @ts-ignore
-const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
 
 /**
  * Ensures the value is set properly and dispatches events to simulate real user action
@@ -93,28 +98,28 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
 const setValueForInput = (el, val, config) => {
     // Avoid keyboard flashing on Android
     if (!config?.isAndroid) {
-        el.focus()
+        el.focus();
     }
 
     // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
-    el.dispatchEvent(new Event('keydown', {bubbles: true}))
+    el.dispatchEvent(new Event('keydown', { bubbles: true }));
 
-    originalSet?.call(el, val)
+    originalSet?.call(el, val);
 
     const events = [
-        new Event('input', {bubbles: true}),
+        new Event('input', { bubbles: true }),
         // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
-        new Event('keyup', {bubbles: true}),
-        new Event('change', {bubbles: true})
-    ]
-    events.forEach((ev) => el.dispatchEvent(ev))
+        new Event('keyup', { bubbles: true }),
+        new Event('change', { bubbles: true }),
+    ];
+    events.forEach((ev) => el.dispatchEvent(ev));
     // We call this again to make sure all forms are happy
-    originalSet?.call(el, val)
-    events.forEach((ev) => el.dispatchEvent(ev))
-    el.blur()
+    originalSet?.call(el, val);
+    events.forEach((ev) => el.dispatchEvent(ev));
+    el.blur();
 
-    return true
-}
+    return true;
+};
 
 /**
  * Fires events on a select element to simulate user interaction
@@ -123,17 +128,17 @@ const setValueForInput = (el, val, config) => {
 const fireEventsOnSelect = (el) => {
     /** @type {Event[]} */
     const events = [
-        new Event('mousedown', {bubbles: true}),
-        new Event('mouseup', {bubbles: true}),
-        new Event('click', {bubbles: true}),
-        new Event('change', {bubbles: true})
-    ]
+        new Event('mousedown', { bubbles: true }),
+        new Event('mouseup', { bubbles: true }),
+        new Event('click', { bubbles: true }),
+        new Event('change', { bubbles: true }),
+    ];
 
     // Events fire on the select el, not option
-    events.forEach((ev) => el.dispatchEvent(ev))
-    events.forEach((ev) => el.dispatchEvent(ev))
-    el.blur()
-}
+    events.forEach((ev) => el.dispatchEvent(ev));
+    events.forEach((ev) => el.dispatchEvent(ev));
+    el.blur();
+};
 
 /**
  * Selects an option of a select element
@@ -143,41 +148,40 @@ const fireEventsOnSelect = (el) => {
  * @return {boolean}
  */
 const setValueForSelect = (el, val) => {
-    const subtype = getInputSubtype(el)
-    const isMonth = subtype.includes('Month')
-    const isZeroBasedNumber = isMonth &&
-        el.options[0].value === '0' && el.options.length === 12
-    const stringVal = String(val)
-    const numberVal = Number(val)
+    const subtype = getInputSubtype(el);
+    const isMonth = subtype.includes('Month');
+    const isZeroBasedNumber = isMonth && el.options[0].value === '0' && el.options.length === 12;
+    const stringVal = String(val);
+    const numberVal = Number(val);
 
     // Loop first through all values because they tend to be more precise
     for (const option of el.options) {
         // If values for months are zero-based (Jan === 0), add one to match our data type
-        let value = option.value
+        let value = option.value;
         if (isZeroBasedNumber) {
-            value = `${Number(value) + 1}`
+            value = `${Number(value) + 1}`;
         }
         // TODO: try to match localised month names
         // TODO: implement alternative versions of values (abbreviations for States/Provinces or variations like USA, US, United States, etc.)
         if (value === stringVal || Number(value) === numberVal) {
-            if (option.selected) return false
-            option.selected = true
-            fireEventsOnSelect(el)
-            return true
+            if (option.selected) return false;
+            option.selected = true;
+            fireEventsOnSelect(el);
+            return true;
         }
     }
 
     for (const option of el.options) {
         if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
-            if (option.selected) return false
-            option.selected = true
-            fireEventsOnSelect(el)
-            return true
+            if (option.selected) return false;
+            option.selected = true;
+            fireEventsOnSelect(el);
+            return true;
         }
     }
     // If we didn't find a matching option return false
-    return false
-}
+    return false;
+};
 
 /**
  * Sets or selects a value to a form element
@@ -187,11 +191,11 @@ const setValueForSelect = (el, val) => {
  * @return {boolean}
  */
 const setValue = (el, val, config) => {
-    if (el instanceof HTMLInputElement) return setValueForInput(el, val, config)
-    if (el instanceof HTMLSelectElement) return setValueForSelect(el, val)
+    if (el instanceof HTMLInputElement) return setValueForInput(el, val, config);
+    if (el instanceof HTMLSelectElement) return setValueForSelect(el, val);
 
-    return false
-}
+    return false;
+};
 
 /**
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
@@ -200,29 +204,32 @@ const setValue = (el, val, config) => {
 const safeExecute = (el, fn, _opts = {}) => {
     // TODO: temporary fix to misterious bug in Chrome
     // const {checkVisibility = true} = opts
-    const intObs = new IntersectionObserver((changes) => {
-        for (const change of changes) {
-            // Feature detection
-            if (typeof change.isVisible === 'undefined') {
-                // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
-                change.isVisible = true
+    const intObs = new IntersectionObserver(
+        (changes) => {
+            for (const change of changes) {
+                // Feature detection
+                if (typeof change.isVisible === 'undefined') {
+                    // The browser doesn't support Intersection Observer v2, falling back to v1 behavior.
+                    change.isVisible = true;
+                }
+                if (change.isIntersecting) {
+                    /**
+                     * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
+                     * During testing it was found that windows does not `change.isVisible` properly.
+                     */
+                    // TODO: temporary fix to misterious bug in Chrome
+                    // if (!checkVisibility || change.isVisible) {
+                    //     fn()
+                    // }
+                    fn();
+                }
             }
-            if (change.isIntersecting) {
-                /**
-                 * If 'checkVisibility' is 'false' (like on Windows), then we always execute the function
-                 * During testing it was found that windows does not `change.isVisible` properly.
-                 */
-                // TODO: temporary fix to misterious bug in Chrome
-                // if (!checkVisibility || change.isVisible) {
-                //     fn()
-                // }
-                fn()
-            }
-        }
-        intObs.disconnect()
-    }, {trackVisibility: true, delay: 100})
-    intObs.observe(el)
-}
+            intObs.disconnect();
+        },
+        { trackVisibility: true, delay: 100 },
+    );
+    intObs.observe(el);
+};
 
 /**
  * Checks that an element is potentially viewable (even if off-screen)
@@ -230,16 +237,13 @@ const safeExecute = (el, fn, _opts = {}) => {
  * @return {boolean}
  */
 const isPotentiallyViewable = (el) => {
-    const computedStyle = window.getComputedStyle(el)
-    const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1')
-    const visibility = computedStyle.getPropertyValue('visibility')
-    const opacityThreshold = 0.6
+    const computedStyle = window.getComputedStyle(el);
+    const opacity = parseFloat(computedStyle.getPropertyValue('opacity') || '1');
+    const visibility = computedStyle.getPropertyValue('visibility');
+    const opacityThreshold = 0.6;
 
-    return el.clientWidth !== 0 &&
-        el.clientHeight !== 0 &&
-        opacity > opacityThreshold &&
-        visibility !== 'hidden'
-}
+    return el.clientWidth !== 0 && el.clientHeight !== 0 && opacity > opacityThreshold && visibility !== 'hidden';
+};
 
 /**
  * Gets the bounding box of the icon
@@ -247,17 +251,17 @@ const isPotentiallyViewable = (el) => {
  * @returns {{top: number, left: number, bottom: number, width: number, x: number, y: number, right: number, height: number}}
  */
 const getDaxBoundingBox = (input) => {
-    const {right: inputRight, top: inputTop, height: inputHeight} = input.getBoundingClientRect()
-    const inputRightPadding = parseInt(getComputedStyle(input).paddingRight)
-    const width = 30
-    const height = 30
-    const top = inputTop + (inputHeight - height) / 2
-    const right = inputRight - inputRightPadding
-    const left = right - width
-    const bottom = top + height
+    const { right: inputRight, top: inputTop, height: inputHeight } = input.getBoundingClientRect();
+    const inputRightPadding = parseInt(getComputedStyle(input).paddingRight);
+    const width = 30;
+    const height = 30;
+    const top = inputTop + (inputHeight - height) / 2;
+    const right = inputRight - inputRightPadding;
+    const left = right - width;
+    const bottom = top + height;
 
-    return {bottom, height, left, right, top, width, x: left, y: top}
-}
+    return { bottom, height, left, right, top, width, x: left, y: top };
+};
 
 /**
  * Check if a mouse event is within the icon
@@ -266,45 +270,44 @@ const getDaxBoundingBox = (input) => {
  * @returns {boolean}
  */
 const isEventWithinDax = (e, input) => {
-    const {left, right, top, bottom} = getDaxBoundingBox(input)
-    const withinX = e.clientX >= left && e.clientX <= right
-    const withinY = e.clientY >= top && e.clientY <= bottom
+    const { left, right, top, bottom } = getDaxBoundingBox(input);
+    const withinX = e.clientX >= left && e.clientX <= right;
+    const withinY = e.clientY >= top && e.clientY <= bottom;
 
-    return withinX && withinY
-}
+    return withinX && withinY;
+};
 
 /**
  * Adds inline styles from a prop:value object
  * @param {HTMLElement} el
  * @param {Object<string, string>} styles
  */
-const addInlineStyles = (el, styles) => Object.entries(styles)
-    .forEach(([property, val]) => el.style.setProperty(property, val, 'important'))
+const addInlineStyles = (el, styles) =>
+    Object.entries(styles).forEach(([property, val]) => el.style.setProperty(property, val, 'important'));
 
 /**
  * Removes inline styles from a prop:value object
  * @param {HTMLElement} el
  * @param {Object<string, string>} styles
  */
-const removeInlineStyles = (el, styles) => Object.keys(styles)
-    .forEach(property => el.style.removeProperty(property))
+const removeInlineStyles = (el, styles) => Object.keys(styles).forEach((property) => el.style.removeProperty(property));
 
-const ADDRESS_DOMAIN = '@duck.com'
+const ADDRESS_DOMAIN = '@duck.com';
 /**
  * Given a username, returns the full email address
  * @param {string} address
  * @returns {string}
  */
-const formatDuckAddress = (address) => address + ADDRESS_DOMAIN
+const formatDuckAddress = (address) => address + ADDRESS_DOMAIN;
 
 /**
  * Escapes any occurrences of &, ", <, > or / with XML entities.
  * @param {string} str The string to escape.
  * @return {string} The escaped string.
  */
-function escapeXML (str) {
-    const replacements = { '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;', '/': '&#x2F;' }
-    return String(str).replace(/[&"'<>/]/g, m => replacements[m])
+function escapeXML(str) {
+    const replacements = { '&': '&amp;', '"': '&quot;', "'": '&apos;', '<': '&lt;', '>': '&gt;', '/': '&#x2F;' };
+    return String(str).replace(/[&"'<>/]/g, (m) => replacements[m]);
 }
 
 /**
@@ -314,25 +317,26 @@ function escapeXML (str) {
  * @return {boolean}
  */
 const isLikelyASubmitButton = (el, matching) => {
-    const text = getTextShallow(el)
-    const ariaLabel = el.getAttribute('aria-label') || ''
-    const dataTestId = el.getAttribute('data-test-id') || ''
+    const text = getTextShallow(el);
+    const ariaLabel = el.getAttribute('aria-label') || '';
+    const dataTestId = el.getAttribute('data-test-id') || '';
 
     if (
         (el.getAttribute('type') === 'submit' || // is explicitly set as "submit"
-        el.getAttribute('name') === 'submit') && // is called "submit"
+            el.getAttribute('name') === 'submit') && // is called "submit"
         !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
-    ) return true
+    )
+        return true;
 
     return (
-        safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
-        safeRegexTest(/submit/i, dataTestId) ||
-        safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
-        (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className)) // it's a large element 250x40px
-    ) &&
-    el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
-    !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
-}
+        (safeRegexTest(/primary|submit/i, el.className) || // has high-signal submit classes
+            safeRegexTest(/submit/i, dataTestId) ||
+            safeRegexTest(matching.getDDGMatcherRegex('submitButtonRegex'), text) || // has high-signal text
+            (el.offsetHeight * el.offsetWidth >= 10000 && !safeRegexTest(/secondary/i, el.className))) && // it's a large element 250x40px
+        el.offsetHeight * el.offsetWidth >= 2000 && // it's not a very small button like inline links and such
+        !safeRegexTest(matching.getDDGMatcherRegex('submitButtonUnlikelyRegex'), text + ' ' + ariaLabel)
+    );
+};
 
 /**
  * Check that a button matches the form type - login buttons on a login form, signup buttons on a signup form
@@ -341,15 +345,15 @@ const isLikelyASubmitButton = (el, matching) => {
  */
 const buttonMatchesFormType = (el, formObj) => {
     if (formObj.isLogin) {
-        return !safeRegexTest(/sign.?up|register|join/i, el.textContent || '')
+        return !safeRegexTest(/sign.?up|register|join/i, el.textContent || '');
     } else if (formObj.isSignup) {
-        return !safeRegexTest(/(log|sign).?([io])n/i, el.textContent || '')
+        return !safeRegexTest(/(log|sign).?([io])n/i, el.textContent || '');
     } else {
-        return true
+        return true;
     }
-}
+};
 
-const buttonInputTypes = ['submit', 'button']
+const buttonInputTypes = ['submit', 'button'];
 /**
  * Get the text of an element, one level deep max
  * @param {Node} el
@@ -358,34 +362,34 @@ const buttonInputTypes = ['submit', 'button']
 const getTextShallow = (el) => {
     // for buttons, we don't care about descendants, just get the whole text as is
     // this is important in order to give proper attribution of the text to the button
-    if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent)
+    if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent);
 
     if (el instanceof HTMLInputElement) {
         if (buttonInputTypes.includes(el.type)) {
-            return el.value
+            return el.value;
         }
 
         if (el.type === 'image') {
-            return removeExcessWhitespace(el.alt || el.value || el.title || el.name)
+            return removeExcessWhitespace(el.alt || el.value || el.title || el.name);
         }
     }
 
-    let text = ''
+    let text = '';
     for (const childNode of el.childNodes) {
         if (childNode instanceof Text) {
-            text += ' ' + childNode.textContent
+            text += ' ' + childNode.textContent;
         }
     }
 
-    return removeExcessWhitespace(text)
-}
+    return removeExcessWhitespace(text);
+};
 
 /**
  * Check if hostname is a local address
  * @param {string} [hostname]
  * @returns {boolean}
  */
-function isLocalNetwork (hostname = window.location.hostname) {
+function isLocalNetwork(hostname = window.location.hostname) {
     return (
         ['localhost', '', '::1'].includes(hostname) ||
         hostname.includes('127.0.0.1') ||
@@ -393,18 +397,19 @@ function isLocalNetwork (hostname = window.location.hostname) {
         hostname.startsWith('10.0.') ||
         hostname.endsWith('.local') ||
         hostname.endsWith('.internal')
-    )
+    );
 }
 
 // Extracted from lib/DDG/Util/Constants.pm
-const tldrs = /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i
+const tldrs =
+    /\.(?:c(?:o(?:m|op)?|at?|[iykgdmnxruhcfzvl])|o(?:rg|m)|n(?:et?|a(?:me)?|[ucgozrfpil])|e(?:d?u|[gechstr])|i(?:n(?:t|fo)?|[stqldroem])|m(?:o(?:bi)?|u(?:seum)?|i?l|[mcyvtsqhaerngxzfpwkd])|g(?:ov|[glqeriabtshdfmuywnp])|b(?:iz?|[drovfhtaywmzjsgbenl])|t(?:r(?:avel)?|[ncmfzdvkopthjwg]|e?l)|k[iemygznhwrp]|s[jtvberindlucygkhaozm]|u[gymszka]|h[nmutkr]|r[owesu]|d[kmzoej]|a(?:e(?:ro)?|r(?:pa)?|[qofiumsgzlwcnxdt])|p(?:ro?|[sgnthfymakwle])|v[aegiucn]|l[sayuvikcbrt]|j(?:o(?:bs)?|[mep])|w[fs]|z[amw]|f[rijkom]|y[eut]|qa)$/i;
 /**
  * Check if hostname is a valid top-level domain
  * @param {string} [hostname]
  * @returns {boolean}
  */
-function isValidTLD (hostname = window.location.hostname) {
-    return tldrs.test(hostname) || hostname === 'fill.dev'
+function isValidTLD(hostname = window.location.hostname) {
+    return tldrs.test(hostname) || hostname === 'fill.dev';
 }
 
 /**
@@ -415,26 +420,26 @@ function isValidTLD (hostname = window.location.hostname) {
 const wasAutofilledByChrome = (input) => {
     try {
         // Other browsers throw because the selector is invalid
-        return input.matches('input:-internal-autofill-selected')
+        return input.matches('input:-internal-autofill-selected');
     } catch (e) {
-        return false
+        return false;
     }
-}
+};
 
 /**
  * Checks if we should log form analysis debug info to the console
  * @returns {boolean}
  */
-function shouldLog () {
-    return readDebugSetting('ddg-autofill-debug')
+function shouldLog() {
+    return readDebugSetting('ddg-autofill-debug');
 }
 
 /**
  * Checks if we should log performance info to the console
  * @returns {boolean}
  */
-function shouldLogPerformance () {
-    return readDebugSetting('ddg-autofill-perf')
+function shouldLogPerformance() {
+    return readDebugSetting('ddg-autofill-perf');
 }
 
 /**
@@ -442,20 +447,20 @@ function shouldLogPerformance () {
  * @param setting
  * @returns {boolean}
  */
-function readDebugSetting (setting) {
+function readDebugSetting(setting) {
     // sessionStorage throws in invalid schemes like data: and file:
     try {
-        return window.sessionStorage?.getItem(setting) === 'true'
+        return window.sessionStorage?.getItem(setting) === 'true';
     } catch (e) {
-        return false
+        return false;
     }
 }
 
-function logPerformance (markName) {
+function logPerformance(markName) {
     if (shouldLogPerformance()) {
-        const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`)
-        console.log(`${markName} took ${Math.round(measurement?.duration)}ms`)
-        window.performance?.clearMarks()
+        const measurement = window.performance?.measure(`${markName}:init`, `${markName}:init:start`, `${markName}:init:end`);
+        console.log(`${markName} took ${Math.round(measurement?.duration)}ms`);
+        window.performance?.clearMarks();
     }
 }
 
@@ -464,12 +469,12 @@ function logPerformance (markName) {
  * @param {Function} callback
  * @returns {Function}
  */
-function whenIdle (callback) {
-    let timer
+function whenIdle(callback) {
+    let timer;
     return (...args) => {
-        cancelIdleCallback(timer)
-        timer = requestIdleCallback(() => callback.apply(this, args))
-    }
+        cancelIdleCallback(timer);
+        timer = requestIdleCallback(() => callback.apply(this, args));
+    };
 }
 
 /**
@@ -478,15 +483,15 @@ function whenIdle (callback) {
  * @param {number} totalLength
  * @returns {string}
  */
-function truncateFromMiddle (string, totalLength = 30) {
+function truncateFromMiddle(string, totalLength = 30) {
     if (totalLength < 4) {
-        throw new Error('Do not use with strings shorter than 4')
+        throw new Error('Do not use with strings shorter than 4');
     }
 
-    if (string.length <= totalLength) return string
+    if (string.length <= totalLength) return string;
 
-    const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2))
-    return truncated
+    const truncated = string.slice(0, totalLength / 2).concat('…', string.slice(totalLength / -2));
+    return truncated;
 }
 
 /**
@@ -494,22 +499,28 @@ function truncateFromMiddle (string, totalLength = 30) {
  * @param {HTMLFormElement} form
  * @returns {boolean}
  */
-function isFormLikelyToBeUsedAsPageWrapper (form) {
-    if (form.parentElement !== document.body) return false
+function isFormLikelyToBeUsedAsPageWrapper(form) {
+    /**
+     * We have a strict failsafe here to avoid running into performance issues.
+     * Running querySelectorAll('*') on a large number of sites is risky. We've seen
+     * documents with hundreds of thousands of elements and pages that create and delete
+     * forms as you scroll.
+     */
+    if (form.parentElement !== document.body) return false;
 
-    const formChildren = form.querySelectorAll('*').length
+    const formChildren = form.querySelectorAll('*').length;
     // If the form has few content elements, it's unlikely to cause issues anyway
-    if (formChildren < 100) return false
+    if (formChildren < 100) return false;
 
-    const bodyChildren = document.body.querySelectorAll('*').length
+    const bodyChildren = document.body.querySelectorAll('*').length;
 
     /**
      * Percentage of the formChildren on the total body elements
      * form * 100 / body = x
      */
-    const formChildrenPercentage = formChildren * 100 / bodyChildren
+    const formChildrenPercentage = (formChildren * 100) / bodyChildren;
 
-    return formChildrenPercentage > 50
+    return formChildrenPercentage > 50;
 }
 
 /**
@@ -518,10 +529,10 @@ function isFormLikelyToBeUsedAsPageWrapper (form) {
  * @param {String} string
  * @returns {boolean}
  */
-function safeRegexTest (regex, string) {
-    if (!string || !regex || string.length > constants.TEXT_LENGTH_CUTOFF) return false
+function safeRegexTest(regex, string, textLengthCutoff = constants.TEXT_LENGTH_CUTOFF) {
+    if (!string || !regex || string.length > textLengthCutoff) return false;
 
-    return regex.test(string)
+    return regex.test(string);
 }
 
 /**
@@ -530,21 +541,21 @@ function safeRegexTest (regex, string) {
  * @param {typeof Element} [wantedTargetType]
  * @returns {EventTarget | null}
  */
-function pierceShadowTree (event, wantedTargetType) {
-    const {target} = event
+function pierceShadowTree(event, wantedTargetType) {
+    const { target } = event;
 
     // Sanity checks
-    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target
+    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target;
 
-    const clickStack = event.composedPath()
+    const clickStack = event.composedPath();
 
     // If we're not looking for a specific element, get the top of the stack
     if (!wantedTargetType) {
-        return clickStack[0]
+        return clickStack[0];
     }
 
     // Otherwise, search the wanted target, or return the original target
-    return clickStack.find(el => el instanceof wantedTargetType) || target
+    return clickStack.find((el) => el instanceof wantedTargetType) || target;
 }
 
 /**
@@ -552,18 +563,95 @@ function pierceShadowTree (event, wantedTargetType) {
  * @param {Document | DocumentOrShadowRoot} root
  * @returns {Element | null}
  */
-function getActiveElement (root = document) {
-    const activeElement = root.activeElement
+function getActiveElement(root = document) {
+    const activeElement = root.activeElement;
 
-    if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement
+    if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement;
 
-    const innerActiveElement = activeElement.shadowRoot.activeElement
+    const innerActiveElement = activeElement.shadowRoot.activeElement;
 
     if (innerActiveElement?.shadowRoot) {
-        return getActiveElement(innerActiveElement.shadowRoot)
+        return getActiveElement(innerActiveElement.shadowRoot);
     }
 
-    return innerActiveElement
+    return innerActiveElement;
+}
+
+/**
+ * Takes a root element and tries to find elements in shadow DOMs that match the selector
+ * @param {HTMLElement|HTMLFormElement} root
+ * @param {string} selector
+ * @returns {Element[]}
+ */
+function findElementsInShadowTree(root, selector) {
+    const shadowElements = [];
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    /** @type {Node|null} */
+    let node = walker.currentNode;
+    while (node) {
+        if (node instanceof HTMLElement && node.shadowRoot) {
+            shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
+        }
+        node = walker.nextNode();
+    }
+
+    return shadowElements;
+}
+
+/**
+ * The function looks for form's control elements, and returns them if they're iterable.
+ * @param {HTMLElement} form
+ * @param {string} selector
+ * @returns {Element[]|null}
+ */
+function getFormControlElements(form, selector) {
+    // Some sites seem to be overriding `form.elements`, so we need to check if it's still iterable.
+    if (form instanceof HTMLFormElement && form.elements != null && Symbol.iterator in Object(form.elements)) {
+        // For form elements we use .elements to catch fields outside the form itself using the form attribute.
+        // It also catches all elements when the markup is broken.
+        // We use .filter to avoid specific types of elements.
+        const formControls = [...form.elements].filter((el) => el.matches(selector));
+        return [...formControls];
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Default operation: finds elements using querySelectorAll.
+ * Optionally, can be forced to scan the shadow tree.
+ * @param {HTMLElement} element
+ * @param {string} selector
+ * @param {boolean} forceScanShadowTree
+ * @returns {Element[]}
+ */
+function queryElementsWithShadow(element, selector, forceScanShadowTree = false) {
+    /** @type {Element[]|NodeListOf<Element>} element */
+    const elements = element.querySelectorAll(selector);
+
+    if (forceScanShadowTree || elements.length === 0) {
+        return [...elements, ...findElementsInShadowTree(element, selector)];
+    }
+    return [...elements];
+}
+
+/**
+ * Checks if there is a single username-like identity, i.e. email or phone or credit card number
+ * If there is then returns that, otherwise returns undefined
+ * @param {InternalIdentityObject} identities
+ * @param {InternalCreditCardObject} creditCards
+ * @returns {string | undefined}
+ */
+function getUsernameLikeIdentity(identities, creditCards) {
+    if (identities?.emailAddress) {
+        return identities.emailAddress;
+    }
+    if (Object.keys(identities ?? {}).length === 1 && Boolean(identities.phone)) {
+        return identities.phone;
+    }
+    if (Object.keys(creditCards ?? {}).length === 1 && Boolean(creditCards.cardNumber)) {
+        return creditCards.cardNumber;
+    }
 }
 
 export {
@@ -597,5 +685,9 @@ export {
     isFormLikelyToBeUsedAsPageWrapper,
     safeRegexTest,
     pierceShadowTree,
-    getActiveElement
-}
+    getActiveElement,
+    findElementsInShadowTree,
+    queryElementsWithShadow,
+    getFormControlElements,
+    getUsernameLikeIdentity,
+};

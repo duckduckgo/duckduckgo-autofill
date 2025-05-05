@@ -1,5 +1,5 @@
-import InterfacePrototype from './InterfacePrototype.js'
-import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js'
+import InterfacePrototype from './InterfacePrototype.js';
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js';
 import {
     EmailProtectionGetAddressesCall,
     GetAutofillInitDataCall,
@@ -8,9 +8,10 @@ import {
     OpenManagePasswordsCall,
     OpenManageCreditCardsCall,
     OpenManageIdentitiesCall,
-    CloseAutofillParentCall
-} from '../deviceApiCalls/__generated__/deviceApiCalls.js'
-import { overlayApi } from './overlayApi.js'
+    CloseAutofillParentCall,
+} from '../deviceApiCalls/__generated__/deviceApiCalls.js';
+import { overlayApi } from './overlayApi.js';
+import { defaultOptions } from '../UI/HTMLTooltip.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -24,15 +25,15 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * Mark top frame as not stripping credential data
      * @type {boolean}
      */
-    stripCredentials = false
+    stripCredentials = false;
 
     /**
      * overlay API helpers
      */
-    overlay = overlayApi(this)
+    overlay = overlayApi(this);
 
-    previousScreenX = 0
-    previousScreenY = 0
+    previousScreenX = 0;
+    previousScreenY = 0;
 
     /**
      * Because we're running inside the Overlay, we always create the HTML
@@ -41,24 +42,30 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @override
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createUIController () {
-        return new HTMLTooltipUIController({
-            tooltipKind: /** @type {const} */ ('modern'),
-            device: this
-        }, {
-            wrapperClass: 'top-autofill',
-            tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
-            remove: async () => this._closeAutofillParent(),
-            testMode: this.isTestMode(),
-            /**
-             * Note: This is needed because Mutation observer didn't support visibility checks on Windows
-             */
-            checkVisibility: false
-        })
+    createUIController() {
+        return new HTMLTooltipUIController(
+            {
+                tooltipKind: /** @type {const} */ ('modern'),
+                device: this,
+            },
+            {
+                ...defaultOptions,
+                platform: 'windows',
+                wrapperClass: 'top-autofill',
+                isTopAutofill: true,
+                tooltipPositionClass: () => '.wrapper { transform: none; }',
+                setSize: (details) => this.deviceApi.notify(new SetSizeCall(details)),
+                remove: async () => this._closeAutofillParent(),
+                testMode: this.isTestMode(),
+                /**
+                 * Note: This is needed because Mutation observer didn't support visibility checks on Windows
+                 */
+                checkVisibility: false,
+            },
+        );
     }
 
-    addDeviceListeners () {
+    addDeviceListeners() {
         /**
          * On Windows (vs. MacOS) we can use the built-in `mousemove`
          * event and screen-relative positioning.
@@ -74,44 +81,44 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
                 (!this.previousScreenX && !this.previousScreenY) || // if no previous coords
                 (this.previousScreenX === event.screenX && this.previousScreenY === event.screenY) // or the mouse hasn't moved
             ) {
-                this.previousScreenX = event.screenX
-                this.previousScreenY = event.screenY
-                return
+                this.previousScreenX = event.screenX;
+                this.previousScreenY = event.screenY;
+                return;
             }
 
-            const activeTooltip = this.uiController?.getActiveTooltip?.()
-            activeTooltip?.focus(event.x, event.y)
-            this.previousScreenX = event.screenX
-            this.previousScreenY = event.screenY
-        })
+            const activeTooltip = this.uiController?.getActiveTooltip?.();
+            activeTooltip?.focus(event.x, event.y);
+            this.previousScreenX = event.screenX;
+            this.previousScreenY = event.screenY;
+        });
 
-        return super.addDeviceListeners()
-    }
-
-    /**
-     * @returns {Promise<any>}
-     */
-    async _closeAutofillParent () {
-        return this.deviceApi.notify(new CloseAutofillParentCall(null))
+        return super.addDeviceListeners();
     }
 
     /**
      * @returns {Promise<any>}
      */
-    openManagePasswords () {
-        return this.deviceApi.notify(new OpenManagePasswordsCall({}))
+    async _closeAutofillParent() {
+        return this.deviceApi.notify(new CloseAutofillParentCall(null));
+    }
+
+    /**
+     * @returns {Promise<any>}
+     */
+    openManagePasswords() {
+        return this.deviceApi.notify(new OpenManagePasswordsCall({}));
     }
     /**
      * @returns {Promise<any>}
      */
-    openManageCreditCards () {
-        return this.deviceApi.notify(new OpenManageCreditCardsCall({}))
+    openManageCreditCards() {
+        return this.deviceApi.notify(new OpenManageCreditCardsCall({}));
     }
     /**
      * @returns {Promise<any>}
      */
-    openManageIdentities () {
-        return this.deviceApi.notify(new OpenManageIdentitiesCall({}))
+    openManageIdentities() {
+        return this.deviceApi.notify(new OpenManageIdentitiesCall({}));
     }
 
     /**
@@ -121,21 +128,21 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @override
      * @returns {Promise<void>}
      */
-    async setupAutofill () {
-        const loggedIn = await this._getIsLoggedIn()
+    async setupAutofill() {
+        const loggedIn = await this._getIsLoggedIn();
         if (loggedIn) {
-            await this.getAddresses()
+            await this.getAddresses();
         }
 
-        const response = await this.deviceApi.request(new GetAutofillInitDataCall(null))
+        const response = await this.deviceApi.request(new GetAutofillInitDataCall(null));
         // @ts-ignore
-        this.storeLocalData(response)
+        this.storeLocalData(response);
     }
 
-    async postInit () {
+    async postInit() {
         // setup overlay API pieces
-        this.overlay.showImmediately()
-        super.postInit()
+        this.overlay.showImmediately();
+        super.postInit();
     }
 
     /**
@@ -147,26 +154,26 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
      * @param {string} type
      */
-    async selectedDetail (data, type) {
-        return this.overlay.selectedDetail(data, type)
+    async selectedDetail(data, type) {
+        return this.overlay.selectedDetail(data, type);
     }
 
     /**
      * Email Protection calls
      */
 
-    async _getIsLoggedIn () {
-        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}))
+    async _getIsLoggedIn() {
+        const isLoggedIn = await this.deviceApi.request(new EmailProtectionGetIsLoggedInCall({}));
 
-        this.isDeviceSignedIn = () => isLoggedIn
-        return isLoggedIn
+        this.isDeviceSignedIn = () => isLoggedIn;
+        return isLoggedIn;
     }
 
-    async getAddresses () {
-        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}))
+    async getAddresses() {
+        const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}));
 
-        this.storeLocalAddresses(addresses)
-        return addresses
+        this.storeLocalAddresses(addresses);
+        return addresses;
     }
 
     /**
@@ -174,8 +181,8 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @param {Number} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity (id) {
-        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`)
-        return Promise.resolve({ success: identity })
+    getAutofillIdentity(id) {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
+        return Promise.resolve({ success: identity });
     }
 }

@@ -6,17 +6,14 @@
  * @returns {string}
  * @throws {Error} - If the string does not contain the searchRegex
  */
-function replaceInString (string, searchRegex, replace) {
+function replaceInString(string, searchRegex, replace) {
     if (!searchRegex.test(string)) {
-        const errorMsg = 'No match found in the string. Check both string and regex.'
-        console.log(errorMsg)
-        console.log(string)
-        throw new Error(errorMsg)
+        const errorMsg = 'No match found in the string. Check both string and regex.';
+        console.log(errorMsg);
+        console.log(string);
+        throw new Error(errorMsg);
     }
-    return string.replaceAll(
-        new RegExp(searchRegex.source, 'gi'),
-        replace
-    )
+    return string.replaceAll(new RegExp(searchRegex.source, 'gi'), replace);
 }
 
 /**
@@ -26,12 +23,12 @@ function replaceInString (string, searchRegex, replace) {
  * @returns {string}
  * @throws {Error} - If the string does not contain the searchRegex
  */
-function replaceAllInString (string, changes) {
-    let updatedFile = string
+function replaceAllInString(string, changes) {
+    let updatedFile = string;
     for (const [searchRegex, replace = ''] of changes) {
-        updatedFile = replaceInString(updatedFile, searchRegex, replace)
+        updatedFile = replaceInString(updatedFile, searchRegex, replace);
     }
-    return updatedFile
+    return updatedFile;
 }
 
 /**
@@ -40,8 +37,8 @@ function replaceAllInString (string, changes) {
  * @param {string} [anchor]
  * @returns {string}
  */
-function getLink (url, anchor) {
-    return `<a href="${url}">${anchor || url}</a>`
+function getLink(url, anchor) {
+    return `<a href="${url}">${anchor || url}</a>`;
 }
 
 /**
@@ -49,27 +46,8 @@ function getLink (url, anchor) {
  * @param {string} content
  * @returns {string}
  */
-function wrapInLi (content) {
-    return `<li>${content}</li>`
-}
-
-/**
- * Provide the source project.pbxproj for iOS and macOS and get it updated with the BSK reference
- * @param {string} projectPbxprojContent
- * @param {string} commit
- * @returns {string}
- */
-function updateProjectPbxproj (projectPbxprojContent, commit) {
-    const bskPackageRegex = new RegExp(
-        /(repositoryURL = "https:\/\/github\.com\/duckduckgo\/BrowserServicesKit";\s+requirement = {\s+kind = )(exactVersion)(;\s+)(version = \d+.\d+.\d+;)/,
-        'i'
-    )
-
-    return replaceInString(
-        projectPbxprojContent,
-        bskPackageRegex,
-        `$1revision$3revision = ${commit};`
-    )
+function wrapInLi(content) {
+    return `<li>${content}</li>`;
 }
 
 /**
@@ -78,17 +56,10 @@ function updateProjectPbxproj (projectPbxprojContent, commit) {
  * @param {string} version
  * @returns {string}
  */
-function updatePackageSwift (packageSwiftContent, version) {
-    const autofillPackageSwiftRegex = new RegExp(
-        /(\.package\(url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", exact: ")(.+)("\),)/,
-        'i'
-    )
+function updatePackageSwift(packageSwiftContent, version) {
+    const autofillPackageSwiftRegex = /(\.package\(url: "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill\.git", exact: ")(.+)("\),)/i;
 
-    return replaceInString(
-        packageSwiftContent,
-        autofillPackageSwiftRegex,
-        `$1${version}$3`
-    )
+    return replaceInString(packageSwiftContent, autofillPackageSwiftRegex, `$1${version}$3`);
 }
 
 /**
@@ -105,36 +76,28 @@ function updatePackageSwift (packageSwiftContent, version) {
  * }} substitutions
  * @returns {string}
  */
-function updatePackageResolved (packageResolvedContent, substitutions) {
-    let updatedContent = packageResolvedContent
+function updatePackageResolved(packageResolvedContent, substitutions) {
+    let updatedContent = packageResolvedContent;
 
     if (substitutions.autofill) {
-        const autofillRegex = new RegExp(
-            /("location" : "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : ")([\d.]+)("\s+})/,
-            'i'
-        )
+        const autofillRegex =
+            /("location" : "https:\/\/github.com\/duckduckgo\/duckduckgo-autofill.git",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : ")([\d.]+)("\s+})/i;
 
         updatedContent = replaceInString(
             updatedContent,
             autofillRegex,
-            `$1${substitutions.autofill.commit}$3${substitutions.autofill.version}$5`
-        )
+            `$1${substitutions.autofill.commit}$3${substitutions.autofill.version}$5`,
+        );
     }
 
     if (substitutions.bsk) {
-        const bskRegex = new RegExp(
-            /("location" : "https:\/\/github.com\/duckduckgo\/BrowserServicesKit",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/,
-            'i'
-        )
+        const bskRegex =
+            /("location" : "https:\/\/github.com\/duckduckgo\/apple-browsers",\s+"state" : {\s+"revision" : ")(\w+)(",\s+"version" : "[\d.]+)("\s+})/i;
 
-        updatedContent = replaceInString(
-            updatedContent,
-            bskRegex,
-            `$1${substitutions.bsk.commit}$4`
-        )
+        updatedContent = replaceInString(updatedContent, bskRegex, `$1${substitutions.bsk.commit}$4`);
     }
 
-    return updatedContent
+    return updatedContent;
 }
 
 module.exports = {
@@ -144,5 +107,4 @@ module.exports = {
     wrapInLi,
     updatePackageSwift,
     updatePackageResolved,
-    updateProjectPbxproj
-}
+};

@@ -50,52 +50,52 @@
  * debugMessaging.notify("pageLoad", { time: window.performance.now() })
  * ```
  */
-import { WebkitMessagingConfig, WebkitMessagingTransport } from './webkit.js'
+import { WebkitMessagingConfig, WebkitMessagingTransport } from './webkit.js';
 
 /**
  * @implements {MessagingTransport}
  */
 export class Messaging {
     /**
-   * @param {WebkitMessagingConfig} config
-   */
-    constructor (config) {
-        this.transport = getTransport(config)
+     * @param {WebkitMessagingConfig} config
+     */
+    constructor(config) {
+        this.transport = getTransport(config);
     }
     /**
-   * Send a 'fire-and-forget' message.
-   * @throws {Error}
-   * {@link MissingHandler}
-   *
-   * @example
-   *
-   * ```
-   * const messaging = new Messaging(config)
-   * messaging.notify("foo", {bar: "baz"})
-   * ```
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   */
-    notify (name, data = {}) {
-        this.transport.notify(name, data)
+     * Send a 'fire-and-forget' message.
+     * @throws {Error}
+     * {@link MissingHandler}
+     *
+     * @example
+     *
+     * ```
+     * const messaging = new Messaging(config)
+     * messaging.notify("foo", {bar: "baz"})
+     * ```
+     * @param {string} name
+     * @param {Record<string, any>} [data]
+     */
+    notify(name, data = {}) {
+        this.transport.notify(name, data);
     }
     /**
-   * Send a request, and wait for a response
-   * @throws {Error}
-   * {@link MissingHandler}
-   *
-   * @example
-   * ```
-   * const messaging = new Messaging(config)
-   * const response = await messaging.request("foo", {bar: "baz"})
-   * ```
-   *
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @return {Promise<any>}
-   */
-    request (name, data = {}) {
-        return this.transport.request(name, data)
+     * Send a request, and wait for a response
+     * @throws {Error}
+     * {@link MissingHandler}
+     *
+     * @example
+     * ```
+     * const messaging = new Messaging(config)
+     * const response = await messaging.request("foo", {bar: "baz"})
+     * ```
+     *
+     * @param {string} name
+     * @param {Record<string, any>} [data]
+     * @return {Promise<any>}
+     */
+    request(name, data = {}) {
+        return this.transport.request(name, data);
     }
 }
 
@@ -104,22 +104,22 @@ export class Messaging {
  */
 export class MessagingTransport {
     /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @returns {void}
-   */
+     * @param {string} name
+     * @param {Record<string, any>} [data]
+     * @returns {void}
+     */
     // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
-    notify (name, data = {}) {
-        throw new Error("must implement 'notify'")
+    notify(name, data = {}) {
+        throw new Error("must implement 'notify'");
     }
     /**
-   * @param {string} name
-   * @param {Record<string, any>} [data]
-   * @return {Promise<any>}
-   */
+     * @param {string} name
+     * @param {Record<string, any>} [data]
+     * @return {Promise<any>}
+     */
     // @ts-ignore - ignoring a no-unused ts error, this is only an interface.
-    request (name, data = {}) {
-        throw new Error('must implement')
+    request(name, data = {}) {
+        throw new Error('must implement');
     }
 }
 
@@ -127,11 +127,11 @@ export class MessagingTransport {
  * @param {WebkitMessagingConfig} config
  * @returns {MessagingTransport}
  */
-function getTransport (config) {
+function getTransport(config) {
     if (config instanceof WebkitMessagingConfig) {
-        return new WebkitMessagingTransport(config)
+        return new WebkitMessagingTransport(config);
     }
-    throw new Error('unreachable')
+    throw new Error('unreachable');
 }
 
 /**
@@ -139,16 +139,16 @@ function getTransport (config) {
  */
 export class MissingHandler extends Error {
     /**
-   * @param {string} message
-   * @param {string} handlerName
-   */
-    constructor (message, handlerName) {
-        super(message)
-        this.handlerName = handlerName
+     * @param {string} message
+     * @param {string} handlerName
+     */
+    constructor(message, handlerName) {
+        super(message);
+        this.handlerName = handlerName;
     }
 }
 
 /**
  * Some re-exports for convenience
  */
-export { WebkitMessagingConfig }
+export { WebkitMessagingConfig };

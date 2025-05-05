@@ -1,16 +1,10 @@
 // We've seen non-standard types like 'user'. This selector should get them, too
-const genericTextField = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`
+const genericTextInputField = `
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`;
 
-const formInputsSelectorWithoutSelect = [
-    genericTextField,
-    '[autocomplete=username]'
-]
+const formInputsSelectorWithoutSelect = [genericTextInputField, '[autocomplete=username]'];
 
-const formInputsSelector = [
-    ...formInputsSelectorWithoutSelect,
-    'select'
-]
+const formInputsSelector = [...formInputsSelectorWithoutSelect, 'select'];
 
 const submitButtonSelector = `
 input[type=submit],
@@ -19,9 +13,9 @@ input[type=image],
 button:not([role=switch]):not([role=link]),
 [role=button],
 a[href="#"][id*=button i],
-a[href="#"][id*=btn i]`
+a[href="#"][id*=btn i]`;
 
-const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)'
+const safeUniversalSelector = '*:not(select):not(option):not(script):not(noscript):not(style):not(br)';
 
 const emailAddress = [
     `
@@ -41,11 +35,11 @@ input[autocomplete=email]`,
     // https://account.nicovideo.jp/login
     `input[name="mail_tel" i]`,
     // https://www.morningstar.it/it/membership/LoginPopup.aspx
-    `input[value=email i]`
-]
+    `input[value=email i]`,
+];
 
 const username = [
-    `${genericTextField}[autocomplete^=user i]`,
+    `${genericTextInputField}[autocomplete^=user i]`,
     `input[name=username i]`,
     // fix for `aa.com`
     `input[name="loginId" i]`,
@@ -106,14 +100,14 @@ const username = [
     `input[can-field="accountName"]`,
     // https://www.fullcolor.com/customer/account/login/
     `input[name="login[username]"]`,
-    `input[placeholder^="username" i]`
-]
+    `input[placeholder^="username" i]`,
+];
 
 const password = [
     `input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i])`,
     // DDG's CloudSave feature https://duckduckgo.com/settings
-    'input.js-cloudsave-phrase'
-]
+    'input.js-cloudsave-phrase',
+];
 
 const cardName = `
 input[autocomplete="cc-name" i],
@@ -123,7 +117,7 @@ input[name="cc-name" i],
 input[name="ppw-accountHolderName" i],
 input[id*=cardname i],
 input[id*=card-name i],
-input[id*=card_name i]`
+input[id*=card_name i]`;
 
 const cardNumber = `
 input[autocomplete="cc-number" i],
@@ -136,7 +130,7 @@ input[name*=card i][name*=number i],
 input[name*=cardnumber i],
 input[id*=cardnumber i],
 input[id*=card-number i],
-input[id*=card_number i]`
+input[id*=card_number i]`;
 
 const cardSecurityCode = `
 input[autocomplete="cc-csc" i],
@@ -147,7 +141,7 @@ input[name="cvc" i],
 input[name="cc-cvc" i],
 input[name="cc-csc" i],
 input[name="csc" i],
-input[name*=security i][name*=code i]`
+input[name*=security i][name*=code i]`;
 
 const expirationMonth = `
 [autocomplete="cc-exp-month" i],
@@ -161,7 +155,7 @@ const expirationMonth = `
 [name*=cc-exp-month i],
 [name*="card_exp-month" i],
 [name*=cc_exp_month i],
-[id*=cc-month i]`
+[id*=cc-month i]`;
 
 const expirationYear = `
 [autocomplete="cc-exp-year" i],
@@ -175,14 +169,14 @@ const expirationYear = `
 [name*="cc-exp-year" i],
 [name*="card_exp-year" i],
 [name*=cc_exp_year i],
-[id*=cc-year i]`
+[id*=cc-year i]`;
 
 const expiration = `
 [autocomplete="cc-exp" i],
 [name="cc-exp" i],
 [name="exp-date" i],
 [name="expirationDate" i],
-input[id*=expiration i]`
+input[id*=expiration i]`;
 
 const firstName = `
 [name*=fname i], [autocomplete*=given-name i],
@@ -192,7 +186,7 @@ const firstName = `
 [name*=givenname i], [autocomplete*=givenname i],
 [name*=given-name i],
 [name*=given_name i], [autocomplete*=given_name i],
-[name*=forename i], [autocomplete*=forename i]`
+[name*=forename i], [autocomplete*=forename i]`;
 
 const middleName = `
 [name*=mname i], [autocomplete*=additional-name i],
@@ -201,7 +195,7 @@ const middleName = `
 [name*=middle_name i], [autocomplete*=middle_name i],
 [name*=additionalname i], [autocomplete*=additionalname i],
 [name*=additional-name i],
-[name*=additional_name i], [autocomplete*=additional_name i]`
+[name*=additional_name i], [autocomplete*=additional_name i]`;
 
 const lastName = `
 [name=lname], [autocomplete*=family-name i],
@@ -211,48 +205,48 @@ const lastName = `
 [name*=familyname i], [autocomplete*=familyname i],
 [name*=family-name i],
 [name*=family_name i], [autocomplete*=family_name i],
-[name*=surname i], [autocomplete*=surname i]`
+[name*=surname i], [autocomplete*=surname i]`;
 
 const fullName = `
 [autocomplete=name],
 [name*=fullname i], [autocomplete*=fullname i],
 [name*=full-name i], [autocomplete*=full-name i],
 [name*=full_name i], [autocomplete*=full_name i],
-[name*=your-name i], [autocomplete*=your-name i]`
+[name*=your-name i], [autocomplete*=your-name i]`;
 
 const phone = `
 [name*=phone i]:not([name*=extension i]):not([name*=type i]):not([name*=country i]),
 [name*=mobile i]:not([name*=type i]),
 [autocomplete=tel],
 [autocomplete="tel-national"],
-[placeholder*="phone number" i]`
+[placeholder*="phone number" i]`;
 
 const addressStreet = `
 [name=address i], [autocomplete=street-address i], [autocomplete=address-line1 i],
 [name=street i],
-[name=ppw-line1 i], [name*=addressLine1 i]`
+[name=ppw-line1 i], [name*=addressLine1 i]`;
 
 const addressStreet2 = `
 [name=address2 i], [autocomplete=address-line2 i],
-[name=ppw-line2 i], [name*=addressLine2 i]`
+[name=ppw-line2 i], [name*=addressLine2 i]`;
 
 const addressCity = `
 [name=city i], [autocomplete=address-level2 i],
-[name=ppw-city i], [name*=addressCity i]`
+[name=ppw-city i], [name*=addressCity i]`;
 
 const addressProvince = `
-[name=province i], [name=state i], [autocomplete=address-level1 i]`
+[name=province i], [name=state i], [autocomplete=address-level1 i]`;
 
 const addressPostalCode = `
 [name=zip i], [name=zip2 i], [name=postal i], [autocomplete=postal-code i], [autocomplete=zip-code i],
-[name*=postalCode i], [name*=zipcode i]`
+[name*=postalCode i], [name*=zipcode i]`;
 
 const addressCountryCode = [
     `[name=country i], [autocomplete=country i],
      [name*=countryCode i], [name*=country-code i],
      [name*=countryName i], [name*=country-name i]`,
-    `select.idms-address-country` // Fix for Apple signup
-]
+    `select.idms-address-country`, // Fix for Apple signup
+];
 
 const birthdayDay = `
 [autocomplete=bday-day i],
@@ -260,7 +254,7 @@ const birthdayDay = `
 [name*=birthday_day i], [name*=birthday-day i],
 [name=date_of_birth_day i], [name=date-of-birth-day i],
 [name^=birthdate_d i], [name^=birthdate-d i],
-[aria-label="birthday" i][placeholder="day" i]`
+[aria-label="birthday" i][placeholder="day" i]`;
 
 const birthdayMonth = `
 [autocomplete=bday-month i],
@@ -268,7 +262,7 @@ const birthdayMonth = `
 [name*=birthday_month i], [name*=birthday-month i],
 [name=date_of_birth_month i], [name=date-of-birth-month i],
 [name^=birthdate_m i], [name^=birthdate-m i],
-select[name="mm" i]`
+select[name="mm" i]`;
 
 const birthdayYear = `
 [autocomplete=bday-year i],
@@ -276,11 +270,11 @@ const birthdayYear = `
 [name*=birthday_year i], [name*=birthday-year i],
 [name=date_of_birth_year i], [name=date-of-birth-year i],
 [name^=birthdate_y i], [name^=birthdate-y i],
-[aria-label="birthday" i][placeholder="year" i]`
+[aria-label="birthday" i][placeholder="year" i]`;
 
 const selectors = {
     // Generic
-    genericTextField,
+    genericTextInputField,
     submitButtonSelector,
     formInputsSelectorWithoutSelect,
     formInputsSelector,
@@ -313,7 +307,7 @@ const selectors = {
     addressCountryCode,
     birthdayDay,
     birthdayMonth,
-    birthdayYear
-}
+    birthdayYear,
+};
 
-module.exports = {selectors}
+module.exports = { selectors };

@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Daugiau nerodyti",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importuoti slaptažodį į „DuckDuckGo“",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Greitai ir saugiai perkelkite slaptažodžius iš kitos naršyklės ar slaptažodžių tvarkyklės.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }

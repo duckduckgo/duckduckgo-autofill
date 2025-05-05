@@ -1,11 +1,11 @@
-import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js'
-import { createScanner } from '../Scanner.js'
-import {attachAndReturnGenericForm} from '../test-utils.js'
-import {constants} from '../constants.js'
+import InterfacePrototype from '../DeviceInterface/InterfacePrototype.js';
+import { createScanner } from '../Scanner.js';
+import { attachAndReturnGenericForm, setMockSiteSpecificFixes } from '../test-utils.js';
+import { constants } from '../constants.js';
 
 afterEach(() => {
-    document.body.innerHTML = ''
-})
+    document.body.innerHTML = '';
+});
 
 describe('Test the form class reading values correctly', () => {
     const testCases = [
@@ -18,7 +18,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with email',
@@ -29,7 +29,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with both email and username fields',
@@ -41,7 +41,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with readonly email fields and password',
@@ -52,7 +52,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with empty fields',
@@ -63,7 +63,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with only the password filled',
@@ -74,7 +74,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {password: 'testPassword'}}
+            expValues: { credentials: { password: 'testPassword' } },
         },
         {
             testCase: 'form with only the username filled',
@@ -85,7 +85,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form where the password is <=3 characters long',
@@ -96,7 +96,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: false,
-            expValues: {credentials: undefined}
+            expValues: { credentials: undefined },
         },
         {
             testCase: 'form with hidden email field',
@@ -107,7 +107,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'form with hidden username field',
@@ -118,7 +118,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'testUsername', password: 'testPassword'}}
+            expValues: { credentials: { username: 'testUsername', password: 'testPassword' } },
         },
         {
             testCase: 'form with email in plain text',
@@ -129,7 +129,7 @@ describe('Test the form class reading values correctly', () => {
     <button type="submit">Sign up</button>
 </form>`,
             expHasValues: true,
-            expValues: {credentials: {username: 'name@email.com', password: 'testPassword'}}
+            expValues: { credentials: { username: 'name@email.com', password: 'testPassword' } },
         },
         {
             testCase: 'complete checkout form',
@@ -186,16 +186,16 @@ describe('Test the form class reading values correctly', () => {
                     addressPostalCode: '23901',
                     addressCountryCode: 'US',
                     phone: '6100000000',
-                    emailAddress: 'peppapig@email.com'
+                    emailAddress: 'peppapig@email.com',
                 },
                 creditCards: {
                     cardName: 'Peppa Pig',
                     cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
+                    cardNumber: '4111111111111111',
+                },
+            },
         },
         {
             testCase: 'test localised country code with text input',
@@ -207,7 +207,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: true,
-            expValues: {identities: {addressCountryCode: 'IT'}}
+            expValues: { identities: { addressCountryCode: 'IT' } },
         },
         {
             testCase: 'incomplete identities form',
@@ -217,7 +217,7 @@ describe('Test the form class reading values correctly', () => {
     <input value="Italia" autocomplete="country" />
 </form>`,
             expHasValues: false,
-            expValues: {identities: undefined}
+            expValues: { identities: undefined },
         },
         {
             testCase: 'incomplete creditCard form',
@@ -227,7 +227,7 @@ describe('Test the form class reading values correctly', () => {
     <input autocomplete="cc-number" value="4111111111111111">
 </form>`,
             expHasValues: false,
-            expValues: {creditCards: undefined}
+            expValues: { creditCards: undefined },
         },
         {
             testCase: 'creditCard form with all values except cvv',
@@ -246,9 +246,9 @@ describe('Test the form class reading values correctly', () => {
                     cardName: 'Peppa Pig',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
+                    cardNumber: '4111111111111111',
+                },
+            },
         },
         {
             testCase: 'creditCard form with all values but name and identities name in adjacent field',
@@ -282,66 +282,76 @@ describe('Test the form class reading values correctly', () => {
                     cardSecurityCode: '123',
                     expirationMonth: '12',
                     expirationYear: '2028',
-                    cardNumber: '4111111111111111'
-                }
-            }
-        }
-    ]
-
-    test.each(testCases)('Test $testCase', (
+                    cardNumber: '4111111111111111',
+                },
+            },
+        },
         {
-            form,
-            expHasValues,
-            expValues
-        }) => {
-        const formEl = attachAndReturnGenericForm(form)
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        const formClass = scanner.forms.get(formEl)
-        const hasValues = formClass?.hasValues()
-        const formValues = formClass?.getValuesReadyForStorage()
+            testCase: 'signup form with email address and password, with first name and last name in adjacent fields    ',
+            form: `
+<form method="post" id="signupForm">
+    <input type="text" value="Dax" id="firstName" placeholder="First name" />
+    <input type="text" value="McDax" id="lastName" placeholder="Last name" />
+    <input type="email" value="dax@mcdax.com" autocomplete="email" />
+    <input type="password" value="123456" autocomplete="new-password" />
+    <button type="submit">Sign up</button>
+</form>`,
+            expHasValues: true,
+            expValues: {
+                credentials: { username: 'dax@mcdax.com', password: '123456' },
+            },
+        },
+    ];
 
-        expect(hasValues).toBe(expHasValues)
-        expect(formValues).toMatchObject(expValues)
-    })
-})
+    test.each(testCases)('Test $testCase', ({ form, expHasValues, expValues }) => {
+        const formEl = attachAndReturnGenericForm(form);
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const formClass = scanner.forms.get(formEl);
+        const hasValues = formClass?.hasValues();
+        const formValues = formClass?.getValuesReadyForStorage();
+
+        expect(hasValues).toBe(expHasValues);
+        expect(formValues).toMatchObject(expValues);
+    });
+});
 
 describe('Check form has focus', () => {
     test('focus detected correctly', () => {
-        const formEl = attachAndReturnGenericForm()
+        const formEl = attachAndReturnGenericForm();
 
         // When we require autofill, the script scores the fields in the DOM
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-        const formClass = scanner.forms.get(formEl)
+        const formClass = scanner.forms.get(formEl);
 
-        expect(formClass?.hasFocus()).toBe(false)
+        expect(formClass?.hasFocus()).toBe(false);
 
-        const input = formEl.querySelector('input')
-        input?.focus()
+        const input = formEl.querySelector('input');
+        input?.focus();
 
-        expect(formClass?.hasFocus()).toBe(true)
+        expect(formClass?.hasFocus()).toBe(true);
 
-        input?.blur()
+        input?.blur();
 
-        expect(formClass?.hasFocus()).toBe(false)
-    })
-})
+        expect(formClass?.hasFocus()).toBe(false);
+    });
+});
 
 describe('Attempt form submission when needed', () => {
-    const submitHandler = jest.fn((e) => e.preventDefault())
+    const submitHandler = jest.fn((e) => e.preventDefault());
 
-    afterEach(() => submitHandler.mockClear())
+    afterEach(() => submitHandler.mockClear());
 
     describe('Do not submit', () => {
         test('when the form is not a login', () => {
-            const formEl = attachAndReturnGenericForm()
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+            const formEl = attachAndReturnGenericForm();
+            formEl.addEventListener('submit', submitHandler);
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).not.toHaveBeenCalled()
-        })
+            const formClass = scanner.forms.get(formEl);
+            formClass?.attemptSubmissionIfNeeded();
+            expect(submitHandler).not.toHaveBeenCalled();
+        });
         test('when the form has more than one submit button', () => {
             const formEl = attachAndReturnGenericForm(`
                 <form>
@@ -349,15 +359,15 @@ describe('Attempt form submission when needed', () => {
                     <input type="password" value="testPassword" autocomplete="current-password" />
                     <button type="submit">Log in</button>
                     <button type="submit">Other weird login buton that takes you somewhere else</button>
-                </form>`)
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+                </form>`);
+            formEl.addEventListener('submit', submitHandler);
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).not.toHaveBeenCalled()
-        })
-    })
+            const formClass = scanner.forms.get(formEl);
+            formClass?.attemptSubmissionIfNeeded();
+            expect(submitHandler).not.toHaveBeenCalled();
+        });
+    });
     describe('Submit the form', () => {
         test('a valid login form with a clear submit button', () => {
             const formEl = attachAndReturnGenericForm(`
@@ -365,53 +375,363 @@ describe('Attempt form submission when needed', () => {
                     <input type="text" value="testUsername" autocomplete="username" />
                     <input type="password" value="testPassword" autocomplete="current-password" />
                     <button type="submit">Log in</button>
-                </form>`)
-            formEl.addEventListener('submit', submitHandler)
-            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
+                </form>`);
+            formEl.addEventListener('submit', submitHandler);
+            const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
 
-            const formClass = scanner.forms.get(formEl)
-            formClass?.attemptSubmissionIfNeeded()
-            expect(submitHandler).toHaveBeenCalled()
-        })
-    })
-})
+            const formClass = scanner.forms.get(formEl);
+            formClass?.attemptSubmissionIfNeeded();
+            expect(submitHandler).toHaveBeenCalled();
+        });
+    });
+});
 
 describe('Form bails', () => {
     beforeEach(() => {
-        document.body.innerHTML = ''
-    })
+        document.body.innerHTML = '';
+    });
     test('when it has too many fields on load', async () => {
-        const formEl = attachAndReturnGenericForm()
+        const formEl = attachAndReturnGenericForm();
         for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
-            const input = document.createElement('input')
-            input.type = 'email'
-            input.placeholder = 'Email address'
-            formEl.appendChild(input)
+            const input = document.createElement('input');
+            input.type = 'email';
+            input.placeholder = 'Email address';
+            formEl.appendChild(input);
         }
 
-        createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
-        expect(decoratedInputs).toHaveLength(0)
-    })
+        createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+        expect(decoratedInputs).toHaveLength(0);
+    });
     test('when too many fields are added after the initial scan', async () => {
-        const formEl = attachAndReturnGenericForm()
+        const formEl = attachAndReturnGenericForm();
 
-        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document)
-        let decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
-        expect(decoratedInputs).toHaveLength(2)
+        const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
+        let decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+        expect(decoratedInputs).toHaveLength(2);
 
-        const newInputs = []
+        const newInputs = [];
         for (let i = 0; i <= constants.MAX_INPUTS_PER_FORM + 10; i++) {
-            const input = document.createElement('input')
-            input.type = 'email'
-            input.placeholder = 'Email address'
-            newInputs.push(input)
+            const input = document.createElement('input');
+            input.type = 'email';
+            input.placeholder = 'Email address';
+            newInputs.push(input);
         }
-        formEl.append(...newInputs)
+        formEl.append(...newInputs);
         // Scan right away without waiting for the queue
-        scanner.findEligibleInputs(formEl)
+        scanner.findEligibleInputs(formEl);
 
-        decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`)
-        expect(decoratedInputs).toHaveLength(0)
-    })
-})
+        decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+        expect(decoratedInputs).toHaveLength(0);
+    });
+});
+
+describe('Form re-categorizes inputs', () => {
+    const deviceInterface = InterfacePrototype.default();
+    deviceInterface.settings.setFeatureToggles({
+        unknown_username_categorization: true,
+    });
+    describe('Should recategorize', () => {
+        test('when form has unknown input and has username data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                <input type="text" value="unknown" autocomplete="unknown" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Login</button>
+            </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+                identities: {
+                    phone: true,
+                },
+            });
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+            expect(form?.inputs.credentials.size).toBe(2);
+        });
+        test('when form has unknown input and has phone data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <input type="tel" placeholder="Phone" />
+                <input type="password" value="testPassword" autocomplete="new-password" />
+                <button type="submit">Sign in</button>
+            </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: false,
+                },
+                identities: {
+                    phone: true,
+                },
+            });
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.phone');
+            expect(form?.inputs.identities.size).toBe(1);
+        });
+
+        test('when form has card number input and has credit card data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <input type="text" name="cardNumber" placeholder="Card Number" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Sign in</button>
+            </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: false,
+                },
+                creditCards: {
+                    cardNumber: true,
+                },
+            });
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardNumber');
+            expect(form?.inputs.creditCards.size).toBe(1);
+        });
+    });
+
+    describe('Should not recategorize', () => {
+        test('when form has card name input, and has username and cardName data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <form>
+                <input type="text" value="testCardName" autocomplete="cc-name" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Login</button>
+            </form>`);
+            const scanner = createScanner(deviceInterface).findEligibleInputs(formEl);
+            const form = scanner.forms.get(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+                creditCards: {
+                    cardName: true,
+                },
+            });
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('creditCards.cardName');
+            expect(form?.inputs.creditCards.size).toBe(1);
+            expect(form?.inputs.unknown.size).toBe(0);
+        });
+
+        test('when form has username input and unknown input together, and username data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="text" value="unknown" autocomplete="unknown" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Sign in</button>
+                </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+            });
+            const scanner = createScanner(deviceInterface).findEligibleInputs(formEl);
+            const form = scanner.forms.get(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[1].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
+            expect(form?.inputs.unknown.size).toBe(1);
+            expect(form?.inputs.credentials.size).toBe(2);
+        });
+
+        test('when it is a signup form with unknown input and has username data available', () => {
+            const formEl = attachAndReturnGenericForm(`
+                <form>
+                    <input type="text" value="unknown" autocomplete="unknown" />
+                    <input type="password" value="testPassword" autocomplete="new-password" />
+                    <button type="submit">Sign up</button>
+                </form>`);
+            deviceInterface.settings.setAvailableInputTypes({
+                credentials: {
+                    username: true,
+                },
+            });
+            const scanner = createScanner(deviceInterface).findEligibleInputs(formEl);
+            const form = scanner.forms.get(formEl);
+            const decoratedInputs = document.querySelectorAll(`[${constants.ATTR_INPUT_TYPE}]`);
+            expect(decoratedInputs[0].getAttribute(constants.ATTR_INPUT_TYPE)).toBe('unknown');
+            expect(form?.inputs.unknown.size).toBe(1);
+            expect(form?.inputs.credentials.size).toBe(1);
+        });
+    });
+});
+
+describe('site specific fixes', () => {
+    describe('Form force boundary', () => {
+        beforeEach(() => {
+            document.body.innerHTML = '';
+        });
+        test('when a forced form is present in the config', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <div id="form-boundary">
+                <form id="original-form">
+                    <input type="text" value="testUsername" autocomplete="username" />  
+                </form>
+            </div>`);
+
+            // Given a runtime config with forced form boundary
+            const deviceInterface = InterfacePrototype.default();
+            setMockSiteSpecificFixes(deviceInterface, 'form-boundary');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const forcedForm = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            if (!forcedForm) {
+                throw new Error('Form boundary not found');
+            }
+            expect(scanner.forms.get(forcedForm)).toBeDefined();
+            expect(scanner.forms.get(formEl)).toBeUndefined();
+        });
+        test("when form doesn't have a forced boundary", () => {
+            const formEl = attachAndReturnGenericForm(`
+            <div id="form-boundary">
+                <form id="original-form">
+                    <input type="text" value="testUsername" autocomplete="username" />  
+                </form>
+            </div>`);
+
+            // given a runtime config without a forced form boundary (using a config that doesn't have a forced form boundary)
+            const deviceInterface = InterfacePrototype.default();
+            setMockSiteSpecificFixes(deviceInterface, 'login-to-signup');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const forcedForm = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            if (!forcedForm) {
+                throw new Error('Form boundary not found');
+            }
+            const form = scanner.forms.get(formEl);
+            expect(form?.form.getAttribute('id')).toBe('original-form');
+        });
+
+        test('when form element is a page container, the actual form is within a div and there are no site-specific-fixes, the child form gets destroyed', () => {
+            const formEl = attachAndReturnGenericForm(`
+            <form id="container-form">
+                <div id="form-boundary">
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Login</button>
+                </div>
+                <input type="text" value="testUsername2" autocomplete="username" />
+            </form>`);
+
+            // Given a runtime config without forced form boundary
+            const deviceInterface = InterfacePrototype.default();
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+
+            // Check that scanner actually contains the real form boundary
+            const formBoundaryElement = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            expect(scanner.forms.has(formBoundaryElement)).toBeFalsy();
+
+            // Username input belongs to the parent form instead of the form boundary
+            const usernameInput = /** @type {HTMLInputElement} */ (
+                document.querySelector('#container-form input[type="text"]:first-child')
+            );
+            const form = scanner.forms.get(formEl);
+            expect(form?.inputs.all.has(usernameInput)).toBeTruthy();
+
+            // Input doesn't belong to the form boundary
+            const formBoundaryForm = scanner.forms.get(formBoundaryElement);
+            expect(formBoundaryForm?.inputs.all.has(usernameInput)).toBeFalsy();
+        });
+
+        test("when form element is a page container, the actual form is within a div and site-specific-fixes are present, the child form doesn't get destroyed", () => {
+            attachAndReturnGenericForm(`
+            <form id="container-form">
+                <div id="form-boundary">
+                    <input type="text" value="testUsername" autocomplete="username" />
+                    <input type="password" value="testPassword" autocomplete="current-password" />
+                    <button type="submit">Login</button>
+                </div>
+                <input type="text" value="testUsername2" autocomplete="username" />
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+
+            // Given a runtime config with forced form boundary
+            setMockSiteSpecificFixes(deviceInterface, 'form-boundary');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+
+            // Check that scanner actually contains the real form boundary
+            const formBoundaryElement = /** @type {HTMLElement} */ (document.querySelector('#form-boundary'));
+            expect(scanner.forms.has(formBoundaryElement)).toBeTruthy();
+
+            const usernameInput = /** @type {HTMLInputElement} */ (document.querySelector('#form-boundary input[type="text"]:first-child'));
+
+            // Username input belongs to the form boundary
+            const formBoundaryForm = scanner.forms.get(formBoundaryElement);
+            expect(formBoundaryForm?.inputs.all.has(usernameInput)).toBeTruthy();
+        });
+    });
+
+    describe('Force form type', () => {
+        test('when a forced form (login) type is present in the config', () => {
+            // Given a signup form
+            const formEl = attachAndReturnGenericForm(`
+            <form id="signup">
+                <input type="text" value="testUsername" autocomplete="username" />
+                <input type="password" value="testPassword" autocomplete="new-password" />
+                <button type="submit">Sign up</button>
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+            // And a signup to login config, that forces the form to be a login form
+            setMockSiteSpecificFixes(deviceInterface, 'signup-to-login');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            // Then the form is a login form, instead of signup
+            expect(form?.isLogin).toBeTruthy();
+            expect(form?.isSignup).toBeFalsy();
+        });
+        test('when a forced form (signup) type is present in the config', () => {
+            // Given a login form
+            const formEl = attachAndReturnGenericForm(`
+            <form id="login">
+                <input type="text" value="testUsername" autocomplete="username" />
+                <input type="password" value="testPassword" autocomplete="current-password" />
+                <button type="submit">Login</button>
+            </form>`);
+
+            const deviceInterface = InterfacePrototype.default();
+            // And a login to signup config, that forces the form to be a signup form
+            setMockSiteSpecificFixes(deviceInterface, 'login-to-signup');
+            const scanner = createScanner(deviceInterface).findEligibleInputs(document);
+            const form = scanner.forms.get(formEl);
+            // Then the form is a signup form, instead of login
+            expect(form?.isLogin).toBeFalsy();
+            expect(form?.isSignup).toBeTruthy();
+        });
+    });
+
+    describe('Force input type', () => {
+        beforeEach(() => {
+            document.body.innerHTML = '';
+            attachAndReturnGenericForm(`
+                <form id="login">
+                    <input id="username-input" type="text" value="username" autocomplete="username" />
+                </form>`);
+        });
+
+        test('when a forced input type is not present in the config', () => {
+            const deviceInterface = InterfacePrototype.default();
+            // Setting a forced form type, but no forced input type
+            setMockSiteSpecificFixes(deviceInterface, 'form-boundary');
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const input = /** @type {HTMLInputElement} */ (document.getElementById('username-input'));
+            expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.username');
+        });
+
+        test('when a forced input type is present in the config', () => {
+            const deviceInterface = InterfacePrototype.default();
+            setMockSiteSpecificFixes(deviceInterface, 'input-type');
+            createScanner(deviceInterface).findEligibleInputs(document);
+            const input = /** @type {HTMLInputElement} */ (document.getElementById('username-input'));
+            expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
+        });
+    });
+});

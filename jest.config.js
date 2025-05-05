@@ -18,13 +18,11 @@ module.exports = {
 
     // ensure snapshots are in a JSON format
     snapshotFormat: {
-        printBasicPrototype: false
+        printBasicPrototype: false,
     },
-    transformIgnorePatterns: [
-        '/node_modules/(?!@duckduckgo/content-scope-(scripts|utils))'
-    ],
-    testPathIgnorePatterns: [
-        '/node_modules/',
-        '<rootDir>/integration-test'
-    ]
-}
+    transformIgnorePatterns: ['/node_modules/(?!@duckduckgo/content-scope-(scripts|utils))'],
+    testPathIgnorePatterns: ['/node_modules/', '<rootDir>/integration-test'],
+    moduleNameMapper: {
+        '\\.(css|less)$': '<rootDir>/__mocks__/styleMock.js',
+    },
+};

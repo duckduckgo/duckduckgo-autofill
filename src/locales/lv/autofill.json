@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Turpmāk nerādīt",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Importēt paroli DuckDuckGo",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Ātri un droši pārnes savas paroles no citas pārlūkprogrammas vai paroļu pārvaldnieka.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }

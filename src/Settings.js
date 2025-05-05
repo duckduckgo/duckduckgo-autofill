@@ -1,7 +1,9 @@
-import {validate} from '../packages/device-api/index.js'
-import {GetAvailableInputTypesCall, GetRuntimeConfigurationCall} from './deviceApiCalls/__generated__/deviceApiCalls.js'
-import {autofillSettingsSchema} from './deviceApiCalls/__generated__/validators.zod.js'
-import {autofillEnabled} from './autofill-utils.js'
+import { validate } from '../packages/device-api/index.js';
+import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
+import { autofillSettingsSchema } from './deviceApiCalls/__generated__/validators.zod.js';
+import { autofillEnabled } from './autofill-utils.js';
+import SiteSpecificFeature from './site-specific-feature.js';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils.js';
 
 /**
  * Some Type helpers to prevent duplication
@@ -23,27 +25,30 @@ import {autofillEnabled} from './autofill-utils.js'
  */
 export class Settings {
     /** @type {GlobalConfig} */
-    globalConfig
+    globalConfig;
     /** @type {DeviceApi} */
-    deviceApi
+    deviceApi;
     /** @type {AutofillFeatureToggles | null} */
-    _featureToggles = null
+    _featureToggles = null;
     /** @type {AvailableInputTypes | null} */
-    _availableInputTypes = null
+    _availableInputTypes = null;
     /** @type {RuntimeConfiguration | null | undefined} */
-    _runtimeConfiguration = null
+    _runtimeConfiguration = null;
     /** @type {boolean | null} */
-    _enabled = null
+    _enabled = null;
     /** @type {string} */
-    _language = 'en'
+    _language = 'en';
+
+    /** @type {SiteSpecificFeature | null} */
+    _siteSpecificFeature = null;
 
     /**
      * @param {GlobalConfig} config
      * @param {DeviceApi} deviceApi
      */
-    constructor (config, deviceApi) {
-        this.deviceApi = deviceApi
-        this.globalConfig = config
+    constructor(config, deviceApi) {
+        this.deviceApi = deviceApi;
+        this.globalConfig = config;
     }
 
     /**
@@ -58,17 +63,17 @@ export class Settings {
      *
      * @returns {Promise<AutofillFeatureToggles>}
      */
-    async getFeatureToggles () {
+    async getFeatureToggles() {
         try {
-            const runtimeConfig = await this._getRuntimeConfiguration()
-            const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema)
-            return autofillSettings.featureToggles
+            const runtimeConfig = await this._getRuntimeConfiguration();
+            const autofillSettings = validate(runtimeConfig.userPreferences?.features?.autofill?.settings, autofillSettingsSchema);
+            return autofillSettings.featureToggles;
         } catch (e) {
             // these are the fallbacks for when a platform hasn't implemented the calls above.
             if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: getFeatureToggles: ❌', e)
+                console.log('isDDGTestMode: getFeatureToggles: ❌', e);
             }
-            return Settings.defaults.featureToggles
+            return Settings.defaults.featureToggles;
         }
     }
 
@@ -78,17 +83,20 @@ export class Settings {
      * support this going forward.
      * @returns {Promise<boolean|null>}
      */
-    async getEnabled () {
+    async getEnabled() {
         try {
-            const runtimeConfig = await this._getRuntimeConfiguration()
-            const enabled = autofillEnabled(runtimeConfig)
-            return enabled
+            const runtimeConfig = await this._getRuntimeConfiguration();
+            // Also we might not need zod anymore for defining runtime config? We should simply rely on the
+            // C-S-S types.
+            // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
+            const enabled = autofillEnabled(runtimeConfig);
+            return enabled;
         } catch (e) {
             // these are the fallbacks for when a platform hasn't implemented the calls above. (like on android)
             if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: getEnabled: ❌', e)
+                console.log('isDDGTestMode: getEnabled: ❌', e);
             }
-            return null
+            return null;
         }
     }
 
@@ -104,20 +112,20 @@ export class Settings {
      *
      * @returns {Promise<string>} the device's current language code, or 'en' if something goes wrong
      */
-    async getLanguage () {
+    async getLanguage() {
         try {
-            const conf = await this._getRuntimeConfiguration()
-            const language = conf.userPreferences.language ?? 'en'
+            const conf = await this._getRuntimeConfiguration();
+            const language = conf.userPreferences.language ?? 'en';
             if (language.length !== 2) {
-                console.warn(`config.userPreferences.language must be two characters, but received '${language}'`)
-                return 'en'
+                console.warn(`config.userPreferences.language must be two characters, but received '${language}'`);
+                return 'en';
             }
-            return language
+            return language;
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: getLanguage: ❌', e)
+                console.log('isDDGTestMode: getLanguage: ❌', e);
             }
-            return 'en'
+            return 'en';
         }
     }
 
@@ -134,11 +142,11 @@ export class Settings {
      * @throws
      * @private
      */
-    async _getRuntimeConfiguration () {
-        if (this._runtimeConfiguration) return this._runtimeConfiguration
-        const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null))
-        this._runtimeConfiguration = runtimeConfig
-        return this._runtimeConfiguration
+    async _getRuntimeConfiguration() {
+        if (this._runtimeConfiguration) return this._runtimeConfiguration;
+        const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null));
+        this._runtimeConfiguration = runtimeConfig;
+        return this._runtimeConfiguration;
     }
 
     /**
@@ -147,19 +155,77 @@ export class Settings {
      *
      * @returns {Promise<AvailableInputTypes>}
      */
-    async getAvailableInputTypes () {
+    async getAvailableInputTypes() {
         try {
             // This info is not needed in the topFrame, so we avoid calling the native app
             if (this.globalConfig.isTopFrame) {
-                return Settings.defaults.availableInputTypes
+                return Settings.defaults.availableInputTypes;
             }
-            return await this.deviceApi.request(new GetAvailableInputTypesCall(null))
+            return await this.deviceApi.request(new GetAvailableInputTypesCall(null));
         } catch (e) {
             if (this.globalConfig.isDDGTestMode) {
-                console.log('isDDGTestMode: getAvailableInputTypes: ❌', e)
+                console.log('isDDGTestMode: getAvailableInputTypes: ❌', e);
             }
-            return Settings.defaults.availableInputTypes
+            return Settings.defaults.availableInputTypes;
         }
+    }
+
+    /**
+     * @returns {SiteSpecificFeature|null}
+     */
+    get siteSpecificFeature() {
+        return this._siteSpecificFeature;
+    }
+
+    /**
+     * WORKAROUND: Currently C-S-S only suppports parsing top level features, so we need to manually allow
+     * setting top level features in the content scope from nested features.
+     * @param {RuntimeConfiguration} runtimeConfig
+     * @param {string} name
+     * @returns {RuntimeConfiguration}
+     */
+    setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
+        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
+            runtimeConfig.contentScope
+        );
+        const feature = contentScope.features.autofill.features?.[name];
+        // If the feature is not enabled or already exists, do nothing
+        if (feature?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
+
+        if (feature) {
+            runtimeConfig.contentScope.features = {
+                ...contentScope.features,
+                [name]: {
+                    ...feature,
+                    exceptions: [],
+                    hash: '',
+                },
+            };
+        }
+        return runtimeConfig;
+    }
+
+    async getsiteSpecificFeature() {
+        if (this._siteSpecificFeature) return this._siteSpecificFeature;
+
+        try {
+            const runtimeConfig = await this._getRuntimeConfiguration();
+            this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, 'siteSpecificFixes');
+            // @ts-ignore
+            const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
+            return new SiteSpecificFeature(args);
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getsiteSpecificFeature: ❌', e);
+            }
+            return Settings.defaults.siteSpecificFeature;
+        }
+    }
+
+    setsiteSpecificFeature(siteSpecificFeature) {
+        if (this._siteSpecificFeature) return;
+
+        this._siteSpecificFeature = siteSpecificFeature;
     }
 
     /**
@@ -173,24 +239,25 @@ export class Settings {
      *      enabled: boolean | null
      * }>}
      */
-    async refresh () {
-        this.setEnabled(await this.getEnabled())
-        this.setFeatureToggles(await this.getFeatureToggles())
-        this.setAvailableInputTypes(await this.getAvailableInputTypes())
-        this.setLanguage(await this.getLanguage())
+    async refresh() {
+        this.setEnabled(await this.getEnabled());
+        this.setsiteSpecificFeature(await this.getsiteSpecificFeature());
+        this.setFeatureToggles(await this.getFeatureToggles());
+        this.setAvailableInputTypes(await this.getAvailableInputTypes());
+        this.setLanguage(await this.getLanguage());
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
             if (!this.enabled) {
-                return Settings.defaults
+                return Settings.defaults;
             }
         }
 
         return {
             featureToggles: this.featureToggles,
             availableInputTypes: this.availableInputTypes,
-            enabled: this.enabled
-        }
+            enabled: this.enabled,
+        };
     }
 
     /**
@@ -202,27 +269,27 @@ export class Settings {
      * }} types
      * @returns {boolean}
      */
-    isTypeUnavailable ({mainType, subtype, variant}) {
-        if (mainType === 'unknown') return true
+    isTypeUnavailable({ mainType, subtype, variant }) {
+        if (mainType === 'unknown') return true;
 
         // Ensure password generation feature flag is respected
         if (subtype === 'password' && variant === 'new') {
-            return !this.featureToggles.password_generation
+            return !this.featureToggles.password_generation;
         }
 
         if (!this.featureToggles[`inputType_${mainType}`] && subtype !== 'emailAddress') {
-            return true
+            return true;
         }
-        return false
+        return false;
     }
 
     /**
      * Requests data from remote
      * @returns {Promise<>}
      */
-    async populateData () {
-        const availableInputTypesFromRemote = await this.getAvailableInputTypes()
-        this.setAvailableInputTypes(availableInputTypesFromRemote)
+    async populateData() {
+        const availableInputTypesFromRemote = await this.getAvailableInputTypes();
+        this.setAvailableInputTypes(availableInputTypesFromRemote);
     }
 
     /**
@@ -234,13 +301,13 @@ export class Settings {
      * }} types
      * @returns {Promise<boolean>}
      */
-    async populateDataIfNeeded ({mainType, subtype, variant}) {
-        if (this.isTypeUnavailable({mainType, subtype, variant})) return false
+    async populateDataIfNeeded({ mainType, subtype, variant }) {
+        if (this.isTypeUnavailable({ mainType, subtype, variant })) return false;
         if (this.availableInputTypes?.[mainType] === undefined) {
-            await this.populateData()
-            return true
+            await this.populateData();
+            return true;
         }
-        return false
+        return false;
     }
 
     /**
@@ -254,71 +321,73 @@ export class Settings {
      * @param {import("./InContextSignup.js").InContextSignup?} inContextSignup
      * @returns {boolean}
      */
-    canAutofillType ({mainType, subtype, variant}, inContextSignup) {
-        if (this.isTypeUnavailable({ mainType, subtype, variant })) return false
+    canAutofillType({ mainType, subtype, variant }, inContextSignup) {
+        if (this.isTypeUnavailable({ mainType, subtype, variant })) return false;
 
         // If it's an email field and Email Protection is enabled, return true regardless of other options
-        const isEmailProtectionEnabled = this.featureToggles.emailProtection && this.availableInputTypes.email
+        const isEmailProtectionEnabled = this.featureToggles.emailProtection && this.availableInputTypes.email;
         if (subtype === 'emailAddress' && isEmailProtectionEnabled) {
-            return true
+            return true;
         }
 
         if (inContextSignup?.isAvailable(subtype)) {
-            return true
+            return true;
         }
 
         // Check for password generation and the password.new scoring
         if (subtype === 'password' && variant === 'new' && this.featureToggles.password_generation) {
-            return true
+            return true;
         }
 
         if (subtype === 'fullName') {
-            return Boolean(this.availableInputTypes.identities?.firstName || this.availableInputTypes.identities?.lastName)
+            return Boolean(this.availableInputTypes.identities?.firstName || this.availableInputTypes.identities?.lastName);
         }
 
         if (subtype === 'expiration') {
-            return Boolean(this.availableInputTypes.creditCards?.expirationMonth || this.availableInputTypes.creditCards?.expirationYear)
+            return Boolean(this.availableInputTypes.creditCards?.expirationMonth || this.availableInputTypes.creditCards?.expirationYear);
         }
 
-        return Boolean(this.availableInputTypes[mainType]?.[subtype])
+        return Boolean(this.availableInputTypes[mainType]?.[subtype]);
     }
 
     /** @returns {AutofillFeatureToggles} */
-    get featureToggles () {
-        if (this._featureToggles === null) throw new Error('feature toggles accessed before being set')
-        return this._featureToggles
+    get featureToggles() {
+        if (this._featureToggles === null) throw new Error('feature toggles accessed before being set');
+        return this._featureToggles;
     }
 
     /** @param {AutofillFeatureToggles} input */
-    setFeatureToggles (input) {
-        this._featureToggles = input
+    setFeatureToggles(input) {
+        this._featureToggles = input;
     }
 
     /** @returns {AvailableInputTypes} */
-    get availableInputTypes () {
-        if (this._availableInputTypes === null) throw new Error('available input types accessed before being set')
-        return this._availableInputTypes
+    get availableInputTypes() {
+        if (this._availableInputTypes === null) throw new Error('available input types accessed before being set');
+        return this._availableInputTypes;
     }
 
     /** @param {AvailableInputTypes} value */
-    setAvailableInputTypes (value) {
-        this._availableInputTypes = {...this._availableInputTypes, ...value}
+    setAvailableInputTypes(value) {
+        this._availableInputTypes = { ...this._availableInputTypes, ...value };
     }
 
     /** @returns {string} the user's current two-character language code, as provided by the platform */
-    get language () {
-        return this._language
+    get language() {
+        return this._language;
     }
 
     /**
      * Sets the current two-character language code.
      * @param {string} language - the language
      */
-    setLanguage (language) {
-        this._language = language
+    setLanguage(language) {
+        this._language = language;
     }
 
     static defaults = {
+        /** @type {SiteSpecificFeature | null} */
+        siteSpecificFeature: null,
         /** @type {AutofillFeatureToggles} */
         featureToggles: {
             credentials_saving: false,
@@ -328,13 +397,15 @@ export class Settings {
             inputType_identities: false,
             inputType_credentials: false,
             inputType_creditCards: false,
-            inlineIcon_credentials: false
+            inlineIcon_credentials: false,
+            unknown_username_categorization: false,
+            partial_form_saves: false,
         },
         /** @type {AvailableInputTypes} */
         availableInputTypes: {
             credentials: {
                 username: false,
-                password: false
+                password: false,
             },
             identities: {
                 firstName: false,
@@ -350,37 +421,37 @@ export class Settings {
                 addressPostalCode: false,
                 addressCountryCode: false,
                 phone: false,
-                emailAddress: false
+                emailAddress: false,
             },
             creditCards: {
                 cardName: false,
                 cardSecurityCode: false,
                 expirationMonth: false,
                 expirationYear: false,
-                cardNumber: false
+                cardNumber: false,
             },
-            email: false
+            email: false,
         },
         /** @type {boolean | null} */
-        enabled: null
-    }
+        enabled: null,
+    };
 
-    static default (globalConfig, deviceApi) {
-        const settings = new Settings(globalConfig, deviceApi)
-        settings.setFeatureToggles(Settings.defaults.featureToggles)
-        settings.setAvailableInputTypes(Settings.defaults.availableInputTypes)
-        return settings
+    static default(globalConfig, deviceApi) {
+        const settings = new Settings(globalConfig, deviceApi);
+        settings.setFeatureToggles(Settings.defaults.featureToggles);
+        settings.setAvailableInputTypes(Settings.defaults.availableInputTypes);
+        return settings;
     }
 
     /** @returns {boolean|null} */
-    get enabled () {
-        return this._enabled
+    get enabled() {
+        return this._enabled;
     }
 
     /**
      * @param {boolean|null} enabled
      */
-    setEnabled (enabled) {
-        this._enabled = enabled
+    setEnabled(enabled) {
+        this._enabled = enabled;
     }
 }

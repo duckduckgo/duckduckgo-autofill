@@ -282,8 +282,8 @@ const COUNTRY_CODES_TO_NAMES = {
     ZM: 'Zambia',
     ZR: 'Congo - Kinshasa',
     ZW: 'Zimbabwe',
-    ZZ: 'Unknown Region'
-}
+    ZZ: 'Unknown Region',
+};
 
 /**
  * Country names object using country name to reference 2-letter country codes
@@ -299,7 +299,7 @@ const COUNTRY_NAMES_TO_CODES = {
     Anguilla: 'AI',
     Albania: 'AL',
     Armenia: 'AM',
-    'Curaçao': 'CW',
+    Curaçao: 'CW',
     Angola: 'AO',
     Antarctica: 'AQ',
     Argentina: 'AR',
@@ -488,7 +488,7 @@ const COUNTRY_NAMES_TO_CODES = {
     Paraguay: 'PY',
     Qatar: 'QA',
     'Outlying Oceania': 'QO',
-    'Réunion': 'RE',
+    Réunion: 'RE',
     Zimbabwe: 'ZW',
     Romania: 'RO',
     Russia: 'SU',
@@ -553,10 +553,7 @@ const COUNTRY_NAMES_TO_CODES = {
     Mayotte: 'YT',
     'South Africa': 'ZA',
     Zambia: 'ZM',
-    'Unknown Region': 'ZZ'
-}
+    'Unknown Region': 'ZZ',
+};
 
-export {
-    COUNTRY_CODES_TO_NAMES,
-    COUNTRY_NAMES_TO_CODES
-}
+export { COUNTRY_CODES_TO_NAMES, COUNTRY_NAMES_TO_CODES };

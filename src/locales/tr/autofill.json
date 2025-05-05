@@ -87,5 +87,13 @@
   "dontShowAgain" : {
     "title" : "Bir Daha Gösterme",
     "note" : "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "credentialsImportHeading" : {
+    "title" : "Şifreyi DuckDuckGo'ya aktar",
+    "note" : "Label that when clicked, will open a dialog to import user's credentials from other browsers"
+  },
+  "credentialsImportText" : {
+    "title" : "Şifrelerinizi başka bir tarayıcıdan veya şifre yöneticisinden hızlı ve güvenli bir şekilde aktarın.",
+    "note" : "Subtitle that explains the purpose of the import dialog"
   }
 }

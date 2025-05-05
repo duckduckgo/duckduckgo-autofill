@@ -1,1 +1,1 @@
-export const CSS_STYLES = '$CSS_STYLES$'
+export const CSS_STYLES = '$CSS_STYLES$';

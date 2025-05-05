@@ -1,0 +1,16 @@
+src/**/*.d.ts
+dist/*
+debug/*
+integration-test/extension/autofill.js
+integration-test/extension/autofill-debug.js
+shared/js/content-scope/sjcl.js
+unit-test/data/reference-tests
+docs/**/*
+src/deviceApiCalls/__generated__/*
+src/Form/matching-config/__generated__/*
+playwright-report/*
+**/*.json
+**/*.md
+**/*.html
+**/*.har
+**/*.css

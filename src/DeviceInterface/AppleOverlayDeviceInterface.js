@@ -1,7 +1,8 @@
-import {AppleDeviceInterface} from './AppleDeviceInterface.js'
-import {HTMLTooltipUIController} from '../UI/controllers/HTMLTooltipUIController.js'
-import {overlayApi} from './overlayApi.js'
-import {createNotification} from '../../packages/device-api/index.js'
+import { AppleDeviceInterface } from './AppleDeviceInterface.js';
+import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIController.js';
+import { overlayApi } from './overlayApi.js';
+import { createNotification } from '../../packages/device-api/index.js';
+import { defaultOptions } from '../UI/HTMLTooltip.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -15,15 +16,15 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * Mark top frame as not stripping credential data
      * @type {boolean}
      */
-    stripCredentials = false
+    stripCredentials = false;
 
     /**
      * overlay API helpers
      */
-    overlay = overlayApi(this)
+    overlay = overlayApi(this);
 
-    previousX = 0
-    previousY = 0
+    previousX = 0;
+    previousY = 0;
 
     /**
      * Because we're running inside the Overlay, we always create the HTML
@@ -32,20 +33,31 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @override
      * @returns {import("../UI/controllers/UIController.js").UIController}
      */
-    createUIController () {
-        return new HTMLTooltipUIController({
-            tooltipKind: /** @type {const} */ ('modern'),
-            device: this
-        }, {
-            wrapperClass: 'top-autofill',
-            tooltipPositionClass: () => '.wrapper { transform: none; }',
-            setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
-            remove: async () => this._closeAutofillParent(),
-            testMode: this.isTestMode()
-        })
+    createUIController() {
+        return new HTMLTooltipUIController(
+            {
+                tooltipKind: /** @type {const} */ ('modern'),
+                device: this,
+            },
+            {
+                ...defaultOptions,
+                platform: 'macos',
+                wrapperClass: 'top-autofill',
+                isTopAutofill: true,
+                tooltipPositionClass: () => '.wrapper { transform: none; }',
+                setSize: (details) => this.deviceApi.notify(createNotification('setSize', details)),
+                remove: async () => this._closeAutofillParent(),
+                testMode: this.isTestMode(),
+            },
+        );
     }
 
-    addDeviceListeners () {
+    async startCredentialsImportFlow() {
+        this._closeAutofillParent();
+        await this.deviceApi.notify(createNotification('startCredentialsImportFlow'));
+    }
+
+    addDeviceListeners() {
         /**
          * The native side will send a custom event 'mouseMove' to indicate
          * that the HTMLTooltip should fake an element being focused.
@@ -61,18 +73,18 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
                 (!this.previousX && !this.previousY) || // if no previous coords
                 (this.previousX === event.detail.x && this.previousY === event.detail.y) // or the mouse hasn't moved
             ) {
-                this.previousX = event.detail.x
-                this.previousY = event.detail.y
-                return
+                this.previousX = event.detail.x;
+                this.previousY = event.detail.y;
+                return;
             }
 
-            const activeTooltip = this.uiController?.getActiveTooltip?.()
-            activeTooltip?.focus(event.detail.x, event.detail.y)
-            this.previousX = event.detail.x
-            this.previousY = event.detail.y
-        })
+            const activeTooltip = this.uiController?.getActiveTooltip?.();
+            activeTooltip?.focus(event.detail.x, event.detail.y);
+            this.previousX = event.detail.x;
+            this.previousY = event.detail.y;
+        });
 
-        return super.addDeviceListeners()
+        return super.addDeviceListeners();
     }
 
     /**
@@ -82,20 +94,20 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @override
      * @returns {Promise<void>}
      */
-    async setupAutofill () {
-        await this._getAutofillInitData()
-        await this.inContextSignup.init()
-        const signedIn = await this._checkDeviceSignedIn()
+    async setupAutofill() {
+        await this._getAutofillInitData();
+        await this.inContextSignup.init();
+        const signedIn = await this._checkDeviceSignedIn();
 
         if (signedIn) {
-            await this.getAddresses()
+            await this.getAddresses();
         }
     }
 
-    async postInit () {
+    async postInit() {
         // setup overlay API pieces
-        this.overlay.showImmediately()
-        super.postInit()
+        this.overlay.showImmediately();
+        super.postInit();
     }
 
     /**
@@ -107,9 +119,9 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @param {IdentityObject|CreditCardObject|CredentialsObject|{email:string, id: string}} data
      * @param {string} type
      */
-    async selectedDetail (data, type) {
-        return this.overlay.selectedDetail(data, type)
+    async selectedDetail(data, type) {
+        return this.overlay.selectedDetail(data, type);
     }
 }
 
-export { AppleOverlayDeviceInterface }
+export { AppleOverlayDeviceInterface };

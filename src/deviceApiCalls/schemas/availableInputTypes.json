@@ -99,6 +99,9 @@
         "locked",
         "unlocked"
       ]
+    },
+    "credentialsImport": {
+      "type": "boolean"
     }
   }
 }

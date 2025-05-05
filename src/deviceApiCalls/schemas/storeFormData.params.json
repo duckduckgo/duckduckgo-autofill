@@ -23,6 +23,7 @@
     "trigger": {
       "type": "string",
       "enum": [
+        "partialSave",
         "formSubmission",
         "passwordGeneration",
         "emailProtection"
