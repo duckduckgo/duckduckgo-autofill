@@ -6,7 +6,7 @@
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getRuntimeConfigurationResponse", success: {...} }')`
-  - See [Response Schema](../src/schemas/response.getRuntimeConfiguration.schema.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getRuntimeConfiguration.result.json)
 
 **request example**
 
@@ -68,7 +68,7 @@ This represents which input types we can autofill for the current user.
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAvailableInputTypesResponse", success: {...} }')`
-  - See [Response Schema](../src/schemas/getAvailableInputTypes.result.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json)
 
 **request example**
 
@@ -131,8 +131,8 @@ optional as they are not supported on Windows.
 
 see:
 
-- [../src/schemas/getAutofillData.params.json](../src/schemas/getAutofillData.params.json)
-- [../src/schemas/getAutofillData.result.json](../src/schemas/getAutofillData.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getAutofillData.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **request example**
 
@@ -207,7 +207,7 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillInitData' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAutofillInitDataResponse", success: {...} }')`
-  - See [Response Schema](../src/schemas/getAutofillData.result.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **response example**
 
@@ -233,8 +233,8 @@ see:
 
 see:
 
-- [../src/schemas/getIdentity.params.json](../src/schemas/getIdentity.params.json)
-- [../src/schemas/getIdentity.result.json](../src/schemas/getIdentity.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getIdentity.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getIdentity.result.json)
 
 ```json
 {
@@ -261,8 +261,8 @@ see:
 
 see:
 
-- [../src/schemas/getCreditCard.params.json](../src/schemas/getCreditCard.params.json)
-- [../src/schemas/getCreditCard.result.json](../src/schemas/getCreditCard.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getCreditCard.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getCreditCard.result.json)
 
 **response example**
 
@@ -300,8 +300,8 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillCredentials', Data: { id: "01" } })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAutofillCredentialsResponse", success: {...} }')`
-  - See [Request Schema](../src/schemas/getAutofillCredentials.params.json)
-  - See [Response Schema](../src/schemas/getAutofillCredentials.result.json)
+  - See [Request Schema](../src/deviceApiCalls/schemas/getAutofillCredentials.params.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getAutofillCredentials.result.json)
 
 **request example**
 

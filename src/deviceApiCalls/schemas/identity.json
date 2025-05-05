@@ -68,9 +68,6 @@
       "description": "Email address"
     }
   },
-  "required": [
-    "id",
-    "title"
-  ],
+  "required": ["id", "title"],
   "additionalProperties": false
 }

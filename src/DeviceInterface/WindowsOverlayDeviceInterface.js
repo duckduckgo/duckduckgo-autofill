@@ -180,12 +180,17 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets a single identity obj once the user requests it
-     * @param {Number} id
+     * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     async getAutofillIdentity(id) {
-        // FIXME: do we need to check the local identities - getLocalIdentities?
-        // const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
+        const PRIVATE_ADDRESS_ID = 'privateAddress';
+        const PERSONAL_ADDRESS_ID = 'personalAddress';
+
+        if (id === PRIVATE_ADDRESS_ID || id === PERSONAL_ADDRESS_ID) {
+            const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
+            return { success: identity };
+        }
         const result = await this.deviceApi.request(new GetIdentityCall({ id }));
         return { success: result };
     }

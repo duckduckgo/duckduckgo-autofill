@@ -171,7 +171,7 @@ export class StartCredentialsImportFlowCall extends DeviceApiCall {
  */
 export class GetIdentityCall extends DeviceApiCall {
   method = "getIdentity"
-  id = "getIdentity"
+  id = "getIdentityResponse"
   resultValidator = getIdentityResultSchema
 }
 /**
@@ -179,7 +179,7 @@ export class GetIdentityCall extends DeviceApiCall {
  */
 export class GetCreditCardCall extends DeviceApiCall {
   method = "getCreditCard"
-  id = "getCreditCard"
+  id = "getCreditCardResponse"
   resultValidator = getCreditCardResultSchema
 }
 /**

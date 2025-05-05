@@ -897,11 +897,13 @@ Source: "${matchedFrom}"`;
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-      const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+      const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
+      const type = forcedInputType || this.inferInputType(input, formEl, opts);
       input.setAttribute(ATTR_INPUT_TYPE, type);
       return type;
     }
@@ -4213,7 +4215,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower; required: upper; required: digit; required: [#$%^&!@];"
     },
     "hetzner.com": {
-      "password-rules": "minlength: 8; required: lower; required: upper; required: digit, special;"
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit, required: [-^!$%/()=?+#.,;:~*@{}_&[]];"
     },
     "hilton.com": {
       "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
@@ -5290,12 +5292,12 @@ Source: "${matchedFrom}"`;
         return "";
       },
       getIconAlternate: () => "",
-      shouldDecorate: async (input, { isLogin, isHybrid, device, isCredentialsImoprtAvailable }) => {
+      shouldDecorate: async (input, { isLogin, isHybrid, device, isCredentialsImportAvailable }) => {
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         if (subtype === "password" && variant === "new" || // New passord field
         isLogin || isHybrid || variant === "current") {
-          return isCredentialsImoprtAvailable || canBeAutofilled(input, device);
+          return isCredentialsImportAvailable || canBeAutofilled(input, device);
         }
         return false;
       },
@@ -5863,7 +5865,7 @@ Source: "${matchedFrom}"`;
         hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
         supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
       };
-      this.matching.setInputType(input, this.form, opts);
+      this.matching.setInputType(input, this.form, this.device.settings.siteSpecificFeature, opts);
       const mainInputType = getInputMainType(input);
       this.inputs[mainInputType].add(input);
       this.decorateInput(input);
@@ -6043,7 +6045,7 @@ Source: "${matchedFrom}"`;
         } else if (isIncontextSignupAvailable) {
           return false;
         } else {
-          return this.isCredentialsImoprtAvailable;
+          return this.isCredentialsImportAvailable;
         }
       }
       if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
@@ -6150,7 +6152,7 @@ Source: "${matchedFrom}"`;
     touchAllInputs(dataType = "all") {
       this.execOnInputs((input) => this.touched.add(input), dataType);
     }
-    get isCredentialsImoprtAvailable() {
+    get isCredentialsImportAvailable() {
       const isLoginOrHybrid = this.isLogin || this.isHybrid;
       return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
@@ -6168,7 +6170,7 @@ Source: "${matchedFrom}"`;
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
       await this.device.settings.populateDataIfNeeded({ mainType, subtype });
-      if (this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) || this.isCredentialsImoprtAvailable) {
+      if (this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) || this.isCredentialsImportAvailable) {
         setTimeout(() => {
           safeExecute(this.form, () => {
             const { x, y, width, height } = this.form.getBoundingClientRect();
@@ -10663,12 +10665,12 @@ Source: "${matchedFrom}"`;
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
     getIdentity: z.record(z.unknown()).and(z.object({
-      id: z.literal("getIdentity").optional(),
+      id: z.literal("getIdentityResponse").optional(),
       paramValidator: getIdentityParamSchema.optional(),
       resultValidator: getIdentityResultSchema.optional()
     })).optional(),
     getCreditCard: z.record(z.unknown()).and(z.object({
-      id: z.literal("getCreditCard").optional(),
+      id: z.literal("getCreditCardResponse").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
       resultValidator: getCreditCardResultSchema.optional()
     })).optional(),
@@ -11085,7 +11087,7 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "getIdentity");
-      __publicField(this, "id", "getIdentity");
+      __publicField(this, "id", "getIdentityResponse");
       __publicField(this, "resultValidator", getIdentityResultSchema);
     }
   };
@@ -11093,7 +11095,7 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "getCreditCard");
-      __publicField(this, "id", "getCreditCard");
+      __publicField(this, "id", "getCreditCardResponse");
       __publicField(this, "resultValidator", getCreditCardResultSchema);
     }
   };
@@ -12600,13 +12602,29 @@ Source: "${matchedFrom}"`;
       super(FEATURE_NAME, args);
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
+     * @returns {InputTypeSetting[]}
+     */
+    get inputTypeSettings() {
+      return this.getFeatureSetting("inputTypeSettings") || [];
+    }
+    /**
+     * @param {HTMLInputElement} input
+     * @returns {import('./Form/matching').SupportedTypes | null}
+     */
+    getForcedInputType(input) {
+      const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
+      if (!isValidSupportedType(setting?.type))
+        return null;
+      return setting?.type;
+    }
+    /**
+     * @returns {FormTypeSetting[]}
      */
     get formTypeSettings() {
       return this.getFeatureSetting("formTypeSettings") || [];
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySelector'] | null}
+     * @returns {FormBoundarySelector|null}
      */
     get formBoundarySelector() {
       return this.getFeatureSetting("formBoundarySelector");
@@ -12617,7 +12635,7 @@ Source: "${matchedFrom}"`;
      * @returns {string|null|undefined}
      */
     getForcedFormType(form) {
-      return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type;
+      return this.formTypeSettings.find((config) => form.matches(config.selector))?.type;
     }
     /**
      * @returns {HTMLElement|null}
@@ -18946,10 +18964,16 @@ ${this.options.css}
     }
     /**
      * Gets a single identity obj once the user requests it
-     * @param {Number} id
+     * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
     async getAutofillIdentity(id) {
+      const PRIVATE_ADDRESS_ID = "privateAddress";
+      const PERSONAL_ADDRESS_ID = "personalAddress";
+      if (id === PRIVATE_ADDRESS_ID || id === PERSONAL_ADDRESS_ID) {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
+        return { success: identity };
+      }
       const result = await this.deviceApi.request(new GetIdentityCall({ id }));
       return { success: result };
     }

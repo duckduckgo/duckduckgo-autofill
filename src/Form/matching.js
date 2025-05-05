@@ -323,11 +323,13 @@ class Matching {
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-        const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+        const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
+        const type = forcedInputType || this.inferInputType(input, formEl, opts);
         input.setAttribute(ATTR_INPUT_TYPE, type);
         return type;
     }
@@ -1021,4 +1023,5 @@ export {
     checkPlaceholderAndLabels,
     Matching,
     createMatching,
+    isValidSupportedType,
 };
