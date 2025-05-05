@@ -21,7 +21,7 @@ import {
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js';
-import { canBeInteractedWith, getInputConfig, isFieldDecorated } from './inputTypeConfig.js';
+import { canBeInteractedWith, getInputConfig, isEligibleCCSubType, isFieldDecorated } from './inputTypeConfig.js';
 
 import {
     getUnifiedExpiryDate,
@@ -531,7 +531,7 @@ class Form {
      * @param {boolean} shouldCheckForDecorate
      */
     execOnInputs(fn, inputType = 'all', shouldCheckForDecorate = true) {
-        const inputs = [...this.inputs[inputType]];
+        const inputs = this.inputs[inputType];
         for (const input of inputs) {
             let canExecute = true;
             // sometimes we want to execute even if we didn't decorate
@@ -780,6 +780,11 @@ class Form {
         return this;
     }
 
+    /**
+     * @param {MouseEvent} e
+     * @param {HTMLInputElement} input
+     * @returns {boolean}
+     */
     shouldOpenTooltip(e, input) {
         if (!isPotentiallyViewable(input)) return false;
 
@@ -807,12 +812,15 @@ class Form {
             }
         }
 
-        if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
+        const isNotTouchedAndFilled = !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
+        const isMobileApp = this.device.globalConfig.isMobileApp;
+        if (this.device.globalConfig.isExtension || isMobileApp) {
             // Don't open the tooltip on input focus whenever it's showing in-context signup
             if (isIncontextSignupAvailable) return false;
+            if (isMobileApp && isNotTouchedAndFilled && isEligibleCCSubType(subtype)) return true;
         }
 
-        return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
+        return isNotTouchedAndFilled;
     }
 
     /**
@@ -945,20 +953,22 @@ class Form {
         this.execOnInputs((input) => this.touched.add(input), dataType);
     }
 
+    /**
+     * @returns {boolean}
+     */
     get isCredentialsImoprtAvailable() {
         const isLoginOrHybrid = this.isLogin || this.isHybrid;
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
 
-    getFirstViableInputForType(dataType) {
-        return [...this.inputs[dataType]].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
+    getFirstViableInputForCredentials() {
+        return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
 
     async promptLoginIfNeeded() {
-        const isMobileCCForm = this.isCCForm && this.device.globalConfig.isMobileApp;
-        if (document.visibilityState !== 'visible' || !(this.isLogin || isMobileCCForm)) return;
+        if (document.visibilityState !== 'visible' || !this.isLogin) return;
 
-        const firstViableInput = this.getFirstViableInputForType('credentials') || this.getFirstViableInputForType('creditCards');
+        const firstViableInput = this.getFirstViableInputForCredentials();
         const input = this.activeInput || firstViableInput;
         if (!input) return;
 
@@ -981,14 +991,12 @@ class Form {
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
 
                     if (this.form.contains(topMostElementFromPoint)) {
-                        const dataTypeForExec = this.isCCForm ? 'creditCards' : this.isLogin ? 'credentials' : null;
                         // Add inputs to the touched set only for the dataTypeForExec, which currentl
-                        dataTypeForExec &&
-                            this.execOnInputs((input) => {
-                                if (isPotentiallyViewable(input)) {
-                                    this.touched.add(input);
-                                }
-                            }, dataTypeForExec);
+                        this.execOnInputs((input) => {
+                            if (isPotentiallyViewable(input)) {
+                                this.touched.add(input);
+                            }
+                        }, 'credentials');
                         this.device.attachTooltip({
                             form: this,
                             input,

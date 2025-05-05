@@ -5153,8 +5153,8 @@ Source: "${matchedFrom}"`;
   var ddgPasswordIconFilled = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjNzY0MzEwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4yNSA2Ljc1YTIgMiAwIDEgMCAwIDQgMiAyIDAgMCAwIDAtNFptLS41IDJhLjUuNSAwIDEgMSAxIDAgLjUuNSAwIDAgMS0xIDBaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxwYXRoIGZpbGw9IiM3NjQzMTAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTE0LjYyNSA0YTUuMzc1IDUuMzc1IDAgMCAwLTUuMjQ0IDYuNTU5bC01LjE2MSA1LjE2YS43NS43NSAwIDAgMC0uMjIuNTMxdjNjMCAuNDE0LjMzNi43NS43NS43NWgyLjk5N2MuNTU0IDAgMS4wMDMtLjQ1IDEuMDAzLTEuMDAzVjE4aC45OTdjLjU1NCAwIDEuMDAzLS40NSAxLjAwMy0xLjAwM1YxNS41SDEyYS43NS43NSAwIDAgMCAuNTMtLjIybC43MS0uNzFBNS4zOCA1LjM4IDAgMCAwIDIwIDkuMzc1IDUuMzc1IDUuMzc1IDAgMCAwIDE0LjYyNSA0Wk0xMC43NSA5LjM3NWEzLjg3NSAzLjg3NSAwIDEgMSAyLjU0IDMuNjQuNzUuNzUgMCAwIDAtLjc4OS4xNzNMMTEuNjkgMTRIMTBhLjc1Ljc1IDAgMCAwLS43NS43NXYxLjc1SDhhLjc1Ljc1IDAgMCAwLS43NS43NXYxLjI1SDUuNXYtMS45NGw1LjI0OC01LjI0OGEuNzUuNzUgMCAwIDAgLjE4NC0uNzU4IDMuODcyIDMuODcyIDAgMCAxLS4xODItMS4xNzlaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==";
   var ddgPasswordGenIconBase = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOC0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODQtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjMtLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM5LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMS0yLjA5My41NzhhLjYzNi42MzYgMCAwIDEtLjY1NS0xLjA5IDUuMzQgNS4zNCAwIDEgMSAxLjMwMiA5LjcyMmwtLjc3NS43NzZhLjYzNi42MzYgMCAwIDEtLjQ1LjE4NmgtMS4zOTh2MS42NWMwIC40OTMtLjQuODkzLS44OTMuODkzSDguNTc4djEuMTQxYzAgLjQ5NC0uNC44OTMtLjg5NC44OTNINC42MzZBLjYzNi42MzYgMCAwIDEgNCAxOS4zMTNWMTYuMjZjMC0uMTY5LjA2Ny0uMzMuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUxLjI4NC0uNjM2LjYzNS0uNjM2aDEuNzcxbC44NjQtLjg2M2EuNjM2LjYzNiAwIDAgMSAuNjY4LS4xNDcgNC4wNjkgNC4wNjkgMCAxIDAgMS40MDItNy44OVoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEzLjYyNSA4LjQ5OWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI1YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=";
   var ddgPasswordGenIconFilled = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjNzY0MzEwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOS0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODUtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjItLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM4LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiM3NjQzMTAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMTEtMi4wOTMuNTc4YS42MzYuNjM2IDAgMCAxLS42NTUtMS4wOSA1LjM0IDUuMzQgMCAxIDEgMS4zMDIgOS43MjNsLS43NzUuNzc1YS42MzYuNjM2IDAgMCAxLS40NS4xODZoLTEuMzk4djEuNjVjMCAuNDkzLS40Ljg5My0uODkzLjg5M0g4LjU3OHYxLjE0MWMwIC40OTQtLjQuODk0LS44OTQuODk0SDQuNjM2QS42MzYuNjM2IDAgMCAxIDQgMTkuMzEzVjE2LjI2YS42NC42NCAwIDAgMSAuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUuMjg0LS42MzYuNjM1LS42MzZoMS43NzFsLjg2NC0uODYzYS42MzYuNjM2IDAgMCAxIC42NjgtLjE0NyA0LjA2OSA0LjA2OSAwIDEgMCAxLjQwMi03Ljg5WiIvPgogICAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTMuNjI1IDguNWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI2YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=";
-  var ddgCcIconBase = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTYuODQyIDhBLjg0MS44NDEgMCAwIDAgNiA4Ljg0MXYyLjMxOGMwIC40NjQuMzc3Ljg0MS44NDIuODQxaDMuMzE3YS44NDEuODQxIDAgMCAwIC44NDEtLjg0MVY4Ljg0YS44NDEuODQxIDAgMCAwLS44NC0uODRINi44NDJaIi8+PHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMiA4YTUgNSAwIDAgMSA1LTVoMTBhNSA1IDAgMCAxIDUgNXY4YTUgNSAwIDAgMS01IDVIN2E1IDUgMCAwIDEtNS01VjhabTUtMy41QTMuNSAzLjUgMCAwIDAgMy41IDh2NmgxN1Y4QTMuNSAzLjUgMCAwIDAgMTcgNC41SDdabTAgMTVBMy41MDIgMy41MDIgMCAwIDEgMy42NDUgMTdoMTYuNzFBMy41MDIgMy41MDIgMCAwIDEgMTcgMTkuNUg3WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+";
-  var ddgCcIconFilled = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbD0iIzc2NDMxMCIgZD0iTTYuODQyIDhBLjg0MS44NDEgMCAwIDAgNiA4Ljg0MXYyLjMxOGMwIC40NjQuMzc3Ljg0MS44NDIuODQxaDMuMzE3YS44NDEuODQxIDAgMCAwIC44NDEtLjg0MVY4Ljg0YS44NDEuODQxIDAgMCAwLS44NC0uODRINi44NDJaIi8+PHBhdGggZmlsbD0iIzc2NDMxMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMiA4YTUgNSAwIDAgMSA1LTVoMTBhNSA1IDAgMCAxIDUgNXY4YTUgNSAwIDAgMS01IDVIN2E1IDUgMCAwIDEtNS01VjhabTUtMy41QTMuNSAzLjUgMCAwIDAgMy41IDh2NmgxN1Y4QTMuNSAzLjUgMCAwIDAgMTcgNC41SDdabTAgMTVBMy41MDIgMy41MDIgMCAwIDEgMy42NDUgMTdoMTYuNzFBMy41MDIgMy41MDIgMCAwIDEgMTcgMTkuNUg3WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+";
+  var ddgCcIconBase = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTE3IDNhNSA1IDAgMCAxIDUgNXY4YTUgNSAwIDAgMS01IDVIN2E1IDUgMCAwIDEtNS01VjhhNSA1IDAgMCAxIDUtNWgxMFpNNyA0LjVBMy41IDMuNSAwIDAgMCAzLjUgOHY4QTMuNSAzLjUgMCAwIDAgNyAxOS41aDEwYTMuNSAzLjUgMCAwIDAgMy41LTMuNVY4QTMuNSAzLjUgMCAwIDAgMTcgNC41SDdabTEuNzUgMTFhLjc1Ljc1IDAgMCAxIDAgMS41aC0zYS43NS43NSAwIDAgMSAwLTEuNWgzWm0yLjc1IDBhLjc1Ljc1IDAgMSAxIDAgMS41aC0uMjVhLjc1Ljc1IDAgMCAxIDAtMS41aC4yNVptNi43NSAwYS43NS43NSAwIDEgMSAwIDEuNWgtNGEuNzUuNzUgMCAwIDEgMC0xLjVoNFptLTkuNS00Ljc1YS43NS43NSAwIDAgMSAuNzUuNzV2MS43NWEuNzUuNzUgMCAwIDEtLjc1Ljc1aC0zYS43NS43NSAwIDAgMS0uNzUtLjc1VjExLjVhLjc1Ljc1IDAgMCAxIC43NS0uNzVoM1oiIC8+PC9zdmc+";
+  var ddgCcIconFilled = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzc2NDMxMCIgZD0iTTE3IDNhNSA1IDAgMCAxIDUgNXY4YTUgNSAwIDAgMS01IDVIN2E1IDUgMCAwIDEtNS01VjhhNSA1IDAgMCAxIDUtNWgxMFpNNyA0LjVBMy41IDMuNSAwIDAgMCAzLjUgOHY4QTMuNSAzLjUgMCAwIDAgNyAxOS41aDEwYTMuNSAzLjUgMCAwIDAgMy41LTMuNVY4QTMuNSAzLjUgMCAwIDAgMTcgNC41SDdabTEuNzUgMTFhLjc1Ljc1IDAgMCAxIDAgMS41aC0zYS43NS43NSAwIDAgMSAwLTEuNWgzWm0yLjc1IDBhLjc1Ljc1IDAgMSAxIDAgMS41aC0uMjVhLjc1Ljc1IDAgMCAxIDAtMS41aC4yNVptNi43NSAwYS43NS43NSAwIDEgMSAwIDEuNWgtNGEuNzUuNzUgMCAwIDEgMC0xLjVoNFptLTkuNS00Ljc1YS43NS43NSAwIDAgMSAuNzUuNzV2MS43NWEuNzUuNzUgMCAwIDEtLjc1Ljc1aC0zYS43NS43NSAwIDAgMS0uNzUtLjc1VjExLjVhLjc1Ljc1IDAgMCAxIC43NS0uNzVoM1oiIC8+PC9zdmc+";
 
   // src/InputTypes/CreditCard.js
   var _data4;
@@ -5255,6 +5255,7 @@ Source: "${matchedFrom}"`;
     const canAutofill = device.settings.canAutofillType({ mainType, subtype, variant }, device.inContextSignup);
     return Boolean(canAutofill);
   };
+  var isEligibleCCSubType = (subtype) => subtype === "cardNumber" || subtype === "cardSecurityCode";
   var inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
@@ -5307,16 +5308,14 @@ Source: "${matchedFrom}"`;
       getIconBase: (input, form) => {
         const { device } = form;
         const subtype = getInputSubtype(input);
-        const isValidInputSubType = subtype === "cardNumber" || subtype === "cardSecurityCode";
-        if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && isValidInputSubType)
+        if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && isEligibleCCSubType(subtype))
           return ddgCcIconBase;
         return "";
       },
       getIconFilled: (input, form) => {
         const { device } = form;
         const subtype = getInputSubtype(input);
-        const isValidInputSubType = subtype === "cardNumber" || subtype === "cardSecurityCode";
-        if (device.globalConfig.isMobileApp && isValidInputSubType)
+        if (device.globalConfig.isMobileApp && isEligibleCCSubType(subtype))
           return ddgCcIconFilled;
         return "";
       },
@@ -5843,7 +5842,7 @@ Source: "${matchedFrom}"`;
      * @param {boolean} shouldCheckForDecorate
      */
     execOnInputs(fn, inputType = "all", shouldCheckForDecorate = true) {
-      const inputs = [...this.inputs[inputType]];
+      const inputs = this.inputs[inputType];
       for (const input of inputs) {
         let canExecute = true;
         if (shouldCheckForDecorate) {
@@ -6037,6 +6036,11 @@ Source: "${matchedFrom}"`;
       }
       return this;
     }
+    /**
+     * @param {MouseEvent} e
+     * @param {HTMLInputElement} input
+     * @returns {boolean}
+     */
     shouldOpenTooltip(e, input) {
       if (!isPotentiallyViewable(input))
         return false;
@@ -6058,11 +6062,15 @@ Source: "${matchedFrom}"`;
           return this.isCredentialsImoprtAvailable;
         }
       }
-      if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
+      const isNotTouchedAndFilled = !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
+      const isMobileApp = this.device.globalConfig.isMobileApp;
+      if (this.device.globalConfig.isExtension || isMobileApp) {
         if (isIncontextSignupAvailable)
           return false;
+        if (isMobileApp && isNotTouchedAndFilled && isEligibleCCSubType(subtype))
+          return true;
       }
-      return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
+      return isNotTouchedAndFilled;
     }
     /**
      * Skip overridding values that the user provided if:
@@ -6162,18 +6170,20 @@ Source: "${matchedFrom}"`;
     touchAllInputs(dataType = "all") {
       this.execOnInputs((input) => this.touched.add(input), dataType);
     }
+    /**
+     * @returns {boolean}
+     */
     get isCredentialsImoprtAvailable() {
       const isLoginOrHybrid = this.isLogin || this.isHybrid;
       return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
-    getFirstViableInputForType(dataType) {
-      return [...this.inputs[dataType]].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
+    getFirstViableInputForCredentials() {
+      return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
     async promptLoginIfNeeded() {
-      const isMobileCCForm = this.isCCForm && this.device.globalConfig.isMobileApp;
-      if (document.visibilityState !== "visible" || !(this.isLogin || isMobileCCForm))
+      if (document.visibilityState !== "visible" || !this.isLogin)
         return;
-      const firstViableInput = this.getFirstViableInputForType("credentials") || this.getFirstViableInputForType("creditCards");
+      const firstViableInput = this.getFirstViableInputForCredentials();
       const input = this.activeInput || firstViableInput;
       if (!input)
         return;
@@ -6189,12 +6199,11 @@ Source: "${matchedFrom}"`;
             const elVCenter = y + height / 2;
             const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
             if (this.form.contains(topMostElementFromPoint)) {
-              const dataTypeForExec = this.isCCForm ? "creditCards" : this.isLogin ? "credentials" : null;
-              dataTypeForExec && this.execOnInputs((input2) => {
+              this.execOnInputs((input2) => {
                 if (isPotentiallyViewable(input2)) {
                   this.touched.add(input2);
                 }
-              }, dataTypeForExec);
+              }, "credentials");
               this.device.attachTooltip({
                 form: this,
                 input,
@@ -11606,7 +11615,7 @@ Source: "${matchedFrom}"`;
      * Check if password promotion prompt should be shown. Only returns valid value in the main webiew.
      */
     isAvailable() {
-      return this.device.settings.availableInputTypes.credentialsImport;
+      return Boolean(this.device.settings.availableInputTypes.credentialsImport);
     }
     init() {
       if (!this.device.globalConfig.hasModernWebkitAPI)
