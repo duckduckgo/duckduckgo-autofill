@@ -897,11 +897,13 @@ Source: "${matchedFrom}"`;
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-      const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+      const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
+      const type = forcedInputType || this.inferInputType(input, formEl, opts);
       input.setAttribute(ATTR_INPUT_TYPE, type);
       return type;
     }
@@ -4213,7 +4215,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "minlength: 8; maxlength: 30; max-consecutive: 3; required: lower; required: upper; required: digit; required: [#$%^&!@];"
     },
     "hetzner.com": {
-      "password-rules": "minlength: 8; required: lower; required: upper; required: digit, special;"
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit, required: [-^!$%/()=?+#.,;:~*@{}_&[]];"
     },
     "hilton.com": {
       "password-rules": "minlength: 8; maxlength: 32; required: lower; required: upper; required: digit;"
@@ -5863,7 +5865,7 @@ Source: "${matchedFrom}"`;
         hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
         supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities
       };
-      this.matching.setInputType(input, this.form, opts);
+      this.matching.setInputType(input, this.form, this.device.settings.siteSpecificFeature, opts);
       const mainInputType = getInputMainType(input);
       this.inputs[mainInputType].add(input);
       this.decorateInput(input);
@@ -8122,13 +8124,29 @@ Source: "${matchedFrom}"`;
       super(FEATURE_NAME, args);
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formTypeSettings']}
+     * @returns {InputTypeSetting[]}
+     */
+    get inputTypeSettings() {
+      return this.getFeatureSetting("inputTypeSettings") || [];
+    }
+    /**
+     * @param {HTMLInputElement} input
+     * @returns {import('./Form/matching').SupportedTypes | null}
+     */
+    getForcedInputType(input) {
+      const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
+      if (!isValidSupportedType(setting?.type))
+        return null;
+      return setting?.type;
+    }
+    /**
+     * @returns {FormTypeSetting[]}
      */
     get formTypeSettings() {
       return this.getFeatureSetting("formTypeSettings") || [];
     }
     /**
-     * @returns {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').SiteSpecificFixes['formBoundarySelector'] | null}
+     * @returns {FormBoundarySelector|null}
      */
     get formBoundarySelector() {
       return this.getFeatureSetting("formBoundarySelector");
@@ -8139,7 +8157,7 @@ Source: "${matchedFrom}"`;
      * @returns {string|null|undefined}
      */
     getForcedFormType(form) {
-      return this.formTypeSettings?.find((config) => form.matches(config.selector))?.type;
+      return this.formTypeSettings.find((config) => form.matches(config.selector))?.type;
     }
     /**
      * @returns {HTMLElement|null}
