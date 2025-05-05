@@ -131,8 +131,8 @@ optional as they are not supported on Windows.
 
 see:
 
-- [../src/schemas/getAutofillData.params.json](../src/deviceApiCalls/schemas/getAutofillData.params.json)
-- [../src/schemas/getAutofillData.result.json](../src/deviceApiCalls/schemas/getAutofillData.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getAutofillData.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **request example**
 
@@ -233,8 +233,8 @@ see:
 
 see:
 
-- [../src/schemas/getIdentity.params.json](../src/deviceApiCalls/schemas/getIdentity.params.json)
-- [../src/schemas/getIdentity.result.json](../src/deviceApiCalls/schemas/getIdentity.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getIdentity.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getIdentity.result.json)
 
 ```json
 {
@@ -261,8 +261,8 @@ see:
 
 see:
 
-- [../src/schemas/getCreditCard.params.json](../src/deviceApiCalls/schemas/getCreditCard.params.json)
-- [../src/schemas/getCreditCard.result.json](../src/deviceApiCalls/schemas/getCreditCard.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getCreditCard.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getCreditCard.result.json)
 
 **response example**
 
