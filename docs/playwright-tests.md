@@ -13,8 +13,8 @@ Because you can script common flows that you'd normally test manually anyway, yo
 
 **2) They act as automated QA within our workflows / release cycles**
 
-These tests encode the most common/important user flows into executable scripts, this is a massive 
-help when running locally, but becomes even more so when running on every Pull Request. 
+These tests encode the most common/important user flows into executable scripts, this is a massive
+help when running locally, but becomes even more so when running on every Pull Request.
 
 They are **not** a replacement for manual testing - instead they fill the gap between unit tests
 and manual tests.
@@ -23,15 +23,15 @@ and manual tests.
 
 These live within `integration-test/tests`
 
-  - the files are named with the following format `<feature>.<platform>.spec.js`
-  - this format matches the configuration inside `playwright.config.js`
+- the files are named with the following format `<feature>.<platform>.spec.js`
+- this format matches the configuration inside `playwright.config.js`
 
 ### Mocking
 
 Cross-platform mocking is achieved via implementations of `MockBuilder`. This is done
-to offer an API that reads well and can be replicated for each platform. For example, mocking 
+to offer an API that reads well and can be replicated for each platform. For example, mocking
 the user flow of having a private+personal email address on both webkit + android would look
-like the following: 
+like the following:
 
 ```javascript
 // webkit mocks
@@ -48,7 +48,7 @@ await createAndroidMocks()
 ```
 
 All future mocks should uphold this constraint of conforming to the `MockBuilder` interface. You can see
-the first two implementations of mocking in `integration-test/helpers/mocks.js` 
+the first two implementations of mocking in `integration-test/helpers/mocks.js`
 
 ### Page Helpers
 
@@ -105,14 +105,17 @@ When a test has failed in Github Actions, you can download the artifact produced
 Because tests run in parallel (for speed), failures can be tricky to isolate, follow these steps:
 
 1) First, set `workers: 1` in `playwright.config.js` - this will cause the tests to run sequentially, making it immediately obvious which file had the problem
-2) Once you've discovered the file with the flaxy/broken test, isolate further by using `.only` if needed, eg: 
+2) Once you've discovered the file with the flaxy/broken test, isolate further by using `.only` if needed, eg:
+
     ```javascript
     test.only("autofill email", () => {
         // snip
     })
     ```
+
 3) now you can re-run this single test in isolation
 4) if you want to click around the page, and open devtools etc add a `await page.pause()` at a place in the test script where you'd like it to pause and run the `test:integration:showui` command.
+
    ```javascript
    await emailPage.navigate();
    await page.pause() // <-- add this

@@ -267,21 +267,41 @@ which has its own box-shadow and border-radius settings.
     background-position: right bottom;
 }
 
+/* FIXME: find a better way to address :not bitwarden */
+/* NB: .currentFocus is used by MacOS */
 .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
 .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-    filter: var(--hover-effect)
+    filter: var(--hover-effect);
+}
+
+.tooltip__button--data.currentFocus.no-hover-effect::before,
+.wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before,
+.tooltip__button--data.no-hover-effect:hover::before {
+    filter: none;
 }
 
 /* Icon effects */
 @media (prefers-color-scheme: dark) {
     .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
-        filter: invert(100%);
+        filter: var(--hover-effect-dark);
         opacity: .9;
+    }
+
+    .tooltip__button--data.no-hover-effect::before,
+    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before {
+        filter: none;
+        opacity: 1;
     }
 
     .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
     .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
         filter: var(--hover-effect-dark)
+    }
+
+    .tooltip__button--data.currentFocus.no-hover-effect::before,
+    .tooltip__button--data.no-hover-effect:hover::before,
+    .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
+        filter: none;
     }
 }
 
@@ -365,9 +385,38 @@ which has its own box-shadow and border-radius settings.
     background-size: 28px 28px;
     background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOC0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODQtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjMtLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM5LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMS0yLjA5My41NzhhLjYzNi42MzYgMCAwIDEtLjY1NS0xLjA5IDUuMzQgNS4zNCAwIDEgMSAxLjMwMiA5LjcyMmwtLjc3NS43NzZhLjYzNi42MzYgMCAwIDEtLjQ1LjE4NmgtMS4zOTh2MS42NWMwIC40OTMtLjQuODkzLS44OTMuODkzSDguNTc4djEuMTQxYzAgLjQ5NC0uNC44OTMtLjg5NC44OTNINC42MzZBLjYzNi42MzYgMCAwIDEgNCAxOS4zMTNWMTYuMjZjMC0uMTY5LjA2Ny0uMzMuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUxLjI4NC0uNjM2LjYzNS0uNjM2aDEuNzcxbC44NjQtLjg2M2EuNjM2LjYzNiAwIDAgMSAuNjY4LS4xNDcgNC4wNjkgNC4wNjkgMCAxIDAgMS40MDItNy44OVoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEzLjYyNSA4LjQ5OWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI1YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=');
 }
+/* Payment Provider Icons */
 .tooltip__button--data--creditCards::before {
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');
+    background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMjYgNGMzLjMxMzcgMCA2IDIuNjg2MjkgNiA2djEyYzAgMy4zMTM3LTIuNjg2MyA2LTYgNmgtMjBjLTMuMzEzNzEgMC01Ljk5OTk5OTAyLTIuNjg2My01Ljk5OTk5ODg4LTZsLjAwMDAwMDUzLTEyYy4wMDAwMDAxNC0zLjMxMzcxIDIuNjg2Mjg4MzUtNiA1Ljk5OTk5ODM1LTZ6IiBmaWxsPSIjZmZmIi8+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMzAgMjJ2LTEyYzAtMi4yMDkxNC0xLjc5MDktNC00LTRoLTIwYy0yLjIwOTE0IDAtNCAxLjc5MDg2LTQgNHYxMmMwIDIuMjA5MSAxLjc5MDg2IDQgNCA0aDIwYzIuMjA5MSAwIDQtMS43OTA5IDQtNHptMi0xMmMwLTMuMzEzNzEtMi42ODYzLTYtNi02aC0yMGMtMy4zMTM3MSAwLTUuOTk5OTk4MjEgMi42ODYyOS01Ljk5OTk5ODM1IDZsLS4wMDAwMDA1MyAxMmMtLjAwMDAwMDE0IDMuMzEzNyAyLjY4NjI4ODg4IDYgNS45OTk5OTg4OCA2aDIwYzMuMzEzNyAwIDYtMi42ODYzIDYtNnoiIGZpbGw9IiNjY2MiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjxwYXRoIGQ9Im00IDEzYzAtLjU1MjMuNDQ3NzItMSAxLTFoNGMuNTUyMjggMCAxIC40NDc3IDEgMXYyYzAgLjU1MjMtLjQ0NzcyIDEtMSAxaC00Yy0uNTUyMjggMC0xLS40NDc3LTEtMXoiIGZpbGw9IiNmZmQ2NWMiLz48ZyBmaWxsPSIjYWFhIj48cGF0aCBkPSJtNCAyMGMwLS41NTIzLjQ0NzcyLTEgMS0xaDVjLjU1MjMgMCAxIC40NDc3IDEgMXMtLjQ0NzcgMS0xIDFoLTVjLS41NTIyOCAwLTEtLjQ0NzctMS0xeiIvPjxwYXRoIGQ9Im0xMiAyMGMwLS41NTIzLjQ0NzctMSAxLTFoMWMuNTUyMyAwIDEgLjQ0NzcgMSAxcy0uNDQ3NyAxLTEgMWgtMWMtLjU1MjMgMC0xLS40NDc3LTEtMXoiLz48cGF0aCBkPSJtMTYgMjBjMC0uNTUyMy40NDc3LTEgMS0xaDEwYy41NTIzIDAgMSAuNDQ3NyAxIDFzLS40NDc3IDEtMSAxaC0xMGMtLjU1MjMgMC0xLS40NDc3LTEtMXoiLz48L2c+PC9zdmc+');
 }
+
+.tooltip__button--data--provider__generic::before {
+    background-image: url('../img/credit-card-generic.svg');
+}
+
+.tooltip__button--data--provider__dinersClub::before {
+    background-image: url('../img/credit-card-diners-club.svg');
+}
+.tooltip__button--data--provider__discover::before {
+    background-image: url('../img/credit-card-discover.svg');
+}
+.tooltip__button--data--provider__jcb::before {
+    background-image: url('../img/credit-card-jcb.svg');
+}
+.tooltip__button--data--provider__mastercard::before {
+    background-image: url('../img/credit-card-mastercard.svg');
+}
+.tooltip__button--data--provider__unionPay::before {
+    background-image: url('../img/credit-card-unionpay.svg');
+}
+.tooltip__button--data--provider__visa::before {
+    background-image: url('../img/credit-card-visa.svg');
+}
+.tooltip__button--data--provider__amex::before {
+    background-image: url('../img/credit-card-amex.svg');
+}
+/* /Payment Provider Icons */
+
 .tooltip__button--data--identities::before {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIxYzIuMTQzIDAgNC4xMTEtLjc1IDUuNjU3LTItLjYyNi0uNTA2LTEuMzE4LS45MjctMi4wNi0xLjI1LTEuMS0uNDgtMi4yODUtLjczNS0zLjQ4Ni0uNzUtMS4yLS4wMTQtMi4zOTIuMjExLTMuNTA0LjY2NC0uODE3LjMzMy0xLjU4Ljc4My0yLjI2NCAxLjMzNiAxLjU0NiAxLjI1IDMuNTE0IDIgNS42NTcgMnptNC4zOTctNS4wODNjLjk2Ny40MjIgMS44NjYuOTggMi42NzIgMS42NTVDMjAuMjc5IDE2LjAzOSAyMSAxNC4xMDQgMjEgMTJjMC00Ljk3LTQuMDMtOS05LTlzLTkgNC4wMy05IDljMCAyLjEwNC43MjIgNC4wNCAxLjkzMiA1LjU3Mi44NzQtLjczNCAxLjg2LTEuMzI4IDIuOTIxLTEuNzYgMS4zNi0uNTU0IDIuODE2LS44MyA0LjI4My0uODExIDEuNDY3LjAxOCAyLjkxNi4zMyA0LjI2LjkxNnpNMTIgMjNjNi4wNzUgMCAxMS00LjkyNSAxMS0xMVMxOC4wNzUgMSAxMiAxIDEgNS45MjUgMSAxMnM0LjkyNSAxMSAxMSAxMXptMy0xM2MwIDEuNjU3LTEuMzQzIDMtMyAzcy0zLTEuMzQzLTMtMyAxLjM0My0zIDMtMyAzIDEuMzQzIDMgM3ptMiAwYzAgMi43NjEtMi4yMzkgNS01IDVzLTUtMi4yMzktNS01IDIuMjM5LTUgNS01IDUgMi4yMzkgNSA1eiIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4=');
 }
@@ -395,6 +444,7 @@ hr:first-child {
         border-top: 1px solid rgba(255,255,255,.2);
     }
 }
+
 
 #privateAddress {
     align-items: flex-start;

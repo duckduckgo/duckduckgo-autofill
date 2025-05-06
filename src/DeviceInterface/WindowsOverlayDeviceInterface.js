@@ -9,6 +9,8 @@ import {
     OpenManageCreditCardsCall,
     OpenManageIdentitiesCall,
     CloseAutofillParentCall,
+    GetCreditCardCall,
+    GetIdentityCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
@@ -178,11 +180,28 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
 
     /**
      * Gets a single identity obj once the user requests it
-     * @param {Number} id
+     * @param {IdentityObject['id']} id
      * @returns {Promise<{success: IdentityObject|undefined}>}
      */
-    getAutofillIdentity(id) {
-        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
-        return Promise.resolve({ success: identity });
+    async getAutofillIdentity(id) {
+        const PRIVATE_ADDRESS_ID = 'privateAddress';
+        const PERSONAL_ADDRESS_ID = 'personalAddress';
+
+        if (id === PRIVATE_ADDRESS_ID || id === PERSONAL_ADDRESS_ID) {
+            const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
+            return { success: identity };
+        }
+        const result = await this.deviceApi.request(new GetIdentityCall({ id }));
+        return { success: result };
+    }
+
+    /**
+     * Gets a single complete credit card obj once the user requests it
+     * @param {CreditCardObject['id']} id
+     * @returns {APIResponseSingle<CreditCardObject>}
+     */
+    async getAutofillCreditCard(id) {
+        const result = await this.deviceApi.request(new GetCreditCardCall({ id }));
+        return { success: result };
     }
 }

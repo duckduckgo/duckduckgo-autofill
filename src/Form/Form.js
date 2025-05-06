@@ -613,6 +613,7 @@ class Form {
         const config = getInputConfig(input);
 
         const shouldDecorate = await config.shouldDecorate(input, this);
+
         if (!shouldDecorate) return this;
 
         input.setAttribute(ATTR_AUTOFILL, 'true');
@@ -803,7 +804,7 @@ class Form {
                 // Don't open the tooltip on input focus whenever it'll only show in-context signup
                 return false;
             } else {
-                return this.isCredentialsImoprtAvailable;
+                return this.isCredentialsImportAvailable;
             }
         }
 
@@ -945,7 +946,7 @@ class Form {
         this.execOnInputs((input) => this.touched.add(input), dataType);
     }
 
-    get isCredentialsImoprtAvailable() {
+    get isCredentialsImportAvailable() {
         const isLoginOrHybrid = this.isLogin || this.isHybrid;
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
@@ -967,7 +968,7 @@ class Form {
         await this.device.settings.populateDataIfNeeded({ mainType, subtype });
         if (
             this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) ||
-            this.isCredentialsImoprtAvailable
+            this.isCredentialsImportAvailable
         ) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {
