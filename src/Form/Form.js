@@ -818,8 +818,18 @@ class Form {
             // Don't open the tooltip on input focus whenever it's showing in-context signup
             if (isIncontextSignupAvailable) return false;
 
-            const wasAnyCCFieldTouched = [...this.inputs.creditCards].some((input) => this.touched.has(input));
-            return isMobileApp && !wasAnyCCFieldTouched && (canShowCCIcon(subtype) || subtype === 'cardName');
+            const isEligibleCCField = (ccSubtype) => canShowCCIcon(ccSubtype) || ccSubtype === 'cardName';
+
+            const isTouchedCCInput = (ccInput) => {
+                const ccSubtype = getInputSubtype(ccInput);
+                return this.touched.has(ccInput) && isEligibleCCField(ccSubtype);
+            };
+
+            const hasAnyTouchedCCInput = [...this.inputs.creditCards].some(isTouchedCCInput);
+
+            console.log('isMobileApp, isEligibleCCField(subtype)', isMobileApp, isEligibleCCField(subtype), !hasAnyTouchedCCInput);
+
+            if (isMobileApp && isEligibleCCField(subtype)) return !hasAnyTouchedCCInput;
         }
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
