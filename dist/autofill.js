@@ -5255,7 +5255,7 @@ Source: "${matchedFrom}"`;
     const canAutofill = device.settings.canAutofillType({ mainType, subtype, variant }, device.inContextSignup);
     return Boolean(canAutofill);
   };
-  var isEligibleCCSubType = (subtype) => subtype === "cardNumber" || subtype === "cardSecurityCode";
+  var canShowCCIcon = (subtype) => subtype === "cardNumber" || subtype === "cardSecurityCode";
   var inputTypeConfig = {
     /** @type {CredentialsInputTypeConfig} */
     credentials: {
@@ -5308,14 +5308,18 @@ Source: "${matchedFrom}"`;
       getIconBase: (input, form) => {
         const { device } = form;
         const subtype = getInputSubtype(input);
-        if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && isEligibleCCSubType(subtype))
+        if (subtype === "cardName")
+          return "";
+        if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && canShowCCIcon(subtype))
           return ddgCcIconBase;
         return "";
       },
       getIconFilled: (input, form) => {
         const { device } = form;
         const subtype = getInputSubtype(input);
-        if (device.globalConfig.isMobileApp && isEligibleCCSubType(subtype))
+        if (subtype === "cardName")
+          return "";
+        if (device.globalConfig.isMobileApp && canShowCCIcon(subtype))
           return ddgCcIconFilled;
         return "";
       },
@@ -6062,15 +6066,14 @@ Source: "${matchedFrom}"`;
           return this.isCredentialsImoprtAvailable;
         }
       }
-      const isNotTouchedAndFilled = !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
       const isMobileApp = this.device.globalConfig.isMobileApp;
       if (this.device.globalConfig.isExtension || isMobileApp) {
         if (isIncontextSignupAvailable)
           return false;
-        if (isMobileApp && isNotTouchedAndFilled && isEligibleCCSubType(subtype))
-          return true;
+        const wasAnyCCFieldTouched = [...this.inputs.creditCards].some((input2) => this.touched.has(input2));
+        return isMobileApp && !wasAnyCCFieldTouched && (canShowCCIcon(subtype) || subtype === "cardName");
       }
-      return isNotTouchedAndFilled;
+      return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }
     /**
      * Skip overridding values that the user provided if:

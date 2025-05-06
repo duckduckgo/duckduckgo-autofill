@@ -21,7 +21,7 @@ import {
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js';
-import { canBeInteractedWith, getInputConfig, isEligibleCCSubType, isFieldDecorated } from './inputTypeConfig.js';
+import { canBeInteractedWith, getInputConfig, isFieldDecorated, canShowCCIcon } from './inputTypeConfig.js';
 
 import {
     getUnifiedExpiryDate,
@@ -812,15 +812,16 @@ class Form {
             }
         }
 
-        const isNotTouchedAndFilled = !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
         const isMobileApp = this.device.globalConfig.isMobileApp;
         if (this.device.globalConfig.isExtension || isMobileApp) {
             // Don't open the tooltip on input focus whenever it's showing in-context signup
             if (isIncontextSignupAvailable) return false;
-            if (isMobileApp && isNotTouchedAndFilled && isEligibleCCSubType(subtype)) return true;
+
+            const wasAnyCCFieldTouched = [...this.inputs.creditCards].some((input) => this.touched.has(input));
+            return isMobileApp && !wasAnyCCFieldTouched && (canShowCCIcon(subtype) || subtype === 'cardName');
         }
 
-        return isNotTouchedAndFilled;
+        return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
     }
 
     /**
