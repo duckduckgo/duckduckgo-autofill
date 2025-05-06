@@ -135,7 +135,7 @@ const inputTypeConfig = {
             return '';
         },
         getIconAlternate: () => '',
-        shouldDecorate: async (input, { isLogin, isHybrid, device, isCredentialsImoprtAvailable }) => {
+        shouldDecorate: async (input, { isLogin, isHybrid, device, isCredentialsImportAvailable }) => {
             const subtype = getInputSubtype(input);
             const variant = getInputVariant(input);
 
@@ -146,7 +146,7 @@ const inputTypeConfig = {
                 variant === 'current' // Current password field
             ) {
                 // Check feature flags and available input types
-                return isCredentialsImoprtAvailable || canBeAutofilled(input, device);
+                return isCredentialsImportAvailable || canBeAutofilled(input, device);
             }
 
             return false;
