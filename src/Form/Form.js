@@ -21,7 +21,7 @@ import {
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js';
-import { canBeInteractedWith, getInputConfig, isFieldDecorated } from './inputTypeConfig.js';
+import { canBeInteractedWith, getInputConfig, isFieldDecorated, canShowCCIcon } from './inputTypeConfig.js';
 
 import {
     getUnifiedExpiryDate,
@@ -781,6 +781,11 @@ class Form {
         return this;
     }
 
+    /**
+     * @param {MouseEvent} e
+     * @param {HTMLInputElement} input
+     * @returns {boolean}
+     */
     shouldOpenTooltip(e, input) {
         if (!isPotentiallyViewable(input)) return false;
 
@@ -808,9 +813,23 @@ class Form {
             }
         }
 
-        if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
+        const isMobileApp = this.device.globalConfig.isMobileApp;
+        if (this.device.globalConfig.isExtension || isMobileApp) {
             // Don't open the tooltip on input focus whenever it's showing in-context signup
             if (isIncontextSignupAvailable) return false;
+
+            const isEligibleCCField = (ccSubtype) => canShowCCIcon(ccSubtype) || ccSubtype === 'cardName';
+
+            const isTouchedCCInput = (ccInput) => {
+                const ccSubtype = getInputSubtype(ccInput);
+                return this.touched.has(ccInput) && isEligibleCCField(ccSubtype);
+            };
+
+            const hasAnyTouchedCCInput = [...this.inputs.creditCards].some(isTouchedCCInput);
+
+            console.log('isMobileApp, isEligibleCCField(subtype)', isMobileApp, isEligibleCCField(subtype), !hasAnyTouchedCCInput);
+
+            if (isMobileApp && isEligibleCCField(subtype)) return !hasAnyTouchedCCInput;
         }
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
@@ -951,15 +970,15 @@ class Form {
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
 
-    getFirstViableCredentialsInput() {
+    getFirstViableInputForCredentials() {
         return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
 
     async promptLoginIfNeeded() {
         if (document.visibilityState !== 'visible' || !this.isLogin) return;
 
-        const firstCredentialInput = this.getFirstViableCredentialsInput();
-        const input = this.activeInput || firstCredentialInput;
+        const firstViableInput = this.getFirstViableInputForCredentials();
+        const input = this.activeInput || firstViableInput;
         if (!input) return;
 
         const mainType = getInputMainType(input);
@@ -979,7 +998,9 @@ class Form {
                     const elVCenter = y + height / 2;
                     // This checks that the form is not covered by anything else
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
+
                     if (this.form.contains(topMostElementFromPoint)) {
+                        // Add inputs to the touched set only for the dataTypeForExec, which currentl
                         this.execOnInputs((input) => {
                             if (isPotentiallyViewable(input)) {
                                 this.touched.add(input);
