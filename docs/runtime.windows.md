@@ -1,4 +1,4 @@
-## Links 
+## Links
 
 - [Privacy Test Pages, Form Submissions](https://privacy-test-pages.site/autofill/form-submission.html)
 
@@ -6,7 +6,7 @@
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getRuntimeConfiguration' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getRuntimeConfigurationResponse", success: {...} }')`
-  - See [Response Schema](../src/schemas/response.getRuntimeConfiguration.schema.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getRuntimeConfiguration.result.json)
 
 **request example**
 
@@ -60,7 +60,7 @@ Where `event.data` is:
 }
 ```
 
---- 
+---
 
 ## `getAvailableInputTypes()`
 
@@ -68,7 +68,7 @@ This represents which input types we can autofill for the current user.
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAvailableInputTypesResponse", success: {...} }')`
-  - See [Response Schema](../src/schemas/getAvailableInputTypes.result.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getAvailableInputTypes.result.json)
 
 **request example**
 
@@ -76,7 +76,7 @@ This represents which input types we can autofill for the current user.
 windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAvailableInputTypes' })
 ```
 
-**`response`** example, via: 
+**`response`** example, via:
 
 ```js
 windowsInteropAddEventListener('message', (event) => {...})
@@ -131,8 +131,8 @@ optional as they are not supported on Windows.
 
 see:
 
-- [../src/schemas/getAutofillData.params.json](../src/schemas/getAutofillData.params.json)
-- [../src/schemas/getAutofillData.result.json](../src/schemas/getAutofillData.result.json)
+- [Request Schema](../src/deviceApiCalls/schemas/getAutofillData.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **request example**
 
@@ -188,7 +188,7 @@ see:
 }
 ```
 
---- 
+---
 
 ## `overlay -> setSize()`
 
@@ -207,7 +207,7 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillInitData' })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAutofillInitDataResponse", success: {...} }')`
-  - See [Response Schema](../src/schemas/getAutofillData.result.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getAutofillData.result.json)
 
 **response example**
 
@@ -229,13 +229,69 @@ see:
 }
 ```
 
---- 
+## `overlay -> getAutofillIdentity()`
+
+see:
+
+- [Request Schema](../src/deviceApiCalls/schemas/getIdentity.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getIdentity.result.json)
+
+```json
+{
+  "type": "getAutofillIdentity",
+  "success": {
+    "identities": {
+      "id": "1",
+      "firstName": "John",
+      "lastName": "Doe",
+      "emailAddress": "john.doe@example.com",
+      "phone": "+1234567890",
+      "addressStreet": "123 Main St",
+      "addressStreet2": "Apt 4B",
+      "addressCity": "Springfield",
+      "addressProvince": "IL",
+      "addressPostalCode": "62701",
+      "addressCountryCode": "US"
+    }
+  }
+}
+```
+
+## `overlay -> getAutofillCreditCard()`
+
+see:
+
+- [Request Schema](../src/deviceApiCalls/schemas/getCreditCard.params.json)
+- [Response Schema](../src/deviceApiCalls/schemas/getCreditCard.result.json)
+
+**response example**
+
+```json
+{
+  "type": "getAutofillCreditCard",
+  "success": {
+    "creditCards": {
+      "id": "1",
+      "title": "My Card",
+      "displayNumber": "1234",
+      "cardName": "John Doe",
+      "expirationMonth": "12",
+      "expirationYear": "2025",
+      "cardNumber": "4111111111111111",
+      "paymentProvider": "Visa"
+    }
+  }
+}
+```
+
+---
 
 ## `overlay -> selectedDetail({ id: 01 })`
 
---- 
+---
 
 ## `overlay -> closeAutofillParent()`
+
 ## `webpage -> closeAutofillParent()`
 
 ---
@@ -244,8 +300,8 @@ see:
 
 - `windowsInteropPostMessage({ Feature: 'Autofill', Name: 'getAutofillCredentials', Data: { id: "01" } })`
 - Response Message via: `windowsInteropAddEventListener({type: "getAutofillCredentialsResponse", success: {...} }')`
-  - See [Request Schema](../src/schemas/getAutofillCredentials.params.json)
-  - See [Response Schema](../src/schemas/getAutofillCredentials.result.json)
+  - See [Request Schema](../src/deviceApiCalls/schemas/getAutofillCredentials.params.json)
+  - See [Response Schema](../src/deviceApiCalls/schemas/getAutofillCredentials.result.json)
 
 **request example**
 
@@ -297,7 +353,7 @@ windowsInteropPostMessage({ Feature: 'Autofill', Name: 'storeFormData', Data: da
 
 String replacements
 
-```
+```cs
 isTopFrame = true
 // INJECT isTopFrame HERE
 

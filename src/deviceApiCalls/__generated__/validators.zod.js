@@ -66,6 +66,14 @@ export const getAliasResultSchema = z.object({
     })
 });
 
+export const getIdentityParamSchema = z.object({
+    id: z.string()
+});
+
+export const getCreditCardParamSchema = z.object({
+    id: z.string()
+});
+
 export const emailProtectionStoreUserDataParamsSchema = z.object({
     token: z.string(),
     userName: z.string(),
@@ -157,15 +165,35 @@ export const availableInputTypesSchema = z.object({
     credentialsImport: z.boolean().optional()
 });
 
-export const getAutofillInitDataResponseSchema = z.object({
-    type: z.literal("getAutofillInitDataResponse").optional(),
-    success: z.object({
-        credentials: z.array(credentialsSchema),
-        identities: z.array(z.record(z.unknown())),
-        creditCards: z.array(z.record(z.unknown())),
-        serializedInputContext: z.string()
-    }).optional(),
-    error: genericErrorSchema.optional()
+export const identityObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    firstName: z.string().optional(),
+    middleName: z.string().optional(),
+    lastName: z.string().optional(),
+    birthdayDay: z.string().optional(),
+    birthdayMonth: z.string().optional(),
+    birthdayYear: z.string().optional(),
+    addressStreet: z.string().optional(),
+    addressStreet2: z.string().optional(),
+    addressCity: z.string().optional(),
+    addressProvince: z.string().optional(),
+    addressPostalCode: z.string().optional(),
+    addressCountryCode: z.string().optional(),
+    phone: z.string().optional(),
+    emailAddress: z.string().optional()
+});
+
+export const creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
 });
 
 export const getAutofillCredentialsResultSchema = z.object({
@@ -230,6 +258,14 @@ export const autofillFeatureTogglesSchema = z.object({
     third_party_credentials_provider: z.boolean().optional(),
     unknown_username_categorization: z.boolean().optional(),
     partial_form_saves: z.boolean().optional()
+});
+
+export const getIdentityResultSchema = z.object({
+    success: identityObjectSchema
+});
+
+export const getCreditCardResultSchema = z.object({
+    success: creditCardObjectSchema
 });
 
 export const emailProtectionGetIsLoggedInResultSchema = z.object({
@@ -298,6 +334,17 @@ export const storeFormDataSchema = z.object({
 export const getAvailableInputTypesResultSchema = z.object({
     type: z.literal("getAvailableInputTypesResponse").optional(),
     success: availableInputTypesSchema,
+    error: genericErrorSchema.optional()
+});
+
+export const getAutofillInitDataResponseSchema = z.object({
+    type: z.literal("getAutofillInitDataResponse").optional(),
+    success: z.object({
+        credentials: z.array(credentialsSchema),
+        identities: z.array(identityObjectSchema),
+        creditCards: z.array(creditCardObjectSchema),
+        serializedInputContext: z.string()
+    }).optional(),
     error: genericErrorSchema.optional()
 });
 
@@ -396,6 +443,16 @@ export const apiSchema = z.object({
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    getIdentity: z.record(z.unknown()).and(z.object({
+        id: z.literal("getIdentityResponse").optional(),
+        paramValidator: getIdentityParamSchema.optional(),
+        resultValidator: getIdentityResultSchema.optional()
+    })).optional(),
+    getCreditCard: z.record(z.unknown()).and(z.object({
+        id: z.literal("getCreditCardResponse").optional(),
+        paramValidator: getCreditCardParamSchema.optional(),
+        resultValidator: getCreditCardResultSchema.optional()
+    })).optional(),
     credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
     emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
         id: z.literal("emailProtectionStoreUserDataResponse").optional(),

@@ -36,6 +36,7 @@ export class DeviceApi {
     async request(deviceApiCall, options) {
         deviceApiCall.validateParams();
         const result = await this.transport.send(deviceApiCall, options);
+
         const processed = deviceApiCall.preResultValidation(result);
         return deviceApiCall.validateResult(processed);
     }
