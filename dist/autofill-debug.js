@@ -4544,6 +4544,9 @@ Source: "${matchedFrom}"`;
     "ruten.com.tw": {
       "password-rules": "minlength: 6; maxlength: 15; required: lower, upper;"
     },
+    "safeway.com": {
+      "password-rules": "minlength: 8; maxlength: 40; required: upper; required: [!#$%&*@^]; allowed: lower,digit;"
+    },
     "salslimo.com": {
       "password-rules": "minlength: 8; maxlength: 50; required: upper; required: lower; required: digit; required: [!@#$&*];"
     },
