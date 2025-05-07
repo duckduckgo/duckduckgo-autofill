@@ -6117,7 +6117,10 @@ Source: "${matchedFrom}"`;
           return false;
       }
       if (isMobileApp && mainType === "creditCards") {
-        return !this.touched.has(input) && !(input instanceof HTMLSelectElement);
+        const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some(
+          (ccInput) => this.touched.has(ccInput)
+        );
+        return !hasAnyCCInputBeenTouched && !(input instanceof HTMLSelectElement);
       }
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }

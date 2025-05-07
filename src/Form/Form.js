@@ -859,9 +859,12 @@ class Form {
             if (isIncontextSignupAvailable) return false;
         }
 
-        // On mobile, don't re-prompt for credit cards if the field was already touched
+        // On mobile, don't re-prompt for credit cards if any field cc has already been touched
         if (isMobileApp && mainType === 'creditCards') {
-            return !this.touched.has(input) && !(input instanceof HTMLSelectElement);
+            const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some(
+                (ccInput) => this.touched.has(ccInput)
+            );
+            return !hasAnyCCInputBeenTouched && !(input instanceof HTMLSelectElement);
         }
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
