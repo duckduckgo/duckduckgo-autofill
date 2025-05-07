@@ -6097,11 +6097,11 @@ Source: "${matchedFrom}"`;
         return true;
       if (this.device.globalConfig.isWindows)
         return true;
+      const mainType = getInputMainType(input);
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
       const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
       if (this.device.globalConfig.isApp) {
-        const mainType = getInputMainType(input);
         const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype, variant }, null);
         if (hasSavedDetails) {
           return true;
@@ -6115,15 +6115,9 @@ Source: "${matchedFrom}"`;
       if (this.device.globalConfig.isExtension || isMobileApp) {
         if (isIncontextSignupAvailable)
           return false;
-        const isEligibleCCField = (ccSubtype) => canShowCCIcon(ccSubtype) || ccSubtype === "cardName";
-        const isTouchedCCInput = (ccInput) => {
-          const ccSubtype = getInputSubtype(ccInput);
-          return this.touched.has(ccInput) && isEligibleCCField(ccSubtype);
-        };
-        const hasAnyTouchedCCInput = [...this.inputs.creditCards].some(isTouchedCCInput);
-        console.log("isMobileApp, isEligibleCCField(subtype)", isMobileApp, isEligibleCCField(subtype), !hasAnyTouchedCCInput);
-        if (isMobileApp && isEligibleCCField(subtype))
-          return !hasAnyTouchedCCInput;
+      }
+      if (isMobileApp && mainType === "creditCards") {
+        return !this.touched.has(input) && !(input instanceof HTMLSelectElement);
       }
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }
