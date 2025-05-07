@@ -116,6 +116,8 @@ input[name="ccname" i],
 input[name="cc-name" i],
 input[name="ppw-accountHolderName" i],
 input[name="payment[name]"],
+input[id="cc-name" i],
+input[id="ccname" i],
 input[id*=cardname i],
 input[id*=card-name i],
 input[id*=card_name i]`;
@@ -130,6 +132,8 @@ input[name="cc-number" i],
 input[name*=card i][name*=number i]:not([name*=verif i]):not([name*=phone i]),
 input[name*=cardnumber i],
 input[name="payment[card_no]"],
+input[id="cc-number" i],
+input[id="ccnumber" i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`;
@@ -144,7 +148,11 @@ input[name*="cvv" i],
 input[name="cc-cvc" i],
 input[name="cc-csc" i],
 input[name="csc" i],
-input[name*=security i][name*=code i]`;
+input[name*=security i][name*=code i],
+input[id="cc-csc" i],
+input[id="csc" i],
+input[id="cc-cvc" i],
+input[id="cvc" i]`;
 
 const expirationMonth = `
 [autocomplete="cc-exp-month" i],
@@ -158,6 +166,8 @@ const expirationMonth = `
 [name*=cc-exp-month i],
 [name*="card_exp-month" i],
 [name*=cc_exp_month i],
+[id="cc-exp-month" i],
+[id="cc_exp_month" i],
 [id*=cc-month i]`;
 
 const expirationYear = `
@@ -172,6 +182,8 @@ const expirationYear = `
 [name*="cc-exp-year" i],
 [name*="card_exp-year" i],
 [name*=cc_exp_year i],
+[id="cc-exp-year" i],
+[id="cc_exp_year" i],
 [id*=cc-year i]`;
 
 const expiration = `
@@ -179,6 +191,7 @@ const expiration = `
 [name="cc-exp" i],
 [name="exp-date" i],
 [name="expirationDate" i],
+[id="cc-exp" i],
 input[id*=expiration i]`;
 
 const firstName = `
