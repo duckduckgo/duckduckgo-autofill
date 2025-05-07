@@ -5927,7 +5927,7 @@ Source: "${matchedFrom}"`;
         const fakeIdentity = {
           id: "fake-identity-id",
           title: "Test Identity",
-          phone: "+14343150583",
+          phone: "4343150583",
           firstName: "Peppa",
           lastName: "Pig",
           addressStreet: "3 Wynne drive",
@@ -5954,7 +5954,7 @@ Source: "${matchedFrom}"`;
       };
       const mainType = getInputMainType(input);
       if (mainType === "identities") {
-        this.addListener(input, "click", fillIdentityFieldsOnIOS);
+        this.addListener(input, "click", fillIdentityFieldsOnIOS, { once: true });
       }
       const shouldDecorate = await config.shouldDecorate(input, this);
       if (!shouldDecorate)
