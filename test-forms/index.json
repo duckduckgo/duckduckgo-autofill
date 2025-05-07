@@ -557,5 +557,6 @@
   { "html": "revolut_business_login.html" },
   { "html": "amazon-mobile-payment-form.html" },
   { "html": "brickit_payment-form.html" },
-  { "html": "fedex_login.html" }
+  { "html": "fedex_login.html" },
+  { "html": "att_credit_card.html" }
 ]
