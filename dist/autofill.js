@@ -83,6 +83,7 @@
     // INJECT availableInputTypes HERE
     let secret = "PLACEHOLDER_SECRET";
     const isAndroid = userPreferences?.platform.name === "android";
+    const isIOS = userPreferences?.platform.name === "ios";
     const isDDGApp = ["ios", "android", "macos", "windows"].includes(userPreferences?.platform.name) || isWindows;
     const isMobileApp = ["ios", "android"].includes(userPreferences?.platform.name);
     const isFirefox = navigator.userAgent.includes("Firefox");
@@ -92,6 +93,7 @@
       isApp,
       isDDGApp,
       isAndroid,
+      isIOS,
       isFirefox,
       isMobileApp,
       isExtension,
@@ -5920,6 +5922,40 @@ Source: "${matchedFrom}"`;
      */
     async decorateInput(input) {
       const config = getInputConfig(input);
+      const fillIdentityFieldsOnIOS = (e) => {
+        const input2 = e.target;
+        const fakeIdentity = {
+          id: "fake-identity-id",
+          title: "Test Identity",
+          phone: "+14343150583",
+          firstName: "Peppa",
+          lastName: "Pig",
+          addressStreet: "3 Wynne drive",
+          addressCity: "Farmville",
+          addressProvince: "Virginia",
+          addressPostalCode: "23901",
+          addressCountryCode: "US",
+          birthdayYear: "1984",
+          birthdayMonth: "08",
+          birthdayDay: "14"
+        };
+        const mainType2 = getInputMainType(input2);
+        const subtype = getInputSubtype(input2);
+        if (mainType2 === "identities" && subtype !== "emailAddress" && this.device.globalConfig.isIOS) {
+          this.execOnInputs((input3) => {
+            const subtype2 = getInputSubtype(input3);
+            if (fakeIdentity[subtype2]) {
+              safeExecute(input3, () => {
+                setValue(input3, fakeIdentity[subtype2], this.device.globalConfig);
+              });
+            }
+          }, "identities");
+        }
+      };
+      const mainType = getInputMainType(input);
+      if (mainType === "identities") {
+        this.addListener(input, "click", fillIdentityFieldsOnIOS);
+      }
       const shouldDecorate = await config.shouldDecorate(input, this);
       if (!shouldDecorate)
         return this;
