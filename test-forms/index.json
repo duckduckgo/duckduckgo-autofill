@@ -45,6 +45,7 @@
   { "html": "homedepot_signup.html" },
   { "html": "yahoo_login.html", "expectedFailures": ["unknown"] },
   { "html": "yahoo_signup.html" },
+  { "html": "yahoo_payment-form.html" },
   { "html": "cnn_newsletter.html" },
   { "html": "etsy_login.html" },
   { "html": "etsy_signup.html" },
