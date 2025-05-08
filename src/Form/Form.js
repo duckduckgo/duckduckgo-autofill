@@ -646,11 +646,11 @@ class Form {
                     }
                 }, 'identities');
             }
-        }
+        };
         const mainType = getInputMainType(input);
 
         if (mainType === 'identities') {
-            this.addListener(input, 'click', fillIdentityFieldsOnIOS, {once: true});
+            this.addListener(input, 'click', fillIdentityFieldsOnIOS, { once: true });
         }
         const shouldDecorate = await config.shouldDecorate(input, this);
 
@@ -833,7 +833,7 @@ class Form {
         if (isEventWithinDax(e, input)) return true;
         if (this.device.globalConfig.isWindows) return true;
 
-        const mainType = getInputMainType(input)
+        const mainType = getInputMainType(input);
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
@@ -861,9 +861,7 @@ class Form {
 
         // On mobile, don't re-prompt for credit cards if any field cc has already been touched
         if (isMobileApp && mainType === 'creditCards') {
-            const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some(
-                (ccInput) => this.touched.has(ccInput)
-            );
+            const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some((ccInput) => this.touched.has(ccInput));
             return !hasAnyCCInputBeenTouched && !(input instanceof HTMLSelectElement);
         }
 
