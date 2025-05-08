@@ -890,7 +890,6 @@ class Form {
     }
 
     autofillInput(input, string, dataType) {
-        console.log('autofillInput', input, string, dataType);
         // Do not autofill if it's invisible (select elements can be hidden because of custom implementations)
         if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return;
         // Do not autofill if it's disabled or readonly to avoid potential breakage
