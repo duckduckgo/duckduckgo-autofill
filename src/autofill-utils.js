@@ -101,6 +101,13 @@ const setValueForInput = (el, val, config) => {
         el.focus();
     }
 
+    const events = [
+        new Event('keydown', { bubbles: true }),
+        new Event('input', { bubbles: true }),
+        new Event('keyup', { bubbles: true }),
+        new Event('change', { bubbles: true }),
+    ];
+
     // Direct value assignment - minimize events. Credit card fields are a special case, since
     // in some cases the additional events can cause issues like extra formatting or cursor jumps.
     if (typeof val === 'string' && getInputSubtype(el) === 'cardNumber') {
@@ -112,9 +119,7 @@ const setValueForInput = (el, val, config) => {
             originalSet?.call(el, val);
 
             // Only dispatch minimal events after value is set
-            el.dispatchEvent(new Event('input', { bubbles: true }));
-            el.dispatchEvent(new Event('keyup', { bubbles: true }));
-            el.dispatchEvent(new Event('change', { bubbles: true }));
+            events.forEach((ev) => el.dispatchEvent(ev));
             el.blur();
             return true;
         } catch (e) {
@@ -126,7 +131,6 @@ const setValueForInput = (el, val, config) => {
     // Standard fallback approach
     el.dispatchEvent(new Event('keydown', { bubbles: true }));
     originalSet?.call(el, val);
-    const events = [new Event('input', { bubbles: true }), new Event('keyup', { bubbles: true }), new Event('change', { bubbles: true })];
     events.forEach((ev) => el.dispatchEvent(ev));
     originalSet?.call(el, val);
     events.forEach((ev) => el.dispatchEvent(ev));
