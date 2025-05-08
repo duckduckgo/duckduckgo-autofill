@@ -257,7 +257,8 @@ const matchingConfiguration = {
           forceUnknown: /search|policy|choose a user\b/iu
         },
         cardName: {
-          match: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/iu
+          match: /(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)/iu,
+          skip: /email/iu
         },
         cardNumber: {
           match: /card.*number|number.*card/iu,

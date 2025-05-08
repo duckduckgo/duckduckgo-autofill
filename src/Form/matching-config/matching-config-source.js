@@ -301,7 +301,7 @@ const matchingConfiguration = {
                 },
 
                 // CC
-                cardName: { match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)' },
+                cardName: { match: '(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)', skip: 'email' },
                 cardNumber: { match: 'card.*number|number.*card', skip: 'phone', forceUnknown: 'plus' },
                 cardSecurityCode: { match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id' },
                 expirationMonth: {

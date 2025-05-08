@@ -409,7 +409,8 @@
             forceUnknown: /search|policy|choose a user\b/iu
           },
           cardName: {
-            match: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/iu
+            match: /(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)/iu,
+            skip: /email/iu
           },
           cardNumber: {
             match: /card.*number|number.*card/iu,
@@ -6117,9 +6118,7 @@ Source: "${matchedFrom}"`;
           return false;
       }
       if (isMobileApp && mainType === "creditCards") {
-        const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some(
-          (ccInput) => this.touched.has(ccInput)
-        );
+        const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some((ccInput) => this.touched.has(ccInput));
         return !hasAnyCCInputBeenTouched && !(input instanceof HTMLSelectElement);
       }
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
