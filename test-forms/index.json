@@ -560,5 +560,5 @@
   { "html": "fedex_login.html" },
   { "html": "att_credit_card.html" },
   { "html": "sams_club_credit_card.html", "expectedFailures": ["expirationMonth", "expirationYear"] },
-  { "html": "time_payment-form.html" }
+  { "html": "peacocktv_payment-form.html" }
 ]
