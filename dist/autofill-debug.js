@@ -1556,13 +1556,17 @@ Source: "${matchedFrom}"`;
     if (!config?.isAndroid) {
       el.focus();
     }
+    const events = [
+      new Event("keydown", { bubbles: true }),
+      new Event("input", { bubbles: true }),
+      new Event("keyup", { bubbles: true }),
+      new Event("change", { bubbles: true })
+    ];
     if (typeof val === "string" && getInputSubtype(el) === "cardNumber") {
       try {
         el.dispatchEvent(new Event("keydown", { bubbles: true }));
         originalSet?.call(el, val);
-        el.dispatchEvent(new Event("input", { bubbles: true }));
-        el.dispatchEvent(new Event("keyup", { bubbles: true }));
-        el.dispatchEvent(new Event("change", { bubbles: true }));
+        events.forEach((ev) => el.dispatchEvent(ev));
         el.blur();
         return true;
       } catch (e) {
@@ -1571,7 +1575,6 @@ Source: "${matchedFrom}"`;
     }
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
     originalSet?.call(el, val);
-    const events = [new Event("input", { bubbles: true }), new Event("keyup", { bubbles: true }), new Event("change", { bubbles: true })];
     events.forEach((ev) => el.dispatchEvent(ev));
     originalSet?.call(el, val);
     events.forEach((ev) => el.dispatchEvent(ev));
