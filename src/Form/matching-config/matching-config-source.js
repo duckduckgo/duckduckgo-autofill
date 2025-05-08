@@ -306,9 +306,9 @@ const matchingConfiguration = {
                 cardSecurityCode: { match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id' },
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    skip: 'mm[/\\s.\\-_—–]|check',
+                    skip: 'mm[/\\s.\\-_—–]|check|year',
                 },
-                expirationYear: { match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check' },
+                expirationYear: { match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check|month' },
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
                     skip: 'invalid|^dd/|check',

@@ -216,7 +216,7 @@ const matchingConfiguration = {
         cardSecurityCode: 'input[autocomplete="cc-csc" i], input[autocomplete="csc" i], input[autocomplete="cc-cvc" i], input[autocomplete="cvc" i], input[name*="cvc" i], input[name*="cvv" i], input[name="cc-cvc" i], input[name="cc-csc" i], input[name="csc" i], input[name*=security i][name*=code i], input[id="cc-csc" i], input[id="csc" i], input[id="cc-cvc" i], input[id="cvc" i]',
         expirationMonth: '[autocomplete="cc-exp-month" i], [autocomplete="cc_exp_month" i], [name="ccmonth" i], [name="ppw-expirationDate_month" i], [name=cardExpiryMonth i], [name*=ExpDate_Month i], [name*=exp i][name*=month i]:not([name*=year i]), [id*=exp i][id*=month i]:not([id*=year i]), [name*=cc-exp-month i], [name*="card_exp-month" i], [name*=cc_exp_month i], [id="cc-exp-month" i], [id="cc_exp_month" i], [id*=cc-month i]',
         expirationYear: '[autocomplete="cc-exp-year" i], [autocomplete="cc_exp_year" i], [name="ccyear" i], [name="ppw-expirationDate_year" i], [name=cardExpiryYear i], [name*=ExpDate_Year i], [name*=exp i][name*=year i]:not([name*=month i]), [id*=exp i][id*=year i]:not([id*=month i]), [name*="cc-exp-year" i], [name*="card_exp-year" i], [name*=cc_exp_year i], [id="cc-exp-year" i], [id="cc_exp_year" i], [id*=cc-year i]',
-        expiration: '[autocomplete="cc-exp" i], [name="cc-exp" i], [name="exp-date" i], input[name="expiry" i], [name="expirationDate" i], [id="cc-exp" i], input[id*=expiration i]',
+        expiration: '[autocomplete="cc-exp" i], [name="cc-exp" i], [name="exp-date" i], input[name="expiry" i], [name="expirationDate" i], input[name*=ex][placeholder="mm/yy" i], [id="cc-exp" i], input[id*=expiration i]',
         firstName: '[name*=fname i], [autocomplete*=given-name i], [name*=firstname i], [autocomplete*=firstname i], [name*=first-name i], [autocomplete*=first-name i], [name*=first_name i], [autocomplete*=first_name i], [name*=givenname i], [autocomplete*=givenname i], [name*=given-name i], [name*=given_name i], [autocomplete*=given_name i], [name*=forename i], [autocomplete*=forename i]',
         middleName: '[name*=mname i], [autocomplete*=additional-name i], [name*=middlename i], [autocomplete*=middlename i], [name*=middle-name i], [autocomplete*=middle-name i], [name*=middle_name i], [autocomplete*=middle_name i], [name*=additionalname i], [autocomplete*=additionalname i], [name*=additional-name i], [name*=additional_name i], [autocomplete*=additional_name i]',
         lastName: '[name=lname], [autocomplete*=family-name i], [name*=lastname i], [autocomplete*=lastname i], [name*=last-name i], [autocomplete*=last-name i], [name*=last_name i], [autocomplete*=last_name i], [name*=familyname i], [autocomplete*=familyname i], [name*=family-name i], [name*=family_name i], [autocomplete*=family_name i], [name*=surname i], [autocomplete*=surname i]',
@@ -270,11 +270,11 @@ const matchingConfiguration = {
         },
         expirationMonth: {
           match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/iu,
-          skip: /mm[/\s.\-_—–]|check/iu
+          skip: /mm[/\s.\-_—–]|check|year/iu
         },
         expirationYear: {
           match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/iu,
-          skip: /mm[/\s.\-_—–]|check/iu
+          skip: /mm[/\s.\-_—–]|check|month/iu
         },
         expiration: {
           match: /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/iu,

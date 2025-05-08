@@ -192,6 +192,7 @@ const expiration = `
 [name="exp-date" i],
 input[name="expiry" i],
 [name="expirationDate" i],
+input[name*=ex][placeholder="mm/yy" i],
 [id="cc-exp" i],
 input[id*=expiration i]`;
 
