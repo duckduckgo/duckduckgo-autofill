@@ -172,7 +172,11 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
+        if (
+            option.innerText === stringVal ||
+            Number(option.innerText) === numberVal ||
+            safeRegexTest(new RegExp(stringVal, 'i'), option.innerText)
+        ) {
             if (option.selected) return false;
             option.selected = true;
             fireEventsOnSelect(el);
