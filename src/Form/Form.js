@@ -21,7 +21,7 @@ import {
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js';
-import { canBeInteractedWith, getInputConfig, isFieldDecorated, canShowCCIcon } from './inputTypeConfig.js';
+import { canBeInteractedWith, getInputConfig, isFieldDecorated } from './inputTypeConfig.js';
 
 import {
     getUnifiedExpiryDate,
@@ -612,6 +612,46 @@ class Form {
     async decorateInput(input) {
         const config = getInputConfig(input);
 
+        /**
+         * Temporary escape hatch for helping to fill identity fields on iOS
+         **/
+        const fillIdentityFieldsOnIOS = (e) => {
+            const input = e.target;
+
+            /** @type {IdentityObject} */
+            const fakeIdentity = {
+                id: 'fake-identity-id',
+                title: 'Test Identity',
+                phone: '4343150583',
+                firstName: 'Peppa',
+                lastName: 'Pig',
+                addressStreet: '3 Wynne drive',
+                addressCity: 'Farmville',
+                addressProvince: 'Virginia',
+                addressPostalCode: '23901',
+                addressCountryCode: 'US',
+                birthdayYear: '1984',
+                birthdayMonth: '08',
+                birthdayDay: '14',
+            };
+            const mainType = getInputMainType(input);
+            const subtype = getInputSubtype(input);
+            if (mainType === 'identities' && subtype !== 'emailAddress' && this.device.globalConfig.isIOS) {
+                this.execOnInputs((input) => {
+                    const subtype = getInputSubtype(input);
+                    if (fakeIdentity[subtype]) {
+                        safeExecute(input, () => {
+                            setValue(input, fakeIdentity[subtype], this.device.globalConfig);
+                        });
+                    }
+                }, 'identities');
+            }
+        };
+        const mainType = getInputMainType(input);
+
+        if (mainType === 'identities') {
+            this.addListener(input, 'click', fillIdentityFieldsOnIOS, { once: true });
+        }
         const shouldDecorate = await config.shouldDecorate(input, this);
 
         if (!shouldDecorate) return this;
@@ -793,12 +833,12 @@ class Form {
         if (isEventWithinDax(e, input)) return true;
         if (this.device.globalConfig.isWindows) return true;
 
+        const mainType = getInputMainType(input);
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
 
         if (this.device.globalConfig.isApp) {
-            const mainType = getInputMainType(input);
             // Check if, without in-context signup (passed as `null` below),
             // we'd have any other items to show. This lets us know if we're
             // just showing in-context signup, or with other autofill items.
@@ -817,19 +857,12 @@ class Form {
         if (this.device.globalConfig.isExtension || isMobileApp) {
             // Don't open the tooltip on input focus whenever it's showing in-context signup
             if (isIncontextSignupAvailable) return false;
+        }
 
-            const isEligibleCCField = (ccSubtype) => canShowCCIcon(ccSubtype) || ccSubtype === 'cardName';
-
-            const isTouchedCCInput = (ccInput) => {
-                const ccSubtype = getInputSubtype(ccInput);
-                return this.touched.has(ccInput) && isEligibleCCField(ccSubtype);
-            };
-
-            const hasAnyTouchedCCInput = [...this.inputs.creditCards].some(isTouchedCCInput);
-
-            console.log('isMobileApp, isEligibleCCField(subtype)', isMobileApp, isEligibleCCField(subtype), !hasAnyTouchedCCInput);
-
-            if (isMobileApp && isEligibleCCField(subtype)) return !hasAnyTouchedCCInput;
+        // On mobile, don't re-prompt for credit cards if any field cc has already been touched
+        if (isMobileApp && mainType === 'creditCards') {
+            const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some((ccInput) => this.touched.has(ccInput));
+            return !hasAnyCCInputBeenTouched && !(input instanceof HTMLSelectElement);
         }
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');

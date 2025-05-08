@@ -101,19 +101,33 @@ const setValueForInput = (el, val, config) => {
         el.focus();
     }
 
-    // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
+    // Direct value assignment - minimize events. Credit card fields are a special case, since
+    // in some cases the additional events can cause issues like extra formatting or cursor jumps.
+    if (typeof val === 'string' && getInputSubtype(el) === 'cardNumber') {
+        try {
+            // First dispatch keydown to simulate the start of user input
+            el.dispatchEvent(new Event('keydown', { bubbles: true }));
+
+            // Set the raw value directly
+            originalSet?.call(el, val);
+
+            // Only dispatch minimal events after value is set
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('keyup', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.blur();
+            return true;
+        } catch (e) {
+            // If there's an error with the direct approach, fall back to standard method
+            console.warn('Direct value assignment failed, falling back to standard method', e);
+        }
+    }
+
+    // Standard fallback approach
     el.dispatchEvent(new Event('keydown', { bubbles: true }));
-
     originalSet?.call(el, val);
-
-    const events = [
-        new Event('input', { bubbles: true }),
-        // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
-        new Event('keyup', { bubbles: true }),
-        new Event('change', { bubbles: true }),
-    ];
+    const events = [new Event('input', { bubbles: true }), new Event('keyup', { bubbles: true }), new Event('change', { bubbles: true })];
     events.forEach((ev) => el.dispatchEvent(ev));
-    // We call this again to make sure all forms are happy
     originalSet?.call(el, val);
     events.forEach((ev) => el.dispatchEvent(ev));
     el.blur();
@@ -172,7 +186,11 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
+        if (
+            option.innerText === stringVal ||
+            Number(option.innerText) === numberVal ||
+            safeRegexTest(new RegExp(stringVal, 'i'), option.innerText)
+        ) {
             if (option.selected) return false;
             option.selected = true;
             fireEventsOnSelect(el);
@@ -200,6 +218,9 @@ const setValue = (el, val, config) => {
 /**
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
+ * @param {HTMLElement} el
+ * @param {Function} fn
+ * @param {{checkVisibility?: Boolean}} [_opts]
  */
 const safeExecute = (el, fn, _opts = {}) => {
     // TODO: temporary fix to misterious bug in Chrome

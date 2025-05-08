@@ -1,0 +1,89 @@
+<form novalidate class="ng-pristine ng-invalid ng-touched">
+    <div data-test="tokenization-two-lines">
+        <div class="bootstrap">
+            <div class="field-container ng-pristine ng-invalid ng-touched">
+                <div class="input-block error">
+                    <label for="cc-number" data-test="upc-bs-label-cardNumber">Card number</label>
+                    <div id="input_container">
+                        <input 
+                            type="tel" 
+                            id="cc-number" 
+                            formcontrolname="cardNumber" 
+                            autocomplete="off" 
+                            cardnumber="" 
+                            data-test="upc-bs-input-cardNumber" 
+                            placeholder="e.g 41111 1111 1111 1111" 
+                            class="ng-pristine ng-invalid ng-touched" 
+                            data-manual-scoring="cardNumber"
+                        >
+                    </div>
+                </div>
+                <div>
+                    <span></span>
+                    <div class="error-message-block">
+                        <span data-test="error-message-card" class="error-message">Check card number.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cardExpCvcTwoLines">
+        <div class="expDate" dir="ltr">
+            <div class="bootstrap">
+                <div class="field-container ng-untouched ng-pristine ng-invalid">
+                    <div class="input-block">
+                        <label for="cc-exp" data-test="upc-bs-label-expDate">Expiry date (MM/YY)</label>
+                        <input 
+                            type="tel" 
+                            id="cc-exp" 
+                            formcontrolname="expDate" 
+                            autocomplete="off" 
+                            ccexp="" 
+                            data-test="upc-bs-input-expDate" 
+                            placeholder="MM/YY" 
+                            class="ng-untouched ng-pristine ng-invalid" 
+                            data-manual-scoring="expiration"
+                        >
+                    </div>
+                    <div>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cvc" dir="ltr">
+            <div class="bootstrap">
+                <div class="field-container ng-untouched ng-pristine ng-invalid">
+                    <div class="input-block">
+                        <label for="cc-cvc" data-test="upc-bs-label-cvc">Security code</label>
+                        <div id="input_container">
+                            <input 
+                                type="tel" 
+                                id="cc-cvc" 
+                                formcontrolname="cvc" 
+                                autocomplete="off" 
+                                cccvc="" 
+                                data-test="upc-bs-input-cvc" 
+                                placeholder="Security code" 
+                                class="ng-untouched ng-pristine ng-invalid" 
+                                data-manual-scoring="cardSecurityCode"
+                            >
+                            <div id="help_icon" style="display: block;">
+                                <button class="help-svg" aria-label="What's a security code?">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                        <path d="M8 2.6C10.98 2.6 13.4 5.02 13.4 8C13.4 10.98 10.98 13.4 8 13.4C5.02 13.4 2.6 10.98 2.6 8C2.6 5.02 5.02 2.6 8 2.6ZM8 1C4.13 1 1 4.13 1 8C1 11.87 4.13 15 8 15C11.87 15 15 11.87 15 8C15 4.13 11.87 1 8 1ZM7.47 5.03C6.8915 5.03 6.42 5.49693 6.42 6.08V6.61H4.92V6.08C4.92 4.66307 6.0685 3.53 7.47 3.53H8.53C9.94692 3.53 11.08 4.6785 11.08 6.08C11.08 7.04411 10.5291 7.93609 9.66099 8.36301L9.65768 8.36464L9.30956 8.53372C8.96106 8.70579 8.74 9.06173 8.74 9.46V9.81H7.24V9.46C7.24 8.49881 7.77833 7.61519 8.64901 7.18699L8.65232 7.18536L9.00041 7.0163C9.35154 6.84293 9.58 6.47536 9.58 6.08C9.58 5.5015 9.11307 5.03 8.53 5.03H7.47ZM8.95005 11.5C8.95005 12.0247 8.52472 12.45 8.00005 12.45C7.47538 12.45 7.05005 12.0247 7.05005 11.5C7.05005 10.9753 7.47538 10.55 8.00005 10.55C8.52472 10.55 8.95005 10.9753 8.95005 11.5Z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form> 

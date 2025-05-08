@@ -45,6 +45,7 @@
   { "html": "homedepot_signup.html" },
   { "html": "yahoo_login.html", "expectedFailures": ["unknown"] },
   { "html": "yahoo_signup.html" },
+  { "html": "yahoo_payment-form.html" },
   { "html": "cnn_newsletter.html" },
   { "html": "etsy_login.html" },
   { "html": "etsy_signup.html" },
@@ -556,5 +557,10 @@
   { "html": "revolut_business_login.html" },
   { "html": "amazon-mobile-payment-form.html" },
   { "html": "brickit_payment-form.html" },
-  { "html": "fedex_login.html" }
+  { "html": "fedex_login.html" },
+  { "html": "att_credit_card.html" },
+  { "html": "sams_club_credit_card.html", "expectedFailures": ["expirationMonth", "expirationYear"] },
+  { "html": "peacocktv_payment-form.html" },
+  { "html": "victoriassecret_payment-form.html" },
+  { "html": "uhaul_payment-form.html" }
 ]
