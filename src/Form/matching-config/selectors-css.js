@@ -190,6 +190,7 @@ const expiration = `
 [autocomplete="cc-exp" i],
 [name="cc-exp" i],
 [name="exp-date" i],
+input[name="expiry" i],
 [name="expirationDate" i],
 [id="cc-exp" i],
 input[id*=expiration i]`;
