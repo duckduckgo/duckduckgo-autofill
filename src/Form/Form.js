@@ -612,46 +612,6 @@ class Form {
     async decorateInput(input) {
         const config = getInputConfig(input);
 
-        /**
-         * Temporary escape hatch for helping to fill identity fields on iOS
-         **/
-        const fillIdentityFieldsOnIOS = (e) => {
-            const input = e.target;
-
-            /** @type {IdentityObject} */
-            const fakeIdentity = {
-                id: 'fake-identity-id',
-                title: 'Test Identity',
-                phone: '4343150583',
-                firstName: 'Peppa',
-                lastName: 'Pig',
-                addressStreet: '3 Wynne drive',
-                addressCity: 'Farmville',
-                addressProvince: 'Virginia',
-                addressPostalCode: '23901',
-                addressCountryCode: 'US',
-                birthdayYear: '1984',
-                birthdayMonth: '08',
-                birthdayDay: '14',
-            };
-            const mainType = getInputMainType(input);
-            const subtype = getInputSubtype(input);
-            if (mainType === 'identities' && subtype !== 'emailAddress' && this.device.globalConfig.isIOS) {
-                this.execOnInputs((input) => {
-                    const subtype = getInputSubtype(input);
-                    if (fakeIdentity[subtype]) {
-                        safeExecute(input, () => {
-                            setValue(input, fakeIdentity[subtype], this.device.globalConfig);
-                        });
-                    }
-                }, 'identities');
-            }
-        };
-        const mainType = getInputMainType(input);
-
-        if (mainType === 'identities') {
-            this.addListener(input, 'click', fillIdentityFieldsOnIOS, { once: true });
-        }
         const shouldDecorate = await config.shouldDecorate(input, this);
 
         if (!shouldDecorate) return this;
