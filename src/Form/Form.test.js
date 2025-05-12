@@ -430,6 +430,7 @@ describe('Form re-categorizes inputs', () => {
     const deviceInterface = InterfacePrototype.default();
     deviceInterface.settings.setFeatureToggles({
         unknown_username_categorization: true,
+        password_variant_categorization: true,
     });
     describe('Should recategorize', () => {
         test('when form has unknown input and has username data available', () => {

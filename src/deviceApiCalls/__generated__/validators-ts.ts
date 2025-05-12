@@ -734,9 +734,13 @@ export interface AutofillFeatureToggles {
   inlineIcon_credentials?: boolean;
   third_party_credentials_provider?: boolean;
   /**
-   * If true, we will attempt categorizaing username, based on the rest of the input fields in the form
+   * If true, we will attempt re-categorizing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, we will attempt re-categorizing the password variant, based on other fields in the form
+   */
+  password_variant_categorization?: boolean;
   /**
    * If true, then username only form saves will be allowed
    */
