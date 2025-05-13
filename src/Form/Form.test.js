@@ -754,7 +754,7 @@ describe('Password variant recategorization', () => {
         });
 
         createScanner(deviceInterface).findEligibleInputs(document);
-        
+
         // Query password inputs by their IDs
         const oldPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('old-password'));
         const newPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('new-password'));
@@ -781,7 +781,7 @@ describe('Password variant recategorization', () => {
         });
 
         createScanner(deviceInterface).findEligibleInputs(document);
-        
+
         // Query password inputs by their IDs
         const newPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('new-password'));
         const confirmPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('confirm-password'));
@@ -806,7 +806,7 @@ describe('Password variant recategorization', () => {
         });
 
         createScanner(deviceInterface).findEligibleInputs(document);
-        
+
         // Query password inputs by their IDs
         const currentPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('current-password'));
         const newPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('new-password'));
@@ -835,7 +835,7 @@ describe('Password variant recategorization', () => {
         });
 
         createScanner(deviceInterface).findEligibleInputs(document);
-        
+
         // Query password inputs by their IDs
         const password1 = /** @type {HTMLInputElement} */ (document.getElementById('password1'));
         const password2 = /** @type {HTMLInputElement} */ (document.getElementById('password2'));
