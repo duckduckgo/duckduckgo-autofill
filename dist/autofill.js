@@ -5719,6 +5719,9 @@ Source: "${matchedFrom}"`;
     canCategorizeAmbiguousInput() {
       return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
     }
+    canCategorizePasswordVariant() {
+      return this.device.settings.featureToggles.password_variant_categorization;
+    }
     /**
      * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
      * @param {HTMLInputElement} ambiguousInput
@@ -5773,6 +5776,31 @@ Source: "${matchedFrom}"`;
           console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
       }
     }
+    /**
+     * Recategorizes the new/current password field variant
+     */
+    recategorizeInputVariantIfNeeded() {
+      let newPasswordFields = 0;
+      let currentPasswordFields = 0;
+      let firstNewPasswordField = null;
+      for (const credentialElement of this.inputs.credentials) {
+        const variant = getInputVariant(credentialElement);
+        if (variant === "new") {
+          newPasswordFields++;
+          if (!firstNewPasswordField)
+            firstNewPasswordField = credentialElement;
+        }
+        if (variant === "current")
+          currentPasswordFields++;
+        if (newPasswordFields > 3 || currentPasswordFields > 0)
+          return;
+      }
+      if (newPasswordFields === 3 && currentPasswordFields === 0) {
+        if (shouldLog())
+          console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+        firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE2, "credentials.password.current");
+      }
+    }
     categorizeInputs() {
       const selector = this.matching.cssSelector("formInputsSelector");
       if (this.form.matches(selector)) {
@@ -5789,6 +5817,8 @@ Source: "${matchedFrom}"`;
       }
       if (this.canCategorizeAmbiguousInput())
         this.recategorizeInputToTargetType();
+      if (this.canCategorizePasswordVariant())
+        this.recategorizeInputVariantIfNeeded();
       if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
         this.destroy();
         return;
@@ -8526,6 +8556,7 @@ Source: "${matchedFrom}"`;
       inputType_creditCards: false,
       inlineIcon_credentials: false,
       unknown_username_categorization: false,
+      password_variant_categorization: false,
       partial_form_saves: false
     },
     /** @type {AvailableInputTypes} */
