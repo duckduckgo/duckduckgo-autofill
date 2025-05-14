@@ -5979,7 +5979,7 @@ Source: "${matchedFrom}"`;
         if (this.isAutofilling || this.device.isTooltipActive()) {
           return;
         }
-        const isLabel = e.target instanceof HTMLLabelElement;
+        const isLabel = e.type !== "focus" && e.target instanceof HTMLLabelElement;
         const input2 = isLabel ? e.target.control : e.target;
         if (!input2 || !this.inputs.all.has(input2))
           return;
@@ -6017,19 +6017,17 @@ Source: "${matchedFrom}"`;
         }
       };
       const isMobileApp = this.device.globalConfig.isMobileApp;
-      if (!(input instanceof HTMLSelectElement)) {
-        const events = ["pointerdown"];
-        if (!isMobileApp)
-          events.push("focus");
-        input.labels?.forEach((label) => {
-          this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
-        });
-        events.forEach((ev) => this.addListener(input, ev, handler));
-      } else {
+      if (input instanceof HTMLSelectElement) {
         this.addListener(input, "change", handlerSelect);
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handlerSelect : handlerLabel);
         });
+      } else {
+        const events = ["pointerdown", "focus"];
+        input.labels?.forEach((label) => {
+          this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
+        });
+        events.forEach((ev) => this.addListener(input, ev, handler));
       }
       return this;
     }

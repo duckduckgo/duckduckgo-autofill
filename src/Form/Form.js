@@ -713,7 +713,7 @@ class Form {
             }
 
             // On mobile, we don't trigger on focus, so here we get the target control on label click
-            const isLabel = e.target instanceof HTMLLabelElement;
+            const isLabel = e.type !== 'focus' && e.target instanceof HTMLLabelElement;
             const input = isLabel ? e.target.control : e.target;
             if (!input || !this.inputs.all.has(input)) return;
 
@@ -762,9 +762,13 @@ class Form {
         };
 
         const isMobileApp = this.device.globalConfig.isMobileApp;
-        if (!(input instanceof HTMLSelectElement)) {
-            const events = ['pointerdown'];
-            if (!isMobileApp) events.push('focus');
+        if (input instanceof HTMLSelectElement) {
+            this.addListener(input, 'change', handlerSelect);
+            input.labels?.forEach((label) => {
+                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+            });
+        } else {
+            const events = ['pointerdown', 'focus'];
             input.labels?.forEach((label) => {
                 // On mobile devices: handle click events (instead of focus) for labels,
                 // On desktop devices: handle label clicks which is needed when the form
@@ -772,11 +776,6 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
             });
             events.forEach((ev) => this.addListener(input, ev, handler));
-        } else {
-            this.addListener(input, 'change', handlerSelect);
-            input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
-            });
         }
         return this;
     }
