@@ -6077,7 +6077,6 @@ Source: "${matchedFrom}"`;
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
       const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
-      const isIos = this.device.globalConfig.isIOS;
       if (this.device.globalConfig.isApp) {
         const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype, variant }, null);
         if (hasSavedDetails) {
@@ -6093,7 +6092,7 @@ Source: "${matchedFrom}"`;
         if (isIncontextSignupAvailable)
           return false;
       }
-      if (isIos && mainType === "creditCards")
+      if (this.device.globalConfig.isIOS && mainType === "creditCards")
         return true;
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }

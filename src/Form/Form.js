@@ -829,7 +829,6 @@ class Form {
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
-        const isIos = this.device.globalConfig.isIOS;
 
         if (this.device.globalConfig.isApp) {
             // Check if, without in-context signup (passed as `null` below),
@@ -854,7 +853,7 @@ class Form {
 
         // On ios, always send the calls to the native side, so they can decide on the UX
         // On ios we either show a tooltip or the keyboard extension which non-blocking.
-        if (isIos && mainType === 'creditCards') return true;
+        if (this.device.globalConfig.isIOS && mainType === 'creditCards') return true;
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
     }
