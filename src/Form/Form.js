@@ -393,6 +393,10 @@ class Form {
         return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
     }
 
+    canCategorizePasswordVariant() {
+        return this.device.settings.featureToggles.password_variant_categorization;
+    }
+
     /**
      * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
      * @param {HTMLInputElement} ambiguousInput
@@ -450,6 +454,33 @@ class Form {
         }
     }
 
+    /**
+     * Recategorizes the new/current password field variant
+     */
+    recategorizeInputVariantIfNeeded() {
+        let newPasswordFields = 0;
+        let currentPasswordFields = 0;
+        let firstNewPasswordField = null;
+
+        for (const credentialElement of this.inputs.credentials) {
+            const variant = getInputVariant(credentialElement);
+            if (variant === 'new') {
+                newPasswordFields++;
+                if (!firstNewPasswordField) firstNewPasswordField = credentialElement;
+            }
+            if (variant === 'current') currentPasswordFields++;
+
+            // Short circuit if the field counts wouldn't match the requirements
+            if (newPasswordFields > 3 || currentPasswordFields > 0) return;
+        }
+
+        // If a form has 3 new-password fields, but no current, the first is likely a current
+        if (newPasswordFields === 3 && currentPasswordFields === 0) {
+            if (shouldLog()) console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+            firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE, 'credentials.password.current');
+        }
+    }
+
     categorizeInputs() {
         const selector = this.matching.cssSelector('formInputsSelector');
         // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -474,6 +505,8 @@ class Form {
         }
 
         if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+
+        if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
 
         // If the form has only one input and it's unknown, discard the form
         if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
@@ -796,6 +829,7 @@ class Form {
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
+        const isIos = this.device.globalConfig.isIOS;
 
         if (this.device.globalConfig.isApp) {
             // Check if, without in-context signup (passed as `null` below),
@@ -818,11 +852,9 @@ class Form {
             if (isIncontextSignupAvailable) return false;
         }
 
-        // On mobile, don't re-prompt for credit cards if any field cc has already been touched
-        if (isMobileApp && mainType === 'creditCards') {
-            const hasAnyCCInputBeenTouched = [...this.inputs.creditCards].some((ccInput) => this.touched.has(ccInput));
-            return !hasAnyCCInputBeenTouched && !(input instanceof HTMLSelectElement);
-        }
+        // On ios, always send the calls to the native side, so they can decide on the UX
+        // On ios we either show a tooltip or the keyboard extension which non-blocking.
+        if (isIos && mainType === 'creditCards') return true;
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
     }
