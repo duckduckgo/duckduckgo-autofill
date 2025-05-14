@@ -89,12 +89,6 @@ const canBeAutofilled = async (input, device) => {
 };
 
 /**
- * @param {import('./matching.js').SupportedSubTypes | 'unknown'} subtype
- * @returns {boolean}
- */
-const canShowCCIcon = (subtype) => subtype === 'cardNumber' || subtype === 'cardSecurityCode';
-
-/**
  * A map of config objects. These help by centralising here some complexity
  * @type {InputTypeConfig}
  */
@@ -158,27 +152,8 @@ const inputTypeConfig = {
     creditCards: {
         type: 'creditCards',
         displayName: 'credit cards',
-        getIconBase: (input, form) => {
-            const { device } = form;
-            const subtype = getInputSubtype(input);
-
-            if (subtype === 'cardName') return '';
-
-            if (canBeInteractedWith(input) && device.globalConfig.isMobileApp && canShowCCIcon(subtype))
-                return ddgPasswordIcons.ddgCcIconBase;
-
-            return '';
-        },
-        getIconFilled: (input, form) => {
-            const { device } = form;
-            const subtype = getInputSubtype(input);
-
-            if (subtype === 'cardName') return '';
-
-            if (device.globalConfig.isMobileApp && canShowCCIcon(subtype)) return ddgPasswordIcons.ddgCcIconFilled;
-
-            return '';
-        },
+        getIconBase: () => '',
+        getIconFilled: () => '',
         getIconAlternate: () => '',
         shouldDecorate: async (input, { device }) => {
             return canBeAutofilled(input, device);
@@ -243,4 +218,4 @@ const isFieldDecorated = (input) => {
     return input.hasAttribute(constants.ATTR_INPUT_TYPE);
 };
 
-export { getInputConfig, getInputConfigFromType, canBeInteractedWith, isFieldDecorated, canShowCCIcon };
+export { getInputConfig, getInputConfigFromType, canBeInteractedWith, isFieldDecorated };
