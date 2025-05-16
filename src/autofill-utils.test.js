@@ -40,6 +40,7 @@ const renderInputWithSelect = () => {
         <option value="US">USA</option>
         <option value="02">February</option>
         <option value="march">03</option>
+        <option value="July">July (07)</option>
     </select>
     `;
 
@@ -66,6 +67,13 @@ describe('value setting on selects', function () {
     it('should set value & dispatch events when value has changed', () => {
         const { select, events } = renderInputWithSelect();
         setValue(select, 'US');
+        expect(select.value).toBe('US');
+        expect(events).toStrictEqual(eventsToFireOnSelect);
+    });
+    it('should set value even when the match is not exact (i.e. matches with regex instead of ===', () => {
+        const { select, events } = renderInputWithSelect();
+        setValue(select, '07');
+        expect(select.value).toBe('July');
         expect(events).toStrictEqual(eventsToFireOnSelect);
     });
     it('should set value when the value is expressed with a leading 0 like 02 for February', () => {

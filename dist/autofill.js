@@ -83,6 +83,7 @@
     // INJECT availableInputTypes HERE
     let secret = "PLACEHOLDER_SECRET";
     const isAndroid = userPreferences?.platform.name === "android";
+    const isIOS = userPreferences?.platform.name === "ios";
     const isDDGApp = ["ios", "android", "macos", "windows"].includes(userPreferences?.platform.name) || isWindows;
     const isMobileApp = ["ios", "android"].includes(userPreferences?.platform.name);
     const isFirefox = navigator.userAgent.includes("Firefox");
@@ -92,6 +93,7 @@
       isApp,
       isDDGApp,
       isAndroid,
+      isIOS,
       isFirefox,
       isMobileApp,
       isExtension,
@@ -361,12 +363,12 @@
           emailAddress: 'input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]), input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]), input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=email], input[type=text][aria-label*=email i]:not([aria-label*=search i]), input:not([type])[aria-label*=email i]:not([aria-label*=search i]), input[name=username][type=email], input[autocomplete=username][type=email], input[autocomplete=username][placeholder*=email i], input[autocomplete=email],input[name="mail_tel" i],input[value=email i]',
           username: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])[autocomplete^=user i],input[name=username i],input[name="loginId" i],input[name="userid" i],input[id="userid" i],input[name="user_id" i],input[name="user-id" i],input[id="login-id" i],input[id="login_id" i],input[id="loginid" i],input[name="login" i],input[name=accountname i],input[autocomplete=username i],input[name*=accountid i],input[name="j_username" i],input[id="j_username" i],input[name="uwinid" i],input[name="livedoor_id" i],input[name="ssousername" i],input[name="j_userlogin_pwd" i],input[name="user[login]" i],input[name="user" i],input[name$="_username" i],input[id="lmSsoinput" i],input[name="account_subdomain" i],input[name="masterid" i],input[name="tridField" i],input[id="signInName" i],input[id="w3c_accountsbundle_accountrequeststep1_login" i],input[id="username" i],input[name="_user" i],input[name="login_username" i],input[name^="login-user-account" i],input[id="loginusuario" i],input[name="usuario" i],input[id="UserLoginFormUsername" i],input[id="nw_username" i],input[can-field="accountName"],input[name="login[username]"],input[placeholder^="username" i]',
           password: "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i]),input.js-cloudsave-phrase",
-          cardName: 'input[autocomplete="cc-name" i], input[autocomplete="ccname" i], input[name="ccname" i], input[name="cc-name" i], input[name="ppw-accountHolderName" i], input[name="payment[name]"], input[id*=cardname i], input[id*=card-name i], input[id*=card_name i]',
-          cardNumber: 'input[autocomplete="cc-number" i], input[autocomplete="ccnumber" i], input[autocomplete="cardnumber" i], input[autocomplete="card-number" i], input[name="ccnumber" i], input[name="cc-number" i], input[name*=card i][name*=number i]:not([name*=verif i]):not([name*=phone i]), input[name*=cardnumber i], input[name="payment[card_no]"], input[id*=cardnumber i], input[id*=card-number i], input[id*=card_number i]',
-          cardSecurityCode: 'input[autocomplete="cc-csc" i], input[autocomplete="csc" i], input[autocomplete="cc-cvc" i], input[autocomplete="cvc" i], input[name*="cvc" i], input[name*="cvv" i], input[name="cc-cvc" i], input[name="cc-csc" i], input[name="csc" i], input[name*=security i][name*=code i]',
-          expirationMonth: '[autocomplete="cc-exp-month" i], [autocomplete="cc_exp_month" i], [name="ccmonth" i], [name="ppw-expirationDate_month" i], [name=cardExpiryMonth i], [name*=ExpDate_Month i], [name*=exp i][name*=month i]:not([name*=year i]), [id*=exp i][id*=month i]:not([id*=year i]), [name*=cc-exp-month i], [name*="card_exp-month" i], [name*=cc_exp_month i], [id*=cc-month i]',
-          expirationYear: '[autocomplete="cc-exp-year" i], [autocomplete="cc_exp_year" i], [name="ccyear" i], [name="ppw-expirationDate_year" i], [name=cardExpiryYear i], [name*=ExpDate_Year i], [name*=exp i][name*=year i]:not([name*=month i]), [id*=exp i][id*=year i]:not([id*=month i]), [name*="cc-exp-year" i], [name*="card_exp-year" i], [name*=cc_exp_year i], [id*=cc-year i]',
-          expiration: '[autocomplete="cc-exp" i], [name="cc-exp" i], [name="exp-date" i], [name="expirationDate" i], input[id*=expiration i]',
+          cardName: 'input[autocomplete="cc-name" i], input[autocomplete="ccname" i], input[name="ccname" i], input[name="cc-name" i], input[name="ppw-accountHolderName" i], input[name="payment[name]"], input[id="cc-name" i], input[id="ccname" i], input[id*=cardname i], input[id*=card-name i], input[id*=card_name i]',
+          cardNumber: 'input[autocomplete="cc-number" i], input[autocomplete="ccnumber" i], input[autocomplete="cardnumber" i], input[autocomplete="card-number" i], input[name="ccnumber" i], input[name="cc-number" i], input[name*=card i][name*=number i]:not([name*=verif i]):not([name*=phone i]):not([name*=secur i]), input[name*=cardnumber i], input[name="payment[card_no]"], input[id="cc-number" i], input[id="ccnumber" i], input[id*=cardnumber i], input[id*=card-number i], input[id*=card_number i]',
+          cardSecurityCode: 'input[autocomplete="cc-csc" i], input[autocomplete="csc" i], input[autocomplete="cc-cvc" i], input[autocomplete="cvc" i], input[name*="cvc" i], input[name*="cvv" i], input[name="cc-cvc" i], input[name="cc-csc" i], input[name="csc" i], input[name*=security i][name*=code i], input[id="cc-csc" i], input[id="csc" i], input[id="cc-cvc" i], input[id="cvc" i]',
+          expirationMonth: '[autocomplete="cc-exp-month" i], [autocomplete="cc_exp_month" i], [name="ccmonth" i], [name="ppw-expirationDate_month" i], [name=cardExpiryMonth i], [name*=ExpDate_Month i], [name*=exp i][name*=month i]:not([name*=year i]), [id*=exp i][id*=month i]:not([id*=year i]), [name*=cc-exp-month i], [name*="card_exp-month" i], [name*=cc_exp_month i], [id="cc-exp-month" i], [id="cc_exp_month" i], [id*=cc-month i]',
+          expirationYear: '[autocomplete="cc-exp-year" i], [autocomplete="cc_exp_year" i], [name="ccyear" i], [name="ppw-expirationDate_year" i], [name=cardExpiryYear i], [name*=ExpDate_Year i], [name*=exp i][name*=year i]:not([name*=month i]), [id*=exp i][id*=year i]:not([id*=month i]), [name*="cc-exp-year" i], [name*="card_exp-year" i], [name*=cc_exp_year i], [id="cc-exp-year" i], [id="cc_exp_year" i], [id*=cc-year i]',
+          expiration: '[autocomplete="cc-exp" i], [name="cc-exp" i], [name="exp-date" i], input[name="expiry" i], [name="expirationDate" i], input[name*=ex][placeholder="mm/yy" i], [id="cc-exp" i], input[id*=expiration i]',
           firstName: "[name*=fname i], [autocomplete*=given-name i], [name*=firstname i], [autocomplete*=firstname i], [name*=first-name i], [autocomplete*=first-name i], [name*=first_name i], [autocomplete*=first_name i], [name*=givenname i], [autocomplete*=givenname i], [name*=given-name i], [name*=given_name i], [autocomplete*=given_name i], [name*=forename i], [autocomplete*=forename i]",
           middleName: "[name*=mname i], [autocomplete*=additional-name i], [name*=middlename i], [autocomplete*=middlename i], [name*=middle-name i], [autocomplete*=middle-name i], [name*=middle_name i], [autocomplete*=middle_name i], [name*=additionalname i], [autocomplete*=additionalname i], [name*=additional-name i], [name*=additional_name i], [autocomplete*=additional_name i]",
           lastName: "[name=lname], [autocomplete*=family-name i], [name*=lastname i], [autocomplete*=lastname i], [name*=last-name i], [autocomplete*=last-name i], [name*=last_name i], [autocomplete*=last_name i], [name*=familyname i], [autocomplete*=familyname i], [name*=family-name i], [name*=family_name i], [autocomplete*=family_name i], [name*=surname i], [autocomplete*=surname i]",
@@ -407,7 +409,8 @@
             forceUnknown: /search|policy|choose a user\b/iu
           },
           cardName: {
-            match: /(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)/iu
+            match: /(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)/iu,
+            skip: /email/iu
           },
           cardNumber: {
             match: /card.*number|number.*card/iu,
@@ -419,11 +422,11 @@
           },
           expirationMonth: {
             match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(month|\bmm\b(?![.\s/-]yy))/iu,
-            skip: /mm[/\s.\-_—–]|check/iu
+            skip: /mm[/\s.\-_—–]|check|year/iu
           },
           expirationYear: {
             match: /(card|\bcc\b)?.?(exp(iry|iration)?)?.?(year|yy)/iu,
-            skip: /mm[/\s.\-_—–]|check/iu
+            skip: /mm[/\s.\-_—–]|check|month/iu
           },
           expiration: {
             match: /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/iu,
@@ -1598,7 +1601,7 @@ Source: "${matchedFrom}"`;
       }
     }
     for (const option of el.options) {
-      if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
+      if (option.innerText === stringVal || Number(option.innerText) === numberVal || safeRegexTest(new RegExp(stringVal, "i"), option.innerText)) {
         if (option.selected)
           return false;
         option.selected = true;
@@ -5196,7 +5199,7 @@ Source: "${matchedFrom}"`;
 `.trim();
   var daxGrayscaleBase64 = `data:image/svg+xml;base64,${window.btoa(daxGrayscaleSvg)}`;
 
-  // src/UI/img/ddgPasswordIcon.js
+  // src/UI/img/ddgInputIcons.js
   var ddgPasswordIconBase = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4zMzQgNi42NjdhMiAyIDAgMSAwIDAgNCAyIDIgMCAwIDAgMC00Wm0tLjY2NyAyYS42NjcuNjY3IDAgMSAxIDEuMzMzIDAgLjY2Ny42NjcgMCAwIDEtMS4zMzMgMFoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuNjY3IDRhNS4zMzMgNS4zMzMgMCAwIDAtNS4xODggNi41NzhsLTUuMjg0IDUuMjg0YS42NjcuNjY3IDAgMCAwLS4xOTUuNDcxdjNjMCAuMzY5LjI5OC42NjcuNjY3LjY2N2gyLjY2NmMuNzM3IDAgMS4zMzQtLjU5NyAxLjMzNC0xLjMzM1YxOGguNjY2Yy43MzcgMCAxLjMzNC0uNTk3IDEuMzM0LTEuMzMzdi0xLjMzNEgxMmMuMTc3IDAgLjM0Ni0uMDcuNDcxLS4xOTVsLjY4OC0uNjg4QTUuMzMzIDUuMzMzIDAgMSAwIDE0LjY2NyA0Wm0tNCA1LjMzM2E0IDQgMCAxIDEgMi41NTUgMy43MzIuNjY3LjY2NyAwIDAgMC0uNzEzLjE1bC0uNzg1Ljc4NUgxMGEuNjY3LjY2NyAwIDAgMC0uNjY3LjY2N3YySDhhLjY2Ny42NjcgMCAwIDAtLjY2Ny42NjZ2MS4zMzRoLTJ2LTIuMDU4bDUuMzY1LTUuMzY0YS42NjcuNjY3IDAgMCAwIC4xNjMtLjY3NyAzLjk5NiAzLjk5NiAwIDAgMS0uMTk0LTEuMjM1WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+Cjwvc3ZnPgo=";
   var ddgPasswordIconFilled = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjNzY0MzEwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS4yNSA2Ljc1YTIgMiAwIDEgMCAwIDQgMiAyIDAgMCAwIDAtNFptLS41IDJhLjUuNSAwIDEgMSAxIDAgLjUuNSAwIDAgMS0xIDBaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICAgIDxwYXRoIGZpbGw9IiM3NjQzMTAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTE0LjYyNSA0YTUuMzc1IDUuMzc1IDAgMCAwLTUuMjQ0IDYuNTU5bC01LjE2MSA1LjE2YS43NS43NSAwIDAgMC0uMjIuNTMxdjNjMCAuNDE0LjMzNi43NS43NS43NWgyLjk5N2MuNTU0IDAgMS4wMDMtLjQ1IDEuMDAzLTEuMDAzVjE4aC45OTdjLjU1NCAwIDEuMDAzLS40NSAxLjAwMy0xLjAwM1YxNS41SDEyYS43NS43NSAwIDAgMCAuNTMtLjIybC43MS0uNzFBNS4zOCA1LjM4IDAgMCAwIDIwIDkuMzc1IDUuMzc1IDUuMzc1IDAgMCAwIDE0LjYyNSA0Wk0xMC43NSA5LjM3NWEzLjg3NSAzLjg3NSAwIDEgMSAyLjU0IDMuNjQuNzUuNzUgMCAwIDAtLjc4OS4xNzNMMTEuNjkgMTRIMTBhLjc1Ljc1IDAgMCAwLS43NS43NXYxLjc1SDhhLjc1Ljc1IDAgMCAwLS43NS43NXYxLjI1SDUuNXYtMS45NGw1LjI0OC01LjI0OGEuNzUuNzUgMCAwIDAgLjE4NC0uNzU4IDMuODcyIDMuODcyIDAgMCAxLS4xODItMS4xNzlaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==";
   var ddgPasswordGenIconBase = "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNOC4wNDcgNC42MjVDNy45MzcgNC4xMjUgNy44NjIgNCA3LjUgNGMtLjM2MiAwLS40MzguMTI1LS41NDcuNjI1LS4wNjguMzEtLjE3NyAxLjMzOC0uMjUxIDIuMDc3LS43MzguMDc0LTEuNzY3LjE4My0yLjA3Ny4yNTEtLjUuMTEtLjYyNS4xODQtLjYyNS41NDcgMCAuMzYyLjEyNS40MzcuNjI1LjU0Ny4zMS4wNjcgMS4zMzYuMTc3IDIuMDc0LjI1LjA3My43NjcuMTg1IDEuODQyLjI1NCAyLjA3OC4xMS4zNzUuMTg1LjYyNS41NDcuNjI1LjM2MiAwIC40MzgtLjEyNS41NDctLjYyNS4wNjgtLjMxLjE3Ny0xLjMzNi4yNS0yLjA3NC43NjctLjA3MyAxLjg0Mi0uMTg1IDIuMDc4LS4yNTQuMzc1LS4xMS42MjUtLjE4NS42MjUtLjU0NyAwLS4zNjMtLjEyNS0uNDM4LS42MjUtLjU0Ny0uMzEtLjA2OC0xLjMzOS0uMTc3LTIuMDc3LS4yNTEtLjA3NC0uNzM5LS4xODMtMS43NjctLjI1MS0yLjA3N1oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGQ9Ik0xNC42ODEgNS4xOTljLS43NjYgMC0xLjQ4Mi4yMS0yLjA5My41NzhhLjYzNi42MzYgMCAwIDEtLjY1NS0xLjA5IDUuMzQgNS4zNCAwIDEgMSAxLjMwMiA5LjcyMmwtLjc3NS43NzZhLjYzNi42MzYgMCAwIDEtLjQ1LjE4NmgtMS4zOTh2MS42NWMwIC40OTMtLjQuODkzLS44OTMuODkzSDguNTc4djEuMTQxYzAgLjQ5NC0uNC44OTMtLjg5NC44OTNINC42MzZBLjYzNi42MzYgMCAwIDEgNCAxOS4zMTNWMTYuMjZjMC0uMTY5LjA2Ny0uMzMuMTg2LS40NWw1LjU2Mi01LjU2MmEuNjM2LjYzNiAwIDEgMSAuOS45bC01LjM3NiA1LjM3NXYyLjE1M2gyLjAzNHYtMS4zOTljMC0uMzUuMjg1LS42MzYuNjM2LS42MzZIOS4zNHYtMS45MDdjMC0uMzUxLjI4NC0uNjM2LjYzNS0uNjM2aDEuNzcxbC44NjQtLjg2M2EuNjM2LjYzNiAwIDAgMSAuNjY4LS4xNDcgNC4wNjkgNC4wNjkgMCAxIDAgMS40MDItNy44OVoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEzLjYyNSA4LjQ5OWExLjg3NSAxLjg3NSAwIDEgMSAzLjc1IDAgMS44NzUgMS44NzUgMCAwIDEtMy43NSAwWm0xLjg3NS0uNjI1YS42MjUuNjI1IDAgMSAwIDAgMS4yNS42MjUuNjI1IDAgMCAwIDAtMS4yNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogICAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTQuNjI1IDEyLjEyNWEuNjI1LjYyNSAwIDEgMCAwLTEuMjUuNjI1LjYyNSAwIDAgMCAwIDEuMjVaIi8+Cjwvc3ZnPgo=";
@@ -6051,7 +6054,7 @@ Source: "${matchedFrom}"`;
         if (this.isAutofilling || this.device.isTooltipActive()) {
           return;
         }
-        const isLabel = e.target instanceof HTMLLabelElement;
+        const isLabel = e.type !== "focus" && e.target instanceof HTMLLabelElement;
         const input2 = isLabel ? e.target.control : e.target;
         if (!input2 || !this.inputs.all.has(input2))
           return;
@@ -6089,22 +6092,25 @@ Source: "${matchedFrom}"`;
         }
       };
       const isMobileApp = this.device.globalConfig.isMobileApp;
-      if (!(input instanceof HTMLSelectElement)) {
-        const events = ["pointerdown"];
-        if (!isMobileApp)
-          events.push("focus");
-        input.labels?.forEach((label) => {
-          this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
-        });
-        events.forEach((ev) => this.addListener(input, ev, handler));
-      } else {
+      if (input instanceof HTMLSelectElement) {
         this.addListener(input, "change", handlerSelect);
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handlerSelect : handlerLabel);
         });
+      } else {
+        const events = ["pointerdown", "focus"];
+        input.labels?.forEach((label) => {
+          this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
+        });
+        events.forEach((ev) => this.addListener(input, ev, handler));
       }
       return this;
     }
+    /**
+     * @param {MouseEvent} e
+     * @param {HTMLInputElement} input
+     * @returns {boolean}
+     */
     shouldOpenTooltip(e, input) {
       if (!isPotentiallyViewable(input))
         return false;
@@ -6112,11 +6118,11 @@ Source: "${matchedFrom}"`;
         return true;
       if (this.device.globalConfig.isWindows)
         return true;
+      const mainType = getInputMainType(input);
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
       const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
       if (this.device.globalConfig.isApp) {
-        const mainType = getInputMainType(input);
         const hasSavedDetails = this.device.settings.canAutofillType({ mainType, subtype, variant }, null);
         if (hasSavedDetails) {
           return true;
@@ -6126,10 +6132,13 @@ Source: "${matchedFrom}"`;
           return this.isCredentialsImportAvailable;
         }
       }
-      if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
+      const isMobileApp = this.device.globalConfig.isMobileApp;
+      if (this.device.globalConfig.isExtension || isMobileApp) {
         if (isIncontextSignupAvailable)
           return false;
       }
+      if (this.device.globalConfig.isIOS && mainType === "creditCards")
+        return true;
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }
     /**
@@ -6155,8 +6164,10 @@ Source: "${matchedFrom}"`;
         return;
       if (this.shouldSkipInput(input, dataType))
         return;
-      if (input.value === string)
+      if (input.value === string) {
+        input.blur();
         return;
+      }
       const successful = setValue(input, string, this.device.globalConfig);
       if (!successful)
         return;
@@ -6234,14 +6245,14 @@ Source: "${matchedFrom}"`;
       const isLoginOrHybrid = this.isLogin || this.isHybrid;
       return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
-    getFirstViableCredentialsInput() {
+    getFirstViableInputForCredentials() {
       return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
     async promptLoginIfNeeded() {
       if (document.visibilityState !== "visible" || !this.isLogin)
         return;
-      const firstCredentialInput = this.getFirstViableCredentialsInput();
-      const input = this.activeInput || firstCredentialInput;
+      const firstViableInput = this.getFirstViableInputForCredentials();
+      const input = this.activeInput || firstViableInput;
       if (!input)
         return;
       const mainType = getInputMainType(input);
@@ -11691,7 +11702,7 @@ Source: "${matchedFrom}"`;
      * Check if password promotion prompt should be shown. Only returns valid value in the main webiew.
      */
     isAvailable() {
-      return this.device.settings.availableInputTypes.credentialsImport;
+      return Boolean(this.device.settings.availableInputTypes.credentialsImport);
     }
     init() {
       if (!this.device.globalConfig.hasModernWebkitAPI)

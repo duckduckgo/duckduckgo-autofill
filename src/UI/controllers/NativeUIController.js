@@ -75,6 +75,7 @@ export class NativeUIController extends UIController {
                         form.activeInput?.focus();
                         break;
                     }
+
                     case 'acceptGeneratedPassword': {
                         form.autofillData(
                             {

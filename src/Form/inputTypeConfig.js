@@ -1,5 +1,5 @@
 import { daxBase64, daxGrayscaleBase64 } from './logo-svg.js';
-import * as ddgPasswordIcons from '../UI/img/ddgPasswordIcon.js';
+import * as ddgPasswordIcons from '../UI/img/ddgInputIcons.js';
 import { getInputType, getMainTypeFromType, getInputSubtype, getInputMainType, getInputVariant } from './matching.js';
 import { createCredentialsTooltipItem } from '../InputTypes/Credentials.js';
 import { CreditCardTooltipItem } from '../InputTypes/CreditCard.js';

@@ -93,6 +93,7 @@ interface GlobalConfig {
     isApp: boolean;
     isDDGApp: boolean;
     isAndroid: boolean;
+    isIOS: boolean;
     isFirefox: boolean;
     isMobileApp: boolean;
     isExtension: boolean;

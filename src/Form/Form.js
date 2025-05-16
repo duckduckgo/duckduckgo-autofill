@@ -746,7 +746,7 @@ class Form {
             }
 
             // On mobile, we don't trigger on focus, so here we get the target control on label click
-            const isLabel = e.target instanceof HTMLLabelElement;
+            const isLabel = e.type !== 'focus' && e.target instanceof HTMLLabelElement;
             const input = isLabel ? e.target.control : e.target;
             if (!input || !this.inputs.all.has(input)) return;
 
@@ -795,9 +795,13 @@ class Form {
         };
 
         const isMobileApp = this.device.globalConfig.isMobileApp;
-        if (!(input instanceof HTMLSelectElement)) {
-            const events = ['pointerdown'];
-            if (!isMobileApp) events.push('focus');
+        if (input instanceof HTMLSelectElement) {
+            this.addListener(input, 'change', handlerSelect);
+            input.labels?.forEach((label) => {
+                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+            });
+        } else {
+            const events = ['pointerdown', 'focus'];
             input.labels?.forEach((label) => {
                 // On mobile devices: handle click events (instead of focus) for labels,
                 // On desktop devices: handle label clicks which is needed when the form
@@ -805,15 +809,15 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
             });
             events.forEach((ev) => this.addListener(input, ev, handler));
-        } else {
-            this.addListener(input, 'change', handlerSelect);
-            input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
-            });
         }
         return this;
     }
 
+    /**
+     * @param {MouseEvent} e
+     * @param {HTMLInputElement} input
+     * @returns {boolean}
+     */
     shouldOpenTooltip(e, input) {
         if (!isPotentiallyViewable(input)) return false;
 
@@ -821,12 +825,12 @@ class Form {
         if (isEventWithinDax(e, input)) return true;
         if (this.device.globalConfig.isWindows) return true;
 
+        const mainType = getInputMainType(input);
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
         const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
 
         if (this.device.globalConfig.isApp) {
-            const mainType = getInputMainType(input);
             // Check if, without in-context signup (passed as `null` below),
             // we'd have any other items to show. This lets us know if we're
             // just showing in-context signup, or with other autofill items.
@@ -841,10 +845,15 @@ class Form {
             }
         }
 
-        if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
+        const isMobileApp = this.device.globalConfig.isMobileApp;
+        if (this.device.globalConfig.isExtension || isMobileApp) {
             // Don't open the tooltip on input focus whenever it's showing in-context signup
             if (isIncontextSignupAvailable) return false;
         }
+
+        // On ios, always send the calls to the native side, so they can decide on the UX
+        // On ios we either show a tooltip or the keyboard extension which non-blocking.
+        if (this.device.globalConfig.isIOS && mainType === 'creditCards') return true;
 
         return !this.touched.has(input) && !input.classList.contains('ddg-autofilled');
     }
@@ -878,8 +887,11 @@ class Form {
 
         if (this.shouldSkipInput(input, dataType)) return;
 
-        // If the value is already there, just return
-        if (input.value === string) return;
+        // If the value is already filled, blur and return. We nede to blur to force closing the keyboard in some cases (e.g credit cards)
+        if (input.value === string) {
+            input.blur();
+            return;
+        }
 
         const successful = setValue(input, string, this.device.globalConfig);
 
@@ -984,15 +996,15 @@ class Form {
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
 
-    getFirstViableCredentialsInput() {
+    getFirstViableInputForCredentials() {
         return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
 
     async promptLoginIfNeeded() {
         if (document.visibilityState !== 'visible' || !this.isLogin) return;
 
-        const firstCredentialInput = this.getFirstViableCredentialsInput();
-        const input = this.activeInput || firstCredentialInput;
+        const firstViableInput = this.getFirstViableInputForCredentials();
+        const input = this.activeInput || firstViableInput;
         if (!input) return;
 
         const mainType = getInputMainType(input);
@@ -1012,7 +1024,9 @@ class Form {
                     const elVCenter = y + height / 2;
                     // This checks that the form is not covered by anything else
                     const topMostElementFromPoint = document.elementFromPoint(elHCenter, elVCenter);
+
                     if (this.form.contains(topMostElementFromPoint)) {
+                        // Add inputs to the touched set only for the dataTypeForExec, which currentl
                         this.execOnInputs((input) => {
                             if (isPotentiallyViewable(input)) {
                                 this.touched.add(input);

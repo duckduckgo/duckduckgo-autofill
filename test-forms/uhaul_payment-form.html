@@ -1,0 +1,259 @@
+<form action="/Checkout/" class="collapse" data-ajax="true" data-ajax-method="Post" data-getbillingaddress-url="/GetCheckoutBillingAddress/" data-summary-ajaxform="true" data-validation-scroll-target="OrderComponentsRoot" id="CheckoutForm" method="post" novalidate="novalidate">
+    <p class="text-lg">
+        <strong class="text-semibold">All fields are required</strong>, unless indicated otherwise.
+    </p>
+    <input id="ComponentTypes_0_" name="ComponentTypes[0]" type="hidden" value="Retail">
+    <input id="PageLoad" name="PageLoad" type="hidden" value="False">
+    <input id="hiddenOriginalPossiblyInvalidEmailAddress" name="OriginalPossiblyInvalidEmailAddress" type="hidden" value="">
+
+    <fieldset id="movingSuppliesShippingAddress" class="divider collapse" data-shipping-option-action="/UpdateMovingSuppliesShippingOptions/">
+        <legend class="text-xl">Shipping Information</legend>
+        <div class="grid-x grid-margin-x hide">
+            <div class="cell medium-6">
+                <label for="ddlSavedShipAddress">
+                    Saved Addresses
+                    <select data-val="true" data-val-number="The field VerifiedCustomer_ShippingAddressId must be a number." id="ddlSavedShipAddress" name="VerifiedCustomer_ShippingAddressId" data-manual-scoring="addressStreet"></select>
+                </label>
+            </div>
+        </div>
+
+        <div id="rwShippingAddressInputs" class="">
+            <div class="grid-x hide">
+                <div class="cell shrink">
+                    <label for="chkPopulateCorporateShippingAddress" class="checkbox custom-ctrl">
+                        <input type="checkbox" id="chkPopulateCorporateShippingAddress">
+                        Use Company Address
+                        <span class="input-icon"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="ShippingAddress_rwFirstLastName" class="grid-x grid-margin-x medium-up-2">
+                <div class="cell">
+                    <label for="ShippingAddress_NameFirst">
+                        First Name
+                        <input name="ShippingAddress.NameFirst" data-pageload-value="" id="ShippingAddress_NameFirst" maxlength="30" type="text" value="" data-manual-scoring="firstName">
+                    </label>
+                </div>
+                <div class="cell">
+                    <label for="ShippingAddress_NameLast">
+                        Last Name
+                        <input name="ShippingAddress.NameLast" data-pageload-value="" id="ShippingAddress_NameLast" maxlength="30" type="text" value="" data-manual-scoring="lastName">
+                    </label>
+                </div>
+            </div>
+
+            <div id="ShippingAddress_rwAddress" class="grid-x grid-margin-x uhjs-ShippingAddress_Address">
+                <div class="cell medium-9">
+                    <label for="ShippingAddress_Address">
+                        Address
+                        <input name="ShippingAddress.Address" data-pageload-value="" id="ShippingAddress_Address" type="text" value="" data-manual-scoring="addressStreet">
+                    </label>
+                </div>
+                <div class="cell medium-auto">
+                    <label for="ShippingAddress_Address2">
+                        Apt or Suite #
+                        <input name="ShippingAddress.Address2" data-pageload-value="" id="ShippingAddress_Address2" placeholder="Optional" type="text" value="" data-manual-scoring="addressStreet2">
+                    </label>
+                </div>
+            </div>
+
+            <div id="ShippingAddress_rwCity" class="grid-x grid-margin-x uhjs-ShippingAddress_Address">
+                <div class="cell medium-6">
+                    <label for="ShippingAddress_City">
+                        City
+                        <input name="ShippingAddress.City" data-pageload-value="" id="ShippingAddress_City" type="text" value="" data-manual-scoring="addressCity">
+                    </label>
+                </div>
+                <div class="cell medium-auto">
+                    <label for="ShippingAddress_StateProvince">
+                        State/Province
+                        <input name="ShippingAddress.StateProvince" data-pageload-value="" id="ShippingAddress_StateProvince" maxlength="2" type="text" value="" data-manual-scoring="addressProvince">
+                    </label>
+                </div>
+                <div class="cell medium-auto">
+                    <label for="ShippingAddress_PostalCode">
+                        Zip/Postal Code
+                        <input name="ShippingAddress.PostalCode" data-pageload-value="" id="ShippingAddress_PostalCode" type="text" value="" data-manual-scoring="addressPostalCode">
+                    </label>
+                </div>
+            </div>
+
+            <p class="note">
+                <strong>Please note:</strong> we do not ship to P.O. Boxes
+            </p>
+        </div>
+    </fieldset>
+
+    <fieldset class="divider collapse">
+        <legend class="text-xl">Billing Information</legend>
+        <div class="grid-x">
+            <div class="cell shrink">
+                <label for="sameAsBilling" class="checkbox custom-ctrl">
+                    <input type="checkbox" class="uhjs-same-as-billing" id="sameAsBilling" value="false">
+                    Same as shipping
+                    <span class="input-icon"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="divider">
+            <div id="rwAddressInputs" class="">
+                <div id="BillingAddress_rwFirstLastName" class="grid-x grid-margin-x medium-up-2">
+                    <div class="cell">
+                        <label for="BillingAddress_NameFirst">
+                            First Name
+                            <input name="BillingAddress.NameFirst" data-pageload-value="" id="BillingAddress_NameFirst" maxlength="30" type="text" value="" data-manual-scoring="firstName">
+                        </label>
+                    </div>
+                    <div class="cell">
+                        <label for="BillingAddress_NameLast">
+                            Last Name
+                            <input name="BillingAddress.NameLast" data-pageload-value="" id="BillingAddress_NameLast" maxlength="30" type="text" value="" data-manual-scoring="lastName">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="BillingAddress_rwAddress" class="grid-x grid-margin-x uhjs-BillingAddress_Address">
+                    <div class="cell medium-9">
+                        <label for="BillingAddress_Address">
+                            Address
+                            <input name="BillingAddress.Address" data-pageload-value="" id="BillingAddress_Address" type="text" value="" data-manual-scoring="addressStreet">
+                        </label>
+                    </div>
+                    <div class="cell medium-auto">
+                        <label for="BillingAddress_Address2">
+                            Apt or Suite #
+                            <input name="BillingAddress.Address2" data-pageload-value="" id="BillingAddress_Address2" placeholder="Optional" type="text" value="" data-manual-scoring="addressStreet2">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="BillingAddress_rwCity" class="grid-x grid-margin-x uhjs-BillingAddress_Address">
+                    <div class="cell medium-6">
+                        <label for="BillingAddress_City">
+                            City
+                            <input name="BillingAddress.City" data-pageload-value="" id="BillingAddress_City" type="text" value="" data-manual-scoring="addressCity">
+                        </label>
+                    </div>
+                    <div class="cell medium-auto">
+                        <label for="BillingAddress_StateProvince">
+                            State/Province
+                            <input name="BillingAddress.StateProvince" data-pageload-value="" id="BillingAddress_StateProvince" maxlength="2" type="text" value="" data-manual-scoring="addressProvince">
+                        </label>
+                    </div>
+                    <div class="cell medium-auto">
+                        <label for="BillingAddress_PostalCode">
+                            Zip/Postal Code
+                            <input name="BillingAddress.PostalCode" data-pageload-value="" id="BillingAddress_PostalCode" type="text" value="" data-manual-scoring="addressPostalCode">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="rwPhoneNumber" class="grid-x grid-margin-x medium-up-2">
+                    <div class="cell">
+                        <label for="PhoneNumber">
+                            Mobile Phone Number
+                            <input id="PhoneNumber" name="PhoneNumber" type="tel" value="" data-manual-scoring="phone">
+                        </label>
+                    </div>
+                    <div class="cell">
+                        <label for="EmailAddress">
+                            Email Address
+                            <input id="EmailAddress" name="EmailAddress" type="email" value="" data-manual-scoring="emailAddress">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="">
+            <label class="collapse checkbox custom-ctrl" for="ReceiveOrderDetailsUrlViaSms">
+                <input id="ReceiveOrderDetailsUrlViaSms" name="ReceiveOrderDetailsUrlViaSms" type="checkbox" checked="checked" value="true">
+                Receive my order details summary by text message
+                <span class="input-icon"></span>
+            </label>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend class="text-xl">Payment Information</legend>
+        <p class="collapse-half">
+            <strong class="text-normal">Encrypted payment</strong>
+        </p>
+        <div class="callout radius margin-x">
+            <div class="grid-x grid-margin-x">
+                <div id="rwCreditCardNumber" class="cell medium-6">
+                    <label for="CardNumber">
+                        Credit Card Number
+                        <input id="CardNumber" inputmode="numeric" name="CardNumber" pattern="[0-9*]*" type="text" value="" data-manual-scoring="cardNumber">
+                        <input id="TokenizedCardNumber" name="TokenizedCardNumber" type="hidden" value="">
+                    </label>
+                </div>
+                <div id="rwExpiration" class="cell auto">
+                    <div class="grid-x grid-margin-x small-up-2">
+                        <div class="cell">
+                            <label for="CardExpirationMonth" aria-label="Expiration Month">
+                                Exp. Month
+                                <select id="CardExpirationMonth" name="CardExpirationMonth" data-manual-scoring="expirationMonth">
+                                    <option value="January">January (01)</option>
+                                    <option value="February">February (02)</option>
+                                    <option value="March">March (03)</option>
+                                    <option value="April">April (04)</option>
+                                    <option value="May">May (05)</option>
+                                    <option value="June">June (06)</option>
+                                    <option value="July">July (07)</option>
+                                    <option value="August">August (08)</option>
+                                    <option value="September">September (09)</option>
+                                    <option value="October">October (10)</option>
+                                    <option value="November">November (11)</option>
+                                    <option value="December">December (12)</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="cell">
+                            <label for="CardExpirationYear" aria-label="Expiration Year">
+                                Exp. Year
+                                <select data-val="true" data-val-number="The field CardExpirationYear must be a number." id="CardExpirationYear" name="CardExpirationYear" data-manual-scoring="expirationYear">
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>
+                                    <option value="2038">2038</option>
+                                    <option value="2039">2039</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-x grid-margin-x">
+                <div class="cell small-5 medium-shrink">
+                    <label for="CardSecurityNumber">
+                        CSC
+                        <a class="text-small text-normal" data-open="CardSecurityCode" aria-controls="CardSecurityCode" aria-haspopup="true" tabindex="0" href="#">What's this?</a>
+                        <input maxlength="4" id="CardSecurityNumber" inputmode="numeric" name="CardSecurityNumber" pattern="[0-9]*" type="password" value="" data-manual-scoring="cardSecurityCode">
+                    </label>
+                </div>
+                <div class="cell small-7 medium-auto">
+                    <ul class="inline text-bold text-small">
+                        <li>
+                            Visa / <span class="show-for-medium">MasterCard</span>
+                            <span class="hide-for-medium">Visa/MC</span>
+                        </li>
+                        <li>Amex</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</form> 

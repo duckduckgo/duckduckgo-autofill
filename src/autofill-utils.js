@@ -172,7 +172,11 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
+        if (
+            option.innerText === stringVal ||
+            Number(option.innerText) === numberVal ||
+            safeRegexTest(new RegExp(stringVal, 'i'), option.innerText)
+        ) {
             if (option.selected) return false;
             option.selected = true;
             fireEventsOnSelect(el);
@@ -200,6 +204,9 @@ const setValue = (el, val, config) => {
 /**
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
+ * @param {HTMLElement} el
+ * @param {Function} fn
+ * @param {{checkVisibility?: Boolean}} [_opts]
  */
 const safeExecute = (el, fn, _opts = {}) => {
     // TODO: temporary fix to misterious bug in Chrome
