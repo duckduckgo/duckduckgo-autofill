@@ -887,8 +887,11 @@ class Form {
 
         if (this.shouldSkipInput(input, dataType)) return;
 
-        // If the value is already there, just return
-        if (input.value === string) return;
+        // If the value is already filled, blur and return. We nede to blur to force closing the keyboard in some cases (e.g credit cards)
+        if (input.value === string) {
+            input.blur();
+            return;
+        }
 
         const successful = setValue(input, string, this.device.globalConfig);
 

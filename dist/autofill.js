@@ -6119,8 +6119,10 @@ Source: "${matchedFrom}"`;
         return;
       if (this.shouldSkipInput(input, dataType))
         return;
-      if (input.value === string)
+      if (input.value === string) {
+        input.blur();
         return;
+      }
       const successful = setValue(input, string, this.device.globalConfig);
       if (!successful)
         return;
