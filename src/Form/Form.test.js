@@ -430,6 +430,7 @@ describe('Form re-categorizes inputs', () => {
     const deviceInterface = InterfacePrototype.default();
     deviceInterface.settings.setFeatureToggles({
         unknown_username_categorization: true,
+        password_variant_categorization: true,
     });
     describe('Should recategorize', () => {
         test('when form has unknown input and has username data available', () => {
@@ -733,5 +734,116 @@ describe('site specific fixes', () => {
             const input = /** @type {HTMLInputElement} */ (document.getElementById('username-input'));
             expect(input.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('identities.emailAddress');
         });
+    });
+});
+
+describe('Password variant recategorization', () => {
+    test('recategorizes first password field to current-password when there are 3 new-password fields', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="old-password" type="password" value="oldPassword" />
+                <input id="new-password" type="password" value="newPassword" autocomplete="new-password" />
+                <input id="confirm-password" type="password" value="confirmPassword" autocomplete="new-password" />
+                <button type="submit">Change Password</button>
+            </form>`);
+
+        // Create a device interface with password_variant_categorization enabled
+        const deviceInterface = InterfacePrototype.default();
+        deviceInterface.settings.setFeatureToggles({
+            password_variant_categorization: true,
+        });
+
+        createScanner(deviceInterface).findEligibleInputs(document);
+
+        // Query password inputs by their IDs
+        const oldPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('old-password'));
+        const newPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('new-password'));
+        const confirmPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('confirm-password'));
+
+        // The first password field should be recategorized to current-password
+        expect(oldPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.current');
+        // The other password fields should remain as new-password
+        expect(newPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+        expect(confirmPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+    });
+
+    test('does not recategorize when there are less than 3 new-password fields', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="new-password" type="password" value="newPassword" autocomplete="new-password" />
+                <input id="confirm-password" type="password" value="confirmPassword" autocomplete="new-password" />
+                <button type="submit">Create Account</button>
+            </form>`);
+
+        const deviceInterface = InterfacePrototype.default();
+        deviceInterface.settings.setFeatureToggles({
+            password_variant_categorization: true,
+        });
+
+        createScanner(deviceInterface).findEligibleInputs(document);
+
+        // Query password inputs by their IDs
+        const newPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('new-password'));
+        const confirmPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('confirm-password'));
+
+        // Both password fields should remain as new-password
+        expect(newPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+        expect(confirmPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+    });
+
+    test('does not recategorize when there is already a current-password field', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="current-password" type="password" value="oldPassword" autocomplete="current-password" />
+                <input id="new-password" type="password" value="newPassword" autocomplete="new-password" />
+                <input id="confirm-password" type="password" value="confirmPassword" autocomplete="new-password" />
+                <button type="submit">Change Password</button>
+            </form>`);
+
+        const deviceInterface = InterfacePrototype.default();
+        deviceInterface.settings.setFeatureToggles({
+            password_variant_categorization: true,
+        });
+
+        createScanner(deviceInterface).findEligibleInputs(document);
+
+        // Query password inputs by their IDs
+        const currentPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('current-password'));
+        const newPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('new-password'));
+        const confirmPasswordInput = /** @type {HTMLInputElement} */ (document.getElementById('confirm-password'));
+
+        // The first password should remain as current-password
+        expect(currentPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.current');
+        // The other password fields should remain as new-password
+        expect(newPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+        expect(confirmPasswordInput.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+    });
+
+    test('does not recategorize when feature toggle is disabled', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input id="password1" type="password" value="oldPassword" autocomplete="new-password" />
+                <input id="password2" type="password" value="newPassword" autocomplete="new-password" />
+                <input id="password3" type="password" value="confirmPassword" autocomplete="new-password" />
+                <button type="submit">Change Password</button>
+            </form>`);
+
+        // Create a device interface with password_variant_categorization disabled
+        const deviceInterface = InterfacePrototype.default();
+        deviceInterface.settings.setFeatureToggles({
+            password_variant_categorization: false,
+        });
+
+        createScanner(deviceInterface).findEligibleInputs(document);
+
+        // Query password inputs by their IDs
+        const password1 = /** @type {HTMLInputElement} */ (document.getElementById('password1'));
+        const password2 = /** @type {HTMLInputElement} */ (document.getElementById('password2'));
+        const password3 = /** @type {HTMLInputElement} */ (document.getElementById('password3'));
+
+        // All password fields should remain as new-password
+        expect(password1.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+        expect(password2.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
+        expect(password3.getAttribute(constants.ATTR_INPUT_TYPE)).toBe('credentials.password.new');
     });
 });
