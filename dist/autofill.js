@@ -3981,7 +3981,7 @@ Source: "${matchedFrom}"`;
       "password-rules": "maxlength: 15;"
     },
     "ea.com": {
-      "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
+      "password-rules": "minlength: 8; maxlength: 64; required: lower; required: upper; required: digit; allowed: special;"
     },
     "easycoop.com": {
       "password-rules": "minlength: 8; required: upper; required: special; allowed: lower, digit;"
