@@ -278,7 +278,7 @@ const matchingConfiguration = {
                 },
                 username: {
                     match:
-                        '(user|account|online.?id|membership.?id|log(i|o)n|net)((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
+                        '(user|account|online.?id|membership.?id|log(i|o)n|net|customer.?(number|id))((.)?(name|i.?d.?|log(i|o)n).?)?(.?((or|/).+|\\*|:)( required)?)?$' +
                         // Italian
                         '|(nome|id|login).?utente|(nome|id) (dell.)?account|codice (cliente|uten)' +
                         // German
