@@ -29,6 +29,10 @@
         }
       }
     },
+    "getAutofillDataCancelled": {
+      "type": "object",
+      "description": "Signal to the native side that the getAutofillData call has been aborted"
+    },
     "getRuntimeConfiguration": {
       "type": "object",
       "properties": {

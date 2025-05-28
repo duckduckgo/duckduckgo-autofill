@@ -59,6 +59,12 @@ export interface API {
     resultValidator?: GetAutofillDataResponse;
     [k: string]: unknown;
   };
+  /**
+   * Signal to the native side that the getAutofillData call has been aborted
+   */
+  getAutofillDataCancelled?: {
+    [k: string]: unknown;
+  };
   getRuntimeConfiguration?: {
     id?: "getRuntimeConfigurationResponse";
     resultValidator?: GetRuntimeConfigurationResponse;

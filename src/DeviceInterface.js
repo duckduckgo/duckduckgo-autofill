@@ -18,9 +18,9 @@ function createDevice() {
      * @type {import("../packages/device-api").DeviceApiTransport}
      */
     const loggingTransport = {
-        async send(deviceApiCall) {
+        async send(deviceApiCall, options) {
             console.log('[->outgoing]', 'id:', deviceApiCall.method, deviceApiCall.params || null);
-            const result = await transport.send(deviceApiCall);
+            const result = await transport.send(deviceApiCall, options);
             console.log('[<-incoming]', 'id:', deviceApiCall.method, result || null);
             return result;
         },

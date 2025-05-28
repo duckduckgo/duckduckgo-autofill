@@ -386,6 +386,7 @@ export const apiSchema = z.object({
         paramsValidator: getAutofillDataRequestSchema.optional(),
         resultValidator: getAutofillDataResponseSchema.optional()
     })).optional(),
+    getAutofillDataCancelled: z.record(z.unknown()).optional(),
     getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
         id: z.literal("getRuntimeConfigurationResponse").optional(),
         resultValidator: getRuntimeConfigurationResponseSchema.optional()

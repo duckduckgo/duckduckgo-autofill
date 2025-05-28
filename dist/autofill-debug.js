@@ -10651,6 +10651,7 @@ Source: "${matchedFrom}"`;
       paramsValidator: getAutofillDataRequestSchema.optional(),
       resultValidator: getAutofillDataResponseSchema.optional()
     })).optional(),
+    getAutofillDataCancelled: z.record(z.unknown()).optional(),
     getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
       id: z.literal("getRuntimeConfigurationResponse").optional(),
       resultValidator: getRuntimeConfigurationResponseSchema.optional()
@@ -11004,6 +11005,12 @@ Source: "${matchedFrom}"`;
       __publicField(this, "id", "getAutofillDataResponse");
       __publicField(this, "paramsValidator", getAutofillDataRequestSchema);
       __publicField(this, "resultValidator", getAutofillDataResponseSchema);
+    }
+  };
+  var GetAutofillDataCancelledCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getAutofillDataCancelled");
     }
   };
   var GetRuntimeConfigurationCall = class extends DeviceApiCall {
@@ -11659,7 +11666,7 @@ Source: "${matchedFrom}"`;
   };
 
   // src/UI/controllers/NativeUIController.js
-  var _passwordStatus;
+  var _passwordStatus, _abortController;
   var NativeUIController = class extends UIController {
     constructor() {
       super(...arguments);
@@ -11670,6 +11677,8 @@ Source: "${matchedFrom}"`;
        * @type {"default" | "rejected"}
        */
       __privateAdd(this, _passwordStatus, "default");
+      /** @type {AbortController|null} */
+      __privateAdd(this, _abortController, null);
     }
     /**
      * @param {import('./UIController').AttachArgs} args
@@ -11697,7 +11706,19 @@ Source: "${matchedFrom}"`;
       if (device.settings.featureToggles.password_generation) {
         payload = this.appendGeneratedPassword(topContextData, payload, triggerMetaData);
       }
-      device.deviceApi.request(new GetAutofillDataCall(payload)).then((resp) => {
+      if (mainType === "creditCards" && device.globalConfig.isIOS) {
+        input.addEventListener("blur", () => {
+          if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
+            __privateGet(this, _abortController).abort("HideKeyboardExtension");
+          }
+        });
+      }
+      if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
+        __privateGet(this, _abortController).abort("OverlappingListeners");
+      }
+      __privateSet(this, _abortController, new AbortController());
+      device.deviceApi.request(new GetAutofillDataCall(payload), { signal: __privateGet(this, _abortController).signal }).then((resp) => {
+        console.log("Request completed successfully", resp);
         switch (resp.action) {
           case "fill": {
             if (mainType in resp) {
@@ -11734,8 +11755,13 @@ Source: "${matchedFrom}"`;
           }
         }
       }).catch((e) => {
-        console.error("NativeTooltip::device.getAutofillData(payload)");
-        console.error(e);
+        if (e instanceof DOMException && e.name === "HideKeyboardExtension") {
+          device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
+        } else {
+          console.error("Promise Rejected", e);
+          console.error("NativeTooltip::device.getAutofillData(payload)");
+          console.error(e);
+        }
       });
     }
     /**
@@ -11773,6 +11799,7 @@ Source: "${matchedFrom}"`;
     }
   };
   _passwordStatus = new WeakMap();
+  _abortController = new WeakMap();
 
   // packages/messaging/webkit.js
   var WebkitMessagingTransport = class {
@@ -12059,6 +12086,9 @@ Source: "${matchedFrom}"`;
   };
 
   // src/deviceApiCalls/transports/apple.transport.js
+  var AbortError = (signal) => {
+    return new DOMException("Aborted", signal.reason || "AbortError");
+  };
   var AppleTransport = class extends DeviceApiTransport {
     /** @param {GlobalConfig} globalConfig */
     constructor(globalConfig) {
@@ -12071,11 +12101,22 @@ Source: "${matchedFrom}"`;
       });
       this.messaging = new Messaging(webkitConfig);
     }
-    async send(deviceApiCall) {
+    async send(deviceApiCall, options) {
       try {
+        if (options?.signal?.aborted) {
+          throw AbortError(options.signal);
+        }
         if (deviceApiCall.id) {
-          return await this.messaging.request(deviceApiCall.method, deviceApiCall.params || void 0);
+          const abortPromise = new Promise((_resolve, reject) => {
+            options?.signal?.addEventListener("abort", () => {
+              reject(AbortError(options.signal));
+            });
+          });
+          return await Promise.race([this.messaging.request(deviceApiCall.method, deviceApiCall.params || void 0), abortPromise]);
         } else {
+          if (options?.signal?.aborted) {
+            throw AbortError(options.signal);
+          }
           return this.messaging.notify(deviceApiCall.method, deviceApiCall.params || void 0);
         }
       } catch (e) {
@@ -19039,9 +19080,9 @@ ${this.options.css}
     const globalConfig = createGlobalConfig();
     const transport = createTransport(globalConfig);
     const loggingTransport = {
-      async send(deviceApiCall) {
+      async send(deviceApiCall, options) {
         console.log("[->outgoing]", "id:", deviceApiCall.method, deviceApiCall.params || null);
-        const result = await transport.send(deviceApiCall);
+        const result = await transport.send(deviceApiCall, options);
         console.log("[<-incoming]", "id:", deviceApiCall.method, result || null);
         return result;
       }

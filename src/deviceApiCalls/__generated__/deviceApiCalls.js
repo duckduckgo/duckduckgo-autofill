@@ -45,6 +45,12 @@ export class GetAutofillDataCall extends DeviceApiCall {
   resultValidator = getAutofillDataResponseSchema
 }
 /**
+ * @extends {DeviceApiCall<any, any>} 
+ */
+export class GetAutofillDataCancelledCall extends DeviceApiCall {
+  method = "getAutofillDataCancelled"
+}
+/**
  * @extends {DeviceApiCall<any, getRuntimeConfigurationResponseSchema>} 
  */
 export class GetRuntimeConfigurationCall extends DeviceApiCall {
