@@ -46,6 +46,27 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
+     * @returns {number}
+     */
+    get maxInputsPerPageFailsafe() {
+        return this.getFeatureSetting('maxInputsPerPageFailsafe');
+    }
+
+    /**
+     * @returns {number}
+     */
+    get maxFormsPerPageFailsafe() {
+        return this.getFeatureSetting('maxFormsFailsafe');
+    }
+
+    /**
+     * @returns {number}
+     */
+    get maxInputsPerFormFailsafe() {
+        return this.getFeatureSetting('maxInputsPerFormFailsafe');
+    }
+
+    /**
      * Checks if there's a forced form type configuration for the given form element
      * @param {HTMLElement} form
      * @returns {string|null|undefined}
