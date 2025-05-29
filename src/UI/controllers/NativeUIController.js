@@ -62,7 +62,8 @@ export class NativeUIController extends UIController {
             payload = this.appendGeneratedPassword(topContextData, payload, triggerMetaData);
         }
 
-        const handleAbortEvent = () => {
+        const handleAbortEvent = (e) => {
+            console.log('DEBUG: event type on abort', e.type);
             if (this.#abortController && !this.#abortController.signal.aborted) {
                 this.#abortController.abort('HideKeyboardExtension');
             }
@@ -72,11 +73,9 @@ export class NativeUIController extends UIController {
         // This is because the keyboard extension is not aware of the input blur event
         // and will continue to show the keyboard even when the input is blurred.
         // We also need to handle `pointercancel`, in case user clicks on the input to scroll.
-        if (mainType === 'creditCards' && device.globalConfig.isIOS) {
-            ['blur', 'pointercancel'].forEach((event) => {
-                form.activeInput?.addEventListener(event, handleAbortEvent);
-            });
-        }
+        // if (mainType === 'creditCards' && device.globalConfig.isIOS) {
+        //     input.addEventListener('blur', handleAbortEvent);
+        // }
 
         // prevent overlapping listeners
         if (this.#abortController && !this.#abortController.signal.aborted) {
@@ -125,9 +124,11 @@ export class NativeUIController extends UIController {
                     }
                 }
             })
-            .catch((e) => {
+            .catch(async (e) => {
                 if (e instanceof DOMException && e.name === 'HideKeyboardExtension') {
-                    device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
+                    await device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
+                    // Remove event listeners
+                    // input.removeEventListener('blur', handleAbortEvent);
                 } else {
                     console.error('NativeTooltip::device.getAutofillData(payload)');
                     console.error(e);

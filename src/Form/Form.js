@@ -802,8 +802,10 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
             });
         } else {
-            const events = ['pointerdown'];
+            let events = ['pointerdown'];
+            // For desktop or iOS, we want to handle focus events as well
             if (!isMobileApp) events.push('focus');
+            if (this.device.globalConfig.isIOS && getInputMainType(input) === 'creditCards') events = ['focus'];
             input.labels?.forEach((label) => {
                 // On mobile devices: handle click events (instead of focus) for labels,
                 // On desktop devices: handle label clicks which is needed when the form

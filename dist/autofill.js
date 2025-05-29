@@ -6054,9 +6054,11 @@ Source: "${matchedFrom}"`;
           this.addListener(label, "pointerdown", isMobileApp ? handlerSelect : handlerLabel);
         });
       } else {
-        const events = ["pointerdown"];
+        let events = ["pointerdown"];
         if (!isMobileApp)
           events.push("focus");
+        if (this.device.globalConfig.isIOS && getInputMainType(input) === "creditCards")
+          events = ["focus"];
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
         });
@@ -7225,16 +7227,12 @@ Source: "${matchedFrom}"`;
       if (device.settings.featureToggles.password_generation) {
         payload = this.appendGeneratedPassword(topContextData, payload, triggerMetaData);
       }
-      const handleAbortEvent = () => {
+      const handleAbortEvent = (e) => {
+        console.log("DEBUG: event type on abort", e.type);
         if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
           __privateGet(this, _abortController).abort("HideKeyboardExtension");
         }
       };
-      if (mainType === "creditCards" && device.globalConfig.isIOS) {
-        ["blur", "pointercancel"].forEach((event) => {
-          form.activeInput?.addEventListener(event, handleAbortEvent);
-        });
-      }
       if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
         __privateGet(this, _abortController).abort("OverlappingListeners");
       }
@@ -7275,9 +7273,9 @@ Source: "${matchedFrom}"`;
             }
           }
         }
-      }).catch((e) => {
+      }).catch(async (e) => {
         if (e instanceof DOMException && e.name === "HideKeyboardExtension") {
-          device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
+          await device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
         } else {
           console.error("NativeTooltip::device.getAutofillData(payload)");
           console.error(e);
