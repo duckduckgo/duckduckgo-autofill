@@ -6031,6 +6031,7 @@ Source: "${matchedFrom}"`;
             input2.blur();
           }
           this.touched.add(input2);
+          console.log("DEBUG: event type before attachTooltip", e.type);
           this.device.attachTooltip({
             form: this,
             input: input2,
@@ -6053,7 +6054,9 @@ Source: "${matchedFrom}"`;
           this.addListener(label, "pointerdown", isMobileApp ? handlerSelect : handlerLabel);
         });
       } else {
-        const events = ["pointerdown", "focus"];
+        const events = ["pointerdown"];
+        if (!isMobileApp)
+          events.push("focus");
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
         });

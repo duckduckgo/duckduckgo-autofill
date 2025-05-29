@@ -777,6 +777,7 @@ class Form {
                 }
 
                 this.touched.add(input);
+                console.log("DEBUG: event type before attachTooltip", e.type);
                 this.device.attachTooltip({
                     form: this,
                     input,
@@ -801,7 +802,8 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
             });
         } else {
-            const events = ['pointerdown', 'focus'];
+            const events = ['pointerdown'];
+            if (!isMobileApp) events.push('focus');
             input.labels?.forEach((label) => {
                 // On mobile devices: handle click events (instead of focus) for labels,
                 // On desktop devices: handle label clicks which is needed when the form
