@@ -7223,7 +7223,7 @@ Source: "${matchedFrom}"`;
         payload = this.appendGeneratedPassword(topContextData, payload, triggerMetaData);
       }
       if (mainType === "creditCards" && device.globalConfig.isIOS) {
-        input.addEventListener("blur", () => {
+        form.activeInput?.addEventListener("blur", () => {
           if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
             __privateGet(this, _abortController).abort("HideKeyboardExtension");
           }

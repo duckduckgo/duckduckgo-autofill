@@ -66,7 +66,7 @@ export class NativeUIController extends UIController {
         // This is because the keyboard extension is not aware of the input blur event
         // and will continue to show the keyboard even when the input is blurred
         if (mainType === 'creditCards' && device.globalConfig.isIOS) {
-            input.addEventListener('blur', () => {
+            form.activeInput?.addEventListener('blur', () => {
                 if (this.#abortController && !this.#abortController.signal.aborted) {
                     this.#abortController.abort('HideKeyboardExtension');
                 }
@@ -77,6 +77,7 @@ export class NativeUIController extends UIController {
         if (this.#abortController && !this.#abortController.signal.aborted) {
             this.#abortController.abort('OverlappingListeners');
         }
+
         this.#abortController = new AbortController();
 
         device.deviceApi
