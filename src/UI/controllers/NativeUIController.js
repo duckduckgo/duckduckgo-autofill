@@ -62,14 +62,19 @@ export class NativeUIController extends UIController {
             payload = this.appendGeneratedPassword(topContextData, payload, triggerMetaData);
         }
 
+        const handleAbortEvent = () => {
+            if (this.#abortController && !this.#abortController.signal.aborted) {
+                this.#abortController.abort('HideKeyboardExtension');
+            }
+        };
+
         // On iOS, we need to hide the keyboard extension when the user blurs the input
         // This is because the keyboard extension is not aware of the input blur event
-        // and will continue to show the keyboard even when the input is blurred
+        // and will continue to show the keyboard even when the input is blurred.
+        // We also need to handle `pointercancel`, in case user clicks on the input to scroll.
         if (mainType === 'creditCards' && device.globalConfig.isIOS) {
-            form.activeInput?.addEventListener('blur', () => {
-                if (this.#abortController && !this.#abortController.signal.aborted) {
-                    this.#abortController.abort('HideKeyboardExtension');
-                }
+            ['blur', 'pointercancel'].forEach((event) => {
+                form.activeInput?.addEventListener(event, handleAbortEvent);
             });
         }
 
@@ -83,7 +88,6 @@ export class NativeUIController extends UIController {
         device.deviceApi
             .request(new GetAutofillDataCall(payload), { signal: this.#abortController.signal })
             .then((resp) => {
-                console.log('Request completed successfully', resp);
                 switch (resp.action) {
                     case 'fill': {
                         if (mainType in resp) {
@@ -125,7 +129,6 @@ export class NativeUIController extends UIController {
                 if (e instanceof DOMException && e.name === 'HideKeyboardExtension') {
                     device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
                 } else {
-                    console.error('Promise Rejected', e);
                     console.error('NativeTooltip::device.getAutofillData(payload)');
                     console.error(e);
                 }

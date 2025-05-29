@@ -6031,7 +6031,7 @@ Source: "${matchedFrom}"`;
             input2.blur();
           }
           this.touched.add(input2);
-          console.log("DEBUG: event type before attachTooltip", e.type);
+          console.log("DEBUG: event type before attachTooltip", e.type, e.target);
           this.device.attachTooltip({
             form: this,
             input: input2,
@@ -7225,11 +7225,14 @@ Source: "${matchedFrom}"`;
       if (device.settings.featureToggles.password_generation) {
         payload = this.appendGeneratedPassword(topContextData, payload, triggerMetaData);
       }
+      const handleAbortEvent = () => {
+        if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
+          __privateGet(this, _abortController).abort("HideKeyboardExtension");
+        }
+      };
       if (mainType === "creditCards" && device.globalConfig.isIOS) {
-        form.activeInput?.addEventListener("blur", () => {
-          if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
-            __privateGet(this, _abortController).abort("HideKeyboardExtension");
-          }
+        ["blur", "pointercancel"].forEach((event) => {
+          form.activeInput?.addEventListener(event, handleAbortEvent);
         });
       }
       if (__privateGet(this, _abortController) && !__privateGet(this, _abortController).signal.aborted) {
@@ -7237,7 +7240,6 @@ Source: "${matchedFrom}"`;
       }
       __privateSet(this, _abortController, new AbortController());
       device.deviceApi.request(new GetAutofillDataCall(payload), { signal: __privateGet(this, _abortController).signal }).then((resp) => {
-        console.log("Request completed successfully", resp);
         switch (resp.action) {
           case "fill": {
             if (mainType in resp) {
@@ -7277,7 +7279,6 @@ Source: "${matchedFrom}"`;
         if (e instanceof DOMException && e.name === "HideKeyboardExtension") {
           device.deviceApi.notify(new GetAutofillDataCancelledCall(null));
         } else {
-          console.error("Promise Rejected", e);
           console.error("NativeTooltip::device.getAutofillData(payload)");
           console.error(e);
         }

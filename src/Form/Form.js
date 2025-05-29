@@ -777,7 +777,7 @@ class Form {
                 }
 
                 this.touched.add(input);
-                console.log("DEBUG: event type before attachTooltip", e.type);
+                console.log('DEBUG: event type before attachTooltip', e.type, e.target);
                 this.device.attachTooltip({
                     form: this,
                     input,
