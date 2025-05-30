@@ -563,4 +563,6 @@
   { "html": "peacocktv_payment-form.html" },
   { "html": "victoriassecret_payment-form.html" },
   { "html": "uhaul_payment-form.html" }
+  { "html": "sielte_change-password.html" },
+  { "html": "mcqueensdairies_co_uk_login.html", "expectedSubmitFalsePositives": 1 }
 ]

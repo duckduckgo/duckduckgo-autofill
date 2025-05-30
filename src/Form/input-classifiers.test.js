@@ -214,6 +214,7 @@ describe.each(testCases)('Test $html fields', (testCase) => {
         deviceInterface.settings.setAvailableInputTypes(availableInputTypes);
         deviceInterface.settings.setFeatureToggles({
             unknown_username_categorization: true,
+            password_variant_categorization: true,
         });
         const scanner = createScanner(deviceInterface);
         scanner.findEligibleInputs(document);
