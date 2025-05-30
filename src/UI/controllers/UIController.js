@@ -1,5 +1,5 @@
 /**
- * @typedef AttachArgs The argument required to 'attach' a tooltip
+ * @typedef AttachTooltipArgs The argument required to 'attachTooltip'
  * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
  * @property {HTMLInputElement} input the input field that triggered this 'attach' call
  * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
@@ -11,7 +11,7 @@
  */
 
 /**
- * @typedef ShowKeyboardExtensionArgs The argument required to 'showKeyboardExtension'
+ * @typedef AttachKeyboardArgs The argument required to 'attachKeyboard'
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
  * @property {import("../../Form/Form").Form} form the Form that triggered this call
  */
@@ -24,22 +24,22 @@ export class UIController {
      * Implement this method to control what happen when Autofill
      * has enough information to 'attach' a tooltip.
      *
-     * @param {AttachArgs} _args
+     * @param {AttachTooltipArgs} _args
      * @returns {void}
      */
-    attach(_args) {
-        throw new Error('must implement attach');
+    attachTooltip(_args) {
+        throw new Error('must implement attachTooltip');
     }
 
     /**
      * Implement this method to control what happen when Autofill
      * has enough information to show the keyboard extension.
      *
-     * @param {ShowKeyboardExtensionArgs} _args
+     * @param {AttachKeyboardArgs} _args
      * @returns {void}
      */
-    showKeyboardExtension(_args) {
-        throw new Error('must implement showKeyboardExtension');
+    attachKeyboard(_args) {
+        throw new Error('must implement attachKeyboard');
     }
 
     /**

@@ -68,7 +68,7 @@ export class HTMLTooltipUIController extends UIController {
     }
 
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
     attach(args) {
         if (this.getActiveTooltip()) {

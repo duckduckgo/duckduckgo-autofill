@@ -411,7 +411,7 @@ class InterfacePrototype {
      * @param {HTMLInputElement} params.input
      * @param {{ x: number; y: number; } | null} params.click
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
-     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
+     * @param {import('../UI/controllers/UIController.js').AttachTooltipArgs["triggerMetaData"]} params.triggerMetaData
      */
     attachTooltip(params) {
         const { form, input, click, trigger } = params;
@@ -465,7 +465,7 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form);
 
-        this.uiController?.attach({
+        this.uiController?.attachTooltip({
             input,
             form,
             click,
@@ -482,10 +482,10 @@ class InterfacePrototype {
     }
 
     /**
-     * @param {import('../UI/controllers/UIController.js').ShowKeyboardExtensionArgs} args
+     * @param {import('../UI/controllers/UIController.js').AttachKeyboardArgs} args
      */
-    showKeyboardExtension(args) {
-        this.uiController?.showKeyboardExtension(args);
+    attachKeyboard(args) {
+        this.uiController?.attachKeyboard(args);
     }
 
     /**

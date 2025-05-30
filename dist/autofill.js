@@ -6053,7 +6053,7 @@ Source: "${matchedFrom}"`;
         this.touched.add(input);
       };
       const handlerFocus = () => {
-        this.device.showKeyboardExtension({
+        this.device.attachKeyboard({
           device: this.device,
           form: this
         });
@@ -7172,21 +7172,21 @@ Source: "${matchedFrom}"`;
      * Implement this method to control what happen when Autofill
      * has enough information to 'attach' a tooltip.
      *
-     * @param {AttachArgs} _args
+     * @param {AttachTooltipArgs} _args
      * @returns {void}
      */
-    attach(_args2) {
-      throw new Error("must implement attach");
+    attachTooltip(_args2) {
+      throw new Error("must implement attachTooltip");
     }
     /**
      * Implement this method to control what happen when Autofill
      * has enough information to show the keyboard extension.
      *
-     * @param {ShowKeyboardExtensionArgs} _args
+     * @param {AttachKeyboardArgs} _args
      * @returns {void}
      */
-    showKeyboardExtension(_args2) {
-      throw new Error("must implement showKeyboardExtension");
+    attachKeyboard(_args2) {
+      throw new Error("must implement attachKeyboard");
     }
     /**
      * Implement this if your tooltip can be created from positioning
@@ -7253,9 +7253,9 @@ Source: "${matchedFrom}"`;
       __privateAdd(this, _passwordStatus, "default");
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       const { form, input, device, trigger, triggerMetaData, topContextData } = args;
       const inputType = getInputType(input);
       const mainType = getMainTypeFromType(inputType);
@@ -7320,9 +7320,9 @@ Source: "${matchedFrom}"`;
       });
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachKeyboardArgs} args
      */
-    async showKeyboardExtension(args) {
+    async attachKeyboard(args) {
       const { device, form } = args;
       try {
         const resp = await device.deviceApi.request(new GetAutofillDataFocusCall(null));
@@ -7346,7 +7346,7 @@ Source: "${matchedFrom}"`;
      *
      * @param {TopContextData} topContextData
      * @param {import('../../deviceApiCalls/__generated__/validators-ts.js').GetAutofillDataRequest} outgoingData
-     * @param {import('../../UI/controllers/UIController.js').AttachArgs['triggerMetaData']} triggerMetaData
+     * @param {import('../../UI/controllers/UIController.js').AttachTooltipArgs['triggerMetaData']} triggerMetaData
      * @return {import('../../deviceApiCalls/__generated__/validators-ts.js').GetAutofillDataRequest}
      */
     appendGeneratedPassword(topContextData, outgoingData, triggerMetaData) {
@@ -12094,7 +12094,7 @@ Source: "${matchedFrom}"`;
      * @param {HTMLInputElement} params.input
      * @param {{ x: number; y: number; } | null} params.click
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
-     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
+     * @param {import('../UI/controllers/UIController.js').AttachTooltipArgs["triggerMetaData"]} params.triggerMetaData
      */
     attachTooltip(params) {
       const { form, input, click, trigger } = params;
@@ -12129,7 +12129,7 @@ Source: "${matchedFrom}"`;
         credentialsImport: this.credentialsImport.isAvailable() && (this.activeForm.isLogin || this.activeForm.isHybrid)
       };
       const processedTopContext = this.preAttachTooltip(topContextData, input, form);
-      this.uiController?.attach({
+      this.uiController?.attachTooltip({
         input,
         form,
         click,
@@ -12144,10 +12144,10 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
-     * @param {import('../UI/controllers/UIController.js').ShowKeyboardExtensionArgs} args
+     * @param {import('../UI/controllers/UIController.js').AttachKeyboardArgs} args
      */
-    showKeyboardExtension(args) {
-      this.uiController?.showKeyboardExtension(args);
+    attachKeyboard(args) {
+      this.uiController?.attachKeyboard(args);
     }
     /**
      * When an item was selected, we then call back to the device
@@ -13265,7 +13265,7 @@ ${this.options.css}
       window.removeEventListener("pointerup", this, true);
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
     attach(args) {
       if (this.getActiveTooltip()) {
@@ -13715,9 +13715,9 @@ ${this.options.css}
       window.addEventListener("pointerdown", this, true);
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       const { getPosition, topContextData, click, input } = args;
       if (!input.parentNode)
         return;
@@ -13736,7 +13736,7 @@ ${this.options.css}
         input.scrollIntoView(true);
         this._mutObs?.disconnect();
         setTimeout(() => {
-          this.attach(args);
+          this.attachTooltip(args);
         }, 50);
         return;
       }

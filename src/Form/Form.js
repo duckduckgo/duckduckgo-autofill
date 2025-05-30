@@ -740,7 +740,7 @@ class Form {
         };
 
         const handlerFocus = () => {
-            this.device.showKeyboardExtension({
+            this.device.attachKeyboard({
                 device: this.device,
                 form: this,
             });
