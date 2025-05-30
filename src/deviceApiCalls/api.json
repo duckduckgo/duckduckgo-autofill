@@ -29,6 +29,15 @@
         }
       }
     },
+    "getAutofillDataFocus": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getAutofillDataFocusResponse"
+        }
+      }
+    },
     "getRuntimeConfiguration": {
       "type": "object",
       "properties": {

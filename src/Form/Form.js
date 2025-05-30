@@ -791,13 +791,21 @@ class Form {
 
                 const activeStyles = getIconStylesAlternate(input, this);
                 addInlineStyles(input, activeStyles);
+            } else if (this.device.globalConfig.isIOS && e.type === 'focus') {
+                // For iOS, we want to handle focus events always to be able to show the keyboard extension
+                this.device.attachKeyboard({ device: this.device, form: this });
             }
         };
 
         const isMobileApp = this.device.globalConfig.isMobileApp;
-        if (!(input instanceof HTMLSelectElement)) {
+        if (input instanceof HTMLSelectElement) {
+            this.addListener(input, 'change', handlerSelect);
+            input.labels?.forEach((label) => {
+                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+            });
+        } else {
             const events = ['pointerdown'];
-            if (!isMobileApp) events.push('focus');
+            if (!isMobileApp || this.device.globalConfig.isIOS) events.push('focus');
             input.labels?.forEach((label) => {
                 // On mobile devices: handle click events (instead of focus) for labels,
                 // On desktop devices: handle label clicks which is needed when the form
@@ -805,11 +813,6 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
             });
             events.forEach((ev) => this.addListener(input, ev, handler));
-        } else {
-            this.addListener(input, 'change', handlerSelect);
-            input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
-            });
         }
         return this;
     }
