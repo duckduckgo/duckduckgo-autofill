@@ -6060,6 +6060,8 @@ Source: "${matchedFrom}"`;
         const input2 = isLabel ? e.target.control : e.target;
         if (!input2 || !this.inputs.all.has(input2))
           return;
+        if (input2 === this.activeInput)
+          return;
         if (wasAutofilledByChrome(input2))
           return;
         if (!canBeInteractedWith(input2))

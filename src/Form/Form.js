@@ -750,6 +750,9 @@ class Form {
             const input = isLabel ? e.target.control : e.target;
             if (!input || !this.inputs.all.has(input)) return;
 
+            // Skip if this is the same input that's already active
+            if (input === this.activeInput) return;
+
             if (wasAutofilledByChrome(input)) return;
 
             if (!canBeInteractedWith(input)) return;
