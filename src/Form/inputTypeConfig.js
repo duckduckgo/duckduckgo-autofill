@@ -169,7 +169,7 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,
         shouldDecorate: async (input, { device }) => {
-            // For iOS, we want to handle focus events always to be able to show the keyboard extension
+            // For iOS, we want to add handlers to the input to be able to show the keyboard extension
             return device.globalConfig.isIOS || canBeAutofilled(input, device);
         },
         dataType: 'Identities',

@@ -6091,7 +6091,7 @@ Source: "${matchedFrom}"`;
           });
           const activeStyles = getIconStylesAlternate(input2, this);
           addInlineStyles(input2, activeStyles);
-        } else if (this.device.globalConfig.isIOS) {
+        } else if (this.device.globalConfig.isIOS && e.type === "focus") {
           this.device.attachKeyboard({ device: this.device, form: this });
         }
       };

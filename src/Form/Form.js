@@ -791,7 +791,8 @@ class Form {
 
                 const activeStyles = getIconStylesAlternate(input, this);
                 addInlineStyles(input, activeStyles);
-            } else if (this.device.globalConfig.isIOS) {
+            } else if (this.device.globalConfig.isIOS && e.type === 'focus') {
+                // For iOS, we want to handle focus events always to be able to show the keyboard extension
                 this.device.attachKeyboard({ device: this.device, form: this });
             }
         };
