@@ -482,6 +482,13 @@ class InterfacePrototype {
     }
 
     /**
+     * @param {import('../UI/controllers/UIController.js').ShowKeyboardExtensionArgs} args
+     */
+    showKeyboardExtension(args) {
+        this.uiController?.showKeyboardExtension(args);
+    }
+
+    /**
      * When an item was selected, we then call back to the device
      * to fetch the full suite of data needed to complete the autofill
      *

@@ -739,6 +739,13 @@ class Form {
             this.touched.add(input);
         };
 
+        const handlerFocus = () => {
+            this.device.showKeyboardExtension({
+                device: this.device,
+                form: this,
+            });
+        };
+
         const handler = (e) => {
             // Avoid firing multiple times
             if (this.isAutofilling || this.device.isTooltipActive()) {
@@ -795,7 +802,12 @@ class Form {
         };
 
         const isMobileApp = this.device.globalConfig.isMobileApp;
-        if (!(input instanceof HTMLSelectElement)) {
+        if (input instanceof HTMLSelectElement) {
+            this.addListener(input, 'change', handlerSelect);
+            input.labels?.forEach((label) => {
+                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+            });
+        } else {
             const events = ['pointerdown'];
             if (!isMobileApp) events.push('focus');
             input.labels?.forEach((label) => {
@@ -805,11 +817,9 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
             });
             events.forEach((ev) => this.addListener(input, ev, handler));
-        } else {
-            this.addListener(input, 'change', handlerSelect);
-            input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
-            });
+
+            // For iOS, we want to handle focus events separately for keyboard extension
+            if (this.device.globalConfig.isIOS) this.addListener(input, 'focus', handlerFocus);
         }
         return this;
     }

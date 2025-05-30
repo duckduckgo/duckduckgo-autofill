@@ -83,6 +83,7 @@
     // INJECT availableInputTypes HERE
     let secret = "PLACEHOLDER_SECRET";
     const isAndroid = userPreferences?.platform.name === "android";
+    const isIOS = userPreferences?.platform.name === "ios";
     const isDDGApp = ["ios", "android", "macos", "windows"].includes(userPreferences?.platform.name) || isWindows;
     const isMobileApp = ["ios", "android"].includes(userPreferences?.platform.name);
     const isFirefox = navigator.userAgent.includes("Firefox");
@@ -92,6 +93,7 @@
       isApp,
       isDDGApp,
       isAndroid,
+      isIOS,
       isFirefox,
       isMobileApp,
       isExtension,
@@ -6050,6 +6052,12 @@ Source: "${matchedFrom}"`;
       const handlerSelect = () => {
         this.touched.add(input);
       };
+      const handlerFocus = () => {
+        this.device.showKeyboardExtension({
+          device: this.device,
+          form: this
+        });
+      };
       const handler = (e) => {
         if (this.isAutofilling || this.device.isTooltipActive()) {
           return;
@@ -6092,7 +6100,12 @@ Source: "${matchedFrom}"`;
         }
       };
       const isMobileApp = this.device.globalConfig.isMobileApp;
-      if (!(input instanceof HTMLSelectElement)) {
+      if (input instanceof HTMLSelectElement) {
+        this.addListener(input, "change", handlerSelect);
+        input.labels?.forEach((label) => {
+          this.addListener(label, "pointerdown", isMobileApp ? handlerSelect : handlerLabel);
+        });
+      } else {
         const events = ["pointerdown"];
         if (!isMobileApp)
           events.push("focus");
@@ -6100,11 +6113,8 @@ Source: "${matchedFrom}"`;
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
         });
         events.forEach((ev) => this.addListener(input, ev, handler));
-      } else {
-        this.addListener(input, "change", handlerSelect);
-        input.labels?.forEach((label) => {
-          this.addListener(label, "pointerdown", isMobileApp ? handlerSelect : handlerLabel);
-        });
+        if (this.device.globalConfig.isIOS)
+          this.addListener(input, "focus", handlerFocus);
       }
       return this;
     }
@@ -6558,6 +6568,13 @@ Source: "${matchedFrom}"`;
       __publicField(this, "id", "getAutofillDataResponse");
       __publicField(this, "paramsValidator", getAutofillDataRequestSchema);
       __publicField(this, "resultValidator", getAutofillDataResponseSchema);
+    }
+  };
+  var GetAutofillDataFocusCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getAutofillDataFocus");
+      __publicField(this, "id", "getAutofillDataFocusResponse");
     }
   };
   var GetRuntimeConfigurationCall = class extends DeviceApiCall {
@@ -7162,6 +7179,16 @@ Source: "${matchedFrom}"`;
       throw new Error("must implement attach");
     }
     /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to show the keyboard extension.
+     *
+     * @param {ShowKeyboardExtensionArgs} _args
+     * @returns {void}
+     */
+    showKeyboardExtension(_args2) {
+      throw new Error("must implement showKeyboardExtension");
+    }
+    /**
      * Implement this if your tooltip can be created from positioning
      * + topContextData.
      *
@@ -7291,6 +7318,27 @@ Source: "${matchedFrom}"`;
         console.error("NativeTooltip::device.getAutofillData(payload)");
         console.error(e);
       });
+    }
+    /**
+     * @param {import('./UIController').AttachArgs} args
+     */
+    async showKeyboardExtension(args) {
+      const { device, form } = args;
+      try {
+        const resp = await device.deviceApi.request(new GetAutofillDataFocusCall(null));
+        switch (resp.action) {
+          case "fill": {
+            form.autofillData(resp.creditCards, "creditCards");
+            break;
+          }
+          case "none": {
+            break;
+          }
+        }
+      } catch (e) {
+        console.error("NativeTooltip::device.getAutofillDataFocus()");
+        console.error(e);
+      }
     }
     /**
      * If a password exists in `topContextData`, we can append it to the outgoing data
@@ -12094,6 +12142,12 @@ Source: "${matchedFrom}"`;
       if (trigger === "autoprompt") {
         this.autopromptFired = true;
       }
+    }
+    /**
+     * @param {import('../UI/controllers/UIController.js').ShowKeyboardExtensionArgs} args
+     */
+    showKeyboardExtension(args) {
+      this.uiController?.showKeyboardExtension(args);
     }
     /**
      * When an item was selected, we then call back to the device

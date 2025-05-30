@@ -11,6 +11,12 @@
  */
 
 /**
+ * @typedef ShowKeyboardExtensionArgs The argument required to 'showKeyboardExtension'
+ * @property {import("../../DeviceInterface/InterfacePrototype").default} device
+ * @property {import("../../Form/Form").Form} form the Form that triggered this call
+ */
+
+/**
  * This is the base interface that `UIControllers` should extend/implement
  */
 export class UIController {
@@ -24,6 +30,18 @@ export class UIController {
     attach(_args) {
         throw new Error('must implement attach');
     }
+
+    /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to show the keyboard extension.
+     *
+     * @param {ShowKeyboardExtensionArgs} _args
+     * @returns {void}
+     */
+    showKeyboardExtension(_args) {
+        throw new Error('must implement showKeyboardExtension');
+    }
+
     /**
      * Implement this if your tooltip can be created from positioning
      * + topContextData.
