@@ -17743,7 +17743,7 @@ ${this.options.css}
     /**
      * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       if (this.getActiveTooltip()) {
         return;
       }
