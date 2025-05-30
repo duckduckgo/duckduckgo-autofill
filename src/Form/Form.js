@@ -645,6 +645,15 @@ class Form {
     async decorateInput(input) {
         const config = getInputConfig(input);
 
+        // For iOS, we want to handle focus events always to be able to show the keyboard extension
+        if (this.device.globalConfig.isIOS)
+            this.addListener(input, 'focus', () =>
+                this.device.attachKeyboard({
+                    device: this.device,
+                    form: this,
+                }),
+            );
+
         const shouldDecorate = await config.shouldDecorate(input, this);
 
         if (!shouldDecorate) return this;
@@ -739,13 +748,6 @@ class Form {
             this.touched.add(input);
         };
 
-        const handlerFocus = () => {
-            this.device.attachKeyboard({
-                device: this.device,
-                form: this,
-            });
-        };
-
         const handler = (e) => {
             // Avoid firing multiple times
             if (this.isAutofilling || this.device.isTooltipActive()) {
@@ -817,9 +819,6 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
             });
             events.forEach((ev) => this.addListener(input, ev, handler));
-
-            // For iOS, we want to handle focus events separately for keyboard extension
-            if (this.device.globalConfig.isIOS) this.addListener(input, 'focus', handlerFocus);
         }
         return this;
     }

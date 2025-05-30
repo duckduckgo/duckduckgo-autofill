@@ -5981,6 +5981,15 @@ Source: "${matchedFrom}"`;
      */
     async decorateInput(input) {
       const config = getInputConfig(input);
+      if (this.device.globalConfig.isIOS)
+        this.addListener(
+          input,
+          "focus",
+          () => this.device.attachKeyboard({
+            device: this.device,
+            form: this
+          })
+        );
       const shouldDecorate = await config.shouldDecorate(input, this);
       if (!shouldDecorate)
         return this;
@@ -6052,12 +6061,6 @@ Source: "${matchedFrom}"`;
       const handlerSelect = () => {
         this.touched.add(input);
       };
-      const handlerFocus = () => {
-        this.device.attachKeyboard({
-          device: this.device,
-          form: this
-        });
-      };
       const handler = (e) => {
         if (this.isAutofilling || this.device.isTooltipActive()) {
           return;
@@ -6113,8 +6116,6 @@ Source: "${matchedFrom}"`;
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
         });
         events.forEach((ev) => this.addListener(input, ev, handler));
-        if (this.device.globalConfig.isIOS)
-          this.addListener(input, "focus", handlerFocus);
       }
       return this;
     }
