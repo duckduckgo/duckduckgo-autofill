@@ -154,9 +154,9 @@ test.describe('When Bitwarden is the password provider', () => {
                 .applyTo(page);
 
             // Load the autofill.js script with replacements
+            // prettier-ignore
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
-                .replace('hasModernWebkitAPI', true)
                 .platform('macos')
                 .applyTo(page);
 

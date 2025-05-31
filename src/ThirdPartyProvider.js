@@ -12,19 +12,14 @@ export class ThirdPartyProvider {
     }
     init() {
         if (this.device.settings.featureToggles.third_party_credentials_provider) {
-            if (this.device.globalConfig.hasModernWebkitAPI) {
-                Object.defineProperty(window, 'providerStatusUpdated', {
-                    enumerable: false,
-                    configurable: false,
-                    writable: false,
-                    value: (data) => {
-                        this.providerStatusUpdated(data);
-                    },
-                });
-            } else {
-                // On Catalina we poll the native layer
-                setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2000);
-            }
+            Object.defineProperty(window, 'providerStatusUpdated', {
+                enumerable: false,
+                configurable: false,
+                writable: false,
+                value: (data) => {
+                    this.providerStatusUpdated(data);
+                },
+            });
         }
     }
 
