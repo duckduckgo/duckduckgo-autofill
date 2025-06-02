@@ -108,9 +108,21 @@ export class NativeUIController extends UIController {
      * @param {import('./UIController').AttachKeyboardArgs} args
      */
     async attachKeyboard(args) {
-        const { device, form } = args;
+        const { device, form, input } = args;
+        const inputType = getInputType(input);
+        const mainType = getMainTypeFromType(inputType);
+
+        if (mainType === 'unknown') {
+            throw new Error('unreachable, should not be here if (mainType === "unknown")');
+        }
+
         try {
-            const resp = await device.deviceApi.request(new GetAutofillDataFocusCall(null));
+            const resp = await device.deviceApi.request(
+                new GetAutofillDataFocusCall({
+                    inputType,
+                    mainType,
+                }),
+            );
             switch (resp.action) {
                 case 'fill': {
                     form.autofillData(resp.creditCards, 'creditCards');

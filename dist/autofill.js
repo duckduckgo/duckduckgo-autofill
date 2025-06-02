@@ -6092,7 +6092,7 @@ Source: "${matchedFrom}"`;
           const activeStyles = getIconStylesAlternate(input2, this);
           addInlineStyles(input2, activeStyles);
         } else if (this.device.globalConfig.isIOS && e.type === "focus") {
-          this.device.attachKeyboard({ device: this.device, form: this });
+          this.device.attachKeyboard({ device: this.device, form: this, input: input2 });
         }
       };
       const isMobileApp = this.device.globalConfig.isMobileApp;
@@ -6287,6 +6287,7 @@ Source: "${matchedFrom}"`;
   // zod-replacers:./validators.zod.js
   var sendJSPixelParamsSchema = null;
   var addDebugFlagParamsSchema = null;
+  var getAutofillDataFocusRequestSchema = null;
   var getAutofillCredentialsParamsSchema = null;
   var setSizeParamsSchema = null;
   var selectedDetailParamsSchema = null;
@@ -6304,6 +6305,7 @@ Source: "${matchedFrom}"`;
   var emailProtectionRefreshPrivateAddressResultSchema = null;
   var getAutofillDataRequestSchema = null;
   var getAutofillDataResponseSchema = null;
+  var getAutofillDataFocusResponseSchema = null;
   var storeFormDataSchema = null;
   var getAvailableInputTypesResultSchema = null;
   var getAutofillInitDataResponseSchema = null;
@@ -6569,6 +6571,8 @@ Source: "${matchedFrom}"`;
       super(...arguments);
       __publicField(this, "method", "getAutofillDataFocus");
       __publicField(this, "id", "getAutofillDataFocusResponse");
+      __publicField(this, "paramsValidator", getAutofillDataFocusRequestSchema);
+      __publicField(this, "resultValidator", getAutofillDataFocusResponseSchema);
     }
   };
   var GetRuntimeConfigurationCall = class extends DeviceApiCall {
@@ -7317,9 +7321,19 @@ Source: "${matchedFrom}"`;
      * @param {import('./UIController').AttachKeyboardArgs} args
      */
     async attachKeyboard(args) {
-      const { device, form } = args;
+      const { device, form, input } = args;
+      const inputType = getInputType(input);
+      const mainType = getMainTypeFromType(inputType);
+      if (mainType === "unknown") {
+        throw new Error('unreachable, should not be here if (mainType === "unknown")');
+      }
       try {
-        const resp = await device.deviceApi.request(new GetAutofillDataFocusCall(null));
+        const resp = await device.deviceApi.request(
+          new GetAutofillDataFocusCall({
+            inputType,
+            mainType
+          })
+        );
         switch (resp.action) {
           case "fill": {
             form.autofillData(resp.creditCards, "creditCards");

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GetAutofillDataFocusRequest",
+  "type": "object",
+  "description": "This describes the argument given to `getAutofillDataFocus(data)`",
+  "additionalProperties": false,
+  "properties": {
+    "inputType": {
+      "description": "This is the combined input type, such as `credentials.username`",
+      "type": "string"
+    },
+    "mainType": {
+      "description": "The main input type",
+      "type": "string",
+      "enum": [
+        "credentials",
+        "identities",
+        "creditCards"
+      ]
+    }
+  },
+  "required": [
+    "inputType",
+    "mainType"
+  ]
+}

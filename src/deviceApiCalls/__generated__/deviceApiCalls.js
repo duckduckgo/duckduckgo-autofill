@@ -3,6 +3,8 @@ import {
     addDebugFlagParamsSchema,
     getAutofillDataRequestSchema,
     getAutofillDataResponseSchema,
+    getAutofillDataFocusRequestSchema,
+    getAutofillDataFocusResponseSchema,
     getRuntimeConfigurationResponseSchema,
     storeFormDataSchema,
     getAvailableInputTypesResultSchema,
@@ -45,11 +47,13 @@ export class GetAutofillDataCall extends DeviceApiCall {
   resultValidator = getAutofillDataResponseSchema
 }
 /**
- * @extends {DeviceApiCall<any, any>} 
+ * @extends {DeviceApiCall<getAutofillDataFocusRequestSchema, getAutofillDataFocusResponseSchema>} 
  */
 export class GetAutofillDataFocusCall extends DeviceApiCall {
   method = "getAutofillDataFocus"
   id = "getAutofillDataFocusResponse"
+  paramsValidator = getAutofillDataFocusRequestSchema
+  resultValidator = getAutofillDataFocusResponseSchema
 }
 /**
  * @extends {DeviceApiCall<any, getRuntimeConfigurationResponseSchema>} 

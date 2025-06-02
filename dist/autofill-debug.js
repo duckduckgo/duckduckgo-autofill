@@ -6092,7 +6092,7 @@ Source: "${matchedFrom}"`;
           const activeStyles = getIconStylesAlternate(input2, this);
           addInlineStyles(input2, activeStyles);
         } else if (this.device.globalConfig.isIOS && e.type === "focus") {
-          this.device.attachKeyboard({ device: this.device, form: this });
+          this.device.attachKeyboard({ device: this.device, form: this, input: input2 });
         }
       };
       const isMobileApp = this.device.globalConfig.isMobileApp;
@@ -10376,6 +10376,10 @@ Source: "${matchedFrom}"`;
   var addDebugFlagParamsSchema = z.object({
     flag: z.string()
   });
+  var getAutofillDataFocusRequestSchema = z.object({
+    inputType: z.string(),
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")])
+  });
   var getAutofillCredentialsParamsSchema = z.object({
     id: z.string()
   });
@@ -10446,6 +10450,17 @@ Source: "${matchedFrom}"`;
   var genericErrorSchema = z.object({
     message: z.string()
   });
+  var creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
+  });
   var userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
     sessionKey: z.string(),
@@ -10511,17 +10526,6 @@ Source: "${matchedFrom}"`;
     addressCountryCode: z.string().optional(),
     phone: z.string().optional(),
     emailAddress: z.string().optional()
-  });
-  var creditCardObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    displayNumber: z.string(),
-    cardName: z.string().optional(),
-    cardSecurityCode: z.string().optional(),
-    expirationMonth: z.string().optional(),
-    expirationYear: z.string().optional(),
-    cardNumber: z.string().optional(),
-    paymentProvider: z.string().optional()
   });
   var getAutofillCredentialsResultSchema = z.object({
     type: z.literal("getAutofillCredentialsResponse").optional(),
@@ -10641,6 +10645,14 @@ Source: "${matchedFrom}"`;
     }).optional(),
     error: genericErrorSchema.optional()
   });
+  var getAutofillDataFocusResponseSchema = z.object({
+    type: z.literal("getAutofillDataFocusResponse").optional(),
+    success: z.object({
+      creditCards: creditCardObjectSchema.optional(),
+      action: z.union([z.literal("fill"), z.literal("none")])
+    }).optional(),
+    error: genericErrorSchema.optional()
+  });
   var storeFormDataSchema = z.object({
     credentials: outgoingCredentialsSchema.optional(),
     trigger: z.union([z.literal("partialSave"), z.literal("formSubmission"), z.literal("passwordGeneration"), z.literal("emailProtection")]).optional()
@@ -10693,7 +10705,9 @@ Source: "${matchedFrom}"`;
       resultValidator: getAutofillDataResponseSchema.optional()
     })).optional(),
     getAutofillDataFocus: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAutofillDataFocusResponse").optional()
+      id: z.literal("getAutofillDataFocusResponse").optional(),
+      paramsValidator: getAutofillDataFocusRequestSchema.optional(),
+      resultValidator: getAutofillDataFocusResponseSchema.optional()
     })).optional(),
     getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
       id: z.literal("getRuntimeConfigurationResponse").optional(),
@@ -11055,6 +11069,8 @@ Source: "${matchedFrom}"`;
       super(...arguments);
       __publicField(this, "method", "getAutofillDataFocus");
       __publicField(this, "id", "getAutofillDataFocusResponse");
+      __publicField(this, "paramsValidator", getAutofillDataFocusRequestSchema);
+      __publicField(this, "resultValidator", getAutofillDataFocusResponseSchema);
     }
   };
   var GetRuntimeConfigurationCall = class extends DeviceApiCall {
@@ -11803,9 +11819,19 @@ Source: "${matchedFrom}"`;
      * @param {import('./UIController').AttachKeyboardArgs} args
      */
     async attachKeyboard(args) {
-      const { device, form } = args;
+      const { device, form, input } = args;
+      const inputType = getInputType(input);
+      const mainType = getMainTypeFromType(inputType);
+      if (mainType === "unknown") {
+        throw new Error('unreachable, should not be here if (mainType === "unknown")');
+      }
       try {
-        const resp = await device.deviceApi.request(new GetAutofillDataFocusCall(null));
+        const resp = await device.deviceApi.request(
+          new GetAutofillDataFocusCall({
+            inputType,
+            mainType
+          })
+        );
         switch (resp.action) {
           case "fill": {
             form.autofillData(resp.creditCards, "creditCards");

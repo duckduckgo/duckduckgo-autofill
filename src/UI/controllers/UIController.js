@@ -14,6 +14,7 @@
  * @typedef AttachKeyboardArgs The argument required to 'attachKeyboard'
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
  * @property {import("../../Form/Form").Form} form the Form that triggered this call
+ * @property {HTMLInputElement} input the input field that triggered this call
  */
 
 /**

@@ -35,6 +35,12 @@
         "id": {
           "type": "string",
           "const": "getAutofillDataFocusResponse"
+        },
+        "paramsValidator": {
+          "$ref": "./schemas/getAutofillDataFocus.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAutofillDataFocus.result.json"
         }
       }
     },
