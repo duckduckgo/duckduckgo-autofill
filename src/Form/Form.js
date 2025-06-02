@@ -648,6 +648,9 @@ class Form {
         // For iOS, we want to handle focus events always to be able to show the keyboard extension
         if (this.device.globalConfig.isIOS) {
             this.addListener(input, 'focus', () => {
+                // If autofilling is in progress, we don't want to send the GetAutofillDataFocus call to the native side
+                if (this.isAutofilling) return;
+
                 this.device.attachKeyboard({ device: this.device, form: this, input });
             });
         }

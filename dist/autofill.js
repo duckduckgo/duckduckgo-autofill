@@ -1553,9 +1553,8 @@ Source: "${matchedFrom}"`;
   };
   var originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
   var setValueForInput = (el, val, config) => {
-    if (!(config?.isAndroid || config?.isIOS)) {
+    if (!config?.isAndroid)
       el.focus();
-    }
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
     originalSet?.call(el, val);
     const events = [
@@ -5984,6 +5983,8 @@ Source: "${matchedFrom}"`;
       const config = getInputConfig(input);
       if (this.device.globalConfig.isIOS) {
         this.addListener(input, "focus", () => {
+          if (this.isAutofilling)
+            return;
           this.device.attachKeyboard({ device: this.device, form: this, input });
         });
       }
