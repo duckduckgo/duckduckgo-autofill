@@ -96,8 +96,8 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  * @return {boolean}
  */
 const setValueForInput = (el, val, config) => {
-    // Avoid keyboard flashing on Android
-    if (!config?.isAndroid) {
+    // Avoid keyboard flashing on Android or iOS
+    if (!(config?.isAndroid || config?.isIOS)) {
         el.focus();
     }
 

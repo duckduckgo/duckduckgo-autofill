@@ -1553,7 +1553,7 @@ Source: "${matchedFrom}"`;
   };
   var originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
   var setValueForInput = (el, val, config) => {
-    if (!config?.isAndroid) {
+    if (!(config?.isAndroid || config?.isIOS)) {
       el.focus();
     }
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
