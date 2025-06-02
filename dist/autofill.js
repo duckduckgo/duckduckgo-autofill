@@ -5378,7 +5378,7 @@ Source: "${matchedFrom}"`;
       getIconFilled: getIdentitiesIcon,
       getIconAlternate: getIdentitiesAlternateIcon,
       shouldDecorate: async (input, { device }) => {
-        return device.globalConfig.isIOS || canBeAutofilled(input, device);
+        return canBeAutofilled(input, device);
       },
       dataType: "Identities",
       tooltipItem: (data) => new IdentityTooltipItem(data)
@@ -5981,6 +5981,11 @@ Source: "${matchedFrom}"`;
      */
     async decorateInput(input) {
       const config = getInputConfig(input);
+      if (this.device.globalConfig.isIOS) {
+        this.addListener(input, "focus", () => {
+          this.device.attachKeyboard({ device: this.device, form: this, input });
+        });
+      }
       const shouldDecorate = await config.shouldDecorate(input, this);
       if (!shouldDecorate)
         return this;
@@ -6091,8 +6096,6 @@ Source: "${matchedFrom}"`;
           });
           const activeStyles = getIconStylesAlternate(input2, this);
           addInlineStyles(input2, activeStyles);
-        } else if (this.device.globalConfig.isIOS && e.type === "focus") {
-          this.device.attachKeyboard({ device: this.device, form: this, input: input2 });
         }
       };
       const isMobileApp = this.device.globalConfig.isMobileApp;
@@ -6103,7 +6106,7 @@ Source: "${matchedFrom}"`;
         });
       } else {
         const events = ["pointerdown"];
-        if (!isMobileApp || this.device.globalConfig.isIOS)
+        if (!isMobileApp)
           events.push("focus");
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);

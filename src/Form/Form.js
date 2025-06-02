@@ -645,6 +645,13 @@ class Form {
     async decorateInput(input) {
         const config = getInputConfig(input);
 
+        // For iOS, we want to handle focus events always to be able to show the keyboard extension
+        if (this.device.globalConfig.isIOS) {
+            this.addListener(input, 'focus', () => {
+                this.device.attachKeyboard({ device: this.device, form: this, input });
+            });
+        }
+
         const shouldDecorate = await config.shouldDecorate(input, this);
 
         if (!shouldDecorate) return this;
@@ -791,9 +798,6 @@ class Form {
 
                 const activeStyles = getIconStylesAlternate(input, this);
                 addInlineStyles(input, activeStyles);
-            } else if (this.device.globalConfig.isIOS && e.type === 'focus') {
-                // For iOS, we want to handle focus events always to be able to show the keyboard extension
-                this.device.attachKeyboard({ device: this.device, form: this, input });
             }
         };
 
@@ -805,7 +809,7 @@ class Form {
             });
         } else {
             const events = ['pointerdown'];
-            if (!isMobileApp || this.device.globalConfig.isIOS) events.push('focus');
+            if (!isMobileApp) events.push('focus');
             input.labels?.forEach((label) => {
                 // On mobile devices: handle click events (instead of focus) for labels,
                 // On desktop devices: handle label clicks which is needed when the form

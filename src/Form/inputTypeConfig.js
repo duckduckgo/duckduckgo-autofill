@@ -169,8 +169,7 @@ const inputTypeConfig = {
         getIconFilled: getIdentitiesIcon,
         getIconAlternate: getIdentitiesAlternateIcon,
         shouldDecorate: async (input, { device }) => {
-            // For iOS, we want to add handlers to the input to be able to show the keyboard extension
-            return device.globalConfig.isIOS || canBeAutofilled(input, device);
+            return canBeAutofilled(input, device);
         },
         dataType: 'Identities',
         tooltipItem: (data) => new IdentityTooltipItem(data),
