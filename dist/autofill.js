@@ -855,7 +855,9 @@ Source: "${matchedFrom}"`;
       }
       if (input instanceof HTMLInputElement) {
         if (this.subtypeFromMatchers("password", input)) {
-          if (input.type === "password" && input.name !== "email" && // pcsretirement.com, improper use of the for attribute
+          if ((input.type === "password" || // Some sites might not use the password type, but a placeholder should catch those cases
+          // See test-forms/playpiknik_login.html
+          safeRegexTest(/password/i, input.placeholder)) && input.name !== "email" && // pcsretirement.com, improper use of the for attribute
           input.name !== "Username") {
             return this.inferPasswordVariant(input, opts);
           }

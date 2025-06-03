@@ -54,6 +54,8 @@
   { "html": "google_signup.html", "expectedFailures": ["username"], "expectedSubmitFalseNegatives": 1 },
   { "html": "google_store_checkout.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "indeed_login_signup.html" },
+  { "html": "playpiknik_login.html" },
+  { "html": "playpiknik_signup.html" },
   { "html": "target_login.html" },
   { "html": "target_signup.html" },
   { "html": "target_checkout.html" },
