@@ -254,7 +254,10 @@ class Matching {
             if (this.subtypeFromMatchers('password', input)) {
                 // Any other input type is likely a false match
                 if (
-                    (input.type === 'password' || safeRegexTest(/password/i, input.placeholder)) &&
+                    (input.type === 'password' ||
+                        // Some sites might not use the password type, but a placeholder should catch those cases
+                        // See test-forms/playpiknik_login.html
+                        safeRegexTest(/password/i, input.placeholder)) &&
                     input.name !== 'email' &&
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
