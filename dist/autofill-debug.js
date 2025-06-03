@@ -3671,6 +3671,9 @@ Source: "${matchedFrom}"`;
     "acmemarkets.com": {
       "password-rules": "minlength: 8; maxlength: 40; required: upper; required: [!#$%&*@^]; allowed: lower,digit;"
     },
+    "act.org": {
+      "password-rules": "minlength: 8; maxlength: 64; required: lower; required: upper; required: digit; required: [!#$%&*@^];"
+    },
     "admiral.com": {
       "password-rules": "minlength: 8; required: digit; required: [- !\"#$&'()*+,.:;<=>?@[^_`{|}~]]; allowed: lower, upper;"
     },
