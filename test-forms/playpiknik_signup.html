@@ -1,0 +1,21 @@
+<!-- https://playpiknik.com/account/manage/create -->
+<form method="POST" id="form" onsubmit="submitForm(event, null)" autocomplete="off">
+    <div class="input-wrapper">
+        <input id="inp_email" class="form-input caret-playful-green" name="email" type="text" value="" placeholder="parent's email address" inputmode="email" onfocus="handleFocus(event)" autocorrect="off" autocapitalize="none" data-manual-scoring="emailAddress">
+    </div>
+    <div class="input-wrapper">
+        <input id="inp_confirm_email" class="form-input caret-playful-green" name="confirm_email" type="text" value="" placeholder="confirm email address" inputmode="email" onfocus="handleFocus(event)" autocorrect="off" autocapitalize="none" data-manual-scoring="emailAddress">
+    </div>
+    <div class="input-wrapper">
+        <input id="inp_password" class="form-input caret-playful-green" name="password" type="text" value="" placeholder="password" inputmode="" onfocus="handleFocus(event)" autocorrect="off" autocapitalize="none" data-manual-scoring="password.new">
+        <button id="btn_password" class="password-toggle" type="button" onmousedown="togglePassword(event)" onmouseup="focusOnInput(event)">
+        Hide
+        </button>
+    </div>
+    <div class="form-checkbox">
+        <input id="checkbox-terms_and_conditions" type="checkbox" value="checked" name="terms_and_conditions">
+        <label for="checkbox-terms_and_conditions">I agree to the &nbsp;<a href="https://playpiknik.link/privacy-policy" target="_blank" class="color-lightgrey">Privacy Policy</a>&nbsp;and&nbsp;<a href="https://playpiknik.link/terms-of-use" target="blank" class="color-lightgrey">Terms of Use</a></label>
+    </div>
+    <input type="hidden" name="token" value="">
+    <button type="submit" value="Submit" class="submit-btn background-playful-green" data-ga-cat="web-store" data-ga-label="Create continue" data-manual-submit>Continue</button>
+</form> 
