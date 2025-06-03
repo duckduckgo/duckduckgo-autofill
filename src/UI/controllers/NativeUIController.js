@@ -126,6 +126,8 @@ export class NativeUIController extends UIController {
             switch (resp.action) {
                 case 'fill': {
                     form.autofillData(resp.creditCards, 'creditCards');
+                    // force blur the input to hide the keyboard (e.g even if the data is the same as before)
+                    input.blur();
                     break;
                 }
                 case 'none': {

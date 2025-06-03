@@ -7342,6 +7342,7 @@ Source: "${matchedFrom}"`;
         switch (resp.action) {
           case "fill": {
             form.autofillData(resp.creditCards, "creditCards");
+            input.blur();
             break;
           }
           case "none": {
