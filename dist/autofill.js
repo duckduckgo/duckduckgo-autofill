@@ -852,7 +852,7 @@ Source: "${matchedFrom}"`;
       }
       if (input instanceof HTMLInputElement) {
         if (this.subtypeFromMatchers("password", input)) {
-          if (input.type === "password" && input.name !== "email" && // pcsretirement.com, improper use of the for attribute
+          if ((input.type === "password" || safeRegexTest(/password/i, input.placeholder)) && input.name !== "email" && // pcsretirement.com, improper use of the for attribute
           input.name !== "Username") {
             return this.inferPasswordVariant(input, opts);
           }
