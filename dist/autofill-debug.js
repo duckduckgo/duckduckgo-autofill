@@ -4678,6 +4678,9 @@ Source: "${matchedFrom}"`;
     "thameswater.co.uk": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
     },
+    "ticketweb.com": {
+      "password-rules": "minlength: 12; maxlength: 15;"
+    },
     "tix.soundrink.com": {
       "password-rules": "minlength: 6; maxlength: 16;"
     },
