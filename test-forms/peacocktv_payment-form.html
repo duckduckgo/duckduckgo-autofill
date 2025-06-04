@@ -1,0 +1,50 @@
+<form novalidate>
+    <div class="field text-field field--animated">
+        <div class="text-field__input" id="number">
+            <label for="card_number" class="visuallyhidden" id="number_label">Card Number</label>
+            <input inputmode="numeric" title="credit card number" type="tel" name="card_number" id="card_number" autocomplete="cc-number" maxlength="22" size="19" data-manual-scoring="cardNumber">
+        </div>
+        <label class="text-field__label" for="number">
+            <span>Card Number</span>
+        </label>
+    </div>
+
+    <div class="payments-accepted-cards">
+        <div class="payments-accepted-cards__card payments-accepted-cards__card--visa"></div>
+        <div class="payments-accepted-cards__card payments-accepted-cards__card--mastercard"></div>
+        <div class="payments-accepted-cards__card payments-accepted-cards__card--discover"></div>
+        <div class="payments-accepted-cards__card payments-accepted-cards__card--amex"></div>
+        <div class="payments-accepted-cards__card payments-accepted-cards__card--diners_club"></div>
+    </div>
+
+    <div class="expiry-cvv-wrapper" name="expiry-cvv-wrapper">
+        <div class="field text-field field--animated">
+            <input 
+                name="expiry" 
+                id="expiry" 
+                type="tel" 
+                autocomplete="on" 
+                aria-invalid="false" 
+                aria-required="true" 
+                required 
+                class="text-field__input text-field__input--error" 
+                value="" 
+                data-manual-scoring="expiration"
+            >
+            <label class="text-field__label label--error" for="expiry">
+                <span>MM/YY</span>
+            </label>
+            <p role="alert" class="text-field__error">Enter Expiration Date</p>
+        </div>
+
+        <div class="field text-field field--animated">
+            <div class="text-field__input" id="cvv">
+                <label for="cvv" class="visuallyhidden" id="cvv_label">CVV</label>
+                <input inputmode="numeric" title="cvv number" type="tel" id="cvv" size="4" maxlength="3" autocomplete="cc-csc" data-manual-scoring="cardSecurityCode">
+            </div>
+            <label class="text-field__label" for="cvv">
+                <span>CVV</span>
+            </label>
+        </div>
+    </div>
+</form> 
