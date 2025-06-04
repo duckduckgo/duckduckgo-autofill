@@ -304,7 +304,9 @@ class InterfacePrototype {
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
         }
-        this.initGlobalFocusHandler(this.scanner.forms);
+        if (this.settings.featureToggles.input_focus_api) {
+            this.initGlobalFocusHandler(this.scanner.forms);
+        }
     }
 
     async init() {

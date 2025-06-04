@@ -771,6 +771,10 @@ export interface AutofillFeatureToggles {
    */
   unknown_username_categorization?: boolean;
   /**
+   * If true, we will send extra calls (getAutofillDataFocused) to show the keyboard accessory
+   */
+  input_focus_api?: boolean;
+  /**
    * If true, we will attempt re-categorizing the password variant, based on other fields in the form
    */
   password_variant_categorization?: boolean;
