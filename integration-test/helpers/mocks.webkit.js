@@ -320,13 +320,16 @@ export function createWebkitMocks(platform = 'macos') {
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData);
             return this;
         },
-        withCredentials: function (credentials, inputType = 'credentials.username') {
+        withCredentials: function (credentials, inputType = 'credentials.username', shouldDismiss = false) {
             webkitBase.pmHandlerGetAutofillInitData.success.credentials.push(credentials);
             /** @type {TopContextData} */
             const topContextData = { inputType };
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData);
             webkitBase.pmHandlerGetAutofillCredentials.success = credentials;
             webkitBase.getAutofillData = { success: { credentials, action: 'fill' } };
+            if (shouldDismiss) {
+                webkitBase.getAutofillData = { success: { action: 'none' } };
+            }
             webkitBase.getSelectedCredentials = [
                 // Simulates macOS overlay polling. This means the user hasn't
                 // selected anything for 5 polls, then selects.
@@ -338,10 +341,6 @@ export function createWebkitMocks(platform = 'macos') {
                 { type: 'ok', data: credentials, configType: 'credentials' },
                 { type: 'stop' },
             ];
-            return this;
-        },
-        withCredentialsButDismissed: function () {
-            webkitBase.getAutofillData = { success: { action: 'none' } };
             return this;
         },
         withDataType: function (data) {

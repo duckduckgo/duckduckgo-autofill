@@ -25,17 +25,10 @@ async function testLoginPage(page, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page);
 
-    let mocks;
-    if (opts.shouldNotAutofillOnClick) {
-        mocks = createWebkitMocks()
-            .withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes())
-            .withCredentialsButDismissed();
-    } else {
-        mocks = createWebkitMocks().withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes());
-    }
+    const mocks = createWebkitMocks().withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes());
 
     if (opts.credentials) {
-        mocks.withCredentials(opts.credentials);
+        mocks.withCredentials(opts.credentials, null, true);
     }
 
     await mocks.applyTo(page);
