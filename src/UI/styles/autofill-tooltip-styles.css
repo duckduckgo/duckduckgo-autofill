@@ -569,6 +569,7 @@ hr:first-child {
 }
 
 .truncate {
+    display: inline-block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
