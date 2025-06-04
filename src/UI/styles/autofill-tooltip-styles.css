@@ -573,5 +573,5 @@ hr:first-child {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: calc(100% - 55px);
+    max-width: 240px;
 }
