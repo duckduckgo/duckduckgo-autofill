@@ -11991,7 +11991,7 @@ Source: "${matchedFrom}"`;
           const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
           const form = [...forms.values()].find((form2) => form2.hasFocus());
           const targetElement = pierceShadowTree(e);
-          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement) {
+          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
             this.attachKeyboard({ device: this, form, element: targetElement });
           }
         },
@@ -12012,8 +12012,8 @@ Source: "${matchedFrom}"`;
       await this.postInit();
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
-        this.initGlobalFocusHandler(this.scanner.forms);
       }
+      this.initGlobalFocusHandler(this.scanner.forms);
     }
     async init() {
       const settings = await this.settings.refresh();

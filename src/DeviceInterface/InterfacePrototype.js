@@ -273,7 +273,7 @@ class InterfacePrototype {
                 const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
                 const form = [...forms.values()].find((form) => form.hasFocus());
                 const targetElement = pierceShadowTree(e);
-                if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement) {
+                if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
                     this.attachKeyboard({ device: this, form, element: targetElement });
                 }
             },
@@ -303,8 +303,8 @@ class InterfacePrototype {
 
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
-            this.initGlobalFocusHandler(this.scanner.forms);
         }
+        this.initGlobalFocusHandler(this.scanner.forms);
     }
 
     async init() {
