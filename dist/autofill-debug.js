@@ -11801,6 +11801,10 @@ Source: "${matchedFrom}"`;
             );
             break;
           }
+          case "none": {
+            form.touchAllInputs(mainType);
+            break;
+          }
           case "rejectGeneratedPassword": {
             __privateSet(this, _passwordStatus, "rejected");
             form.touchAllInputs("credentials");
