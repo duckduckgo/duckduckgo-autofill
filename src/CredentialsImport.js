@@ -19,7 +19,7 @@ class CredentialsImport {
     isAvailable() {
         // Ideally we should also be checking activeForm?.isLogin or activeForm?.isHybrid, however
         // in some instance activeForm is not yet initialized (when decorating the page).
-        return this.device.settings.availableInputTypes.credentialsImport;
+        return Boolean(this.device.settings.availableInputTypes.credentialsImport);
     }
 
     init() {
