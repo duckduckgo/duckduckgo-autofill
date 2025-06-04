@@ -141,7 +141,7 @@ test.describe('Auto-fill a login form on iOS', () => {
                     },
                     credentials,
                     pageType: 'loginWithFormInModal',
-                    shouldNotAutofillOnClick: false,
+                    shouldNotAutofillOnClick: true,
                 });
                 await login.promptWasNotShown();
                 await login.assertDialogClose();
