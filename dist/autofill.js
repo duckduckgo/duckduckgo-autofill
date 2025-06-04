@@ -7287,6 +7287,10 @@ Source: "${matchedFrom}"`;
             form.activeInput?.focus();
             break;
           }
+          case "none": {
+            form.touchAllInputs(mainType);
+            break;
+          }
           default: {
             if (args.device.isTestMode()) {
               console.warn("response not handled", resp);
