@@ -370,7 +370,7 @@ export interface GetAutofillDataFocusRequest {
   /**
    * The main input type
    */
-  mainType: "credentials" | "identities" | "creditCards";
+  mainType: "credentials" | "identities" | "creditCards" | "unknown";
 }
 export interface GetAutofillDataFocusResponse {
   /**

@@ -108,13 +108,9 @@ export class NativeUIController extends UIController {
      * @param {import('./UIController').AttachKeyboardArgs} args
      */
     async attachKeyboard(args) {
-        const { device, form, input } = args;
-        const inputType = getInputType(input);
+        const { device, form, element } = args;
+        const inputType = getInputType(element);
         const mainType = getMainTypeFromType(inputType);
-
-        if (mainType === 'unknown') {
-            throw new Error('unreachable, should not be here if (mainType === "unknown")');
-        }
 
         try {
             const resp = await device.deviceApi.request(
@@ -125,9 +121,9 @@ export class NativeUIController extends UIController {
             );
             switch (resp.action) {
                 case 'fill': {
-                    form.autofillData(resp.creditCards, 'creditCards');
+                    form?.autofillData(resp.creditCards, 'creditCards');
                     // force blur the input to hide the keyboard (e.g even if the data is the same as before)
-                    input.blur();
+                    element.blur();
                     break;
                 }
                 case 'none': {

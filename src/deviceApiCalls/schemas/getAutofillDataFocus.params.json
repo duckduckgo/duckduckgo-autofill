@@ -15,7 +15,8 @@
       "enum": [
         "credentials",
         "identities",
-        "creditCards"
+        "creditCards",
+        "unknown"
       ]
     }
   },

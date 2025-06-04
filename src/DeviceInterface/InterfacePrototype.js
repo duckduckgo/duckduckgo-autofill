@@ -5,6 +5,7 @@ import {
     formatDuckAddress,
     notifyWebApp,
     getDaxBoundingBox,
+    pierceShadowTree,
 } from '../autofill-utils.js';
 
 import { getInputType, getMainTypeFromType, getSubtypeFromType } from '../Form/matching.js';
@@ -262,6 +263,24 @@ class InterfacePrototype {
         return this.#data.creditCards;
     }
 
+    /**
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     */
+    initGlobalFocusHandler(forms) {
+        window.addEventListener(
+            'focus',
+            (e) => {
+                const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
+                const form = [...forms.values()].find((form) => form.hasFocus());
+                const targetElement = pierceShadowTree(e);
+                if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement) {
+                    this.attachKeyboard({ device: this, form, element: targetElement });
+                }
+            },
+            true,
+        );
+    }
+
     async startInit() {
         if (this.isInitializationStarted) return;
 
@@ -284,6 +303,7 @@ class InterfacePrototype {
 
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
+            this.initGlobalFocusHandler(this.scanner.forms);
         }
     }
 

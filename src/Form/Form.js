@@ -174,6 +174,14 @@ class Form {
     }
 
     /**
+     * Handles the focus event for the form
+     */
+    focusHandler(element) {
+        if (this.isAutofilling) return;
+        this.device.attachKeyboard({ device: this.device, form: this, element });
+    }
+
+    /**
      * Reads the values from the form without preparing to store them
      * @return {InternalDataStorageObject}
      */
@@ -644,16 +652,6 @@ class Form {
      */
     async decorateInput(input) {
         const config = getInputConfig(input);
-
-        // For iOS, we want to handle focus events always to be able to show the keyboard extension
-        if (this.device.globalConfig.isIOS) {
-            this.addListener(input, 'focus', () => {
-                // If autofilling is in progress, we don't want to send the GetAutofillDataFocus call to the native side
-                if (this.isAutofilling) return;
-
-                this.device.attachKeyboard({ device: this.device, form: this, input });
-            });
-        }
 
         const shouldDecorate = await config.shouldDecorate(input, this);
 

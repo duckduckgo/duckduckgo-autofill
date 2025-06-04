@@ -13,9 +13,8 @@
 /**
  * @typedef AttachKeyboardArgs The argument required to 'attachKeyboard'
  * @property {import("../../DeviceInterface/InterfacePrototype").default} device
- * @property {import("../../Form/Form").Form} form the Form that triggered this call
- * @property {HTMLInputElement} input the input field that triggered this call
- */
+ * @property {import("../../Form/Form").Form} [form] if there was a form that contained the element that triggered this call
+ * @property {any} element the element that triggered this call
 
 /**
  * This is the base interface that `UIControllers` should extend/implement

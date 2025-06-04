@@ -31,7 +31,7 @@ export const addDebugFlagParamsSchema = z.object({
 
 export const getAutofillDataFocusRequestSchema = z.object({
     inputType: z.string(),
-    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")])
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards"), z.literal("unknown")])
 });
 
 export const getAutofillCredentialsParamsSchema = z.object({

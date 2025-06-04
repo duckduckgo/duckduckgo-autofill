@@ -5581,6 +5581,14 @@ Source: "${matchedFrom}"`;
       this.submitHandlerExecuted = true;
     }
     /**
+     * Handles the focus event for the form
+     */
+    focusHandler(element) {
+      if (this.isAutofilling)
+        return;
+      this.device.attachKeyboard({ device: this.device, form: this, element });
+    }
+    /**
      * Reads the values from the form without preparing to store them
      * @return {InternalDataStorageObject}
      */
@@ -5986,13 +5994,6 @@ Source: "${matchedFrom}"`;
      */
     async decorateInput(input) {
       const config = getInputConfig(input);
-      if (this.device.globalConfig.isIOS) {
-        this.addListener(input, "focus", () => {
-          if (this.isAutofilling)
-            return;
-          this.device.attachKeyboard({ device: this.device, form: this, input });
-        });
-      }
       const shouldDecorate = await config.shouldDecorate(input, this);
       if (!shouldDecorate)
         return this;
@@ -10388,7 +10389,7 @@ Source: "${matchedFrom}"`;
   });
   var getAutofillDataFocusRequestSchema = z.object({
     inputType: z.string(),
-    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")])
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards"), z.literal("unknown")])
   });
   var getAutofillCredentialsParamsSchema = z.object({
     id: z.string()
@@ -11829,12 +11830,9 @@ Source: "${matchedFrom}"`;
      * @param {import('./UIController').AttachKeyboardArgs} args
      */
     async attachKeyboard(args) {
-      const { device, form, input } = args;
-      const inputType = getInputType(input);
+      const { device, form, element } = args;
+      const inputType = getInputType(element);
       const mainType = getMainTypeFromType(inputType);
-      if (mainType === "unknown") {
-        throw new Error('unreachable, should not be here if (mainType === "unknown")');
-      }
       try {
         const resp = await device.deviceApi.request(
           new GetAutofillDataFocusCall({
@@ -11844,8 +11842,8 @@ Source: "${matchedFrom}"`;
         );
         switch (resp.action) {
           case "fill": {
-            form.autofillData(resp.creditCards, "creditCards");
-            input.blur();
+            form?.autofillData(resp.creditCards, "creditCards");
+            element.blur();
             break;
           }
           case "none": {
@@ -16485,6 +16483,23 @@ Source: "${matchedFrom}"`;
     getLocalCreditCards() {
       return __privateGet(this, _data6).creditCards;
     }
+    /**
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     */
+    initGlobalFocusHandler(forms) {
+      window.addEventListener(
+        "focus",
+        (e) => {
+          const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
+          const form = [...forms.values()].find((form2) => form2.hasFocus());
+          const targetElement = pierceShadowTree(e);
+          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement) {
+            this.attachKeyboard({ device: this, form, element: targetElement });
+          }
+        },
+        true
+      );
+    }
     async startInit() {
       if (this.isInitializationStarted)
         return;
@@ -16499,6 +16514,7 @@ Source: "${matchedFrom}"`;
       await this.postInit();
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
+        this.initGlobalFocusHandler(this.scanner.forms);
       }
     }
     async init() {
