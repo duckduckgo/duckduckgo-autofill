@@ -19,13 +19,20 @@ const test = testContext(base);
  * @param {Partial<import('../../src/deviceApiCalls/__generated__/validators-ts').AvailableInputTypes>} [opts.availableInputTypes]
  * @param {CredentialsMock} [opts.credentials]
  * @param {keyof typeof constants.pages} [opts.pageType]
+ * @param {boolean} [opts.shouldNotAutofillOnClick]
  */
 async function testLoginPage(page, opts) {
     // enable in-terminal exceptions
     await forwardConsoleMessages(page);
 
-    // android specific mocks
-    const mocks = createWebkitMocks().withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes());
+    let mocks;
+    if (opts.shouldNotAutofillOnClick) {
+        mocks = createWebkitMocks()
+            .withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes())
+            .withCredentialsButDismissed();
+    } else {
+        mocks = createWebkitMocks().withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes());
+    }
 
     if (opts.credentials) {
         mocks.withCredentials(opts.credentials);
@@ -125,6 +132,26 @@ test.describe('Auto-fill a login form on iOS', () => {
                 await login.fieldsContainIcons();
 
                 await login.clickIntoUsernameInput();
+                await login.assertFormSubmitted();
+            });
+            test.only('the form ', async ({ page }) => {
+                const { login } = await testLoginPage(page, {
+                    featureToggles: {
+                        inputType_credentials: true,
+                    },
+                    credentials,
+                    pageType: 'loginWithFormInModal',
+                    shouldNotAutofillOnClick: false,
+                });
+                await login.promptWasNotShown();
+                await login.assertDialogClose();
+                await login.openDialog();
+                await login.fieldsContainIcons();
+
+                await page.pause();
+
+                await login.clickIntoUsernameInput();
+
                 await login.assertFormSubmitted();
             });
             test('should prompt to store and not autosubmit when the form completes a partial credential stored', async ({ page }) => {

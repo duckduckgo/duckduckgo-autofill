@@ -340,6 +340,10 @@ export function createWebkitMocks(platform = 'macos') {
             ];
             return this;
         },
+        withCredentialsButDismissed: function () {
+            webkitBase.getAutofillData = { success: { action: 'none' } };
+            return this;
+        },
         withDataType: function (data) {
             return withDataType(this, data);
         },

@@ -42,6 +42,8 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     withCreditCard(creditCard: CreditCardObject, inputType?: SupportedTypes): MockBuilder<State, Mocks>;
     // Add a credential
     withCredentials(credentials: CredentialsMock, inputType?: SupportedTypes): MockBuilder<State, Mocks>;
+    // The native handler replies with none
+    withCredentialsButDismissed(): MockBuilder<State, Mocks>;
     withDataType(data: any): MockBuilder<State, Mocks>;
     // Add available input types
     withAvailableInputTypes(
