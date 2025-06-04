@@ -174,14 +174,6 @@ class Form {
     }
 
     /**
-     * Handles the focus event for the form
-     */
-    focusHandler(element) {
-        if (this.isAutofilling) return;
-        this.device.attachKeyboard({ device: this.device, form: this, element });
-    }
-
-    /**
      * Reads the values from the form without preparing to store them
      * @return {InternalDataStorageObject}
      */
@@ -803,12 +795,7 @@ class Form {
         };
 
         const isMobileApp = this.device.globalConfig.isMobileApp;
-        if (input instanceof HTMLSelectElement) {
-            this.addListener(input, 'change', handlerSelect);
-            input.labels?.forEach((label) => {
-                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
-            });
-        } else {
+        if (!(input instanceof HTMLSelectElement)) {
             const events = ['pointerdown'];
             if (!isMobileApp) events.push('focus');
             input.labels?.forEach((label) => {
@@ -818,6 +805,11 @@ class Form {
                 this.addListener(label, 'pointerdown', isMobileApp ? handler : handlerLabel);
             });
             events.forEach((ev) => this.addListener(input, ev, handler));
+        } else {
+            this.addListener(input, 'change', handlerSelect);
+            input.labels?.forEach((label) => {
+                this.addListener(label, 'pointerdown', isMobileApp ? handlerSelect : handlerLabel);
+            });
         }
         return this;
     }
