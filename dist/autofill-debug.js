@@ -11792,10 +11792,6 @@ Source: "${matchedFrom}"`;
             form.activeInput?.focus();
             break;
           }
-          case "none": {
-            form.touchAllInputs(mainType);
-            break;
-          }
           case "acceptGeneratedPassword": {
             form.autofillData(
               {

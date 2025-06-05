@@ -76,11 +76,6 @@ export class NativeUIController extends UIController {
                         break;
                     }
 
-                    case 'none': {
-                        form.touchAllInputs(mainType);
-                        break;
-                    }
-
                     case 'acceptGeneratedPassword': {
                         form.autofillData(
                             {
