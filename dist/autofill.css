@@ -460,6 +460,4 @@ hr:first-child {
   text-overflow: ellipsis;
   max-width: 250px;
   line-height: 1.3;
-  margin: 0;
-  padding: 0;
 }
