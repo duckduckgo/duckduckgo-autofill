@@ -237,7 +237,7 @@
 }
 .tooltip__button__text-container {
   margin: auto 0;
-  width: calc(100% - 55px);
+  width: 100%;
 }
 .label {
   display: block;
