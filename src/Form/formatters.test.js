@@ -200,5 +200,35 @@ describe('prepareFormValuesForStorage()', () => {
             });
             expect(values.credentials).toEqual({ password: inputCredentials.password });
         });
+
+        it('rejects credentials, if there is no credentials data and credit cards is available, and partial_form_saves is disabled', () => {
+            const values = prepareFormValuesForStorage(
+                {
+                    // @ts-ignore
+                    credentials: {},
+                    // @ts-ignore
+                    identities: {},
+                    // @ts-ignore
+                    creditCards: { cardNumber: '1234567890123456', cardName: 'Dax McDax' },
+                },
+                false,
+            ); // partial_form_saves is disabled
+            expect(values.credentials).toBeUndefined();
+        });
+
+        it('rejects credentials, if there is no credentials data and credit cards is available, and partial_form_saves is enabled', () => {
+            const values = prepareFormValuesForStorage(
+                {
+                    // @ts-ignore
+                    credentials: {},
+                    // @ts-ignore
+                    identities: {},
+                    // @ts-ignore
+                    creditCards: { cardNumber: '1234567890123456', cardName: 'Dax McDax' },
+                },
+                true,
+            ); // partial_form_saves is enabled
+            expect(values.credentials).toBeUndefined();
+        });
     });
 });

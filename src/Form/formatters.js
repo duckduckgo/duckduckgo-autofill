@@ -190,15 +190,15 @@ const formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, '');
 /**
  * Infer credentials from password and identities
  * @param {InternalDataStorageObject['credentials']} credentials
- * @param {InternalIdentityObject} identities
+ * @param {InternalIdentityObject|undefined} identities
  * @param {InternalCreditCardObject|undefined} creditCards
  * @return InternalCredentialsObject|undefined
  */
 const inferCredentialsForPartialSave = (credentials, identities, creditCards) => {
     // Try to infer username from identity or card number
     if (!credentials.username) {
-        // @ts-ignore - We know that username is not a useful value here
-        credentials.username = getUsernameLikeIdentity(identities, creditCards);
+        const possibleUsername = getUsernameLikeIdentity(identities, creditCards);
+        if (possibleUsername) credentials.username = possibleUsername;
     }
     // Discard empty credentials
     if (Object.keys(credentials ?? {}).length === 0) {
