@@ -83,6 +83,7 @@
     // INJECT availableInputTypes HERE
     let secret = "PLACEHOLDER_SECRET";
     const isAndroid = userPreferences?.platform.name === "android";
+    const isIOS = userPreferences?.platform.name === "ios";
     const isDDGApp = ["ios", "android", "macos", "windows"].includes(userPreferences?.platform.name) || isWindows;
     const isMobileApp = ["ios", "android"].includes(userPreferences?.platform.name);
     const isFirefox = navigator.userAgent.includes("Firefox");
@@ -92,6 +93,7 @@
       isApp,
       isDDGApp,
       isAndroid,
+      isIOS,
       isFirefox,
       isMobileApp,
       isExtension,
@@ -1553,9 +1555,8 @@ Source: "${matchedFrom}"`;
   };
   var originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
   var setValueForInput = (el, val, config) => {
-    if (!config?.isAndroid) {
+    if (!config?.isAndroid)
       el.focus();
-    }
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
     originalSet?.call(el, val);
     const events = [
@@ -10380,6 +10381,10 @@ Source: "${matchedFrom}"`;
   var addDebugFlagParamsSchema = z.object({
     flag: z.string()
   });
+  var getAutofillDataFocusRequestSchema = z.object({
+    inputType: z.string(),
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards"), z.literal("unknown")])
+  });
   var getAutofillCredentialsParamsSchema = z.object({
     id: z.string()
   });
@@ -10450,6 +10455,17 @@ Source: "${matchedFrom}"`;
   var genericErrorSchema = z.object({
     message: z.string()
   });
+  var creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
+  });
   var userPreferencesSchema = z.object({
     globalPrivacyControlValue: z.boolean().optional(),
     sessionKey: z.string(),
@@ -10516,17 +10532,6 @@ Source: "${matchedFrom}"`;
     phone: z.string().optional(),
     emailAddress: z.string().optional()
   });
-  var creditCardObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    displayNumber: z.string(),
-    cardName: z.string().optional(),
-    cardSecurityCode: z.string().optional(),
-    expirationMonth: z.string().optional(),
-    expirationYear: z.string().optional(),
-    cardNumber: z.string().optional(),
-    paymentProvider: z.string().optional()
-  });
   var getAutofillCredentialsResultSchema = z.object({
     type: z.literal("getAutofillCredentialsResponse").optional(),
     success: z.object({
@@ -10585,6 +10590,7 @@ Source: "${matchedFrom}"`;
     inlineIcon_credentials: z.boolean().optional(),
     third_party_credentials_provider: z.boolean().optional(),
     unknown_username_categorization: z.boolean().optional(),
+    input_focus_api: z.boolean().optional(),
     password_variant_categorization: z.boolean().optional(),
     partial_form_saves: z.boolean().optional()
   });
@@ -10645,6 +10651,14 @@ Source: "${matchedFrom}"`;
     }).optional(),
     error: genericErrorSchema.optional()
   });
+  var getAutofillDataFocusResponseSchema = z.object({
+    type: z.literal("getAutofillDataFocusResponse").optional(),
+    success: z.object({
+      creditCards: creditCardObjectSchema.optional(),
+      action: z.union([z.literal("fill"), z.literal("none")])
+    }).optional(),
+    error: genericErrorSchema.optional()
+  });
   var storeFormDataSchema = z.object({
     credentials: outgoingCredentialsSchema.optional(),
     trigger: z.union([z.literal("partialSave"), z.literal("formSubmission"), z.literal("passwordGeneration"), z.literal("emailProtection")]).optional()
@@ -10695,6 +10709,11 @@ Source: "${matchedFrom}"`;
       id: z.literal("getAutofillDataResponse").optional(),
       paramsValidator: getAutofillDataRequestSchema.optional(),
       resultValidator: getAutofillDataResponseSchema.optional()
+    })).optional(),
+    getAutofillDataFocus: z.record(z.unknown()).and(z.object({
+      id: z.literal("getAutofillDataFocusResponse").optional(),
+      paramsValidator: getAutofillDataFocusRequestSchema.optional(),
+      resultValidator: getAutofillDataFocusResponseSchema.optional()
     })).optional(),
     getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
       id: z.literal("getRuntimeConfigurationResponse").optional(),
@@ -11049,6 +11068,15 @@ Source: "${matchedFrom}"`;
       __publicField(this, "id", "getAutofillDataResponse");
       __publicField(this, "paramsValidator", getAutofillDataRequestSchema);
       __publicField(this, "resultValidator", getAutofillDataResponseSchema);
+    }
+  };
+  var GetAutofillDataFocusCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getAutofillDataFocus");
+      __publicField(this, "id", "getAutofillDataFocusResponse");
+      __publicField(this, "paramsValidator", getAutofillDataFocusRequestSchema);
+      __publicField(this, "resultValidator", getAutofillDataFocusResponseSchema);
     }
   };
   var GetRuntimeConfigurationCall = class extends DeviceApiCall {
@@ -11646,11 +11674,21 @@ Source: "${matchedFrom}"`;
      * Implement this method to control what happen when Autofill
      * has enough information to 'attach' a tooltip.
      *
-     * @param {AttachArgs} _args
+     * @param {AttachTooltipArgs} _args
      * @returns {void}
      */
-    attach(_args2) {
-      throw new Error("must implement attach");
+    attachTooltip(_args2) {
+      throw new Error("must implement attachTooltip");
+    }
+    /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to show the keyboard extension.
+     *
+     * @param {AttachKeyboardArgs} _args
+     * @returns {void}
+     */
+    attachKeyboard(_args2) {
+      throw new Error("must implement attachKeyboard");
     }
     /**
      * Implement this if your tooltip can be created from positioning
@@ -11717,9 +11755,9 @@ Source: "${matchedFrom}"`;
       __privateAdd(this, _passwordStatus, "default");
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       const { form, input, device, trigger, triggerMetaData, topContextData } = args;
       const inputType = getInputType(input);
       const mainType = getMainTypeFromType(inputType);
@@ -11756,10 +11794,6 @@ Source: "${matchedFrom}"`;
             form.activeInput?.focus();
             break;
           }
-          case "none": {
-            form.touchAllInputs(mainType);
-            break;
-          }
           case "acceptGeneratedPassword": {
             form.autofillData(
               {
@@ -11768,6 +11802,10 @@ Source: "${matchedFrom}"`;
               },
               mainType
             );
+            break;
+          }
+          case "none": {
+            form.touchAllInputs(mainType);
             break;
           }
           case "rejectGeneratedPassword": {
@@ -11788,12 +11826,41 @@ Source: "${matchedFrom}"`;
       });
     }
     /**
+     * @param {import('./UIController').AttachKeyboardArgs} args
+     */
+    async attachKeyboard(args) {
+      const { device, form, element } = args;
+      const inputType = getInputType(element);
+      const mainType = getMainTypeFromType(inputType);
+      try {
+        const resp = await device.deviceApi.request(
+          new GetAutofillDataFocusCall({
+            inputType,
+            mainType
+          })
+        );
+        switch (resp.action) {
+          case "fill": {
+            form?.autofillData(resp.creditCards, "creditCards");
+            element.blur();
+            break;
+          }
+          case "none": {
+            break;
+          }
+        }
+      } catch (e) {
+        console.error("NativeTooltip::device.getAutofillDataFocus()");
+        console.error(e);
+      }
+    }
+    /**
      * If a password exists in `topContextData`, we can append it to the outgoing data
      * in a way that native platforms can easily understand.
      *
      * @param {TopContextData} topContextData
      * @param {import('../../deviceApiCalls/__generated__/validators-ts.js').GetAutofillDataRequest} outgoingData
-     * @param {import('../../UI/controllers/UIController.js').AttachArgs['triggerMetaData']} triggerMetaData
+     * @param {import('../../UI/controllers/UIController.js').AttachTooltipArgs['triggerMetaData']} triggerMetaData
      * @return {import('../../deviceApiCalls/__generated__/validators-ts.js').GetAutofillDataRequest}
      */
     appendGeneratedPassword(topContextData, outgoingData, triggerMetaData) {
@@ -13093,6 +13160,7 @@ Source: "${matchedFrom}"`;
       inputType_identities: false,
       inputType_credentials: false,
       inputType_creditCards: false,
+      input_focus_api: false,
       inlineIcon_credentials: false,
       unknown_username_categorization: false,
       password_variant_categorization: false,
@@ -16415,6 +16483,23 @@ Source: "${matchedFrom}"`;
     getLocalCreditCards() {
       return __privateGet(this, _data6).creditCards;
     }
+    /**
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     */
+    initGlobalFocusHandler(forms) {
+      window.addEventListener(
+        "focus",
+        (e) => {
+          const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
+          const form = [...forms.values()].find((form2) => form2.hasFocus());
+          const targetElement = pierceShadowTree(e);
+          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
+            this.attachKeyboard({ device: this, form, element: targetElement });
+          }
+        },
+        true
+      );
+    }
     async startInit() {
       if (this.isInitializationStarted)
         return;
@@ -16429,6 +16514,9 @@ Source: "${matchedFrom}"`;
       await this.postInit();
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
+      }
+      if (this.settings.featureToggles.input_focus_api) {
+        this.initGlobalFocusHandler(this.scanner.forms);
       }
     }
     async init() {
@@ -16537,7 +16625,7 @@ Source: "${matchedFrom}"`;
      * @param {HTMLInputElement} params.input
      * @param {{ x: number; y: number; } | null} params.click
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
-     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
+     * @param {import('../UI/controllers/UIController.js').AttachTooltipArgs["triggerMetaData"]} params.triggerMetaData
      */
     attachTooltip(params) {
       const { form, input, click, trigger } = params;
@@ -16572,7 +16660,7 @@ Source: "${matchedFrom}"`;
         credentialsImport: this.credentialsImport.isAvailable() && (this.activeForm.isLogin || this.activeForm.isHybrid)
       };
       const processedTopContext = this.preAttachTooltip(topContextData, input, form);
-      this.uiController?.attach({
+      this.uiController?.attachTooltip({
         input,
         form,
         click,
@@ -16585,6 +16673,12 @@ Source: "${matchedFrom}"`;
       if (trigger === "autoprompt") {
         this.autopromptFired = true;
       }
+    }
+    /**
+     * @param {import('../UI/controllers/UIController.js').AttachKeyboardArgs} args
+     */
+    attachKeyboard(args) {
+      this.uiController?.attachKeyboard(args);
     }
     /**
      * When an item was selected, we then call back to the device
@@ -17702,9 +17796,9 @@ ${this.options.css}
       window.removeEventListener("pointerup", this, true);
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       if (this.getActiveTooltip()) {
         return;
       }
@@ -18152,9 +18246,9 @@ ${this.options.css}
       window.addEventListener("pointerdown", this, true);
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       const { getPosition, topContextData, click, input } = args;
       if (!input.parentNode)
         return;
@@ -18173,7 +18267,7 @@ ${this.options.css}
         input.scrollIntoView(true);
         this._mutObs?.disconnect();
         setTimeout(() => {
-          this.attach(args);
+          this.attachTooltip(args);
         }, 50);
         return;
       }

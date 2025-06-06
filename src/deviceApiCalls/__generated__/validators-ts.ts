@@ -59,6 +59,12 @@ export interface API {
     resultValidator?: GetAutofillDataResponse;
     [k: string]: unknown;
   };
+  getAutofillDataFocus?: {
+    id?: "getAutofillDataFocusResponse";
+    paramsValidator?: GetAutofillDataFocusRequest;
+    resultValidator?: GetAutofillDataFocusResponse;
+    [k: string]: unknown;
+  };
   getRuntimeConfiguration?: {
     id?: "getRuntimeConfigurationResponse";
     resultValidator?: GetRuntimeConfigurationResponse;
@@ -354,6 +360,71 @@ export interface GenericError {
   message: string;
 }
 /**
+ * This describes the argument given to `getAutofillDataFocus(data)`
+ */
+export interface GetAutofillDataFocusRequest {
+  /**
+   * This is the combined input type, such as `credentials.username`
+   */
+  inputType: string;
+  /**
+   * The main input type
+   */
+  mainType: "credentials" | "identities" | "creditCards" | "unknown";
+}
+export interface GetAutofillDataFocusResponse {
+  /**
+   * Required on iOS, to show keyboard extension
+   */
+  type?: "getAutofillDataFocusResponse";
+  /**
+   * The data returned, containing only fields that will be auto-filled
+   */
+  success?: {
+    creditCards?: CreditCardObject;
+    action: "fill" | "none";
+  };
+  error?: GenericError;
+}
+export interface CreditCardObject {
+  /**
+   * Unique identifier for the credit card
+   */
+  id: string;
+  /**
+   * Title or name of the credit card
+   */
+  title: string;
+  /**
+   * Formatted display number of the credit card
+   */
+  displayNumber: string;
+  /**
+   * Name on the credit card
+   */
+  cardName?: string;
+  /**
+   * Security code (CVV/CVC) of the credit card
+   */
+  cardSecurityCode?: string;
+  /**
+   * Expiration month of the credit card
+   */
+  expirationMonth?: string;
+  /**
+   * Expiration year of the credit card
+   */
+  expirationYear?: string;
+  /**
+   * Full number of the credit card
+   */
+  cardNumber?: string;
+  /**
+   * Payment provider associated with the credit card
+   */
+  paymentProvider?: string;
+}
+/**
  * Data that can be understood by @duckduckgo/content-scope-scripts
  */
 export interface GetRuntimeConfigurationResponse {
@@ -546,44 +617,6 @@ export interface IdentityObject {
    */
   emailAddress?: string;
 }
-export interface CreditCardObject {
-  /**
-   * Unique identifier for the credit card
-   */
-  id: string;
-  /**
-   * Title or name of the credit card
-   */
-  title: string;
-  /**
-   * Formatted display number of the credit card
-   */
-  displayNumber: string;
-  /**
-   * Name on the credit card
-   */
-  cardName?: string;
-  /**
-   * Security code (CVV/CVC) of the credit card
-   */
-  cardSecurityCode?: string;
-  /**
-   * Expiration month of the credit card
-   */
-  expirationMonth?: string;
-  /**
-   * Expiration year of the credit card
-   */
-  expirationYear?: string;
-  /**
-   * Full number of the credit card
-   */
-  cardNumber?: string;
-  /**
-   * Payment provider associated with the credit card
-   */
-  paymentProvider?: string;
-}
 /**
  * This describes the argument given to `getAutofillCredentials`
  */
@@ -737,6 +770,10 @@ export interface AutofillFeatureToggles {
    * If true, we will attempt re-categorizing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, we will send extra calls (getAutofillDataFocused) to show the keyboard accessory
+   */
+  input_focus_api?: boolean;
   /**
    * If true, we will attempt re-categorizing the password variant, based on other fields in the form
    */

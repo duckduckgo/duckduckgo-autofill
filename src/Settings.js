@@ -397,6 +397,7 @@ export class Settings {
             inputType_identities: false,
             inputType_credentials: false,
             inputType_creditCards: false,
+            input_focus_api: false,
             inlineIcon_credentials: false,
             unknown_username_categorization: false,
             password_variant_categorization: false,

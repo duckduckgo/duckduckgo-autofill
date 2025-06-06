@@ -1,5 +1,5 @@
 /**
- * @typedef AttachArgs The argument required to 'attach' a tooltip
+ * @typedef AttachTooltipArgs The argument required to 'attachTooltip'
  * @property {import("../../Form/Form").Form} form the Form that triggered this 'attach' call
  * @property {HTMLInputElement} input the input field that triggered this 'attach' call
  * @property {() => { x: number; y: number; height: number; width: number; }} getPosition A function that provides positioning information
@@ -11,6 +11,12 @@
  */
 
 /**
+ * @typedef AttachKeyboardArgs The argument required to 'attachKeyboard'
+ * @property {import("../../DeviceInterface/InterfacePrototype").default} device
+ * @property {import("../../Form/Form").Form} [form] if there was a form that contained the element that triggered this call
+ * @property {any} element the element that triggered this call
+
+/**
  * This is the base interface that `UIControllers` should extend/implement
  */
 export class UIController {
@@ -18,12 +24,24 @@ export class UIController {
      * Implement this method to control what happen when Autofill
      * has enough information to 'attach' a tooltip.
      *
-     * @param {AttachArgs} _args
+     * @param {AttachTooltipArgs} _args
      * @returns {void}
      */
-    attach(_args) {
-        throw new Error('must implement attach');
+    attachTooltip(_args) {
+        throw new Error('must implement attachTooltip');
     }
+
+    /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to show the keyboard extension.
+     *
+     * @param {AttachKeyboardArgs} _args
+     * @returns {void}
+     */
+    attachKeyboard(_args) {
+        throw new Error('must implement attachKeyboard');
+    }
+
     /**
      * Implement this if your tooltip can be created from positioning
      * + topContextData.
