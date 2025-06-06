@@ -1826,10 +1826,10 @@ Source: "${matchedFrom}"`;
     if (identities?.emailAddress) {
       return identities.emailAddress;
     }
-    if (Object.keys(identities ?? {}).length === 1 && Boolean(identities.phone)) {
+    if (identities && Object.keys(identities).length === 1 && Boolean(identities.phone)) {
       return identities.phone;
     }
-    if (Object.keys(creditCards ?? {}).length === 1 && Boolean(creditCards.cardNumber)) {
+    if (creditCards && Object.keys(creditCards).length === 1 && Boolean(creditCards.cardNumber)) {
       return creditCards.cardNumber;
     }
   }
@@ -2487,7 +2487,9 @@ Source: "${matchedFrom}"`;
   var formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, "");
   var inferCredentialsForPartialSave = (credentials, identities, creditCards) => {
     if (!credentials.username) {
-      credentials.username = getUsernameLikeIdentity(identities, creditCards);
+      const possibleUsername = getUsernameLikeIdentity(identities, creditCards);
+      if (possibleUsername)
+        credentials.username = possibleUsername;
     }
     if (Object.keys(credentials ?? {}).length === 0) {
       return void 0;
