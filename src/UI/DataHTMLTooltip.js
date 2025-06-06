@@ -96,7 +96,7 @@ ${css}
             ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
             <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${paymentProviderIconClass} ${providerIconClass} js-autofill-button ${disableHoverEffectClass}">
                 <span class="tooltip__button__text-container">
-                    <span class="label label--medium">${escapeXML(item.labelMedium(t, this.subtype))}</span>
+                    <span class="label label--medium truncate">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
                     ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
                 </span>
