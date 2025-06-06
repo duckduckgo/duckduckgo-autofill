@@ -643,18 +643,18 @@ function queryElementsWithShadow(element, selector, forceScanShadowTree = false)
 /**
  * Checks if there is a single username-like identity, i.e. email or phone or credit card number
  * If there is then returns that, otherwise returns undefined
- * @param {InternalIdentityObject} identities
- * @param {InternalCreditCardObject} creditCards
+ * @param {InternalIdentityObject|undefined} identities
+ * @param {InternalCreditCardObject|undefined} creditCards
  * @returns {string | undefined}
  */
 function getUsernameLikeIdentity(identities, creditCards) {
     if (identities?.emailAddress) {
         return identities.emailAddress;
     }
-    if (Object.keys(identities ?? {}).length === 1 && Boolean(identities.phone)) {
+    if (identities && Object.keys(identities).length === 1 && Boolean(identities.phone)) {
         return identities.phone;
     }
-    if (Object.keys(creditCards ?? {}).length === 1 && Boolean(creditCards.cardNumber)) {
+    if (creditCards && Object.keys(creditCards).length === 1 && Boolean(creditCards.cardNumber)) {
         return creditCards.cardNumber;
     }
 }
