@@ -58,7 +58,7 @@
     "jest-environment-jsdom": "^30.0.0",
     "jest-html-reporter": "^3.10.2",
     "json-schema-to-typescript": "^13.1.2",
-    "markdown-it": "^13.0.2",
+    "markdown-it": "^14.1.0",
     "playwright": "^1.50.0",
     "prettier": "^3.5.3",
     "through2": "^4.0.2",
