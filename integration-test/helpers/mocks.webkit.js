@@ -306,12 +306,12 @@ export function createWebkitMocks(platform = 'macos') {
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData);
             return this;
         },
-        withCreditCard(creditCard, inputType = 'creditCards.cardNumber', shouldPoll = false) {
+        withCreditCard(creditCard, inputType = 'creditCards.cardNumber', shouldGetAutofillData = false) {
             webkitBase.pmHandlerGetAutofillInitData.success.creditCards.push(creditCard);
             const topContextData = { inputType };
             webkitBase.pmHandlerGetAutofillInitData.success.serializedInputContext = JSON.stringify(topContextData);
 
-            if (shouldPoll) {
+            if (shouldGetAutofillData) {
                 webkitBase.getAutofillData = { success: { action: 'none', creditCards: creditCard } };
                 webkitBase.getAutofillDataFocus = { success: { action: 'none', creditCards: creditCard } };
             }

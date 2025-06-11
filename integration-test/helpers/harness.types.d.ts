@@ -39,7 +39,7 @@ interface MockBuilder<State, Mocks extends Record<string, any>> {
     // Add an identity
     withIdentity(identity: IdentityObject, inputType?: SupportedTypes): MockBuilder<State, Mocks>;
     // Add a credit card
-    withCreditCard(creditCard: CreditCardObject, inputType?: SupportedTypes, shouldPoll?: boolean): MockBuilder<State, Mocks>;
+    withCreditCard(creditCard: CreditCardObject, inputType?: SupportedTypes, shouldGetAutofillData?: boolean): MockBuilder<State, Mocks>;
     // Add a credential
     withCredentials(credentials: CredentialsMock, inputType?: SupportedTypes): MockBuilder<State, Mocks>;
     withDataType(data: any): MockBuilder<State, Mocks>;
