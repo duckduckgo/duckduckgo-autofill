@@ -95,5 +95,9 @@
   "credentialsImportText" : {
     "title" : "Greitai ir saugiai perkelkite slaptažodžius iš kitos naršyklės ar slaptažodžių tvarkyklės.",
     "note" : "Subtitle that explains the purpose of the import dialog"
+  },
+  "Expiry": {
+    "title": "Galiojimo data",
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }

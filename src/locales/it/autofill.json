@@ -95,5 +95,9 @@
   "credentialsImportText" : {
     "title" : "Trasferisci in modo rapido e sicuro le tue password da un altro browser o gestore di password.",
     "note" : "Subtitle that explains the purpose of the import dialog"
+  },
+  "Expiry": {
+    "title": "Scadenza",
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }

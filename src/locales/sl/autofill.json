@@ -95,5 +95,9 @@
   "credentialsImportText" : {
     "title" : "Hitro in varno prenesite gesla iz drugega brskalnika ali upravitelja gesel.",
     "note" : "Subtitle that explains the purpose of the import dialog"
+  },
+  "Expiry": {
+    "title": "Datum poteka",
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }
