@@ -330,6 +330,8 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
+    creditCards?: CreditCardObject;
+    identities?: IdentityObject;
     action:
       | "fill"
       | "focus"
@@ -355,36 +357,6 @@ export interface Credentials {
   };
   credentialsProvider?: "duckduckgo" | "bitwarden";
   providerStatus?: "locked" | "unlocked";
-}
-export interface GenericError {
-  message: string;
-}
-/**
- * This describes the argument given to `getAutofillDataFocus(data)`
- */
-export interface GetAutofillDataFocusRequest {
-  /**
-   * This is the combined input type, such as `credentials.username`
-   */
-  inputType: string;
-  /**
-   * The main input type
-   */
-  mainType: "credentials" | "identities" | "creditCards" | "unknown";
-}
-export interface GetAutofillDataFocusResponse {
-  /**
-   * Required on iOS, to show keyboard extension
-   */
-  type?: "getAutofillDataFocusResponse";
-  /**
-   * The data returned, containing only fields that will be auto-filled
-   */
-  success?: {
-    creditCards?: CreditCardObject;
-    action: "fill" | "none";
-  };
-  error?: GenericError;
 }
 export interface CreditCardObject {
   /**
@@ -423,6 +395,102 @@ export interface CreditCardObject {
    * Payment provider associated with the credit card
    */
   paymentProvider?: string;
+}
+export interface IdentityObject {
+  /**
+   * Unique identifier for the identity
+   */
+  id: string;
+  /**
+   * Title or name of the identity
+   */
+  title: string;
+  /**
+   * First name of the individual
+   */
+  firstName?: string;
+  /**
+   * Middle name of the individual
+   */
+  middleName?: string;
+  /**
+   * Last name of the individual
+   */
+  lastName?: string;
+  /**
+   * Day of birth
+   */
+  birthdayDay?: string;
+  /**
+   * Month of birth
+   */
+  birthdayMonth?: string;
+  /**
+   * Year of birth
+   */
+  birthdayYear?: string;
+  /**
+   * Street address
+   */
+  addressStreet?: string;
+  /**
+   * Additional street address information
+   */
+  addressStreet2?: string;
+  /**
+   * City of the address
+   */
+  addressCity?: string;
+  /**
+   * Province or state of the address
+   */
+  addressProvince?: string;
+  /**
+   * Postal or ZIP code of the address
+   */
+  addressPostalCode?: string;
+  /**
+   * Country code of the address
+   */
+  addressCountryCode?: string;
+  /**
+   * Phone number
+   */
+  phone?: string;
+  /**
+   * Email address
+   */
+  emailAddress?: string;
+}
+export interface GenericError {
+  message: string;
+}
+/**
+ * This describes the argument given to `getAutofillDataFocus(data)`
+ */
+export interface GetAutofillDataFocusRequest {
+  /**
+   * This is the combined input type, such as `credentials.username`
+   */
+  inputType: string;
+  /**
+   * The main input type
+   */
+  mainType: "credentials" | "identities" | "creditCards" | "unknown";
+}
+export interface GetAutofillDataFocusResponse {
+  /**
+   * Required on iOS, to show keyboard extension
+   */
+  type?: "getAutofillDataFocusResponse";
+  /**
+   * The data returned, containing only fields that will be auto-filled
+   */
+  success?: {
+    creditCards?: CreditCardObject;
+    action: "fill" | "none";
+  };
+  error?: GenericError;
 }
 /**
  * Data that can be understood by @duckduckgo/content-scope-scripts
@@ -550,72 +618,6 @@ export interface GetAutofillInitDataResponse {
     serializedInputContext: string;
   };
   error?: GenericError;
-}
-export interface IdentityObject {
-  /**
-   * Unique identifier for the identity
-   */
-  id: string;
-  /**
-   * Title or name of the identity
-   */
-  title: string;
-  /**
-   * First name of the individual
-   */
-  firstName?: string;
-  /**
-   * Middle name of the individual
-   */
-  middleName?: string;
-  /**
-   * Last name of the individual
-   */
-  lastName?: string;
-  /**
-   * Day of birth
-   */
-  birthdayDay?: string;
-  /**
-   * Month of birth
-   */
-  birthdayMonth?: string;
-  /**
-   * Year of birth
-   */
-  birthdayYear?: string;
-  /**
-   * Street address
-   */
-  addressStreet?: string;
-  /**
-   * Additional street address information
-   */
-  addressStreet2?: string;
-  /**
-   * City of the address
-   */
-  addressCity?: string;
-  /**
-   * Province or state of the address
-   */
-  addressProvince?: string;
-  /**
-   * Postal or ZIP code of the address
-   */
-  addressPostalCode?: string;
-  /**
-   * Country code of the address
-   */
-  addressCountryCode?: string;
-  /**
-   * Phone number
-   */
-  phone?: string;
-  /**
-   * Email address
-   */
-  emailAddress?: string;
 }
 /**
  * This describes the argument given to `getAutofillCredentials`
