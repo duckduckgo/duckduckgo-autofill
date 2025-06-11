@@ -400,17 +400,17 @@ const matchingConfiguration = {
                 },
                 conservativeSignupRegex: {
                     match:
-                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|update' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' +
                         // German
                         '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' +
                         // Dutch
-                        '|registreren|eigenschappen|profiel|bijwerken' +
+                        '|registreren|eigenschappen|bijwerken' +
                         // French
-                        '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' +
+                        '|s.inscrire|inscription|s.abonner|abonnement|préférences|créer un compte' +
                         // Spanish
-                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
+                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|lista de correo' +
                         // Swedish
                         '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera',
                 },
