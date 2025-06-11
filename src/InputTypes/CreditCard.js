@@ -17,7 +17,7 @@ export class CreditCardTooltipItem {
         const { displayNumber, expirationMonth, expirationYear } = this.#data;
         const expiration =
             expirationMonth && expirationYear
-                ? `\u00A0 ${t('autofill:expires')}: ${String(expirationMonth).padStart(2, '0')}/${expirationYear}`
+                ? `\u00A0 ${t('autofill:Expiry')}: ${String(expirationMonth).padStart(2, '0')}/${expirationYear}`
                 : '';
 
         return `•••• ${displayNumber}${expiration}`;
