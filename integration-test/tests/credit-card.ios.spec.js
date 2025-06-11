@@ -1,9 +1,10 @@
 import { constants } from '../helpers/mocks.js';
 import { forwardConsoleMessages, createIOSAutofillScript } from '../helpers/harness.js';
-import { test as base, expect } from '@playwright/test';
+import { test as base } from '@playwright/test';
 import { createWebkitMocks } from '../helpers/mocks.webkit.js';
 import { createAvailableInputTypes } from '../helpers/utils.js';
 import { testContext } from '../helpers/test-context.js';
+import { creditCardPage } from '../helpers/pages/creditCardPage.js';
 
 /**
  * Tests for credit card autofill on iOS
@@ -34,36 +35,10 @@ async function testCreditCardPage(page, opts) {
 
     await createIOSAutofillScript(page);
 
-    const creditCardPage = createCreditCardPage(page);
-    await creditCardPage.navigate();
+    const creditCardPageHelper = creditCardPage(page);
+    await creditCardPageHelper.navigate();
 
-    return { creditCardPage };
-}
-
-/**
- * Create a credit card page helper
- * @param {import("@playwright/test").Page} page
- */
-function createCreditCardPage(page) {
-    return {
-        async navigate() {
-            await page.goto(constants.pages.creditCardVariousInputs);
-        },
-
-        async clickCardNumberField() {
-            await page.click('#cardNumber');
-        },
-
-        async clickCardHolderField() {
-            await page.click('#cardHolder');
-        },
-
-        async assertMockCallOccurredTimes(methodName, expectedCount) {
-            const calls = await page.evaluate('window.__playwright_autofill.mocks.calls');
-            const mockCalls = calls.filter(([name]) => name === methodName);
-            expect(mockCalls).toHaveLength(expectedCount);
-        },
-    };
+    return { creditCardPage: creditCardPageHelper };
 }
 
 test.describe('Credit Card Autofill on iOS', () => {
@@ -127,5 +102,47 @@ test.describe('Credit Card Autofill on iOS', () => {
         await creditCardPage.clickCardNumberField();
         await creditCardPage.assertMockCallOccurredTimes('getAutofillData', 1);
         await creditCardPage.assertMockCallOccurredTimes('getAutofillDataFocus', 0);
+    });
+
+    test('clicking on shadow input field fires getAutofillDataFocus', async ({ page }) => {
+        const { creditCardPage } = await testCreditCardPage(page, {
+            featureToggles: {
+                inputType_creditCards: true,
+                input_focus_api: true,
+            },
+            availableInputTypes: {
+                creditCards: {
+                    cardNumber: true,
+                },
+            },
+            creditCard,
+        });
+
+        await creditCardPage.clickOnKnownShadowInputField();
+        await creditCardPage.assertMockCallOccurredTimes('getAutofillData', 0);
+        await creditCardPage.assertMockCallOccurredTimes('getAutofillDataFocus', 1);
+
+        await creditCardPage.clickOnUnknownShadowInputField();
+        await creditCardPage.assertMockCallOccurredTimes('getAutofillData', 0);
+        await creditCardPage.assertMockCallOccurredTimes('getAutofillDataFocus', 2);
+    });
+
+    test('clicking on content editable field fires getAutofillDataFocus', async ({ page }) => {
+        const { creditCardPage } = await testCreditCardPage(page, {
+            featureToggles: {
+                inputType_creditCards: true,
+                input_focus_api: true,
+            },
+            availableInputTypes: {
+                creditCards: {
+                    cardNumber: true,
+                },
+            },
+            creditCard,
+        });
+
+        await creditCardPage.clickOnContentEditableField();
+        await creditCardPage.assertMockCallOccurredTimes('getAutofillData', 0);
+        await creditCardPage.assertMockCallOccurredTimes('getAutofillDataFocus', 1);
     });
 });
