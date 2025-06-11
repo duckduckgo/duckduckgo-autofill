@@ -1,0 +1,46 @@
+<form name="form1" method="post" class="login-form" id="CustomerLoginForm" action="/client/client_login.php">
+
+    <div id="nLogin1" class="row">
+            <div class="PasswordNotice">If this is your first time using our website, use your Postcode as your password.<br>You will set your Password after you login.</div>
+    </div>
+
+    <div id="nLogin2" class="row">
+            <div class="column one-half">
+                <label for="myaccountno">Customer Number</label>
+                <div class="tooltip">
+                    <input name="myaccountno" type="text" id="myaccountno" class="uppercase" maxlength="8" onkeypress="return isNumberKey(event)" tabindex="1" data-manual-scoring="username">
+                    <span class="tooltiptext">This is the reference number for your account that we sent via SMS when you signed up for our deliveries.</span>
+                </div>
+          <a href="client_send_account.php">I don't know my Customer Number</a>
+            </div>
+            <div class="column one-half">
+                <label for="mypostcode">Password</label>
+                <div class="tooltip">
+                    <input name="mypostcode" type="password" id="mypostcode" tabindex="2" data-manual-scoring="password.current">
+                    <span class="tooltiptext">If this is your first time using our website, use your Postcode as your password.<br><br>You will set your Password after you login.</span>
+                </div>
+                <a href="client_reset_password.php">I don't know my Password</a>
+            </div>
+    </div>
+
+    <div id="vLogin" class="row">
+            <div class="column one-half">
+                <label for="myaccountno">Customer Number</label>
+                <input name="myaccountno2" type="text" id="myaccountno2" maxlength="8" onkeypress="return isNumberKey(event)" value="" data-manual-scoring="username">
+            </div>
+            <div class="column one-half">
+                <label for="myvcode">Verification Code
+                </label>
+                <input name="myvcode" type="text" id="myvcode" class="uppercase" placeholder="Verification Code" value="" data-manual-scoring="unknown">
+            </div>
+    </div>
+
+    <input name="form" type="hidden" id="form" value="true">
+    <input name="vmethod" type="hidden" id="vmethod">
+    <input name="mytoken" type="hidden" id="token" value="099055109111121114073120067073049080068073115117078118081061">
+
+    <div class="form-actions">
+        <button type="button" id="resendcode" class="cancel icon-after" onclick="SendClientLoginVerificationCode('','read');">re-send code</button>
+        <button type="submit" name="Submit" id="loginSubmit" class="submit icon-after" tabindex="3" data-manual-submit>Login</button>
+    </div>
+</form>
