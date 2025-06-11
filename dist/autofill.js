@@ -8464,7 +8464,7 @@ Source: "${matchedFrom}"`;
         /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
         runtimeConfig.contentScope
       );
-      const feature = contentScope.features.autofill.features?.[name];
+      const feature = contentScope.features?.autofill?.features?.[name];
       if (feature?.state !== "enabled" || contentScope.features[name])
         return runtimeConfig;
       if (feature) {

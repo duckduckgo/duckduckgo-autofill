@@ -24,7 +24,7 @@ async function testCreditCardPage(page, opts) {
     // iOS specific mocks
     const mocks = createWebkitMocks('ios')
         .withAvailableInputTypes(opts.availableInputTypes || createAvailableInputTypes())
-        .withFeatureToggles(opts.featureToggles)
+        .withFeatureToggles(opts.featureToggles);
 
     if (opts.creditCard) {
         mocks.withCreditCard(opts.creditCard, 'creditCards.cardNumber', true);
@@ -49,7 +49,7 @@ function createCreditCardPage(page) {
         async navigate() {
             await page.goto(constants.pages.creditCardVariousInputs);
         },
-        
+
         async clickCardNumberField() {
             await page.click('#cardNumber');
         },
@@ -69,14 +69,14 @@ function createCreditCardPage(page) {
 test.describe('Credit Card Autofill on iOS', () => {
     const creditCard = {
         ...constants.fields.creditCard,
-        displayNumber: '•••• •••• •••• 4242'
+        displayNumber: '•••• •••• •••• 4242',
     };
 
     test('clicking on card number field fires getAutofillData when credit cards are available', async ({ page }) => {
         const { creditCardPage } = await testCreditCardPage(page, {
             featureToggles: {
                 inputType_creditCards: true,
-                input_focus_api: true
+                input_focus_api: true,
             },
             availableInputTypes: {
                 creditCards: {
@@ -98,25 +98,24 @@ test.describe('Credit Card Autofill on iOS', () => {
         const { creditCardPage } = await testCreditCardPage(page, {
             featureToggles: {
                 inputType_creditCards: true,
-                input_focus_api: true
+                input_focus_api: true,
             },
             availableInputTypes: {
                 creditCards: {
                     cardNumber: false,
                 },
-            }
+            },
         });
 
         await creditCardPage.clickCardNumberField();
         await creditCardPage.assertMockCallOccurredTimes('getAutofillData', 0);
     });
 
-
     test('when input_focus_api is false, clicking on card number field does not fire getAutofillDataFocus', async ({ page }) => {
         const { creditCardPage } = await testCreditCardPage(page, {
             featureToggles: {
                 inputType_creditCards: true,
-                input_focus_api: false
+                input_focus_api: false,
             },
             availableInputTypes: {
                 creditCards: {
