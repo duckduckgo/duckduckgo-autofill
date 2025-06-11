@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "maxNodeModuleJsDepth": 0,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true
+  },
+  "include": [
+    "./**/*.js"
+  ],
+  "exclude": [
+    "precompile-regexes.js"
+  ]
+}
