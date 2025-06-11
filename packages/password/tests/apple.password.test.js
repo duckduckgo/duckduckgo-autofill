@@ -26,56 +26,78 @@ describe('password implementation, internal API', () => {
     });
     it('should produce positive integers from ranges _randomNumberWithUniformDistribution', () => {
         assert(
-            property(integer({ min: 1 }), (data) => {
-                const password = new Password();
-                const result = password._randomNumberWithUniformDistribution(data);
-                return result >= 0;
-            }),
+            property(
+                integer({ min: 1 }),
+                /** @param {number} data */ (data) => {
+                    const password = new Password();
+                    const result = password._randomNumberWithUniformDistribution(data);
+                    return result >= 0;
+                },
+            ),
         );
     });
     it('should produce boolean _passwordHasNotExceededConsecutiveCharLimit', () => {
         assert(
-            property(string(), integer(), (str, int) => {
-                const password = new Password();
-                const result = password._passwordHasNotExceededConsecutiveCharLimit(str, int);
-                return typeof result === 'boolean';
-            }),
+            property(
+                string(),
+                integer(),
+                /** @param {string} str @param {number} int */ (str, int) => {
+                    const password = new Password();
+                    const result = password._passwordHasNotExceededConsecutiveCharLimit(str, int);
+                    return typeof result === 'boolean';
+                },
+            ),
         );
     });
     it('should produce string from _canonicalizedScanSetFromCharacters', () => {
         assert(
-            property(array(string()), (strArray) => {
-                const password = new Password();
-                const result = password._canonicalizedScanSetFromCharacters(strArray);
-                return typeof result === 'string';
-            }),
+            property(
+                array(string()),
+                /** @param {string[]} strArray */ (strArray) => {
+                    const password = new Password();
+                    const result = password._canonicalizedScanSetFromCharacters(strArray);
+                    return typeof result === 'string';
+                },
+            ),
         );
     });
     it('should produce string from _classicPassword', () => {
         assert(
-            property(integer({ min: 1, max: 60 }), string(), (int, str) => {
-                const password = new Password();
-                const result = password._classicPassword(int, str);
-                return typeof result === 'string';
-            }),
+            property(
+                integer({ min: 1, max: 60 }),
+                string(),
+                /** @param {number} int @param {string} str */ (int, str) => {
+                    const password = new Password();
+                    const result = password._classicPassword(int, str);
+                    return typeof result === 'string';
+                },
+            ),
         );
     });
     it('should produce boolean from _passwordHasNotExceededRepeatedCharLimit', () => {
         assert(
-            property(integer({ min: 1, max: 60 }), string(), (limit, str) => {
-                const password = new Password();
-                const result = password._passwordHasNotExceededRepeatedCharLimit(str, limit);
-                return typeof result === 'boolean';
-            }),
+            property(
+                integer({ min: 1, max: 60 }),
+                string(),
+                /** @param {number} limit @param {string} str */ (limit, str) => {
+                    const password = new Password();
+                    const result = password._passwordHasNotExceededRepeatedCharLimit(str, limit);
+                    return typeof result === 'boolean';
+                },
+            ),
         );
     });
     it('should produce boolean from _passwordContainsRequiredCharacters', () => {
         assert(
-            property(string(), array(string()), (pw, strArray) => {
-                const password = new Password();
-                const result = password._passwordContainsRequiredCharacters(pw, strArray);
-                return typeof result === 'boolean';
-            }),
+            property(
+                string(),
+                array(string()),
+                /** @param {string} pw @param {string[]} strArray */ (pw, strArray) => {
+                    const password = new Password();
+                    const result = password._passwordContainsRequiredCharacters(pw, strArray);
+                    return typeof result === 'boolean';
+                },
+            ),
         );
     });
 });

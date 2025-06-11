@@ -50,7 +50,7 @@
     "chokidar-cli": "^3.0.0",
     "esbuild": "^0.25.5",
     "eslint": "^9.13.0",
-    "fast-check": "^2.25.0",
+    "fast-check": "^4.1.1",
     "globals": "^16.2.0",
     "http-server": "^14.1.1",
     "jest": "^30.0.0",
