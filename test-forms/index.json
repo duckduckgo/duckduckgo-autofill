@@ -17,6 +17,7 @@
   { "html": "pinterest_signup.html" },
   { "html": "reddit_login.html" },
   { "html": "reddit_signup.html", "expectedSubmitFalseNegatives": 1 },
+  { "html": "bluesky_login.html" },
   { "html": "yelp_login.html" },
   { "html": "yelp_signup.html" },
   { "html": "instagram_login.html" },
