@@ -2,6 +2,8 @@ import { validate } from '../packages/device-api/index.js';
 import { GetAvailableInputTypesCall, GetRuntimeConfigurationCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
 import { autofillSettingsSchema } from './deviceApiCalls/__generated__/validators.zod.js';
 import { autofillEnabled } from './autofill-utils.js';
+import SiteSpecificFeature from './site-specific-feature.js';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils.js';
 
 /**
  * Some Type helpers to prevent duplication
@@ -36,6 +38,9 @@ export class Settings {
     _enabled = null;
     /** @type {string} */
     _language = 'en';
+
+    /** @type {SiteSpecificFeature | null} */
+    _siteSpecificFeature = null;
 
     /**
      * @param {GlobalConfig} config
@@ -81,6 +86,9 @@ export class Settings {
     async getEnabled() {
         try {
             const runtimeConfig = await this._getRuntimeConfiguration();
+            // Also we might not need zod anymore for defining runtime config? We should simply rely on the
+            // C-S-S types.
+            // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
             const enabled = autofillEnabled(runtimeConfig);
             return enabled;
         } catch (e) {
@@ -163,6 +171,64 @@ export class Settings {
     }
 
     /**
+     * @returns {SiteSpecificFeature|null}
+     */
+    get siteSpecificFeature() {
+        return this._siteSpecificFeature;
+    }
+
+    /**
+     * WORKAROUND: Currently C-S-S only suppports parsing top level features, so we need to manually allow
+     * setting top level features in the content scope from nested features.
+     * @param {RuntimeConfiguration} runtimeConfig
+     * @param {string} name
+     * @returns {RuntimeConfiguration}
+     */
+    setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
+        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
+            runtimeConfig.contentScope
+        );
+        const feature = contentScope.features.autofill.features?.[name];
+        // If the feature is not enabled or already exists, do nothing
+        if (feature?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
+
+        if (feature) {
+            runtimeConfig.contentScope.features = {
+                ...contentScope.features,
+                [name]: {
+                    ...feature,
+                    exceptions: [],
+                    hash: '',
+                },
+            };
+        }
+        return runtimeConfig;
+    }
+
+    async getsiteSpecificFeature() {
+        if (this._siteSpecificFeature) return this._siteSpecificFeature;
+
+        try {
+            const runtimeConfig = await this._getRuntimeConfiguration();
+            this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, 'siteSpecificFixes');
+            // @ts-ignore
+            const args = processConfig(runtimeConfig.contentScope, runtimeConfig.userUnprotectedDomains, runtimeConfig.userPreferences);
+            return new SiteSpecificFeature(args);
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getsiteSpecificFeature: ❌', e);
+            }
+            return Settings.defaults.siteSpecificFeature;
+        }
+    }
+
+    setsiteSpecificFeature(siteSpecificFeature) {
+        if (this._siteSpecificFeature) return;
+
+        this._siteSpecificFeature = siteSpecificFeature;
+    }
+
+    /**
      * To 'refresh' settings means to re-call APIs to determine new state. This may
      * only occur once per page, but it must be done before any page scanning/decorating
      * or translation can happen.
@@ -175,6 +241,7 @@ export class Settings {
      */
     async refresh() {
         this.setEnabled(await this.getEnabled());
+        this.setsiteSpecificFeature(await this.getsiteSpecificFeature());
         this.setFeatureToggles(await this.getFeatureToggles());
         this.setAvailableInputTypes(await this.getAvailableInputTypes());
         this.setLanguage(await this.getLanguage());
@@ -319,6 +386,8 @@ export class Settings {
     }
 
     static defaults = {
+        /** @type {SiteSpecificFeature | null} */
+        siteSpecificFeature: null,
         /** @type {AutofillFeatureToggles} */
         featureToggles: {
             credentials_saving: false,
@@ -330,6 +399,7 @@ export class Settings {
             inputType_creditCards: false,
             inlineIcon_credentials: false,
             unknown_username_categorization: false,
+            password_variant_categorization: false,
             partial_form_saves: false,
         },
         /** @type {AvailableInputTypes} */

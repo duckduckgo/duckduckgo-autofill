@@ -76,6 +76,9 @@ class DefaultScanner {
     /** @type {import("./Form/matching").Matching} matching */
     matching;
 
+    /** @type {HTMLElement|null} */
+    _forcedForm = null;
+
     /**
      * @param {import("./DeviceInterface/InterfacePrototype").default} device
      * @param {ScannerOptions} options
@@ -141,6 +144,8 @@ class DefaultScanner {
     }
 
     /**
+     * Core logic for find inputs that are eligible for autofill. If they are,
+     * then call addInput which will attempt to add the input to a parent form.
      * @param context
      */
     findEligibleInputs(context) {
@@ -159,6 +164,7 @@ class DefaultScanner {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
+
             inputs.forEach((input) => this.addInput(input));
             if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
                 findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {
@@ -215,10 +221,15 @@ class DefaultScanner {
     }
 
     /**
-     * @param {HTMLElement|HTMLInputElement|HTMLSelectElement} input
-     * @returns {HTMLFormElement|HTMLElement}
+     * @param {HTMLElement} input
+     * @returns {HTMLElement}
      */
     getParentForm(input) {
+        this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
+        if (this._forcedForm?.contains(input)) {
+            return this._forcedForm;
+        }
+
         if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
             if (input.form) {
                 // Use input.form unless it encloses most of the DOM
@@ -281,10 +292,19 @@ class DefaultScanner {
 
     /**
      * @param {HTMLInputElement|HTMLSelectElement} input
+     * @returns {boolean}
+     */
+    inputExistsInForms(input) {
+        return [...this.forms.values()].some((form) => form.inputs.all.has(input));
+    }
+
+    /**
+     * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {HTMLFormElement|null} form
      */
     addInput(input, form = null) {
         if (this.isStopped) return;
+        if (this.inputExistsInForms(input)) return;
 
         const parentForm = form || this.getParentForm(input);
 
@@ -331,7 +351,8 @@ class DefaultScanner {
             }
         } else {
             // if this form is an ancestor of an existing form, remove that before adding this
-            if (childForm) {
+            // unless it's the forced form, in that case we want to keep it.
+            if (childForm && childForm !== this._forcedForm) {
                 this.forms.get(childForm)?.destroy();
                 this.forms.delete(childForm);
             }
@@ -339,7 +360,6 @@ class DefaultScanner {
             // Only add the form if below the limit of forms per page
             if (this.forms.size < this.options.maxFormsPerPage) {
                 this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
-                // Also only add the form if it hasn't self-destructed due to having too few fields
             } else {
                 this.setMode('on-click', 'The page has too many forms, stop adding them.');
             }
@@ -429,7 +449,7 @@ class DefaultScanner {
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-        // If the scanner is stopped, just return
+        // If the scanner is stopped event target is messed up, just return
         if (this.isStopped || !(event.target instanceof Element)) return;
 
         window.performance?.mark?.('scan_shadow:init:start');
@@ -437,17 +457,32 @@ class DefaultScanner {
         // If the target is an input, find the real target in case it's in a shadow tree
         const realTarget = pierceShadowTree(event, HTMLInputElement);
 
-        // If it's an input we haven't already scanned,
-        // find the enclosing parent form, and scan it.
-        if (realTarget instanceof HTMLInputElement && !realTarget.hasAttribute(ATTR_INPUT_TYPE)) {
+        // If the target is a generic text input field, and it's not attributed with a type,
+        // find the parent form and scan it.
+        if (
+            realTarget instanceof HTMLInputElement &&
+            realTarget.matches(this.matching.cssSelector('genericTextInputField')) &&
+            !realTarget.hasAttribute(ATTR_INPUT_TYPE)
+        ) {
+            // Helpful to debug if this code is being executed when it shouldn't
+            if (shouldLog()) console.log('scanOnClick executing for target', realTarget);
+
             const parentForm = this.getParentForm(realTarget);
 
             // If the parent form is an input element we bail.
             if (parentForm instanceof HTMLInputElement) return;
 
             const hasShadowTree = event.target?.shadowRoot != null;
-            const form = new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree);
-            this.forms.set(parentForm, form);
+            const form = this.forms.get(parentForm);
+            if (!form) {
+                // Only create a new one if none exists
+                this.forms.set(
+                    parentForm,
+                    new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree),
+                );
+            } else {
+                form.addInput(realTarget);
+            }
             this.findEligibleInputs(parentForm);
         }
 

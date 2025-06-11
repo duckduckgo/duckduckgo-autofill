@@ -7,8 +7,8 @@ const { updatePackageResolved, updatePackageSwift } = require('./release-utils.j
 const autofillCommit = process.env.GITHUB_SHA;
 const autofillVersion = process.env.VERSION;
 
-const packageSwiftPath = filepath('../../bsk/Package.swift');
-const packageResolvedPath = filepath('../../bsk/Package.resolved');
+const packageSwiftPath = filepath('../../apple-monorepo/SharedPackages/BrowserServicesKit/Package.swift');
+const packageResolvedPath = filepath('../../apple-monorepo/SharedPackages/BrowserServicesKit/Package.resolved');
 
 function updateBSKRepo(version, commit) {
     console.log('running updateBSKrepo');

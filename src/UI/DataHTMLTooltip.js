@@ -56,8 +56,8 @@ class DataHTMLTooltip extends HTMLTooltip {
      */
     render(device, config, items, callbacks) {
         const t = device.t;
-        const { wrapperClass, css } = this.options;
-        const isTopAutofill = wrapperClass?.includes('top-autofill');
+        const { wrapperClass, css, isTopAutofill, platform } = this.options;
+
         let hasAddedSeparator = false;
         // Only show an hr above the first duck address button, but it can be either personal or private
         const shouldShowSeparator = (dataId, index) => {
@@ -78,21 +78,25 @@ class DataHTMLTooltip extends HTMLTooltip {
         const dataTypeClass = `tooltip__button--data--${config.type}${this.variant ? '__' + this.variant : ''}`;
         this.shadow.innerHTML = `
 ${css}
-<div class="wrapper wrapper--data ${topClass}" hidden>
+<div class="wrapper wrapper--data ${topClass}" hidden data-platform=${platform}>
     <div class="tooltip tooltip--data${this.options.isIncontextSignupAvailable() ? ' tooltip--incontext-signup' : ''}">
         ${items
             .map((item, index) => {
                 const credentialsProvider = item.credentialsProvider?.();
                 const providerIconClass = credentialsProvider ? `tooltip__button--data--${credentialsProvider}` : '';
+                const paymentProvider = item.paymentProvider?.();
+                const paymentProviderIconClass = paymentProvider ? `tooltip__button--data--provider__${paymentProvider}` : '';
+                const disableHoverEffectClass = paymentProvider ? 'no-hover-effect' : '';
+
                 // these 2 are optional
                 const labelSmall = item.labelSmall?.(t, this.subtype);
                 const label = item.label?.(t, this.subtype);
 
                 return `
             ${shouldShowSeparator(item.id(), index) ? '<hr />' : ''}
-            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${providerIconClass} js-autofill-button">
+            <button id="${item.id()}" class="tooltip__button tooltip__button--data ${dataTypeClass} ${paymentProviderIconClass} ${providerIconClass} js-autofill-button ${disableHoverEffectClass}">
                 <span class="tooltip__button__text-container">
-                    <span class="label label--medium">${escapeXML(item.labelMedium(t, this.subtype))}</span>
+                    <span class="label label--medium truncate">${escapeXML(item.labelMedium(t, this.subtype))}</span>
                     ${label ? `<span class="label">${escapeXML(label)}</span>` : ''}
                     ${labelSmall ? `<span class="label label--small">${escapeXML(labelSmall)}</span>` : ''}
                 </span>
@@ -151,4 +155,4 @@ ${css}
     }
 }
 
-export default DataHTMLTooltip;
+export { DataHTMLTooltip };

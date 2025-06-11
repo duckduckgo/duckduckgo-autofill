@@ -148,6 +148,7 @@ describe('Settings', () => {
         "inputType_identities": false,
         "partial_form_saves": false,
         "password_generation": false,
+        "password_variant_categorization": false,
         "unknown_username_categorization": false,
       }
     `);
@@ -166,6 +167,7 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
                     autofill: {
                         state: 'enabled',
                         exceptions: [],
+                        settings: {},
                     },
                 },
                 unprotectedTemporary: [],
@@ -177,6 +179,7 @@ async function settingsFromMockedCalls(featureToggles, availableInputTypes) {
                 features: {
                     autofill: { settings: { featureToggles } },
                 },
+                sessionKey: 'abc123',
             },
         },
     });

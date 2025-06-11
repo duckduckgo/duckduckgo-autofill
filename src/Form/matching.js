@@ -250,13 +250,14 @@ class Matching {
                 return `creditCards.${subtype}`;
             }
         }
-
         if (input instanceof HTMLInputElement) {
             if (this.subtypeFromMatchers('password', input)) {
                 // Any other input type is likely a false match
-                // Arguably "text" should be as well, but it can be used for password reveal fields
                 if (
-                    ['password', 'text'].includes(input.type) &&
+                    (input.type === 'password' ||
+                        // Some sites might not use the password type, but a placeholder should catch those cases
+                        // See test-forms/playpiknik_login.html
+                        safeRegexTest(/password/i, input.placeholder)) &&
                     input.name !== 'email' &&
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
@@ -315,8 +316,9 @@ class Matching {
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
      *   isCCForm?: boolean,
+     *   isSignup?: boolean,
      *   hasCredentials?: boolean,
-     *   supportsIdentitiesAutofill?: boolean
+     *   supportsIdentitiesAutofill?: boolean,
      * }} SetInputTypeOpts
      */
 
@@ -324,11 +326,13 @@ class Matching {
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-        const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+        const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
+        const type = forcedInputType || this.inferInputType(input, formEl, opts);
         input.setAttribute(ATTR_INPUT_TYPE, type);
         return type;
     }
@@ -833,10 +837,10 @@ function getInputVariant(input) {
  * @param {string | null} string
  * @return {string}
  */
-const removeExcessWhitespace = (string = '') => {
+const removeExcessWhitespace = (string = '', textLengthCutoff = TEXT_LENGTH_CUTOFF) => {
     string = string?.trim() || '';
     // The length check is extra safety to avoid trimming strings that would be discarded anyway
-    if (!string || string.length > TEXT_LENGTH_CUTOFF + 50) return '';
+    if (!string || string.length > textLengthCutoff + 50) return '';
 
     return string.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ');
 };
@@ -1022,4 +1026,5 @@ export {
     checkPlaceholderAndLabels,
     Matching,
     createMatching,
+    isValidSupportedType,
 };

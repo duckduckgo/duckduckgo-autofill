@@ -14,15 +14,20 @@ class FormAnalyzer {
     form;
     /** @type Matching */
     matching;
+
+    /** @type {import('../site-specific-feature').default|null} */
+    siteSpecificFeature;
+
     /**
      * @param {HTMLElement} form
+     * @param {import('../site-specific-feature').default|null} siteSpecificFeature
      * @param {HTMLInputElement|HTMLSelectElement} input
      * @param {Matching} [matching]
      */
-    constructor(form, input, matching) {
+    constructor(form, siteSpecificFeature, input, matching) {
         this.form = form;
+        this.siteSpecificFeature = siteSpecificFeature;
         this.matching = matching || new Matching(matchingConfiguration);
-
         /**
          * The signal is a continuum where negative values imply login and positive imply signup
          * @type {number}
@@ -53,24 +58,41 @@ class FormAnalyzer {
         return this;
     }
 
+    areLoginOrSignupSignalsWeak() {
+        return Math.abs(this.autofillSignal) < 10;
+    }
+
     /**
      * Hybrid forms can be used for both login and signup
      * @returns {boolean}
      */
     get isHybrid() {
-        // When marking for hybrid we also want to ensure other signals are weak
-        const areOtherSignalsWeak = Math.abs(this.autofillSignal) < 10;
+        const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+        if (forcedFormType) {
+            return forcedFormType === 'hybrid';
+        }
 
-        return this.hybridSignal > 0 && areOtherSignalsWeak;
+        // When marking for hybrid we also want to ensure other signals are weak
+        return this.hybridSignal > 0 && this.areLoginOrSignupSignalsWeak();
     }
 
     get isLogin() {
+        const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+        if (forcedFormType) {
+            return forcedFormType === 'login';
+        }
+
         if (this.isHybrid) return false;
 
         return this.autofillSignal < 0;
     }
 
     get isSignup() {
+        const forcedFormType = this.siteSpecificFeature?.getForcedFormType(this.form);
+        if (forcedFormType) {
+            return forcedFormType === 'signup';
+        }
+
         if (this.isHybrid) return false;
 
         return this.autofillSignal >= 0;
@@ -146,7 +168,7 @@ class FormAnalyzer {
         }
 
         const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? 'conservativeSignupRegex' : 'signupRegex');
-        const matchesSignup = safeRegexTest(/new.?password/i, string) || safeRegexTest(signupRegexToUse, string);
+        const matchesSignup = safeRegexTest(/new.?(password|username)/i, string) || safeRegexTest(signupRegexToUse, string);
 
         // In some cases a login match means the login is somewhere else, i.e. when a link points outside
         if (shouldFlip) {
@@ -169,6 +191,7 @@ class FormAnalyzer {
                 strength: signalStrength,
                 signalType: `${el.name} attr: ${attributeString}`,
                 shouldCheckUnifiedForm: isInput,
+                shouldBeConservative: true,
             });
         });
     }
@@ -229,13 +252,22 @@ class FormAnalyzer {
         });
     }
 
+    evaluatePasswordHints() {
+        const textContent = removeExcessWhitespace(this.form.textContent, 200);
+        if (textContent) {
+            const hasPasswordHints = safeRegexTest(this.matching.getDDGMatcherRegex('passwordHintsRegex'), textContent, 500);
+            if (hasPasswordHints) {
+                this.increaseSignalBy(5, 'Password hints');
+            }
+        }
+    }
+
     /**
-     * Function that checks if the element is an external link or a custom web element that
-     * encapsulates a link.
+     * Function that checks if the element is link like and navigating away from the current page
      * @param {any} el
      * @returns {boolean}
      */
-    isElementExternalLink(el) {
+    isOutboundLink(el) {
         // Checks if the element is present in the cusotm elements registry and ends with a '-link' suffix.
         // If it does, it checks if it contains an anchor element inside.
         const tagName = el.nodeName.toLowerCase();
@@ -243,12 +275,16 @@ class FormAnalyzer {
             customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, 'a').length > 0;
 
         // if an external link matches one of the regexes, we assume the match is not pertinent to the current form
-        const isElementLink =
-            (el instanceof HTMLAnchorElement && el.href && el.getAttribute('href') !== '#') ||
-            (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
-            el.matches('button[class*=secondary]');
+        const isElementLikelyALink = (el) => {
+            if (el == null) return false;
+            return (
+                (el instanceof HTMLAnchorElement && el.href && !el.getAttribute('href')?.startsWith('#')) ||
+                (el.getAttribute('role') || '').toUpperCase() === 'LINK' ||
+                el.matches('button[class*=secondary]')
+            );
+        };
 
-        return isCustomWebElementLink || isElementLink;
+        return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest('a'));
     }
 
     evaluateElement(el) {
@@ -277,16 +313,26 @@ class FormAnalyzer {
                     }
                 });
             } else {
-                // Here we don't think this is a submit, so if there is another submit in the form, flip the score
-                const thereIsASubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
-                const isSocialButton = /facebook|twitter|google|apple/i.test(string);
-                shouldFlip = thereIsASubmitButton && !isSocialButton;
+                // Here we don't think this is a submit, so determine if we should flip the score
+                const hasAnotherSubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
+                const buttonText = string;
+
+                if (hasAnotherSubmitButton) {
+                    // If there's another submit button, flip based on text content alone
+                    shouldFlip = this.shouldFlipScoreForButtonText(buttonText);
+                } else {
+                    // With no submit button, only flip if it's an outbound link that navigates away, and also match the text
+                    // Here we want to be more conservative, because we don't want to flip for every link given that there was no
+                    // submit button detected on the form, hence the extra check for the link.
+                    const isOutboundLink = this.isOutboundLink(el);
+                    shouldFlip = isOutboundLink && this.shouldFlipScoreForButtonText(buttonText);
+                }
             }
             const strength = likelyASubmit ? 20 : 4;
             this.updateSignal({ string, strength, signalType: `button: ${string}`, shouldFlip });
             return;
         }
-        if (this.isElementExternalLink(el)) {
+        if (this.isOutboundLink(el)) {
             let shouldFlip = true;
             let strength = 1;
             // Don't flip forgotten password links
@@ -331,9 +377,14 @@ class FormAnalyzer {
         }
 
         // A form with many fields is unlikely to be a login form
-        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextField'));
+        const relevantFields = this.form.querySelectorAll(this.matching.cssSelector('genericTextInputField'));
         if (relevantFields.length >= 4) {
             this.increaseSignalBy(relevantFields.length * 1.5, 'many fields: it is probably not a login');
+        }
+
+        // If we can't decide at this point, try reading password hints
+        if (this.areLoginOrSignupSignalsWeak()) {
+            this.evaluatePasswordHints();
         }
 
         // If we can't decide at this point, try reading page headings
@@ -382,6 +433,16 @@ class FormAnalyzer {
         // We check for more than one to minimise false positives
         this._isCCForm = Boolean(textMatches && deDupedMatches.size > 1);
         return this._isCCForm;
+    }
+
+    /**
+     * @param {string} text
+     * @returns {boolean}
+     */
+    shouldFlipScoreForButtonText(text) {
+        const isForgotPassword = safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), text);
+        const isSocialButton = /facebook|twitter|google|apple/i.test(text);
+        return !isForgotPassword && !isSocialButton;
     }
 }
 

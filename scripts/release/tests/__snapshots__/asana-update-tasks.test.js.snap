@@ -18,44 +18,14 @@ exports[`when all data is available updates each platforms task notes 1`] = `
     },
   ],
   [
-    "bsk-123",
+    "apple-123",
     {
       "html_notes": "<h2>New release:<h2>
 <ol>
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href="https://github.com/duckduckgo/BrowserServicesKit/pr/1">BrowserServicesKit PR</a></li>
-    <li><a href="https://github.com/duckduckgo/ios/pr/1">iOS PR</a></li><li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
-</ol>
-<h2>Release notes:</h2>
-<p>[[notes]]</p>",
-    },
-  ],
-  [
-    "ios-123",
-    {
-      "html_notes": "<h2>New release:<h2>
-<ol>
-    <li>version [[version]]</li>
-    <li>[[commit]]</li>
-    <li>[[release_url]]</li>
-    <li><a href="https://github.com/duckduckgo/ios/pr/1">iOS PR</a></li>
-    
-</ol>
-<h2>Release notes:</h2>
-<p>[[notes]]</p>",
-    },
-  ],
-  [
-    "macos-123",
-    {
-      "html_notes": "<h2>New release:<h2>
-<ol>
-    <li>version [[version]]</li>
-    <li>[[commit]]</li>
-    <li>[[release_url]]</li>
-    <li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/apple-browsers/pr/1">Apple PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>
@@ -98,29 +68,14 @@ exports[`when not all PR URLs are available updates each platforms task notes ex
     },
   ],
   [
-    "bsk-123",
+    "apple-123",
     {
       "html_notes": "<h2>New release:<h2>
 <ol>
     <li>version [[version]]</li>
     <li>[[commit]]</li>
     <li>[[release_url]]</li>
-    <li><a href="https://github.com/duckduckgo/BrowserServicesKit/pr/1">BrowserServicesKit PR</a></li>
-    <li>Error creating iOS PR</li><li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
-</ol>
-<h2>Release notes:</h2>
-<p>[[notes]]</p>",
-    },
-  ],
-  [
-    "macos-123",
-    {
-      "html_notes": "<h2>New release:<h2>
-<ol>
-    <li>version [[version]]</li>
-    <li>[[commit]]</li>
-    <li>[[release_url]]</li>
-    <li><a href="https://github.com/duckduckgo/macos-browser/pr/1">macOS PR</a></li>
+    <li><a href="https://github.com/duckduckgo/apple-browsers/pr/1">Apple PR</a></li>
     
 </ol>
 <h2>Release notes:</h2>

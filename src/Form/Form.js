@@ -19,7 +19,7 @@ import {
     getFormControlElements,
 } from '../autofill-utils.js';
 
-import { getInputSubtype, getInputMainType, createMatching, getInputVariant } from './matching.js';
+import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
 import { getIconStylesAutofilled, getIconStylesBase, getIconStylesAlternate } from './inputStyles.js';
 import { canBeInteractedWith, getInputConfig, isFieldDecorated } from './inputTypeConfig.js';
 
@@ -42,6 +42,7 @@ class Form {
     form;
     /** @type {HTMLInputElement | null} */
     activeInput;
+
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
@@ -53,7 +54,7 @@ class Form {
     constructor(form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.form = form;
         this.matching = matching || createMatching();
-        this.formAnalyzer = new FormAnalyzer(form, input, matching);
+        this.formAnalyzer = new FormAnalyzer(form, deviceInterface.settings.siteSpecificFeature, input, matching);
         this.device = deviceInterface;
         this.hasShadowTree = hasShadowTree;
 
@@ -100,7 +101,7 @@ class Form {
                     this.mutObs.disconnect();
                     // If any known input has been removed from the DOM, reanalyze the whole form
                     window.requestIdleCallback(() => {
-                        this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching);
+                        this.formAnalyzer = new FormAnalyzer(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
                         this.recategorizeAllInputs();
                     });
                 }
@@ -388,6 +389,98 @@ class Form {
         }
     }
 
+    canCategorizeAmbiguousInput() {
+        return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
+    }
+
+    canCategorizePasswordVariant() {
+        return this.device.settings.featureToggles.password_variant_categorization;
+    }
+
+    /**
+     * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
+     * @param {HTMLInputElement} ambiguousInput
+     * @returns {import('./matching.js').SupportedTypes | undefined}
+     */
+    getTargetTypeForAmbiguousInput(ambiguousInput) {
+        const ambiguousInputSubtype = getInputSubtype(ambiguousInput);
+        const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
+        const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
+        const hasCreditCardData = Boolean(this.device.settings.availableInputTypes.creditCards?.cardNumber);
+
+        if (hasUsernameData || ambiguousInputSubtype === 'unknown') return 'credentials.username';
+
+        if (hasPhoneData && ambiguousInputSubtype === 'phone') return 'identities.phone';
+
+        if (hasCreditCardData && ambiguousInputSubtype === 'cardNumber') return 'creditCards.cardNumber';
+    }
+
+    /**
+     * Returns the ambiguous inputs that should be categorised.
+     * An input is considered ambiguous if it's unknown, phone or credit card and,
+     * the form doesn't have a username field,
+     * the form has password fields.
+     * @returns {HTMLInputElement[] | null}
+     */
+    get ambiguousInputs() {
+        const hasUsernameInput = [...this.inputs.credentials].some((input) => getInputSubtype(input) === 'username');
+        if (hasUsernameInput) return null;
+        const hasPasswordInputs =
+            [...this.inputs.credentials].filter((/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password').length >
+            0;
+        if (!hasPasswordInputs) return null;
+
+        const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === 'phone');
+        const cardNumberInputs = [...this.inputs.creditCards].filter((input) => getInputSubtype(input) === 'cardNumber');
+        return [...this.inputs.unknown, ...phoneInputs, ...cardNumberInputs];
+    }
+
+    /**
+     * Recategorizes input's attribute to username, decorates it and also updates the input set.
+     */
+    recategorizeInputToTargetType() {
+        const ambiguousInput = this.ambiguousInputs?.[0];
+        const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
+        if (ambiguousInput?.matches?.(inputSelector)) {
+            const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
+            const inputType = getInputType(ambiguousInput);
+            if (!targetType || targetType === inputType) return;
+
+            ambiguousInput.setAttribute(ATTR_INPUT_TYPE, targetType);
+            this.decorateInput(ambiguousInput);
+            this.inputs[getMainTypeFromType(targetType)].add(ambiguousInput);
+            this.inputs[getMainTypeFromType(inputType)].delete(ambiguousInput);
+            if (shouldLog()) console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
+        }
+    }
+
+    /**
+     * Recategorizes the new/current password field variant
+     */
+    recategorizeInputVariantIfNeeded() {
+        let newPasswordFields = 0;
+        let currentPasswordFields = 0;
+        let firstNewPasswordField = null;
+
+        for (const credentialElement of this.inputs.credentials) {
+            const variant = getInputVariant(credentialElement);
+            if (variant === 'new') {
+                newPasswordFields++;
+                if (!firstNewPasswordField) firstNewPasswordField = credentialElement;
+            }
+            if (variant === 'current') currentPasswordFields++;
+
+            // Short circuit if the field counts wouldn't match the requirements
+            if (newPasswordFields > 3 || currentPasswordFields > 0) return;
+        }
+
+        // If a form has 3 new-password fields, but no current, the first is likely a current
+        if (newPasswordFields === 3 && currentPasswordFields === 0) {
+            if (shouldLog()) console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+            firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE, 'credentials.password.current');
+        }
+    }
+
     categorizeInputs() {
         const selector = this.matching.cssSelector('formInputsSelector');
         // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -411,37 +504,14 @@ class Form {
             }
         }
 
-        // Try to analyse the form inputs and categorize lone unknown input to username type, in login forms.
-        if (this.canCategorizeUnknownUsername()) {
-            const credentialInputs = [...this.inputs.credentials];
-            const unknownInputs = [...this.inputs.unknown];
-            const identityInputs = [...this.inputs.identities];
-            const creditCards = [...this.inputs.creditCards];
+        if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
 
-            const hasUsername = credentialInputs.some((input) => getInputSubtype(input) === 'username');
-            const hasIdentitiesExceptPhone = identityInputs.filter((input) => getInputSubtype(input) !== 'phone').length > 0;
+        if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
 
-            const hasIdentitiesOrCreditCards = hasIdentitiesExceptPhone || creditCards.length > 0;
-
-            const phoneInputs = identityInputs.filter((input) => getInputSubtype(input) === 'phone');
-
-            // Categorise if the form:
-            // 1. doesn't have a username field,
-            // 2. doesn't have identities (except phone) or credit cards, otherwise it's likely to be a more complex form. Categorising then will cause bad UX.
-            // 3. has exactly one unknown input or one phone input, and
-            // 4. the form is a login form.
-            const ambiguousInputs = [...unknownInputs, ...phoneInputs];
-            if (!hasUsername && !hasIdentitiesOrCreditCards && this.isLogin && ambiguousInputs.length === 1) {
-                const passwordInputs = credentialInputs.filter(
-                    (/** @type {HTMLInputElement} */ input) => getInputSubtype(input) === 'password',
-                );
-                const ambiguousInput = ambiguousInputs[0];
-                const inputSelector = this.matching.cssSelector('formInputsSelectorWithoutSelect');
-                if (passwordInputs.length > 0 && ambiguousInput.matches?.(inputSelector)) {
-                    const ambiguousInputType = getInputMainType(ambiguousInput);
-                    this.recategorizeInputToUsername(ambiguousInput, ambiguousInputType);
-                }
-            }
+        // If the form has only one input and it's unknown, discard the form
+        if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
+            this.destroy();
+            return;
         }
 
         this.initialScanComplete = true;
@@ -450,22 +520,6 @@ class Form {
         if (this.form !== document.body) {
             this.mutObs.observe(this.form, this.mutObsConfig);
         }
-    }
-
-    /**
-     * Recategorizes input's attribute to username, decorates it and also updates the input set.
-     * @param {HTMLInputElement} input
-     * @param {SupportedMainTypes} type
-     */
-    recategorizeInputToUsername(input, type) {
-        input.setAttribute(ATTR_INPUT_TYPE, 'credentials.username');
-        this.decorateInput(input);
-        this.inputs.credentials.add(input);
-        this.inputs[type].delete(input);
-    }
-
-    canCategorizeUnknownUsername() {
-        return this.device.settings.featureToggles.unknown_username_categorization;
     }
 
     get submitButtons() {
@@ -532,7 +586,7 @@ class Form {
 
         // When new inputs are added after the initial scan, reanalyze the whole form
         if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching);
+            this.formAnalyzer = new FormAnalyzer(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
             this.recategorizeAllInputs();
             return this;
         }
@@ -549,7 +603,8 @@ class Form {
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
             supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities,
         };
-        this.matching.setInputType(input, this.form, opts);
+
+        this.matching.setInputType(input, this.form, this.device.settings.siteSpecificFeature, opts);
 
         const mainInputType = getInputMainType(input);
         this.inputs[mainInputType].add(input);
@@ -591,6 +646,7 @@ class Form {
         const config = getInputConfig(input);
 
         const shouldDecorate = await config.shouldDecorate(input, this);
+
         if (!shouldDecorate) return this;
 
         input.setAttribute(ATTR_AUTOFILL, 'true');
@@ -781,7 +837,7 @@ class Form {
                 // Don't open the tooltip on input focus whenever it'll only show in-context signup
                 return false;
             } else {
-                return this.isCredentialsImoprtAvailable;
+                return this.isCredentialsImportAvailable;
             }
         }
 
@@ -923,7 +979,7 @@ class Form {
         this.execOnInputs((input) => this.touched.add(input), dataType);
     }
 
-    get isCredentialsImoprtAvailable() {
+    get isCredentialsImportAvailable() {
         const isLoginOrHybrid = this.isLogin || this.isHybrid;
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
@@ -945,7 +1001,7 @@ class Form {
         await this.device.settings.populateDataIfNeeded({ mainType, subtype });
         if (
             this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) ||
-            this.isCredentialsImoprtAvailable
+            this.isCredentialsImportAvailable
         ) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {
