@@ -5225,7 +5225,7 @@ Source: "${matchedFrom}"`;
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelSmall", (t) => {
         const { displayNumber, expirationMonth, expirationYear } = __privateGet(this, _data4);
-        const expiration = expirationMonth && expirationYear ? `\xA0 ${t("autofill:expires")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
+        const expiration = expirationMonth && expirationYear ? `\xA0 ${t("autofill:Expiry")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
         return `\u2022\u2022\u2022\u2022 ${displayNumber}${expiration}`;
       });
       __publicField(this, "paymentProvider", () => __privateGet(this, _data4).paymentProvider || "");
@@ -9593,8 +9593,8 @@ Source: "${matchedFrom}"`;
       title: "Quickly and securely transfer your passwords from another browser or password manager.",
       note: "Subtitle that explains the purpose of the import dialog"
     },
-    expires: {
-      title: "Expires",
+    Expiry: {
+      title: "Expiry",
       note: "Label that indicates the expiration date of credit cards."
     }
   };
