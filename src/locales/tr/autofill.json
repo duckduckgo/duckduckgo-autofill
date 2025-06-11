@@ -96,7 +96,7 @@
     "title" : "Şifrelerinizi başka bir tarayıcıdan veya şifre yöneticisinden hızlı ve güvenli bir şekilde aktarın.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Son kullanma tarihi",
     "note": "Label that indicates the expiration date of credit cards."
   }

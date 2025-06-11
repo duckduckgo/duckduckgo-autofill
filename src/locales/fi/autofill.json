@@ -96,7 +96,7 @@
     "title" : "Siirrä salasanasi nopeasti ja turvallisesti toisesta selaimesta tai salasanojen hallintaohjelmasta.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Vanhenemispäivä",
     "note": "Label that indicates the expiration date of credit cards."
   }

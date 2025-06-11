@@ -96,7 +96,7 @@
     "title" : "Snel en veilig je wachtwoorden overzetten vanuit een andere browser of wachtwoordmanager.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Vervaldatum",
     "note": "Label that indicates the expiration date of credit cards."
   }

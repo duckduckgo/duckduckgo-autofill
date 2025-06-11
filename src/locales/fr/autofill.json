@@ -96,7 +96,7 @@
     "title" : "Transférez vos mots de passe rapidement et en toute sécurité à partir d’un autre navigateur ou d’un autre gestionnaire de mots de passe.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Expiration",
     "note": "Label that indicates the expiration date of credit cards."
   }

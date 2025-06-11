@@ -96,7 +96,7 @@
     "title" : "Übertrage deine Passwörter schnell und sicher von einem anderen Browser oder Passwort-Manager.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Gültigkeit",
     "note": "Label that indicates the expiration date of credit cards."
   }

@@ -96,7 +96,7 @@
     "title" : "Прехвърляйте паролите си от друг браузър или мениджър на пароли бързо и сигурно.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Срок на валидност",
     "note": "Label that indicates the expiration date of credit cards."
   }

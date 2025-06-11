@@ -96,7 +96,7 @@
     "title" : "Overfør hurtigt og sikkert dine adgangskoder fra en anden browser eller adgangskodeadministrator.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Udløbsdato",
     "note": "Label that indicates the expiration date of credit cards."
   }

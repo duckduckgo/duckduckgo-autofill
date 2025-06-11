@@ -96,7 +96,7 @@
     "title" : "Быстрый и безопасный способ перенести пароли из другого браузера или менеджера.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Срок действия",
     "note": "Label that indicates the expiration date of credit cards."
   }

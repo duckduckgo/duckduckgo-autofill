@@ -96,7 +96,7 @@
     "title" : "Vii oma paroolid kiiresti ja turvaliselt üle teisest brauserist või paroolihaldurist.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "Expiry": {
+  "expiry":{
     "title": "Aegumiskuupäev",
     "note": "Label that indicates the expiration date of credit cards."
   }
