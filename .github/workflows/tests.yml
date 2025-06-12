@@ -31,15 +31,12 @@ jobs:
               run: 'npm run test:unit'
             - name: 'Password unit tests'
               run: 'npm run test:passwords'
-            - name: Get installed Playwright version
-              id: playwright-version
-              run: echo "version=$(npm list @playwright/test --depth=0 --json | jq -r '.dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
             - name: Cache Playwright browsers
               uses: actions/cache@v3
               id: playwright-cache
               with:
                   path: ~/.cache/ms-playwright
-                  key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-playwright-
             - name: Install Playwright + DEPS
