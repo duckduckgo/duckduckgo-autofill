@@ -59,6 +59,12 @@ export interface API {
     resultValidator?: GetAutofillDataResponse;
     [k: string]: unknown;
   };
+  getAutofillDataFocus?: {
+    id?: "getAutofillDataFocusResponse";
+    paramsValidator?: GetAutofillDataFocusRequest;
+    resultValidator?: GetAutofillDataFocusResponse;
+    [k: string]: unknown;
+  };
   getRuntimeConfiguration?: {
     id?: "getRuntimeConfigurationResponse";
     resultValidator?: GetRuntimeConfigurationResponse;
@@ -324,6 +330,8 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
+    creditCards?: CreditCardObject;
+    identities?: IdentityObject;
     action:
       | "fill"
       | "focus"
@@ -350,8 +358,139 @@ export interface Credentials {
   credentialsProvider?: "duckduckgo" | "bitwarden";
   providerStatus?: "locked" | "unlocked";
 }
+export interface CreditCardObject {
+  /**
+   * Unique identifier for the credit card
+   */
+  id: string;
+  /**
+   * Title or name of the credit card
+   */
+  title: string;
+  /**
+   * Formatted display number of the credit card
+   */
+  displayNumber: string;
+  /**
+   * Name on the credit card
+   */
+  cardName?: string;
+  /**
+   * Security code (CVV/CVC) of the credit card
+   */
+  cardSecurityCode?: string;
+  /**
+   * Expiration month of the credit card
+   */
+  expirationMonth?: string;
+  /**
+   * Expiration year of the credit card
+   */
+  expirationYear?: string;
+  /**
+   * Full number of the credit card
+   */
+  cardNumber?: string;
+  /**
+   * Payment provider associated with the credit card
+   */
+  paymentProvider?: string;
+}
+export interface IdentityObject {
+  /**
+   * Unique identifier for the identity
+   */
+  id: string;
+  /**
+   * Title or name of the identity
+   */
+  title: string;
+  /**
+   * First name of the individual
+   */
+  firstName?: string;
+  /**
+   * Middle name of the individual
+   */
+  middleName?: string;
+  /**
+   * Last name of the individual
+   */
+  lastName?: string;
+  /**
+   * Day of birth
+   */
+  birthdayDay?: string;
+  /**
+   * Month of birth
+   */
+  birthdayMonth?: string;
+  /**
+   * Year of birth
+   */
+  birthdayYear?: string;
+  /**
+   * Street address
+   */
+  addressStreet?: string;
+  /**
+   * Additional street address information
+   */
+  addressStreet2?: string;
+  /**
+   * City of the address
+   */
+  addressCity?: string;
+  /**
+   * Province or state of the address
+   */
+  addressProvince?: string;
+  /**
+   * Postal or ZIP code of the address
+   */
+  addressPostalCode?: string;
+  /**
+   * Country code of the address
+   */
+  addressCountryCode?: string;
+  /**
+   * Phone number
+   */
+  phone?: string;
+  /**
+   * Email address
+   */
+  emailAddress?: string;
+}
 export interface GenericError {
   message: string;
+}
+/**
+ * This describes the argument given to `getAutofillDataFocus(data)`
+ */
+export interface GetAutofillDataFocusRequest {
+  /**
+   * This is the combined input type, such as `credentials.username`
+   */
+  inputType: string;
+  /**
+   * The main input type
+   */
+  mainType: "credentials" | "identities" | "creditCards" | "unknown";
+}
+export interface GetAutofillDataFocusResponse {
+  /**
+   * Required on mobile, to show keyboard accessory
+   */
+  type?: "getAutofillDataFocusResponse";
+  /**
+   * The data returned, containing only fields that will be auto-filled
+   */
+  success?: {
+    creditCards?: CreditCardObject;
+    action: "fill" | "none";
+  };
+  error?: GenericError;
 }
 /**
  * Data that can be understood by @duckduckgo/content-scope-scripts
@@ -479,110 +618,6 @@ export interface GetAutofillInitDataResponse {
     serializedInputContext: string;
   };
   error?: GenericError;
-}
-export interface IdentityObject {
-  /**
-   * Unique identifier for the identity
-   */
-  id: string;
-  /**
-   * Title or name of the identity
-   */
-  title: string;
-  /**
-   * First name of the individual
-   */
-  firstName?: string;
-  /**
-   * Middle name of the individual
-   */
-  middleName?: string;
-  /**
-   * Last name of the individual
-   */
-  lastName?: string;
-  /**
-   * Day of birth
-   */
-  birthdayDay?: string;
-  /**
-   * Month of birth
-   */
-  birthdayMonth?: string;
-  /**
-   * Year of birth
-   */
-  birthdayYear?: string;
-  /**
-   * Street address
-   */
-  addressStreet?: string;
-  /**
-   * Additional street address information
-   */
-  addressStreet2?: string;
-  /**
-   * City of the address
-   */
-  addressCity?: string;
-  /**
-   * Province or state of the address
-   */
-  addressProvince?: string;
-  /**
-   * Postal or ZIP code of the address
-   */
-  addressPostalCode?: string;
-  /**
-   * Country code of the address
-   */
-  addressCountryCode?: string;
-  /**
-   * Phone number
-   */
-  phone?: string;
-  /**
-   * Email address
-   */
-  emailAddress?: string;
-}
-export interface CreditCardObject {
-  /**
-   * Unique identifier for the credit card
-   */
-  id: string;
-  /**
-   * Title or name of the credit card
-   */
-  title: string;
-  /**
-   * Formatted display number of the credit card
-   */
-  displayNumber: string;
-  /**
-   * Name on the credit card
-   */
-  cardName?: string;
-  /**
-   * Security code (CVV/CVC) of the credit card
-   */
-  cardSecurityCode?: string;
-  /**
-   * Expiration month of the credit card
-   */
-  expirationMonth?: string;
-  /**
-   * Expiration year of the credit card
-   */
-  expirationYear?: string;
-  /**
-   * Full number of the credit card
-   */
-  cardNumber?: string;
-  /**
-   * Payment provider associated with the credit card
-   */
-  paymentProvider?: string;
 }
 /**
  * This describes the argument given to `getAutofillCredentials`
@@ -737,6 +772,10 @@ export interface AutofillFeatureToggles {
    * If true, we will attempt re-categorizing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, we will send extra calls (getAutofillDataFocused) to show the keyboard accessory
+   */
+  input_focus_api?: boolean;
   /**
    * If true, we will attempt re-categorizing the password variant, based on other fields in the form
    */

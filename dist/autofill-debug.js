@@ -2,6 +2,10 @@
 (() => {
   var __defProp = Object.defineProperty;
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
   var __publicField = (obj, key, value) => {
     __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
     return value;
@@ -83,6 +87,7 @@
     // INJECT availableInputTypes HERE
     let secret = "PLACEHOLDER_SECRET";
     const isAndroid = userPreferences?.platform.name === "android";
+    const isIOS = userPreferences?.platform.name === "ios";
     const isDDGApp = ["ios", "android", "macos", "windows"].includes(userPreferences?.platform.name) || isWindows;
     const isMobileApp = ["ios", "android"].includes(userPreferences?.platform.name);
     const isFirefox = navigator.userAgent.includes("Firefox");
@@ -92,6 +97,7 @@
       isApp,
       isDDGApp,
       isAndroid,
+      isIOS,
       isFirefox,
       isMobileApp,
       isExtension,
@@ -1553,9 +1559,8 @@ Source: "${matchedFrom}"`;
   };
   var originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
   var setValueForInput = (el, val, config) => {
-    if (!config?.isAndroid) {
+    if (!config?.isAndroid)
       el.focus();
-    }
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
     originalSet?.call(el, val);
     const events = [
@@ -6288,10 +6293,123 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/lib/index.mjs
+  // node_modules/zod/dist/esm/v3/external.js
+  var external_exports = {};
+  __export(external_exports, {
+    BRAND: () => BRAND,
+    DIRTY: () => DIRTY,
+    EMPTY_PATH: () => EMPTY_PATH,
+    INVALID: () => INVALID,
+    NEVER: () => NEVER,
+    OK: () => OK,
+    ParseStatus: () => ParseStatus,
+    Schema: () => ZodType,
+    ZodAny: () => ZodAny,
+    ZodArray: () => ZodArray,
+    ZodBigInt: () => ZodBigInt,
+    ZodBoolean: () => ZodBoolean,
+    ZodBranded: () => ZodBranded,
+    ZodCatch: () => ZodCatch,
+    ZodDate: () => ZodDate,
+    ZodDefault: () => ZodDefault,
+    ZodDiscriminatedUnion: () => ZodDiscriminatedUnion,
+    ZodEffects: () => ZodEffects,
+    ZodEnum: () => ZodEnum,
+    ZodError: () => ZodError,
+    ZodFirstPartyTypeKind: () => ZodFirstPartyTypeKind,
+    ZodFunction: () => ZodFunction,
+    ZodIntersection: () => ZodIntersection,
+    ZodIssueCode: () => ZodIssueCode,
+    ZodLazy: () => ZodLazy,
+    ZodLiteral: () => ZodLiteral,
+    ZodMap: () => ZodMap,
+    ZodNaN: () => ZodNaN,
+    ZodNativeEnum: () => ZodNativeEnum,
+    ZodNever: () => ZodNever,
+    ZodNull: () => ZodNull,
+    ZodNullable: () => ZodNullable,
+    ZodNumber: () => ZodNumber,
+    ZodObject: () => ZodObject,
+    ZodOptional: () => ZodOptional,
+    ZodParsedType: () => ZodParsedType,
+    ZodPipeline: () => ZodPipeline,
+    ZodPromise: () => ZodPromise,
+    ZodReadonly: () => ZodReadonly,
+    ZodRecord: () => ZodRecord,
+    ZodSchema: () => ZodType,
+    ZodSet: () => ZodSet,
+    ZodString: () => ZodString,
+    ZodSymbol: () => ZodSymbol,
+    ZodTransformer: () => ZodEffects,
+    ZodTuple: () => ZodTuple,
+    ZodType: () => ZodType,
+    ZodUndefined: () => ZodUndefined,
+    ZodUnion: () => ZodUnion,
+    ZodUnknown: () => ZodUnknown,
+    ZodVoid: () => ZodVoid,
+    addIssueToContext: () => addIssueToContext,
+    any: () => anyType,
+    array: () => arrayType,
+    bigint: () => bigIntType,
+    boolean: () => booleanType,
+    coerce: () => coerce,
+    custom: () => custom,
+    date: () => dateType,
+    datetimeRegex: () => datetimeRegex,
+    defaultErrorMap: () => en_default,
+    discriminatedUnion: () => discriminatedUnionType,
+    effect: () => effectsType,
+    enum: () => enumType,
+    function: () => functionType,
+    getErrorMap: () => getErrorMap,
+    getParsedType: () => getParsedType,
+    instanceof: () => instanceOfType,
+    intersection: () => intersectionType,
+    isAborted: () => isAborted,
+    isAsync: () => isAsync,
+    isDirty: () => isDirty,
+    isValid: () => isValid,
+    late: () => late,
+    lazy: () => lazyType,
+    literal: () => literalType,
+    makeIssue: () => makeIssue,
+    map: () => mapType,
+    nan: () => nanType,
+    nativeEnum: () => nativeEnumType,
+    never: () => neverType,
+    null: () => nullType,
+    nullable: () => nullableType,
+    number: () => numberType,
+    object: () => objectType,
+    objectUtil: () => objectUtil,
+    oboolean: () => oboolean,
+    onumber: () => onumber,
+    optional: () => optionalType,
+    ostring: () => ostring,
+    pipeline: () => pipelineType,
+    preprocess: () => preprocessType,
+    promise: () => promiseType,
+    quotelessJson: () => quotelessJson,
+    record: () => recordType,
+    set: () => setType,
+    setErrorMap: () => setErrorMap,
+    strictObject: () => strictObjectType,
+    string: () => stringType,
+    symbol: () => symbolType,
+    transformer: () => effectsType,
+    tuple: () => tupleType,
+    undefined: () => undefinedType,
+    union: () => unionType,
+    unknown: () => unknownType,
+    util: () => util,
+    void: () => voidType
+  });
+
+  // node_modules/zod/dist/esm/v3/helpers/util.js
   var util;
   (function(util2) {
-    util2.assertEqual = (val) => val;
+    util2.assertEqual = (_) => {
+    };
     function assertIs(_arg) {
     }
     util2.assertIs = assertIs;
@@ -6335,7 +6453,7 @@ Source: "${matchedFrom}"`;
       }
       return void 0;
     };
-    util2.isInteger = typeof Number.isInteger === "function" ? (val) => Number.isInteger(val) : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
+    util2.isInteger = typeof Number.isInteger === "function" ? (val) => Number.isInteger(val) : (val) => typeof val === "number" && Number.isFinite(val) && Math.floor(val) === val;
     function joinValues(array, separator = " | ") {
       return array.map((val) => typeof val === "string" ? `'${val}'` : val).join(separator);
     }
@@ -6387,7 +6505,7 @@ Source: "${matchedFrom}"`;
       case "string":
         return ZodParsedType.string;
       case "number":
-        return isNaN(data) ? ZodParsedType.nan : ZodParsedType.number;
+        return Number.isNaN(data) ? ZodParsedType.nan : ZodParsedType.number;
       case "boolean":
         return ZodParsedType.boolean;
       case "function":
@@ -6420,6 +6538,8 @@ Source: "${matchedFrom}"`;
         return ZodParsedType.unknown;
     }
   };
+
+  // node_modules/zod/dist/esm/v3/ZodError.js
   var ZodIssueCode = util.arrayToEnum([
     "invalid_type",
     "invalid_literal",
@@ -6535,6 +6655,8 @@ Source: "${matchedFrom}"`;
     const error = new ZodError(issues);
     return error;
   };
+
+  // node_modules/zod/dist/esm/v3/locales/en.js
   var errorMap = (issue, _ctx) => {
     let message;
     switch (issue.code) {
@@ -6633,13 +6755,18 @@ Source: "${matchedFrom}"`;
     }
     return { message };
   };
-  var overrideErrorMap = errorMap;
+  var en_default = errorMap;
+
+  // node_modules/zod/dist/esm/v3/errors.js
+  var overrideErrorMap = en_default;
   function setErrorMap(map) {
     overrideErrorMap = map;
   }
   function getErrorMap() {
     return overrideErrorMap;
   }
+
+  // node_modules/zod/dist/esm/v3/helpers/parseUtil.js
   var makeIssue = (params) => {
     const { data, path, errorMaps, issueData } = params;
     const fullPath = [...path, ...issueData.path || []];
@@ -6679,7 +6806,7 @@ Source: "${matchedFrom}"`;
         // then schema-bound map if available
         overrideMap,
         // then global override map
-        overrideMap === errorMap ? void 0 : errorMap
+        overrideMap === en_default ? void 0 : en_default
         // then global default map
       ].filter((x) => !!x)
     });
@@ -6748,29 +6875,15 @@ Source: "${matchedFrom}"`;
   var isDirty = (x) => x.status === "dirty";
   var isValid = (x) => x.status === "valid";
   var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
-  function __classPrivateFieldGet(receiver, state, kind, f) {
-    if (kind === "a" && !f)
-      throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-      throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-  }
-  function __classPrivateFieldSet(receiver, state, value, kind, f) {
-    if (kind === "m")
-      throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f)
-      throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
-      throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-  }
+
+  // node_modules/zod/dist/esm/v3/helpers/errorUtil.js
   var errorUtil;
   (function(errorUtil2) {
     errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-    errorUtil2.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+    errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
   })(errorUtil || (errorUtil = {}));
-  var _ZodEnum_cache;
-  var _ZodNativeEnum_cache;
+
+  // node_modules/zod/dist/esm/v3/types.js
   var ParseInputLazyPath = class {
     constructor(parent, value, path, key) {
       this._cachedPath = [];
@@ -6781,7 +6894,7 @@ Source: "${matchedFrom}"`;
     }
     get path() {
       if (!this._cachedPath.length) {
-        if (this._key instanceof Array) {
+        if (Array.isArray(this._key)) {
           this._cachedPath.push(...this._path, ...this._key);
         } else {
           this._cachedPath.push(...this._path, this._key);
@@ -6819,17 +6932,16 @@ Source: "${matchedFrom}"`;
     if (errorMap2)
       return { errorMap: errorMap2, description };
     const customMap = (iss, ctx) => {
-      var _a, _b;
       const { message } = params;
       if (iss.code === "invalid_enum_value") {
-        return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+        return { message: message ?? ctx.defaultError };
       }
       if (typeof ctx.data === "undefined") {
-        return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+        return { message: message ?? required_error ?? ctx.defaultError };
       }
       if (iss.code !== "invalid_type")
         return { message: ctx.defaultError };
-      return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
+      return { message: message ?? invalid_type_error ?? ctx.defaultError };
     };
     return { errorMap: customMap, description };
   }
@@ -6881,14 +6993,13 @@ Source: "${matchedFrom}"`;
       throw result.error;
     }
     safeParse(data, params) {
-      var _a;
       const ctx = {
         common: {
           issues: [],
-          async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
-          contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap
+          async: params?.async ?? false,
+          contextualErrorMap: params?.errorMap
         },
-        path: (params === null || params === void 0 ? void 0 : params.path) || [],
+        path: params?.path || [],
         schemaErrorMap: this._def.errorMap,
         parent: null,
         data,
@@ -6898,7 +7009,6 @@ Source: "${matchedFrom}"`;
       return handleResult(ctx, result);
     }
     "~validate"(data) {
-      var _a, _b;
       const ctx = {
         common: {
           issues: [],
@@ -6919,7 +7029,7 @@ Source: "${matchedFrom}"`;
             issues: ctx.common.issues
           };
         } catch (err) {
-          if ((_b = (_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("encountered")) {
+          if (err?.message?.toLowerCase()?.includes("encountered")) {
             this["~standard"].async = true;
           }
           ctx.common = {
@@ -6944,10 +7054,10 @@ Source: "${matchedFrom}"`;
       const ctx = {
         common: {
           issues: [],
-          contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+          contextualErrorMap: params?.errorMap,
           async: true
         },
-        path: (params === null || params === void 0 ? void 0 : params.path) || [],
+        path: params?.path || [],
         schemaErrorMap: this._def.errorMap,
         parent: null,
         data,
@@ -7137,13 +7247,14 @@ Source: "${matchedFrom}"`;
   var dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
   var dateRegex = new RegExp(`^${dateRegexSource}$`);
   function timeRegexSource(args) {
-    let regex = `([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d`;
+    let secondsRegexSource = `[0-5]\\d`;
     if (args.precision) {
-      regex = `${regex}\\.\\d{${args.precision}}`;
+      secondsRegexSource = `${secondsRegexSource}\\.\\d{${args.precision}}`;
     } else if (args.precision == null) {
-      regex = `${regex}(\\.\\d+)?`;
+      secondsRegexSource = `${secondsRegexSource}(\\.\\d+)?`;
     }
-    return regex;
+    const secondsQuantifier = args.precision ? "+" : "?";
+    return `([01]\\d|2[0-3]):[0-5]\\d(:${secondsRegexSource})${secondsQuantifier}`;
   }
   function timeRegex(args) {
     return new RegExp(`^${timeRegexSource(args)}$`);
@@ -7175,12 +7286,14 @@ Source: "${matchedFrom}"`;
       const decoded = JSON.parse(atob(base64));
       if (typeof decoded !== "object" || decoded === null)
         return false;
-      if (!decoded.typ || !decoded.alg)
+      if ("typ" in decoded && decoded?.typ !== "JWT")
+        return false;
+      if (!decoded.alg)
         return false;
       if (alg && decoded.alg !== alg)
         return false;
       return true;
-    } catch (_a) {
+    } catch {
       return false;
     }
   }
@@ -7339,7 +7452,7 @@ Source: "${matchedFrom}"`;
         } else if (check.kind === "url") {
           try {
             new URL(input.data);
-          } catch (_a) {
+          } catch {
             ctx = this._getOrReturnCtx(input, ctx);
             addIssueToContext(ctx, {
               validation: "url",
@@ -7551,7 +7664,6 @@ Source: "${matchedFrom}"`;
       return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
     }
     datetime(options) {
-      var _a, _b;
       if (typeof options === "string") {
         return this._addCheck({
           kind: "datetime",
@@ -7563,10 +7675,10 @@ Source: "${matchedFrom}"`;
       }
       return this._addCheck({
         kind: "datetime",
-        precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-        offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
-        local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
-        ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
+        precision: typeof options?.precision === "undefined" ? null : options?.precision,
+        offset: options?.offset ?? false,
+        local: options?.local ?? false,
+        ...errorUtil.errToObj(options?.message)
       });
     }
     date(message) {
@@ -7582,8 +7694,8 @@ Source: "${matchedFrom}"`;
       }
       return this._addCheck({
         kind: "time",
-        precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-        ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
+        precision: typeof options?.precision === "undefined" ? null : options?.precision,
+        ...errorUtil.errToObj(options?.message)
       });
     }
     duration(message) {
@@ -7600,8 +7712,8 @@ Source: "${matchedFrom}"`;
       return this._addCheck({
         kind: "includes",
         value,
-        position: options === null || options === void 0 ? void 0 : options.position,
-        ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
+        position: options?.position,
+        ...errorUtil.errToObj(options?.message)
       });
     }
     startsWith(value, message) {
@@ -7733,11 +7845,10 @@ Source: "${matchedFrom}"`;
     }
   };
   ZodString.create = (params) => {
-    var _a;
     return new ZodString({
       checks: [],
       typeName: ZodFirstPartyTypeKind.ZodString,
-      coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+      coerce: params?.coerce ?? false,
       ...processCreateParams(params)
     });
   };
@@ -7745,9 +7856,9 @@ Source: "${matchedFrom}"`;
     const valDecCount = (val.toString().split(".")[1] || "").length;
     const stepDecCount = (step.toString().split(".")[1] || "").length;
     const decCount = valDecCount > stepDecCount ? valDecCount : stepDecCount;
-    const valInt = parseInt(val.toFixed(decCount).replace(".", ""));
-    const stepInt = parseInt(step.toFixed(decCount).replace(".", ""));
-    return valInt % stepInt / Math.pow(10, decCount);
+    const valInt = Number.parseInt(val.toFixed(decCount).replace(".", ""));
+    const stepInt = Number.parseInt(step.toFixed(decCount).replace(".", ""));
+    return valInt % stepInt / 10 ** decCount;
   }
   var ZodNumber = class _ZodNumber extends ZodType {
     constructor() {
@@ -7957,7 +8068,8 @@ Source: "${matchedFrom}"`;
       return !!this._def.checks.find((ch) => ch.kind === "int" || ch.kind === "multipleOf" && util.isInteger(ch.value));
     }
     get isFinite() {
-      let max = null, min = null;
+      let max = null;
+      let min = null;
       for (const ch of this._def.checks) {
         if (ch.kind === "finite" || ch.kind === "int" || ch.kind === "multipleOf") {
           return true;
@@ -7976,7 +8088,7 @@ Source: "${matchedFrom}"`;
     return new ZodNumber({
       checks: [],
       typeName: ZodFirstPartyTypeKind.ZodNumber,
-      coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+      coerce: params?.coerce || false,
       ...processCreateParams(params)
     });
   };
@@ -7990,7 +8102,7 @@ Source: "${matchedFrom}"`;
       if (this._def.coerce) {
         try {
           input.data = BigInt(input.data);
-        } catch (_a) {
+        } catch {
           return this._getInvalidInput(input);
         }
       }
@@ -8145,11 +8257,10 @@ Source: "${matchedFrom}"`;
     }
   };
   ZodBigInt.create = (params) => {
-    var _a;
     return new ZodBigInt({
       checks: [],
       typeName: ZodFirstPartyTypeKind.ZodBigInt,
-      coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+      coerce: params?.coerce ?? false,
       ...processCreateParams(params)
     });
   };
@@ -8174,7 +8285,7 @@ Source: "${matchedFrom}"`;
   ZodBoolean.create = (params) => {
     return new ZodBoolean({
       typeName: ZodFirstPartyTypeKind.ZodBoolean,
-      coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+      coerce: params?.coerce || false,
       ...processCreateParams(params)
     });
   };
@@ -8193,7 +8304,7 @@ Source: "${matchedFrom}"`;
         });
         return INVALID;
       }
-      if (isNaN(input.data.getTime())) {
+      if (Number.isNaN(input.data.getTime())) {
         const ctx2 = this._getOrReturnCtx(input);
         addIssueToContext(ctx2, {
           code: ZodIssueCode.invalid_date
@@ -8282,7 +8393,7 @@ Source: "${matchedFrom}"`;
   ZodDate.create = (params) => {
     return new ZodDate({
       checks: [],
-      coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+      coerce: params?.coerce || false,
       typeName: ZodFirstPartyTypeKind.ZodDate,
       ...processCreateParams(params)
     });
@@ -8557,7 +8668,8 @@ Source: "${matchedFrom}"`;
         return this._cached;
       const shape = this._def.shape();
       const keys = util.objectKeys(shape);
-      return this._cached = { shape, keys };
+      this._cached = { shape, keys };
+      return this._cached;
     }
     _parse(input) {
       const parsedType = this._getType(input);
@@ -8607,9 +8719,8 @@ Source: "${matchedFrom}"`;
             });
             status.dirty();
           }
-        } else if (unknownKeys === "strip")
-          ;
-        else {
+        } else if (unknownKeys === "strip") {
+        } else {
           throw new Error(`Internal ZodObject error: invalid unknownKeys value.`);
         }
       } else {
@@ -8656,11 +8767,10 @@ Source: "${matchedFrom}"`;
         unknownKeys: "strict",
         ...message !== void 0 ? {
           errorMap: (issue, ctx) => {
-            var _a, _b, _c, _d;
-            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+            const defaultError = this._def.errorMap?.(issue, ctx).message ?? ctx.defaultError;
             if (issue.code === "unrecognized_keys")
               return {
-                message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError
+                message: errorUtil.errToObj(message).message ?? defaultError
               };
             return {
               message: defaultError
@@ -8791,11 +8901,11 @@ Source: "${matchedFrom}"`;
     }
     pick(mask) {
       const shape = {};
-      util.objectKeys(mask).forEach((key) => {
+      for (const key of util.objectKeys(mask)) {
         if (mask[key] && this.shape[key]) {
           shape[key] = this.shape[key];
         }
-      });
+      }
       return new _ZodObject({
         ...this._def,
         shape: () => shape
@@ -8803,11 +8913,11 @@ Source: "${matchedFrom}"`;
     }
     omit(mask) {
       const shape = {};
-      util.objectKeys(this.shape).forEach((key) => {
+      for (const key of util.objectKeys(this.shape)) {
         if (!mask[key]) {
           shape[key] = this.shape[key];
         }
-      });
+      }
       return new _ZodObject({
         ...this._def,
         shape: () => shape
@@ -8821,14 +8931,14 @@ Source: "${matchedFrom}"`;
     }
     partial(mask) {
       const newShape = {};
-      util.objectKeys(this.shape).forEach((key) => {
+      for (const key of util.objectKeys(this.shape)) {
         const fieldSchema = this.shape[key];
         if (mask && !mask[key]) {
           newShape[key] = fieldSchema;
         } else {
           newShape[key] = fieldSchema.optional();
         }
-      });
+      }
       return new _ZodObject({
         ...this._def,
         shape: () => newShape
@@ -8836,7 +8946,7 @@ Source: "${matchedFrom}"`;
     }
     required(mask) {
       const newShape = {};
-      util.objectKeys(this.shape).forEach((key) => {
+      for (const key of util.objectKeys(this.shape)) {
         if (mask && !mask[key]) {
           newShape[key] = this.shape[key];
         } else {
@@ -8847,7 +8957,7 @@ Source: "${matchedFrom}"`;
           }
           newShape[key] = newField;
         }
-      });
+      }
       return new _ZodObject({
         ...this._def,
         shape: () => newShape
@@ -9463,12 +9573,7 @@ Source: "${matchedFrom}"`;
         return makeIssue({
           data: args,
           path: ctx.path,
-          errorMaps: [
-            ctx.common.contextualErrorMap,
-            ctx.schemaErrorMap,
-            getErrorMap(),
-            errorMap
-          ].filter((x) => !!x),
+          errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), en_default].filter((x) => !!x),
           issueData: {
             code: ZodIssueCode.invalid_arguments,
             argumentsError: error
@@ -9479,12 +9584,7 @@ Source: "${matchedFrom}"`;
         return makeIssue({
           data: returns,
           path: ctx.path,
-          errorMaps: [
-            ctx.common.contextualErrorMap,
-            ctx.schemaErrorMap,
-            getErrorMap(),
-            errorMap
-          ].filter((x) => !!x),
+          errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), en_default].filter((x) => !!x),
           issueData: {
             code: ZodIssueCode.invalid_return_type,
             returnTypeError: error
@@ -9608,10 +9708,6 @@ Source: "${matchedFrom}"`;
     });
   }
   var ZodEnum = class _ZodEnum extends ZodType {
-    constructor() {
-      super(...arguments);
-      _ZodEnum_cache.set(this, void 0);
-    }
     _parse(input) {
       if (typeof input.data !== "string") {
         const ctx = this._getOrReturnCtx(input);
@@ -9623,10 +9719,10 @@ Source: "${matchedFrom}"`;
         });
         return INVALID;
       }
-      if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f")) {
-        __classPrivateFieldSet(this, _ZodEnum_cache, new Set(this._def.values), "f");
+      if (!this._cache) {
+        this._cache = new Set(this._def.values);
       }
-      if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f").has(input.data)) {
+      if (!this._cache.has(input.data)) {
         const ctx = this._getOrReturnCtx(input);
         const expectedValues = this._def.values;
         addIssueToContext(ctx, {
@@ -9675,13 +9771,8 @@ Source: "${matchedFrom}"`;
       });
     }
   };
-  _ZodEnum_cache = /* @__PURE__ */ new WeakMap();
   ZodEnum.create = createZodEnum;
   var ZodNativeEnum = class extends ZodType {
-    constructor() {
-      super(...arguments);
-      _ZodNativeEnum_cache.set(this, void 0);
-    }
     _parse(input) {
       const nativeEnumValues = util.getValidEnumValues(this._def.values);
       const ctx = this._getOrReturnCtx(input);
@@ -9694,10 +9785,10 @@ Source: "${matchedFrom}"`;
         });
         return INVALID;
       }
-      if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f")) {
-        __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util.getValidEnumValues(this._def.values)), "f");
+      if (!this._cache) {
+        this._cache = new Set(util.getValidEnumValues(this._def.values));
       }
-      if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f").has(input.data)) {
+      if (!this._cache.has(input.data)) {
         const expectedValues = util.objectValues(nativeEnumValues);
         addIssueToContext(ctx, {
           received: ctx.data,
@@ -9712,7 +9803,6 @@ Source: "${matchedFrom}"`;
       return this._def.values;
     }
   };
-  _ZodNativeEnum_cache = /* @__PURE__ */ new WeakMap();
   ZodNativeEnum.create = (values, params) => {
     return new ZodNativeEnum({
       values,
@@ -9853,7 +9943,7 @@ Source: "${matchedFrom}"`;
             parent: ctx
           });
           if (!isValid(base))
-            return base;
+            return INVALID;
           const result = effect.transform(base.value, checkCtx);
           if (result instanceof Promise) {
             throw new Error(`Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.`);
@@ -9862,8 +9952,11 @@ Source: "${matchedFrom}"`;
         } else {
           return this._def.schema._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx }).then((base) => {
             if (!isValid(base))
-              return base;
-            return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({ status: status.value, value: result }));
+              return INVALID;
+            return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({
+              status: status.value,
+              value: result
+            }));
           });
         }
       }
@@ -10123,21 +10216,19 @@ Source: "${matchedFrom}"`;
   function custom(check, _params = {}, fatal) {
     if (check)
       return ZodAny.create().superRefine((data, ctx) => {
-        var _a, _b;
         const r = check(data);
         if (r instanceof Promise) {
           return r.then((r2) => {
-            var _a2, _b2;
             if (!r2) {
               const params = cleanParams(_params, data);
-              const _fatal = (_b2 = (_a2 = params.fatal) !== null && _a2 !== void 0 ? _a2 : fatal) !== null && _b2 !== void 0 ? _b2 : true;
+              const _fatal = params.fatal ?? fatal ?? true;
               ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
             }
           });
         }
         if (!r) {
           const params = cleanParams(_params, data);
-          const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+          const _fatal = params.fatal ?? fatal ?? true;
           ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
         }
         return;
@@ -10237,563 +10328,467 @@ Source: "${matchedFrom}"`;
     date: (arg) => ZodDate.create({ ...arg, coerce: true })
   };
   var NEVER = INVALID;
-  var z = /* @__PURE__ */ Object.freeze({
-    __proto__: null,
-    defaultErrorMap: errorMap,
-    setErrorMap,
-    getErrorMap,
-    makeIssue,
-    EMPTY_PATH,
-    addIssueToContext,
-    ParseStatus,
-    INVALID,
-    DIRTY,
-    OK,
-    isAborted,
-    isDirty,
-    isValid,
-    isAsync,
-    get util() {
-      return util;
-    },
-    get objectUtil() {
-      return objectUtil;
-    },
-    ZodParsedType,
-    getParsedType,
-    ZodType,
-    datetimeRegex,
-    ZodString,
-    ZodNumber,
-    ZodBigInt,
-    ZodBoolean,
-    ZodDate,
-    ZodSymbol,
-    ZodUndefined,
-    ZodNull,
-    ZodAny,
-    ZodUnknown,
-    ZodNever,
-    ZodVoid,
-    ZodArray,
-    ZodObject,
-    ZodUnion,
-    ZodDiscriminatedUnion,
-    ZodIntersection,
-    ZodTuple,
-    ZodRecord,
-    ZodMap,
-    ZodSet,
-    ZodFunction,
-    ZodLazy,
-    ZodLiteral,
-    ZodEnum,
-    ZodNativeEnum,
-    ZodPromise,
-    ZodEffects,
-    ZodTransformer: ZodEffects,
-    ZodOptional,
-    ZodNullable,
-    ZodDefault,
-    ZodCatch,
-    ZodNaN,
-    BRAND,
-    ZodBranded,
-    ZodPipeline,
-    ZodReadonly,
-    custom,
-    Schema: ZodType,
-    ZodSchema: ZodType,
-    late,
-    get ZodFirstPartyTypeKind() {
-      return ZodFirstPartyTypeKind;
-    },
-    coerce,
-    any: anyType,
-    array: arrayType,
-    bigint: bigIntType,
-    boolean: booleanType,
-    date: dateType,
-    discriminatedUnion: discriminatedUnionType,
-    effect: effectsType,
-    "enum": enumType,
-    "function": functionType,
-    "instanceof": instanceOfType,
-    intersection: intersectionType,
-    lazy: lazyType,
-    literal: literalType,
-    map: mapType,
-    nan: nanType,
-    nativeEnum: nativeEnumType,
-    never: neverType,
-    "null": nullType,
-    nullable: nullableType,
-    number: numberType,
-    object: objectType,
-    oboolean,
-    onumber,
-    optional: optionalType,
-    ostring,
-    pipeline: pipelineType,
-    preprocess: preprocessType,
-    promise: promiseType,
-    record: recordType,
-    set: setType,
-    strictObject: strictObjectType,
-    string: stringType,
-    symbol: symbolType,
-    transformer: effectsType,
-    tuple: tupleType,
-    "undefined": undefinedType,
-    union: unionType,
-    unknown: unknownType,
-    "void": voidType,
-    NEVER,
-    ZodIssueCode,
-    quotelessJson,
-    ZodError
-  });
 
   // src/deviceApiCalls/__generated__/validators.zod.js
-  var sendJSPixelParamsSchema = z.union([z.object({
-    pixelName: z.literal("autofill_identity"),
-    params: z.object({
-      fieldType: z.string().optional()
+  var sendJSPixelParamsSchema = external_exports.union([external_exports.object({
+    pixelName: external_exports.literal("autofill_identity"),
+    params: external_exports.object({
+      fieldType: external_exports.string().optional()
     }).optional()
-  }), z.object({
-    pixelName: z.literal("autofill_show")
-  }), z.object({
-    pixelName: z.literal("autofill_import_credentials_prompt_shown")
-  }), z.object({
-    pixelName: z.literal("autofill_personal_address")
-  }), z.object({
-    pixelName: z.literal("autofill_private_address")
-  }), z.object({
-    pixelName: z.literal("incontext_show")
-  }), z.object({
-    pixelName: z.literal("incontext_primary_cta")
-  }), z.object({
-    pixelName: z.literal("incontext_dismiss_persisted")
-  }), z.object({
-    pixelName: z.literal("incontext_close_x")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_show")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_import_credentials_prompt_shown")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_personal_address")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_private_address")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_show")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_primary_cta")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_dismiss_persisted")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_close_x")
   })]);
-  var addDebugFlagParamsSchema = z.object({
-    flag: z.string()
+  var addDebugFlagParamsSchema = external_exports.object({
+    flag: external_exports.string()
   });
-  var getAutofillCredentialsParamsSchema = z.object({
-    id: z.string()
+  var getAutofillDataFocusRequestSchema = external_exports.object({
+    inputType: external_exports.string(),
+    mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards"), external_exports.literal("unknown")])
   });
-  var setSizeParamsSchema = z.object({
-    height: z.number(),
-    width: z.number()
+  var getAutofillCredentialsParamsSchema = external_exports.object({
+    id: external_exports.string()
   });
-  var selectedDetailParamsSchema = z.object({
-    data: z.record(z.unknown()),
-    configType: z.string()
+  var setSizeParamsSchema = external_exports.object({
+    height: external_exports.number(),
+    width: external_exports.number()
   });
-  var setIncontextSignupPermanentlyDismissedAtSchema = z.object({
-    value: z.number().optional()
+  var selectedDetailParamsSchema = external_exports.object({
+    data: external_exports.record(external_exports.unknown()),
+    configType: external_exports.string()
   });
-  var getIncontextSignupDismissedAtSchema = z.object({
-    success: z.object({
-      permanentlyDismissedAt: z.number().optional(),
-      isInstalledRecently: z.boolean().optional()
+  var setIncontextSignupPermanentlyDismissedAtSchema = external_exports.object({
+    value: external_exports.number().optional()
+  });
+  var getIncontextSignupDismissedAtSchema = external_exports.object({
+    success: external_exports.object({
+      permanentlyDismissedAt: external_exports.number().optional(),
+      isInstalledRecently: external_exports.boolean().optional()
     })
   });
-  var getAliasParamsSchema = z.object({
-    requiresUserPermission: z.boolean(),
-    shouldConsumeAliasIfProvided: z.boolean(),
-    isIncontextSignupAvailable: z.boolean().optional()
+  var getAliasParamsSchema = external_exports.object({
+    requiresUserPermission: external_exports.boolean(),
+    shouldConsumeAliasIfProvided: external_exports.boolean(),
+    isIncontextSignupAvailable: external_exports.boolean().optional()
   });
-  var getAliasResultSchema = z.object({
-    success: z.object({
-      alias: z.string().optional()
+  var getAliasResultSchema = external_exports.object({
+    success: external_exports.object({
+      alias: external_exports.string().optional()
     })
   });
-  var getIdentityParamSchema = z.object({
-    id: z.string()
+  var getIdentityParamSchema = external_exports.object({
+    id: external_exports.string()
   });
-  var getCreditCardParamSchema = z.object({
-    id: z.string()
+  var getCreditCardParamSchema = external_exports.object({
+    id: external_exports.string()
   });
-  var emailProtectionStoreUserDataParamsSchema = z.object({
-    token: z.string(),
-    userName: z.string(),
-    cohort: z.string()
+  var emailProtectionStoreUserDataParamsSchema = external_exports.object({
+    token: external_exports.string(),
+    userName: external_exports.string(),
+    cohort: external_exports.string()
   });
-  var showInContextEmailProtectionSignupPromptSchema = z.object({
-    success: z.object({
-      isSignedIn: z.boolean()
+  var showInContextEmailProtectionSignupPromptSchema = external_exports.object({
+    success: external_exports.object({
+      isSignedIn: external_exports.boolean()
     })
   });
-  var generatedPasswordSchema = z.object({
-    value: z.string(),
-    username: z.string()
+  var generatedPasswordSchema = external_exports.object({
+    value: external_exports.string(),
+    username: external_exports.string()
   });
-  var triggerContextSchema = z.object({
-    inputTop: z.number(),
-    inputLeft: z.number(),
-    inputHeight: z.number(),
-    inputWidth: z.number(),
-    wasFromClick: z.boolean()
+  var triggerContextSchema = external_exports.object({
+    inputTop: external_exports.number(),
+    inputLeft: external_exports.number(),
+    inputHeight: external_exports.number(),
+    inputWidth: external_exports.number(),
+    wasFromClick: external_exports.boolean()
   });
-  var credentialsSchema = z.object({
-    id: z.string().optional(),
-    username: z.string(),
-    password: z.string(),
-    origin: z.object({
-      url: z.string()
+  var credentialsSchema = external_exports.object({
+    id: external_exports.string().optional(),
+    username: external_exports.string(),
+    password: external_exports.string(),
+    origin: external_exports.object({
+      url: external_exports.string()
     }).optional(),
-    credentialsProvider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional(),
-    providerStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
+    credentialsProvider: external_exports.union([external_exports.literal("duckduckgo"), external_exports.literal("bitwarden")]).optional(),
+    providerStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional()
   });
-  var genericErrorSchema = z.object({
-    message: z.string()
+  var creditCardObjectSchema = external_exports.object({
+    id: external_exports.string(),
+    title: external_exports.string(),
+    displayNumber: external_exports.string(),
+    cardName: external_exports.string().optional(),
+    cardSecurityCode: external_exports.string().optional(),
+    expirationMonth: external_exports.string().optional(),
+    expirationYear: external_exports.string().optional(),
+    cardNumber: external_exports.string().optional(),
+    paymentProvider: external_exports.string().optional()
   });
-  var userPreferencesSchema = z.object({
-    globalPrivacyControlValue: z.boolean().optional(),
-    sessionKey: z.string(),
-    debug: z.boolean(),
-    language: z.string().optional(),
-    platform: z.object({
-      name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android")])
+  var identityObjectSchema = external_exports.object({
+    id: external_exports.string(),
+    title: external_exports.string(),
+    firstName: external_exports.string().optional(),
+    middleName: external_exports.string().optional(),
+    lastName: external_exports.string().optional(),
+    birthdayDay: external_exports.string().optional(),
+    birthdayMonth: external_exports.string().optional(),
+    birthdayYear: external_exports.string().optional(),
+    addressStreet: external_exports.string().optional(),
+    addressStreet2: external_exports.string().optional(),
+    addressCity: external_exports.string().optional(),
+    addressProvince: external_exports.string().optional(),
+    addressPostalCode: external_exports.string().optional(),
+    addressCountryCode: external_exports.string().optional(),
+    phone: external_exports.string().optional(),
+    emailAddress: external_exports.string().optional()
+  });
+  var genericErrorSchema = external_exports.object({
+    message: external_exports.string()
+  });
+  var getAutofillDataFocusResponseSchema = external_exports.object({
+    type: external_exports.literal("getAutofillDataFocusResponse").optional(),
+    success: external_exports.object({
+      creditCards: creditCardObjectSchema.optional(),
+      action: external_exports.union([external_exports.literal("fill"), external_exports.literal("none")])
+    }).optional(),
+    error: genericErrorSchema.optional()
+  });
+  var userPreferencesSchema = external_exports.object({
+    globalPrivacyControlValue: external_exports.boolean().optional(),
+    sessionKey: external_exports.string(),
+    debug: external_exports.boolean(),
+    language: external_exports.string().optional(),
+    platform: external_exports.object({
+      name: external_exports.union([external_exports.literal("ios"), external_exports.literal("macos"), external_exports.literal("windows"), external_exports.literal("extension"), external_exports.literal("android")])
     }),
-    features: z.record(z.object({
-      settings: z.record(z.unknown())
+    features: external_exports.record(external_exports.object({
+      settings: external_exports.record(external_exports.unknown())
     }))
   });
-  var outgoingCredentialsSchema = z.object({
-    username: z.string().optional(),
-    password: z.string().optional()
+  var outgoingCredentialsSchema = external_exports.object({
+    username: external_exports.string().optional(),
+    password: external_exports.string().optional()
   });
-  var availableInputTypesSchema = z.object({
-    credentials: z.object({
-      username: z.boolean().optional(),
-      password: z.boolean().optional()
+  var availableInputTypesSchema = external_exports.object({
+    credentials: external_exports.object({
+      username: external_exports.boolean().optional(),
+      password: external_exports.boolean().optional()
     }).optional(),
-    identities: z.object({
-      firstName: z.boolean().optional(),
-      middleName: z.boolean().optional(),
-      lastName: z.boolean().optional(),
-      birthdayDay: z.boolean().optional(),
-      birthdayMonth: z.boolean().optional(),
-      birthdayYear: z.boolean().optional(),
-      addressStreet: z.boolean().optional(),
-      addressStreet2: z.boolean().optional(),
-      addressCity: z.boolean().optional(),
-      addressProvince: z.boolean().optional(),
-      addressPostalCode: z.boolean().optional(),
-      addressCountryCode: z.boolean().optional(),
-      phone: z.boolean().optional(),
-      emailAddress: z.boolean().optional()
+    identities: external_exports.object({
+      firstName: external_exports.boolean().optional(),
+      middleName: external_exports.boolean().optional(),
+      lastName: external_exports.boolean().optional(),
+      birthdayDay: external_exports.boolean().optional(),
+      birthdayMonth: external_exports.boolean().optional(),
+      birthdayYear: external_exports.boolean().optional(),
+      addressStreet: external_exports.boolean().optional(),
+      addressStreet2: external_exports.boolean().optional(),
+      addressCity: external_exports.boolean().optional(),
+      addressProvince: external_exports.boolean().optional(),
+      addressPostalCode: external_exports.boolean().optional(),
+      addressCountryCode: external_exports.boolean().optional(),
+      phone: external_exports.boolean().optional(),
+      emailAddress: external_exports.boolean().optional()
     }).optional(),
-    creditCards: z.object({
-      cardName: z.boolean().optional(),
-      cardSecurityCode: z.boolean().optional(),
-      expirationMonth: z.boolean().optional(),
-      expirationYear: z.boolean().optional(),
-      cardNumber: z.boolean().optional()
+    creditCards: external_exports.object({
+      cardName: external_exports.boolean().optional(),
+      cardSecurityCode: external_exports.boolean().optional(),
+      expirationMonth: external_exports.boolean().optional(),
+      expirationYear: external_exports.boolean().optional(),
+      cardNumber: external_exports.boolean().optional()
     }).optional(),
-    email: z.boolean().optional(),
-    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
-    credentialsImport: z.boolean().optional()
+    email: external_exports.boolean().optional(),
+    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
+    credentialsImport: external_exports.boolean().optional()
   });
-  var identityObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    firstName: z.string().optional(),
-    middleName: z.string().optional(),
-    lastName: z.string().optional(),
-    birthdayDay: z.string().optional(),
-    birthdayMonth: z.string().optional(),
-    birthdayYear: z.string().optional(),
-    addressStreet: z.string().optional(),
-    addressStreet2: z.string().optional(),
-    addressCity: z.string().optional(),
-    addressProvince: z.string().optional(),
-    addressPostalCode: z.string().optional(),
-    addressCountryCode: z.string().optional(),
-    phone: z.string().optional(),
-    emailAddress: z.string().optional()
-  });
-  var creditCardObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    displayNumber: z.string(),
-    cardName: z.string().optional(),
-    cardSecurityCode: z.string().optional(),
-    expirationMonth: z.string().optional(),
-    expirationYear: z.string().optional(),
-    cardNumber: z.string().optional(),
-    paymentProvider: z.string().optional()
-  });
-  var getAutofillCredentialsResultSchema = z.object({
-    type: z.literal("getAutofillCredentialsResponse").optional(),
-    success: z.object({
-      id: z.string().optional(),
-      autogenerated: z.boolean().optional(),
-      username: z.string(),
-      password: z.string().optional()
+  var getAutofillInitDataResponseSchema = external_exports.object({
+    type: external_exports.literal("getAutofillInitDataResponse").optional(),
+    success: external_exports.object({
+      credentials: external_exports.array(credentialsSchema),
+      identities: external_exports.array(identityObjectSchema),
+      creditCards: external_exports.array(creditCardObjectSchema),
+      serializedInputContext: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var availableInputTypes1Schema = z.object({
-    credentials: z.object({
-      username: z.boolean().optional(),
-      password: z.boolean().optional()
+  var getAutofillCredentialsResultSchema = external_exports.object({
+    type: external_exports.literal("getAutofillCredentialsResponse").optional(),
+    success: external_exports.object({
+      id: external_exports.string().optional(),
+      autogenerated: external_exports.boolean().optional(),
+      username: external_exports.string(),
+      password: external_exports.string().optional()
     }).optional(),
-    identities: z.object({
-      firstName: z.boolean().optional(),
-      middleName: z.boolean().optional(),
-      lastName: z.boolean().optional(),
-      birthdayDay: z.boolean().optional(),
-      birthdayMonth: z.boolean().optional(),
-      birthdayYear: z.boolean().optional(),
-      addressStreet: z.boolean().optional(),
-      addressStreet2: z.boolean().optional(),
-      addressCity: z.boolean().optional(),
-      addressProvince: z.boolean().optional(),
-      addressPostalCode: z.boolean().optional(),
-      addressCountryCode: z.boolean().optional(),
-      phone: z.boolean().optional(),
-      emailAddress: z.boolean().optional()
-    }).optional(),
-    creditCards: z.object({
-      cardName: z.boolean().optional(),
-      cardSecurityCode: z.boolean().optional(),
-      expirationMonth: z.boolean().optional(),
-      expirationYear: z.boolean().optional(),
-      cardNumber: z.boolean().optional()
-    }).optional(),
-    email: z.boolean().optional(),
-    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
-    credentialsImport: z.boolean().optional()
+    error: genericErrorSchema.optional()
   });
-  var providerStatusUpdatedSchema = z.object({
-    status: z.union([z.literal("locked"), z.literal("unlocked")]),
-    credentials: z.array(credentialsSchema),
+  var availableInputTypes1Schema = external_exports.object({
+    credentials: external_exports.object({
+      username: external_exports.boolean().optional(),
+      password: external_exports.boolean().optional()
+    }).optional(),
+    identities: external_exports.object({
+      firstName: external_exports.boolean().optional(),
+      middleName: external_exports.boolean().optional(),
+      lastName: external_exports.boolean().optional(),
+      birthdayDay: external_exports.boolean().optional(),
+      birthdayMonth: external_exports.boolean().optional(),
+      birthdayYear: external_exports.boolean().optional(),
+      addressStreet: external_exports.boolean().optional(),
+      addressStreet2: external_exports.boolean().optional(),
+      addressCity: external_exports.boolean().optional(),
+      addressProvince: external_exports.boolean().optional(),
+      addressPostalCode: external_exports.boolean().optional(),
+      addressCountryCode: external_exports.boolean().optional(),
+      phone: external_exports.boolean().optional(),
+      emailAddress: external_exports.boolean().optional()
+    }).optional(),
+    creditCards: external_exports.object({
+      cardName: external_exports.boolean().optional(),
+      cardSecurityCode: external_exports.boolean().optional(),
+      expirationMonth: external_exports.boolean().optional(),
+      expirationYear: external_exports.boolean().optional(),
+      cardNumber: external_exports.boolean().optional()
+    }).optional(),
+    email: external_exports.boolean().optional(),
+    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
+    credentialsImport: external_exports.boolean().optional()
+  });
+  var providerStatusUpdatedSchema = external_exports.object({
+    status: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]),
+    credentials: external_exports.array(credentialsSchema),
     availableInputTypes: availableInputTypes1Schema
   });
-  var autofillFeatureTogglesSchema = z.object({
-    inputType_credentials: z.boolean().optional(),
-    inputType_identities: z.boolean().optional(),
-    inputType_creditCards: z.boolean().optional(),
-    emailProtection: z.boolean().optional(),
-    emailProtection_incontext_signup: z.boolean().optional(),
-    password_generation: z.boolean().optional(),
-    credentials_saving: z.boolean().optional(),
-    inlineIcon_credentials: z.boolean().optional(),
-    third_party_credentials_provider: z.boolean().optional(),
-    unknown_username_categorization: z.boolean().optional(),
-    password_variant_categorization: z.boolean().optional(),
-    partial_form_saves: z.boolean().optional()
+  var autofillFeatureTogglesSchema = external_exports.object({
+    inputType_credentials: external_exports.boolean().optional(),
+    inputType_identities: external_exports.boolean().optional(),
+    inputType_creditCards: external_exports.boolean().optional(),
+    emailProtection: external_exports.boolean().optional(),
+    emailProtection_incontext_signup: external_exports.boolean().optional(),
+    password_generation: external_exports.boolean().optional(),
+    credentials_saving: external_exports.boolean().optional(),
+    inlineIcon_credentials: external_exports.boolean().optional(),
+    third_party_credentials_provider: external_exports.boolean().optional(),
+    unknown_username_categorization: external_exports.boolean().optional(),
+    input_focus_api: external_exports.boolean().optional(),
+    password_variant_categorization: external_exports.boolean().optional(),
+    partial_form_saves: external_exports.boolean().optional()
   });
-  var getIdentityResultSchema = z.object({
+  var getIdentityResultSchema = external_exports.object({
     success: identityObjectSchema
   });
-  var getCreditCardResultSchema = z.object({
+  var getCreditCardResultSchema = external_exports.object({
     success: creditCardObjectSchema
   });
-  var emailProtectionGetIsLoggedInResultSchema = z.object({
-    success: z.boolean().optional(),
+  var emailProtectionGetIsLoggedInResultSchema = external_exports.object({
+    success: external_exports.boolean().optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetUserDataResultSchema = z.object({
-    success: z.object({
-      userName: z.string(),
-      nextAlias: z.string(),
-      token: z.string()
+  var emailProtectionGetUserDataResultSchema = external_exports.object({
+    success: external_exports.object({
+      userName: external_exports.string(),
+      nextAlias: external_exports.string(),
+      token: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetCapabilitiesResultSchema = z.object({
-    success: z.object({
-      addUserData: z.boolean().optional(),
-      getUserData: z.boolean().optional(),
-      removeUserData: z.boolean().optional()
+  var emailProtectionGetCapabilitiesResultSchema = external_exports.object({
+    success: external_exports.object({
+      addUserData: external_exports.boolean().optional(),
+      getUserData: external_exports.boolean().optional(),
+      removeUserData: external_exports.boolean().optional()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetAddressesResultSchema = z.object({
-    success: z.object({
-      personalAddress: z.string(),
-      privateAddress: z.string()
+  var emailProtectionGetAddressesResultSchema = external_exports.object({
+    success: external_exports.object({
+      personalAddress: external_exports.string(),
+      privateAddress: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionRefreshPrivateAddressResultSchema = z.object({
-    success: z.object({
-      personalAddress: z.string(),
-      privateAddress: z.string()
+  var emailProtectionRefreshPrivateAddressResultSchema = external_exports.object({
+    success: external_exports.object({
+      personalAddress: external_exports.string(),
+      privateAddress: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var getAutofillDataRequestSchema = z.object({
+  var getAutofillDataRequestSchema = external_exports.object({
     generatedPassword: generatedPasswordSchema.optional(),
-    inputType: z.string(),
-    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
-    subType: z.string(),
-    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup")]).optional(),
-    serializedInputContext: z.string().optional(),
+    inputType: external_exports.string(),
+    mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards")]),
+    subType: external_exports.string(),
+    trigger: external_exports.union([external_exports.literal("userInitiated"), external_exports.literal("autoprompt"), external_exports.literal("postSignup")]).optional(),
+    serializedInputContext: external_exports.string().optional(),
     triggerContext: triggerContextSchema.optional()
   });
-  var getAutofillDataResponseSchema = z.object({
-    type: z.literal("getAutofillDataResponse").optional(),
-    success: z.object({
+  var getAutofillDataResponseSchema = external_exports.object({
+    type: external_exports.literal("getAutofillDataResponse").optional(),
+    success: external_exports.object({
       credentials: credentialsSchema.optional(),
-      action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("refreshAvailableInputTypes"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
+      creditCards: creditCardObjectSchema.optional(),
+      identities: identityObjectSchema.optional(),
+      action: external_exports.union([external_exports.literal("fill"), external_exports.literal("focus"), external_exports.literal("none"), external_exports.literal("refreshAvailableInputTypes"), external_exports.literal("acceptGeneratedPassword"), external_exports.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var storeFormDataSchema = z.object({
+  var storeFormDataSchema = external_exports.object({
     credentials: outgoingCredentialsSchema.optional(),
-    trigger: z.union([z.literal("partialSave"), z.literal("formSubmission"), z.literal("passwordGeneration"), z.literal("emailProtection")]).optional()
+    trigger: external_exports.union([external_exports.literal("partialSave"), external_exports.literal("formSubmission"), external_exports.literal("passwordGeneration"), external_exports.literal("emailProtection")]).optional()
   });
-  var getAvailableInputTypesResultSchema = z.object({
-    type: z.literal("getAvailableInputTypesResponse").optional(),
+  var getAvailableInputTypesResultSchema = external_exports.object({
+    type: external_exports.literal("getAvailableInputTypesResponse").optional(),
     success: availableInputTypesSchema,
     error: genericErrorSchema.optional()
   });
-  var getAutofillInitDataResponseSchema = z.object({
-    type: z.literal("getAutofillInitDataResponse").optional(),
-    success: z.object({
-      credentials: z.array(credentialsSchema),
-      identities: z.array(identityObjectSchema),
-      creditCards: z.array(creditCardObjectSchema),
-      serializedInputContext: z.string()
-    }).optional(),
-    error: genericErrorSchema.optional()
-  });
-  var askToUnlockProviderResultSchema = z.object({
-    type: z.literal("askToUnlockProviderResponse").optional(),
+  var askToUnlockProviderResultSchema = external_exports.object({
+    type: external_exports.literal("askToUnlockProviderResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
-  var checkCredentialsProviderStatusResultSchema = z.object({
-    type: z.literal("checkCredentialsProviderStatusResponse").optional(),
+  var checkCredentialsProviderStatusResultSchema = external_exports.object({
+    type: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
-  var autofillSettingsSchema = z.object({
+  var autofillSettingsSchema = external_exports.object({
     featureToggles: autofillFeatureTogglesSchema
   });
-  var runtimeConfigurationSchema = z.object({
-    contentScope: z.record(z.unknown()),
-    userUnprotectedDomains: z.array(z.string()),
+  var runtimeConfigurationSchema = external_exports.object({
+    contentScope: external_exports.record(external_exports.unknown()),
+    userUnprotectedDomains: external_exports.array(external_exports.string()),
     userPreferences: userPreferencesSchema
   });
-  var getRuntimeConfigurationResponseSchema = z.object({
-    type: z.literal("getRuntimeConfigurationResponse").optional(),
+  var getRuntimeConfigurationResponseSchema = external_exports.object({
+    type: external_exports.literal("getRuntimeConfigurationResponse").optional(),
     success: runtimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
   });
-  var apiSchema = z.object({
-    addDebugFlag: z.record(z.unknown()).and(z.object({
+  var apiSchema = external_exports.object({
+    addDebugFlag: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: addDebugFlagParamsSchema.optional()
     })).optional(),
-    getAutofillData: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAutofillDataResponse").optional(),
+    getAutofillData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillDataResponse").optional(),
       paramsValidator: getAutofillDataRequestSchema.optional(),
       resultValidator: getAutofillDataResponseSchema.optional()
     })).optional(),
-    getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
-      id: z.literal("getRuntimeConfigurationResponse").optional(),
+    getAutofillDataFocus: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillDataFocusResponse").optional(),
+      paramsValidator: getAutofillDataFocusRequestSchema.optional(),
+      resultValidator: getAutofillDataFocusResponseSchema.optional()
+    })).optional(),
+    getRuntimeConfiguration: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getRuntimeConfigurationResponse").optional(),
       resultValidator: getRuntimeConfigurationResponseSchema.optional()
     })).optional(),
-    storeFormData: z.record(z.unknown()).and(z.object({
+    storeFormData: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: storeFormDataSchema.optional()
     })).optional(),
-    getAvailableInputTypes: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAvailableInputTypesResponse").optional(),
+    getAvailableInputTypes: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAvailableInputTypesResponse").optional(),
       resultValidator: getAvailableInputTypesResultSchema.optional()
     })).optional(),
-    getAutofillInitData: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAutofillInitDataResponse").optional(),
+    getAutofillInitData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillInitDataResponse").optional(),
       resultValidator: getAutofillInitDataResponseSchema.optional()
     })).optional(),
-    getAutofillCredentials: z.record(z.unknown()).and(z.object({
-      id: z.literal("getAutofillCredentialsResponse").optional(),
+    getAutofillCredentials: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillCredentialsResponse").optional(),
       paramsValidator: getAutofillCredentialsParamsSchema.optional(),
       resultValidator: getAutofillCredentialsResultSchema.optional()
     })).optional(),
-    setSize: z.record(z.unknown()).and(z.object({
+    setSize: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: setSizeParamsSchema.optional()
     })).optional(),
-    selectedDetail: z.record(z.unknown()).and(z.object({
+    selectedDetail: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: selectedDetailParamsSchema.optional()
     })).optional(),
-    closeAutofillParent: z.record(z.unknown()).optional(),
-    askToUnlockProvider: z.record(z.unknown()).and(z.object({
-      id: z.literal("askToUnlockProviderResponse").optional(),
+    closeAutofillParent: external_exports.record(external_exports.unknown()).optional(),
+    askToUnlockProvider: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("askToUnlockProviderResponse").optional(),
       resultValidator: askToUnlockProviderResultSchema.optional()
     })).optional(),
-    checkCredentialsProviderStatus: z.record(z.unknown()).and(z.object({
-      id: z.literal("checkCredentialsProviderStatusResponse").optional(),
+    checkCredentialsProviderStatus: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
       resultValidator: checkCredentialsProviderStatusResultSchema.optional()
     })).optional(),
-    sendJSPixel: z.record(z.unknown()).and(z.object({
+    sendJSPixel: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: sendJSPixelParamsSchema.optional()
     })).optional(),
-    setIncontextSignupPermanentlyDismissedAt: z.record(z.unknown()).and(z.object({
+    setIncontextSignupPermanentlyDismissedAt: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: setIncontextSignupPermanentlyDismissedAtSchema.optional()
     })).optional(),
-    getIncontextSignupDismissedAt: z.record(z.unknown()).and(z.object({
-      id: z.literal("getIncontextSignupDismissedAt").optional(),
+    getIncontextSignupDismissedAt: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getIncontextSignupDismissedAt").optional(),
       resultValidator: getIncontextSignupDismissedAtSchema.optional()
     })).optional(),
-    autofillSettings: z.record(z.unknown()).and(z.object({
-      validatorsOnly: z.literal(true).optional(),
+    autofillSettings: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      validatorsOnly: external_exports.literal(true).optional(),
       resultValidator: autofillSettingsSchema.optional()
     })).optional(),
-    getAlias: z.record(z.unknown()).and(z.object({
-      validatorsOnly: z.literal(true).optional(),
+    getAlias: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      validatorsOnly: external_exports.literal(true).optional(),
       paramValidator: getAliasParamsSchema.optional(),
       resultValidator: getAliasResultSchema.optional()
     })).optional(),
-    openManagePasswords: z.record(z.unknown()).optional(),
-    openManageCreditCards: z.record(z.unknown()).optional(),
-    openManageIdentities: z.record(z.unknown()).optional(),
-    startCredentialsImportFlow: z.record(z.unknown()).optional(),
-    getIdentity: z.record(z.unknown()).and(z.object({
-      id: z.literal("getIdentityResponse").optional(),
+    openManagePasswords: external_exports.record(external_exports.unknown()).optional(),
+    openManageCreditCards: external_exports.record(external_exports.unknown()).optional(),
+    openManageIdentities: external_exports.record(external_exports.unknown()).optional(),
+    startCredentialsImportFlow: external_exports.record(external_exports.unknown()).optional(),
+    getIdentity: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getIdentityResponse").optional(),
       paramValidator: getIdentityParamSchema.optional(),
       resultValidator: getIdentityResultSchema.optional()
     })).optional(),
-    getCreditCard: z.record(z.unknown()).and(z.object({
-      id: z.literal("getCreditCardResponse").optional(),
+    getCreditCard: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getCreditCardResponse").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
       resultValidator: getCreditCardResultSchema.optional()
     })).optional(),
-    credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
-    emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
-      id: z.literal("emailProtectionStoreUserDataResponse").optional(),
+    credentialsImportFlowPermanentlyDismissed: external_exports.record(external_exports.unknown()).optional(),
+    emailProtectionStoreUserData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionStoreUserDataResponse").optional(),
       paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()
     })).optional(),
-    emailProtectionRemoveUserData: z.record(z.unknown()).optional(),
-    emailProtectionGetIsLoggedIn: z.record(z.unknown()).and(z.object({
-      id: z.literal("emailProtectionGetIsLoggedInResponse").optional(),
+    emailProtectionRemoveUserData: external_exports.record(external_exports.unknown()).optional(),
+    emailProtectionGetIsLoggedIn: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetIsLoggedInResponse").optional(),
       resultValidator: emailProtectionGetIsLoggedInResultSchema.optional()
     })).optional(),
-    emailProtectionGetUserData: z.record(z.unknown()).and(z.object({
-      id: z.literal("emailProtectionGetUserDataResponse").optional(),
+    emailProtectionGetUserData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetUserDataResponse").optional(),
       resultValidator: emailProtectionGetUserDataResultSchema.optional()
     })).optional(),
-    emailProtectionGetCapabilities: z.record(z.unknown()).and(z.object({
-      id: z.literal("emailProtectionGetCapabilitiesResponse").optional(),
+    emailProtectionGetCapabilities: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetCapabilitiesResponse").optional(),
       resultValidator: emailProtectionGetCapabilitiesResultSchema.optional()
     })).optional(),
-    emailProtectionGetAddresses: z.record(z.unknown()).and(z.object({
-      id: z.literal("emailProtectionGetAddressesResponse").optional(),
+    emailProtectionGetAddresses: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetAddressesResponse").optional(),
       resultValidator: emailProtectionGetAddressesResultSchema.optional()
     })).optional(),
-    emailProtectionRefreshPrivateAddress: z.record(z.unknown()).and(z.object({
-      id: z.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
+    emailProtectionRefreshPrivateAddress: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
       resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
     })).optional(),
-    startEmailProtectionSignup: z.record(z.unknown()).optional(),
-    closeEmailProtectionTab: z.record(z.unknown()).optional(),
-    ShowInContextEmailProtectionSignupPrompt: z.record(z.unknown()).and(z.object({
-      id: z.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
+    startEmailProtectionSignup: external_exports.record(external_exports.unknown()).optional(),
+    closeEmailProtectionTab: external_exports.record(external_exports.unknown()).optional(),
+    ShowInContextEmailProtectionSignupPrompt: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
       resultValidator: showInContextEmailProtectionSignupPromptSchema.optional()
     })).optional()
   });
@@ -11049,6 +11044,15 @@ Source: "${matchedFrom}"`;
       __publicField(this, "id", "getAutofillDataResponse");
       __publicField(this, "paramsValidator", getAutofillDataRequestSchema);
       __publicField(this, "resultValidator", getAutofillDataResponseSchema);
+    }
+  };
+  var GetAutofillDataFocusCall = class extends DeviceApiCall {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "method", "getAutofillDataFocus");
+      __publicField(this, "id", "getAutofillDataFocusResponse");
+      __publicField(this, "paramsValidator", getAutofillDataFocusRequestSchema);
+      __publicField(this, "resultValidator", getAutofillDataFocusResponseSchema);
     }
   };
   var GetRuntimeConfigurationCall = class extends DeviceApiCall {
@@ -11646,11 +11650,21 @@ Source: "${matchedFrom}"`;
      * Implement this method to control what happen when Autofill
      * has enough information to 'attach' a tooltip.
      *
-     * @param {AttachArgs} _args
+     * @param {AttachTooltipArgs} _args
      * @returns {void}
      */
-    attach(_args2) {
-      throw new Error("must implement attach");
+    attachTooltip(_args2) {
+      throw new Error("must implement attachTooltip");
+    }
+    /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to show the keyboard extension.
+     *
+     * @param {AttachKeyboardArgs} _args
+     * @returns {void}
+     */
+    attachKeyboard(_args2) {
+      throw new Error("must implement attachKeyboard");
     }
     /**
      * Implement this if your tooltip can be created from positioning
@@ -11717,9 +11731,9 @@ Source: "${matchedFrom}"`;
       __privateAdd(this, _passwordStatus, "default");
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       const { form, input, device, trigger, triggerMetaData, topContextData } = args;
       const inputType = getInputType(input);
       const mainType = getMainTypeFromType(inputType);
@@ -11756,10 +11770,6 @@ Source: "${matchedFrom}"`;
             form.activeInput?.focus();
             break;
           }
-          case "none": {
-            form.touchAllInputs(mainType);
-            break;
-          }
           case "acceptGeneratedPassword": {
             form.autofillData(
               {
@@ -11768,6 +11778,10 @@ Source: "${matchedFrom}"`;
               },
               mainType
             );
+            break;
+          }
+          case "none": {
+            form.touchAllInputs(mainType);
             break;
           }
           case "rejectGeneratedPassword": {
@@ -11788,12 +11802,41 @@ Source: "${matchedFrom}"`;
       });
     }
     /**
+     * @param {import('./UIController').AttachKeyboardArgs} args
+     */
+    async attachKeyboard(args) {
+      const { device, form, element } = args;
+      const inputType = getInputType(element);
+      const mainType = getMainTypeFromType(inputType);
+      try {
+        const resp = await device.deviceApi.request(
+          new GetAutofillDataFocusCall({
+            inputType,
+            mainType
+          })
+        );
+        switch (resp.action) {
+          case "fill": {
+            form?.autofillData(resp.creditCards, "creditCards");
+            element.blur();
+            break;
+          }
+          case "none": {
+            break;
+          }
+        }
+      } catch (e) {
+        console.error("NativeTooltip::device.getAutofillDataFocus()");
+        console.error(e);
+      }
+    }
+    /**
      * If a password exists in `topContextData`, we can append it to the outgoing data
      * in a way that native platforms can easily understand.
      *
      * @param {TopContextData} topContextData
      * @param {import('../../deviceApiCalls/__generated__/validators-ts.js').GetAutofillDataRequest} outgoingData
-     * @param {import('../../UI/controllers/UIController.js').AttachArgs['triggerMetaData']} triggerMetaData
+     * @param {import('../../UI/controllers/UIController.js').AttachTooltipArgs['triggerMetaData']} triggerMetaData
      * @return {import('../../deviceApiCalls/__generated__/validators-ts.js').GetAutofillDataRequest}
      */
     appendGeneratedPassword(topContextData, outgoingData, triggerMetaData) {
@@ -12892,7 +12935,7 @@ Source: "${matchedFrom}"`;
         /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
         runtimeConfig.contentScope
       );
-      const feature = contentScope.features.autofill.features?.[name];
+      const feature = contentScope.features?.autofill?.features?.[name];
       if (feature?.state !== "enabled" || contentScope.features[name])
         return runtimeConfig;
       if (feature) {
@@ -13093,6 +13136,7 @@ Source: "${matchedFrom}"`;
       inputType_identities: false,
       inputType_credentials: false,
       inputType_creditCards: false,
+      input_focus_api: false,
       inlineIcon_credentials: false,
       unknown_username_categorization: false,
       password_variant_categorization: false,
@@ -16415,6 +16459,23 @@ Source: "${matchedFrom}"`;
     getLocalCreditCards() {
       return __privateGet(this, _data6).creditCards;
     }
+    /**
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     */
+    initGlobalFocusHandler(forms) {
+      window.addEventListener(
+        "focus",
+        (e) => {
+          const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
+          const form = [...forms.values()].find((form2) => form2.hasFocus());
+          const targetElement = pierceShadowTree(e);
+          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
+            this.attachKeyboard({ device: this, form, element: targetElement });
+          }
+        },
+        true
+      );
+    }
     async startInit() {
       if (this.isInitializationStarted)
         return;
@@ -16429,6 +16490,9 @@ Source: "${matchedFrom}"`;
       await this.postInit();
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
+      }
+      if (this.settings.featureToggles.input_focus_api) {
+        this.initGlobalFocusHandler(this.scanner.forms);
       }
     }
     async init() {
@@ -16537,7 +16601,7 @@ Source: "${matchedFrom}"`;
      * @param {HTMLInputElement} params.input
      * @param {{ x: number; y: number; } | null} params.click
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
-     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
+     * @param {import('../UI/controllers/UIController.js').AttachTooltipArgs["triggerMetaData"]} params.triggerMetaData
      */
     attachTooltip(params) {
       const { form, input, click, trigger } = params;
@@ -16572,7 +16636,7 @@ Source: "${matchedFrom}"`;
         credentialsImport: this.credentialsImport.isAvailable() && (this.activeForm.isLogin || this.activeForm.isHybrid)
       };
       const processedTopContext = this.preAttachTooltip(topContextData, input, form);
-      this.uiController?.attach({
+      this.uiController?.attachTooltip({
         input,
         form,
         click,
@@ -16585,6 +16649,12 @@ Source: "${matchedFrom}"`;
       if (trigger === "autoprompt") {
         this.autopromptFired = true;
       }
+    }
+    /**
+     * @param {import('../UI/controllers/UIController.js').AttachKeyboardArgs} args
+     */
+    attachKeyboard(args) {
+      this.uiController?.attachKeyboard(args);
     }
     /**
      * When an item was selected, we then call back to the device
@@ -17702,9 +17772,9 @@ ${this.options.css}
       window.removeEventListener("pointerup", this, true);
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       if (this.getActiveTooltip()) {
         return;
       }
@@ -18152,9 +18222,9 @@ ${this.options.css}
       window.addEventListener("pointerdown", this, true);
     }
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
       const { getPosition, topContextData, click, input } = args;
       if (!input.parentNode)
         return;
@@ -18173,7 +18243,7 @@ ${this.options.css}
         input.scrollIntoView(true);
         this._mutObs?.disconnect();
         setTimeout(() => {
-          this.attach(args);
+          this.attachTooltip(args);
         }, 50);
         return;
       }
