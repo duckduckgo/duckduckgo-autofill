@@ -97,7 +97,7 @@
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
   "expiry" : {
-    "title": "Validade",
-    "note": "Label that indicates the expiration date of credit cards."
+    "title" : "Validade",
+    "note" : "Label that indicates the expiration date of credit cards."
   }
 }
