@@ -123,7 +123,7 @@ const creditCardsMore = [
                 id: 'd',
                 displayNumber: '1234',
                 cardName: 'monzo',
-                title: 'Monzo',
+                title: 'Monzo with a very long long title that should wrap',
                 expirationMonth: '1',
                 expirationYear: '2025',
                 paymentProvider: 'visa',

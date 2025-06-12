@@ -1,0 +1,17 @@
+<!-- https://playpiknik.com/account/manage/signin -->
+<form method="POST" id="form" onsubmit="submitForm(event, null)" autocomplete="off">
+    <div class="input-wrapper">
+        <input id="inp_email" class="form-input caret-playful-blue" name="email" type="text" value="" placeholder="parent's email address" inputmode="email" onfocus="handleFocus(event)" autocorrect="off" autocapitalize="none" data-manual-scoring="username">
+    </div>
+    <div class="input-wrapper">
+        <input id="inp_confirm_email" class="form-input caret-playful-blue" name="confirm_email" type="text" value="" placeholder="confirm email address" inputmode="email" onfocus="handleFocus(event)" autocorrect="off" autocapitalize="none" data-manual-scoring="username">
+    </div>
+    <div class="input-wrapper">
+        <input id="inp_password" class="form-input caret-playful-blue" name="password" type="text" value="" placeholder="password" inputmode="" onfocus="handleFocus(event)" autocorrect="off" autocapitalize="none" data-manual-scoring="password.current">
+        <button id="btn_password" class="password-toggle" type="button" onmousedown="togglePassword(event)" onmouseup="focusOnInput(event)">
+          Hide
+        </button>
+    </div>
+    <input type="hidden" name="token" value="">
+    <button type="submit" value="Submit" class="submit-btn background-playful-blue" data-ga-cat="web-store" data-ga-label="Create continue" data-manual-submit>Sign in</button>
+</form>
