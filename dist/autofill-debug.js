@@ -5230,7 +5230,7 @@ Source: "${matchedFrom}"`;
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelSmall", (t) => {
         const { displayNumber, expirationMonth, expirationYear } = __privateGet(this, _data4);
-        const expiration = expirationMonth && expirationYear ? `\xA0 ${t("autofill:expires")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
+        const expiration = expirationMonth && expirationYear ? `\xA0 ${t("autofill:expiry")}: ${String(expirationMonth).padStart(2, "0")}/${expirationYear}` : "";
         return `\u2022\u2022\u2022\u2022 ${displayNumber}${expiration}`;
       });
       __publicField(this, "paymentProvider", () => __privateGet(this, _data4).paymentProvider || "");
@@ -13605,6 +13605,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\u041F\u0440\u0435\u0445\u0432\u044A\u0440\u043B\u044F\u0439\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u0438\u0442\u0435 \u0441\u0438 \u043E\u0442 \u0434\u0440\u0443\u0433 \u0431\u0440\u0430\u0443\u0437\u044A\u0440 \u0438\u043B\u0438 \u043C\u0435\u043D\u0438\u0434\u0436\u044A\u0440 \u043D\u0430 \u043F\u0430\u0440\u043E\u043B\u0438 \u0431\u044A\u0440\u0437\u043E \u0438 \u0441\u0438\u0433\u0443\u0440\u043D\u043E.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "\u0421\u0440\u043E\u043A \u043D\u0430 \u0432\u0430\u043B\u0438\u0434\u043D\u043E\u0441\u0442",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -13707,6 +13711,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Rychle a\xA0bezpe\u010Dn\u011B p\u0159enes svoje hesla z\xA0jin\xE9ho prohl\xED\u017Ee\u010De nebo spr\xE1vce hesel.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Datum konce platnosti",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -13809,6 +13817,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Overf\xF8r hurtigt og sikkert dine adgangskoder fra en anden browser eller adgangskodeadministrator.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Udl\xF8bsdato",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -13911,6 +13923,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\xDCbertrage deine Passw\xF6rter schnell und sicher von einem anderen Browser oder Passwort-Manager.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "G\xFCltigkeit",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14013,6 +14029,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\u039C\u03B5\u03C4\u03B1\u03C6\u03AD\u03C1\u03B5\u03C4\u03B5 \u03B3\u03C1\u03AE\u03B3\u03BF\u03C1\u03B1 \u03BA\u03B1\u03B9 \u03BC\u03B5 \u03B1\u03C3\u03C6\u03AC\u03BB\u03B5\u03B9\u03B1 \u03C4\u03BF\u03C5\u03C2 \u03BA\u03C9\u03B4\u03B9\u03BA\u03BF\u03CD\u03C2 \u03C0\u03C1\u03CC\u03C3\u03B2\u03B1\u03C3\u03AE\u03C2 \u03C3\u03B1\u03C2 \u03B1\u03C0\u03CC \u03AC\u03BB\u03BB\u03BF \u03C0\u03C1\u03CC\u03B3\u03C1\u03B1\u03BC\u03BC\u03B1 \u03C0\u03B5\u03C1\u03B9\u03AE\u03B3\u03B7\u03C3\u03B7\u03C2 \u03AE \u03C0\u03C1\u03CC\u03B3\u03C1\u03B1\u03BC\u03BC\u03B1 \u03B4\u03B9\u03B1\u03C7\u03B5\u03AF\u03C1\u03B9\u03C3\u03B7\u03C2 \u03BA\u03C9\u03B4\u03B9\u03BA\u03CE\u03BD \u03C0\u03C1\u03CC\u03C3\u03B2\u03B1\u03C3\u03B7\u03C2.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "\u039B\u03AE\u03BE\u03B7",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14116,8 +14136,8 @@ Source: "${matchedFrom}"`;
       title: "Quickly and securely transfer your passwords from another browser or password manager.",
       note: "Subtitle that explains the purpose of the import dialog"
     },
-    expires: {
-      title: "Expires",
+    expiry: {
+      title: "Expiry",
       note: "Label that indicates the expiration date of credit cards."
     }
   };
@@ -14221,6 +14241,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Transfiere tus contrase\xF1as de forma r\xE1pida y segura desde otro navegador o administrador de contrase\xF1as.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Fecha de caducidad",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14323,6 +14347,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Vii oma paroolid kiiresti ja turvaliselt \xFCle teisest brauserist v\xF5i paroolihaldurist.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Aegumiskuup\xE4ev",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14425,6 +14453,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Siirr\xE4 salasanasi nopeasti ja turvallisesti toisesta selaimesta tai salasanojen hallintaohjelmasta.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Vanhenemisp\xE4iv\xE4",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14527,6 +14559,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Transf\xE9rez vos mots de passe rapidement et en toute s\xE9curit\xE9 \xE0 partir d\u2019un autre navigateur ou d\u2019un autre gestionnaire de mots de passe.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Expiration",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14629,6 +14665,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Brzo i sigurno prenesi svoje lozinke iz drugog preglednika ili upravitelja lozinkama.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Istje\u010De",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14731,6 +14771,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Gyorsan \xE9s biztons\xE1gosan \xE1thozhatod a jelszavaid egy m\xE1sik b\xF6ng\xE9sz\u0151b\u0151l vagy jelsz\xF3kezel\u0151b\u0151l.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Lej\xE1rat",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14833,6 +14877,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Trasferisci in modo rapido e sicuro le tue password da un altro browser o gestore di password.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Scadenza",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -14935,6 +14983,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Greitai ir saugiai perkelkite slapta\u017Eod\u017Eius i\u0161 kitos nar\u0161ykl\u0117s ar slapta\u017Eod\u017Ei\u0173 tvarkykl\u0117s.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Galiojimo data",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15037,6 +15089,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\u0100tri un dro\u0161i p\u0101rnes savas paroles no citas p\u0101rl\u016Bkprogrammas vai paro\u013Cu p\u0101rvaldnieka.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Der\u012Bguma termi\u0146\u0161",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15139,6 +15195,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Overf\xF8r passordene dine raskt og sikkert fra en annen nettleser eller passordbehandling.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Utl\xF8psdato",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15241,6 +15301,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Snel en veilig je wachtwoorden overzetten vanuit een andere browser of wachtwoordmanager.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Vervaldatum",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15343,6 +15407,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Szybko i bezpiecznie przenie\u015B has\u0142a z innej przegl\u0105darki lub mened\u017Cera hase\u0142.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Wa\u017Cno\u015B\u0107",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15445,6 +15513,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Transfere de forma r\xE1pida e segura as tuas palavras-passe a partir de outro navegador ou gestor de palavras-passe.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Validade",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15547,6 +15619,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Transfer\u0103 rapid \u0219i sigur parolele dintr-un alt browser sau manager de parole.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Expir\u0103",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15649,6 +15725,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\u0411\u044B\u0441\u0442\u0440\u044B\u0439 \u0438 \u0431\u0435\u0437\u043E\u043F\u0430\u0441\u043D\u044B\u0439 \u0441\u043F\u043E\u0441\u043E\u0431 \u043F\u0435\u0440\u0435\u043D\u0435\u0441\u0442\u0438 \u043F\u0430\u0440\u043E\u043B\u0438 \u0438\u0437 \u0434\u0440\u0443\u0433\u043E\u0433\u043E \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u0430 \u0438\u043B\u0438 \u043C\u0435\u043D\u0435\u0434\u0436\u0435\u0440\u0430.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "\u0421\u0440\u043E\u043A \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15751,6 +15831,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "R\xFDchlo a\xA0bezpe\u010Dne preneste svoje hesl\xE1 z\xA0in\xE9ho prehliada\u010Da alebo spr\xE1vcu hesiel.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Vypr\u0161anie platnosti",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15853,6 +15937,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "Hitro in varno prenesite gesla iz drugega brskalnika ali upravitelja gesel.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Datum poteka",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -15955,6 +16043,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\xD6verf\xF6r snabbt och s\xE4kert dina l\xF6senord fr\xE5n en annan webbl\xE4sare eller l\xF6senordshanterare.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Utg\xE5ngsdatum",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -16057,6 +16149,10 @@ Source: "${matchedFrom}"`;
     credentialsImportText: {
       title: "\u015Eifrelerinizi ba\u015Fka bir taray\u0131c\u0131dan veya \u015Fifre y\xF6neticisinden h\u0131zl\u0131 ve g\xFCvenli bir \u015Fekilde aktar\u0131n.",
       note: "Subtitle that explains the purpose of the import dialog"
+    },
+    expiry: {
+      title: "Son kullanma tarihi",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 
@@ -16151,6 +16247,10 @@ Source: "${matchedFrom}"`;
     dontShowAgain: {
       title: "Do\xF8\xBAn\xF1't Sh00w Ag@\xE5\xE5\xEEn",
       note: "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+    },
+    expiry: {
+      title: "\xA3\xA3xp@\xEE\xEFr\xA5\xA5",
+      note: "Label that indicates the expiration date of credit cards."
     }
   };
 

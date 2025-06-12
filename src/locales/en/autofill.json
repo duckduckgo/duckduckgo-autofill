@@ -97,8 +97,8 @@
     "title": "Quickly and securely transfer your passwords from another browser or password manager.",
     "note": "Subtitle that explains the purpose of the import dialog"
   },
-  "expires": {
-    "title": "Expires",
-    "note": "Label that indicates the expiration date of credit cards."
+  "expiry" : {
+    "title" : "Expiry",
+    "note" : "Label that indicates the expiration date of credit cards."
   }
 }

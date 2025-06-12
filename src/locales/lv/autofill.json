@@ -95,5 +95,9 @@
   "credentialsImportText" : {
     "title" : "Ātri un droši pārnes savas paroles no citas pārlūkprogrammas vai paroļu pārvaldnieka.",
     "note" : "Subtitle that explains the purpose of the import dialog"
+  },
+  "expiry" : {
+    "title": "Derīguma termiņš",
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }
