@@ -96,7 +96,7 @@
     "title" : "Brzo i sigurno prenesi svoje lozinke iz drugog preglednika ili upravitelja lozinkama.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry":{
+  "expiry" : {
     "title": "Istječe",
     "note": "Label that indicates the expiration date of credit cards."
   }

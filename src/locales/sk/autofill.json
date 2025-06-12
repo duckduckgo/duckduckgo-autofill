@@ -96,7 +96,7 @@
     "title" : "Rýchlo a bezpečne preneste svoje heslá z iného prehliadača alebo správcu hesiel.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry":{
+  "expiry" : {
     "title": "Vypršanie platnosti",
     "note": "Label that indicates the expiration date of credit cards."
   }

@@ -96,7 +96,7 @@
     "title" : "Szybko i bezpiecznie przenieś hasła z innej przeglądarki lub menedżera haseł.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry":{
+  "expiry" : {
     "title": "Ważność",
     "note": "Label that indicates the expiration date of credit cards."
   }

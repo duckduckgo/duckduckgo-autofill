@@ -96,8 +96,8 @@
     "title" : "Transfiere tus contraseñas de forma rápida y segura desde otro navegador o administrador de contraseñas.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry":{
-    "title": "Fecha de caducidad",
-    "note": "Label that indicates the expiration date of credit cards."
+  "expiry" : {
+    "title" : "Fecha de caducidad",
+    "note" : "Label that indicates the expiration date of credit cards."
   }
 }

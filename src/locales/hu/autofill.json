@@ -96,7 +96,7 @@
     "title" : "Gyorsan és biztonságosan áthozhatod a jelszavaid egy másik böngészőből vagy jelszókezelőből.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry":{
+  "expiry" : {
     "title": "Lejárat",
     "note": "Label that indicates the expiration date of credit cards."
   }

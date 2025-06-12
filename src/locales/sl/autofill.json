@@ -96,7 +96,7 @@
     "title" : "Hitro in varno prenesite gesla iz drugega brskalnika ali upravitelja gesel.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry":{
+  "expiry" : {
     "title": "Datum poteka",
     "note": "Label that indicates the expiration date of credit cards."
   }

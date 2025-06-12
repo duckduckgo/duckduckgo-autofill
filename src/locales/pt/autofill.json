@@ -96,7 +96,7 @@
     "title" : "Transfere de forma rápida e segura as tuas palavras-passe a partir de outro navegador ou gestor de palavras-passe.",
     "note" : "Subtitle that explains the purpose of the import dialog"
   },
-  "expiry": {
+  "expiry" : {
     "title": "Validade",
     "note": "Label that indicates the expiration date of credit cards."
   }
