@@ -15,7 +15,10 @@ jobs:
                   node-version-file: '.nvmrc'
             - uses: actions/cache@v3
               with:
-                  path: ~/.npm
+                  path: |
+                      ~/.npm
+                      node_modules
+                      packages/*/node_modules
                   key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-node-
