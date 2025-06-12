@@ -97,9 +97,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  */
 const setValueForInput = (el, val, config) => {
     // Avoid keyboard flashing on Android
-    if (!config?.isAndroid) {
-        el.focus();
-    }
+    if (!config?.isAndroid) el.focus();
 
     // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
     el.dispatchEvent(new Event('keydown', { bubbles: true }));

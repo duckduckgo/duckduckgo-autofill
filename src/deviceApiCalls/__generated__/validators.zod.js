@@ -29,6 +29,11 @@ export const addDebugFlagParamsSchema = z.object({
     flag: z.string()
 });
 
+export const getAutofillDataFocusRequestSchema = z.object({
+    inputType: z.string(),
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards"), z.literal("unknown")])
+});
+
 export const getAutofillCredentialsParamsSchema = z.object({
     id: z.string()
 });
@@ -110,8 +115,48 @@ export const credentialsSchema = z.object({
     providerStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
 });
 
+export const creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
+});
+
+export const identityObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    firstName: z.string().optional(),
+    middleName: z.string().optional(),
+    lastName: z.string().optional(),
+    birthdayDay: z.string().optional(),
+    birthdayMonth: z.string().optional(),
+    birthdayYear: z.string().optional(),
+    addressStreet: z.string().optional(),
+    addressStreet2: z.string().optional(),
+    addressCity: z.string().optional(),
+    addressProvince: z.string().optional(),
+    addressPostalCode: z.string().optional(),
+    addressCountryCode: z.string().optional(),
+    phone: z.string().optional(),
+    emailAddress: z.string().optional()
+});
+
 export const genericErrorSchema = z.object({
     message: z.string()
+});
+
+export const getAutofillDataFocusResponseSchema = z.object({
+    type: z.literal("getAutofillDataFocusResponse").optional(),
+    success: z.object({
+        creditCards: creditCardObjectSchema.optional(),
+        action: z.union([z.literal("fill"), z.literal("none")])
+    }).optional(),
+    error: genericErrorSchema.optional()
 });
 
 export const userPreferencesSchema = z.object({
@@ -165,35 +210,15 @@ export const availableInputTypesSchema = z.object({
     credentialsImport: z.boolean().optional()
 });
 
-export const identityObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    firstName: z.string().optional(),
-    middleName: z.string().optional(),
-    lastName: z.string().optional(),
-    birthdayDay: z.string().optional(),
-    birthdayMonth: z.string().optional(),
-    birthdayYear: z.string().optional(),
-    addressStreet: z.string().optional(),
-    addressStreet2: z.string().optional(),
-    addressCity: z.string().optional(),
-    addressProvince: z.string().optional(),
-    addressPostalCode: z.string().optional(),
-    addressCountryCode: z.string().optional(),
-    phone: z.string().optional(),
-    emailAddress: z.string().optional()
-});
-
-export const creditCardObjectSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    displayNumber: z.string(),
-    cardName: z.string().optional(),
-    cardSecurityCode: z.string().optional(),
-    expirationMonth: z.string().optional(),
-    expirationYear: z.string().optional(),
-    cardNumber: z.string().optional(),
-    paymentProvider: z.string().optional()
+export const getAutofillInitDataResponseSchema = z.object({
+    type: z.literal("getAutofillInitDataResponse").optional(),
+    success: z.object({
+        credentials: z.array(credentialsSchema),
+        identities: z.array(identityObjectSchema),
+        creditCards: z.array(creditCardObjectSchema),
+        serializedInputContext: z.string()
+    }).optional(),
+    error: genericErrorSchema.optional()
 });
 
 export const getAutofillCredentialsResultSchema = z.object({
@@ -257,6 +282,7 @@ export const autofillFeatureTogglesSchema = z.object({
     inlineIcon_credentials: z.boolean().optional(),
     third_party_credentials_provider: z.boolean().optional(),
     unknown_username_categorization: z.boolean().optional(),
+    input_focus_api: z.boolean().optional(),
     password_variant_categorization: z.boolean().optional(),
     partial_form_saves: z.boolean().optional()
 });
@@ -322,6 +348,8 @@ export const getAutofillDataResponseSchema = z.object({
     type: z.literal("getAutofillDataResponse").optional(),
     success: z.object({
         credentials: credentialsSchema.optional(),
+        creditCards: creditCardObjectSchema.optional(),
+        identities: identityObjectSchema.optional(),
         action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("refreshAvailableInputTypes"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
@@ -335,17 +363,6 @@ export const storeFormDataSchema = z.object({
 export const getAvailableInputTypesResultSchema = z.object({
     type: z.literal("getAvailableInputTypesResponse").optional(),
     success: availableInputTypesSchema,
-    error: genericErrorSchema.optional()
-});
-
-export const getAutofillInitDataResponseSchema = z.object({
-    type: z.literal("getAutofillInitDataResponse").optional(),
-    success: z.object({
-        credentials: z.array(credentialsSchema),
-        identities: z.array(identityObjectSchema),
-        creditCards: z.array(creditCardObjectSchema),
-        serializedInputContext: z.string()
-    }).optional(),
     error: genericErrorSchema.optional()
 });
 
@@ -385,6 +402,11 @@ export const apiSchema = z.object({
         id: z.literal("getAutofillDataResponse").optional(),
         paramsValidator: getAutofillDataRequestSchema.optional(),
         resultValidator: getAutofillDataResponseSchema.optional()
+    })).optional(),
+    getAutofillDataFocus: z.record(z.unknown()).and(z.object({
+        id: z.literal("getAutofillDataFocusResponse").optional(),
+        paramsValidator: getAutofillDataFocusRequestSchema.optional(),
+        resultValidator: getAutofillDataFocusResponseSchema.optional()
     })).optional(),
     getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
         id: z.literal("getRuntimeConfigurationResponse").optional(),

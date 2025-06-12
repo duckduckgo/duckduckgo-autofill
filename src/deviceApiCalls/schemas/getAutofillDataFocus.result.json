@@ -1,25 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "GetAutofillDataResponse",
+  "title": "GetAutofillDataFocusResponse",
   "type": "object",
   "additionalProperties": false,
   "properties": {
     "type": {
-      "description": "Required on Android + Windows devices, optional on iOS",
+      "description": "Required on mobile, to show keyboard accessory",
       "type": "string",
-      "const": "getAutofillDataResponse"
+      "const": "getAutofillDataFocusResponse"
     },
     "success": {
       "description": "The data returned, containing only fields that will be auto-filled",
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "credentials": { "$ref": "./credentials.json" },
         "creditCards": { "$ref": "./creditCard.json" },
-        "identities": { "$ref": "./identity.json" },
         "action": {
           "type": "string",
-          "enum": ["fill", "focus", "none", "refreshAvailableInputTypes", "acceptGeneratedPassword", "rejectGeneratedPassword"]
+          "enum": ["fill", "none"]
         }
       },
       "required": ["action"]
