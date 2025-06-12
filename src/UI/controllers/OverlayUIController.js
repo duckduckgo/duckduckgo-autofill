@@ -26,7 +26,7 @@ import { getMainTypeFromType, getSubtypeFromType } from '../../Form/matching.js'
  *     onPointerDown: (e) => this.onPointerDown(e)
  * })
  *
- * controller.attach(...)
+ * controller.attachTooltip(...)
  * ```
  */
 export class OverlayUIController extends UIController {
@@ -55,9 +55,9 @@ export class OverlayUIController extends UIController {
     }
 
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
         const { getPosition, topContextData, click, input } = args;
 
         // Do not attach the tooltip if the input is not in the DOM
@@ -82,7 +82,7 @@ export class OverlayUIController extends UIController {
             input.scrollIntoView(true);
             this._mutObs?.disconnect();
             setTimeout(() => {
-                this.attach(args);
+                this.attachTooltip(args);
             }, 50);
             return;
         }
