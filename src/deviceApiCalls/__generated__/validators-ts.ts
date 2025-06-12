@@ -480,7 +480,7 @@ export interface GetAutofillDataFocusRequest {
 }
 export interface GetAutofillDataFocusResponse {
   /**
-   * Required on iOS, to show keyboard extension
+   * Required on mobile, to show keyboard accessory
    */
   type?: "getAutofillDataFocusResponse";
   /**

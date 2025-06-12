@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "properties": {
     "type": {
-      "description": "Required on iOS, to show keyboard extension",
+      "description": "Required on mobile, to show keyboard accessory",
       "type": "string",
       "const": "getAutofillDataFocusResponse"
     },

@@ -13,23 +13,28 @@ export function creditCardPage(page) {
         },
 
         async clickCardNumberField() {
-            await page.click('#cardNumber');
+            const locator = page.getByLabel('Card Number');
+            await locator.click();
         },
 
         async clickCardHolderField() {
-            await page.click('#cardHolder');
+            const locator = page.getByLabel('Card Holder Name');
+            await locator.click();
         },
 
         async clickOnKnownShadowInputField() {
-            await page.click("[name='shadowInput']");
+            const locator = page.getByPlaceholder('Secure note (Shadow DOM)');
+            await locator.click();
         },
 
         async clickOnUnknownShadowInputField() {
-            await page.click("[name='shadowFirstName']");
+            const locator = page.getByPlaceholder('First Name (Shadow DOM)');
+            await locator.click();
         },
 
         async clickOnContentEditableField() {
-            await page.click('#contentEditableDiv');
+            const locator = page.getByText('Edit me! (contenteditable)');
+            await locator.click();
         },
 
         async assertMockCallOccurredTimes(methodName, expectedCount) {
