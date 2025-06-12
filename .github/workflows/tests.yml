@@ -14,7 +14,6 @@ jobs:
               with:
                   node-version-file: '.nvmrc'
             - uses: actions/cache@v3
-              id: npm-cache
               with:
                   path: |
                       ~/.npm
@@ -23,13 +22,6 @@ jobs:
                   key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-node-
-            - name: Check npm cache status
-              run: |
-                  if [ "${{ steps.npm-cache.outputs.cache-hit }}" == "true" ]; then
-                    echo "✅ NPM Cache HIT - using cached node_modules"
-                  else
-                    echo "❌ NPM Cache MISS - will download dependencies"
-                  fi
             - name: npm ci
               run: 'npm ci'
             - name: 'Clean tree'
@@ -50,13 +42,6 @@ jobs:
                   key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-playwright-
-            - name: Check Playwright cache status
-              run: |
-                  if [ "${{ steps.playwright-cache.outputs.cache-hit }}" == "true" ]; then
-                    echo "✅ Playwright Cache HIT - using cached browsers"
-                  else
-                    echo "❌ Playwright Cache MISS - will download browsers"
-                  fi
             - name: Install Playwright + DEPS
               run: npx playwright install --with-deps
               if: steps.playwright-cache.outputs.cache-hit != 'true'
