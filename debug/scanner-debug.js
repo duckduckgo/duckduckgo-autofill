@@ -17,7 +17,6 @@ const url = new URL(window.location.href);
 const initial = url.searchParams.get('form');
 
 loadList().then(() => {
-    if (!initial) return
     setState(initial)
     loadNewForm(initial).catch(console.error);
 });
