@@ -6,8 +6,12 @@
 
 import { Form } from '../src/Form/Form.js';
 
+/**
+ * @typedef {import('../src/Scanner.js').Scanner} Scanner
+ */
+
 const state = {
-    /** @type {import('./Scanner.js').Scanner | undefined} */
+    /** @type {import('../src/Scanner.js').Scanner | undefined} */
     scanner: undefined,
     /** @type {HTMLSelectElement|null} */
     list: document.querySelector('select[name="html-list"]'),
@@ -85,7 +89,7 @@ async function loadNewForm(filename) {
 }
 
 let timer;
-code.addEventListener('input', (evt) => {
+code.addEventListener('input', () => {
     clearTimeout(timer);
     const content = code.value;
     timer = setTimeout(() => {
@@ -95,8 +99,9 @@ code.addEventListener('input', (evt) => {
 frame.onload = () => {
     if (!frame) throw new Error('could not get iframe')
     console.log('will re-load shiz...')
-    frame.contentWindow?.addEventListener('ddg-scan-complete', ({ detail }) => {
-        const scanner = /** @type {Scanner} */(detail);
+    frame.contentWindow?.addEventListener('ddg-scan-complete', (event) => {
+        const customEvent = /** @type {CustomEvent} */ (event);
+        const scanner = /** @type {Scanner} */(customEvent.detail);
         for (let [_, form] of scanner.forms) {
             updateSignals(form);
             updateInputs(form);
@@ -120,7 +125,7 @@ function updateFrame(html) {
 }
 
 function setState(initial) {
-    const list = document.querySelector('select[name="html-list"]');
+    const list = /** @type {HTMLSelectElement|null} */ (document.querySelector('select[name="html-list"]'));
     if (!list) throw new Error("unreachable");
     if (initial) list.value = initial;
     list.addEventListener('change', (e) => {
