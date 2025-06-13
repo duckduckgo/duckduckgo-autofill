@@ -5,7 +5,8 @@
  */
 
 import { Form } from '../src/Form/Form.js';
-import beautify from 'js-beautify';
+import * as prettier from 'prettier/standalone';
+import htmlPlugin from 'prettier/plugins/html';
 
 /**
  * @typedef {import('../src/Scanner.js').Scanner} Scanner
@@ -143,7 +144,7 @@ function showSaveButton() {
     if (prettifyBtn) prettifyBtn.hidden = true;
 }
 
-function prettifyAndCleanHTML(html) {
+async function prettifyAndCleanHTML(html) {
     if (!html.trim()) return '';
 
     // Create a temporary DOM to parse and clean the HTML
@@ -174,20 +175,20 @@ function prettifyAndCleanHTML(html) {
     // Get the cleaned HTML
     let cleanedHTML = tempDiv.innerHTML;
 
-    // Use js-beautify for proper HTML formatting
-    // @ts-ignore - js-beautify types are incomplete
-    return beautify.html(cleanedHTML, {
-        indent_size: 2,
-        indent_char: ' ',
-        max_preserve_newlines: 1,
-        preserve_newlines: true,
-        keep_array_indentation: false,
-        break_chained_methods: false,
-        wrap_line_length: 120,
-        unformatted: ['pre', 'code', 'textarea'],
-        content_unformatted: ['pre', 'textarea'],
-        void_elements: ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']
-    });
+    // Use prettier for proper HTML formatting
+    try {
+        return await prettier.format(cleanedHTML, {
+            parser: 'html',
+            plugins: [htmlPlugin],
+            printWidth: 120,
+            tabWidth: 2,
+            useTabs: false,
+            htmlWhitespaceSensitivity: 'css'
+        });
+    } catch (error) {
+        console.error('Prettier formatting failed:', error);
+        return cleanedHTML;
+    }
 }
 
 function updateFrame(html) {
@@ -221,7 +222,7 @@ function setState(initial) {
 prettifyBtn.addEventListener('click', async () => {
     try {
         const clipboardText = await navigator.clipboard.readText();
-        const cleanedHTML = prettifyAndCleanHTML(clipboardText);
+        const cleanedHTML = await prettifyAndCleanHTML(clipboardText);
         if (code) {
             code.value = cleanedHTML;
             updateFrame(cleanedHTML);
