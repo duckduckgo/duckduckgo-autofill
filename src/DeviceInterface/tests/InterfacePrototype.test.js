@@ -26,7 +26,7 @@ describe('InterfacePrototype', function () {
         await device.init();
 
         const uiController = /** @type {import("../../UI/controllers/UIController.js").UIController } */ (device.uiController);
-        jest.spyOn(uiController, 'attach');
+        jest.spyOn(uiController, 'attachTooltip');
 
         const formEl = attachAndReturnGenericForm();
         const input = /** @type {HTMLInputElement} */ (formEl.querySelector('input'));
@@ -39,7 +39,7 @@ describe('InterfacePrototype', function () {
             trigger: 'userInitiated',
             triggerMetaData: { type: 'explicit-opt-in' },
         });
-        expect(uiController.attach).not.toHaveBeenCalled();
+        expect(uiController.attachTooltip).not.toHaveBeenCalled();
 
         mockedDoc.mockRestore();
     });

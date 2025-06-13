@@ -88,5 +88,9 @@
   "dontShowAgain": {
     "title": "Doøºnñ't Sh00w Ag@ååîn",
     "note": "Button that prevents the DuckDuckGo email protection signup prompt from appearing again."
+  },
+  "expiry" : {
+    "title": "££xp@îïr¥¥",
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }

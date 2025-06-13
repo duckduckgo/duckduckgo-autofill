@@ -3,6 +3,8 @@ import {
     addDebugFlagParamsSchema,
     getAutofillDataRequestSchema,
     getAutofillDataResponseSchema,
+    getAutofillDataFocusRequestSchema,
+    getAutofillDataFocusResponseSchema,
     getRuntimeConfigurationResponseSchema,
     storeFormDataSchema,
     getAvailableInputTypesResultSchema,
@@ -16,6 +18,8 @@ import {
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
     getIncontextSignupDismissedAtSchema,
+    getIdentityResultSchema,
+    getCreditCardResultSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
     emailProtectionGetUserDataResultSchema,
@@ -41,6 +45,15 @@ export class GetAutofillDataCall extends DeviceApiCall {
   id = "getAutofillDataResponse"
   paramsValidator = getAutofillDataRequestSchema
   resultValidator = getAutofillDataResponseSchema
+}
+/**
+ * @extends {DeviceApiCall<getAutofillDataFocusRequestSchema, getAutofillDataFocusResponseSchema>} 
+ */
+export class GetAutofillDataFocusCall extends DeviceApiCall {
+  method = "getAutofillDataFocus"
+  id = "getAutofillDataFocusResponse"
+  paramsValidator = getAutofillDataFocusRequestSchema
+  resultValidator = getAutofillDataFocusResponseSchema
 }
 /**
  * @extends {DeviceApiCall<any, getRuntimeConfigurationResponseSchema>} 
@@ -163,6 +176,22 @@ export class OpenManageIdentitiesCall extends DeviceApiCall {
  */
 export class StartCredentialsImportFlowCall extends DeviceApiCall {
   method = "startCredentialsImportFlow"
+}
+/**
+ * @extends {DeviceApiCall<any, getIdentityResultSchema>} 
+ */
+export class GetIdentityCall extends DeviceApiCall {
+  method = "getIdentity"
+  id = "getIdentityResponse"
+  resultValidator = getIdentityResultSchema
+}
+/**
+ * @extends {DeviceApiCall<any, getCreditCardResultSchema>} 
+ */
+export class GetCreditCardCall extends DeviceApiCall {
+  method = "getCreditCard"
+  id = "getCreditCardResponse"
+  resultValidator = getCreditCardResultSchema
 }
 /**
  * @extends {DeviceApiCall<any, any>} 

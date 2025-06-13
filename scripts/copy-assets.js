@@ -11,8 +11,7 @@ copyAutofillHTML();
 copySharedCredentials();
 
 function copyAutofillCSS() {
-    const stylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-tooltip-styles.css');
-    copyFileSync(stylesPath, filepath(distPath, 'autofill.css'));
+    const stylesPath = filepath(distPath, 'autofill.css');
     copyFileSync(stylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill.css'));
 
     const hostStylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-host-styles.css');

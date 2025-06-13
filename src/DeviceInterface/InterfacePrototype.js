@@ -5,6 +5,7 @@ import {
     formatDuckAddress,
     notifyWebApp,
     getDaxBoundingBox,
+    pierceShadowTree,
 } from '../autofill-utils.js';
 
 import { getInputType, getMainTypeFromType, getSubtypeFromType } from '../Form/matching.js';
@@ -262,6 +263,24 @@ class InterfacePrototype {
         return this.#data.creditCards;
     }
 
+    /**
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     */
+    initGlobalFocusHandler(forms) {
+        window.addEventListener(
+            'focus',
+            (e) => {
+                const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
+                const form = [...forms.values()].find((form) => form.hasFocus());
+                const targetElement = pierceShadowTree(e);
+                if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
+                    this.attachKeyboard({ device: this, form, element: targetElement });
+                }
+            },
+            true,
+        );
+    }
+
     async startInit() {
         if (this.isInitializationStarted) return;
 
@@ -284,6 +303,9 @@ class InterfacePrototype {
 
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
+        }
+        if (this.settings.featureToggles.input_focus_api) {
+            this.initGlobalFocusHandler(this.scanner.forms);
         }
     }
 
@@ -411,7 +433,7 @@ class InterfacePrototype {
      * @param {HTMLInputElement} params.input
      * @param {{ x: number; y: number; } | null} params.click
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
-     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
+     * @param {import('../UI/controllers/UIController.js').AttachTooltipArgs["triggerMetaData"]} params.triggerMetaData
      */
     attachTooltip(params) {
         const { form, input, click, trigger } = params;
@@ -465,7 +487,7 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form);
 
-        this.uiController?.attach({
+        this.uiController?.attachTooltip({
             input,
             form,
             click,
@@ -479,6 +501,13 @@ class InterfacePrototype {
         if (trigger === 'autoprompt') {
             this.autopromptFired = true;
         }
+    }
+
+    /**
+     * @param {import('../UI/controllers/UIController.js').AttachKeyboardArgs} args
+     */
+    attachKeyboard(args) {
+        this.uiController?.attachKeyboard(args);
     }
 
     /**
@@ -701,7 +730,7 @@ class InterfacePrototype {
         return this.deviceApi.request(new GetAutofillCredentialsCall({ id: String(id) }));
     }
 
-    /** @returns {APIResponse<CreditCardObject>} */
+    /** @returns {APIResponseSingle<CreditCardObject>} */
     async getAutofillCreditCard(_id) {
         throw new Error('getAutofillCreditCard unimplemented');
     }

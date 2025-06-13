@@ -1,0 +1,25 @@
+<!-- https://apiservices.brctv.com -->
+<form class="ui large form" id="identifierForm">
+    <div class="ui visible negative message" id="error-msg"></div>
+
+    <div class="field">
+        <div class="ui fluid left icon input">
+            <input type="text" id="usernameUserInput" value="" name="usernameUserInput" autofocus="autofocus" tabindex="0" placeholder="Username" required="" data-manual-scoring="username">
+        </div>
+        <input id="username" name="username" type="hidden" value="">
+        <input id="authType" name="authType" type="hidden" value="idf">
+    </div>
+
+    <input type="hidden" name="sessionDataKey" value="7a1f8971-ef89-434d-9982-e7bcc2a41d49">
+
+    <div class="buttons">
+        <input type="submit" class="ui primary button margin-bottom-double" role="button" value="Continue" data-manual-submit>
+        <a class="ui primary button margin-bottom-double" href="https://www.brctv.com/register" target="_blank">
+            Register
+        </a>
+    </div>
+
+    <div class="field forgot-links">
+        <a id="usernameRecoverLink" href="https://www.brctv.com/forgot-username">Forgot Username</a>?
+    </div>
+</form>

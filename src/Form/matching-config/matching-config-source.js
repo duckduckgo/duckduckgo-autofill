@@ -301,14 +301,14 @@ const matchingConfiguration = {
                 },
 
                 // CC
-                cardName: { match: '(card.*name|name.*card)|(card.*holder|holder.*card)|(card.*owner|owner.*card)' },
+                cardName: { match: '(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)', skip: 'email' },
                 cardNumber: { match: 'card.*number|number.*card', skip: 'phone', forceUnknown: 'plus' },
                 cardSecurityCode: { match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id' },
                 expirationMonth: {
                     match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(month|\\bmm\\b(?![.\\s/-]yy))',
-                    skip: 'mm[/\\s.\\-_—–]|check',
+                    skip: 'mm[/\\s.\\-_—–]|check|year',
                 },
-                expirationYear: { match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check' },
+                expirationYear: { match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check|month' },
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
                     skip: 'invalid|^dd/|check',
@@ -400,23 +400,23 @@ const matchingConfiguration = {
                 },
                 conservativeSignupRegex: {
                     match:
-                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|profile|update' +
+                        'sign.?up|join|register|enroll|(create|new).+account|newsletter|subscri(be|ption)|settings|preferences|update' +
                         // Italian
                         '|iscri(viti|zione)|registra(ti|zione)|(?:nuovo|crea(?:zione)?) account|contatt(?:ac)?i|sottoscriv|sottoscrizione|impostazioni|preferenze|aggiorna' +
                         // German
                         '|anmeld(en|ung)|registrier(en|ung)|neukunde|neuer (kunde|benutzer|nutzer)' +
                         // Dutch
-                        '|registreren|eigenschappen|profiel|bijwerken' +
+                        '|registreren|eigenschappen|bijwerken' +
                         // French
-                        '|s.inscrire|inscription|s.abonner|abonnement|préférences|profil|créer un compte' +
+                        '|s.inscrire|inscription|s.abonner|abonnement|préférences|créer un compte' +
                         // Spanish
-                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|perfil|lista de correo' +
+                        '|regis(trarse|tro)|regístrate|inscr(ibirse|ipción|íbete)|crea(r cuenta)?|nueva cuenta|nuevo (cliente|usuario)|preferencias|lista de correo' +
                         // Swedish
                         '|registrer(a|ing)|(nytt|öppna) konto|nyhetsbrev|prenumer(era|ation)|kontakt|skapa|starta|inställningar|min (sida|kundvagn)|uppdatera',
                 },
                 resetPasswordLink: {
                     match:
-                        "(forgot(ten)?|reset|don't remember).?(your )?password|password forgotten" +
+                        "(forgot(ten)?|reset|don't remember).?(your )?(password|username)|password forgotten" +
                         // Italian
                         '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
                         // German

@@ -60,7 +60,7 @@ are saved.
 ```mermaid
 sequenceDiagram
     Form->>+InterfacePrototype: device.attachTooltip()
-    InterfacePrototype->>OverlayController: attach()
+    InterfacePrototype->>OverlayController: attachTooltip()
     OverlayController->>AppleDevice: options._show()
     AppleDevice->>AppleDevice: deviceApi.notify('showAutofillParent')
     loop polling for click

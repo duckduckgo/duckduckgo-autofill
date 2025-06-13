@@ -1,6 +1,6 @@
 // We've seen non-standard types like 'user'. This selector should get them, too
 const genericTextInputField = `
-input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`;
+input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([role=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`;
 
 const formInputsSelectorWithoutSelect = [genericTextInputField, '[autocomplete=username]'];
 
@@ -115,6 +115,9 @@ input[autocomplete="ccname" i],
 input[name="ccname" i],
 input[name="cc-name" i],
 input[name="ppw-accountHolderName" i],
+input[name="payment[name]"],
+input[id="cc-name" i],
+input[id="ccname" i],
 input[id*=cardname i],
 input[id*=card-name i],
 input[id*=card_name i]`;
@@ -126,8 +129,11 @@ input[autocomplete="cardnumber" i],
 input[autocomplete="card-number" i],
 input[name="ccnumber" i],
 input[name="cc-number" i],
-input[name*=card i][name*=number i],
+input[name*=card i][name*=number i]:not([name*=verif i]):not([name*=phone i]):not([name*=secur i]),
 input[name*=cardnumber i],
+input[name="payment[card_no]"],
+input[id="cc-number" i],
+input[id="ccnumber" i],
 input[id*=cardnumber i],
 input[id*=card-number i],
 input[id*=card_number i]`;
@@ -137,11 +143,16 @@ input[autocomplete="cc-csc" i],
 input[autocomplete="csc" i],
 input[autocomplete="cc-cvc" i],
 input[autocomplete="cvc" i],
-input[name="cvc" i],
+input[name*="cvc" i],
+input[name*="cvv" i],
 input[name="cc-cvc" i],
 input[name="cc-csc" i],
 input[name="csc" i],
-input[name*=security i][name*=code i]`;
+input[name*=security i][name*=code i],
+input[id="cc-csc" i],
+input[id="csc" i],
+input[id="cc-cvc" i],
+input[id="cvc" i]`;
 
 const expirationMonth = `
 [autocomplete="cc-exp-month" i],
@@ -150,11 +161,13 @@ const expirationMonth = `
 [name="ppw-expirationDate_month" i],
 [name=cardExpiryMonth i],
 [name*=ExpDate_Month i],
-[name*=expiration i][name*=month i],
-[id*=expiration i][id*=month i],
+[name*=exp i][name*=month i]:not([name*=year i]),
+[id*=exp i][id*=month i]:not([id*=year i]),
 [name*=cc-exp-month i],
 [name*="card_exp-month" i],
 [name*=cc_exp_month i],
+[id="cc-exp-month" i],
+[id="cc_exp_month" i],
 [id*=cc-month i]`;
 
 const expirationYear = `
@@ -164,18 +177,23 @@ const expirationYear = `
 [name="ppw-expirationDate_year" i],
 [name=cardExpiryYear i],
 [name*=ExpDate_Year i],
-[name*=expiration i][name*=year i],
-[id*=expiration i][id*=year i],
+[name*=exp i][name*=year i]:not([name*=month i]),
+[id*=exp i][id*=year i]:not([id*=month i]),
 [name*="cc-exp-year" i],
 [name*="card_exp-year" i],
 [name*=cc_exp_year i],
+[id="cc-exp-year" i],
+[id="cc_exp_year" i],
 [id*=cc-year i]`;
 
 const expiration = `
 [autocomplete="cc-exp" i],
 [name="cc-exp" i],
 [name="exp-date" i],
+input[name="expiry" i],
 [name="expirationDate" i],
+input[name*=ex][placeholder="mm/yy" i],
+[id="cc-exp" i],
 input[id*=expiration i]`;
 
 const firstName = `

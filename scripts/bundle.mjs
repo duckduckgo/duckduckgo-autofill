@@ -16,10 +16,11 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
     Promise.all([
         bundle({}),
         bundle({
-            plugins: [],
+            plugins: [cssPlugin()],
             outfile: join(ROOT, 'dist/autofill-debug.js'),
         }),
         uiPreview(),
+        bundleCSSForExtension(),
         scannerDebug(),
         scannerRunner(),
     ]);
@@ -39,11 +40,7 @@ async function bundle(buildOptions = {}) {
         outfile: join(ROOT, 'dist/autofill.js'),
         metafile: true,
         write: false,
-        loader: {
-            // import css files as text
-            '.css': 'text',
-        },
-        plugins: [zodReplacerPlugin()],
+        plugins: [zodReplacerPlugin(), cssPlugin()],
         ...buildOptions,
     };
 
@@ -74,6 +71,30 @@ async function bundle(buildOptions = {}) {
         writeFileSync(file.path, file.replaced);
         console.log('✅', relative(ROOT, file.path));
     }
+
+    if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
+        console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
+    }
+}
+
+async function bundleCSSForExtension() {
+    const outFile = join(ROOT, 'dist/autofill.css');
+    /** @type {import("esbuild").BuildOptions} */
+    const config = {
+        entryPoints: [join(ROOT, 'src/UI/styles/autofill-tooltip-styles.css')],
+        target: 'es2021',
+        bundle: true,
+        outfile: outFile,
+        metafile: true,
+        loader: {
+            '.css': 'css',
+            '.svg': 'base64',
+            '.png': 'base64',
+        },
+    };
+
+    const buildOutput = await esbuild.build(config);
+    console.log('✅', relative(ROOT, outFile));
 
     if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
         console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
@@ -185,4 +206,38 @@ export function replaceConstExports(fileAsString) {
         .flat();
 
     return asNames.join('\n');
+}
+
+/**
+ * Plugin to handle CSS files and transform url() calls into data URLs
+ */
+function cssPlugin() {
+    return {
+        name: 'css-plugin',
+        setup(build) {
+            build.onLoad({ filter: /\.css$/ }, async (args) => {
+                // Load the CSS file and all the assets it references, converting them to data URLs
+                const result = esbuild.buildSync({
+                    entryPoints: [args.path],
+                    bundle: true,
+                    write: false,
+                    loader: {
+                        '.css': 'css',
+                        '.svg': 'base64',
+                        '.png': 'base64',
+                    },
+                });
+
+                if (!result.outputFiles?.[0]) {
+                    throw new Error('No output files generated');
+                }
+
+                // Replace the original CSS file with the transformed version
+                return {
+                    contents: result.outputFiles[0].text,
+                    loader: 'text',
+                };
+            });
+        },
+    };
 }

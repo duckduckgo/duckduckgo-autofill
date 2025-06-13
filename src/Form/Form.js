@@ -393,6 +393,10 @@ class Form {
         return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
     }
 
+    canCategorizePasswordVariant() {
+        return this.device.settings.featureToggles.password_variant_categorization;
+    }
+
     /**
      * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
      * @param {HTMLInputElement} ambiguousInput
@@ -450,6 +454,33 @@ class Form {
         }
     }
 
+    /**
+     * Recategorizes the new/current password field variant
+     */
+    recategorizeInputVariantIfNeeded() {
+        let newPasswordFields = 0;
+        let currentPasswordFields = 0;
+        let firstNewPasswordField = null;
+
+        for (const credentialElement of this.inputs.credentials) {
+            const variant = getInputVariant(credentialElement);
+            if (variant === 'new') {
+                newPasswordFields++;
+                if (!firstNewPasswordField) firstNewPasswordField = credentialElement;
+            }
+            if (variant === 'current') currentPasswordFields++;
+
+            // Short circuit if the field counts wouldn't match the requirements
+            if (newPasswordFields > 3 || currentPasswordFields > 0) return;
+        }
+
+        // If a form has 3 new-password fields, but no current, the first is likely a current
+        if (newPasswordFields === 3 && currentPasswordFields === 0) {
+            if (shouldLog()) console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+            firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE, 'credentials.password.current');
+        }
+    }
+
     categorizeInputs() {
         const selector = this.matching.cssSelector('formInputsSelector');
         // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -474,6 +505,8 @@ class Form {
         }
 
         if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+
+        if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
 
         // If the form has only one input and it's unknown, discard the form
         if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
@@ -613,6 +646,7 @@ class Form {
         const config = getInputConfig(input);
 
         const shouldDecorate = await config.shouldDecorate(input, this);
+
         if (!shouldDecorate) return this;
 
         input.setAttribute(ATTR_AUTOFILL, 'true');
@@ -803,7 +837,7 @@ class Form {
                 // Don't open the tooltip on input focus whenever it'll only show in-context signup
                 return false;
             } else {
-                return this.isCredentialsImoprtAvailable;
+                return this.isCredentialsImportAvailable;
             }
         }
 
@@ -945,7 +979,7 @@ class Form {
         this.execOnInputs((input) => this.touched.add(input), dataType);
     }
 
-    get isCredentialsImoprtAvailable() {
+    get isCredentialsImportAvailable() {
         const isLoginOrHybrid = this.isLogin || this.isHybrid;
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
@@ -967,7 +1001,7 @@ class Form {
         await this.device.settings.populateDataIfNeeded({ mainType, subtype });
         if (
             this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) ||
-            this.isCredentialsImoprtAvailable
+            this.isCredentialsImportAvailable
         ) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {

@@ -59,6 +59,12 @@ export interface API {
     resultValidator?: GetAutofillDataResponse;
     [k: string]: unknown;
   };
+  getAutofillDataFocus?: {
+    id?: "getAutofillDataFocusResponse";
+    paramsValidator?: GetAutofillDataFocusRequest;
+    resultValidator?: GetAutofillDataFocusResponse;
+    [k: string]: unknown;
+  };
   getRuntimeConfiguration?: {
     id?: "getRuntimeConfigurationResponse";
     resultValidator?: GetRuntimeConfigurationResponse;
@@ -166,6 +172,24 @@ export interface API {
    * (macOS/Windows) Opens the native password import flow UI
    */
   startCredentialsImportFlow?: {
+    [k: string]: unknown;
+  };
+  /**
+   * (Windows) Get a single identity
+   */
+  getIdentity?: {
+    id?: "getIdentityResponse";
+    paramValidator?: GetIdentityParam;
+    resultValidator?: GetIdentityResult;
+    [k: string]: unknown;
+  };
+  /**
+   * (Windows) Get a single credit card
+   */
+  getCreditCard?: {
+    id?: "getCreditCardResponse";
+    paramValidator?: GetCreditCardParam;
+    resultValidator?: GetCreditCardResult;
     [k: string]: unknown;
   };
   /**
@@ -306,6 +330,8 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
+    creditCards?: CreditCardObject;
+    identities?: IdentityObject;
     action:
       | "fill"
       | "focus"
@@ -332,8 +358,139 @@ export interface Credentials {
   credentialsProvider?: "duckduckgo" | "bitwarden";
   providerStatus?: "locked" | "unlocked";
 }
+export interface CreditCardObject {
+  /**
+   * Unique identifier for the credit card
+   */
+  id: string;
+  /**
+   * Title or name of the credit card
+   */
+  title: string;
+  /**
+   * Formatted display number of the credit card
+   */
+  displayNumber: string;
+  /**
+   * Name on the credit card
+   */
+  cardName?: string;
+  /**
+   * Security code (CVV/CVC) of the credit card
+   */
+  cardSecurityCode?: string;
+  /**
+   * Expiration month of the credit card
+   */
+  expirationMonth?: string;
+  /**
+   * Expiration year of the credit card
+   */
+  expirationYear?: string;
+  /**
+   * Full number of the credit card
+   */
+  cardNumber?: string;
+  /**
+   * Payment provider associated with the credit card
+   */
+  paymentProvider?: string;
+}
+export interface IdentityObject {
+  /**
+   * Unique identifier for the identity
+   */
+  id: string;
+  /**
+   * Title or name of the identity
+   */
+  title: string;
+  /**
+   * First name of the individual
+   */
+  firstName?: string;
+  /**
+   * Middle name of the individual
+   */
+  middleName?: string;
+  /**
+   * Last name of the individual
+   */
+  lastName?: string;
+  /**
+   * Day of birth
+   */
+  birthdayDay?: string;
+  /**
+   * Month of birth
+   */
+  birthdayMonth?: string;
+  /**
+   * Year of birth
+   */
+  birthdayYear?: string;
+  /**
+   * Street address
+   */
+  addressStreet?: string;
+  /**
+   * Additional street address information
+   */
+  addressStreet2?: string;
+  /**
+   * City of the address
+   */
+  addressCity?: string;
+  /**
+   * Province or state of the address
+   */
+  addressProvince?: string;
+  /**
+   * Postal or ZIP code of the address
+   */
+  addressPostalCode?: string;
+  /**
+   * Country code of the address
+   */
+  addressCountryCode?: string;
+  /**
+   * Phone number
+   */
+  phone?: string;
+  /**
+   * Email address
+   */
+  emailAddress?: string;
+}
 export interface GenericError {
   message: string;
+}
+/**
+ * This describes the argument given to `getAutofillDataFocus(data)`
+ */
+export interface GetAutofillDataFocusRequest {
+  /**
+   * This is the combined input type, such as `credentials.username`
+   */
+  inputType: string;
+  /**
+   * The main input type
+   */
+  mainType: "credentials" | "identities" | "creditCards" | "unknown";
+}
+export interface GetAutofillDataFocusResponse {
+  /**
+   * Required on mobile, to show keyboard accessory
+   */
+  type?: "getAutofillDataFocusResponse";
+  /**
+   * The data returned, containing only fields that will be auto-filled
+   */
+  success?: {
+    creditCards?: CreditCardObject;
+    action: "fill" | "none";
+  };
+  error?: GenericError;
 }
 /**
  * Data that can be understood by @duckduckgo/content-scope-scripts
@@ -453,12 +610,8 @@ export interface GetAutofillInitDataResponse {
   type?: "getAutofillInitDataResponse";
   success?: {
     credentials: Credentials[];
-    identities: {
-      [k: string]: unknown;
-    }[];
-    creditCards: {
-      [k: string]: unknown;
-    }[];
+    identities: IdentityObject[];
+    creditCards: CreditCardObject[];
     /**
      * A clone of the `serializedInputContext` that was sent in the request
      */
@@ -616,9 +769,17 @@ export interface AutofillFeatureToggles {
   inlineIcon_credentials?: boolean;
   third_party_credentials_provider?: boolean;
   /**
-   * If true, we will attempt categorizaing username, based on the rest of the input fields in the form
+   * If true, we will attempt re-categorizing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, we will send extra calls (getAutofillDataFocused) to show the keyboard accessory
+   */
+  input_focus_api?: boolean;
+  /**
+   * If true, we will attempt re-categorizing the password variant, based on other fields in the form
+   */
+  password_variant_categorization?: boolean;
   /**
    * If true, then username only form saves will be allowed
    */
@@ -633,6 +794,18 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
+}
+export interface GetIdentityParam {
+  id: string;
+}
+export interface GetIdentityResult {
+  success: IdentityObject;
+}
+export interface GetCreditCardParam {
+  id: string;
+}
+export interface GetCreditCardResult {
+  success: CreditCardObject;
 }
 /**
  * Used to store Email Protection auth credentials.

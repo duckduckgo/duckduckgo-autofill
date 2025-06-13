@@ -95,5 +95,9 @@
   "credentialsImportText" : {
     "title" : "Överför snabbt och säkert dina lösenord från en annan webbläsare eller lösenordshanterare.",
     "note" : "Subtitle that explains the purpose of the import dialog"
+  },
+  "expiry" : {
+    "title": "Utgångsdatum",
+    "note": "Label that indicates the expiration date of credit cards."
   }
 }
