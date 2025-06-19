@@ -275,6 +275,30 @@ class InterfacePrototype {
                 const targetElement = pierceShadowTree(e);
                 if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
                     this.attachKeyboard({ device: this, form, element: targetElement });
+
+                    if (targetElement instanceof HTMLElement && !targetElement.hasAttribute('autocomplete')) {
+                        const inputType = getInputType(targetElement);
+                        const autocompleteValue = this.getAutocompleteValueFromInputType(inputType);
+                        targetElement.setAttribute('autocomplete', autocompleteValue);
+                    }
+                }
+            },
+            true,
+        );
+    }
+
+    /**
+     * Remove autocomplete attribute on blur
+     */
+    initGlobalBlurHandler() {
+        window.addEventListener(
+            'blur',
+            (e) => {
+                const targetElement = pierceShadowTree(e);
+                if (this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
+                    if (targetElement instanceof HTMLElement && targetElement.hasAttribute('autocomplete')) {
+                        targetElement.removeAttribute('autocomplete');
+                    }
                 }
             },
             true,
@@ -304,9 +328,10 @@ class InterfacePrototype {
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
         }
-        if (this.settings.featureToggles.input_focus_api) {
-            this.initGlobalFocusHandler(this.scanner.forms);
-        }
+        // if (this.settings.featureToggles.input_focus_api) {
+        this.initGlobalFocusHandler(this.scanner.forms);
+        this.initGlobalBlurHandler();
+        // }
     }
 
     async init() {
@@ -680,6 +705,34 @@ class InterfacePrototype {
 
     /** @returns {void} */
     closeEmailProtection() {}
+
+    /**
+     * Determines the appropriate autocomplete attribute value based on the input type
+     * @param {import('../Form/matching').SupportedTypes} inputType
+     * @returns {string}
+     */
+    getAutocompleteValueFromInputType(inputType) {
+        const subtype = getSubtypeFromType(inputType);
+
+        // Map input subtypes to autocomplete attribute values
+        const autocompleteMap = {
+            // Identities
+            emailAddress: 'email',
+            fullName: 'name',
+            firstName: 'given-name',
+            middleName: 'additional-name',
+            lastName: 'family-name',
+            phone: 'tel',
+            addressStreet: 'street-address',
+            addressStreet2: 'address-line2',
+            addressCity: 'address-level2',
+            addressProvince: 'address-level1',
+            addressPostalCode: 'postal-code',
+            addressCountryCode: 'country',
+        };
+
+        return autocompleteMap[subtype] || 'on';
+    }
 
     /** @returns {Promise<null|Record<string,boolean>>} */
     getEmailProtectionCapabilities() {

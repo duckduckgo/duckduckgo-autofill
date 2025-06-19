@@ -1,19 +1,29 @@
 "use strict";
 (() => {
   var __defProp = Object.defineProperty;
-  var __typeError = (msg) => {
-    throw TypeError(msg);
-  };
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __export = (target, all) => {
-    for (var name in all)
-      __defProp(target, name, { get: all[name], enumerable: true });
+  var __publicField = (obj, key, value) => {
+    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+    return value;
   };
-  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
-  var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
-  var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-  var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
+  var __accessCheck = (obj, member, msg) => {
+    if (!member.has(obj))
+      throw TypeError("Cannot " + msg);
+  };
+  var __privateGet = (obj, member, getter) => {
+    __accessCheck(obj, member, "read from private field");
+    return getter ? getter.call(obj) : member.get(obj);
+  };
+  var __privateAdd = (obj, member, value) => {
+    if (member.has(obj))
+      throw TypeError("Cannot add the same private member more than once");
+    member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+  };
+  var __privateSet = (obj, member, value, setter) => {
+    __accessCheck(obj, member, "write to private field");
+    setter ? setter.call(obj, value) : member.set(obj, value);
+    return value;
+  };
 
   // src/requestIdleCallback.js
   /*!
@@ -580,7 +590,8 @@
 
   // src/Form/matching-utils.js
   function logMatching(el, matchingResult) {
-    if (!shouldLog()) return;
+    if (!shouldLog())
+      return;
     const fieldIdentifier = getInputIdentifier(el);
     console.group(fieldIdentifier);
     console.log(el);
@@ -596,9 +607,12 @@ Source: "${matchedFrom}"`;
     console.groupEnd();
   }
   function getVerb(matchingResult) {
-    if (matchingResult.matched) return "Matched";
-    if (matchingResult.proceed === false) return "Matched forceUnknown";
-    if (matchingResult.skip) return "Skipped";
+    if (matchingResult.matched)
+      return "Matched";
+    if (matchingResult.proceed === false)
+      return "Matched forceUnknown";
+    if (matchingResult.skip)
+      return "Skipped";
     return "";
   }
   function getInputIdentifier(el) {
@@ -609,7 +623,8 @@ Source: "${matchedFrom}"`;
     return "Field: " + (label || placeholder || name || id);
   }
   function logUnmatched(el, allStrings) {
-    if (!shouldLog()) return;
+    if (!shouldLog())
+      return;
     const fieldIdentifier = getInputIdentifier(el);
     console.group(fieldIdentifier);
     console.log(el);
@@ -630,18 +645,18 @@ Source: "${matchedFrom}"`;
      */
     constructor(config) {
       /** @type {MatchingConfiguration} */
-      __privateAdd(this, _config);
+      __privateAdd(this, _config, void 0);
       /** @type {CssSelectorConfiguration['selectors']} */
-      __privateAdd(this, _cssSelectors);
+      __privateAdd(this, _cssSelectors, void 0);
       /** @type {Record<string, DDGMatcher>} */
-      __privateAdd(this, _ddgMatchers);
+      __privateAdd(this, _ddgMatchers, void 0);
       /**
        * This acts as an internal cache for the larger vendorRegexes
        * @type {VendorRegexConfiguration['rules']}
        */
-      __privateAdd(this, _vendorRegexRules);
+      __privateAdd(this, _vendorRegexRules, void 0);
       /** @type {MatcherLists} */
-      __privateAdd(this, _matcherLists);
+      __privateAdd(this, _matcherLists, void 0);
       /** @type {Array<StrategyNames>} */
       __privateAdd(this, _defaultStrategyOrder, ["cssSelector", "ddgMatcher", "vendorRegex"]);
       /** @type {Record<MatchableStrings, string>} */
@@ -807,11 +822,13 @@ Source: "${matchedFrom}"`;
      */
     isInputLargeEnough(matchedType, input) {
       const expectedDimensionBounds = dimensionBounds[matchedType];
-      if (!expectedDimensionBounds) return true;
+      if (!expectedDimensionBounds)
+        return true;
       const width = input.offsetWidth;
       const height = input.offsetHeight;
       const isHidden = height === 0 && width === 0;
-      if (isHidden) return true;
+      if (isHidden)
+        return true;
       return width >= expectedDimensionBounds.minWidth;
     }
     /**
@@ -828,7 +845,8 @@ Source: "${matchedFrom}"`;
         return presetType;
       }
       this.setActiveElementStrings(input, formEl);
-      if (this.subtypeFromMatchers("unknown", input)) return "unknown";
+      if (this.subtypeFromMatchers("unknown", input))
+        return "unknown";
       if (opts.isCCForm) {
         const subtype = this.subtypeFromMatchers("cc", input);
         if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -906,7 +924,8 @@ Source: "${matchedFrom}"`;
         let result;
         for (const matcher of matchers) {
           const lookup = matcher.strategies[strategyName];
-          if (!lookup) continue;
+          if (!lookup)
+            continue;
           if (strategyName === "cssSelector") {
             result = this.execCssSelector(lookup, el);
           }
@@ -998,7 +1017,8 @@ Source: "${matchedFrom}"`;
       const matchableStrings = ddgMatcher.matchableStrings || ["labelText", "placeholderAttr", "relatedText"];
       for (const stringName of matchableStrings) {
         const elementString = this.activeElementStrings[stringName];
-        if (!elementString) continue;
+        if (!elementString)
+          continue;
         let score = 0;
         const result = {
           ...defaultResult,
@@ -1058,7 +1078,8 @@ Source: "${matchedFrom}"`;
       const stringsToMatch = ["placeholderAttr", "nameAttr", "labelText", "id", "relatedText"];
       for (const stringName of stringsToMatch) {
         const elementString = this.activeElementStrings[stringName];
-        if (!elementString) continue;
+        if (!elementString)
+          continue;
         if (safeRegexTest(regex, elementString)) {
           return {
             ...defaultResult,
@@ -1226,7 +1247,8 @@ Source: "${matchedFrom}"`;
   }
   var removeExcessWhitespace = (string = "", textLengthCutoff = TEXT_LENGTH_CUTOFF) => {
     string = string?.trim() || "";
-    if (!string || string.length > textLengthCutoff + 50) return "";
+    if (!string || string.length > textLengthCutoff + 50)
+      return "";
     return string.replace(/\n/g, " ").replace(/\s{2,}/g, " ");
   };
   var getExplicitLabelsText = (el) => {
@@ -1252,7 +1274,8 @@ Source: "${matchedFrom}"`;
   };
   var recursiveGetPreviousElSibling = (el) => {
     const previousEl = el.previousElementSibling;
-    if (!previousEl) return null;
+    if (!previousEl)
+      return null;
     if (EXCLUDED_TAGS.includes(previousEl.tagName)) {
       return recursiveGetPreviousElSibling(previousEl);
     }
@@ -1285,12 +1308,14 @@ Source: "${matchedFrom}"`;
     } else {
       trimmedText = extractElementStrings(scope).join(" ");
     }
-    if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText;
+    if (trimmedText.length < TEXT_LENGTH_CUTOFF)
+      return trimmedText;
     return "";
   };
   var getLargestMeaningfulContainer = (el, form, cssSelector) => {
     const parentElement = el.parentElement;
-    if (!parentElement || el === form || !cssSelector) return el;
+    if (!parentElement || el === form || !cssSelector)
+      return el;
     const inputsInParentsScope = parentElement.querySelectorAll(cssSelector);
     if (inputsInParentsScope.length === 1) {
       const labelInParentScope = parentElement.querySelector("label");
@@ -1484,8 +1509,10 @@ Source: "${matchedFrom}"`;
     }
     return new Promise((resolve) => {
       const handler = (e) => {
-        if (e.origin !== window.origin) return;
-        if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse)) return;
+        if (e.origin !== window.origin)
+          return;
+        if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))
+          return;
         resolve(e.data);
         window.removeEventListener("message", handler);
       };
@@ -1501,7 +1528,8 @@ Source: "${matchedFrom}"`;
       return enabled;
     }
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
-    if (!userPreferences) return false;
+    if (!userPreferences)
+      return false;
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
   };
@@ -1527,7 +1555,8 @@ Source: "${matchedFrom}"`;
   };
   var originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
   var setValueForInput = (el, val, config) => {
-    if (!config?.isAndroid) el.focus();
+    if (!config?.isAndroid)
+      el.focus();
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
     originalSet?.call(el, val);
     const events = [
@@ -1565,7 +1594,8 @@ Source: "${matchedFrom}"`;
         value = `${Number(value) + 1}`;
       }
       if (value === stringVal || Number(value) === numberVal) {
-        if (option.selected) return false;
+        if (option.selected)
+          return false;
         option.selected = true;
         fireEventsOnSelect(el);
         return true;
@@ -1573,7 +1603,8 @@ Source: "${matchedFrom}"`;
     }
     for (const option of el.options) {
       if (option.innerText === stringVal || Number(option.innerText) === numberVal || safeRegexTest(new RegExp(stringVal, "i"), option.innerText)) {
-        if (option.selected) return false;
+        if (option.selected)
+          return false;
         option.selected = true;
         fireEventsOnSelect(el);
         return true;
@@ -1582,8 +1613,10 @@ Source: "${matchedFrom}"`;
     return false;
   };
   var setValue = (el, val, config) => {
-    if (el instanceof HTMLInputElement) return setValueForInput(el, val, config);
-    if (el instanceof HTMLSelectElement) return setValueForSelect(el, val);
+    if (el instanceof HTMLInputElement)
+      return setValueForInput(el, val, config);
+    if (el instanceof HTMLSelectElement)
+      return setValueForSelect(el, val);
     return false;
   };
   var safeExecute = (el, fn, _opts = {}) => {
@@ -1660,7 +1693,8 @@ Source: "${matchedFrom}"`;
   };
   var buttonInputTypes = ["submit", "button"];
   var getTextShallow = (el) => {
-    if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent);
+    if (el instanceof HTMLButtonElement)
+      return removeExcessWhitespace(el.textContent);
     if (el instanceof HTMLInputElement) {
       if (buttonInputTypes.includes(el.type)) {
         return el.value;
@@ -1722,25 +1756,30 @@ Source: "${matchedFrom}"`;
     if (totalLength < 4) {
       throw new Error("Do not use with strings shorter than 4");
     }
-    if (string.length <= totalLength) return string;
+    if (string.length <= totalLength)
+      return string;
     const truncated = string.slice(0, totalLength / 2).concat("\u2026", string.slice(totalLength / -2));
     return truncated;
   }
   function isFormLikelyToBeUsedAsPageWrapper(form) {
-    if (form.parentElement !== document.body) return false;
+    if (form.parentElement !== document.body)
+      return false;
     const formChildren = form.querySelectorAll("*").length;
-    if (formChildren < 100) return false;
+    if (formChildren < 100)
+      return false;
     const bodyChildren = document.body.querySelectorAll("*").length;
     const formChildrenPercentage = formChildren * 100 / bodyChildren;
     return formChildrenPercentage > 50;
   }
   function safeRegexTest(regex, string, textLengthCutoff = constants.TEXT_LENGTH_CUTOFF) {
-    if (!string || !regex || string.length > textLengthCutoff) return false;
+    if (!string || !regex || string.length > textLengthCutoff)
+      return false;
     return regex.test(string);
   }
   function pierceShadowTree(event, wantedTargetType) {
     const { target } = event;
-    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target;
+    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath)
+      return target;
     const clickStack = event.composedPath();
     if (!wantedTargetType) {
       return clickStack[0];
@@ -1749,7 +1788,8 @@ Source: "${matchedFrom}"`;
   }
   function getActiveElement(root = document) {
     const activeElement = root.activeElement;
-    if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement;
+    if (!(activeElement instanceof Element) || !activeElement.shadowRoot)
+      return activeElement;
     const innerActiveElement = activeElement.shadowRoot.activeElement;
     if (innerActiveElement?.shadowRoot) {
       return getActiveElement(innerActiveElement.shadowRoot);
@@ -2348,7 +2388,8 @@ Source: "${matchedFrom}"`;
   var FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
   var formatCCYear = (input, year, form) => {
     const selector = form.matching.cssSelector("formInputsSelector");
-    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
+    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector))
+      return year;
     return `${Number(year) - 2e3}`;
   };
   var getUnifiedExpiryDate = (input, month, year, form) => {
@@ -2370,7 +2411,8 @@ Source: "${matchedFrom}"`;
   var inferElementLocale = (el) => el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || "en";
   var getCountryName = (el, options = {}) => {
     const { addressCountryCode } = options;
-    if (!addressCountryCode) return "";
+    if (!addressCountryCode)
+      return "";
     const elLocale = inferElementLocale(el);
     const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode);
     if (el.nodeName === "SELECT") {
@@ -2387,27 +2429,35 @@ Source: "${matchedFrom}"`;
           }
         }
         for (const option of el.options) {
-          if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value;
+          if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText))
+            return option.value;
         }
       }
     }
     return localisedCountryName;
   };
   var getLocalisedCountryNamesToCodes = (el) => {
-    if (typeof Intl.DisplayNames !== "function") return COUNTRY_NAMES_TO_CODES;
+    if (typeof Intl.DisplayNames !== "function")
+      return COUNTRY_NAMES_TO_CODES;
     const elLocale = inferElementLocale(el);
     return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(([code]) => [getCountryDisplayName(elLocale, code), code]));
   };
   var inferCountryCodeFromElement = (el) => {
-    if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value;
-    if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value];
+    if (COUNTRY_CODES_TO_NAMES[el.value])
+      return el.value;
+    if (COUNTRY_NAMES_TO_CODES[el.value])
+      return COUNTRY_NAMES_TO_CODES[el.value];
     const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el);
-    if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value];
+    if (localisedCountryNamesToCodes[el.value])
+      return localisedCountryNamesToCodes[el.value];
     if (el instanceof HTMLSelectElement) {
       const selectedText = el.selectedOptions[0]?.text;
-      if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText;
-      if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText];
-      if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText];
+      if (COUNTRY_CODES_TO_NAMES[selectedText])
+        return selectedText;
+      if (COUNTRY_NAMES_TO_CODES[selectedText])
+        return localisedCountryNamesToCodes[selectedText];
+      if (localisedCountryNamesToCodes[selectedText])
+        return localisedCountryNamesToCodes[selectedText];
     }
     return "";
   };
@@ -2427,16 +2477,20 @@ Source: "${matchedFrom}"`;
   };
   var shouldStoreIdentities = ({ identities }) => Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
   var shouldStoreCreditCards = ({ creditCards }) => {
-    if (!creditCards.cardNumber) return false;
-    if (creditCards.cardSecurityCode) return true;
-    if (creditCards.expiration) return true;
+    if (!creditCards.cardNumber)
+      return false;
+    if (creditCards.cardSecurityCode)
+      return true;
+    if (creditCards.expiration)
+      return true;
     return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
   };
   var formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, "");
   var inferCredentialsForPartialSave = (credentials, identities, creditCards) => {
     if (!credentials.username) {
       const possibleUsername = getUsernameLikeIdentity(identities, creditCards);
-      if (possibleUsername) credentials.username = possibleUsername;
+      if (possibleUsername)
+        credentials.username = possibleUsername;
     }
     if (Object.keys(credentials ?? {}).length === 0) {
       return void 0;
@@ -2502,7 +2556,7 @@ Source: "${matchedFrom}"`;
     /** @param {CredentialsObject} data */
     constructor(data) {
       /** @type {CredentialsObject} */
-      __privateAdd(this, _data);
+      __privateAdd(this, _data, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data).id));
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelMedium", (t) => {
@@ -2530,7 +2584,7 @@ Source: "${matchedFrom}"`;
     /** @param {CredentialsObject} data */
     constructor(data) {
       /** @type {CredentialsObject} */
-      __privateAdd(this, _data2);
+      __privateAdd(this, _data2, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data2).id));
       __publicField(this, "label", (_subtype) => __privateGet(this, _data2).password);
       /** @param {import('../locales/strings.js').TranslateFn} t */
@@ -2553,7 +2607,7 @@ Source: "${matchedFrom}"`;
     /** @param {CredentialsObject} data */
     constructor(data) {
       /** @type {CredentialsObject} */
-      __privateAdd(this, _data3);
+      __privateAdd(this, _data3, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data3).id));
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelMedium", (t) => t("autofill:bitwardenIsLocked"));
@@ -2572,7 +2626,8 @@ Source: "${matchedFrom}"`;
     if (autofilledFields.username && data.credentials?.username === autofilledFields.username) {
       autogenerated = true;
     }
-    if (!autogenerated) return data;
+    if (!autogenerated)
+      return data;
     return {
       ...data,
       credentials: {
@@ -3191,7 +3246,8 @@ Source: "${matchedFrom}"`;
     parse(inputString) {
       const rules = parsePasswordRules(inputString);
       const requirements = this._requirementsFromRules(rules);
-      if (!requirements) throw new Error("could not generate requirements for " + JSON.stringify(inputString));
+      if (!requirements)
+        throw new Error("could not generate requirements for " + JSON.stringify(inputString));
       const parameters = this._passwordGenerationParametersDictionary(requirements);
       return {
         requirements,
@@ -3202,7 +3258,8 @@ Source: "${matchedFrom}"`;
         },
         generate: () => {
           const password = this._generatedPasswordMatchingRequirements(requirements, parameters);
-          if (password === "") throw new Error("unreachable");
+          if (password === "")
+            throw new Error("unreachable");
           return password;
         }
       };
@@ -4838,7 +4895,8 @@ Source: "${matchedFrom}"`;
       if (forcedFormType) {
         return forcedFormType === "login";
       }
-      if (this.isHybrid) return false;
+      if (this.isHybrid)
+        return false;
       return this.autofillSignal < 0;
     }
     get isSignup() {
@@ -4846,7 +4904,8 @@ Source: "${matchedFrom}"`;
       if (forcedFormType) {
         return forcedFormType === "signup";
       }
-      if (this.isHybrid) return false;
+      if (this.isHybrid)
+        return false;
       return this.autofillSignal >= 0;
     }
     /**
@@ -4901,7 +4960,8 @@ Source: "${matchedFrom}"`;
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     }) {
-      if (!string || string.length > constants.TEXT_LENGTH_CUTOFF) return this;
+      if (!string || string.length > constants.TEXT_LENGTH_CUTOFF)
+        return this;
       const matchesLogin = safeRegexTest(/current.?password/i, string) || safeRegexTest(this.matching.getDDGMatcherRegex("loginRegex"), string) || safeRegexTest(this.matching.getDDGMatcherRegex("resetPasswordLink"), string);
       if (shouldCheckUnifiedForm && matchesLogin && safeRegexTest(this.matching.getDDGMatcherRegex("conservativeSignupRegex"), string)) {
         this.increaseHybridSignal(strength, signalType);
@@ -4910,17 +4970,22 @@ Source: "${matchedFrom}"`;
       const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? "conservativeSignupRegex" : "signupRegex");
       const matchesSignup = safeRegexTest(/new.?(password|username)/i, string) || safeRegexTest(signupRegexToUse, string);
       if (shouldFlip) {
-        if (matchesLogin) this.increaseSignalBy(strength, signalType);
-        if (matchesSignup) this.decreaseSignalBy(strength, signalType);
+        if (matchesLogin)
+          this.increaseSignalBy(strength, signalType);
+        if (matchesSignup)
+          this.decreaseSignalBy(strength, signalType);
       } else {
-        if (matchesLogin) this.decreaseSignalBy(strength, signalType);
-        if (matchesSignup) this.increaseSignalBy(strength, signalType);
+        if (matchesLogin)
+          this.decreaseSignalBy(strength, signalType);
+        if (matchesSignup)
+          this.increaseSignalBy(strength, signalType);
       }
       return this;
     }
     evaluateElAttributes(el, signalStrength = 3, isInput = false) {
       Array.from(el.attributes).forEach((attr) => {
-        if (attr.name === "style") return;
+        if (attr.name === "style")
+          return;
         const attributeString = `${attr.name}=${attr.value}`;
         this.updateSignal({
           string: attributeString,
@@ -4936,7 +5001,8 @@ Source: "${matchedFrom}"`;
       const pathToMatch = pathname + hash;
       const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex("loginRegex"), pathToMatch);
       const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex("conservativeSignupRegex"), pathToMatch);
-      if (matchesLogin && matchesSignup) return;
+      if (matchesLogin && matchesSignup)
+        return;
       if (matchesLogin) {
         this.decreaseSignalBy(1, "url matches login");
       }
@@ -4993,7 +5059,8 @@ Source: "${matchedFrom}"`;
       const tagName = el.nodeName.toLowerCase();
       const isCustomWebElementLink = customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, "a").length > 0;
       const isElementLikelyALink = (el2) => {
-        if (el2 == null) return false;
+        if (el2 == null)
+          return false;
         return el2 instanceof HTMLAnchorElement && el2.href && !el2.getAttribute("href")?.startsWith("#") || (el2.getAttribute("role") || "").toUpperCase() === "LINK" || el2.matches("button[class*=secondary]");
       };
       return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest("a"));
@@ -5053,10 +5120,12 @@ Source: "${matchedFrom}"`;
       const selector = this.matching.cssSelector("safeUniversalSelector");
       const formElements = queryElementsWithShadow(this.form, selector);
       for (let i = 0; i < formElements.length; i++) {
-        if (i >= 200) break;
+        if (i >= 200)
+          break;
         const element = formElements[i];
         const displayValue = window.getComputedStyle(element, null).getPropertyValue("display");
-        if (displayValue !== "none") this.evaluateElement(element);
+        if (displayValue !== "none")
+          this.evaluateElement(element);
       }
       const relevantFields = this.form.querySelectorAll(this.matching.cssSelector("genericTextInputField"));
       if (relevantFields.length >= 4) {
@@ -5075,7 +5144,8 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     isCCForm() {
-      if (this._isCCForm !== void 0) return this._isCCForm;
+      if (this._isCCForm !== void 0)
+        return this._isCCForm;
       const formEl = this.form;
       const ccFieldSelector = this.matching.joinCssSelectors("cc");
       if (!ccFieldSelector) {
@@ -5150,7 +5220,7 @@ Source: "${matchedFrom}"`;
     /** @param {CreditCardObject} data */
     constructor(data) {
       /** @type {CreditCardObject} */
-      __privateAdd(this, _data4);
+      __privateAdd(this, _data4, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data4).id));
       __publicField(this, "labelMedium", () => __privateGet(this, _data4).title);
       /** @param {import('../locales/strings.js').TranslateFn} t */
@@ -5171,7 +5241,7 @@ Source: "${matchedFrom}"`;
     /** @param {IdentityObject} data */
     constructor(data) {
       /** @type {IdentityObject} */
-      __privateAdd(this, _data5);
+      __privateAdd(this, _data5, void 0);
       __publicField(this, "id", () => String(__privateGet(this, _data5).id));
       /**
        * @param {import('../locales/strings.js').TranslateFn} t
@@ -5202,7 +5272,8 @@ Source: "${matchedFrom}"`;
 
   // src/Form/inputTypeConfig.js
   var getIdentitiesIcon = (input, { device }) => {
-    if (!canBeInteractedWith(input)) return "";
+    if (!canBeInteractedWith(input))
+      return "";
     const { isDDGApp, isFirefox, isExtension } = device.globalConfig;
     const subtype = getInputSubtype(input);
     if (device.inContextSignup?.isAvailable(subtype)) {
@@ -5222,7 +5293,8 @@ Source: "${matchedFrom}"`;
     return "";
   };
   var getIdentitiesAlternateIcon = (input, { device }) => {
-    if (!canBeInteractedWith(input)) return "";
+    if (!canBeInteractedWith(input))
+      return "";
     const { isDDGApp, isFirefox, isExtension } = device.globalConfig;
     const subtype = getInputSubtype(input);
     const isIncontext = device.inContextSignup?.isAvailable(subtype);
@@ -5239,7 +5311,8 @@ Source: "${matchedFrom}"`;
   var canBeInteractedWith = (input) => !input.readOnly && !input.disabled;
   var canBeAutofilled = async (input, device) => {
     const mainType = getInputMainType(input);
-    if (mainType === "unknown") return false;
+    if (mainType === "unknown")
+      return false;
     const subtype = getInputSubtype(input);
     const variant = getInputVariant(input);
     await device.settings.populateDataIfNeeded({ mainType, subtype });
@@ -5253,8 +5326,10 @@ Source: "${matchedFrom}"`;
       displayName: "passwords",
       getIconBase: (input, form) => {
         const { device } = form;
-        if (!canBeInteractedWith(input)) return "";
-        if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return "";
+        if (!canBeInteractedWith(input))
+          return "";
+        if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid))
+          return "";
         if (device.settings.featureToggles.inlineIcon_credentials) {
           const subtype = getInputSubtype(input);
           const variant = getInputVariant(input);
@@ -5366,12 +5441,14 @@ Source: "${matchedFrom}"`;
   });
   var getIconStylesBase = (input, form) => {
     const icon = getIcon(input, form);
-    if (!icon) return {};
+    if (!icon)
+      return {};
     return getBasicStyles(input, icon);
   };
   var getIconStylesAlternate = (input, form) => {
     const icon = getIcon(input, form, "alternate");
-    if (!icon) return {};
+    if (!icon)
+      return {};
     return {
       ...getBasicStyles(input, icon)
     };
@@ -5425,7 +5502,8 @@ Source: "${matchedFrom}"`;
       this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
       this.intObs = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) this.removeTooltip();
+          if (!entry.isIntersecting)
+            this.removeTooltip();
         }
       });
       this.rescanCount = 0;
@@ -5466,7 +5544,8 @@ Source: "${matchedFrom}"`;
       return this.formAnalyzer.isCCForm();
     }
     logFormInfo() {
-      if (!shouldLog()) return;
+      if (!shouldLog())
+        return;
       console.log(`Form type: %c${this.getFormType()}`, "font-weight: bold");
       console.log("Signals: ", this.formAnalyzer.signals);
       console.log("Wrapping element: ", this.form);
@@ -5474,9 +5553,12 @@ Source: "${matchedFrom}"`;
       console.log("Submit Buttons: ", this.submitButtons);
     }
     getFormType() {
-      if (this.isHybrid) return `hybrid (hybrid score: ${this.formAnalyzer.hybridSignal}, score: ${this.formAnalyzer.autofillSignal})`;
-      if (this.isLogin) return `login (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
-      if (this.isSignup) return `signup (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
+      if (this.isHybrid)
+        return `hybrid (hybrid score: ${this.formAnalyzer.hybridSignal}, score: ${this.formAnalyzer.autofillSignal})`;
+      if (this.isLogin)
+        return `login (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
+      if (this.isSignup)
+        return `signup (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
       return "something went wrong";
     }
     /**
@@ -5494,7 +5576,8 @@ Source: "${matchedFrom}"`;
       if (this.device.globalConfig.isDDGTestMode) {
         console.log("Form.submitHandler via:", via, this);
       }
-      if (this.submitHandlerExecuted) return;
+      if (this.submitHandlerExecuted)
+        return;
       const values = this.getValuesReadyForStorage();
       this.device.postSubmit?.(values, this);
       this.submitHandlerExecuted = true;
@@ -5542,7 +5625,8 @@ Source: "${matchedFrom}"`;
         } else {
           this.form.querySelectorAll(this.matching.cssSelector("safeUniversalSelector")).forEach((el) => {
             const elText = getTextShallow(el);
-            if (elText.length > 70) return;
+            if (elText.length > 70)
+              return;
             const emailOrUsername = elText.match(
               // https://www.emailregex.com/
               /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
@@ -5584,7 +5668,8 @@ Source: "${matchedFrom}"`;
       this.intObs?.observe(input);
     }
     removeInputHighlight(input) {
-      if (!input.classList.contains("ddg-autofilled")) return;
+      if (!input.classList.contains("ddg-autofilled"))
+        return;
       removeInlineStyles(input, getIconStylesAutofilled(input, this));
       removeInlineStyles(input, { cursor: "pointer" });
       input.classList.remove("ddg-autofilled");
@@ -5598,7 +5683,8 @@ Source: "${matchedFrom}"`;
       }
     }
     removeAllHighlights(e, dataType) {
-      if (e && !e.isTrusted) return;
+      if (e && !e.isTrusted)
+        return;
       this.resetShouldPromptToStoreData();
       this.execOnInputs((input) => this.removeInputHighlight(input), dataType);
     }
@@ -5649,7 +5735,8 @@ Source: "${matchedFrom}"`;
         setValue(input, "", this.device.globalConfig);
         this.removeInputHighlight(input);
       });
-      if (this.activeInput) this.activeInput.focus();
+      if (this.activeInput)
+        this.activeInput.focus();
       this.matching.clear();
     }
     resetShouldPromptToStoreData() {
@@ -5702,9 +5789,12 @@ Source: "${matchedFrom}"`;
       const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
       const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
       const hasCreditCardData = Boolean(this.device.settings.availableInputTypes.creditCards?.cardNumber);
-      if (hasUsernameData || ambiguousInputSubtype === "unknown") return "credentials.username";
-      if (hasPhoneData && ambiguousInputSubtype === "phone") return "identities.phone";
-      if (hasCreditCardData && ambiguousInputSubtype === "cardNumber") return "creditCards.cardNumber";
+      if (hasUsernameData || ambiguousInputSubtype === "unknown")
+        return "credentials.username";
+      if (hasPhoneData && ambiguousInputSubtype === "phone")
+        return "identities.phone";
+      if (hasCreditCardData && ambiguousInputSubtype === "cardNumber")
+        return "creditCards.cardNumber";
     }
     /**
      * Returns the ambiguous inputs that should be categorised.
@@ -5715,9 +5805,11 @@ Source: "${matchedFrom}"`;
      */
     get ambiguousInputs() {
       const hasUsernameInput = [...this.inputs.credentials].some((input) => getInputSubtype(input) === "username");
-      if (hasUsernameInput) return null;
+      if (hasUsernameInput)
+        return null;
       const hasPasswordInputs = [...this.inputs.credentials].filter((input) => getInputSubtype(input) === "password").length > 0;
-      if (!hasPasswordInputs) return null;
+      if (!hasPasswordInputs)
+        return null;
       const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === "phone");
       const cardNumberInputs = [...this.inputs.creditCards].filter((input) => getInputSubtype(input) === "cardNumber");
       return [...this.inputs.unknown, ...phoneInputs, ...cardNumberInputs];
@@ -5731,12 +5823,14 @@ Source: "${matchedFrom}"`;
       if (ambiguousInput?.matches?.(inputSelector)) {
         const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
         const inputType = getInputType(ambiguousInput);
-        if (!targetType || targetType === inputType) return;
+        if (!targetType || targetType === inputType)
+          return;
         ambiguousInput.setAttribute(ATTR_INPUT_TYPE2, targetType);
         this.decorateInput(ambiguousInput);
         this.inputs[getMainTypeFromType(targetType)].add(ambiguousInput);
         this.inputs[getMainTypeFromType(inputType)].delete(ambiguousInput);
-        if (shouldLog()) console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
+        if (shouldLog())
+          console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
       }
     }
     /**
@@ -5750,13 +5844,17 @@ Source: "${matchedFrom}"`;
         const variant = getInputVariant(credentialElement);
         if (variant === "new") {
           newPasswordFields++;
-          if (!firstNewPasswordField) firstNewPasswordField = credentialElement;
+          if (!firstNewPasswordField)
+            firstNewPasswordField = credentialElement;
         }
-        if (variant === "current") currentPasswordFields++;
-        if (newPasswordFields > 3 || currentPasswordFields > 0) return;
+        if (variant === "current")
+          currentPasswordFields++;
+        if (newPasswordFields > 3 || currentPasswordFields > 0)
+          return;
       }
       if (newPasswordFields === 3 && currentPasswordFields === 0) {
-        if (shouldLog()) console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+        if (shouldLog())
+          console.log('Recategorizing password variant to "current"', firstNewPasswordField);
         firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE2, "credentials.password.current");
       }
     }
@@ -5774,8 +5872,10 @@ Source: "${matchedFrom}"`;
           return;
         }
       }
-      if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
-      if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
+      if (this.canCategorizeAmbiguousInput())
+        this.recategorizeInputToTargetType();
+      if (this.canCategorizePasswordVariant())
+        this.recategorizeInputVariantIfNeeded();
       if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
         this.destroy();
         return;
@@ -5802,12 +5902,14 @@ Source: "${matchedFrom}"`;
       let isThereAnEmptyVisibleField = false;
       this.execOnInputs(
         (input) => {
-          if (input.value === "" && isPotentiallyViewable(input)) isThereAnEmptyVisibleField = true;
+          if (input.value === "" && isPotentiallyViewable(input))
+            isThereAnEmptyVisibleField = true;
         },
         "all",
         false
       );
-      if (isThereAnEmptyVisibleField) return;
+      if (isThereAnEmptyVisibleField)
+        return;
       this.submitButtons.forEach((button) => {
         if (isPotentiallyViewable(button)) {
           button.click();
@@ -5827,11 +5929,13 @@ Source: "${matchedFrom}"`;
         if (shouldCheckForDecorate) {
           canExecute = isFieldDecorated(input);
         }
-        if (canExecute) fn(input);
+        if (canExecute)
+          fn(input);
       }
     }
     addInput(input) {
-      if (this.inputs.all.has(input)) return this;
+      if (this.inputs.all.has(input))
+        return this;
       if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
         this.device.scanner.setMode("stopped", "The form has too many inputs, bailing.");
         return this;
@@ -5841,7 +5945,8 @@ Source: "${matchedFrom}"`;
         this.recategorizeAllInputs();
         return this;
       }
-      if (input.maxLength === 1) return this;
+      if (input.maxLength === 1)
+        return this;
       this.inputs.all.add(input);
       const opts = {
         isLogin: this.isLogin,
@@ -5884,13 +5989,15 @@ Source: "${matchedFrom}"`;
     async decorateInput(input) {
       const config = getInputConfig(input);
       const shouldDecorate = await config.shouldDecorate(input, this);
-      if (!shouldDecorate) return this;
+      if (!shouldDecorate)
+        return this;
       input.setAttribute(ATTR_AUTOFILL, "true");
       const hasIcon = !!config.getIconBase(input, this);
       if (hasIcon) {
         const { onMouseMove, onMouseLeave } = this.addAutofillStyles(input);
         this.addListener(input, "mousemove", (e) => {
-          if (wasAutofilledByChrome(input)) return;
+          if (wasAutofilledByChrome(input))
+            return;
           if (isEventWithinDax(e, e.target)) {
             addInlineStyles(e.target, {
               cursor: "pointer",
@@ -5911,9 +6018,11 @@ Source: "${matchedFrom}"`;
         });
       }
       function getMainClickCoords(e) {
-        if (!e.isTrusted) return;
+        if (!e.isTrusted)
+          return;
         const isMainMouseButton = e.button === 0;
-        if (!isMainMouseButton) return;
+        if (!isMainMouseButton)
+          return;
         return {
           x: e.clientX,
           y: e.clientY
@@ -5937,7 +6046,8 @@ Source: "${matchedFrom}"`;
           /** @type HTMLElement */
           e.target?.closest("label")?.control
         );
-        if (!control) return;
+        if (!control)
+          return;
         if (e.isTrusted) {
           storedClickCoords.set(control, getMainClickCoords(e));
         }
@@ -5955,12 +6065,16 @@ Source: "${matchedFrom}"`;
         }
         const isLabel = e.target instanceof HTMLLabelElement;
         const input2 = isLabel ? e.target.control : e.target;
-        if (!input2 || !this.inputs.all.has(input2)) return;
-        if (wasAutofilledByChrome(input2)) return;
-        if (!canBeInteractedWith(input2)) return;
+        if (!input2 || !this.inputs.all.has(input2))
+          return;
+        if (wasAutofilledByChrome(input2))
+          return;
+        if (!canBeInteractedWith(input2))
+          return;
         const clickCoords = getClickCoords(e, storedClickCoords);
         if (e.type === "pointerdown") {
-          if (!e.isTrusted || !clickCoords) return;
+          if (!e.isTrusted || !clickCoords)
+            return;
         }
         if (this.shouldOpenTooltip(e, input2)) {
           const iconClicked = isEventWithinDax(e, input2);
@@ -5989,7 +6103,8 @@ Source: "${matchedFrom}"`;
       const isMobileApp = this.device.globalConfig.isMobileApp;
       if (!(input instanceof HTMLSelectElement)) {
         const events = ["pointerdown"];
-        if (!isMobileApp) events.push("focus");
+        if (!isMobileApp)
+          events.push("focus");
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
         });
@@ -6003,9 +6118,12 @@ Source: "${matchedFrom}"`;
       return this;
     }
     shouldOpenTooltip(e, input) {
-      if (!isPotentiallyViewable(input)) return false;
-      if (isEventWithinDax(e, input)) return true;
-      if (this.device.globalConfig.isWindows) return true;
+      if (!isPotentiallyViewable(input))
+        return false;
+      if (isEventWithinDax(e, input))
+        return true;
+      if (this.device.globalConfig.isWindows)
+        return true;
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
       const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
@@ -6021,7 +6139,8 @@ Source: "${matchedFrom}"`;
         }
       }
       if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
-        if (isIncontextSignupAvailable) return false;
+        if (isIncontextSignupAvailable)
+          return false;
       }
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }
@@ -6042,12 +6161,17 @@ Source: "${matchedFrom}"`;
       return input.nodeName === "SELECT" ? this.touched.has(input) : isPreviouslyFilledInput;
     }
     autofillInput(input, string, dataType) {
-      if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return;
-      if (!canBeInteractedWith(input)) return;
-      if (this.shouldSkipInput(input, dataType)) return;
-      if (input.value === string) return;
+      if (input instanceof HTMLInputElement && !isPotentiallyViewable(input))
+        return;
+      if (!canBeInteractedWith(input))
+        return;
+      if (this.shouldSkipInput(input, dataType))
+        return;
+      if (input.value === string)
+        return;
       const successful = setValue(input, string, this.device.globalConfig);
-      if (!successful) return;
+      if (!successful)
+        return;
       input.classList.add("ddg-autofilled");
       addInlineStyles(input, getIconStylesAutofilled(input, this));
       this.touched.add(input);
@@ -6126,10 +6250,12 @@ Source: "${matchedFrom}"`;
       return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
     async promptLoginIfNeeded() {
-      if (document.visibilityState !== "visible" || !this.isLogin) return;
+      if (document.visibilityState !== "visible" || !this.isLogin)
+        return;
       const firstCredentialInput = this.getFirstViableCredentialsInput();
       const input = this.activeInput || firstCredentialInput;
-      if (!input) return;
+      if (!input)
+        return;
       const mainType = getInputMainType(input);
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
@@ -6163,123 +6289,10 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/external.js
-  var external_exports = {};
-  __export(external_exports, {
-    BRAND: () => BRAND,
-    DIRTY: () => DIRTY,
-    EMPTY_PATH: () => EMPTY_PATH,
-    INVALID: () => INVALID,
-    NEVER: () => NEVER,
-    OK: () => OK,
-    ParseStatus: () => ParseStatus,
-    Schema: () => ZodType,
-    ZodAny: () => ZodAny,
-    ZodArray: () => ZodArray,
-    ZodBigInt: () => ZodBigInt,
-    ZodBoolean: () => ZodBoolean,
-    ZodBranded: () => ZodBranded,
-    ZodCatch: () => ZodCatch,
-    ZodDate: () => ZodDate,
-    ZodDefault: () => ZodDefault,
-    ZodDiscriminatedUnion: () => ZodDiscriminatedUnion,
-    ZodEffects: () => ZodEffects,
-    ZodEnum: () => ZodEnum,
-    ZodError: () => ZodError,
-    ZodFirstPartyTypeKind: () => ZodFirstPartyTypeKind,
-    ZodFunction: () => ZodFunction,
-    ZodIntersection: () => ZodIntersection,
-    ZodIssueCode: () => ZodIssueCode,
-    ZodLazy: () => ZodLazy,
-    ZodLiteral: () => ZodLiteral,
-    ZodMap: () => ZodMap,
-    ZodNaN: () => ZodNaN,
-    ZodNativeEnum: () => ZodNativeEnum,
-    ZodNever: () => ZodNever,
-    ZodNull: () => ZodNull,
-    ZodNullable: () => ZodNullable,
-    ZodNumber: () => ZodNumber,
-    ZodObject: () => ZodObject,
-    ZodOptional: () => ZodOptional,
-    ZodParsedType: () => ZodParsedType,
-    ZodPipeline: () => ZodPipeline,
-    ZodPromise: () => ZodPromise,
-    ZodReadonly: () => ZodReadonly,
-    ZodRecord: () => ZodRecord,
-    ZodSchema: () => ZodType,
-    ZodSet: () => ZodSet,
-    ZodString: () => ZodString,
-    ZodSymbol: () => ZodSymbol,
-    ZodTransformer: () => ZodEffects,
-    ZodTuple: () => ZodTuple,
-    ZodType: () => ZodType,
-    ZodUndefined: () => ZodUndefined,
-    ZodUnion: () => ZodUnion,
-    ZodUnknown: () => ZodUnknown,
-    ZodVoid: () => ZodVoid,
-    addIssueToContext: () => addIssueToContext,
-    any: () => anyType,
-    array: () => arrayType,
-    bigint: () => bigIntType,
-    boolean: () => booleanType,
-    coerce: () => coerce,
-    custom: () => custom,
-    date: () => dateType,
-    datetimeRegex: () => datetimeRegex,
-    defaultErrorMap: () => en_default,
-    discriminatedUnion: () => discriminatedUnionType,
-    effect: () => effectsType,
-    enum: () => enumType,
-    function: () => functionType,
-    getErrorMap: () => getErrorMap,
-    getParsedType: () => getParsedType,
-    instanceof: () => instanceOfType,
-    intersection: () => intersectionType,
-    isAborted: () => isAborted,
-    isAsync: () => isAsync,
-    isDirty: () => isDirty,
-    isValid: () => isValid,
-    late: () => late,
-    lazy: () => lazyType,
-    literal: () => literalType,
-    makeIssue: () => makeIssue,
-    map: () => mapType,
-    nan: () => nanType,
-    nativeEnum: () => nativeEnumType,
-    never: () => neverType,
-    null: () => nullType,
-    nullable: () => nullableType,
-    number: () => numberType,
-    object: () => objectType,
-    objectUtil: () => objectUtil,
-    oboolean: () => oboolean,
-    onumber: () => onumber,
-    optional: () => optionalType,
-    ostring: () => ostring,
-    pipeline: () => pipelineType,
-    preprocess: () => preprocessType,
-    promise: () => promiseType,
-    quotelessJson: () => quotelessJson,
-    record: () => recordType,
-    set: () => setType,
-    setErrorMap: () => setErrorMap,
-    strictObject: () => strictObjectType,
-    string: () => stringType,
-    symbol: () => symbolType,
-    transformer: () => effectsType,
-    tuple: () => tupleType,
-    undefined: () => undefinedType,
-    union: () => unionType,
-    unknown: () => unknownType,
-    util: () => util,
-    void: () => voidType
-  });
-
-  // node_modules/zod/dist/esm/v3/helpers/util.js
+  // node_modules/zod/lib/index.mjs
   var util;
   (function(util2) {
-    util2.assertEqual = (_) => {
-    };
+    util2.assertEqual = (val) => val;
     function assertIs(_arg) {
     }
     util2.assertIs = assertIs;
@@ -6323,7 +6336,7 @@ Source: "${matchedFrom}"`;
       }
       return void 0;
     };
-    util2.isInteger = typeof Number.isInteger === "function" ? (val) => Number.isInteger(val) : (val) => typeof val === "number" && Number.isFinite(val) && Math.floor(val) === val;
+    util2.isInteger = typeof Number.isInteger === "function" ? (val) => Number.isInteger(val) : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
     function joinValues(array, separator = " | ") {
       return array.map((val) => typeof val === "string" ? `'${val}'` : val).join(separator);
     }
@@ -6375,7 +6388,7 @@ Source: "${matchedFrom}"`;
       case "string":
         return ZodParsedType.string;
       case "number":
-        return Number.isNaN(data) ? ZodParsedType.nan : ZodParsedType.number;
+        return isNaN(data) ? ZodParsedType.nan : ZodParsedType.number;
       case "boolean":
         return ZodParsedType.boolean;
       case "function":
@@ -6408,8 +6421,6 @@ Source: "${matchedFrom}"`;
         return ZodParsedType.unknown;
     }
   };
-
-  // node_modules/zod/dist/esm/v3/ZodError.js
   var ZodIssueCode = util.arrayToEnum([
     "invalid_type",
     "invalid_literal",
@@ -6525,8 +6536,6 @@ Source: "${matchedFrom}"`;
     const error = new ZodError(issues);
     return error;
   };
-
-  // node_modules/zod/dist/esm/v3/locales/en.js
   var errorMap = (issue, _ctx) => {
     let message;
     switch (issue.code) {
@@ -6625,18 +6634,13 @@ Source: "${matchedFrom}"`;
     }
     return { message };
   };
-  var en_default = errorMap;
-
-  // node_modules/zod/dist/esm/v3/errors.js
-  var overrideErrorMap = en_default;
+  var overrideErrorMap = errorMap;
   function setErrorMap(map) {
     overrideErrorMap = map;
   }
   function getErrorMap() {
     return overrideErrorMap;
   }
-
-  // node_modules/zod/dist/esm/v3/helpers/parseUtil.js
   var makeIssue = (params) => {
     const { data, path, errorMaps, issueData } = params;
     const fullPath = [...path, ...issueData.path || []];
@@ -6676,7 +6680,7 @@ Source: "${matchedFrom}"`;
         // then schema-bound map if available
         overrideMap,
         // then global override map
-        overrideMap === en_default ? void 0 : en_default
+        overrideMap === errorMap ? void 0 : errorMap
         // then global default map
       ].filter((x) => !!x)
     });
@@ -6745,15 +6749,29 @@ Source: "${matchedFrom}"`;
   var isDirty = (x) => x.status === "dirty";
   var isValid = (x) => x.status === "valid";
   var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
-
-  // node_modules/zod/dist/esm/v3/helpers/errorUtil.js
+  function __classPrivateFieldGet(receiver, state, kind, f) {
+    if (kind === "a" && !f)
+      throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+      throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+  }
+  function __classPrivateFieldSet(receiver, state, value, kind, f) {
+    if (kind === "m")
+      throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f)
+      throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver))
+      throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
+  }
   var errorUtil;
   (function(errorUtil2) {
     errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-    errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
+    errorUtil2.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
   })(errorUtil || (errorUtil = {}));
-
-  // node_modules/zod/dist/esm/v3/types.js
+  var _ZodEnum_cache;
+  var _ZodNativeEnum_cache;
   var ParseInputLazyPath = class {
     constructor(parent, value, path, key) {
       this._cachedPath = [];
@@ -6764,7 +6782,7 @@ Source: "${matchedFrom}"`;
     }
     get path() {
       if (!this._cachedPath.length) {
-        if (Array.isArray(this._key)) {
+        if (this._key instanceof Array) {
           this._cachedPath.push(...this._path, ...this._key);
         } else {
           this._cachedPath.push(...this._path, this._key);
@@ -6802,16 +6820,17 @@ Source: "${matchedFrom}"`;
     if (errorMap2)
       return { errorMap: errorMap2, description };
     const customMap = (iss, ctx) => {
+      var _a, _b;
       const { message } = params;
       if (iss.code === "invalid_enum_value") {
-        return { message: message ?? ctx.defaultError };
+        return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
       }
       if (typeof ctx.data === "undefined") {
-        return { message: message ?? required_error ?? ctx.defaultError };
+        return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
       }
       if (iss.code !== "invalid_type")
         return { message: ctx.defaultError };
-      return { message: message ?? invalid_type_error ?? ctx.defaultError };
+      return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
     };
     return { errorMap: customMap, description };
   }
@@ -6863,13 +6882,14 @@ Source: "${matchedFrom}"`;
       throw result.error;
     }
     safeParse(data, params) {
+      var _a;
       const ctx = {
         common: {
           issues: [],
-          async: params?.async ?? false,
-          contextualErrorMap: params?.errorMap
+          async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
+          contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap
         },
-        path: params?.path || [],
+        path: (params === null || params === void 0 ? void 0 : params.path) || [],
         schemaErrorMap: this._def.errorMap,
         parent: null,
         data,
@@ -6879,6 +6899,7 @@ Source: "${matchedFrom}"`;
       return handleResult(ctx, result);
     }
     "~validate"(data) {
+      var _a, _b;
       const ctx = {
         common: {
           issues: [],
@@ -6899,7 +6920,7 @@ Source: "${matchedFrom}"`;
             issues: ctx.common.issues
           };
         } catch (err) {
-          if (err?.message?.toLowerCase()?.includes("encountered")) {
+          if ((_b = (_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("encountered")) {
             this["~standard"].async = true;
           }
           ctx.common = {
@@ -6924,10 +6945,10 @@ Source: "${matchedFrom}"`;
       const ctx = {
         common: {
           issues: [],
-          contextualErrorMap: params?.errorMap,
+          contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
           async: true
         },
-        path: params?.path || [],
+        path: (params === null || params === void 0 ? void 0 : params.path) || [],
         schemaErrorMap: this._def.errorMap,
         parent: null,
         data,
@@ -7117,14 +7138,13 @@ Source: "${matchedFrom}"`;
   var dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
   var dateRegex = new RegExp(`^${dateRegexSource}$`);
   function timeRegexSource(args) {
-    let secondsRegexSource = `[0-5]\\d`;
+    let regex = `([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d`;
     if (args.precision) {
-      secondsRegexSource = `${secondsRegexSource}\\.\\d{${args.precision}}`;
+      regex = `${regex}\\.\\d{${args.precision}}`;
     } else if (args.precision == null) {
-      secondsRegexSource = `${secondsRegexSource}(\\.\\d+)?`;
+      regex = `${regex}(\\.\\d+)?`;
     }
-    const secondsQuantifier = args.precision ? "+" : "?";
-    return `([01]\\d|2[0-3]):[0-5]\\d(:${secondsRegexSource})${secondsQuantifier}`;
+    return regex;
   }
   function timeRegex(args) {
     return new RegExp(`^${timeRegexSource(args)}$`);
@@ -7156,14 +7176,12 @@ Source: "${matchedFrom}"`;
       const decoded = JSON.parse(atob(base64));
       if (typeof decoded !== "object" || decoded === null)
         return false;
-      if ("typ" in decoded && decoded?.typ !== "JWT")
-        return false;
-      if (!decoded.alg)
+      if (!decoded.typ || !decoded.alg)
         return false;
       if (alg && decoded.alg !== alg)
         return false;
       return true;
-    } catch {
+    } catch (_a) {
       return false;
     }
   }
@@ -7322,7 +7340,7 @@ Source: "${matchedFrom}"`;
         } else if (check.kind === "url") {
           try {
             new URL(input.data);
-          } catch {
+          } catch (_a) {
             ctx = this._getOrReturnCtx(input, ctx);
             addIssueToContext(ctx, {
               validation: "url",
@@ -7534,6 +7552,7 @@ Source: "${matchedFrom}"`;
       return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
     }
     datetime(options) {
+      var _a, _b;
       if (typeof options === "string") {
         return this._addCheck({
           kind: "datetime",
@@ -7545,10 +7564,10 @@ Source: "${matchedFrom}"`;
       }
       return this._addCheck({
         kind: "datetime",
-        precision: typeof options?.precision === "undefined" ? null : options?.precision,
-        offset: options?.offset ?? false,
-        local: options?.local ?? false,
-        ...errorUtil.errToObj(options?.message)
+        precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
+        offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
+        local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
+        ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
       });
     }
     date(message) {
@@ -7564,8 +7583,8 @@ Source: "${matchedFrom}"`;
       }
       return this._addCheck({
         kind: "time",
-        precision: typeof options?.precision === "undefined" ? null : options?.precision,
-        ...errorUtil.errToObj(options?.message)
+        precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
+        ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
       });
     }
     duration(message) {
@@ -7582,8 +7601,8 @@ Source: "${matchedFrom}"`;
       return this._addCheck({
         kind: "includes",
         value,
-        position: options?.position,
-        ...errorUtil.errToObj(options?.message)
+        position: options === null || options === void 0 ? void 0 : options.position,
+        ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message)
       });
     }
     startsWith(value, message) {
@@ -7715,10 +7734,11 @@ Source: "${matchedFrom}"`;
     }
   };
   ZodString.create = (params) => {
+    var _a;
     return new ZodString({
       checks: [],
       typeName: ZodFirstPartyTypeKind.ZodString,
-      coerce: params?.coerce ?? false,
+      coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
       ...processCreateParams(params)
     });
   };
@@ -7726,9 +7746,9 @@ Source: "${matchedFrom}"`;
     const valDecCount = (val.toString().split(".")[1] || "").length;
     const stepDecCount = (step.toString().split(".")[1] || "").length;
     const decCount = valDecCount > stepDecCount ? valDecCount : stepDecCount;
-    const valInt = Number.parseInt(val.toFixed(decCount).replace(".", ""));
-    const stepInt = Number.parseInt(step.toFixed(decCount).replace(".", ""));
-    return valInt % stepInt / 10 ** decCount;
+    const valInt = parseInt(val.toFixed(decCount).replace(".", ""));
+    const stepInt = parseInt(step.toFixed(decCount).replace(".", ""));
+    return valInt % stepInt / Math.pow(10, decCount);
   }
   var ZodNumber = class _ZodNumber extends ZodType {
     constructor() {
@@ -7938,8 +7958,7 @@ Source: "${matchedFrom}"`;
       return !!this._def.checks.find((ch) => ch.kind === "int" || ch.kind === "multipleOf" && util.isInteger(ch.value));
     }
     get isFinite() {
-      let max = null;
-      let min = null;
+      let max = null, min = null;
       for (const ch of this._def.checks) {
         if (ch.kind === "finite" || ch.kind === "int" || ch.kind === "multipleOf") {
           return true;
@@ -7958,7 +7977,7 @@ Source: "${matchedFrom}"`;
     return new ZodNumber({
       checks: [],
       typeName: ZodFirstPartyTypeKind.ZodNumber,
-      coerce: params?.coerce || false,
+      coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
       ...processCreateParams(params)
     });
   };
@@ -7972,7 +7991,7 @@ Source: "${matchedFrom}"`;
       if (this._def.coerce) {
         try {
           input.data = BigInt(input.data);
-        } catch {
+        } catch (_a) {
           return this._getInvalidInput(input);
         }
       }
@@ -8127,10 +8146,11 @@ Source: "${matchedFrom}"`;
     }
   };
   ZodBigInt.create = (params) => {
+    var _a;
     return new ZodBigInt({
       checks: [],
       typeName: ZodFirstPartyTypeKind.ZodBigInt,
-      coerce: params?.coerce ?? false,
+      coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
       ...processCreateParams(params)
     });
   };
@@ -8155,7 +8175,7 @@ Source: "${matchedFrom}"`;
   ZodBoolean.create = (params) => {
     return new ZodBoolean({
       typeName: ZodFirstPartyTypeKind.ZodBoolean,
-      coerce: params?.coerce || false,
+      coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
       ...processCreateParams(params)
     });
   };
@@ -8174,7 +8194,7 @@ Source: "${matchedFrom}"`;
         });
         return INVALID;
       }
-      if (Number.isNaN(input.data.getTime())) {
+      if (isNaN(input.data.getTime())) {
         const ctx2 = this._getOrReturnCtx(input);
         addIssueToContext(ctx2, {
           code: ZodIssueCode.invalid_date
@@ -8263,7 +8283,7 @@ Source: "${matchedFrom}"`;
   ZodDate.create = (params) => {
     return new ZodDate({
       checks: [],
-      coerce: params?.coerce || false,
+      coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
       typeName: ZodFirstPartyTypeKind.ZodDate,
       ...processCreateParams(params)
     });
@@ -8538,8 +8558,7 @@ Source: "${matchedFrom}"`;
         return this._cached;
       const shape = this._def.shape();
       const keys = util.objectKeys(shape);
-      this._cached = { shape, keys };
-      return this._cached;
+      return this._cached = { shape, keys };
     }
     _parse(input) {
       const parsedType = this._getType(input);
@@ -8589,8 +8608,9 @@ Source: "${matchedFrom}"`;
             });
             status.dirty();
           }
-        } else if (unknownKeys === "strip") {
-        } else {
+        } else if (unknownKeys === "strip")
+          ;
+        else {
           throw new Error(`Internal ZodObject error: invalid unknownKeys value.`);
         }
       } else {
@@ -8637,10 +8657,11 @@ Source: "${matchedFrom}"`;
         unknownKeys: "strict",
         ...message !== void 0 ? {
           errorMap: (issue, ctx) => {
-            const defaultError = this._def.errorMap?.(issue, ctx).message ?? ctx.defaultError;
+            var _a, _b, _c, _d;
+            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
             if (issue.code === "unrecognized_keys")
               return {
-                message: errorUtil.errToObj(message).message ?? defaultError
+                message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError
               };
             return {
               message: defaultError
@@ -8771,11 +8792,11 @@ Source: "${matchedFrom}"`;
     }
     pick(mask) {
       const shape = {};
-      for (const key of util.objectKeys(mask)) {
+      util.objectKeys(mask).forEach((key) => {
         if (mask[key] && this.shape[key]) {
           shape[key] = this.shape[key];
         }
-      }
+      });
       return new _ZodObject({
         ...this._def,
         shape: () => shape
@@ -8783,11 +8804,11 @@ Source: "${matchedFrom}"`;
     }
     omit(mask) {
       const shape = {};
-      for (const key of util.objectKeys(this.shape)) {
+      util.objectKeys(this.shape).forEach((key) => {
         if (!mask[key]) {
           shape[key] = this.shape[key];
         }
-      }
+      });
       return new _ZodObject({
         ...this._def,
         shape: () => shape
@@ -8801,14 +8822,14 @@ Source: "${matchedFrom}"`;
     }
     partial(mask) {
       const newShape = {};
-      for (const key of util.objectKeys(this.shape)) {
+      util.objectKeys(this.shape).forEach((key) => {
         const fieldSchema = this.shape[key];
         if (mask && !mask[key]) {
           newShape[key] = fieldSchema;
         } else {
           newShape[key] = fieldSchema.optional();
         }
-      }
+      });
       return new _ZodObject({
         ...this._def,
         shape: () => newShape
@@ -8816,7 +8837,7 @@ Source: "${matchedFrom}"`;
     }
     required(mask) {
       const newShape = {};
-      for (const key of util.objectKeys(this.shape)) {
+      util.objectKeys(this.shape).forEach((key) => {
         if (mask && !mask[key]) {
           newShape[key] = this.shape[key];
         } else {
@@ -8827,7 +8848,7 @@ Source: "${matchedFrom}"`;
           }
           newShape[key] = newField;
         }
-      }
+      });
       return new _ZodObject({
         ...this._def,
         shape: () => newShape
@@ -9443,7 +9464,12 @@ Source: "${matchedFrom}"`;
         return makeIssue({
           data: args,
           path: ctx.path,
-          errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), en_default].filter((x) => !!x),
+          errorMaps: [
+            ctx.common.contextualErrorMap,
+            ctx.schemaErrorMap,
+            getErrorMap(),
+            errorMap
+          ].filter((x) => !!x),
           issueData: {
             code: ZodIssueCode.invalid_arguments,
             argumentsError: error
@@ -9454,7 +9480,12 @@ Source: "${matchedFrom}"`;
         return makeIssue({
           data: returns,
           path: ctx.path,
-          errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), en_default].filter((x) => !!x),
+          errorMaps: [
+            ctx.common.contextualErrorMap,
+            ctx.schemaErrorMap,
+            getErrorMap(),
+            errorMap
+          ].filter((x) => !!x),
           issueData: {
             code: ZodIssueCode.invalid_return_type,
             returnTypeError: error
@@ -9578,6 +9609,10 @@ Source: "${matchedFrom}"`;
     });
   }
   var ZodEnum = class _ZodEnum extends ZodType {
+    constructor() {
+      super(...arguments);
+      _ZodEnum_cache.set(this, void 0);
+    }
     _parse(input) {
       if (typeof input.data !== "string") {
         const ctx = this._getOrReturnCtx(input);
@@ -9589,10 +9624,10 @@ Source: "${matchedFrom}"`;
         });
         return INVALID;
       }
-      if (!this._cache) {
-        this._cache = new Set(this._def.values);
+      if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f")) {
+        __classPrivateFieldSet(this, _ZodEnum_cache, new Set(this._def.values), "f");
       }
-      if (!this._cache.has(input.data)) {
+      if (!__classPrivateFieldGet(this, _ZodEnum_cache, "f").has(input.data)) {
         const ctx = this._getOrReturnCtx(input);
         const expectedValues = this._def.values;
         addIssueToContext(ctx, {
@@ -9641,8 +9676,13 @@ Source: "${matchedFrom}"`;
       });
     }
   };
+  _ZodEnum_cache = /* @__PURE__ */ new WeakMap();
   ZodEnum.create = createZodEnum;
   var ZodNativeEnum = class extends ZodType {
+    constructor() {
+      super(...arguments);
+      _ZodNativeEnum_cache.set(this, void 0);
+    }
     _parse(input) {
       const nativeEnumValues = util.getValidEnumValues(this._def.values);
       const ctx = this._getOrReturnCtx(input);
@@ -9655,10 +9695,10 @@ Source: "${matchedFrom}"`;
         });
         return INVALID;
       }
-      if (!this._cache) {
-        this._cache = new Set(util.getValidEnumValues(this._def.values));
+      if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f")) {
+        __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util.getValidEnumValues(this._def.values)), "f");
       }
-      if (!this._cache.has(input.data)) {
+      if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache, "f").has(input.data)) {
         const expectedValues = util.objectValues(nativeEnumValues);
         addIssueToContext(ctx, {
           received: ctx.data,
@@ -9673,6 +9713,7 @@ Source: "${matchedFrom}"`;
       return this._def.values;
     }
   };
+  _ZodNativeEnum_cache = /* @__PURE__ */ new WeakMap();
   ZodNativeEnum.create = (values, params) => {
     return new ZodNativeEnum({
       values,
@@ -9813,7 +9854,7 @@ Source: "${matchedFrom}"`;
             parent: ctx
           });
           if (!isValid(base))
-            return INVALID;
+            return base;
           const result = effect.transform(base.value, checkCtx);
           if (result instanceof Promise) {
             throw new Error(`Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.`);
@@ -9822,11 +9863,8 @@ Source: "${matchedFrom}"`;
         } else {
           return this._def.schema._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx }).then((base) => {
             if (!isValid(base))
-              return INVALID;
-            return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({
-              status: status.value,
-              value: result
-            }));
+              return base;
+            return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({ status: status.value, value: result }));
           });
         }
       }
@@ -10086,19 +10124,21 @@ Source: "${matchedFrom}"`;
   function custom(check, _params = {}, fatal) {
     if (check)
       return ZodAny.create().superRefine((data, ctx) => {
+        var _a, _b;
         const r = check(data);
         if (r instanceof Promise) {
           return r.then((r2) => {
+            var _a2, _b2;
             if (!r2) {
               const params = cleanParams(_params, data);
-              const _fatal = params.fatal ?? fatal ?? true;
+              const _fatal = (_b2 = (_a2 = params.fatal) !== null && _a2 !== void 0 ? _a2 : fatal) !== null && _b2 !== void 0 ? _b2 : true;
               ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
             }
           });
         }
         if (!r) {
           const params = cleanParams(_params, data);
-          const _fatal = params.fatal ?? fatal ?? true;
+          const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
           ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
         }
         return;
@@ -10198,467 +10238,583 @@ Source: "${matchedFrom}"`;
     date: (arg) => ZodDate.create({ ...arg, coerce: true })
   };
   var NEVER = INVALID;
+  var z = /* @__PURE__ */ Object.freeze({
+    __proto__: null,
+    defaultErrorMap: errorMap,
+    setErrorMap,
+    getErrorMap,
+    makeIssue,
+    EMPTY_PATH,
+    addIssueToContext,
+    ParseStatus,
+    INVALID,
+    DIRTY,
+    OK,
+    isAborted,
+    isDirty,
+    isValid,
+    isAsync,
+    get util() {
+      return util;
+    },
+    get objectUtil() {
+      return objectUtil;
+    },
+    ZodParsedType,
+    getParsedType,
+    ZodType,
+    datetimeRegex,
+    ZodString,
+    ZodNumber,
+    ZodBigInt,
+    ZodBoolean,
+    ZodDate,
+    ZodSymbol,
+    ZodUndefined,
+    ZodNull,
+    ZodAny,
+    ZodUnknown,
+    ZodNever,
+    ZodVoid,
+    ZodArray,
+    ZodObject,
+    ZodUnion,
+    ZodDiscriminatedUnion,
+    ZodIntersection,
+    ZodTuple,
+    ZodRecord,
+    ZodMap,
+    ZodSet,
+    ZodFunction,
+    ZodLazy,
+    ZodLiteral,
+    ZodEnum,
+    ZodNativeEnum,
+    ZodPromise,
+    ZodEffects,
+    ZodTransformer: ZodEffects,
+    ZodOptional,
+    ZodNullable,
+    ZodDefault,
+    ZodCatch,
+    ZodNaN,
+    BRAND,
+    ZodBranded,
+    ZodPipeline,
+    ZodReadonly,
+    custom,
+    Schema: ZodType,
+    ZodSchema: ZodType,
+    late,
+    get ZodFirstPartyTypeKind() {
+      return ZodFirstPartyTypeKind;
+    },
+    coerce,
+    any: anyType,
+    array: arrayType,
+    bigint: bigIntType,
+    boolean: booleanType,
+    date: dateType,
+    discriminatedUnion: discriminatedUnionType,
+    effect: effectsType,
+    "enum": enumType,
+    "function": functionType,
+    "instanceof": instanceOfType,
+    intersection: intersectionType,
+    lazy: lazyType,
+    literal: literalType,
+    map: mapType,
+    nan: nanType,
+    nativeEnum: nativeEnumType,
+    never: neverType,
+    "null": nullType,
+    nullable: nullableType,
+    number: numberType,
+    object: objectType,
+    oboolean,
+    onumber,
+    optional: optionalType,
+    ostring,
+    pipeline: pipelineType,
+    preprocess: preprocessType,
+    promise: promiseType,
+    record: recordType,
+    set: setType,
+    strictObject: strictObjectType,
+    string: stringType,
+    symbol: symbolType,
+    transformer: effectsType,
+    tuple: tupleType,
+    "undefined": undefinedType,
+    union: unionType,
+    unknown: unknownType,
+    "void": voidType,
+    NEVER,
+    ZodIssueCode,
+    quotelessJson,
+    ZodError
+  });
 
   // src/deviceApiCalls/__generated__/validators.zod.js
-  var sendJSPixelParamsSchema = external_exports.union([external_exports.object({
-    pixelName: external_exports.literal("autofill_identity"),
-    params: external_exports.object({
-      fieldType: external_exports.string().optional()
+  var sendJSPixelParamsSchema = z.union([z.object({
+    pixelName: z.literal("autofill_identity"),
+    params: z.object({
+      fieldType: z.string().optional()
     }).optional()
-  }), external_exports.object({
-    pixelName: external_exports.literal("autofill_show")
-  }), external_exports.object({
-    pixelName: external_exports.literal("autofill_import_credentials_prompt_shown")
-  }), external_exports.object({
-    pixelName: external_exports.literal("autofill_personal_address")
-  }), external_exports.object({
-    pixelName: external_exports.literal("autofill_private_address")
-  }), external_exports.object({
-    pixelName: external_exports.literal("incontext_show")
-  }), external_exports.object({
-    pixelName: external_exports.literal("incontext_primary_cta")
-  }), external_exports.object({
-    pixelName: external_exports.literal("incontext_dismiss_persisted")
-  }), external_exports.object({
-    pixelName: external_exports.literal("incontext_close_x")
+  }), z.object({
+    pixelName: z.literal("autofill_show")
+  }), z.object({
+    pixelName: z.literal("autofill_import_credentials_prompt_shown")
+  }), z.object({
+    pixelName: z.literal("autofill_personal_address")
+  }), z.object({
+    pixelName: z.literal("autofill_private_address")
+  }), z.object({
+    pixelName: z.literal("incontext_show")
+  }), z.object({
+    pixelName: z.literal("incontext_primary_cta")
+  }), z.object({
+    pixelName: z.literal("incontext_dismiss_persisted")
+  }), z.object({
+    pixelName: z.literal("incontext_close_x")
   })]);
-  var addDebugFlagParamsSchema = external_exports.object({
-    flag: external_exports.string()
+  var addDebugFlagParamsSchema = z.object({
+    flag: z.string()
   });
-  var getAutofillDataFocusRequestSchema = external_exports.object({
-    inputType: external_exports.string(),
-    mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards"), external_exports.literal("unknown")])
+  var getAutofillDataFocusRequestSchema = z.object({
+    inputType: z.string(),
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards"), z.literal("unknown")])
   });
-  var getAutofillCredentialsParamsSchema = external_exports.object({
-    id: external_exports.string()
+  var getAutofillCredentialsParamsSchema = z.object({
+    id: z.string()
   });
-  var setSizeParamsSchema = external_exports.object({
-    height: external_exports.number(),
-    width: external_exports.number()
+  var setSizeParamsSchema = z.object({
+    height: z.number(),
+    width: z.number()
   });
-  var selectedDetailParamsSchema = external_exports.object({
-    data: external_exports.record(external_exports.unknown()),
-    configType: external_exports.string()
+  var selectedDetailParamsSchema = z.object({
+    data: z.record(z.unknown()),
+    configType: z.string()
   });
-  var setIncontextSignupPermanentlyDismissedAtSchema = external_exports.object({
-    value: external_exports.number().optional()
+  var setIncontextSignupPermanentlyDismissedAtSchema = z.object({
+    value: z.number().optional()
   });
-  var getIncontextSignupDismissedAtSchema = external_exports.object({
-    success: external_exports.object({
-      permanentlyDismissedAt: external_exports.number().optional(),
-      isInstalledRecently: external_exports.boolean().optional()
+  var getIncontextSignupDismissedAtSchema = z.object({
+    success: z.object({
+      permanentlyDismissedAt: z.number().optional(),
+      isInstalledRecently: z.boolean().optional()
     })
   });
-  var getAliasParamsSchema = external_exports.object({
-    requiresUserPermission: external_exports.boolean(),
-    shouldConsumeAliasIfProvided: external_exports.boolean(),
-    isIncontextSignupAvailable: external_exports.boolean().optional()
+  var getAliasParamsSchema = z.object({
+    requiresUserPermission: z.boolean(),
+    shouldConsumeAliasIfProvided: z.boolean(),
+    isIncontextSignupAvailable: z.boolean().optional()
   });
-  var getAliasResultSchema = external_exports.object({
-    success: external_exports.object({
-      alias: external_exports.string().optional()
+  var getAliasResultSchema = z.object({
+    success: z.object({
+      alias: z.string().optional()
     })
   });
-  var getIdentityParamSchema = external_exports.object({
-    id: external_exports.string()
+  var getIdentityParamSchema = z.object({
+    id: z.string()
   });
-  var getCreditCardParamSchema = external_exports.object({
-    id: external_exports.string()
+  var getCreditCardParamSchema = z.object({
+    id: z.string()
   });
-  var emailProtectionStoreUserDataParamsSchema = external_exports.object({
-    token: external_exports.string(),
-    userName: external_exports.string(),
-    cohort: external_exports.string()
+  var emailProtectionStoreUserDataParamsSchema = z.object({
+    token: z.string(),
+    userName: z.string(),
+    cohort: z.string()
   });
-  var showInContextEmailProtectionSignupPromptSchema = external_exports.object({
-    success: external_exports.object({
-      isSignedIn: external_exports.boolean()
+  var showInContextEmailProtectionSignupPromptSchema = z.object({
+    success: z.object({
+      isSignedIn: z.boolean()
     })
   });
-  var generatedPasswordSchema = external_exports.object({
-    value: external_exports.string(),
-    username: external_exports.string()
+  var generatedPasswordSchema = z.object({
+    value: z.string(),
+    username: z.string()
   });
-  var triggerContextSchema = external_exports.object({
-    inputTop: external_exports.number(),
-    inputLeft: external_exports.number(),
-    inputHeight: external_exports.number(),
-    inputWidth: external_exports.number(),
-    wasFromClick: external_exports.boolean()
+  var triggerContextSchema = z.object({
+    inputTop: z.number(),
+    inputLeft: z.number(),
+    inputHeight: z.number(),
+    inputWidth: z.number(),
+    wasFromClick: z.boolean()
   });
-  var credentialsSchema = external_exports.object({
-    id: external_exports.string().optional(),
-    username: external_exports.string(),
-    password: external_exports.string(),
-    origin: external_exports.object({
-      url: external_exports.string()
+  var credentialsSchema = z.object({
+    id: z.string().optional(),
+    username: z.string(),
+    password: z.string(),
+    origin: z.object({
+      url: z.string()
     }).optional(),
-    credentialsProvider: external_exports.union([external_exports.literal("duckduckgo"), external_exports.literal("bitwarden")]).optional(),
-    providerStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional()
+    credentialsProvider: z.union([z.literal("duckduckgo"), z.literal("bitwarden")]).optional(),
+    providerStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional()
   });
-  var creditCardObjectSchema = external_exports.object({
-    id: external_exports.string(),
-    title: external_exports.string(),
-    displayNumber: external_exports.string(),
-    cardName: external_exports.string().optional(),
-    cardSecurityCode: external_exports.string().optional(),
-    expirationMonth: external_exports.string().optional(),
-    expirationYear: external_exports.string().optional(),
-    cardNumber: external_exports.string().optional(),
-    paymentProvider: external_exports.string().optional()
+  var creditCardObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    displayNumber: z.string(),
+    cardName: z.string().optional(),
+    cardSecurityCode: z.string().optional(),
+    expirationMonth: z.string().optional(),
+    expirationYear: z.string().optional(),
+    cardNumber: z.string().optional(),
+    paymentProvider: z.string().optional()
   });
-  var identityObjectSchema = external_exports.object({
-    id: external_exports.string(),
-    title: external_exports.string(),
-    firstName: external_exports.string().optional(),
-    middleName: external_exports.string().optional(),
-    lastName: external_exports.string().optional(),
-    birthdayDay: external_exports.string().optional(),
-    birthdayMonth: external_exports.string().optional(),
-    birthdayYear: external_exports.string().optional(),
-    addressStreet: external_exports.string().optional(),
-    addressStreet2: external_exports.string().optional(),
-    addressCity: external_exports.string().optional(),
-    addressProvince: external_exports.string().optional(),
-    addressPostalCode: external_exports.string().optional(),
-    addressCountryCode: external_exports.string().optional(),
-    phone: external_exports.string().optional(),
-    emailAddress: external_exports.string().optional()
+  var identityObjectSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    firstName: z.string().optional(),
+    middleName: z.string().optional(),
+    lastName: z.string().optional(),
+    birthdayDay: z.string().optional(),
+    birthdayMonth: z.string().optional(),
+    birthdayYear: z.string().optional(),
+    addressStreet: z.string().optional(),
+    addressStreet2: z.string().optional(),
+    addressCity: z.string().optional(),
+    addressProvince: z.string().optional(),
+    addressPostalCode: z.string().optional(),
+    addressCountryCode: z.string().optional(),
+    phone: z.string().optional(),
+    emailAddress: z.string().optional()
   });
-  var genericErrorSchema = external_exports.object({
-    message: external_exports.string()
+  var genericErrorSchema = z.object({
+    message: z.string()
   });
-  var getAutofillDataFocusResponseSchema = external_exports.object({
-    type: external_exports.literal("getAutofillDataFocusResponse").optional(),
-    success: external_exports.object({
+  var getAutofillDataFocusResponseSchema = z.object({
+    type: z.literal("getAutofillDataFocusResponse").optional(),
+    success: z.object({
       creditCards: creditCardObjectSchema.optional(),
-      action: external_exports.union([external_exports.literal("fill"), external_exports.literal("none")])
+      action: z.union([z.literal("fill"), z.literal("none")])
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var userPreferencesSchema = external_exports.object({
-    globalPrivacyControlValue: external_exports.boolean().optional(),
-    sessionKey: external_exports.string(),
-    debug: external_exports.boolean(),
-    language: external_exports.string().optional(),
-    platform: external_exports.object({
-      name: external_exports.union([external_exports.literal("ios"), external_exports.literal("macos"), external_exports.literal("windows"), external_exports.literal("extension"), external_exports.literal("android")])
+  var userPreferencesSchema = z.object({
+    globalPrivacyControlValue: z.boolean().optional(),
+    sessionKey: z.string(),
+    debug: z.boolean(),
+    language: z.string().optional(),
+    platform: z.object({
+      name: z.union([z.literal("ios"), z.literal("macos"), z.literal("windows"), z.literal("extension"), z.literal("android")])
     }),
-    features: external_exports.record(external_exports.object({
-      settings: external_exports.record(external_exports.unknown())
+    features: z.record(z.object({
+      settings: z.record(z.unknown())
     }))
   });
-  var outgoingCredentialsSchema = external_exports.object({
-    username: external_exports.string().optional(),
-    password: external_exports.string().optional()
+  var outgoingCredentialsSchema = z.object({
+    username: z.string().optional(),
+    password: z.string().optional()
   });
-  var availableInputTypesSchema = external_exports.object({
-    credentials: external_exports.object({
-      username: external_exports.boolean().optional(),
-      password: external_exports.boolean().optional()
+  var availableInputTypesSchema = z.object({
+    credentials: z.object({
+      username: z.boolean().optional(),
+      password: z.boolean().optional()
     }).optional(),
-    identities: external_exports.object({
-      firstName: external_exports.boolean().optional(),
-      middleName: external_exports.boolean().optional(),
-      lastName: external_exports.boolean().optional(),
-      birthdayDay: external_exports.boolean().optional(),
-      birthdayMonth: external_exports.boolean().optional(),
-      birthdayYear: external_exports.boolean().optional(),
-      addressStreet: external_exports.boolean().optional(),
-      addressStreet2: external_exports.boolean().optional(),
-      addressCity: external_exports.boolean().optional(),
-      addressProvince: external_exports.boolean().optional(),
-      addressPostalCode: external_exports.boolean().optional(),
-      addressCountryCode: external_exports.boolean().optional(),
-      phone: external_exports.boolean().optional(),
-      emailAddress: external_exports.boolean().optional()
+    identities: z.object({
+      firstName: z.boolean().optional(),
+      middleName: z.boolean().optional(),
+      lastName: z.boolean().optional(),
+      birthdayDay: z.boolean().optional(),
+      birthdayMonth: z.boolean().optional(),
+      birthdayYear: z.boolean().optional(),
+      addressStreet: z.boolean().optional(),
+      addressStreet2: z.boolean().optional(),
+      addressCity: z.boolean().optional(),
+      addressProvince: z.boolean().optional(),
+      addressPostalCode: z.boolean().optional(),
+      addressCountryCode: z.boolean().optional(),
+      phone: z.boolean().optional(),
+      emailAddress: z.boolean().optional()
     }).optional(),
-    creditCards: external_exports.object({
-      cardName: external_exports.boolean().optional(),
-      cardSecurityCode: external_exports.boolean().optional(),
-      expirationMonth: external_exports.boolean().optional(),
-      expirationYear: external_exports.boolean().optional(),
-      cardNumber: external_exports.boolean().optional()
+    creditCards: z.object({
+      cardName: z.boolean().optional(),
+      cardSecurityCode: z.boolean().optional(),
+      expirationMonth: z.boolean().optional(),
+      expirationYear: z.boolean().optional(),
+      cardNumber: z.boolean().optional()
     }).optional(),
-    email: external_exports.boolean().optional(),
-    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
-    credentialsImport: external_exports.boolean().optional()
+    email: z.boolean().optional(),
+    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
+    credentialsImport: z.boolean().optional()
   });
-  var getAutofillInitDataResponseSchema = external_exports.object({
-    type: external_exports.literal("getAutofillInitDataResponse").optional(),
-    success: external_exports.object({
-      credentials: external_exports.array(credentialsSchema),
-      identities: external_exports.array(identityObjectSchema),
-      creditCards: external_exports.array(creditCardObjectSchema),
-      serializedInputContext: external_exports.string()
+  var getAutofillInitDataResponseSchema = z.object({
+    type: z.literal("getAutofillInitDataResponse").optional(),
+    success: z.object({
+      credentials: z.array(credentialsSchema),
+      identities: z.array(identityObjectSchema),
+      creditCards: z.array(creditCardObjectSchema),
+      serializedInputContext: z.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var getAutofillCredentialsResultSchema = external_exports.object({
-    type: external_exports.literal("getAutofillCredentialsResponse").optional(),
-    success: external_exports.object({
-      id: external_exports.string().optional(),
-      autogenerated: external_exports.boolean().optional(),
-      username: external_exports.string(),
-      password: external_exports.string().optional()
+  var getAutofillCredentialsResultSchema = z.object({
+    type: z.literal("getAutofillCredentialsResponse").optional(),
+    success: z.object({
+      id: z.string().optional(),
+      autogenerated: z.boolean().optional(),
+      username: z.string(),
+      password: z.string().optional()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var availableInputTypes1Schema = external_exports.object({
-    credentials: external_exports.object({
-      username: external_exports.boolean().optional(),
-      password: external_exports.boolean().optional()
+  var availableInputTypes1Schema = z.object({
+    credentials: z.object({
+      username: z.boolean().optional(),
+      password: z.boolean().optional()
     }).optional(),
-    identities: external_exports.object({
-      firstName: external_exports.boolean().optional(),
-      middleName: external_exports.boolean().optional(),
-      lastName: external_exports.boolean().optional(),
-      birthdayDay: external_exports.boolean().optional(),
-      birthdayMonth: external_exports.boolean().optional(),
-      birthdayYear: external_exports.boolean().optional(),
-      addressStreet: external_exports.boolean().optional(),
-      addressStreet2: external_exports.boolean().optional(),
-      addressCity: external_exports.boolean().optional(),
-      addressProvince: external_exports.boolean().optional(),
-      addressPostalCode: external_exports.boolean().optional(),
-      addressCountryCode: external_exports.boolean().optional(),
-      phone: external_exports.boolean().optional(),
-      emailAddress: external_exports.boolean().optional()
+    identities: z.object({
+      firstName: z.boolean().optional(),
+      middleName: z.boolean().optional(),
+      lastName: z.boolean().optional(),
+      birthdayDay: z.boolean().optional(),
+      birthdayMonth: z.boolean().optional(),
+      birthdayYear: z.boolean().optional(),
+      addressStreet: z.boolean().optional(),
+      addressStreet2: z.boolean().optional(),
+      addressCity: z.boolean().optional(),
+      addressProvince: z.boolean().optional(),
+      addressPostalCode: z.boolean().optional(),
+      addressCountryCode: z.boolean().optional(),
+      phone: z.boolean().optional(),
+      emailAddress: z.boolean().optional()
     }).optional(),
-    creditCards: external_exports.object({
-      cardName: external_exports.boolean().optional(),
-      cardSecurityCode: external_exports.boolean().optional(),
-      expirationMonth: external_exports.boolean().optional(),
-      expirationYear: external_exports.boolean().optional(),
-      cardNumber: external_exports.boolean().optional()
+    creditCards: z.object({
+      cardName: z.boolean().optional(),
+      cardSecurityCode: z.boolean().optional(),
+      expirationMonth: z.boolean().optional(),
+      expirationYear: z.boolean().optional(),
+      cardNumber: z.boolean().optional()
     }).optional(),
-    email: external_exports.boolean().optional(),
-    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
-    credentialsImport: external_exports.boolean().optional()
+    email: z.boolean().optional(),
+    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
+    credentialsImport: z.boolean().optional()
   });
-  var providerStatusUpdatedSchema = external_exports.object({
-    status: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]),
-    credentials: external_exports.array(credentialsSchema),
+  var providerStatusUpdatedSchema = z.object({
+    status: z.union([z.literal("locked"), z.literal("unlocked")]),
+    credentials: z.array(credentialsSchema),
     availableInputTypes: availableInputTypes1Schema
   });
-  var autofillFeatureTogglesSchema = external_exports.object({
-    inputType_credentials: external_exports.boolean().optional(),
-    inputType_identities: external_exports.boolean().optional(),
-    inputType_creditCards: external_exports.boolean().optional(),
-    emailProtection: external_exports.boolean().optional(),
-    emailProtection_incontext_signup: external_exports.boolean().optional(),
-    password_generation: external_exports.boolean().optional(),
-    credentials_saving: external_exports.boolean().optional(),
-    inlineIcon_credentials: external_exports.boolean().optional(),
-    third_party_credentials_provider: external_exports.boolean().optional(),
-    unknown_username_categorization: external_exports.boolean().optional(),
-    input_focus_api: external_exports.boolean().optional(),
-    password_variant_categorization: external_exports.boolean().optional(),
-    partial_form_saves: external_exports.boolean().optional()
+  var autofillFeatureTogglesSchema = z.object({
+    inputType_credentials: z.boolean().optional(),
+    inputType_identities: z.boolean().optional(),
+    inputType_creditCards: z.boolean().optional(),
+    emailProtection: z.boolean().optional(),
+    emailProtection_incontext_signup: z.boolean().optional(),
+    password_generation: z.boolean().optional(),
+    credentials_saving: z.boolean().optional(),
+    inlineIcon_credentials: z.boolean().optional(),
+    third_party_credentials_provider: z.boolean().optional(),
+    unknown_username_categorization: z.boolean().optional(),
+    input_focus_api: z.boolean().optional(),
+    password_variant_categorization: z.boolean().optional(),
+    partial_form_saves: z.boolean().optional()
   });
-  var getIdentityResultSchema = external_exports.object({
+  var getIdentityResultSchema = z.object({
     success: identityObjectSchema
   });
-  var getCreditCardResultSchema = external_exports.object({
+  var getCreditCardResultSchema = z.object({
     success: creditCardObjectSchema
   });
-  var emailProtectionGetIsLoggedInResultSchema = external_exports.object({
-    success: external_exports.boolean().optional(),
+  var emailProtectionGetIsLoggedInResultSchema = z.object({
+    success: z.boolean().optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetUserDataResultSchema = external_exports.object({
-    success: external_exports.object({
-      userName: external_exports.string(),
-      nextAlias: external_exports.string(),
-      token: external_exports.string()
+  var emailProtectionGetUserDataResultSchema = z.object({
+    success: z.object({
+      userName: z.string(),
+      nextAlias: z.string(),
+      token: z.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetCapabilitiesResultSchema = external_exports.object({
-    success: external_exports.object({
-      addUserData: external_exports.boolean().optional(),
-      getUserData: external_exports.boolean().optional(),
-      removeUserData: external_exports.boolean().optional()
+  var emailProtectionGetCapabilitiesResultSchema = z.object({
+    success: z.object({
+      addUserData: z.boolean().optional(),
+      getUserData: z.boolean().optional(),
+      removeUserData: z.boolean().optional()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetAddressesResultSchema = external_exports.object({
-    success: external_exports.object({
-      personalAddress: external_exports.string(),
-      privateAddress: external_exports.string()
+  var emailProtectionGetAddressesResultSchema = z.object({
+    success: z.object({
+      personalAddress: z.string(),
+      privateAddress: z.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionRefreshPrivateAddressResultSchema = external_exports.object({
-    success: external_exports.object({
-      personalAddress: external_exports.string(),
-      privateAddress: external_exports.string()
+  var emailProtectionRefreshPrivateAddressResultSchema = z.object({
+    success: z.object({
+      personalAddress: z.string(),
+      privateAddress: z.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var getAutofillDataRequestSchema = external_exports.object({
+  var getAutofillDataRequestSchema = z.object({
     generatedPassword: generatedPasswordSchema.optional(),
-    inputType: external_exports.string(),
-    mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards")]),
-    subType: external_exports.string(),
-    trigger: external_exports.union([external_exports.literal("userInitiated"), external_exports.literal("autoprompt"), external_exports.literal("postSignup")]).optional(),
-    serializedInputContext: external_exports.string().optional(),
+    inputType: z.string(),
+    mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
+    subType: z.string(),
+    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup")]).optional(),
+    serializedInputContext: z.string().optional(),
     triggerContext: triggerContextSchema.optional()
   });
-  var getAutofillDataResponseSchema = external_exports.object({
-    type: external_exports.literal("getAutofillDataResponse").optional(),
-    success: external_exports.object({
+  var getAutofillDataResponseSchema = z.object({
+    type: z.literal("getAutofillDataResponse").optional(),
+    success: z.object({
       credentials: credentialsSchema.optional(),
       creditCards: creditCardObjectSchema.optional(),
       identities: identityObjectSchema.optional(),
-      action: external_exports.union([external_exports.literal("fill"), external_exports.literal("focus"), external_exports.literal("none"), external_exports.literal("refreshAvailableInputTypes"), external_exports.literal("acceptGeneratedPassword"), external_exports.literal("rejectGeneratedPassword")])
+      action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("refreshAvailableInputTypes"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var storeFormDataSchema = external_exports.object({
+  var storeFormDataSchema = z.object({
     credentials: outgoingCredentialsSchema.optional(),
-    trigger: external_exports.union([external_exports.literal("partialSave"), external_exports.literal("formSubmission"), external_exports.literal("passwordGeneration"), external_exports.literal("emailProtection")]).optional()
+    trigger: z.union([z.literal("partialSave"), z.literal("formSubmission"), z.literal("passwordGeneration"), z.literal("emailProtection")]).optional()
   });
-  var getAvailableInputTypesResultSchema = external_exports.object({
-    type: external_exports.literal("getAvailableInputTypesResponse").optional(),
+  var getAvailableInputTypesResultSchema = z.object({
+    type: z.literal("getAvailableInputTypesResponse").optional(),
     success: availableInputTypesSchema,
     error: genericErrorSchema.optional()
   });
-  var askToUnlockProviderResultSchema = external_exports.object({
-    type: external_exports.literal("askToUnlockProviderResponse").optional(),
+  var askToUnlockProviderResultSchema = z.object({
+    type: z.literal("askToUnlockProviderResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
-  var checkCredentialsProviderStatusResultSchema = external_exports.object({
-    type: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
+  var checkCredentialsProviderStatusResultSchema = z.object({
+    type: z.literal("checkCredentialsProviderStatusResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
-  var autofillSettingsSchema = external_exports.object({
+  var autofillSettingsSchema = z.object({
     featureToggles: autofillFeatureTogglesSchema
   });
-  var runtimeConfigurationSchema = external_exports.object({
-    contentScope: external_exports.record(external_exports.unknown()),
-    userUnprotectedDomains: external_exports.array(external_exports.string()),
+  var runtimeConfigurationSchema = z.object({
+    contentScope: z.record(z.unknown()),
+    userUnprotectedDomains: z.array(z.string()),
     userPreferences: userPreferencesSchema
   });
-  var getRuntimeConfigurationResponseSchema = external_exports.object({
-    type: external_exports.literal("getRuntimeConfigurationResponse").optional(),
+  var getRuntimeConfigurationResponseSchema = z.object({
+    type: z.literal("getRuntimeConfigurationResponse").optional(),
     success: runtimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
   });
-  var apiSchema = external_exports.object({
-    addDebugFlag: external_exports.record(external_exports.unknown()).and(external_exports.object({
+  var apiSchema = z.object({
+    addDebugFlag: z.record(z.unknown()).and(z.object({
       paramsValidator: addDebugFlagParamsSchema.optional()
     })).optional(),
-    getAutofillData: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getAutofillDataResponse").optional(),
+    getAutofillData: z.record(z.unknown()).and(z.object({
+      id: z.literal("getAutofillDataResponse").optional(),
       paramsValidator: getAutofillDataRequestSchema.optional(),
       resultValidator: getAutofillDataResponseSchema.optional()
     })).optional(),
-    getAutofillDataFocus: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getAutofillDataFocusResponse").optional(),
+    getAutofillDataFocus: z.record(z.unknown()).and(z.object({
+      id: z.literal("getAutofillDataFocusResponse").optional(),
       paramsValidator: getAutofillDataFocusRequestSchema.optional(),
       resultValidator: getAutofillDataFocusResponseSchema.optional()
     })).optional(),
-    getRuntimeConfiguration: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getRuntimeConfigurationResponse").optional(),
+    getRuntimeConfiguration: z.record(z.unknown()).and(z.object({
+      id: z.literal("getRuntimeConfigurationResponse").optional(),
       resultValidator: getRuntimeConfigurationResponseSchema.optional()
     })).optional(),
-    storeFormData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+    storeFormData: z.record(z.unknown()).and(z.object({
       paramsValidator: storeFormDataSchema.optional()
     })).optional(),
-    getAvailableInputTypes: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getAvailableInputTypesResponse").optional(),
+    getAvailableInputTypes: z.record(z.unknown()).and(z.object({
+      id: z.literal("getAvailableInputTypesResponse").optional(),
       resultValidator: getAvailableInputTypesResultSchema.optional()
     })).optional(),
-    getAutofillInitData: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getAutofillInitDataResponse").optional(),
+    getAutofillInitData: z.record(z.unknown()).and(z.object({
+      id: z.literal("getAutofillInitDataResponse").optional(),
       resultValidator: getAutofillInitDataResponseSchema.optional()
     })).optional(),
-    getAutofillCredentials: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getAutofillCredentialsResponse").optional(),
+    getAutofillCredentials: z.record(z.unknown()).and(z.object({
+      id: z.literal("getAutofillCredentialsResponse").optional(),
       paramsValidator: getAutofillCredentialsParamsSchema.optional(),
       resultValidator: getAutofillCredentialsResultSchema.optional()
     })).optional(),
-    setSize: external_exports.record(external_exports.unknown()).and(external_exports.object({
+    setSize: z.record(z.unknown()).and(z.object({
       paramsValidator: setSizeParamsSchema.optional()
     })).optional(),
-    selectedDetail: external_exports.record(external_exports.unknown()).and(external_exports.object({
+    selectedDetail: z.record(z.unknown()).and(z.object({
       paramsValidator: selectedDetailParamsSchema.optional()
     })).optional(),
-    closeAutofillParent: external_exports.record(external_exports.unknown()).optional(),
-    askToUnlockProvider: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("askToUnlockProviderResponse").optional(),
+    closeAutofillParent: z.record(z.unknown()).optional(),
+    askToUnlockProvider: z.record(z.unknown()).and(z.object({
+      id: z.literal("askToUnlockProviderResponse").optional(),
       resultValidator: askToUnlockProviderResultSchema.optional()
     })).optional(),
-    checkCredentialsProviderStatus: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
+    checkCredentialsProviderStatus: z.record(z.unknown()).and(z.object({
+      id: z.literal("checkCredentialsProviderStatusResponse").optional(),
       resultValidator: checkCredentialsProviderStatusResultSchema.optional()
     })).optional(),
-    sendJSPixel: external_exports.record(external_exports.unknown()).and(external_exports.object({
+    sendJSPixel: z.record(z.unknown()).and(z.object({
       paramsValidator: sendJSPixelParamsSchema.optional()
     })).optional(),
-    setIncontextSignupPermanentlyDismissedAt: external_exports.record(external_exports.unknown()).and(external_exports.object({
+    setIncontextSignupPermanentlyDismissedAt: z.record(z.unknown()).and(z.object({
       paramsValidator: setIncontextSignupPermanentlyDismissedAtSchema.optional()
     })).optional(),
-    getIncontextSignupDismissedAt: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getIncontextSignupDismissedAt").optional(),
+    getIncontextSignupDismissedAt: z.record(z.unknown()).and(z.object({
+      id: z.literal("getIncontextSignupDismissedAt").optional(),
       resultValidator: getIncontextSignupDismissedAtSchema.optional()
     })).optional(),
-    autofillSettings: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      validatorsOnly: external_exports.literal(true).optional(),
+    autofillSettings: z.record(z.unknown()).and(z.object({
+      validatorsOnly: z.literal(true).optional(),
       resultValidator: autofillSettingsSchema.optional()
     })).optional(),
-    getAlias: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      validatorsOnly: external_exports.literal(true).optional(),
+    getAlias: z.record(z.unknown()).and(z.object({
+      validatorsOnly: z.literal(true).optional(),
       paramValidator: getAliasParamsSchema.optional(),
       resultValidator: getAliasResultSchema.optional()
     })).optional(),
-    openManagePasswords: external_exports.record(external_exports.unknown()).optional(),
-    openManageCreditCards: external_exports.record(external_exports.unknown()).optional(),
-    openManageIdentities: external_exports.record(external_exports.unknown()).optional(),
-    startCredentialsImportFlow: external_exports.record(external_exports.unknown()).optional(),
-    getIdentity: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getIdentityResponse").optional(),
+    openManagePasswords: z.record(z.unknown()).optional(),
+    openManageCreditCards: z.record(z.unknown()).optional(),
+    openManageIdentities: z.record(z.unknown()).optional(),
+    startCredentialsImportFlow: z.record(z.unknown()).optional(),
+    getIdentity: z.record(z.unknown()).and(z.object({
+      id: z.literal("getIdentityResponse").optional(),
       paramValidator: getIdentityParamSchema.optional(),
       resultValidator: getIdentityResultSchema.optional()
     })).optional(),
-    getCreditCard: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getCreditCardResponse").optional(),
+    getCreditCard: z.record(z.unknown()).and(z.object({
+      id: z.literal("getCreditCardResponse").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
       resultValidator: getCreditCardResultSchema.optional()
     })).optional(),
-    credentialsImportFlowPermanentlyDismissed: external_exports.record(external_exports.unknown()).optional(),
-    emailProtectionStoreUserData: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("emailProtectionStoreUserDataResponse").optional(),
+    credentialsImportFlowPermanentlyDismissed: z.record(z.unknown()).optional(),
+    emailProtectionStoreUserData: z.record(z.unknown()).and(z.object({
+      id: z.literal("emailProtectionStoreUserDataResponse").optional(),
       paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()
     })).optional(),
-    emailProtectionRemoveUserData: external_exports.record(external_exports.unknown()).optional(),
-    emailProtectionGetIsLoggedIn: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("emailProtectionGetIsLoggedInResponse").optional(),
+    emailProtectionRemoveUserData: z.record(z.unknown()).optional(),
+    emailProtectionGetIsLoggedIn: z.record(z.unknown()).and(z.object({
+      id: z.literal("emailProtectionGetIsLoggedInResponse").optional(),
       resultValidator: emailProtectionGetIsLoggedInResultSchema.optional()
     })).optional(),
-    emailProtectionGetUserData: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("emailProtectionGetUserDataResponse").optional(),
+    emailProtectionGetUserData: z.record(z.unknown()).and(z.object({
+      id: z.literal("emailProtectionGetUserDataResponse").optional(),
       resultValidator: emailProtectionGetUserDataResultSchema.optional()
     })).optional(),
-    emailProtectionGetCapabilities: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("emailProtectionGetCapabilitiesResponse").optional(),
+    emailProtectionGetCapabilities: z.record(z.unknown()).and(z.object({
+      id: z.literal("emailProtectionGetCapabilitiesResponse").optional(),
       resultValidator: emailProtectionGetCapabilitiesResultSchema.optional()
     })).optional(),
-    emailProtectionGetAddresses: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("emailProtectionGetAddressesResponse").optional(),
+    emailProtectionGetAddresses: z.record(z.unknown()).and(z.object({
+      id: z.literal("emailProtectionGetAddressesResponse").optional(),
       resultValidator: emailProtectionGetAddressesResultSchema.optional()
     })).optional(),
-    emailProtectionRefreshPrivateAddress: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
+    emailProtectionRefreshPrivateAddress: z.record(z.unknown()).and(z.object({
+      id: z.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
       resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
     })).optional(),
-    startEmailProtectionSignup: external_exports.record(external_exports.unknown()).optional(),
-    closeEmailProtectionTab: external_exports.record(external_exports.unknown()).optional(),
-    ShowInContextEmailProtectionSignupPrompt: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
+    startEmailProtectionSignup: z.record(z.unknown()).optional(),
+    closeEmailProtectionTab: z.record(z.unknown()).optional(),
+    ShowInContextEmailProtectionSignupPrompt: z.record(z.unknown()).and(z.object({
+      id: z.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
       resultValidator: showInContextEmailProtectionSignupPromptSchema.optional()
     })).optional()
   });
@@ -10745,7 +10901,8 @@ Source: "${matchedFrom}"`;
      * @private
      */
     _validate(data, validator) {
-      if (!validator) return data;
+      if (!validator)
+        return data;
       if (validator) {
         const result = validator?.safeParse(data);
         if (!result) {
@@ -11198,8 +11355,10 @@ Source: "${matchedFrom}"`;
         for (const mutationRecord of mutationList) {
           if (mutationRecord.type === "childList") {
             for (const addedNode of mutationRecord.addedNodes) {
-              if (!(addedNode instanceof HTMLElement)) continue;
-              if (addedNode.nodeName === "DDG-AUTOFILL") continue;
+              if (!(addedNode instanceof HTMLElement))
+                continue;
+              if (addedNode.nodeName === "DDG-AUTOFILL")
+                continue;
               outgoing.push(addedNode);
             }
           }
@@ -11297,7 +11456,8 @@ Source: "${matchedFrom}"`;
       if (shouldLog()) {
         console.log(mode, reason, ...rest);
       }
-      if (mode === "scanning") return;
+      if (mode === "scanning")
+        return;
       if (mode === "stopped") {
         window.removeEventListener("pointerdown", this, true);
         window.removeEventListener("focus", this, true);
@@ -11375,8 +11535,10 @@ Source: "${matchedFrom}"`;
      * @param {HTMLFormElement|null} form
      */
     addInput(input, form = null) {
-      if (this.isStopped) return;
-      if (this.inputExistsInForms(input)) return;
+      if (this.isStopped)
+        return;
+      if (this.inputExistsInForms(input))
+        return;
       const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
@@ -11387,7 +11549,8 @@ Source: "${matchedFrom}"`;
         }
         return;
       }
-      if (parentForm.role === "search") return;
+      if (parentForm.role === "search")
+        return;
       let previouslyFoundParent, childForm;
       for (const [formEl] of this.forms) {
         if (!formEl.isConnected) {
@@ -11474,13 +11637,16 @@ Source: "${matchedFrom}"`;
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-      if (this.isStopped || !(event.target instanceof Element)) return;
+      if (this.isStopped || !(event.target instanceof Element))
+        return;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
       if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
-        if (shouldLog()) console.log("scanOnClick executing for target", realTarget);
+        if (shouldLog())
+          console.log("scanOnClick executing for target", realTarget);
         const parentForm = this.getParentForm(realTarget);
-        if (parentForm instanceof HTMLInputElement) return;
+        if (parentForm instanceof HTMLInputElement)
+          return;
         const hasShadowTree = event.target?.shadowRoot != null;
         const form = this.forms.get(parentForm);
         if (!form) {
@@ -11705,7 +11871,8 @@ Source: "${matchedFrom}"`;
         return outgoingData;
       }
       function suggestPassword() {
-        if (!autoGeneratedCredential?.password) throw new Error("unreachable");
+        if (!autoGeneratedCredential?.password)
+          throw new Error("unreachable");
         return {
           ...outgoingData,
           generatedPassword: {
@@ -11882,7 +12049,8 @@ Source: "${matchedFrom}"`;
      */
     captureWebkitHandlers(handlerNames) {
       const handlers = window.webkit.messageHandlers;
-      if (!handlers) throw new MissingHandler("window.webkit.messageHandlers was absent", "all");
+      if (!handlers)
+        throw new MissingHandler("window.webkit.messageHandlers was absent", "all");
       for (const webkitMessageHandlerName of handlerNames) {
         if (typeof handlers[webkitMessageHandlerName]?.postMessage === "function") {
           const original = handlers[webkitMessageHandlerName];
@@ -12450,11 +12618,11 @@ Source: "${matchedFrom}"`;
      */
     constructor(name, args) {
       /** @type {import('./utils.js').RemoteConfig | undefined} */
-      __privateAdd(this, _bundledConfig);
+      __privateAdd(this, _bundledConfig, void 0);
       /** @type {string} */
       __publicField(this, "name");
       /** @type {{ debug?: boolean, desktopModeEnabled?: boolean, forcedZoomEnabled?: boolean, featureSettings?: Record<string, unknown>, assets?: import('./content-feature.js').AssetConfig | undefined, site: import('./content-feature.js').Site, messagingConfig?: import('@duckduckgo/messaging').MessagingConfig } | null} */
-      __privateAdd(this, _args);
+      __privateAdd(this, _args, void 0);
       this.name = name;
       const { bundledConfig, site, platform } = args;
       __privateSet(this, _bundledConfig, bundledConfig);
@@ -12482,7 +12650,8 @@ Source: "${matchedFrom}"`;
      */
     matchDomainFeatureSetting(featureKeyName) {
       const domain = this.args?.site.domain;
-      if (!domain) return [];
+      if (!domain)
+        return [];
       const domains = this._getFeatureSettings()?.[featureKeyName] || [];
       return domains.filter((rule) => {
         if (Array.isArray(rule.domain)) {
@@ -12607,7 +12776,8 @@ Source: "${matchedFrom}"`;
      */
     getForcedInputType(input) {
       const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
-      if (!isValidSupportedType(setting?.type)) return null;
+      if (!isValidSupportedType(setting?.type))
+        return null;
       return setting?.type;
     }
     /**
@@ -12748,7 +12918,8 @@ Source: "${matchedFrom}"`;
      * @private
      */
     async _getRuntimeConfiguration() {
-      if (this._runtimeConfiguration) return this._runtimeConfiguration;
+      if (this._runtimeConfiguration)
+        return this._runtimeConfiguration;
       const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null));
       this._runtimeConfiguration = runtimeConfig;
       return this._runtimeConfiguration;
@@ -12791,7 +12962,8 @@ Source: "${matchedFrom}"`;
         runtimeConfig.contentScope
       );
       const feature = contentScope.features?.autofill?.features?.[name];
-      if (feature?.state !== "enabled" || contentScope.features[name]) return runtimeConfig;
+      if (feature?.state !== "enabled" || contentScope.features[name])
+        return runtimeConfig;
       if (feature) {
         runtimeConfig.contentScope.features = {
           ...contentScope.features,
@@ -12805,7 +12977,8 @@ Source: "${matchedFrom}"`;
       return runtimeConfig;
     }
     async getsiteSpecificFeature() {
-      if (this._siteSpecificFeature) return this._siteSpecificFeature;
+      if (this._siteSpecificFeature)
+        return this._siteSpecificFeature;
       try {
         const runtimeConfig = await this._getRuntimeConfiguration();
         this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, "siteSpecificFixes");
@@ -12819,7 +12992,8 @@ Source: "${matchedFrom}"`;
       }
     }
     setsiteSpecificFeature(siteSpecificFeature) {
-      if (this._siteSpecificFeature) return;
+      if (this._siteSpecificFeature)
+        return;
       this._siteSpecificFeature = siteSpecificFeature;
     }
     /**
@@ -12860,7 +13034,8 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     isTypeUnavailable({ mainType, subtype, variant }) {
-      if (mainType === "unknown") return true;
+      if (mainType === "unknown")
+        return true;
       if (subtype === "password" && variant === "new") {
         return !this.featureToggles.password_generation;
       }
@@ -12887,7 +13062,8 @@ Source: "${matchedFrom}"`;
      * @returns {Promise<boolean>}
      */
     async populateDataIfNeeded({ mainType, subtype, variant }) {
-      if (this.isTypeUnavailable({ mainType, subtype, variant })) return false;
+      if (this.isTypeUnavailable({ mainType, subtype, variant }))
+        return false;
       if (this.availableInputTypes?.[mainType] === void 0) {
         await this.populateData();
         return true;
@@ -12906,7 +13082,8 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     canAutofillType({ mainType, subtype, variant }, inContextSignup) {
-      if (this.isTypeUnavailable({ mainType, subtype, variant })) return false;
+      if (this.isTypeUnavailable({ mainType, subtype, variant }))
+        return false;
       const isEmailProtectionEnabled = this.featureToggles.emailProtection && this.availableInputTypes.email;
       if (subtype === "emailAddress" && isEmailProtectionEnabled) {
         return true;
@@ -12927,7 +13104,8 @@ Source: "${matchedFrom}"`;
     }
     /** @returns {AutofillFeatureToggles} */
     get featureToggles() {
-      if (this._featureToggles === null) throw new Error("feature toggles accessed before being set");
+      if (this._featureToggles === null)
+        throw new Error("feature toggles accessed before being set");
       return this._featureToggles;
     }
     /** @param {AutofillFeatureToggles} input */
@@ -12936,7 +13114,8 @@ Source: "${matchedFrom}"`;
     }
     /** @returns {AvailableInputTypes} */
     get availableInputTypes() {
-      if (this._availableInputTypes === null) throw new Error("available input types accessed before being set");
+      if (this._availableInputTypes === null)
+        throw new Error("available input types accessed before being set");
       return this._availableInputTypes;
     }
     /** @param {AvailableInputTypes} value */
@@ -13269,8 +13448,10 @@ Source: "${matchedFrom}"`;
         const formsArray = [...forms.values()];
         const matchingForm = formsArray.find((form) => {
           const btns = [...form.submitButtons];
-          if (btns.includes(realTarget)) return true;
-          if (btns.find((btn) => btn.contains(realTarget))) return true;
+          if (btns.includes(realTarget))
+            return true;
+          if (btns.find((btn) => btn.contains(realTarget)))
+            return true;
           return false;
         });
         matchingForm?.submitHandler("global pointerdown event + matching form");
@@ -13280,9 +13461,11 @@ Source: "${matchedFrom}"`;
             /** @type HTMLElement */
             realTarget?.closest(selector)
           );
-          if (!button) return;
+          if (!button)
+            return;
           const buttonIsAFalsePositive = formsArray.some((form) => button?.contains(form.form));
-          if (buttonIsAFalsePositive) return;
+          if (buttonIsAFalsePositive)
+            return;
           const text = getTextShallow(button) || extractElementStrings(button).join(" ");
           const hasRelevantText = safeRegexTest(matching.getDDGMatcherRegex("submitButtonRegex"), text);
           if (hasRelevantText && text.length < 25) {
@@ -13314,10 +13497,12 @@ Source: "${matchedFrom}"`;
           ["fetch", "xmlhttprequest"].includes(entry.initiatorType) && safeRegexTest(/login|sign-in|signin/, entry.name)
         )
       );
-      if (!entries.length) return;
+      if (!entries.length)
+        return;
       const filledForm = formsArray.find((form) => form.hasValues());
       const focusedForm = formsArray.find((form) => form.hasFocus());
-      if (focusedForm) return;
+      if (focusedForm)
+        return;
       filledForm?.submitHandler("performance observer");
     });
     observer.observe({ entryTypes: ["resource"] });
@@ -16173,7 +16358,8 @@ Source: "${matchedFrom}"`;
       return Boolean(this.device.settings.availableInputTypes.credentialsImport);
     }
     init() {
-      if (!this.device.globalConfig.hasModernWebkitAPI) return;
+      if (!this.device.globalConfig.hasModernWebkitAPI)
+        return;
       try {
         Object.defineProperty(window, "credentialsImportFinished", {
           enumerable: false,
@@ -16308,7 +16494,8 @@ Source: "${matchedFrom}"`;
       throw new Error("Not implemented");
     }
     addDuckAddressesToIdentities(identities) {
-      if (!this.hasLocalAddresses) return identities;
+      if (!this.hasLocalAddresses)
+        return identities;
       const newIdentities = [];
       let { privateAddress, personalAddress } = this.getLocalAddresses();
       privateAddress = formatDuckAddress(privateAddress);
@@ -16410,13 +16597,36 @@ Source: "${matchedFrom}"`;
           const targetElement = pierceShadowTree(e);
           if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
             this.attachKeyboard({ device: this, form, element: targetElement });
+            if (targetElement instanceof HTMLElement && !targetElement.hasAttribute("autocomplete")) {
+              const inputType = getInputType(targetElement);
+              const autocompleteValue = this.getAutocompleteValueFromInputType(inputType);
+              targetElement.setAttribute("autocomplete", autocompleteValue);
+            }
+          }
+        },
+        true
+      );
+    }
+    /**
+     * Remove autocomplete attribute on blur
+     */
+    initGlobalBlurHandler() {
+      window.addEventListener(
+        "blur",
+        (e) => {
+          const targetElement = pierceShadowTree(e);
+          if (this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
+            if (targetElement instanceof HTMLElement && targetElement.hasAttribute("autocomplete")) {
+              targetElement.removeAttribute("autocomplete");
+            }
           }
         },
         true
       );
     }
     async startInit() {
-      if (this.isInitializationStarted) return;
+      if (this.isInitializationStarted)
+        return;
       this.isInitializationStarted = true;
       this.addDeviceListeners();
       await this.setupAutofill();
@@ -16429,13 +16639,13 @@ Source: "${matchedFrom}"`;
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
       }
-      if (this.settings.featureToggles.input_focus_api) {
-        this.initGlobalFocusHandler(this.scanner.forms);
-      }
+      this.initGlobalFocusHandler(this.scanner.forms);
+      this.initGlobalBlurHandler();
     }
     async init() {
       const settings = await this.settings.refresh();
-      if (!settings.enabled) return;
+      if (!settings.enabled)
+        return;
       const handler = async () => {
         if (document.readyState === "complete") {
           window.removeEventListener("load", handler);
@@ -16542,9 +16752,12 @@ Source: "${matchedFrom}"`;
      */
     attachTooltip(params) {
       const { form, input, click, trigger } = params;
-      if (document.visibilityState !== "visible" && trigger !== "postSignup") return;
-      if (trigger === "autoprompt" && !this.globalConfig.isMobileApp) return;
-      if (trigger === "autoprompt" && this.autopromptFired) return;
+      if (document.visibilityState !== "visible" && trigger !== "postSignup")
+        return;
+      if (trigger === "autoprompt" && !this.globalConfig.isMobileApp)
+        return;
+      if (trigger === "autoprompt" && this.autopromptFired)
+        return;
       form.activeInput = input;
       this.activeForm = form;
       const inputType = getInputType(input);
@@ -16606,7 +16819,8 @@ Source: "${matchedFrom}"`;
         return this.thirdPartyProvider?.askToUnlockProvider();
       }
       const matchingData = items.find((item) => String(item.id) === id);
-      if (!matchingData) throw new Error("unreachable (fatal)");
+      if (!matchingData)
+        throw new Error("unreachable (fatal)");
       const dataPromise = (() => {
         switch (mainType) {
           case "creditCards":
@@ -16730,6 +16944,30 @@ Source: "${matchedFrom}"`;
     }
     /** @returns {void} */
     closeEmailProtection() {
+    }
+    /**
+     * Determines the appropriate autocomplete attribute value based on the input type
+     * @param {import('../Form/matching').SupportedTypes} inputType
+     * @returns {string}
+     */
+    getAutocompleteValueFromInputType(inputType) {
+      const subtype = getSubtypeFromType(inputType);
+      const autocompleteMap = {
+        // Identities
+        emailAddress: "email",
+        fullName: "name",
+        firstName: "given-name",
+        middleName: "additional-name",
+        lastName: "family-name",
+        phone: "tel",
+        addressStreet: "street-address",
+        addressStreet2: "address-line2",
+        addressCity: "address-level2",
+        addressProvince: "address-level1",
+        addressPostalCode: "postal-code",
+        addressCountryCode: "country"
+      };
+      return autocompleteMap[subtype] || "on";
     }
     /** @returns {Promise<null|Record<string,boolean>>} */
     getEmailProtectionCapabilities() {
@@ -16859,8 +17097,10 @@ Source: "${matchedFrom}"`;
      * @param {import("../Form/Form").Form} form
      */
     postSubmit(values, form) {
-      if (!form.form) return;
-      if (!form.hasValues(values)) return;
+      if (!form.form)
+        return;
+      if (!form.hasValues(values))
+        return;
       const shouldTriggerPartialSave = Object.keys(values?.credentials || {}).length === 1 && Boolean(values?.credentials?.username) && this.settings.featureToggles.partial_form_saves;
       const checks = [
         form.shouldPromptToStoreData && !form.submitHandlerExecuted,
@@ -16915,7 +17155,8 @@ Source: "${matchedFrom}"`;
       this.addNativeAccessibleGlobalFunctions();
     }
     addNativeAccessibleGlobalFunctions() {
-      if (!this.device.globalConfig.hasModernWebkitAPI) return;
+      if (!this.device.globalConfig.hasModernWebkitAPI)
+        return;
       try {
         Object.defineProperty(window, "openAutofillAfterClosingEmailProtectionTab", {
           enumerable: false,
@@ -17099,7 +17340,8 @@ Source: "${matchedFrom}"`;
       this.deviceApi.request(new CloseEmailProtectionTabCall(null));
     }
     addLogoutListener(handler) {
-      if (!this.globalConfig.isDDGDomain) return;
+      if (!this.globalConfig.isDDGDomain)
+        return;
       window.addEventListener("message", (e) => {
         if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
           handler();
@@ -17153,7 +17395,8 @@ Source: "${matchedFrom}"`;
         for (const mutationRecord of mutationList) {
           if (mutationRecord.type === "childList") {
             mutationRecord.addedNodes.forEach((el) => {
-              if (el.nodeName === "DDG-AUTOFILL") return;
+              if (el.nodeName === "DDG-AUTOFILL")
+                return;
               this.ensureIsLastInDOM();
             });
           }
@@ -17228,7 +17471,8 @@ Source: "${matchedFrom}"`;
         window.cancelAnimationFrame(this.animationFrame);
       }
       this.animationFrame = window.requestAnimationFrame(() => {
-        if (this.isHidden) return;
+        if (this.isHidden)
+          return;
         const { left, bottom, height, top } = this.getPosition();
         if (left !== this.left || bottom !== this.top) {
           const coords = { left, top: bottom };
@@ -17252,7 +17496,8 @@ Source: "${matchedFrom}"`;
         const inputPosition = this.getPosition();
         const caretHeight = 14;
         const overriddenTopPosition = top - tooltipBoundingBox.height - inputPosition.height - caretHeight;
-        if (overriddenTopPosition >= 0) return { left, top: overriddenTopPosition };
+        if (overriddenTopPosition >= 0)
+          return { left, top: overriddenTopPosition };
       }
       if (tooltipBoundingBox.left < 0 && window.innerWidth <= smallScreenWidth) {
         const leftOverflow = Math.abs(tooltipBoundingBox.left);
@@ -17310,7 +17555,8 @@ Source: "${matchedFrom}"`;
       this.applyPositionalStyles(element, { left, top });
       if (this.options.hasCaret) {
         const overridePosition = this.getOverridePosition({ left, top });
-        if (overridePosition) this.updatePosition(element, overridePosition);
+        if (overridePosition)
+          this.updatePosition(element, overridePosition);
       }
     }
     ensureIsLastInDOM() {
@@ -17358,7 +17604,8 @@ Source: "${matchedFrom}"`;
     }
     setSize() {
       const innerNode = this.shadow.querySelector(".wrapper--data");
-      if (!innerNode) return;
+      if (!innerNode)
+        return;
       const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
       this.options.setSize?.(details);
     }
@@ -17437,7 +17684,8 @@ Source: "${matchedFrom}"`;
       let hasAddedSeparator = false;
       const shouldShowSeparator = (dataId, index) => {
         const shouldShow = ["personalAddress", "privateAddress"].includes(dataId) && !hasAddedSeparator;
-        if (shouldShow) hasAddedSeparator = true;
+        if (shouldShow)
+          hasAddedSeparator = true;
         const isFirst = index === 0;
         return shouldShow && !isFirst;
       };
@@ -17770,7 +18018,8 @@ ${this.options.css}
       );
     }
     updateItems(data) {
-      if (this._activeInputType === "unknown") return;
+      if (this._activeInputType === "unknown")
+        return;
       const config = getInputConfigFromType(this._activeInputType);
       const asRenderers = data.map((d) => config.tooltipItem(d));
       const activeTooltip = this.getActiveTooltip();
@@ -17828,8 +18077,10 @@ ${this.options.css}
     }
     // Global listener for event delegation
     _pointerDownListener(e) {
-      if (!e.isTrusted) return;
-      if (isEventWithinDax(e, e.target)) return;
+      if (!e.isTrusted)
+        return;
+      if (isEventWithinDax(e, e.target))
+        return;
       if (e.target.nodeName === "DDG-AUTOFILL") {
         this._handleClickInTooltip(e);
       } else {
@@ -17840,8 +18091,10 @@ ${this.options.css}
     }
     // Global listener for event delegation
     _pointerUpListener(e) {
-      if (!e.isTrusted) return;
-      if (isEventWithinDax(e, e.target)) return;
+      if (!e.isTrusted)
+        return;
+      if (isEventWithinDax(e, e.target))
+        return;
       if (e.target.nodeName === "DDG-AUTOFILL") {
         this._handleClickInTooltip(e);
       }
@@ -17850,7 +18103,8 @@ ${this.options.css}
       e.preventDefault();
       e.stopImmediatePropagation();
       const isMainMouseButton = e.button === 0;
-      if (!isMainMouseButton) return;
+      if (!isMainMouseButton)
+        return;
       const activeTooltip = this.getActiveTooltip();
       activeTooltip?.dispatchClick();
     }
@@ -17932,7 +18186,8 @@ ${this.options.css}
       this._options.device.inContextSignup?.onIncontextSignupDismissed({ shouldHideTooltip: !hasOtherOptions });
       if (hasOtherOptions) {
         const topContextData = this._options.device.getTopContextData();
-        if (!topContextData) return;
+        if (!topContextData)
+          return;
         const config = getInputConfigFromType(topContextData.inputType);
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
         this.updateItems(data);
@@ -17990,7 +18245,8 @@ ${this.options.css}
     async resetAutofillUI(callback) {
       this.removeAutofillUIFromPage("Resetting autofill.");
       await this.setupAutofill();
-      if (callback) await callback();
+      if (callback)
+        await callback();
       this.uiController = this.createUIController();
       await this.postInit();
     }
@@ -18087,7 +18343,8 @@ ${this.options.css}
         activeEl = e.target;
       });
       chrome.runtime.onMessage.addListener((message, sender) => {
-        if (sender.id !== chrome.runtime.id) return;
+        if (sender.id !== chrome.runtime.id)
+          return;
         switch (message.type) {
           case "ddgUserReady":
             this.resetAutofillUI(() => this.setupSettingsPage({ shouldLog: true }));
@@ -18140,7 +18397,8 @@ ${this.options.css}
      */
     attachTooltip(args) {
       const { getPosition, topContextData, click, input } = args;
-      if (!input.parentNode) return;
+      if (!input.parentNode)
+        return;
       this._mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {
           mutationRecord.removedNodes.forEach((el) => {
@@ -18474,7 +18732,8 @@ ${this.options.css}
     async _show(details) {
       await this._showAutofillParent(details);
       this._listenForSelectedCredential(async (response) => {
-        if (!response) return;
+        if (!response)
+          return;
         if ("configType" in response) {
           this.selectedDetail(response.data, response.configType);
         } else if ("stop" in response) {
@@ -18489,14 +18748,16 @@ ${this.options.css}
       await this._checkDeviceSignedIn();
     }
     async getAddresses() {
-      if (!this.globalConfig.isApp) return this.getAlias();
+      if (!this.globalConfig.isApp)
+        return this.getAlias();
       const { addresses } = await this.deviceApi.request(createRequest("emailHandlerGetAddresses"));
       this.storeLocalAddresses(addresses);
       return addresses;
     }
     async refreshAlias() {
       await this.deviceApi.notify(createNotification("emailHandlerRefreshAlias"));
-      if (this.globalConfig.isApp) this.getAddresses();
+      if (this.globalConfig.isApp)
+        this.getAddresses();
     }
     async _checkDeviceSignedIn() {
       const { isAppSignedIn } = await this.deviceApi.request(createRequest("emailHandlerCheckAppSignedInStatus"));
@@ -18593,7 +18854,8 @@ ${this.options.css}
       return alias ? formatDuckAddress(alias) : alias;
     }
     addLogoutListener(handler) {
-      if (!this.globalConfig.isDDGDomain) return;
+      if (!this.globalConfig.isDDGDomain)
+        return;
       window.addEventListener("message", (e) => {
         if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
           handler();
@@ -18646,7 +18908,8 @@ ${this.options.css}
        */
       showImmediately() {
         const topContextData = device.getTopContextData();
-        if (!topContextData) throw new Error("unreachable, topContextData should be available");
+        if (!topContextData)
+          throw new Error("unreachable, topContextData should be available");
         const getPosition = () => {
           return {
             x: 0,
@@ -18867,7 +19130,8 @@ ${this.options.css}
       return isLoggedIn;
     }
     addLogoutListener(handler) {
-      if (!this.globalConfig.isDDGDomain) return;
+      if (!this.globalConfig.isDDGDomain)
+        return;
       windowsInteropAddEventListener("message", (e) => {
         if (this.globalConfig.isDDGDomain && e.data === EMAIL_PROTECTION_LOGOUT_MESSAGE) {
           handler();
@@ -19098,7 +19362,8 @@ ${this.options.css}
     if (shouldLog()) {
       console.log("DuckDuckGo Autofill Active");
     }
-    if (!window.isSecureContext) return false;
+    if (!window.isSecureContext)
+      return false;
     try {
       const startupAutofill = () => {
         if (document.visibilityState === "visible") {
