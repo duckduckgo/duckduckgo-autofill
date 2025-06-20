@@ -264,7 +264,69 @@ class InterfacePrototype {
     }
 
     /**
-     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     * Maps input types to their corresponding autocomplete attribute values
+     * @param {import('../Form/matching').SupportedTypes} inputType - The input type to map
+     * @returns {string|undefined} The autocomplete attribute value or undefined if not mapped
+     */
+    getAutocompleteValueFromInputType(inputType) {
+        const subtype = getSubtypeFromType(inputType);
+
+        // Map input subtypes to autocomplete attribute values
+        const autocompleteMap = {
+            // Identities
+            emailAddress: 'email',
+            fullName: 'name',
+            firstName: 'given-name',
+            middleName: 'additional-name',
+            lastName: 'family-name',
+            phone: 'tel',
+            addressStreet: 'street-address',
+            addressStreet2: 'address-line2',
+            addressCity: 'address-level2',
+            addressProvince: 'address-level1',
+            addressPostalCode: 'postal-code',
+            addressCountryCode: 'country',
+        };
+
+        // no default fallback
+        return autocompleteMap[subtype];
+    }
+
+    /**
+     * Sets the appropriate autocomplete attribute on identity input fields
+     * @param {EventTarget|HTMLElement} element - The element to check and potentially set autocomplete on
+     * @returns {void}
+     */
+    setAutocompleteOnIdentityField(element) {
+        if (!(element instanceof HTMLInputElement) || element.hasAttribute('autocomplete')) {
+            return;
+        }
+
+        const inputType = getInputType(element);
+        const mainType = getMainTypeFromType(inputType);
+
+        if (mainType !== 'identities') {
+            return;
+        }
+
+        const autocompleteValue = this.getAutocompleteValueFromInputType(inputType);
+        if (autocompleteValue) {
+            element.setAttribute('autocomplete', autocompleteValue);
+
+            element.addEventListener(
+                'blur',
+                () => {
+                    element.removeAttribute('autocomplete');
+                },
+                { once: true },
+            );
+        }
+    }
+
+    /**
+     * Initializes a global focus event handler to manage autocomplete attributes
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - The forms to monitor
+     * @returns {void}
      */
     initGlobalFocusHandler(forms) {
         window.addEventListener(
@@ -275,30 +337,7 @@ class InterfacePrototype {
                 const targetElement = pierceShadowTree(e);
                 if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
                     this.attachKeyboard({ device: this, form, element: targetElement });
-
-                    if (targetElement instanceof HTMLElement && !targetElement.hasAttribute('autocomplete')) {
-                        const inputType = getInputType(targetElement);
-                        const autocompleteValue = this.getAutocompleteValueFromInputType(inputType);
-                        targetElement.setAttribute('autocomplete', autocompleteValue);
-                    }
-                }
-            },
-            true,
-        );
-    }
-
-    /**
-     * Remove autocomplete attribute on blur
-     */
-    initGlobalBlurHandler() {
-        window.addEventListener(
-            'blur',
-            (e) => {
-                const targetElement = pierceShadowTree(e);
-                if (this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
-                    if (targetElement instanceof HTMLElement && targetElement.hasAttribute('autocomplete')) {
-                        targetElement.removeAttribute('autocomplete');
-                    }
+                    this.setAutocompleteOnIdentityField(targetElement);
                 }
             },
             true,
@@ -330,7 +369,6 @@ class InterfacePrototype {
         }
         // if (this.settings.featureToggles.input_focus_api) {
         this.initGlobalFocusHandler(this.scanner.forms);
-        this.initGlobalBlurHandler();
         // }
     }
 
@@ -711,28 +749,6 @@ class InterfacePrototype {
      * @param {import('../Form/matching').SupportedTypes} inputType
      * @returns {string}
      */
-    getAutocompleteValueFromInputType(inputType) {
-        const subtype = getSubtypeFromType(inputType);
-
-        // Map input subtypes to autocomplete attribute values
-        const autocompleteMap = {
-            // Identities
-            emailAddress: 'email',
-            fullName: 'name',
-            firstName: 'given-name',
-            middleName: 'additional-name',
-            lastName: 'family-name',
-            phone: 'tel',
-            addressStreet: 'street-address',
-            addressStreet2: 'address-line2',
-            addressCity: 'address-level2',
-            addressProvince: 'address-level1',
-            addressPostalCode: 'postal-code',
-            addressCountryCode: 'country',
-        };
-
-        return autocompleteMap[subtype] || 'on';
-    }
 
     /** @returns {Promise<null|Record<string,boolean>>} */
     getEmailProtectionCapabilities() {
