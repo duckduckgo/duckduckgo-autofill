@@ -4,8 +4,9 @@ import { getInputType, getMainTypeFromType, getSubtypeFromType } from '../Form/m
  * Maps input subtypes to autocomplete attribute values according to the HTML spec
  * @param {string} inputType - The input type to map
  * @returns {string|undefined} The autocomplete attribute value or undefined if not mapped
+ * @private
  */
-export function getAutocompleteValueFromInputType(inputType) {
+function getAutocompleteValueFromInputType(inputType) {
     const subtype = getSubtypeFromType(inputType);
 
     // Map input subtypes to autocomplete attribute values
@@ -34,7 +35,7 @@ export function getAutocompleteValueFromInputType(inputType) {
  * @param {EventTarget|HTMLElement} element - The element to check and potentially set autocomplete on
  * @returns {void}
  */
-export function setAutocompleteOnIdentityField(element) {
+function setAutocompleteOnIdentityField(element) {
     if (!(element instanceof HTMLInputElement) || element.hasAttribute('autocomplete')) {
         return;
     }
@@ -58,4 +59,13 @@ export function setAutocompleteOnIdentityField(element) {
             { once: true },
         );
     }
+}
+
+/**
+ * This is a single place to contain all functionality relating to autocomplete attributes
+ */
+export function initAutocompleteApi() {
+    return {
+        setAutocompleteOnIdentityField,
+    };
 }

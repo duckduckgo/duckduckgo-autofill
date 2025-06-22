@@ -1795,48 +1795,6 @@ Source: "${matchedFrom}"`;
     }
   }
 
-  // src/DeviceInterface/initAutocompleteApi.js
-  function getAutocompleteValueFromInputType(inputType) {
-    const subtype = getSubtypeFromType(inputType);
-    const autocompleteMap = {
-      // Identities
-      emailAddress: "email",
-      fullName: "name",
-      firstName: "given-name",
-      middleName: "additional-name",
-      lastName: "family-name",
-      phone: "tel",
-      addressStreet: "street-address",
-      addressStreet2: "address-line2",
-      addressCity: "address-level2",
-      addressProvince: "address-level1",
-      addressPostalCode: "postal-code",
-      addressCountryCode: "country"
-    };
-    return autocompleteMap[subtype];
-  }
-  function setAutocompleteOnIdentityField(element) {
-    if (!(element instanceof HTMLInputElement) || element.hasAttribute("autocomplete")) {
-      return;
-    }
-    const inputType = getInputType(element);
-    const mainType = getMainTypeFromType(inputType);
-    if (mainType !== "identities") {
-      return;
-    }
-    const autocompleteValue = getAutocompleteValueFromInputType(inputType);
-    if (autocompleteValue) {
-      element.setAttribute("autocomplete", autocompleteValue);
-      element.addEventListener(
-        "blur",
-        () => {
-          element.removeAttribute("autocomplete");
-        },
-        { once: true }
-      );
-    }
-  }
-
   // src/Form/countryNames.js
   var COUNTRY_CODES_TO_NAMES = {
     AC: "Ascension Island",
@@ -13365,6 +13323,53 @@ Source: "${matchedFrom}"`;
     observer.observe({ entryTypes: ["resource"] });
   }
 
+  // src/DeviceInterface/initAutocompleteApi.js
+  function getAutocompleteValueFromInputType(inputType) {
+    const subtype = getSubtypeFromType(inputType);
+    const autocompleteMap = {
+      // Identities
+      emailAddress: "email",
+      fullName: "name",
+      firstName: "given-name",
+      middleName: "additional-name",
+      lastName: "family-name",
+      phone: "tel",
+      addressStreet: "street-address",
+      addressStreet2: "address-line2",
+      addressCity: "address-level2",
+      addressProvince: "address-level1",
+      addressPostalCode: "postal-code",
+      addressCountryCode: "country"
+    };
+    return autocompleteMap[subtype];
+  }
+  function setAutocompleteOnIdentityField(element) {
+    if (!(element instanceof HTMLInputElement) || element.hasAttribute("autocomplete")) {
+      return;
+    }
+    const inputType = getInputType(element);
+    const mainType = getMainTypeFromType(inputType);
+    if (mainType !== "identities") {
+      return;
+    }
+    const autocompleteValue = getAutocompleteValueFromInputType(inputType);
+    if (autocompleteValue) {
+      element.setAttribute("autocomplete", autocompleteValue);
+      element.addEventListener(
+        "blur",
+        () => {
+          element.removeAttribute("autocomplete");
+        },
+        { once: true }
+      );
+    }
+  }
+  function initAutocompleteApi() {
+    return {
+      setAutocompleteOnIdentityField
+    };
+  }
+
   // src/EmailProtection.js
   var _previous2;
   var EmailProtection = class {
@@ -16440,13 +16445,13 @@ Source: "${matchedFrom}"`;
     getLocalCreditCards() {
       return __privateGet(this, _data6).creditCards;
     }
-    // Using external autocomplete functions from initAutocompleteApi.js
     /**
      * Initializes a global focus event handler to manage autocomplete attributes
      * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - The forms to monitor
      * @returns {void}
      */
     initGlobalFocusHandler(forms) {
+      const { setAutocompleteOnIdentityField: setAutocompleteOnIdentityField2 } = initAutocompleteApi();
       window.addEventListener(
         "focus",
         (e) => {
@@ -16455,7 +16460,7 @@ Source: "${matchedFrom}"`;
           const targetElement = pierceShadowTree(e);
           if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
             this.attachKeyboard({ device: this, form, element: targetElement });
-            setAutocompleteOnIdentityField(targetElement);
+            setAutocompleteOnIdentityField2(targetElement);
           }
         },
         true
