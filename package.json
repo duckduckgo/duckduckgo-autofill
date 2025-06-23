@@ -45,7 +45,7 @@
     "@playwright/test": "^1.53.0",
     "@types/jest": "^29.5.11",
     "@types/node": "^22.15.31",
-    "asana": "^1.0.2",
+    "asana": "^3.1.0",
     "babel-jest": "^30.0.0",
     "chokidar-cli": "^3.0.0",
     "esbuild": "^0.25.5",
