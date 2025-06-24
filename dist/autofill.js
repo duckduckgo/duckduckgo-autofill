@@ -8218,9 +8218,9 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
-     * If the platform in question is happy to derive it's 'enabled' state from the RuntimeConfiguration,
-     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
-     * support this going forward.
+     * If the platform can derive its 'enabled' state from the RuntimeConfiguration,
+     * then it should use this. Currently, only Windows supports this, but we plan to extend support
+     * to all platforms in the future.
      * @returns {Promise<boolean|null>}
      */
     async getEnabled() {
@@ -8505,6 +8505,7 @@ Source: "${matchedFrom}"`;
     siteSpecificFeature: null,
     /** @type {AutofillFeatureToggles} */
     featureToggles: {
+      autocomplete_attribute_support: false,
       credentials_saving: false,
       password_generation: false,
       emailProtection: false,
@@ -11975,25 +11976,33 @@ Source: "${matchedFrom}"`;
       return __privateGet(this, _data6).creditCards;
     }
     /**
-     * Initializes a global focus event handler to manage autocomplete attributes
-     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - The forms to monitor
+     * Initializes a global focus event handler that handles iOS keyboard and autocomplete functionality
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - Collection of form objects to monitor
      * @returns {void}
      */
     initGlobalFocusHandler(forms) {
       const { setAutocompleteOnIdentityField: setAutocompleteOnIdentityField2 } = initAutocompleteApi();
-      window.addEventListener(
-        "focus",
-        (e) => {
-          const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
-          const form = [...forms.values()].find((form2) => form2.hasFocus());
-          const targetElement = pierceShadowTree(e);
-          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
-            this.attachKeyboard({ device: this, form, element: targetElement });
-            setAutocompleteOnIdentityField2(targetElement);
-          }
-        },
-        true
-      );
+      window.addEventListener("focus", this._handleFocusEvent.bind(this, forms, setAutocompleteOnIdentityField2), true);
+    }
+    /**
+     * Handles focus events for iOS devices
+     * @param {Map} forms - Collection of form objects
+     * @param {Function} setAutocompleteOnIdentityField - Function to set autocomplete attributes
+     * @param {FocusEvent} e - The focus event
+     * @private
+     */
+    _handleFocusEvent(forms, setAutocompleteOnIdentityField2, e) {
+      const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
+      if (isAnyFormAutofilling) return;
+      const targetElement = pierceShadowTree(e);
+      if (!this.globalConfig.isIOS || !targetElement || targetElement instanceof Window) return;
+      const form = [...forms.values()].find((form2) => form2.hasFocus());
+      if (this.settings.featureToggles.input_focus_api) {
+        this.attachKeyboard({ device: this, form, element: targetElement });
+      }
+      if (this.settings.featureToggles.autocomplete_attribute_support) {
+        setAutocompleteOnIdentityField2(targetElement);
+      }
     }
     async startInit() {
       if (this.isInitializationStarted) return;
@@ -12009,7 +12018,9 @@ Source: "${matchedFrom}"`;
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
       }
-      this.initGlobalFocusHandler(this.scanner.forms);
+      if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
+        this.initGlobalFocusHandler(this.scanner.forms);
+      }
     }
     async init() {
       const settings = await this.settings.refresh();

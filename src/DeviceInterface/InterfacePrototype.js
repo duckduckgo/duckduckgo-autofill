@@ -265,26 +265,40 @@ class InterfacePrototype {
     }
 
     /**
-     * Initializes a global focus event handler to manage autocomplete attributes
-     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - The forms to monitor
+     * Initializes a global focus event handler that handles iOS keyboard and autocomplete functionality
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - Collection of form objects to monitor
      * @returns {void}
      */
     initGlobalFocusHandler(forms) {
         const { setAutocompleteOnIdentityField } = initAutocompleteApi();
 
-        window.addEventListener(
-            'focus',
-            (e) => {
-                const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
-                const form = [...forms.values()].find((form) => form.hasFocus());
-                const targetElement = pierceShadowTree(e);
-                if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
-                    this.attachKeyboard({ device: this, form, element: targetElement });
-                    setAutocompleteOnIdentityField(targetElement);
-                }
-            },
-            true,
-        );
+        window.addEventListener('focus', this._handleFocusEvent.bind(this, forms, setAutocompleteOnIdentityField), true);
+    }
+
+    /**
+     * Handles focus events for iOS devices
+     * @param {Map} forms - Collection of form objects
+     * @param {Function} setAutocompleteOnIdentityField - Function to set autocomplete attributes
+     * @param {FocusEvent} e - The focus event
+     * @private
+     */
+    _handleFocusEvent(forms, setAutocompleteOnIdentityField, e) {
+        // Check if any form is currently autofilling
+        const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
+        if (isAnyFormAutofilling) return;
+
+        const targetElement = pierceShadowTree(e);
+
+        if (!this.globalConfig.isIOS || !targetElement || targetElement instanceof Window) return;
+        const form = [...forms.values()].find((form) => form.hasFocus());
+
+        if (this.settings.featureToggles.input_focus_api) {
+            this.attachKeyboard({ device: this, form, element: targetElement });
+        }
+
+        if (this.settings.featureToggles.autocomplete_attribute_support) {
+            setAutocompleteOnIdentityField(targetElement);
+        }
     }
 
     async startInit() {
@@ -310,9 +324,10 @@ class InterfacePrototype {
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
         }
-        // if (this.settings.featureToggles.input_focus_api) {
-        this.initGlobalFocusHandler(this.scanner.forms);
-        // }
+
+        if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
+            this.initGlobalFocusHandler(this.scanner.forms);
+        }
     }
 
     async init() {

@@ -62,7 +62,8 @@ function setAutocompleteOnIdentityField(element) {
 }
 
 /**
- * This is a single place to contain all functionality relating to autocomplete attributes
+ * Initializes the autocomplete API
+ * @returns {Object} - An object containing the setAutocompleteOnIdentityField function
  */
 export function initAutocompleteApi() {
     return {
