@@ -76,7 +76,7 @@
     let webkitMessageHandlerNames = [];
     // INJECT webkitMessageHandlerNames HERE
     let isDDGTestMode = false;
-    isDDGTestMode = true;
+    // INJECT isDDGTestMode HERE
     let contentScope = null;
     let userUnprotectedDomains = [];
     let userPreferences = null;
@@ -17530,16 +17530,20 @@ Source: "${matchedFrom}"`;
       }
     }
     setupSizeListener() {
-      const observer = new PerformanceObserver(() => {
+      const observer = new PerformanceObserver((entries) => {
+        const entryTypes = entries.getEntries().map((entry) => entry.entryType);
+        console.log("DEEP: setSize called in performance observer with entry types:", entryTypes);
         this.setSize();
       });
       observer.observe({ entryTypes: ["layout-shift", "paint"] });
     }
     setSize() {
       const innerNode = this.shadow.querySelector(".wrapper--data");
+      console.log("DEEP: innerNode found in setSize", innerNode);
       if (!innerNode)
         return;
       const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+      console.log("DEEP: options.setSize called in setSize");
       this.options.setSize?.(details);
     }
     init() {
@@ -17561,8 +17565,10 @@ Source: "${matchedFrom}"`;
       this.resObs.observe(document.body);
       this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
       window.addEventListener("scroll", this, { capture: true });
+      console.log("DEEP: setSize called in init");
       this.setSize();
       if (typeof this.options.setSize === "function") {
+        console.log("DEEP: setupSizeListener called in init");
         this.setupSizeListener();
       }
     }
