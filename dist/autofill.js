@@ -12320,11 +12320,6 @@ Source: "${matchedFrom}"`;
     /** @returns {void} */
     closeEmailProtection() {
     }
-    /**
-     * Determines the appropriate autocomplete attribute value based on the input type
-     * @param {import('../Form/matching').SupportedTypes} inputType
-     * @returns {string}
-     */
     /** @returns {Promise<null|Record<string,boolean>>} */
     getEmailProtectionCapabilities() {
       throw new Error("unimplemented");
