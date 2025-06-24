@@ -89,7 +89,7 @@ describe('when not all PR URLs are available', () => {
         // Wait for update tasks to run
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        expect(mockAsanaClient.tasks.updateTask).toBeCalledTimes(3);
+        expect(mockAsanaClient.tasks.updateTask).toHaveBeenCalledTimes(3);
         expect(mockAsanaClient.tasks.updateTask.mock.calls).toMatchSnapshot();
     });
 });
@@ -102,7 +102,7 @@ describe('when all data is available', () => {
         // Wait for update tasks to run
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        expect(mockAsanaClient.tasks.updateTask).toBeCalledTimes(3);
+        expect(mockAsanaClient.tasks.updateTask).toHaveBeenCalledTimes(3);
         expect(mockAsanaClient.tasks.updateTask.mock.calls).toMatchSnapshot();
     });
 });
