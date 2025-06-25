@@ -1,3 +1,4 @@
+import { pierceShadowTree } from '../autofill-utils.js';
 import { getInputType, getMainTypeFromType, getSubtypeFromType } from '../Form/matching.js';
 
 /**
@@ -62,11 +63,51 @@ function setAutocompleteOnIdentityField(element) {
 }
 
 /**
- * Initializes the autocomplete API
- * @returns {Object} - An object containing the setAutocompleteOnIdentityField function
+ * Handles focus events for form elements
+ * @param {Map} forms - Collection of form objects
+ * @param {object} settings - Settings object containing feature toggles
+ * @param {boolean} isIOS - Whether the device is iOS
+ * @param {Function} attachKeyboardCallback - Callback function to attach keyboard
+ * @param {FocusEvent} e - The focus event
+ * @private
  */
-export function initAutocompleteApi() {
+function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback, e) {
+    // Check if any form is currently autofilling
+    const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
+    if (isAnyFormAutofilling) return;
+
+    const targetElement = pierceShadowTree(e);
+
+    if (!isIOS || !targetElement || targetElement instanceof Window) return;
+    const form = [...forms.values()].find((form) => form.hasFocus());
+
+    if (settings.featureToggles.input_focus_api) {
+        attachKeyboardCallback({ form, element: targetElement });
+    }
+
+    if (settings.featureToggles.autocomplete_attribute_support) {
+        setAutocompleteOnIdentityField(targetElement);
+    }
+}
+
+/**
+ * Initializes the focus API
+ * @param {Map} forms - Collection of form objects
+ * @param {object} settings - Settings object containing feature toggles
+ * @param {boolean} isIOS - Whether the device is iOS
+ * @param {Function} attachKeyboardCallback - Callback function to attach keyboard
+ * @returns {Object} - The focus API methods
+ */
+export function initFocusApi(forms, settings, isIOS, attachKeyboardCallback) {
+    // Set up the global focus event listener
+    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, isIOS, attachKeyboardCallback);
+
+    window.addEventListener('focus', boundHandleFocusEvent, true);
+
     return {
         setAutocompleteOnIdentityField,
+        cleanup: () => {
+            window.removeEventListener('focus', boundHandleFocusEvent, true);
+        },
     };
 }

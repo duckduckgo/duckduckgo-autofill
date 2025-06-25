@@ -5,7 +5,6 @@ import {
     formatDuckAddress,
     notifyWebApp,
     getDaxBoundingBox,
-    pierceShadowTree,
 } from '../autofill-utils.js';
 
 import { getInputType, getMainTypeFromType, getSubtypeFromType } from '../Form/matching.js';
@@ -20,7 +19,7 @@ import { Settings } from '../Settings.js';
 import { DeviceApi } from '../../packages/device-api/index.js';
 import { GetAutofillCredentialsCall, StoreFormDataCall, SendJSPixelCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { initFormSubmissionsApi } from './initFormSubmissionsApi.js';
-import { initAutocompleteApi } from './initAutocompleteApi.js';
+import { initFocusApi } from './initFocusApi.js';
 import { EmailProtection } from '../EmailProtection.js';
 import { getTranslator } from '../locales/strings.js';
 import { CredentialsImport } from '../CredentialsImport.js';
@@ -48,6 +47,8 @@ class InterfacePrototype {
     passwordGenerator = new PasswordGenerator();
     emailProtection = new EmailProtection(this);
     credentialsImport = new CredentialsImport(this);
+    /** @type {Object | null} */
+    focusApi = null;
 
     /** @type {import("../InContextSignup.js").InContextSignup | null} */
     inContextSignup = null;
@@ -118,6 +119,7 @@ class InterfacePrototype {
     removeAutofillUIFromPage(reason) {
         this.uiController?.destroy();
         this._scannerCleanup?.(reason);
+        this.focusApi?.cleanup?.();
     }
 
     get hasLocalAddresses() {
@@ -267,38 +269,12 @@ class InterfacePrototype {
     /**
      * Initializes a global focus event handler that handles iOS keyboard and autocomplete functionality
      * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - Collection of form objects to monitor
-     * @returns {void}
+     * @returns {Object}
      */
     initGlobalFocusHandler(forms) {
-        const { setAutocompleteOnIdentityField } = initAutocompleteApi();
-
-        window.addEventListener('focus', this._handleFocusEvent.bind(this, forms, setAutocompleteOnIdentityField), true);
-    }
-
-    /**
-     * Handles focus events for iOS devices
-     * @param {Map} forms - Collection of form objects
-     * @param {Function} setAutocompleteOnIdentityField - Function to set autocomplete attributes
-     * @param {FocusEvent} e - The focus event
-     * @private
-     */
-    _handleFocusEvent(forms, setAutocompleteOnIdentityField, e) {
-        // Check if any form is currently autofilling
-        const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
-        if (isAnyFormAutofilling) return;
-
-        const targetElement = pierceShadowTree(e);
-
-        if (!this.globalConfig.isIOS || !targetElement || targetElement instanceof Window) return;
-        const form = [...forms.values()].find((form) => form.hasFocus());
-
-        if (this.settings.featureToggles.input_focus_api) {
-            this.attachKeyboard({ device: this, form, element: targetElement });
-        }
-
-        if (this.settings.featureToggles.autocomplete_attribute_support) {
-            setAutocompleteOnIdentityField(targetElement);
-        }
+        return initFocusApi(forms, this.settings, this.globalConfig.isIOS, ({ form, element }) =>
+            this.attachKeyboard({ device: this, form, element }),
+        );
     }
 
     async startInit() {
@@ -326,7 +302,7 @@ class InterfacePrototype {
         }
 
         if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
-            this.initGlobalFocusHandler(this.scanner.forms);
+            this.focusApi = this.initGlobalFocusHandler(this.scanner.forms);
         }
     }
 
