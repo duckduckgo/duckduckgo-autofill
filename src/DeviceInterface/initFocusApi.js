@@ -36,7 +36,7 @@ function getAutocompleteValueFromInputType(inputType) {
  * @param {EventTarget|HTMLElement} element - The element to check and potentially set autocomplete on
  * @returns {void}
  */
-function setAutocompleteOnIdentityField(element) {
+export function setAutocompleteOnIdentityField(element) {
     if (!(element instanceof HTMLInputElement) || element.hasAttribute('autocomplete')) {
         return;
     }
@@ -71,7 +71,7 @@ function setAutocompleteOnIdentityField(element) {
  * @param {FocusEvent} e - The focus event
  * @private
  */
-function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback, e) {
+export function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback, e) {
     // Check if any form is currently autofilling
     const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
     if (isAnyFormAutofilling) return;
@@ -106,6 +106,7 @@ export function initFocusApi(forms, settings, isIOS, attachKeyboardCallback) {
 
     return {
         setAutocompleteOnIdentityField,
+        handleFocusEvent: boundHandleFocusEvent,
         cleanup: () => {
             window.removeEventListener('focus', boundHandleFocusEvent, true);
         },
