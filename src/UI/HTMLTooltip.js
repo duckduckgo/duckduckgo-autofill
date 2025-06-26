@@ -330,7 +330,7 @@ export class HTMLTooltip {
         console.log('[HTMLTooltip] Calling options.setSize with details.');
         this.options.setSize?.(details);
     }
-    init() {
+        init() {
         console.log('[HTMLTooltip] init() called.');
         this.animationFrame = null;
         this.top = 0;
@@ -360,16 +360,12 @@ export class HTMLTooltip {
         const innerNode = this.shadow.querySelector('.wrapper--data');
         if (innerNode) {
             console.log('[HTMLTooltip] Creating MutationObserver for .wrapper--data');
-            this.contentObserver = new MutationObserver((mutationList) => {
-                // Log the mutations that were detected
-                for (const mutation of mutationList) {
-                    console.log('[HTMLTooltip] Content mutation detected:', {
-                        type: mutation.type,
-                        attributeName: mutation.attributeName,
-                        target: mutation.target,
-                    });
-                }
-                this.setSize();
+            this.contentObserver = new MutationObserver(() => {
+                // Defer the size calculation to the next frame to ensure the browser has reflowed.
+                window.requestAnimationFrame(() => {
+                    console.log('[HTMLTooltip] setSize called from requestAnimationFrame');
+                    this.setSize();
+                });
             });
             this.contentObserver.observe(innerNode, {
                 attributes: true, // Watch for attribute changes (like 'style' or 'class')
