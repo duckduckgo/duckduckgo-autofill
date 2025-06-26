@@ -57,6 +57,8 @@ export class HTMLTooltip {
     isAboveInput = false;
     /** @type {HTMLTooltipOptions} */
     options;
+    /** @type {MutationObserver | null} */
+    contentObserver = null;
     /**
      * @param inputType
      * @param getPosition
@@ -105,10 +107,12 @@ export class HTMLTooltip {
         document.body.appendChild(this.host);
     }
     remove() {
+        console.log('[HTMLTooltip] remove() called. Disconnecting observers.');
         this.device?.activeForm.resetIconStylesToInitial();
         window.removeEventListener('scroll', this, { capture: true });
         this.resObs.disconnect();
         this.mutObs.disconnect();
+        this.contentObserver?.disconnect();
         this.lift();
     }
     lift() {
@@ -304,24 +308,30 @@ export class HTMLTooltip {
         }
     }
     setupSizeListener() {
+        console.log('[HTMLTooltip] setupSizeListener() called');
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver((entries) => {
             const entryTypes = entries.getEntries().map((entry) => entry.entryType);
-            console.log('DEEP: setSize called in performance observer with entry types:', entryTypes);
+            console.log('[HTMLTooltip] PerformanceObserver triggered. Entry types:', entryTypes);
             this.setSize();
         });
         observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
     setSize() {
+        console.log('[HTMLTooltip] setSize() called.');
         const innerNode = this.shadow.querySelector('.wrapper--data');
         // Shouldn't be possible
-        console.log('DEEP: innerNode found in setSize', innerNode);
-        if (!innerNode) return;
+        if (!innerNode) {
+            console.warn('[HTMLTooltip] .wrapper--data not found in setSize.');
+            return;
+        }
         const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-        console.log('DEEP: options.setSize called in setSize');
+        console.log('[HTMLTooltip] Measured details:', details);
+        console.log('[HTMLTooltip] Calling options.setSize with details.');
         this.options.setSize?.(details);
     }
     init() {
+        console.log('[HTMLTooltip] init() called.');
         this.animationFrame = null;
         this.top = 0;
         this.left = 0;
@@ -331,10 +341,12 @@ export class HTMLTooltip {
         // Un-hide once the style and web fonts have loaded, to avoid flashing
         // unstyled content and layout shifts
         this.stylesheet?.addEventListener('load', () => {
+            console.log('[HTMLTooltip] Stylesheet loaded.');
             Promise.allSettled([
                 document.fonts.load("normal 13px 'DDG_ProximaNova'"),
                 document.fonts.load("bold 13px 'DDG_ProximaNova'"),
             ]).then(() => {
+                console.log('[HTMLTooltip] Fonts loaded. Showing tooltip and checking position.');
                 this.tooltip.parentNode.removeAttribute('hidden');
                 this.checkPosition();
             });
@@ -344,11 +356,35 @@ export class HTMLTooltip {
         this.resObs.observe(document.body);
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
-        console.log('DEEP: setSize called in init');
+
+        const innerNode = this.shadow.querySelector('.wrapper--data');
+        if (innerNode) {
+            console.log('[HTMLTooltip] Creating MutationObserver for .wrapper--data');
+            this.contentObserver = new MutationObserver((mutationList) => {
+                // Log the mutations that were detected
+                for (const mutation of mutationList) {
+                    console.log('[HTMLTooltip] Content mutation detected:', {
+                        type: mutation.type,
+                        attributeName: mutation.attributeName,
+                        target: mutation.target,
+                    });
+                }
+                this.setSize();
+            });
+            this.contentObserver.observe(innerNode, {
+                attributes: true, // Watch for attribute changes (like 'style' or 'class')
+                childList: true,  // Watch for nodes being added or removed
+                subtree: true,    // Watch descendants as well
+            });
+        } else {
+            console.warn('[HTMLTooltip] .wrapper--data not found during init, cannot create content observer.');
+        }
+
+        console.log('[HTMLTooltip] Calling initial setSize() from init().');
         this.setSize();
 
         if (typeof this.options.setSize === 'function') {
-            console.log('DEEP: setupSizeListener called in init');
+            console.log('[HTMLTooltip] setSize callback exists, calling setupSizeListener().');
             this.setupSizeListener();
         }
     }
