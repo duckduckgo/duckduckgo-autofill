@@ -345,7 +345,10 @@ export class HTMLTooltip {
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
         console.log('DEEP: setSize called in init');
-        this.setSize();
+
+        // Always delay setSize to ensure DOM layout is stable after innerHTML changes
+        // This prevents reading cached dimensions from previous tooltip content
+        requestAnimationFrame(() => this.setSize());
 
         if (typeof this.options.setSize === 'function') {
             console.log('DEEP: setupSizeListener called in init');

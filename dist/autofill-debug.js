@@ -1,33 +1,19 @@
 "use strict";
 (() => {
   var __defProp = Object.defineProperty;
+  var __typeError = (msg) => {
+    throw TypeError(msg);
+  };
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
   };
-  var __publicField = (obj, key, value) => {
-    __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-    return value;
-  };
-  var __accessCheck = (obj, member, msg) => {
-    if (!member.has(obj))
-      throw TypeError("Cannot " + msg);
-  };
-  var __privateGet = (obj, member, getter) => {
-    __accessCheck(obj, member, "read from private field");
-    return getter ? getter.call(obj) : member.get(obj);
-  };
-  var __privateAdd = (obj, member, value) => {
-    if (member.has(obj))
-      throw TypeError("Cannot add the same private member more than once");
-    member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-  };
-  var __privateSet = (obj, member, value, setter) => {
-    __accessCheck(obj, member, "write to private field");
-    setter ? setter.call(obj, value) : member.set(obj, value);
-    return value;
-  };
+  var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
+  var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
+  var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+  var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 
   // src/requestIdleCallback.js
   /*!
@@ -76,7 +62,7 @@
     let webkitMessageHandlerNames = [];
     // INJECT webkitMessageHandlerNames HERE
     let isDDGTestMode = false;
-    // INJECT isDDGTestMode HERE
+    isDDGTestMode = true;
     let contentScope = null;
     let userUnprotectedDomains = [];
     let userPreferences = null;
@@ -594,8 +580,7 @@
 
   // src/Form/matching-utils.js
   function logMatching(el, matchingResult) {
-    if (!shouldLog())
-      return;
+    if (!shouldLog()) return;
     const fieldIdentifier = getInputIdentifier(el);
     console.group(fieldIdentifier);
     console.log(el);
@@ -611,12 +596,9 @@ Source: "${matchedFrom}"`;
     console.groupEnd();
   }
   function getVerb(matchingResult) {
-    if (matchingResult.matched)
-      return "Matched";
-    if (matchingResult.proceed === false)
-      return "Matched forceUnknown";
-    if (matchingResult.skip)
-      return "Skipped";
+    if (matchingResult.matched) return "Matched";
+    if (matchingResult.proceed === false) return "Matched forceUnknown";
+    if (matchingResult.skip) return "Skipped";
     return "";
   }
   function getInputIdentifier(el) {
@@ -627,8 +609,7 @@ Source: "${matchedFrom}"`;
     return "Field: " + (label || placeholder || name || id);
   }
   function logUnmatched(el, allStrings) {
-    if (!shouldLog())
-      return;
+    if (!shouldLog()) return;
     const fieldIdentifier = getInputIdentifier(el);
     console.group(fieldIdentifier);
     console.log(el);
@@ -649,18 +630,18 @@ Source: "${matchedFrom}"`;
      */
     constructor(config) {
       /** @type {MatchingConfiguration} */
-      __privateAdd(this, _config, void 0);
+      __privateAdd(this, _config);
       /** @type {CssSelectorConfiguration['selectors']} */
-      __privateAdd(this, _cssSelectors, void 0);
+      __privateAdd(this, _cssSelectors);
       /** @type {Record<string, DDGMatcher>} */
-      __privateAdd(this, _ddgMatchers, void 0);
+      __privateAdd(this, _ddgMatchers);
       /**
        * This acts as an internal cache for the larger vendorRegexes
        * @type {VendorRegexConfiguration['rules']}
        */
-      __privateAdd(this, _vendorRegexRules, void 0);
+      __privateAdd(this, _vendorRegexRules);
       /** @type {MatcherLists} */
-      __privateAdd(this, _matcherLists, void 0);
+      __privateAdd(this, _matcherLists);
       /** @type {Array<StrategyNames>} */
       __privateAdd(this, _defaultStrategyOrder, ["cssSelector", "ddgMatcher", "vendorRegex"]);
       /** @type {Record<MatchableStrings, string>} */
@@ -826,13 +807,11 @@ Source: "${matchedFrom}"`;
      */
     isInputLargeEnough(matchedType, input) {
       const expectedDimensionBounds = dimensionBounds[matchedType];
-      if (!expectedDimensionBounds)
-        return true;
+      if (!expectedDimensionBounds) return true;
       const width = input.offsetWidth;
       const height = input.offsetHeight;
       const isHidden = height === 0 && width === 0;
-      if (isHidden)
-        return true;
+      if (isHidden) return true;
       return width >= expectedDimensionBounds.minWidth;
     }
     /**
@@ -849,8 +828,7 @@ Source: "${matchedFrom}"`;
         return presetType;
       }
       this.setActiveElementStrings(input, formEl);
-      if (this.subtypeFromMatchers("unknown", input))
-        return "unknown";
+      if (this.subtypeFromMatchers("unknown", input)) return "unknown";
       if (opts.isCCForm) {
         const subtype = this.subtypeFromMatchers("cc", input);
         if (subtype && isValidCreditCardSubtype(subtype)) {
@@ -928,8 +906,7 @@ Source: "${matchedFrom}"`;
         let result;
         for (const matcher of matchers) {
           const lookup = matcher.strategies[strategyName];
-          if (!lookup)
-            continue;
+          if (!lookup) continue;
           if (strategyName === "cssSelector") {
             result = this.execCssSelector(lookup, el);
           }
@@ -1021,8 +998,7 @@ Source: "${matchedFrom}"`;
       const matchableStrings = ddgMatcher.matchableStrings || ["labelText", "placeholderAttr", "relatedText"];
       for (const stringName of matchableStrings) {
         const elementString = this.activeElementStrings[stringName];
-        if (!elementString)
-          continue;
+        if (!elementString) continue;
         let score = 0;
         const result = {
           ...defaultResult,
@@ -1082,8 +1058,7 @@ Source: "${matchedFrom}"`;
       const stringsToMatch = ["placeholderAttr", "nameAttr", "labelText", "id", "relatedText"];
       for (const stringName of stringsToMatch) {
         const elementString = this.activeElementStrings[stringName];
-        if (!elementString)
-          continue;
+        if (!elementString) continue;
         if (safeRegexTest(regex, elementString)) {
           return {
             ...defaultResult,
@@ -1251,8 +1226,7 @@ Source: "${matchedFrom}"`;
   }
   var removeExcessWhitespace = (string = "", textLengthCutoff = TEXT_LENGTH_CUTOFF) => {
     string = string?.trim() || "";
-    if (!string || string.length > textLengthCutoff + 50)
-      return "";
+    if (!string || string.length > textLengthCutoff + 50) return "";
     return string.replace(/\n/g, " ").replace(/\s{2,}/g, " ");
   };
   var getExplicitLabelsText = (el) => {
@@ -1278,8 +1252,7 @@ Source: "${matchedFrom}"`;
   };
   var recursiveGetPreviousElSibling = (el) => {
     const previousEl = el.previousElementSibling;
-    if (!previousEl)
-      return null;
+    if (!previousEl) return null;
     if (EXCLUDED_TAGS.includes(previousEl.tagName)) {
       return recursiveGetPreviousElSibling(previousEl);
     }
@@ -1312,14 +1285,12 @@ Source: "${matchedFrom}"`;
     } else {
       trimmedText = extractElementStrings(scope).join(" ");
     }
-    if (trimmedText.length < TEXT_LENGTH_CUTOFF)
-      return trimmedText;
+    if (trimmedText.length < TEXT_LENGTH_CUTOFF) return trimmedText;
     return "";
   };
   var getLargestMeaningfulContainer = (el, form, cssSelector) => {
     const parentElement = el.parentElement;
-    if (!parentElement || el === form || !cssSelector)
-      return el;
+    if (!parentElement || el === form || !cssSelector) return el;
     const inputsInParentsScope = parentElement.querySelectorAll(cssSelector);
     if (inputsInParentsScope.length === 1) {
       const labelInParentScope = parentElement.querySelector("label");
@@ -1513,10 +1484,8 @@ Source: "${matchedFrom}"`;
     }
     return new Promise((resolve) => {
       const handler = (e) => {
-        if (e.origin !== window.origin)
-          return;
-        if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse))
-          return;
+        if (e.origin !== window.origin) return;
+        if (!e.data || e.data && !(e.data[expectedResponse] || e.data.type === expectedResponse)) return;
         resolve(e.data);
         window.removeEventListener("message", handler);
       };
@@ -1532,8 +1501,7 @@ Source: "${matchedFrom}"`;
       return enabled;
     }
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
-    if (!userPreferences)
-      return false;
+    if (!userPreferences) return false;
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
   };
@@ -1559,8 +1527,7 @@ Source: "${matchedFrom}"`;
   };
   var originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
   var setValueForInput = (el, val, config) => {
-    if (!config?.isAndroid)
-      el.focus();
+    if (!config?.isAndroid) el.focus();
     el.dispatchEvent(new Event("keydown", { bubbles: true }));
     originalSet?.call(el, val);
     const events = [
@@ -1598,8 +1565,7 @@ Source: "${matchedFrom}"`;
         value = `${Number(value) + 1}`;
       }
       if (value === stringVal || Number(value) === numberVal) {
-        if (option.selected)
-          return false;
+        if (option.selected) return false;
         option.selected = true;
         fireEventsOnSelect(el);
         return true;
@@ -1607,8 +1573,7 @@ Source: "${matchedFrom}"`;
     }
     for (const option of el.options) {
       if (option.innerText === stringVal || Number(option.innerText) === numberVal || safeRegexTest(new RegExp(stringVal, "i"), option.innerText)) {
-        if (option.selected)
-          return false;
+        if (option.selected) return false;
         option.selected = true;
         fireEventsOnSelect(el);
         return true;
@@ -1617,10 +1582,8 @@ Source: "${matchedFrom}"`;
     return false;
   };
   var setValue = (el, val, config) => {
-    if (el instanceof HTMLInputElement)
-      return setValueForInput(el, val, config);
-    if (el instanceof HTMLSelectElement)
-      return setValueForSelect(el, val);
+    if (el instanceof HTMLInputElement) return setValueForInput(el, val, config);
+    if (el instanceof HTMLSelectElement) return setValueForSelect(el, val);
     return false;
   };
   var safeExecute = (el, fn, _opts = {}) => {
@@ -1697,8 +1660,7 @@ Source: "${matchedFrom}"`;
   };
   var buttonInputTypes = ["submit", "button"];
   var getTextShallow = (el) => {
-    if (el instanceof HTMLButtonElement)
-      return removeExcessWhitespace(el.textContent);
+    if (el instanceof HTMLButtonElement) return removeExcessWhitespace(el.textContent);
     if (el instanceof HTMLInputElement) {
       if (buttonInputTypes.includes(el.type)) {
         return el.value;
@@ -1760,30 +1722,25 @@ Source: "${matchedFrom}"`;
     if (totalLength < 4) {
       throw new Error("Do not use with strings shorter than 4");
     }
-    if (string.length <= totalLength)
-      return string;
+    if (string.length <= totalLength) return string;
     const truncated = string.slice(0, totalLength / 2).concat("\u2026", string.slice(totalLength / -2));
     return truncated;
   }
   function isFormLikelyToBeUsedAsPageWrapper(form) {
-    if (form.parentElement !== document.body)
-      return false;
+    if (form.parentElement !== document.body) return false;
     const formChildren = form.querySelectorAll("*").length;
-    if (formChildren < 100)
-      return false;
+    if (formChildren < 100) return false;
     const bodyChildren = document.body.querySelectorAll("*").length;
     const formChildrenPercentage = formChildren * 100 / bodyChildren;
     return formChildrenPercentage > 50;
   }
   function safeRegexTest(regex, string, textLengthCutoff = constants.TEXT_LENGTH_CUTOFF) {
-    if (!string || !regex || string.length > textLengthCutoff)
-      return false;
+    if (!string || !regex || string.length > textLengthCutoff) return false;
     return regex.test(string);
   }
   function pierceShadowTree(event, wantedTargetType) {
     const { target } = event;
-    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath)
-      return target;
+    if (!(target instanceof Element) || !target?.shadowRoot || !event.composedPath) return target;
     const clickStack = event.composedPath();
     if (!wantedTargetType) {
       return clickStack[0];
@@ -1792,8 +1749,7 @@ Source: "${matchedFrom}"`;
   }
   function getActiveElement(root = document) {
     const activeElement = root.activeElement;
-    if (!(activeElement instanceof Element) || !activeElement.shadowRoot)
-      return activeElement;
+    if (!(activeElement instanceof Element) || !activeElement.shadowRoot) return activeElement;
     const innerActiveElement = activeElement.shadowRoot.activeElement;
     if (innerActiveElement?.shadowRoot) {
       return getActiveElement(innerActiveElement.shadowRoot);
@@ -2392,8 +2348,7 @@ Source: "${matchedFrom}"`;
   var FOUR_DIGIT_YEAR_REGEX = /(\D)\1{3}|\d{4}/i;
   var formatCCYear = (input, year, form) => {
     const selector = form.matching.cssSelector("formInputsSelector");
-    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector))
-      return year;
+    if (input.maxLength === 4 || checkPlaceholderAndLabels(input, FOUR_DIGIT_YEAR_REGEX, form.form, selector)) return year;
     return `${Number(year) - 2e3}`;
   };
   var getUnifiedExpiryDate = (input, month, year, form) => {
@@ -2415,8 +2370,7 @@ Source: "${matchedFrom}"`;
   var inferElementLocale = (el) => el.lang || el.form?.lang || document.body.lang || document.documentElement.lang || "en";
   var getCountryName = (el, options = {}) => {
     const { addressCountryCode } = options;
-    if (!addressCountryCode)
-      return "";
+    if (!addressCountryCode) return "";
     const elLocale = inferElementLocale(el);
     const localisedCountryName = getCountryDisplayName(elLocale, addressCountryCode);
     if (el.nodeName === "SELECT") {
@@ -2433,35 +2387,27 @@ Source: "${matchedFrom}"`;
           }
         }
         for (const option of el.options) {
-          if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText))
-            return option.value;
+          if (countryNameRegex.test(option.value) || countryNameRegex.test(option.innerText)) return option.value;
         }
       }
     }
     return localisedCountryName;
   };
   var getLocalisedCountryNamesToCodes = (el) => {
-    if (typeof Intl.DisplayNames !== "function")
-      return COUNTRY_NAMES_TO_CODES;
+    if (typeof Intl.DisplayNames !== "function") return COUNTRY_NAMES_TO_CODES;
     const elLocale = inferElementLocale(el);
     return Object.fromEntries(Object.entries(COUNTRY_CODES_TO_NAMES).map(([code]) => [getCountryDisplayName(elLocale, code), code]));
   };
   var inferCountryCodeFromElement = (el) => {
-    if (COUNTRY_CODES_TO_NAMES[el.value])
-      return el.value;
-    if (COUNTRY_NAMES_TO_CODES[el.value])
-      return COUNTRY_NAMES_TO_CODES[el.value];
+    if (COUNTRY_CODES_TO_NAMES[el.value]) return el.value;
+    if (COUNTRY_NAMES_TO_CODES[el.value]) return COUNTRY_NAMES_TO_CODES[el.value];
     const localisedCountryNamesToCodes = getLocalisedCountryNamesToCodes(el);
-    if (localisedCountryNamesToCodes[el.value])
-      return localisedCountryNamesToCodes[el.value];
+    if (localisedCountryNamesToCodes[el.value]) return localisedCountryNamesToCodes[el.value];
     if (el instanceof HTMLSelectElement) {
       const selectedText = el.selectedOptions[0]?.text;
-      if (COUNTRY_CODES_TO_NAMES[selectedText])
-        return selectedText;
-      if (COUNTRY_NAMES_TO_CODES[selectedText])
-        return localisedCountryNamesToCodes[selectedText];
-      if (localisedCountryNamesToCodes[selectedText])
-        return localisedCountryNamesToCodes[selectedText];
+      if (COUNTRY_CODES_TO_NAMES[selectedText]) return selectedText;
+      if (COUNTRY_NAMES_TO_CODES[selectedText]) return localisedCountryNamesToCodes[selectedText];
+      if (localisedCountryNamesToCodes[selectedText]) return localisedCountryNamesToCodes[selectedText];
     }
     return "";
   };
@@ -2481,20 +2427,16 @@ Source: "${matchedFrom}"`;
   };
   var shouldStoreIdentities = ({ identities }) => Boolean((identities.firstName || identities.fullName) && identities.addressStreet && identities.addressCity);
   var shouldStoreCreditCards = ({ creditCards }) => {
-    if (!creditCards.cardNumber)
-      return false;
-    if (creditCards.cardSecurityCode)
-      return true;
-    if (creditCards.expiration)
-      return true;
+    if (!creditCards.cardNumber) return false;
+    if (creditCards.cardSecurityCode) return true;
+    if (creditCards.expiration) return true;
     return Boolean(creditCards.expirationYear && creditCards.expirationMonth);
   };
   var formatPhoneNumber = (phone) => phone.replaceAll(/[^0-9|+]/g, "");
   var inferCredentialsForPartialSave = (credentials, identities, creditCards) => {
     if (!credentials.username) {
       const possibleUsername = getUsernameLikeIdentity(identities, creditCards);
-      if (possibleUsername)
-        credentials.username = possibleUsername;
+      if (possibleUsername) credentials.username = possibleUsername;
     }
     if (Object.keys(credentials ?? {}).length === 0) {
       return void 0;
@@ -2560,7 +2502,7 @@ Source: "${matchedFrom}"`;
     /** @param {CredentialsObject} data */
     constructor(data) {
       /** @type {CredentialsObject} */
-      __privateAdd(this, _data, void 0);
+      __privateAdd(this, _data);
       __publicField(this, "id", () => String(__privateGet(this, _data).id));
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelMedium", (t) => {
@@ -2588,7 +2530,7 @@ Source: "${matchedFrom}"`;
     /** @param {CredentialsObject} data */
     constructor(data) {
       /** @type {CredentialsObject} */
-      __privateAdd(this, _data2, void 0);
+      __privateAdd(this, _data2);
       __publicField(this, "id", () => String(__privateGet(this, _data2).id));
       __publicField(this, "label", (_subtype) => __privateGet(this, _data2).password);
       /** @param {import('../locales/strings.js').TranslateFn} t */
@@ -2611,7 +2553,7 @@ Source: "${matchedFrom}"`;
     /** @param {CredentialsObject} data */
     constructor(data) {
       /** @type {CredentialsObject} */
-      __privateAdd(this, _data3, void 0);
+      __privateAdd(this, _data3);
       __publicField(this, "id", () => String(__privateGet(this, _data3).id));
       /** @param {import('../locales/strings.js').TranslateFn} t */
       __publicField(this, "labelMedium", (t) => t("autofill:bitwardenIsLocked"));
@@ -2630,8 +2572,7 @@ Source: "${matchedFrom}"`;
     if (autofilledFields.username && data.credentials?.username === autofilledFields.username) {
       autogenerated = true;
     }
-    if (!autogenerated)
-      return data;
+    if (!autogenerated) return data;
     return {
       ...data,
       credentials: {
@@ -3250,8 +3191,7 @@ Source: "${matchedFrom}"`;
     parse(inputString) {
       const rules = parsePasswordRules(inputString);
       const requirements = this._requirementsFromRules(rules);
-      if (!requirements)
-        throw new Error("could not generate requirements for " + JSON.stringify(inputString));
+      if (!requirements) throw new Error("could not generate requirements for " + JSON.stringify(inputString));
       const parameters = this._passwordGenerationParametersDictionary(requirements);
       return {
         requirements,
@@ -3262,8 +3202,7 @@ Source: "${matchedFrom}"`;
         },
         generate: () => {
           const password = this._generatedPasswordMatchingRequirements(requirements, parameters);
-          if (password === "")
-            throw new Error("unreachable");
+          if (password === "") throw new Error("unreachable");
           return password;
         }
       };
@@ -4899,8 +4838,7 @@ Source: "${matchedFrom}"`;
       if (forcedFormType) {
         return forcedFormType === "login";
       }
-      if (this.isHybrid)
-        return false;
+      if (this.isHybrid) return false;
       return this.autofillSignal < 0;
     }
     get isSignup() {
@@ -4908,8 +4846,7 @@ Source: "${matchedFrom}"`;
       if (forcedFormType) {
         return forcedFormType === "signup";
       }
-      if (this.isHybrid)
-        return false;
+      if (this.isHybrid) return false;
       return this.autofillSignal >= 0;
     }
     /**
@@ -4964,8 +4901,7 @@ Source: "${matchedFrom}"`;
       shouldCheckUnifiedForm = false,
       shouldBeConservative = false
     }) {
-      if (!string || string.length > constants.TEXT_LENGTH_CUTOFF)
-        return this;
+      if (!string || string.length > constants.TEXT_LENGTH_CUTOFF) return this;
       const matchesLogin = safeRegexTest(/current.?password/i, string) || safeRegexTest(this.matching.getDDGMatcherRegex("loginRegex"), string) || safeRegexTest(this.matching.getDDGMatcherRegex("resetPasswordLink"), string);
       if (shouldCheckUnifiedForm && matchesLogin && safeRegexTest(this.matching.getDDGMatcherRegex("conservativeSignupRegex"), string)) {
         this.increaseHybridSignal(strength, signalType);
@@ -4974,22 +4910,17 @@ Source: "${matchedFrom}"`;
       const signupRegexToUse = this.matching.getDDGMatcherRegex(shouldBeConservative ? "conservativeSignupRegex" : "signupRegex");
       const matchesSignup = safeRegexTest(/new.?(password|username)/i, string) || safeRegexTest(signupRegexToUse, string);
       if (shouldFlip) {
-        if (matchesLogin)
-          this.increaseSignalBy(strength, signalType);
-        if (matchesSignup)
-          this.decreaseSignalBy(strength, signalType);
+        if (matchesLogin) this.increaseSignalBy(strength, signalType);
+        if (matchesSignup) this.decreaseSignalBy(strength, signalType);
       } else {
-        if (matchesLogin)
-          this.decreaseSignalBy(strength, signalType);
-        if (matchesSignup)
-          this.increaseSignalBy(strength, signalType);
+        if (matchesLogin) this.decreaseSignalBy(strength, signalType);
+        if (matchesSignup) this.increaseSignalBy(strength, signalType);
       }
       return this;
     }
     evaluateElAttributes(el, signalStrength = 3, isInput = false) {
       Array.from(el.attributes).forEach((attr) => {
-        if (attr.name === "style")
-          return;
+        if (attr.name === "style") return;
         const attributeString = `${attr.name}=${attr.value}`;
         this.updateSignal({
           string: attributeString,
@@ -5005,8 +4936,7 @@ Source: "${matchedFrom}"`;
       const pathToMatch = pathname + hash;
       const matchesLogin = safeRegexTest(this.matching.getDDGMatcherRegex("loginRegex"), pathToMatch);
       const matchesSignup = safeRegexTest(this.matching.getDDGMatcherRegex("conservativeSignupRegex"), pathToMatch);
-      if (matchesLogin && matchesSignup)
-        return;
+      if (matchesLogin && matchesSignup) return;
       if (matchesLogin) {
         this.decreaseSignalBy(1, "url matches login");
       }
@@ -5063,8 +4993,7 @@ Source: "${matchedFrom}"`;
       const tagName = el.nodeName.toLowerCase();
       const isCustomWebElementLink = customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, "a").length > 0;
       const isElementLikelyALink = (el2) => {
-        if (el2 == null)
-          return false;
+        if (el2 == null) return false;
         return el2 instanceof HTMLAnchorElement && el2.href && !el2.getAttribute("href")?.startsWith("#") || (el2.getAttribute("role") || "").toUpperCase() === "LINK" || el2.matches("button[class*=secondary]");
       };
       return isCustomWebElementLink || isElementLikelyALink(el) || isElementLikelyALink(el.closest("a"));
@@ -5124,12 +5053,10 @@ Source: "${matchedFrom}"`;
       const selector = this.matching.cssSelector("safeUniversalSelector");
       const formElements = queryElementsWithShadow(this.form, selector);
       for (let i = 0; i < formElements.length; i++) {
-        if (i >= 200)
-          break;
+        if (i >= 200) break;
         const element = formElements[i];
         const displayValue = window.getComputedStyle(element, null).getPropertyValue("display");
-        if (displayValue !== "none")
-          this.evaluateElement(element);
+        if (displayValue !== "none") this.evaluateElement(element);
       }
       const relevantFields = this.form.querySelectorAll(this.matching.cssSelector("genericTextInputField"));
       if (relevantFields.length >= 4) {
@@ -5148,8 +5075,7 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     isCCForm() {
-      if (this._isCCForm !== void 0)
-        return this._isCCForm;
+      if (this._isCCForm !== void 0) return this._isCCForm;
       const formEl = this.form;
       const ccFieldSelector = this.matching.joinCssSelectors("cc");
       if (!ccFieldSelector) {
@@ -5224,7 +5150,7 @@ Source: "${matchedFrom}"`;
     /** @param {CreditCardObject} data */
     constructor(data) {
       /** @type {CreditCardObject} */
-      __privateAdd(this, _data4, void 0);
+      __privateAdd(this, _data4);
       __publicField(this, "id", () => String(__privateGet(this, _data4).id));
       __publicField(this, "labelMedium", () => __privateGet(this, _data4).title);
       /** @param {import('../locales/strings.js').TranslateFn} t */
@@ -5245,7 +5171,7 @@ Source: "${matchedFrom}"`;
     /** @param {IdentityObject} data */
     constructor(data) {
       /** @type {IdentityObject} */
-      __privateAdd(this, _data5, void 0);
+      __privateAdd(this, _data5);
       __publicField(this, "id", () => String(__privateGet(this, _data5).id));
       /**
        * @param {import('../locales/strings.js').TranslateFn} t
@@ -5276,8 +5202,7 @@ Source: "${matchedFrom}"`;
 
   // src/Form/inputTypeConfig.js
   var getIdentitiesIcon = (input, { device }) => {
-    if (!canBeInteractedWith(input))
-      return "";
+    if (!canBeInteractedWith(input)) return "";
     const { isDDGApp, isFirefox, isExtension } = device.globalConfig;
     const subtype = getInputSubtype(input);
     if (device.inContextSignup?.isAvailable(subtype)) {
@@ -5297,8 +5222,7 @@ Source: "${matchedFrom}"`;
     return "";
   };
   var getIdentitiesAlternateIcon = (input, { device }) => {
-    if (!canBeInteractedWith(input))
-      return "";
+    if (!canBeInteractedWith(input)) return "";
     const { isDDGApp, isFirefox, isExtension } = device.globalConfig;
     const subtype = getInputSubtype(input);
     const isIncontext = device.inContextSignup?.isAvailable(subtype);
@@ -5315,8 +5239,7 @@ Source: "${matchedFrom}"`;
   var canBeInteractedWith = (input) => !input.readOnly && !input.disabled;
   var canBeAutofilled = async (input, device) => {
     const mainType = getInputMainType(input);
-    if (mainType === "unknown")
-      return false;
+    if (mainType === "unknown") return false;
     const subtype = getInputSubtype(input);
     const variant = getInputVariant(input);
     await device.settings.populateDataIfNeeded({ mainType, subtype });
@@ -5330,10 +5253,8 @@ Source: "${matchedFrom}"`;
       displayName: "passwords",
       getIconBase: (input, form) => {
         const { device } = form;
-        if (!canBeInteractedWith(input))
-          return "";
-        if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid))
-          return "";
+        if (!canBeInteractedWith(input)) return "";
+        if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return "";
         if (device.settings.featureToggles.inlineIcon_credentials) {
           const subtype = getInputSubtype(input);
           const variant = getInputVariant(input);
@@ -5445,14 +5366,12 @@ Source: "${matchedFrom}"`;
   });
   var getIconStylesBase = (input, form) => {
     const icon = getIcon(input, form);
-    if (!icon)
-      return {};
+    if (!icon) return {};
     return getBasicStyles(input, icon);
   };
   var getIconStylesAlternate = (input, form) => {
     const icon = getIcon(input, form, "alternate");
-    if (!icon)
-      return {};
+    if (!icon) return {};
     return {
       ...getBasicStyles(input, icon)
     };
@@ -5506,8 +5425,7 @@ Source: "${matchedFrom}"`;
       this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
       this.intObs = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting)
-            this.removeTooltip();
+          if (!entry.isIntersecting) this.removeTooltip();
         }
       });
       this.rescanCount = 0;
@@ -5548,8 +5466,7 @@ Source: "${matchedFrom}"`;
       return this.formAnalyzer.isCCForm();
     }
     logFormInfo() {
-      if (!shouldLog())
-        return;
+      if (!shouldLog()) return;
       console.log(`Form type: %c${this.getFormType()}`, "font-weight: bold");
       console.log("Signals: ", this.formAnalyzer.signals);
       console.log("Wrapping element: ", this.form);
@@ -5557,12 +5474,9 @@ Source: "${matchedFrom}"`;
       console.log("Submit Buttons: ", this.submitButtons);
     }
     getFormType() {
-      if (this.isHybrid)
-        return `hybrid (hybrid score: ${this.formAnalyzer.hybridSignal}, score: ${this.formAnalyzer.autofillSignal})`;
-      if (this.isLogin)
-        return `login (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
-      if (this.isSignup)
-        return `signup (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
+      if (this.isHybrid) return `hybrid (hybrid score: ${this.formAnalyzer.hybridSignal}, score: ${this.formAnalyzer.autofillSignal})`;
+      if (this.isLogin) return `login (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
+      if (this.isSignup) return `signup (score: ${this.formAnalyzer.autofillSignal}, hybrid score: ${this.formAnalyzer.hybridSignal})`;
       return "something went wrong";
     }
     /**
@@ -5580,8 +5494,7 @@ Source: "${matchedFrom}"`;
       if (this.device.globalConfig.isDDGTestMode) {
         console.log("Form.submitHandler via:", via, this);
       }
-      if (this.submitHandlerExecuted)
-        return;
+      if (this.submitHandlerExecuted) return;
       const values = this.getValuesReadyForStorage();
       this.device.postSubmit?.(values, this);
       this.submitHandlerExecuted = true;
@@ -5629,8 +5542,7 @@ Source: "${matchedFrom}"`;
         } else {
           this.form.querySelectorAll(this.matching.cssSelector("safeUniversalSelector")).forEach((el) => {
             const elText = getTextShallow(el);
-            if (elText.length > 70)
-              return;
+            if (elText.length > 70) return;
             const emailOrUsername = elText.match(
               // https://www.emailregex.com/
               /[a-zA-Z\d.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*/
@@ -5672,8 +5584,7 @@ Source: "${matchedFrom}"`;
       this.intObs?.observe(input);
     }
     removeInputHighlight(input) {
-      if (!input.classList.contains("ddg-autofilled"))
-        return;
+      if (!input.classList.contains("ddg-autofilled")) return;
       removeInlineStyles(input, getIconStylesAutofilled(input, this));
       removeInlineStyles(input, { cursor: "pointer" });
       input.classList.remove("ddg-autofilled");
@@ -5687,8 +5598,7 @@ Source: "${matchedFrom}"`;
       }
     }
     removeAllHighlights(e, dataType) {
-      if (e && !e.isTrusted)
-        return;
+      if (e && !e.isTrusted) return;
       this.resetShouldPromptToStoreData();
       this.execOnInputs((input) => this.removeInputHighlight(input), dataType);
     }
@@ -5739,8 +5649,7 @@ Source: "${matchedFrom}"`;
         setValue(input, "", this.device.globalConfig);
         this.removeInputHighlight(input);
       });
-      if (this.activeInput)
-        this.activeInput.focus();
+      if (this.activeInput) this.activeInput.focus();
       this.matching.clear();
     }
     resetShouldPromptToStoreData() {
@@ -5793,12 +5702,9 @@ Source: "${matchedFrom}"`;
       const hasUsernameData = Boolean(this.device.settings.availableInputTypes.credentials?.username);
       const hasPhoneData = Boolean(this.device.settings.availableInputTypes.identities?.phone);
       const hasCreditCardData = Boolean(this.device.settings.availableInputTypes.creditCards?.cardNumber);
-      if (hasUsernameData || ambiguousInputSubtype === "unknown")
-        return "credentials.username";
-      if (hasPhoneData && ambiguousInputSubtype === "phone")
-        return "identities.phone";
-      if (hasCreditCardData && ambiguousInputSubtype === "cardNumber")
-        return "creditCards.cardNumber";
+      if (hasUsernameData || ambiguousInputSubtype === "unknown") return "credentials.username";
+      if (hasPhoneData && ambiguousInputSubtype === "phone") return "identities.phone";
+      if (hasCreditCardData && ambiguousInputSubtype === "cardNumber") return "creditCards.cardNumber";
     }
     /**
      * Returns the ambiguous inputs that should be categorised.
@@ -5809,11 +5715,9 @@ Source: "${matchedFrom}"`;
      */
     get ambiguousInputs() {
       const hasUsernameInput = [...this.inputs.credentials].some((input) => getInputSubtype(input) === "username");
-      if (hasUsernameInput)
-        return null;
+      if (hasUsernameInput) return null;
       const hasPasswordInputs = [...this.inputs.credentials].filter((input) => getInputSubtype(input) === "password").length > 0;
-      if (!hasPasswordInputs)
-        return null;
+      if (!hasPasswordInputs) return null;
       const phoneInputs = [...this.inputs.identities].filter((input) => getInputSubtype(input) === "phone");
       const cardNumberInputs = [...this.inputs.creditCards].filter((input) => getInputSubtype(input) === "cardNumber");
       return [...this.inputs.unknown, ...phoneInputs, ...cardNumberInputs];
@@ -5827,14 +5731,12 @@ Source: "${matchedFrom}"`;
       if (ambiguousInput?.matches?.(inputSelector)) {
         const targetType = this.getTargetTypeForAmbiguousInput(ambiguousInput);
         const inputType = getInputType(ambiguousInput);
-        if (!targetType || targetType === inputType)
-          return;
+        if (!targetType || targetType === inputType) return;
         ambiguousInput.setAttribute(ATTR_INPUT_TYPE2, targetType);
         this.decorateInput(ambiguousInput);
         this.inputs[getMainTypeFromType(targetType)].add(ambiguousInput);
         this.inputs[getMainTypeFromType(inputType)].delete(ambiguousInput);
-        if (shouldLog())
-          console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
+        if (shouldLog()) console.log(`Recategorized input from ${inputType} to ${targetType}`, ambiguousInput);
       }
     }
     /**
@@ -5848,17 +5750,13 @@ Source: "${matchedFrom}"`;
         const variant = getInputVariant(credentialElement);
         if (variant === "new") {
           newPasswordFields++;
-          if (!firstNewPasswordField)
-            firstNewPasswordField = credentialElement;
+          if (!firstNewPasswordField) firstNewPasswordField = credentialElement;
         }
-        if (variant === "current")
-          currentPasswordFields++;
-        if (newPasswordFields > 3 || currentPasswordFields > 0)
-          return;
+        if (variant === "current") currentPasswordFields++;
+        if (newPasswordFields > 3 || currentPasswordFields > 0) return;
       }
       if (newPasswordFields === 3 && currentPasswordFields === 0) {
-        if (shouldLog())
-          console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+        if (shouldLog()) console.log('Recategorizing password variant to "current"', firstNewPasswordField);
         firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE2, "credentials.password.current");
       }
     }
@@ -5876,10 +5774,8 @@ Source: "${matchedFrom}"`;
           return;
         }
       }
-      if (this.canCategorizeAmbiguousInput())
-        this.recategorizeInputToTargetType();
-      if (this.canCategorizePasswordVariant())
-        this.recategorizeInputVariantIfNeeded();
+      if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+      if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
       if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
         this.destroy();
         return;
@@ -5906,14 +5802,12 @@ Source: "${matchedFrom}"`;
       let isThereAnEmptyVisibleField = false;
       this.execOnInputs(
         (input) => {
-          if (input.value === "" && isPotentiallyViewable(input))
-            isThereAnEmptyVisibleField = true;
+          if (input.value === "" && isPotentiallyViewable(input)) isThereAnEmptyVisibleField = true;
         },
         "all",
         false
       );
-      if (isThereAnEmptyVisibleField)
-        return;
+      if (isThereAnEmptyVisibleField) return;
       this.submitButtons.forEach((button) => {
         if (isPotentiallyViewable(button)) {
           button.click();
@@ -5933,13 +5827,11 @@ Source: "${matchedFrom}"`;
         if (shouldCheckForDecorate) {
           canExecute = isFieldDecorated(input);
         }
-        if (canExecute)
-          fn(input);
+        if (canExecute) fn(input);
       }
     }
     addInput(input) {
-      if (this.inputs.all.has(input))
-        return this;
+      if (this.inputs.all.has(input)) return this;
       if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
         this.device.scanner.setMode("stopped", "The form has too many inputs, bailing.");
         return this;
@@ -5949,8 +5841,7 @@ Source: "${matchedFrom}"`;
         this.recategorizeAllInputs();
         return this;
       }
-      if (input.maxLength === 1)
-        return this;
+      if (input.maxLength === 1) return this;
       this.inputs.all.add(input);
       const opts = {
         isLogin: this.isLogin,
@@ -5993,15 +5884,13 @@ Source: "${matchedFrom}"`;
     async decorateInput(input) {
       const config = getInputConfig(input);
       const shouldDecorate = await config.shouldDecorate(input, this);
-      if (!shouldDecorate)
-        return this;
+      if (!shouldDecorate) return this;
       input.setAttribute(ATTR_AUTOFILL, "true");
       const hasIcon = !!config.getIconBase(input, this);
       if (hasIcon) {
         const { onMouseMove, onMouseLeave } = this.addAutofillStyles(input);
         this.addListener(input, "mousemove", (e) => {
-          if (wasAutofilledByChrome(input))
-            return;
+          if (wasAutofilledByChrome(input)) return;
           if (isEventWithinDax(e, e.target)) {
             addInlineStyles(e.target, {
               cursor: "pointer",
@@ -6022,11 +5911,9 @@ Source: "${matchedFrom}"`;
         });
       }
       function getMainClickCoords(e) {
-        if (!e.isTrusted)
-          return;
+        if (!e.isTrusted) return;
         const isMainMouseButton = e.button === 0;
-        if (!isMainMouseButton)
-          return;
+        if (!isMainMouseButton) return;
         return {
           x: e.clientX,
           y: e.clientY
@@ -6050,8 +5937,7 @@ Source: "${matchedFrom}"`;
           /** @type HTMLElement */
           e.target?.closest("label")?.control
         );
-        if (!control)
-          return;
+        if (!control) return;
         if (e.isTrusted) {
           storedClickCoords.set(control, getMainClickCoords(e));
         }
@@ -6069,16 +5955,12 @@ Source: "${matchedFrom}"`;
         }
         const isLabel = e.target instanceof HTMLLabelElement;
         const input2 = isLabel ? e.target.control : e.target;
-        if (!input2 || !this.inputs.all.has(input2))
-          return;
-        if (wasAutofilledByChrome(input2))
-          return;
-        if (!canBeInteractedWith(input2))
-          return;
+        if (!input2 || !this.inputs.all.has(input2)) return;
+        if (wasAutofilledByChrome(input2)) return;
+        if (!canBeInteractedWith(input2)) return;
         const clickCoords = getClickCoords(e, storedClickCoords);
         if (e.type === "pointerdown") {
-          if (!e.isTrusted || !clickCoords)
-            return;
+          if (!e.isTrusted || !clickCoords) return;
         }
         if (this.shouldOpenTooltip(e, input2)) {
           const iconClicked = isEventWithinDax(e, input2);
@@ -6107,8 +5989,7 @@ Source: "${matchedFrom}"`;
       const isMobileApp = this.device.globalConfig.isMobileApp;
       if (!(input instanceof HTMLSelectElement)) {
         const events = ["pointerdown"];
-        if (!isMobileApp)
-          events.push("focus");
+        if (!isMobileApp) events.push("focus");
         input.labels?.forEach((label) => {
           this.addListener(label, "pointerdown", isMobileApp ? handler : handlerLabel);
         });
@@ -6122,12 +6003,9 @@ Source: "${matchedFrom}"`;
       return this;
     }
     shouldOpenTooltip(e, input) {
-      if (!isPotentiallyViewable(input))
-        return false;
-      if (isEventWithinDax(e, input))
-        return true;
-      if (this.device.globalConfig.isWindows)
-        return true;
+      if (!isPotentiallyViewable(input)) return false;
+      if (isEventWithinDax(e, input)) return true;
+      if (this.device.globalConfig.isWindows) return true;
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
       const isIncontextSignupAvailable = this.device.inContextSignup?.isAvailable(subtype);
@@ -6143,8 +6021,7 @@ Source: "${matchedFrom}"`;
         }
       }
       if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
-        if (isIncontextSignupAvailable)
-          return false;
+        if (isIncontextSignupAvailable) return false;
       }
       return !this.touched.has(input) && !input.classList.contains("ddg-autofilled");
     }
@@ -6165,17 +6042,12 @@ Source: "${matchedFrom}"`;
       return input.nodeName === "SELECT" ? this.touched.has(input) : isPreviouslyFilledInput;
     }
     autofillInput(input, string, dataType) {
-      if (input instanceof HTMLInputElement && !isPotentiallyViewable(input))
-        return;
-      if (!canBeInteractedWith(input))
-        return;
-      if (this.shouldSkipInput(input, dataType))
-        return;
-      if (input.value === string)
-        return;
+      if (input instanceof HTMLInputElement && !isPotentiallyViewable(input)) return;
+      if (!canBeInteractedWith(input)) return;
+      if (this.shouldSkipInput(input, dataType)) return;
+      if (input.value === string) return;
       const successful = setValue(input, string, this.device.globalConfig);
-      if (!successful)
-        return;
+      if (!successful) return;
       input.classList.add("ddg-autofilled");
       addInlineStyles(input, getIconStylesAutofilled(input, this));
       this.touched.add(input);
@@ -6254,12 +6126,10 @@ Source: "${matchedFrom}"`;
       return [...this.inputs.credentials].find((input) => canBeInteractedWith(input) && isPotentiallyViewable(input));
     }
     async promptLoginIfNeeded() {
-      if (document.visibilityState !== "visible" || !this.isLogin)
-        return;
+      if (document.visibilityState !== "visible" || !this.isLogin) return;
       const firstCredentialInput = this.getFirstViableCredentialsInput();
       const input = this.activeInput || firstCredentialInput;
-      if (!input)
-        return;
+      if (!input) return;
       const mainType = getInputMainType(input);
       const subtype = getInputSubtype(input);
       const variant = getInputVariant(input);
@@ -10875,8 +10745,7 @@ Source: "${matchedFrom}"`;
      * @private
      */
     _validate(data, validator) {
-      if (!validator)
-        return data;
+      if (!validator) return data;
       if (validator) {
         const result = validator?.safeParse(data);
         if (!result) {
@@ -11329,10 +11198,8 @@ Source: "${matchedFrom}"`;
         for (const mutationRecord of mutationList) {
           if (mutationRecord.type === "childList") {
             for (const addedNode of mutationRecord.addedNodes) {
-              if (!(addedNode instanceof HTMLElement))
-                continue;
-              if (addedNode.nodeName === "DDG-AUTOFILL")
-                continue;
+              if (!(addedNode instanceof HTMLElement)) continue;
+              if (addedNode.nodeName === "DDG-AUTOFILL") continue;
               outgoing.push(addedNode);
             }
           }
@@ -11430,8 +11297,7 @@ Source: "${matchedFrom}"`;
       if (shouldLog()) {
         console.log(mode, reason, ...rest);
       }
-      if (mode === "scanning")
-        return;
+      if (mode === "scanning") return;
       if (mode === "stopped") {
         window.removeEventListener("pointerdown", this, true);
         window.removeEventListener("focus", this, true);
@@ -11509,10 +11375,8 @@ Source: "${matchedFrom}"`;
      * @param {HTMLFormElement|null} form
      */
     addInput(input, form = null) {
-      if (this.isStopped)
-        return;
-      if (this.inputExistsInForms(input))
-        return;
+      if (this.isStopped) return;
+      if (this.inputExistsInForms(input)) return;
       const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
@@ -11523,8 +11387,7 @@ Source: "${matchedFrom}"`;
         }
         return;
       }
-      if (parentForm.role === "search")
-        return;
+      if (parentForm.role === "search") return;
       let previouslyFoundParent, childForm;
       for (const [formEl] of this.forms) {
         if (!formEl.isConnected) {
@@ -11611,16 +11474,13 @@ Source: "${matchedFrom}"`;
      * @param {FocusEvent | PointerEvent} event
      */
     scanOnClick(event) {
-      if (this.isStopped || !(event.target instanceof Element))
-        return;
+      if (this.isStopped || !(event.target instanceof Element)) return;
       window.performance?.mark?.("scan_shadow:init:start");
       const realTarget = pierceShadowTree(event, HTMLInputElement);
       if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
-        if (shouldLog())
-          console.log("scanOnClick executing for target", realTarget);
+        if (shouldLog()) console.log("scanOnClick executing for target", realTarget);
         const parentForm = this.getParentForm(realTarget);
-        if (parentForm instanceof HTMLInputElement)
-          return;
+        if (parentForm instanceof HTMLInputElement) return;
         const hasShadowTree = event.target?.shadowRoot != null;
         const form = this.forms.get(parentForm);
         if (!form) {
@@ -11849,8 +11709,7 @@ Source: "${matchedFrom}"`;
         return outgoingData;
       }
       function suggestPassword() {
-        if (!autoGeneratedCredential?.password)
-          throw new Error("unreachable");
+        if (!autoGeneratedCredential?.password) throw new Error("unreachable");
         return {
           ...outgoingData,
           generatedPassword: {
@@ -12027,8 +11886,7 @@ Source: "${matchedFrom}"`;
      */
     captureWebkitHandlers(handlerNames) {
       const handlers = window.webkit.messageHandlers;
-      if (!handlers)
-        throw new MissingHandler("window.webkit.messageHandlers was absent", "all");
+      if (!handlers) throw new MissingHandler("window.webkit.messageHandlers was absent", "all");
       for (const webkitMessageHandlerName of handlerNames) {
         if (typeof handlers[webkitMessageHandlerName]?.postMessage === "function") {
           const original = handlers[webkitMessageHandlerName];
@@ -12596,11 +12454,11 @@ Source: "${matchedFrom}"`;
      */
     constructor(name, args) {
       /** @type {import('./utils.js').RemoteConfig | undefined} */
-      __privateAdd(this, _bundledConfig, void 0);
+      __privateAdd(this, _bundledConfig);
       /** @type {string} */
       __publicField(this, "name");
       /** @type {{ debug?: boolean, desktopModeEnabled?: boolean, forcedZoomEnabled?: boolean, featureSettings?: Record<string, unknown>, assets?: import('./content-feature.js').AssetConfig | undefined, site: import('./content-feature.js').Site, messagingConfig?: import('@duckduckgo/messaging').MessagingConfig } | null} */
-      __privateAdd(this, _args, void 0);
+      __privateAdd(this, _args);
       this.name = name;
       const { bundledConfig, site, platform } = args;
       __privateSet(this, _bundledConfig, bundledConfig);
@@ -12628,8 +12486,7 @@ Source: "${matchedFrom}"`;
      */
     matchDomainFeatureSetting(featureKeyName) {
       const domain = this.args?.site.domain;
-      if (!domain)
-        return [];
+      if (!domain) return [];
       const domains = this._getFeatureSettings()?.[featureKeyName] || [];
       return domains.filter((rule) => {
         if (Array.isArray(rule.domain)) {
@@ -12754,8 +12611,7 @@ Source: "${matchedFrom}"`;
      */
     getForcedInputType(input) {
       const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
-      if (!isValidSupportedType(setting?.type))
-        return null;
+      if (!isValidSupportedType(setting?.type)) return null;
       return setting?.type;
     }
     /**
@@ -12896,8 +12752,7 @@ Source: "${matchedFrom}"`;
      * @private
      */
     async _getRuntimeConfiguration() {
-      if (this._runtimeConfiguration)
-        return this._runtimeConfiguration;
+      if (this._runtimeConfiguration) return this._runtimeConfiguration;
       const runtimeConfig = await this.deviceApi.request(new GetRuntimeConfigurationCall(null));
       this._runtimeConfiguration = runtimeConfig;
       return this._runtimeConfiguration;
@@ -12940,8 +12795,7 @@ Source: "${matchedFrom}"`;
         runtimeConfig.contentScope
       );
       const feature = contentScope.features?.autofill?.features?.[name];
-      if (feature?.state !== "enabled" || contentScope.features[name])
-        return runtimeConfig;
+      if (feature?.state !== "enabled" || contentScope.features[name]) return runtimeConfig;
       if (feature) {
         runtimeConfig.contentScope.features = {
           ...contentScope.features,
@@ -12955,8 +12809,7 @@ Source: "${matchedFrom}"`;
       return runtimeConfig;
     }
     async getsiteSpecificFeature() {
-      if (this._siteSpecificFeature)
-        return this._siteSpecificFeature;
+      if (this._siteSpecificFeature) return this._siteSpecificFeature;
       try {
         const runtimeConfig = await this._getRuntimeConfiguration();
         this.setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, "siteSpecificFixes");
@@ -12970,8 +12823,7 @@ Source: "${matchedFrom}"`;
       }
     }
     setsiteSpecificFeature(siteSpecificFeature) {
-      if (this._siteSpecificFeature)
-        return;
+      if (this._siteSpecificFeature) return;
       this._siteSpecificFeature = siteSpecificFeature;
     }
     /**
@@ -13012,8 +12864,7 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     isTypeUnavailable({ mainType, subtype, variant }) {
-      if (mainType === "unknown")
-        return true;
+      if (mainType === "unknown") return true;
       if (subtype === "password" && variant === "new") {
         return !this.featureToggles.password_generation;
       }
@@ -13040,8 +12891,7 @@ Source: "${matchedFrom}"`;
      * @returns {Promise<boolean>}
      */
     async populateDataIfNeeded({ mainType, subtype, variant }) {
-      if (this.isTypeUnavailable({ mainType, subtype, variant }))
-        return false;
+      if (this.isTypeUnavailable({ mainType, subtype, variant })) return false;
       if (this.availableInputTypes?.[mainType] === void 0) {
         await this.populateData();
         return true;
@@ -13060,8 +12910,7 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     canAutofillType({ mainType, subtype, variant }, inContextSignup) {
-      if (this.isTypeUnavailable({ mainType, subtype, variant }))
-        return false;
+      if (this.isTypeUnavailable({ mainType, subtype, variant })) return false;
       const isEmailProtectionEnabled = this.featureToggles.emailProtection && this.availableInputTypes.email;
       if (subtype === "emailAddress" && isEmailProtectionEnabled) {
         return true;
@@ -13082,8 +12931,7 @@ Source: "${matchedFrom}"`;
     }
     /** @returns {AutofillFeatureToggles} */
     get featureToggles() {
-      if (this._featureToggles === null)
-        throw new Error("feature toggles accessed before being set");
+      if (this._featureToggles === null) throw new Error("feature toggles accessed before being set");
       return this._featureToggles;
     }
     /** @param {AutofillFeatureToggles} input */
@@ -13092,8 +12940,7 @@ Source: "${matchedFrom}"`;
     }
     /** @returns {AvailableInputTypes} */
     get availableInputTypes() {
-      if (this._availableInputTypes === null)
-        throw new Error("available input types accessed before being set");
+      if (this._availableInputTypes === null) throw new Error("available input types accessed before being set");
       return this._availableInputTypes;
     }
     /** @param {AvailableInputTypes} value */
@@ -13426,10 +13273,8 @@ Source: "${matchedFrom}"`;
         const formsArray = [...forms.values()];
         const matchingForm = formsArray.find((form) => {
           const btns = [...form.submitButtons];
-          if (btns.includes(realTarget))
-            return true;
-          if (btns.find((btn) => btn.contains(realTarget)))
-            return true;
+          if (btns.includes(realTarget)) return true;
+          if (btns.find((btn) => btn.contains(realTarget))) return true;
           return false;
         });
         matchingForm?.submitHandler("global pointerdown event + matching form");
@@ -13439,11 +13284,9 @@ Source: "${matchedFrom}"`;
             /** @type HTMLElement */
             realTarget?.closest(selector)
           );
-          if (!button)
-            return;
+          if (!button) return;
           const buttonIsAFalsePositive = formsArray.some((form) => button?.contains(form.form));
-          if (buttonIsAFalsePositive)
-            return;
+          if (buttonIsAFalsePositive) return;
           const text = getTextShallow(button) || extractElementStrings(button).join(" ");
           const hasRelevantText = safeRegexTest(matching.getDDGMatcherRegex("submitButtonRegex"), text);
           if (hasRelevantText && text.length < 25) {
@@ -13475,12 +13318,10 @@ Source: "${matchedFrom}"`;
           ["fetch", "xmlhttprequest"].includes(entry.initiatorType) && safeRegexTest(/login|sign-in|signin/, entry.name)
         )
       );
-      if (!entries.length)
-        return;
+      if (!entries.length) return;
       const filledForm = formsArray.find((form) => form.hasValues());
       const focusedForm = formsArray.find((form) => form.hasFocus());
-      if (focusedForm)
-        return;
+      if (focusedForm) return;
       filledForm?.submitHandler("performance observer");
     });
     observer.observe({ entryTypes: ["resource"] });
@@ -16336,8 +16177,7 @@ Source: "${matchedFrom}"`;
       return Boolean(this.device.settings.availableInputTypes.credentialsImport);
     }
     init() {
-      if (!this.device.globalConfig.hasModernWebkitAPI)
-        return;
+      if (!this.device.globalConfig.hasModernWebkitAPI) return;
       try {
         Object.defineProperty(window, "credentialsImportFinished", {
           enumerable: false,
@@ -16472,8 +16312,7 @@ Source: "${matchedFrom}"`;
       throw new Error("Not implemented");
     }
     addDuckAddressesToIdentities(identities) {
-      if (!this.hasLocalAddresses)
-        return identities;
+      if (!this.hasLocalAddresses) return identities;
       const newIdentities = [];
       let { privateAddress, personalAddress } = this.getLocalAddresses();
       privateAddress = formatDuckAddress(privateAddress);
@@ -16581,8 +16420,7 @@ Source: "${matchedFrom}"`;
       );
     }
     async startInit() {
-      if (this.isInitializationStarted)
-        return;
+      if (this.isInitializationStarted) return;
       this.isInitializationStarted = true;
       this.addDeviceListeners();
       await this.setupAutofill();
@@ -16601,8 +16439,7 @@ Source: "${matchedFrom}"`;
     }
     async init() {
       const settings = await this.settings.refresh();
-      if (!settings.enabled)
-        return;
+      if (!settings.enabled) return;
       const handler = async () => {
         if (document.readyState === "complete") {
           window.removeEventListener("load", handler);
@@ -16688,9 +16525,11 @@ Source: "${matchedFrom}"`;
       }
       if (config.type === "credentials") {
         if (data) {
+          console.log("DEEP: topContextData is present", data);
           if (Array.isArray(data.credentials) && data.credentials.length > 0) {
             return data.credentials;
           } else {
+            console.log("DEEP: topContextData is not present", this.getLocalCredentials());
             return this.getLocalCredentials().filter(
               (cred) => !!cred[subtype] || subtype === "password" || cred.id === PROVIDER_LOCKED
             );
@@ -16709,12 +16548,9 @@ Source: "${matchedFrom}"`;
      */
     attachTooltip(params) {
       const { form, input, click, trigger } = params;
-      if (document.visibilityState !== "visible" && trigger !== "postSignup")
-        return;
-      if (trigger === "autoprompt" && !this.globalConfig.isMobileApp)
-        return;
-      if (trigger === "autoprompt" && this.autopromptFired)
-        return;
+      if (document.visibilityState !== "visible" && trigger !== "postSignup") return;
+      if (trigger === "autoprompt" && !this.globalConfig.isMobileApp) return;
+      if (trigger === "autoprompt" && this.autopromptFired) return;
       form.activeInput = input;
       this.activeForm = form;
       const inputType = getInputType(input);
@@ -16776,8 +16612,7 @@ Source: "${matchedFrom}"`;
         return this.thirdPartyProvider?.askToUnlockProvider();
       }
       const matchingData = items.find((item) => String(item.id) === id);
-      if (!matchingData)
-        throw new Error("unreachable (fatal)");
+      if (!matchingData) throw new Error("unreachable (fatal)");
       const dataPromise = (() => {
         switch (mainType) {
           case "creditCards":
@@ -17030,10 +16865,8 @@ Source: "${matchedFrom}"`;
      * @param {import("../Form/Form").Form} form
      */
     postSubmit(values, form) {
-      if (!form.form)
-        return;
-      if (!form.hasValues(values))
-        return;
+      if (!form.form) return;
+      if (!form.hasValues(values)) return;
       const shouldTriggerPartialSave = Object.keys(values?.credentials || {}).length === 1 && Boolean(values?.credentials?.username) && this.settings.featureToggles.partial_form_saves;
       const checks = [
         form.shouldPromptToStoreData && !form.submitHandlerExecuted,
@@ -17088,8 +16921,7 @@ Source: "${matchedFrom}"`;
       this.addNativeAccessibleGlobalFunctions();
     }
     addNativeAccessibleGlobalFunctions() {
-      if (!this.device.globalConfig.hasModernWebkitAPI)
-        return;
+      if (!this.device.globalConfig.hasModernWebkitAPI) return;
       try {
         Object.defineProperty(window, "openAutofillAfterClosingEmailProtectionTab", {
           enumerable: false,
@@ -17273,8 +17105,7 @@ Source: "${matchedFrom}"`;
       this.deviceApi.request(new CloseEmailProtectionTabCall(null));
     }
     addLogoutListener(handler) {
-      if (!this.globalConfig.isDDGDomain)
-        return;
+      if (!this.globalConfig.isDDGDomain) return;
       window.addEventListener("message", (e) => {
         if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
           handler();
@@ -17328,8 +17159,7 @@ Source: "${matchedFrom}"`;
         for (const mutationRecord of mutationList) {
           if (mutationRecord.type === "childList") {
             mutationRecord.addedNodes.forEach((el) => {
-              if (el.nodeName === "DDG-AUTOFILL")
-                return;
+              if (el.nodeName === "DDG-AUTOFILL") return;
               this.ensureIsLastInDOM();
             });
           }
@@ -17404,8 +17234,7 @@ Source: "${matchedFrom}"`;
         window.cancelAnimationFrame(this.animationFrame);
       }
       this.animationFrame = window.requestAnimationFrame(() => {
-        if (this.isHidden)
-          return;
+        if (this.isHidden) return;
         const { left, bottom, height, top } = this.getPosition();
         if (left !== this.left || bottom !== this.top) {
           const coords = { left, top: bottom };
@@ -17429,8 +17258,7 @@ Source: "${matchedFrom}"`;
         const inputPosition = this.getPosition();
         const caretHeight = 14;
         const overriddenTopPosition = top - tooltipBoundingBox.height - inputPosition.height - caretHeight;
-        if (overriddenTopPosition >= 0)
-          return { left, top: overriddenTopPosition };
+        if (overriddenTopPosition >= 0) return { left, top: overriddenTopPosition };
       }
       if (tooltipBoundingBox.left < 0 && window.innerWidth <= smallScreenWidth) {
         const leftOverflow = Math.abs(tooltipBoundingBox.left);
@@ -17488,8 +17316,7 @@ Source: "${matchedFrom}"`;
       this.applyPositionalStyles(element, { left, top });
       if (this.options.hasCaret) {
         const overridePosition = this.getOverridePosition({ left, top });
-        if (overridePosition)
-          this.updatePosition(element, overridePosition);
+        if (overridePosition) this.updatePosition(element, overridePosition);
       }
     }
     ensureIsLastInDOM() {
@@ -17540,8 +17367,7 @@ Source: "${matchedFrom}"`;
     setSize() {
       const innerNode = this.shadow.querySelector(".wrapper--data");
       console.log("DEEP: innerNode found in setSize", innerNode);
-      if (!innerNode)
-        return;
+      if (!innerNode) return;
       const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
       console.log("DEEP: options.setSize called in setSize");
       this.options.setSize?.(details);
@@ -17566,7 +17392,7 @@ Source: "${matchedFrom}"`;
       this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
       window.addEventListener("scroll", this, { capture: true });
       console.log("DEEP: setSize called in init");
-      this.setSize();
+      requestAnimationFrame(() => this.setSize());
       if (typeof this.options.setSize === "function") {
         console.log("DEEP: setupSizeListener called in init");
         this.setupSizeListener();
@@ -17623,8 +17449,7 @@ Source: "${matchedFrom}"`;
       let hasAddedSeparator = false;
       const shouldShowSeparator = (dataId, index) => {
         const shouldShow = ["personalAddress", "privateAddress"].includes(dataId) && !hasAddedSeparator;
-        if (shouldShow)
-          hasAddedSeparator = true;
+        if (shouldShow) hasAddedSeparator = true;
         const isFirst = index === 0;
         return shouldShow && !isFirst;
       };
@@ -17935,6 +17760,7 @@ ${this.options.css}
         return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
       }
       const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
+      console.log("DEEP: data recieved", data);
       const asRenderers = data.map((d) => config.tooltipItem(d));
       return new DataHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(
         this._options.device,
@@ -17957,8 +17783,7 @@ ${this.options.css}
       );
     }
     updateItems(data) {
-      if (this._activeInputType === "unknown")
-        return;
+      if (this._activeInputType === "unknown") return;
       const config = getInputConfigFromType(this._activeInputType);
       const asRenderers = data.map((d) => config.tooltipItem(d));
       const activeTooltip = this.getActiveTooltip();
@@ -18016,10 +17841,8 @@ ${this.options.css}
     }
     // Global listener for event delegation
     _pointerDownListener(e) {
-      if (!e.isTrusted)
-        return;
-      if (isEventWithinDax(e, e.target))
-        return;
+      if (!e.isTrusted) return;
+      if (isEventWithinDax(e, e.target)) return;
       if (e.target.nodeName === "DDG-AUTOFILL") {
         this._handleClickInTooltip(e);
       } else {
@@ -18030,10 +17853,8 @@ ${this.options.css}
     }
     // Global listener for event delegation
     _pointerUpListener(e) {
-      if (!e.isTrusted)
-        return;
-      if (isEventWithinDax(e, e.target))
-        return;
+      if (!e.isTrusted) return;
+      if (isEventWithinDax(e, e.target)) return;
       if (e.target.nodeName === "DDG-AUTOFILL") {
         this._handleClickInTooltip(e);
       }
@@ -18042,8 +17863,7 @@ ${this.options.css}
       e.preventDefault();
       e.stopImmediatePropagation();
       const isMainMouseButton = e.button === 0;
-      if (!isMainMouseButton)
-        return;
+      if (!isMainMouseButton) return;
       const activeTooltip = this.getActiveTooltip();
       activeTooltip?.dispatchClick();
     }
@@ -18125,8 +17945,7 @@ ${this.options.css}
       this._options.device.inContextSignup?.onIncontextSignupDismissed({ shouldHideTooltip: !hasOtherOptions });
       if (hasOtherOptions) {
         const topContextData = this._options.device.getTopContextData();
-        if (!topContextData)
-          return;
+        if (!topContextData) return;
         const config = getInputConfigFromType(topContextData.inputType);
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
         this.updateItems(data);
@@ -18184,8 +18003,7 @@ ${this.options.css}
     async resetAutofillUI(callback) {
       this.removeAutofillUIFromPage("Resetting autofill.");
       await this.setupAutofill();
-      if (callback)
-        await callback();
+      if (callback) await callback();
       this.uiController = this.createUIController();
       await this.postInit();
     }
@@ -18282,8 +18100,7 @@ ${this.options.css}
         activeEl = e.target;
       });
       chrome.runtime.onMessage.addListener((message, sender) => {
-        if (sender.id !== chrome.runtime.id)
-          return;
+        if (sender.id !== chrome.runtime.id) return;
         switch (message.type) {
           case "ddgUserReady":
             this.resetAutofillUI(() => this.setupSettingsPage({ shouldLog: true }));
@@ -18336,8 +18153,7 @@ ${this.options.css}
      */
     attachTooltip(args) {
       const { getPosition, topContextData, click, input } = args;
-      if (!input.parentNode)
-        return;
+      if (!input.parentNode) return;
       this._mutObs = new MutationObserver((mutationList) => {
         for (const mutationRecord of mutationList) {
           mutationRecord.removedNodes.forEach((el) => {
@@ -18671,8 +18487,7 @@ ${this.options.css}
     async _show(details) {
       await this._showAutofillParent(details);
       this._listenForSelectedCredential(async (response) => {
-        if (!response)
-          return;
+        if (!response) return;
         if ("configType" in response) {
           this.selectedDetail(response.data, response.configType);
         } else if ("stop" in response) {
@@ -18687,16 +18502,14 @@ ${this.options.css}
       await this._checkDeviceSignedIn();
     }
     async getAddresses() {
-      if (!this.globalConfig.isApp)
-        return this.getAlias();
+      if (!this.globalConfig.isApp) return this.getAlias();
       const { addresses } = await this.deviceApi.request(createRequest("emailHandlerGetAddresses"));
       this.storeLocalAddresses(addresses);
       return addresses;
     }
     async refreshAlias() {
       await this.deviceApi.notify(createNotification("emailHandlerRefreshAlias"));
-      if (this.globalConfig.isApp)
-        this.getAddresses();
+      if (this.globalConfig.isApp) this.getAddresses();
     }
     async _checkDeviceSignedIn() {
       const { isAppSignedIn } = await this.deviceApi.request(createRequest("emailHandlerCheckAppSignedInStatus"));
@@ -18793,8 +18606,7 @@ ${this.options.css}
       return alias ? formatDuckAddress(alias) : alias;
     }
     addLogoutListener(handler) {
-      if (!this.globalConfig.isDDGDomain)
-        return;
+      if (!this.globalConfig.isDDGDomain) return;
       window.addEventListener("message", (e) => {
         if (this.globalConfig.isDDGDomain && e.data.emailProtectionSignedOut) {
           handler();
@@ -18847,8 +18659,7 @@ ${this.options.css}
        */
       showImmediately() {
         const topContextData = device.getTopContextData();
-        if (!topContextData)
-          throw new Error("unreachable, topContextData should be available");
+        if (!topContextData) throw new Error("unreachable, topContextData should be available");
         const getPosition = () => {
           return {
             x: 0,
@@ -19069,8 +18880,7 @@ ${this.options.css}
       return isLoggedIn;
     }
     addLogoutListener(handler) {
-      if (!this.globalConfig.isDDGDomain)
-        return;
+      if (!this.globalConfig.isDDGDomain) return;
       windowsInteropAddEventListener("message", (e) => {
         if (this.globalConfig.isDDGDomain && e.data === EMAIL_PROTECTION_LOGOUT_MESSAGE) {
           handler();
@@ -19301,8 +19111,7 @@ ${this.options.css}
     if (shouldLog()) {
       console.log("DuckDuckGo Autofill Active");
     }
-    if (!window.isSecureContext)
-      return false;
+    if (!window.isSecureContext) return false;
     try {
       const startupAutofill = () => {
         if (document.visibilityState === "visible") {
