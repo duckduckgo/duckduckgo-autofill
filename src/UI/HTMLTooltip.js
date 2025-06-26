@@ -305,20 +305,17 @@ export class HTMLTooltip {
     }
     setupSizeListener() {
         // Listen to layout and paint changes to register the size
-        const observer = new PerformanceObserver((entries) => {
-            const entryTypes = entries.getEntries().map((entry) => entry.entryType);
-            console.log('DEEP: setSize called in performance observer with entry types:', entryTypes);
-            this.setSize();
+        const observer = new PerformanceObserver(() => {
+            this.setSize('performance observer');
         });
         observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
-    setSize() {
+    setSize(caller = 'none') {
         const innerNode = this.shadow.querySelector('.wrapper--data');
         // Shouldn't be possible
-        console.log('DEEP: innerNode found in setSize', innerNode);
         if (!innerNode) return;
         const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-        console.log('DEEP: options.setSize called in setSize');
+        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
         this.options.setSize?.(details);
     }
     init() {
@@ -344,14 +341,12 @@ export class HTMLTooltip {
         this.resObs.observe(document.body);
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
-        console.log('DEEP: setSize called in init');
 
         // Always delay setSize to ensure DOM layout is stable after innerHTML changes
         // This prevents reading cached dimensions from previous tooltip content
-        requestAnimationFrame(() => this.setSize());
+        requestAnimationFrame(() => this.setSize('init'));
 
         if (typeof this.options.setSize === 'function') {
-            console.log('DEEP: setupSizeListener called in init');
             this.setupSizeListener();
         }
     }

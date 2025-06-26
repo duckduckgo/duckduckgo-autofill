@@ -16525,11 +16525,9 @@ Source: "${matchedFrom}"`;
       }
       if (config.type === "credentials") {
         if (data) {
-          console.log("DEEP: topContextData is present", data);
           if (Array.isArray(data.credentials) && data.credentials.length > 0) {
             return data.credentials;
           } else {
-            console.log("DEEP: topContextData is not present", this.getLocalCredentials());
             return this.getLocalCredentials().filter(
               (cred) => !!cred[subtype] || subtype === "password" || cred.id === PROVIDER_LOCKED
             );
@@ -17357,19 +17355,16 @@ Source: "${matchedFrom}"`;
       }
     }
     setupSizeListener() {
-      const observer = new PerformanceObserver((entries) => {
-        const entryTypes = entries.getEntries().map((entry) => entry.entryType);
-        console.log("DEEP: setSize called in performance observer with entry types:", entryTypes);
-        this.setSize();
+      const observer = new PerformanceObserver(() => {
+        this.setSize("performance observer");
       });
       observer.observe({ entryTypes: ["layout-shift", "paint"] });
     }
-    setSize() {
+    setSize(caller = "none") {
       const innerNode = this.shadow.querySelector(".wrapper--data");
-      console.log("DEEP: innerNode found in setSize", innerNode);
       if (!innerNode) return;
       const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-      console.log("DEEP: options.setSize called in setSize");
+      console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
       this.options.setSize?.(details);
     }
     init() {
@@ -17391,10 +17386,8 @@ Source: "${matchedFrom}"`;
       this.resObs.observe(document.body);
       this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
       window.addEventListener("scroll", this, { capture: true });
-      console.log("DEEP: setSize called in init");
-      requestAnimationFrame(() => this.setSize());
+      requestAnimationFrame(() => this.setSize("init"));
       if (typeof this.options.setSize === "function") {
-        console.log("DEEP: setupSizeListener called in init");
         this.setupSizeListener();
       }
     }
@@ -17760,7 +17753,6 @@ ${this.options.css}
         return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
       }
       const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
-      console.log("DEEP: data recieved", data);
       const asRenderers = data.map((d) => config.tooltipItem(d));
       return new DataHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(
         this._options.device,

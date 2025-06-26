@@ -133,7 +133,6 @@ export class HTMLTooltipUIController extends UIController {
 
         // collect the data for each item to display
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
-        console.log('DEEP: data recieved', data);
         // convert the data into tool tip item renderers
         const asRenderers = data.map((d) => config.tooltipItem(d));
 

@@ -415,11 +415,9 @@ class InterfacePrototype {
         }
         if (config.type === 'credentials') {
             if (data) {
-                console.log('DEEP: topContextData is present', data);
                 if (Array.isArray(data.credentials) && data.credentials.length > 0) {
                     return data.credentials;
                 } else {
-                    console.log('DEEP: topContextData is not present', this.getLocalCredentials());
                     return this.getLocalCredentials().filter(
                         (cred) => !!cred[subtype] || subtype === 'password' || cred.id === PROVIDER_LOCKED,
                     );
