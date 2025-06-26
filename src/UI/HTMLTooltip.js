@@ -309,15 +309,16 @@ export class HTMLTooltip {
     setupSizeListener() {
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
-            this.setSize();
+            this.setSize('performance observer');
         });
         observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
-    setSize() {
+    setSize(caller = 'none') {
         const innerNode = this.shadow.querySelector('.wrapper--data');
         // Shouldn't be possible
         if (!innerNode) return;
         const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
         this.options.setSize?.(details);
     }
     init() {
@@ -354,7 +355,7 @@ export class HTMLTooltip {
                 // to ensure the browser has completed its layout reflow after the DOM
                 // mutation, preventing us from reading a stale height value.
                 window.requestAnimationFrame(() => {
-                    this.setSize();
+                    this.setSize('contentObserver')
                 });
             });
             this.contentObserver.observe(innerNode, {
@@ -364,7 +365,7 @@ export class HTMLTooltip {
             });
         }
 
-        this.setSize();
+        this.setSize('init')
 
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();
