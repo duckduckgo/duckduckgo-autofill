@@ -83,7 +83,7 @@ export function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback,
     const form = [...forms.values()].find((form) => form.hasFocus());
 
     if (settings.featureToggles.input_focus_api) {
-        // Note: form can be undefined here if no form has focus - attachKeyboardCallback handles this case
+        // Note: form can be undefined here if no form has focus - NativeUIController::attachKeyboard handles this case
         attachKeyboardCallback({ form, element: targetElement });
     }
 
