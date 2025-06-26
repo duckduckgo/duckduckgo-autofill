@@ -57,6 +57,8 @@ export class HTMLTooltip {
     isAboveInput = false;
     /** @type {HTMLTooltipOptions} */
     options;
+    /** @type {MutationObserver | null} */
+    contentObserver = null;
     /**
      * @param inputType
      * @param getPosition
@@ -109,6 +111,7 @@ export class HTMLTooltip {
         window.removeEventListener('scroll', this, { capture: true });
         this.resObs.disconnect();
         this.mutObs.disconnect();
+        this.contentObserver?.disconnect();
         this.lift();
     }
     lift() {
@@ -306,15 +309,16 @@ export class HTMLTooltip {
     setupSizeListener() {
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
-            this.setSize();
+            this.setSize('performance observer');
         });
         observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
-    setSize() {
+    setSize(caller = 'none') {
         const innerNode = this.shadow.querySelector('.wrapper--data');
         // Shouldn't be possible
         if (!innerNode) return;
         const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
         this.options.setSize?.(details);
     }
     init() {
@@ -340,7 +344,28 @@ export class HTMLTooltip {
         this.resObs.observe(document.body);
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
-        this.setSize();
+
+        const innerNode = this.shadow.querySelector('.wrapper--data');
+        if (innerNode) {
+            // A MutationObserver is used to reliably detect when the tooltip's content
+            // has changed. This is more precise than a general PerformanceObserver
+            // as it targets the exact element whose size we care about.
+            this.contentObserver = new MutationObserver(() => {
+                // We defer the setSize call until the next animation frame. This is critical
+                // to ensure the browser has completed its layout reflow after the DOM
+                // mutation, preventing us from reading a stale height value.
+                window.requestAnimationFrame(() => {
+                    this.setSize('contentObserver')
+                });
+            });
+            this.contentObserver.observe(innerNode, {
+                attributes: true, // Watch for attribute changes (e.g., 'hidden')
+                childList: true,  // Watch for nodes being added or removed
+                subtree: true,    // Watch descendants as well
+            });
+        }
+
+        this.setSize('init')
 
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();
