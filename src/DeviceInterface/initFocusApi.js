@@ -79,9 +79,11 @@ export function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback,
     const targetElement = pierceShadowTree(e);
 
     if (!isIOS || !targetElement || targetElement instanceof Window) return;
+    // Find the form that has focus, may be undefined if no form has focus
     const form = [...forms.values()].find((form) => form.hasFocus());
 
     if (settings.featureToggles.input_focus_api) {
+        // Note: form can be undefined here if no form has focus - attachKeyboardCallback handles this case
         attachKeyboardCallback({ form, element: targetElement });
     }
 
