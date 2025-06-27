@@ -17361,11 +17361,13 @@ Source: "${matchedFrom}"`;
       observer.observe({ entryTypes: ["layout-shift", "paint"] });
     }
     setSize(caller = "none") {
-      const innerNode = this.shadow.querySelector(".wrapper--data");
-      if (!innerNode) return;
-      const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-      console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
-      this.options.setSize?.(details);
+      requestAnimationFrame(() => {
+        const innerNode = this.shadow.querySelector(".wrapper--data");
+        if (!innerNode) return;
+        const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
+        this.options.setSize?.(details);
+      });
     }
     init() {
       this.animationFrame = null;

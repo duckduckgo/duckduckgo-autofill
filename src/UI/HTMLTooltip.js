@@ -311,12 +311,14 @@ export class HTMLTooltip {
         observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
     setSize(caller = 'none') {
-        const innerNode = this.shadow.querySelector('.wrapper--data');
-        // Shouldn't be possible
-        if (!innerNode) return;
-        const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
-        this.options.setSize?.(details);
+        requestAnimationFrame(() => {
+            const innerNode = this.shadow.querySelector('.wrapper--data');
+            // Shouldn't be possible
+            if (!innerNode) return;
+            const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+            console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
+            this.options.setSize?.(details);
+        });
     }
     init() {
         this.animationFrame = null;
@@ -344,7 +346,7 @@ export class HTMLTooltip {
 
         // Always delay setSize to ensure DOM layout is stable after innerHTML changes
         // This prevents reading cached dimensions from previous tooltip content
-       this.setSize('init');
+        this.setSize('init');
 
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();
