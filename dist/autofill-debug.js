@@ -17362,7 +17362,7 @@ Source: "${matchedFrom}"`;
       this.contentObserver = new MutationObserver(() => {
         this.setSize("mutation observer");
       });
-      this.contentObserver.observe(innerNode, { childList: true, subtree: true });
+      this.contentObserver.observe(innerNode, { childList: true, subtree: true, attributes: true });
     }
     setSize(caller = "none") {
       requestAnimationFrame(() => {
