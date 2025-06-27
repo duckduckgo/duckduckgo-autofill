@@ -315,7 +315,7 @@ export class HTMLTooltip {
         this.contentObserver = new MutationObserver(() => {
             this.setSize('mutation observer');
         });
-        this.contentObserver.observe(innerNode, { childList: true });
+        this.contentObserver.observe(innerNode, { childList: true, subtree: true });
     }
     setSize(caller = 'none') {
         requestAnimationFrame(() => {
