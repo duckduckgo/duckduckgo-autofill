@@ -17358,7 +17358,7 @@ Source: "${matchedFrom}"`;
       const observer = new PerformanceObserver(() => {
         this.setSize("performance observer");
       });
-      observer.observe({ entryTypes: ["layout-shift", "paint"] });
+      observer.observe({ entryTypes: ["layout-shift", "paint", "largest-contentful-paint"] });
     }
     setSize(caller = "none") {
       requestAnimationFrame(() => {
