@@ -11220,6 +11220,7 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     get shouldAutoprompt() {
+      if (this.device.credentialsImport.isAvailable()) return false;
       return Date.now() - this.initTimeStamp <= 1500;
     }
     /**
@@ -11631,6 +11632,10 @@ Source: "${matchedFrom}"`;
           }
           case "focus": {
             form.activeInput?.focus();
+            break;
+          }
+          case "refreshAvailableInputTypes": {
+            device.credentialsImport.refresh();
             break;
           }
           case "acceptGeneratedPassword": {

@@ -76,6 +76,11 @@ export class NativeUIController extends UIController {
                         break;
                     }
 
+                    case 'refreshAvailableInputTypes': {
+                        device.credentialsImport.refresh();
+                        break;
+                    }
+
                     case 'acceptGeneratedPassword': {
                         form.autofillData(
                             {
