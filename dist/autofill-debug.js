@@ -17388,7 +17388,6 @@ Source: "${matchedFrom}"`;
       this.resObs.observe(document.body);
       this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
       window.addEventListener("scroll", this, { capture: true });
-      this.setSize("init");
       if (typeof this.options.setSize === "function") {
         this.setupSizeListener();
       }

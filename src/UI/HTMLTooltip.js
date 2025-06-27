@@ -344,10 +344,6 @@ export class HTMLTooltip {
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
 
-        // Always delay setSize to ensure DOM layout is stable after innerHTML changes
-        // This prevents reading cached dimensions from previous tooltip content
-        this.setSize('init');
-
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();
         }
