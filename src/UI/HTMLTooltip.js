@@ -344,7 +344,7 @@ export class HTMLTooltip {
 
         // Always delay setSize to ensure DOM layout is stable after innerHTML changes
         // This prevents reading cached dimensions from previous tooltip content
-        requestAnimationFrame(() => this.setSize('init'));
+       this.setSize('init');
 
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();
