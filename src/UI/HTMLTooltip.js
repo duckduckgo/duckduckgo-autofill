@@ -71,6 +71,10 @@ export class HTMLTooltip {
         this.subtype = getSubtypeFromType(inputType);
         this.variant = getVariantFromType(inputType);
         this.tooltip = null;
+
+        /** @type {MutationObserver | null} */
+        this.contentObserver = null;
+
         this.getPosition = getPosition;
         const forcedVisibilityStyles = {
             display: 'block',
@@ -109,6 +113,7 @@ export class HTMLTooltip {
         window.removeEventListener('scroll', this, { capture: true });
         this.resObs.disconnect();
         this.mutObs.disconnect();
+        this.contentObserver?.disconnect();
         this.lift();
     }
     lift() {
@@ -304,11 +309,13 @@ export class HTMLTooltip {
         }
     }
     setupSizeListener() {
-        // Listen to layout and paint changes to register the size
-        const observer = new PerformanceObserver(() => {
-            this.setSize('performance observer');
+        const innerNode = this.shadow.querySelector('.wrapper--data');
+        if (!innerNode) return;
+
+        this.contentObserver = new MutationObserver(() => {
+            this.setSize('mutation observer');
         });
-        observer.observe({ entryTypes: ['layout-shift', 'paint', 'largest-contentful-paint'] });
+        this.contentObserver.observe(innerNode, { childList: true });
     }
     setSize(caller = 'none') {
         requestAnimationFrame(() => {
@@ -343,6 +350,8 @@ export class HTMLTooltip {
         this.resObs.observe(document.body);
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
+
+        this.setSize('init');
 
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();

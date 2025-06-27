@@ -17173,6 +17173,7 @@ Source: "${matchedFrom}"`;
       this.subtype = getSubtypeFromType(inputType);
       this.variant = getVariantFromType(inputType);
       this.tooltip = null;
+      this.contentObserver = null;
       this.getPosition = getPosition;
       const forcedVisibilityStyles = {
         display: "block",
@@ -17204,6 +17205,7 @@ Source: "${matchedFrom}"`;
       window.removeEventListener("scroll", this, { capture: true });
       this.resObs.disconnect();
       this.mutObs.disconnect();
+      this.contentObserver?.disconnect();
       this.lift();
     }
     lift() {
@@ -17355,10 +17357,12 @@ Source: "${matchedFrom}"`;
       }
     }
     setupSizeListener() {
-      const observer = new PerformanceObserver(() => {
-        this.setSize("performance observer");
+      const innerNode = this.shadow.querySelector(".wrapper--data");
+      if (!innerNode) return;
+      this.contentObserver = new MutationObserver(() => {
+        this.setSize("mutation observer");
       });
-      observer.observe({ entryTypes: ["layout-shift", "paint", "largest-contentful-paint"] });
+      this.contentObserver.observe(innerNode, { childList: true });
     }
     setSize(caller = "none") {
       requestAnimationFrame(() => {
@@ -17388,6 +17392,7 @@ Source: "${matchedFrom}"`;
       this.resObs.observe(document.body);
       this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
       window.addEventListener("scroll", this, { capture: true });
+      this.setSize("init");
       if (typeof this.options.setSize === "function") {
         this.setupSizeListener();
       }
