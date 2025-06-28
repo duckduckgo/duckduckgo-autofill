@@ -8897,11 +8897,11 @@ Source: "${matchedFrom}"`;
       );
     }
   }
-  function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback, e) {
+  function handleFocusEvent(forms, settings, attachKeyboardCallback, e) {
     const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
     if (isAnyFormAutofilling) return;
     const targetElement = pierceShadowTree(e);
-    if (!isIOS || !targetElement || targetElement instanceof Window) return;
+    if (!targetElement || targetElement instanceof Window) return;
     const form = [...forms.values()].find((form2) => form2.hasFocus());
     if (settings.featureToggles.input_focus_api) {
       attachKeyboardCallback({ form, element: targetElement });
@@ -8910,8 +8910,8 @@ Source: "${matchedFrom}"`;
       setAutocompleteOnIdentityField(targetElement);
     }
   }
-  function initFocusApi(forms, settings, isIOS, attachKeyboardCallback) {
-    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, isIOS, attachKeyboardCallback);
+  function initFocusApi(forms, settings, attachKeyboardCallback) {
+    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, attachKeyboardCallback);
     window.addEventListener("focus", boundHandleFocusEvent, true);
     return {
       setAutocompleteOnIdentityField,
@@ -12006,12 +12006,7 @@ Source: "${matchedFrom}"`;
      * @returns {Object}
      */
     initGlobalFocusHandler(forms) {
-      return initFocusApi(
-        forms,
-        this.settings,
-        this.globalConfig.isIOS,
-        ({ form, element }) => this.attachKeyboard({ device: this, form, element })
-      );
+      return initFocusApi(forms, this.settings, ({ form, element }) => this.attachKeyboard({ device: this, form, element }));
     }
     async startInit() {
       if (this.isInitializationStarted) return;
