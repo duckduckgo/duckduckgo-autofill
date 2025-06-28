@@ -28,6 +28,8 @@
   },
   "include": [
     "src",
+    "scripts",
+    "debug",
     "packages/password",
     "integration-test",
     "packages/device-api",
@@ -38,6 +40,7 @@
   "exclude": [
     "jest-test-environment.js",
     "integration-test/extension",
-    "scripts"
+    "scripts",
+    "debug/dist"
   ]
 }

@@ -58,7 +58,7 @@ class Form {
         this.device = deviceInterface;
         this.hasShadowTree = hasShadowTree;
 
-        /** @type Record<'all' | SupportedMainTypes, Set> */
+        /** @type {Record<'all' | SupportedMainTypes, Set>} */
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
