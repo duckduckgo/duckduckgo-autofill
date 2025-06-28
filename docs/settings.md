@@ -14,6 +14,7 @@ The platform will provide feature toggles (boolean flags) based on device suppor
 - `emailProtection` - whether the device supports email protection
 - `password_generation` - if the device can offer generated passwords
 - `credentials_saving` - if the device should offer to capture submitted form data to save
+- `autocomplete_attribute_support` - enables adding HTML autocomplete attributes to form fields to enhance mobile autofill capabilities, particularly iOS QuickType keyboard suggestions
 
 ---
 
