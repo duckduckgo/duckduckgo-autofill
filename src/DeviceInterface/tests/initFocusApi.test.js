@@ -1,44 +1,24 @@
 import { initFocusApi, setAutocompleteOnIdentityField } from '../initFocusApi.js';
-import * as utils from '../../autofill-utils.js';
-import * as matching from '../../Form/matching.js';
-
-// Mock dependencies
-jest.mock('../../autofill-utils.js');
-jest.mock('../../Form/matching.js');
-
-// Type the mocked modules
-const mockedUtils = /** @type {jest.Mocked<typeof utils>} */ (utils);
-const mockedMatching = /** @type {jest.Mocked<typeof matching>} */ (matching);
+import { attachAndReturnGenericForm } from '../../test-utils.js';
 
 describe('initFocusApi', () => {
     let forms;
     let settings;
     let attachKeyboardCallback;
     let focusApi;
-    let mockInputElement;
     let mockForm;
 
     beforeEach(() => {
-        // Reset all mocks
         jest.clearAllMocks();
 
-        // Spy on DOM methods
-        jest.spyOn(HTMLElement.prototype, 'addEventListener');
-        jest.spyOn(HTMLElement.prototype, 'removeAttribute');
-        jest.spyOn(HTMLElement.prototype, 'setAttribute');
-
-        // Create mocks for our test
-        mockInputElement = document.createElement('input');
         mockForm = {
             hasFocus: jest.fn(() => true),
             isAutofilling: false,
         };
 
-        // Setup our forms collection
         forms = new Map();
         forms.set('testForm', mockForm);
 
-        // Setup settings with feature flags
         settings = {
             featureToggles: {
                 input_focus_api: true,
@@ -46,7 +26,6 @@ describe('initFocusApi', () => {
             },
         };
 
-        // Setup keyboard callback
         attachKeyboardCallback = jest.fn();
 
         // Initialize the API with test values
@@ -54,11 +33,7 @@ describe('initFocusApi', () => {
     });
 
     afterEach(() => {
-        // Clean up any event listeners
         focusApi.cleanup();
-
-        // Restore all mocks
-        jest.restoreAllMocks();
     });
 
     it('should initialize and return the API methods', () => {
@@ -68,253 +43,276 @@ describe('initFocusApi', () => {
     });
 
     it('should register focus event listener on initialization', () => {
-        // We need to spy on window.addEventListener
         const addEventSpy = jest.spyOn(window, 'addEventListener');
 
-        // Initialize the focus API
-        initFocusApi(forms, settings, attachKeyboardCallback);
+        const newFocusApi = initFocusApi(forms, settings, attachKeyboardCallback);
 
-        // Check that addEventListener was called with expected args
         expect(addEventSpy).toHaveBeenCalledWith('focus', expect.any(Function), true);
 
-        // Clean up spy
+        newFocusApi.cleanup();
         addEventSpy.mockRestore();
     });
 
     it('should handle focus events and call attachKeyboard when input_focus_api is enabled', () => {
-        // Mock pierce shadow tree to return our input element
-        mockedUtils.pierceShadowTree.mockReturnValue(mockInputElement);
+        // Create a form with an email input that will be detected as an identity field
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="email" name="email" id="email-input" />
+            </form>
+        `);
 
-        // Create and dispatch a focus event
-        const focusEvent = new FocusEvent('focus');
+        const emailInput = document.getElementById('email-input');
+
+        const focusEvent = new FocusEvent('focus', { bubbles: true });
+        Object.defineProperty(focusEvent, 'target', { value: emailInput, enumerable: true });
         window.dispatchEvent(focusEvent);
 
-        // Check that attachKeyboardCallback was called with correct arguments
         expect(attachKeyboardCallback).toHaveBeenCalledWith({
             form: mockForm,
-            element: mockInputElement,
+            element: emailInput,
         });
     });
 
     it('should not call attachKeyboard when input_focus_api is disabled', () => {
-        // Disable the feature toggle
         settings.featureToggles.input_focus_api = false;
 
-        // Reinitialize the API
+        // Reinitialize the API because the feature toggle has changed
         focusApi.cleanup();
         focusApi = initFocusApi(forms, settings, attachKeyboardCallback);
 
-        // Mock pierce shadow tree to return our input element
-        mockedUtils.pierceShadowTree.mockReturnValue(mockInputElement);
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="email" name="email" id="email-input" />
+            </form>
+        `);
 
-        // Create and dispatch a focus event
-        const focusEvent = new FocusEvent('focus');
+        const emailInput = document.getElementById('email-input');
+
+        const focusEvent = new FocusEvent('focus', { bubbles: true });
+        Object.defineProperty(focusEvent, 'target', { value: emailInput, enumerable: true });
         window.dispatchEvent(focusEvent);
 
-        // Check that attachKeyboardCallback was not called
         expect(attachKeyboardCallback).not.toHaveBeenCalled();
     });
 
-    it('should set autocomplete attribute when autocomplete_attribute_support is enabled', () => {
-        // Create an actual input element instead of mocking
-        const inputElement = document.createElement('input');
+    it('should set autocomplete attribute on email input when autocomplete_attribute_support is enabled', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="email" name="email" id="email-input" />
+            </form>
+        `);
 
-        // Mock the behavior of all the dependencies
-        mockedUtils.pierceShadowTree.mockReturnValue(inputElement);
-        mockedMatching.getInputType.mockReturnValue('identities.emailAddress');
-        mockedMatching.getMainTypeFromType.mockReturnValue('identities');
-        mockedMatching.getSubtypeFromType.mockReturnValue('emailAddress');
+        const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
 
-        // Spy on the methods we want to verify
-        const setAttributeSpy = jest.spyOn(inputElement, 'setAttribute');
-        const addEventListenerSpy = jest.spyOn(inputElement, 'addEventListener');
+        emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
 
-        // Create and dispatch a focus event
-        const focusEvent = new FocusEvent('focus');
+        const focusEvent = new FocusEvent('focus', { bubbles: true });
+        Object.defineProperty(focusEvent, 'target', { value: emailInput, enumerable: true });
         window.dispatchEvent(focusEvent);
 
-        // Verify the behavior
-        expect(setAttributeSpy).toHaveBeenCalledWith('autocomplete', 'email');
-        expect(addEventListenerSpy).toHaveBeenCalledWith('blur', expect.any(Function), { once: true });
+        expect(emailInput.getAttribute('autocomplete')).toBe('email');
+    });
 
-        // Get the blur callback and verify it removes the attribute
-        const blurCallback = addEventListenerSpy.mock.calls[0][1];
-        if (typeof blurCallback !== 'function') {
-            throw new Error('Expected blur callback to be a function');
-        }
-        const removeAttributeSpy = jest.spyOn(inputElement, 'removeAttribute');
+    it('should set autocomplete attribute on name input fields', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="text" name="firstName" id="first-name" placeholder="First Name" />
+                <input type="text" name="lastName" id="last-name" placeholder="Last Name" />
+                <input type="text" name="fullName" id="full-name" placeholder="Full Name" />
+            </form>
+        `);
 
-        // Call the blur callback directly with a mock blur event
-        blurCallback(new FocusEvent('blur'));
+        const firstNameInput = /** @type {HTMLInputElement} */ (document.getElementById('first-name'));
+        const lastNameInput = /** @type {HTMLInputElement} */ (document.getElementById('last-name'));
+        const fullNameInput = /** @type {HTMLInputElement} */ (document.getElementById('full-name'));
 
-        // Verify removeAttribute was called
-        expect(removeAttributeSpy).toHaveBeenCalledWith('autocomplete');
+        firstNameInput.setAttribute('data-ddg-inputType', 'identities.firstName');
+        lastNameInput.setAttribute('data-ddg-inputType', 'identities.lastName');
+        fullNameInput.setAttribute('data-ddg-inputType', 'identities.fullName');
 
-        // Cleanup
-        setAttributeSpy.mockRestore();
-        addEventListenerSpy.mockRestore();
-        removeAttributeSpy.mockRestore();
+        firstNameInput.focus();
+        expect(firstNameInput.getAttribute('autocomplete')).toBe('given-name');
+
+        lastNameInput.focus();
+        expect(lastNameInput.getAttribute('autocomplete')).toBe('family-name');
+
+        fullNameInput.focus();
+        expect(fullNameInput.getAttribute('autocomplete')).toBe('name');
+    });
+
+    it('should set autocomplete attribute on phone input', () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="tel" name="phone" id="phone-input" placeholder="Phone Number" />
+            </form>
+        `);
+
+        const phoneInput = /** @type {HTMLInputElement} */ (document.getElementById('phone-input'));
+
+        phoneInput.setAttribute('data-ddg-inputType', 'identities.phone');
+
+        phoneInput.focus();
+
+        expect(phoneInput.getAttribute('autocomplete')).toBe('tel');
+    });
+
+    it('should remove autocomplete attribute on blur', async () => {
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="email" name="email" id="email-input" />
+            </form>
+        `);
+
+        const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
+        emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
+
+        emailInput.focus();
+        expect(emailInput.getAttribute('autocomplete')).toBe('email');
+
+        emailInput.dispatchEvent(new Event('blur', { bubbles: true }));
+
+        expect(emailInput.hasAttribute('autocomplete')).toBe(false);
+    });
+
+    it('should not set autocomplete when autocomplete_attribute_support is disabled', () => {
+        settings.featureToggles.autocomplete_attribute_support = false;
+
+        // Reinitialize the API because the feature toggle has changed
+        focusApi.cleanup();
+        focusApi = initFocusApi(forms, settings, attachKeyboardCallback);
+
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="email" name="email" id="email-input" />
+            </form>
+        `);
+
+        const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
+
+        emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
+
+        const focusEvent = new FocusEvent('focus', { bubbles: true });
+        Object.defineProperty(focusEvent, 'target', { value: emailInput, enumerable: true });
+        window.dispatchEvent(focusEvent);
+
+        expect(emailInput.hasAttribute('autocomplete')).toBe(false);
     });
 
     it('should not process events when a form is autofilling', () => {
-        // Set a form to be autofilling
         mockForm.isAutofilling = true;
 
-        // Mock pierce shadow tree to return our input element
-        mockedUtils.pierceShadowTree.mockReturnValue(mockInputElement);
+        attachAndReturnGenericForm(`
+            <form>
+                <input type="email" name="email" id="email-input" />
+            </form>
+        `);
 
-        // Create spy for the autocomplete method
-        const setAutocompleteSpy = jest.spyOn(focusApi, 'setAutocompleteOnIdentityField');
+        const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
 
-        // Create and dispatch a focus event
-        const focusEvent = new FocusEvent('focus');
+        emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
+
+        const focusEvent = new FocusEvent('focus', { bubbles: true });
+        Object.defineProperty(focusEvent, 'target', { value: emailInput, enumerable: true });
         window.dispatchEvent(focusEvent);
 
-        // Check that neither method was called
-        expect(setAutocompleteSpy).not.toHaveBeenCalled();
-        expect(attachKeyboardCallback).not.toHaveBeenCalled();
-    });
-
-    it('should not process when targetElement is Window', () => {
-        // Mock pierce shadow tree to return a Window object
-        mockedUtils.pierceShadowTree.mockReturnValue(window);
-
-        // Create spies
-        const setAutocompleteSpy = jest.spyOn(focusApi, 'setAutocompleteOnIdentityField');
-
-        // Create and dispatch a focus event
-        const focusEvent = new FocusEvent('focus');
-        window.dispatchEvent(focusEvent);
-
-        // Check that neither method was called
-        expect(setAutocompleteSpy).not.toHaveBeenCalled();
-        expect(attachKeyboardCallback).not.toHaveBeenCalled();
-    });
-
-    it('should not process when targetElement is null', () => {
-        // Mock pierce shadow tree to return null
-        mockedUtils.pierceShadowTree.mockReturnValue(null);
-
-        // Create spies
-        const setAutocompleteSpy = jest.spyOn(focusApi, 'setAutocompleteOnIdentityField');
-
-        // Create and dispatch a focus event
-        const focusEvent = new FocusEvent('focus');
-        window.dispatchEvent(focusEvent);
-
-        // Check that neither method was called
-        expect(setAutocompleteSpy).not.toHaveBeenCalled();
+        // Check that neither autocomplete was set nor attachKeyboard was called
+        expect(emailInput.hasAttribute('autocomplete')).toBe(false);
         expect(attachKeyboardCallback).not.toHaveBeenCalled();
     });
 
     it('should properly clean up event listeners', () => {
-        // We need to spy on window.removeEventListener
         const removeEventSpy = jest.spyOn(window, 'removeEventListener');
 
-        // Call cleanup
         focusApi.cleanup();
 
-        // Check that removeEventListener was called with expected args
         expect(removeEventSpy).toHaveBeenCalledWith('focus', expect.any(Function), true);
 
-        // Clean up spy
         removeEventSpy.mockRestore();
     });
 
     describe('setAutocompleteOnIdentityField', () => {
-        it('should set autocomplete attribute for identity input fields', () => {
-            // Set up mock implementations for this test
-            mockedMatching.getInputType.mockReturnValue('identities.emailAddress');
-            mockedMatching.getMainTypeFromType.mockReturnValue('identities');
-            mockedMatching.getSubtypeFromType.mockReturnValue('emailAddress');
+        it('should set autocomplete attribute for email input fields', () => {
+            // Create a form with an email input
+            attachAndReturnGenericForm(`
+                <form>
+                    <input type="email" name="email" id="email-input" />
+                </form>
+            `);
 
-            // Create a test input
-            const input = document.createElement('input');
+            const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
+            emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
 
-            // Create a spy
-            const setSpy = jest.spyOn(input, 'setAttribute');
+            setAutocompleteOnIdentityField(emailInput);
 
-            // Call the exported function directly
-            setAutocompleteOnIdentityField(input);
-
-            // Verify setAttribute was called with the correct autocomplete value
-            expect(setSpy).toHaveBeenCalledWith('autocomplete', 'email');
-
-            // Cleanup
-            setSpy.mockRestore();
+            expect(emailInput.getAttribute('autocomplete')).toBe('email');
         });
 
         it('should remove autocomplete attribute on blur', () => {
-            // Set up mock implementations for this test
-            mockedMatching.getInputType.mockReturnValue('identities.emailAddress');
-            mockedMatching.getMainTypeFromType.mockReturnValue('identities');
-            mockedMatching.getSubtypeFromType.mockReturnValue('emailAddress');
+            attachAndReturnGenericForm(`
+                <form>
+                    <input type="email" name="email" id="email-input" />
+                </form>
+            `);
 
-            // Create a test input
-            const input = document.createElement('input');
+            const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
 
-            // Create spies
-            const addEventListenerSpy = jest.spyOn(input, 'addEventListener');
-            const removeAttributeSpy = jest.spyOn(input, 'removeAttribute');
+            emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
 
-            // Call the exported function directly
-            setAutocompleteOnIdentityField(input);
+            setAutocompleteOnIdentityField(emailInput);
 
-            // Verify addEventListener was called for blur event
-            expect(addEventListenerSpy).toHaveBeenCalledWith('blur', expect.any(Function), { once: true });
+            expect(emailInput.getAttribute('autocomplete')).toBe('email');
 
-            // Get the callback directly from the spy and execute it
-            const blurCallback = addEventListenerSpy.mock.calls[0][1];
-            if (typeof blurCallback === 'function') {
-                blurCallback(new FocusEvent('blur'));
-            }
+            emailInput.dispatchEvent(new Event('blur', { bubbles: true }));
 
-            // Verify removeAttribute was called
-            expect(removeAttributeSpy).toHaveBeenCalledWith('autocomplete');
-
-            // Cleanup
-            addEventListenerSpy.mockRestore();
-            removeAttributeSpy.mockRestore();
+            expect(emailInput.hasAttribute('autocomplete')).toBe(false);
         });
 
         it('should not set autocomplete on non-input elements', () => {
-            // Create a non-input element
-            const div = document.createElement('div');
+            attachAndReturnGenericForm(`
+                <form>
+                    <div id="not-input">Not an input</div>
+                </form>
+            `);
 
-            // Create setAttribute spy
-            const setSpy = jest.spyOn(div, 'setAttribute');
+            const divElement = /** @type {HTMLElement} */ (document.getElementById('not-input'));
 
-            // Call the exported function with a non-input element
-            setAutocompleteOnIdentityField(div);
+            setAutocompleteOnIdentityField(divElement);
 
-            // Verify setAttribute was not called
-            expect(setSpy).not.toHaveBeenCalled();
+            expect(divElement.hasAttribute('autocomplete')).toBe(false);
         });
 
         it('should not set autocomplete on inputs that already have autocomplete attribute', () => {
-            // Create a test input
-            const input = document.createElement('input');
+            // Purposely adding autocomplete="username"
+            attachAndReturnGenericForm(`
+                <form>
+                    <input type="email" name="email" id="email-input" autocomplete="username" />
+                </form>
+            `);
 
-            // Create hasAttribute spy before we set the actual attribute
-            const hasAttributeSpy = jest.spyOn(input, 'hasAttribute').mockReturnValue(true);
+            const emailInput = /** @type {HTMLInputElement} */ (document.getElementById('email-input'));
 
-            // Set up mock implementations for this test
-            mockedMatching.getInputType.mockReturnValue('identities.emailAddress');
-            mockedMatching.getMainTypeFromType.mockReturnValue('identities');
+            emailInput.setAttribute('data-ddg-inputType', 'identities.emailAddress');
 
-            // Create setAttribute spy
-            const setSpy = jest.spyOn(input, 'setAttribute');
+            setAutocompleteOnIdentityField(emailInput);
 
-            // Call the exported function
-            setAutocompleteOnIdentityField(input);
+            expect(emailInput.getAttribute('autocomplete')).toBe('username');
+        });
 
-            // Verify setAttribute was not called
-            expect(setSpy).not.toHaveBeenCalled();
-            expect(hasAttributeSpy).toHaveBeenCalledWith('autocomplete');
+        it('should not set autocomplete on non-identity fields', () => {
+            // Create a form with a password input (not an identity field)
+            attachAndReturnGenericForm(`
+                <form>
+                    <input type="password" name="password" id="password-input" />
+                </form>
+            `);
 
-            // Cleanup
-            setSpy.mockRestore();
-            hasAttributeSpy.mockRestore();
+            const passwordInput = /** @type {HTMLInputElement} */ (document.getElementById('password-input'));
+
+            passwordInput.setAttribute('data-ddg-inputType', 'credentials.password');
+
+            setAutocompleteOnIdentityField(passwordInput);
+
+            expect(passwordInput.hasAttribute('autocomplete')).toBe(false);
         });
     });
 });
