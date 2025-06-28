@@ -15,7 +15,10 @@ jobs:
                   node-version-file: '.nvmrc'
             - uses: actions/cache@v3
               with:
-                  path: ~/.npm
+                  path: |
+                      ~/.npm
+                      node_modules
+                      packages/*/node_modules
                   key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-node-
@@ -31,8 +34,20 @@ jobs:
               run: 'npm run test:unit'
             - name: 'Password unit tests'
               run: 'npm run test:passwords'
+            - name: Cache Playwright browsers
+              uses: actions/cache@v3
+              id: playwright-cache
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-playwright-
             - name: Install Playwright + DEPS
               run: npx playwright install --with-deps
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
+            - name: Install only system dependencies if browsers are cached
+              run: npx playwright install-deps
+              if: steps.playwright-cache.outputs.cache-hit == 'true'
             - name: 'Install dependencies for CI integration tests'
               run: sudo apt-get install xvfb
             - run: npm run test:integration:ci
