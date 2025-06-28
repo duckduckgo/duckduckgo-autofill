@@ -272,9 +272,7 @@ class InterfacePrototype {
      * @returns {Object}
      */
     initGlobalFocusHandler(forms) {
-        return initFocusApi(forms, this.settings, this.globalConfig.isIOS, ({ form, element }) =>
-            this.attachKeyboard({ device: this, form, element }),
-        );
+        return initFocusApi(forms, this.settings, ({ form, element }) => this.attachKeyboard({ device: this, form, element }));
     }
 
     async startInit() {

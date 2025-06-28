@@ -66,24 +66,25 @@ export function setAutocompleteOnIdentityField(element) {
  * Handles focus events for form elements
  * @param {Map} forms - Collection of form objects
  * @param {object} settings - Settings object containing feature toggles
- * @param {boolean} isIOS - Whether the device is iOS
  * @param {Function} attachKeyboardCallback - Callback function to attach keyboard
  * @param {FocusEvent} e - The focus event
  * @private
  */
-export function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback, e) {
+export function handleFocusEvent(forms, settings, attachKeyboardCallback, e) {
     // Check if any form is currently autofilling
     const isAnyFormAutofilling = [...forms.values()].some((form) => form.isAutofilling);
     if (isAnyFormAutofilling) return;
 
     const targetElement = pierceShadowTree(e);
 
-    if (!isIOS || !targetElement || targetElement instanceof Window) return;
+    // Skip if we don't have a valid target element
+    if (!targetElement || targetElement instanceof Window) return;
     // Find the form that has focus, may be undefined if no form has focus
     const form = [...forms.values()].find((form) => form.hasFocus());
 
     if (settings.featureToggles.input_focus_api) {
-        // Note: form can be undefined here if no form has focus - NativeUIController::attachKeyboard handles this case
+        // Note: form can be undefined here if no form has focus
+        // NativeUIController::attachKeyboardCallback handles this case
         attachKeyboardCallback({ form, element: targetElement });
     }
 
@@ -96,13 +97,12 @@ export function handleFocusEvent(forms, settings, isIOS, attachKeyboardCallback,
  * Initializes the focus API
  * @param {Map} forms - Collection of form objects
  * @param {object} settings - Settings object containing feature toggles
- * @param {boolean} isIOS - Whether the device is iOS
  * @param {Function} attachKeyboardCallback - Callback function to attach keyboard
  * @returns {Object} - The focus API methods
  */
-export function initFocusApi(forms, settings, isIOS, attachKeyboardCallback) {
+export function initFocusApi(forms, settings, attachKeyboardCallback) {
     // Set up the global focus event listener
-    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, isIOS, attachKeyboardCallback);
+    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, attachKeyboardCallback);
 
     window.addEventListener('focus', boundHandleFocusEvent, true);
 

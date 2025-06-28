@@ -50,7 +50,7 @@ describe('initFocusApi', () => {
         attachKeyboardCallback = jest.fn();
 
         // Initialize the API with test values
-        focusApi = initFocusApi(forms, settings, true, attachKeyboardCallback);
+        focusApi = initFocusApi(forms, settings, attachKeyboardCallback);
     });
 
     afterEach(() => {
@@ -72,7 +72,7 @@ describe('initFocusApi', () => {
         const addEventSpy = jest.spyOn(window, 'addEventListener');
 
         // Initialize the focus API
-        initFocusApi(forms, settings, true, attachKeyboardCallback);
+        initFocusApi(forms, settings, attachKeyboardCallback);
 
         // Check that addEventListener was called with expected args
         expect(addEventSpy).toHaveBeenCalledWith('focus', expect.any(Function), true);
@@ -102,7 +102,7 @@ describe('initFocusApi', () => {
 
         // Reinitialize the API
         focusApi.cleanup();
-        focusApi = initFocusApi(forms, settings, true, attachKeyboardCallback);
+        focusApi = initFocusApi(forms, settings, attachKeyboardCallback);
 
         // Mock pierce shadow tree to return our input element
         mockedUtils.pierceShadowTree.mockReturnValue(mockInputElement);
@@ -175,13 +175,25 @@ describe('initFocusApi', () => {
         expect(attachKeyboardCallback).not.toHaveBeenCalled();
     });
 
-    it('should not process non-iOS devices', () => {
-        // Reinitialize the API for non-iOS device
-        focusApi.cleanup();
-        focusApi = initFocusApi(forms, settings, false, attachKeyboardCallback);
+    it('should not process when targetElement is Window', () => {
+        // Mock pierce shadow tree to return a Window object
+        mockedUtils.pierceShadowTree.mockReturnValue(window);
 
-        // Mock pierce shadow tree to return our input element
-        mockedUtils.pierceShadowTree.mockReturnValue(mockInputElement);
+        // Create spies
+        const setAutocompleteSpy = jest.spyOn(focusApi, 'setAutocompleteOnIdentityField');
+
+        // Create and dispatch a focus event
+        const focusEvent = new FocusEvent('focus');
+        window.dispatchEvent(focusEvent);
+
+        // Check that neither method was called
+        expect(setAutocompleteSpy).not.toHaveBeenCalled();
+        expect(attachKeyboardCallback).not.toHaveBeenCalled();
+    });
+
+    it('should not process when targetElement is null', () => {
+        // Mock pierce shadow tree to return null
+        mockedUtils.pierceShadowTree.mockReturnValue(null);
 
         // Create spies
         const setAutocompleteSpy = jest.spyOn(focusApi, 'setAutocompleteOnIdentityField');
