@@ -272,6 +272,7 @@ export const providerStatusUpdatedSchema = z.object({
 });
 
 export const autofillFeatureTogglesSchema = z.object({
+    autocomplete_attribute_support: z.boolean().optional(),
     inputType_credentials: z.boolean().optional(),
     inputType_identities: z.boolean().optional(),
     inputType_creditCards: z.boolean().optional(),

@@ -11,6 +11,10 @@
       "description": "These are toggles used throughout the application to enable/disable features fully",
       "type": "object",
       "properties": {
+        "autocomplete_attribute_support": {
+          "type": "boolean",
+          "description": "Enables adding HTML autocomplete attributes to form fields to enhance mobile autofill capabilities, particularly iOS QuickType keyboard suggestions."
+        },
         "inputType_credentials": {
           "type": "boolean"
         },

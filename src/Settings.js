@@ -78,9 +78,9 @@ export class Settings {
     }
 
     /**
-     * If the platform in question is happy to derive it's 'enabled' state from the RuntimeConfiguration,
-     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
-     * support this going forward.
+     * If the platform can derive its 'enabled' state from the RuntimeConfiguration,
+     * then it should use this. Currently, only Windows supports this, but we plan to extend support
+     * to all platforms in the future.
      * @returns {Promise<boolean|null>}
      */
     async getEnabled() {
@@ -390,6 +390,7 @@ export class Settings {
         siteSpecificFeature: null,
         /** @type {AutofillFeatureToggles} */
         featureToggles: {
+            autocomplete_attribute_support: false,
             credentials_saving: false,
             password_generation: false,
             emailProtection: false,
