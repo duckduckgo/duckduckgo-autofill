@@ -870,7 +870,7 @@ const getExplicitLabelsText = (el) => {
     }
 
     // Labels with long text are likely to be noisy and lead to false positives
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65);
+    const filteredLabels = labelTextCandidates.filter((string) => string.length < 75);
 
     if (filteredLabels.length > 0) {
         return filteredLabels.join(' ');

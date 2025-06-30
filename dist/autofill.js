@@ -1240,7 +1240,7 @@ Source: "${matchedFrom}"`;
         labelTextCandidates.push(...extractElementStrings(labelledByElement));
       }
     }
-    const filteredLabels = labelTextCandidates.filter((string) => string.length < 65);
+    const filteredLabels = labelTextCandidates.filter((string) => string.length < 75);
     if (filteredLabels.length > 0) {
       return filteredLabels.join(" ");
     }
