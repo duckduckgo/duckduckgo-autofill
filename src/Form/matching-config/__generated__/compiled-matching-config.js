@@ -242,7 +242,7 @@ const matchingConfiguration = {
         emailAddress: {
           match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,
           skip: /phone|(first.?|last.?)name|number|code/iu,
-          forceUnknown: /search|filter|subject|title|\btab\b|otp/iu
+          forceUnknown: /search|filter|subject|title|\btab\b|otp|date/iu
         },
         password: {
           match: /password|passwort|kennwort|wachtwoord|mot de passe|clave|contraseña|lösenord/iu,

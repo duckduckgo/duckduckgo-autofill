@@ -252,7 +252,7 @@ const matchingConfiguration = {
                         // Swedish
                         '|\\be.?post|e.?postadress',
                     skip: 'phone|(first.?|last.?)name|number|code',
-                    forceUnknown: 'search|filter|subject|title|\\btab\\b|otp',
+                    forceUnknown: 'search|filter|subject|title|\\btab\\b|otp|date',
                 },
                 password: {
                     match:
