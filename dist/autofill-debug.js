@@ -17173,7 +17173,6 @@ Source: "${matchedFrom}"`;
       this.subtype = getSubtypeFromType(inputType);
       this.variant = getVariantFromType(inputType);
       this.tooltip = null;
-      this.contentObserver = null;
       this.getPosition = getPosition;
       const forcedVisibilityStyles = {
         display: "block",
@@ -17205,7 +17204,6 @@ Source: "${matchedFrom}"`;
       window.removeEventListener("scroll", this, { capture: true });
       this.resObs.disconnect();
       this.mutObs.disconnect();
-      this.contentObserver?.disconnect();
       this.lift();
     }
     lift() {
@@ -17359,19 +17357,17 @@ Source: "${matchedFrom}"`;
     setupSizeListener() {
       const innerNode = this.shadow.querySelector(".wrapper--data");
       if (!innerNode) return;
-      this.contentObserver = new MutationObserver(() => {
-        this.setSize("mutation observer");
+      const observer = new PerformanceObserver(() => {
+        this.setSize("performance observer");
       });
-      this.contentObserver.observe(innerNode, { childList: true, subtree: true, attributes: true });
+      observer.observe({ entryTypes: ["layout-shift", "paint"] });
     }
     setSize(caller = "none") {
-      requestAnimationFrame(() => {
-        const innerNode = this.shadow.querySelector(".wrapper--data");
-        if (!innerNode) return;
-        const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
-        this.options.setSize?.(details);
-      });
+      const innerNode = this.shadow.querySelector(".wrapper--data");
+      if (!innerNode) return;
+      const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+      console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
+      this.options.setSize?.(details);
     }
     init() {
       this.animationFrame = null;

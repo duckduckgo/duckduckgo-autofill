@@ -72,9 +72,6 @@ export class HTMLTooltip {
         this.variant = getVariantFromType(inputType);
         this.tooltip = null;
 
-        /** @type {MutationObserver | null} */
-        this.contentObserver = null;
-
         this.getPosition = getPosition;
         const forcedVisibilityStyles = {
             display: 'block',
@@ -113,7 +110,6 @@ export class HTMLTooltip {
         window.removeEventListener('scroll', this, { capture: true });
         this.resObs.disconnect();
         this.mutObs.disconnect();
-        this.contentObserver?.disconnect();
         this.lift();
     }
     lift() {
@@ -312,20 +308,19 @@ export class HTMLTooltip {
         const innerNode = this.shadow.querySelector('.wrapper--data');
         if (!innerNode) return;
 
-        this.contentObserver = new MutationObserver(() => {
-            this.setSize('mutation observer');
+        // Listen to layout and paint changes to register the size
+        const observer = new PerformanceObserver(() => {
+            this.setSize('performance observer');
         });
-        this.contentObserver.observe(innerNode, { childList: true, subtree: true, attributes: true });
+        observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
     setSize(caller = 'none') {
-        requestAnimationFrame(() => {
-            const innerNode = this.shadow.querySelector('.wrapper--data');
-            // Shouldn't be possible
-            if (!innerNode) return;
-            const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-            console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
-            this.options.setSize?.(details);
-        });
+        const innerNode = this.shadow.querySelector('.wrapper--data');
+        // Shouldn't be possible
+        if (!innerNode) return;
+        const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
+        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
+        this.options.setSize?.(details);
     }
     init() {
         this.animationFrame = null;
