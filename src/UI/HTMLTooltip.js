@@ -65,10 +65,6 @@ export class HTMLTooltip {
     constructor(inputType, getPosition, options) {
         this.options = options;
 
-        // Make sure document is clean, before attaching elements
-        const ddgAutofill = document.getElementById('ddg-autofill');
-        if (ddgAutofill) ddgAutofill.remove();
-
         this.shadow = document.createElement('ddg-autofill').attachShadow({
             mode: options.testMode ? 'open' : 'closed',
         });

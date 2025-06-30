@@ -136,7 +136,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .top-autofill .tooltip--data {
-    min-height: 100vh;
+    /* min-height: 100vh; */
 }
 
 .tooltip--data.tooltip--incontext-signup {
