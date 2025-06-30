@@ -17166,6 +17166,8 @@ Source: "${matchedFrom}"`;
       }));
       __publicField(this, "clickableButtons", /* @__PURE__ */ new Map());
       this.options = options;
+      const ddgAutofill = document.getElementById("ddg-autofill");
+      if (ddgAutofill) ddgAutofill.remove();
       this.shadow = document.createElement("ddg-autofill").attachShadow({
         mode: options.testMode ? "open" : "closed"
       });
