@@ -10325,6 +10325,38 @@ Source: "${matchedFrom}"`;
     phone: external_exports.string().optional(),
     emailAddress: external_exports.string().optional()
   });
+  var availableInputTypesSchema = external_exports.object({
+    credentials: external_exports.object({
+      username: external_exports.boolean().optional(),
+      password: external_exports.boolean().optional()
+    }).optional(),
+    identities: external_exports.object({
+      firstName: external_exports.boolean().optional(),
+      middleName: external_exports.boolean().optional(),
+      lastName: external_exports.boolean().optional(),
+      birthdayDay: external_exports.boolean().optional(),
+      birthdayMonth: external_exports.boolean().optional(),
+      birthdayYear: external_exports.boolean().optional(),
+      addressStreet: external_exports.boolean().optional(),
+      addressStreet2: external_exports.boolean().optional(),
+      addressCity: external_exports.boolean().optional(),
+      addressProvince: external_exports.boolean().optional(),
+      addressPostalCode: external_exports.boolean().optional(),
+      addressCountryCode: external_exports.boolean().optional(),
+      phone: external_exports.boolean().optional(),
+      emailAddress: external_exports.boolean().optional()
+    }).optional(),
+    creditCards: external_exports.object({
+      cardName: external_exports.boolean().optional(),
+      cardSecurityCode: external_exports.boolean().optional(),
+      expirationMonth: external_exports.boolean().optional(),
+      expirationYear: external_exports.boolean().optional(),
+      cardNumber: external_exports.boolean().optional()
+    }).optional(),
+    email: external_exports.boolean().optional(),
+    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
+    credentialsImport: external_exports.boolean().optional()
+  });
   var genericErrorSchema = external_exports.object({
     message: external_exports.string()
   });
@@ -10352,7 +10384,7 @@ Source: "${matchedFrom}"`;
     username: external_exports.string().optional(),
     password: external_exports.string().optional()
   });
-  var availableInputTypesSchema = external_exports.object({
+  var availableInputTypes1Schema = external_exports.object({
     credentials: external_exports.object({
       username: external_exports.boolean().optional(),
       password: external_exports.boolean().optional()
@@ -10404,42 +10436,15 @@ Source: "${matchedFrom}"`;
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var availableInputTypes1Schema = external_exports.object({
-    credentials: external_exports.object({
-      username: external_exports.boolean().optional(),
-      password: external_exports.boolean().optional()
-    }).optional(),
-    identities: external_exports.object({
-      firstName: external_exports.boolean().optional(),
-      middleName: external_exports.boolean().optional(),
-      lastName: external_exports.boolean().optional(),
-      birthdayDay: external_exports.boolean().optional(),
-      birthdayMonth: external_exports.boolean().optional(),
-      birthdayYear: external_exports.boolean().optional(),
-      addressStreet: external_exports.boolean().optional(),
-      addressStreet2: external_exports.boolean().optional(),
-      addressCity: external_exports.boolean().optional(),
-      addressProvince: external_exports.boolean().optional(),
-      addressPostalCode: external_exports.boolean().optional(),
-      addressCountryCode: external_exports.boolean().optional(),
-      phone: external_exports.boolean().optional(),
-      emailAddress: external_exports.boolean().optional()
-    }).optional(),
-    creditCards: external_exports.object({
-      cardName: external_exports.boolean().optional(),
-      cardSecurityCode: external_exports.boolean().optional(),
-      expirationMonth: external_exports.boolean().optional(),
-      expirationYear: external_exports.boolean().optional(),
-      cardNumber: external_exports.boolean().optional()
-    }).optional(),
-    email: external_exports.boolean().optional(),
-    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
-    credentialsImport: external_exports.boolean().optional()
-  });
   var providerStatusUpdatedSchema = external_exports.object({
     status: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]),
     credentials: external_exports.array(credentialsSchema),
-    availableInputTypes: availableInputTypes1Schema
+    availableInputTypes: availableInputTypesSchema
+  });
+  var checkCredentialsProviderStatusResultSchema = external_exports.object({
+    type: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
+    success: providerStatusUpdatedSchema,
+    error: genericErrorSchema.optional()
   });
   var autofillFeatureTogglesSchema = external_exports.object({
     inputType_credentials: external_exports.boolean().optional(),
@@ -10511,6 +10516,7 @@ Source: "${matchedFrom}"`;
       credentials: credentialsSchema.optional(),
       creditCards: creditCardObjectSchema.optional(),
       identities: identityObjectSchema.optional(),
+      availableInputTypes: availableInputTypesSchema.optional(),
       action: external_exports.union([external_exports.literal("fill"), external_exports.literal("focus"), external_exports.literal("none"), external_exports.literal("refreshAvailableInputTypes"), external_exports.literal("acceptGeneratedPassword"), external_exports.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
@@ -10521,16 +10527,11 @@ Source: "${matchedFrom}"`;
   });
   var getAvailableInputTypesResultSchema = external_exports.object({
     type: external_exports.literal("getAvailableInputTypesResponse").optional(),
-    success: availableInputTypesSchema,
+    success: availableInputTypes1Schema,
     error: genericErrorSchema.optional()
   });
   var askToUnlockProviderResultSchema = external_exports.object({
     type: external_exports.literal("askToUnlockProviderResponse").optional(),
-    success: providerStatusUpdatedSchema,
-    error: genericErrorSchema.optional()
-  });
-  var checkCredentialsProviderStatusResultSchema = external_exports.object({
-    type: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
@@ -11632,7 +11633,7 @@ Source: "${matchedFrom}"`;
             break;
           }
           case "refreshAvailableInputTypes": {
-            device.credentialsImport.refresh();
+            device.credentialsImport.refresh(resp.availableInputTypes);
             break;
           }
           case "acceptGeneratedPassword": {
@@ -16191,8 +16192,11 @@ Source: "${matchedFrom}"`;
       } catch (e) {
       }
     }
-    async refresh() {
-      await this.device.settings.refresh();
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+      this.device.settings.setAvailableInputTypes(availableInputTypes || await this.device.settings.getAvailableInputTypes());
       this.device.activeForm?.redecorateAllInputs();
       this.device.uiController?.removeTooltip("interface");
       const activeInput = this.device.activeForm?.activeInput;

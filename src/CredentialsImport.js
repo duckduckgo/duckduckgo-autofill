@@ -40,9 +40,11 @@ class CredentialsImport {
         }
     }
 
-    async refresh() {
-        // Refresh all settings (e.g availableInputTypes)
-        await this.device.settings.refresh();
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+        this.device.settings.setAvailableInputTypes(availableInputTypes || (await this.device.settings.getAvailableInputTypes()));
 
         // Re-decorate all inputs to show the input decorations
         this.device.activeForm?.redecorateAllInputs();

@@ -332,6 +332,7 @@ export interface GetAutofillDataResponse {
     credentials?: Credentials;
     creditCards?: CreditCardObject;
     identities?: IdentityObject;
+    availableInputTypes?: AvailableInputTypes;
     action:
       | "fill"
       | "focus"
@@ -462,6 +463,53 @@ export interface IdentityObject {
    */
   emailAddress?: string;
 }
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes {
+  /**
+   * maps field types and the availability of data for the current site
+   */
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+  };
+  /**
+   * true if signed in for Email Protection
+   */
+  email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
+}
 export interface GenericError {
   message: string;
 }
@@ -553,13 +601,13 @@ export interface GetAvailableInputTypesResult {
    * A string used to identify this result. It's optional
    */
   type?: "getAvailableInputTypesResponse";
-  success: AvailableInputTypes;
+  success: AvailableInputTypes1;
   error?: GenericError;
 }
 /**
  * For each main autofill types, it maps specific fields to their availability
  */
-export interface AvailableInputTypes {
+export interface AvailableInputTypes1 {
   /**
    * maps field types and the availability of data for the current site
    */
@@ -674,54 +722,7 @@ export interface AskToUnlockProviderResult {
 export interface ProviderStatusUpdated {
   status: "locked" | "unlocked";
   credentials: Credentials[];
-  availableInputTypes: AvailableInputTypes1;
-}
-/**
- * For each main autofill types, it maps specific fields to their availability
- */
-export interface AvailableInputTypes1 {
-  /**
-   * maps field types and the availability of data for the current site
-   */
-  credentials?: {
-    username?: boolean;
-    password?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  identities?: {
-    firstName?: boolean;
-    middleName?: boolean;
-    lastName?: boolean;
-    birthdayDay?: boolean;
-    birthdayMonth?: boolean;
-    birthdayYear?: boolean;
-    addressStreet?: boolean;
-    addressStreet2?: boolean;
-    addressCity?: boolean;
-    addressProvince?: boolean;
-    addressPostalCode?: boolean;
-    addressCountryCode?: boolean;
-    phone?: boolean;
-    emailAddress?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  creditCards?: {
-    cardName?: boolean;
-    cardSecurityCode?: boolean;
-    expirationMonth?: boolean;
-    expirationYear?: boolean;
-    cardNumber?: boolean;
-  };
-  /**
-   * true if signed in for Email Protection
-   */
-  email?: boolean;
-  credentialsProviderStatus?: "locked" | "unlocked";
-  credentialsImport?: boolean;
+  availableInputTypes: AvailableInputTypes;
 }
 /**
  * This is only used in macOS 10.15 Catalina

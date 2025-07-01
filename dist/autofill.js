@@ -6173,6 +6173,7 @@ Source: "${matchedFrom}"`;
   var getAutofillDataFocusResponseSchema = null;
   var getAutofillInitDataResponseSchema = null;
   var getAutofillCredentialsResultSchema = null;
+  var checkCredentialsProviderStatusResultSchema = null;
   var getIdentityResultSchema = null;
   var getCreditCardResultSchema = null;
   var emailProtectionGetIsLoggedInResultSchema = null;
@@ -6185,7 +6186,6 @@ Source: "${matchedFrom}"`;
   var storeFormDataSchema = null;
   var getAvailableInputTypesResultSchema = null;
   var askToUnlockProviderResultSchema = null;
-  var checkCredentialsProviderStatusResultSchema = null;
   var getRuntimeConfigurationResponseSchema = null;
 
   // packages/device-api/lib/device-api-call.js
@@ -7157,7 +7157,7 @@ Source: "${matchedFrom}"`;
             break;
           }
           case "refreshAvailableInputTypes": {
-            device.credentialsImport.refresh();
+            device.credentialsImport.refresh(resp.availableInputTypes);
             break;
           }
           case "acceptGeneratedPassword": {
@@ -11720,8 +11720,11 @@ Source: "${matchedFrom}"`;
       } catch (e) {
       }
     }
-    async refresh() {
-      await this.device.settings.refresh();
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+      this.device.settings.setAvailableInputTypes(availableInputTypes || await this.device.settings.getAvailableInputTypes());
       this.device.activeForm?.redecorateAllInputs();
       this.device.uiController?.removeTooltip("interface");
       const activeInput = this.device.activeForm?.activeInput;
