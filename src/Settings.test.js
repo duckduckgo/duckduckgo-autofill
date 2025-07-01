@@ -139,6 +139,7 @@ describe('Settings', () => {
         expect(settings.availableInputTypes).toMatchObject(Settings.defaults.availableInputTypes);
         expect(settings.featureToggles).toMatchInlineSnapshot(`
       {
+        "autocomplete_attribute_support": false,
         "credentials_saving": false,
         "emailProtection": false,
         "emailProtection_incontext_signup": false,

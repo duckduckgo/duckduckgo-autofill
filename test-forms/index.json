@@ -12,7 +12,7 @@
   { "html": "twitter_login.html", "expectedSubmitFalseNegatives": 1 },
   { "html": "twitter_signup.html", "expectedFailures": ["birthdayMonth", "birthdayDay", "birthdayYear"], "expectedSubmitFalseNegatives": 1 },
   { "html": "fandom_login.html" },
-  {"html": "fandom_signup.html", "expectedFailures": ["birthday"] },
+  { "html": "fandom_signup.html", "expectedFailures": ["birthday"] },
   { "html": "pinterest_login.html", "title": "Pinterest Login" },
   { "html": "pinterest_signup.html" },
   { "html": "reddit_login.html" },
@@ -567,5 +567,6 @@
   { "html": "peacocktv_payment-form.html" },
   { "html": "victoriassecret_payment-form.html" },
   { "html": "uhaul_payment-form.html" },
-  { "html": "sielte_change-password.html" }
+  { "html": "sielte_change-password.html" },
+  { "html": "myimmitracker_com_new.html", "title": "Immitracker - Track visa and immigration applications for Canada and Australia" }
 ]

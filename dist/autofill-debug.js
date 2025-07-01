@@ -383,7 +383,7 @@
           },
           emailAddress: {
             match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,
-            skip: /phone|(first.?|last.?)name|number|code/iu,
+            skip: /phone|(first.?|last.?)name|number|code|\bdate\b/iu,
             forceUnknown: /search|filter|subject|title|\btab\b|otp/iu
           },
           password: {
@@ -10445,6 +10445,7 @@ Source: "${matchedFrom}"`;
     availableInputTypes: availableInputTypes1Schema
   });
   var autofillFeatureTogglesSchema = external_exports.object({
+    autocomplete_attribute_support: external_exports.boolean().optional(),
     inputType_credentials: external_exports.boolean().optional(),
     inputType_identities: external_exports.boolean().optional(),
     inputType_creditCards: external_exports.boolean().optional(),
@@ -12692,9 +12693,9 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
-     * If the platform in question is happy to derive it's 'enabled' state from the RuntimeConfiguration,
-     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
-     * support this going forward.
+     * If the platform can derive its 'enabled' state from the RuntimeConfiguration,
+     * then it should use this. Currently, only Windows supports this, but we plan to extend support
+     * to all platforms in the future.
      * @returns {Promise<boolean|null>}
      */
     async getEnabled() {
@@ -12979,6 +12980,7 @@ Source: "${matchedFrom}"`;
     siteSpecificFeature: null,
     /** @type {AutofillFeatureToggles} */
     featureToggles: {
+      autocomplete_attribute_support: false,
       credentials_saving: false,
       password_generation: false,
       emailProtection: false,
@@ -13324,6 +13326,72 @@ Source: "${matchedFrom}"`;
       filledForm?.submitHandler("performance observer");
     });
     observer.observe({ entryTypes: ["resource"] });
+  }
+
+  // src/DeviceInterface/initFocusApi.js
+  function getAutocompleteValueFromInputType(inputType) {
+    const subtype = getSubtypeFromType(inputType);
+    const autocompleteMap = {
+      // Identities
+      emailAddress: "email",
+      fullName: "name",
+      firstName: "given-name",
+      middleName: "additional-name",
+      lastName: "family-name",
+      phone: "tel",
+      addressStreet: "street-address",
+      addressStreet2: "address-line2",
+      addressCity: "address-level2",
+      addressProvince: "address-level1",
+      addressPostalCode: "postal-code",
+      addressCountryCode: "country"
+    };
+    return autocompleteMap[subtype];
+  }
+  function setAutocompleteOnIdentityField(element) {
+    if (!(element instanceof HTMLInputElement) || element.hasAttribute("autocomplete")) {
+      return;
+    }
+    const inputType = getInputType(element);
+    const mainType = getMainTypeFromType(inputType);
+    if (mainType !== "identities") {
+      return;
+    }
+    const autocompleteValue = getAutocompleteValueFromInputType(inputType);
+    if (autocompleteValue) {
+      element.setAttribute("autocomplete", autocompleteValue);
+      element.addEventListener(
+        "blur",
+        () => {
+          element.removeAttribute("autocomplete");
+        },
+        { once: true }
+      );
+    }
+  }
+  function handleFocusEvent(forms, settings, attachKeyboardCallback, e) {
+    const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
+    if (isAnyFormAutofilling) return;
+    const targetElement = pierceShadowTree(e);
+    if (!targetElement || targetElement instanceof Window) return;
+    const form = [...forms.values()].find((form2) => form2.hasFocus());
+    if (settings.featureToggles.input_focus_api) {
+      attachKeyboardCallback({ form, element: targetElement });
+    }
+    if (settings.featureToggles.autocomplete_attribute_support) {
+      setAutocompleteOnIdentityField(targetElement);
+    }
+  }
+  function initFocusApi(forms, settings, attachKeyboardCallback) {
+    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, attachKeyboardCallback);
+    window.addEventListener("focus", boundHandleFocusEvent, true);
+    return {
+      setAutocompleteOnIdentityField,
+      handleFocusEvent: boundHandleFocusEvent,
+      cleanup: () => {
+        window.removeEventListener("focus", boundHandleFocusEvent, true);
+      }
+    };
   }
 
   // src/EmailProtection.js
@@ -16228,6 +16296,8 @@ Source: "${matchedFrom}"`;
       __publicField(this, "passwordGenerator", new PasswordGenerator());
       __publicField(this, "emailProtection", new EmailProtection(this));
       __publicField(this, "credentialsImport", new CredentialsImport(this));
+      /** @type {Object | null} */
+      __publicField(this, "focusApi", null);
       /** @type {import("../InContextSignup.js").InContextSignup | null} */
       __publicField(this, "inContextSignup", null);
       /** @type {import("../ThirdPartyProvider.js").ThirdPartyProvider | null} */
@@ -16287,6 +16357,7 @@ Source: "${matchedFrom}"`;
     removeAutofillUIFromPage(reason) {
       this.uiController?.destroy();
       this._scannerCleanup?.(reason);
+      this.focusApi?.cleanup?.();
     }
     get hasLocalAddresses() {
       return !!(__privateGet(this, _addresses)?.privateAddress && __privateGet(this, _addresses)?.personalAddress);
@@ -16402,21 +16473,12 @@ Source: "${matchedFrom}"`;
       return __privateGet(this, _data6).creditCards;
     }
     /**
-     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     * Initializes a global focus event handler that handles iOS keyboard and autocomplete functionality
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - Collection of form objects to monitor
+     * @returns {Object}
      */
     initGlobalFocusHandler(forms) {
-      window.addEventListener(
-        "focus",
-        (e) => {
-          const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
-          const form = [...forms.values()].find((form2) => form2.hasFocus());
-          const targetElement = pierceShadowTree(e);
-          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
-            this.attachKeyboard({ device: this, form, element: targetElement });
-          }
-        },
-        true
-      );
+      return initFocusApi(forms, this.settings, ({ form, element }) => this.attachKeyboard({ device: this, form, element }));
     }
     async startInit() {
       if (this.isInitializationStarted) return;
@@ -16432,8 +16494,8 @@ Source: "${matchedFrom}"`;
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
       }
-      if (this.settings.featureToggles.input_focus_api) {
-        this.initGlobalFocusHandler(this.scanner.forms);
+      if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
+        this.focusApi = this.initGlobalFocusHandler(this.scanner.forms);
       }
     }
     async init() {
