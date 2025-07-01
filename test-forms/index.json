@@ -555,5 +555,6 @@
   { "html": "peacocktv_payment-form.html" },
   { "html": "victoriassecret_payment-form.html" },
   { "html": "uhaul_payment-form.html" },
-  { "html": "sielte_change-password.html" }
+  { "html": "sielte_change-password.html" },
+  { "html": "myimmitracker_com_new.html", "title": "Immitracker - Track visa and immigration applications for Canada and Australia" }
 ]
