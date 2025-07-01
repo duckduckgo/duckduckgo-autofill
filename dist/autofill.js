@@ -379,7 +379,7 @@
           },
           emailAddress: {
             match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,
-            skip: /phone|(first.?|last.?)name|number|code/iu,
+            skip: /phone|(first.?|last.?)name|number|code|\bdate\b/iu,
             forceUnknown: /search|filter|subject|title|\btab\b|otp/iu
           },
           password: {
