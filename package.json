@@ -47,7 +47,7 @@
     "@types/jest": "^29.5.11",
     "@types/node": "^22.15.31",
     "asana": "^1.0.2",
-    "babel-jest": "^30.0.0",
+    "babel-jest": "^30.0.2",
     "chokidar-cli": "^3.0.0",
     "esbuild": "^0.25.5",
     "eslint": "^9.28.0",
