@@ -12887,15 +12887,14 @@ Source: "${matchedFrom}"`;
       const innerNode = this.shadow.querySelector(".wrapper--data");
       if (!innerNode) return;
       const observer = new PerformanceObserver(() => {
-        this.setSize("performance observer");
+        this.setSize();
       });
       observer.observe({ entryTypes: ["layout-shift", "paint"] });
     }
-    setSize(caller = "none") {
+    setSize() {
       const innerNode = this.shadow.querySelector(".wrapper--data");
       if (!innerNode) return;
       const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-      console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
       this.options.setSize?.(details);
     }
     init() {
@@ -12911,13 +12910,14 @@ Source: "${matchedFrom}"`;
         ]).then(() => {
           this.tooltip.parentNode.removeAttribute("hidden");
           this.checkPosition();
+          this.setSize();
         });
       });
       this.append();
       this.resObs.observe(document.body);
       this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
       window.addEventListener("scroll", this, { capture: true });
-      this.setSize("init");
+      this.setSize();
       if (typeof this.options.setSize === "function") {
         this.setupSizeListener();
       }

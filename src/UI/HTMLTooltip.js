@@ -311,16 +311,15 @@ export class HTMLTooltip {
 
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
-            this.setSize('performance observer');
+            this.setSize();
         });
         observer.observe({ entryTypes: ['layout-shift', 'paint'] });
     }
-    setSize(caller = 'none') {
+    setSize() {
         const innerNode = this.shadow.querySelector('.wrapper--data');
         // Shouldn't be possible
         if (!innerNode) return;
         const details = { height: innerNode.clientHeight, width: innerNode.clientWidth };
-        console.log(`DEEP: options.setSize called in setSize from ${caller}`, details);
         this.options.setSize?.(details);
     }
     init() {
@@ -339,6 +338,11 @@ export class HTMLTooltip {
             ]).then(() => {
                 this.tooltip.parentNode.removeAttribute('hidden');
                 this.checkPosition();
+
+                // (Windows_ When chrome is forced to re-calculate style
+                // it seems to be a good point for us to set size as well, as performanceobserver
+                // doesn't seem to be triggered.
+                this.setSize();
             });
         });
 
@@ -347,7 +351,7 @@ export class HTMLTooltip {
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
 
-        this.setSize('init');
+        this.setSize();
 
         if (typeof this.options.setSize === 'function') {
             this.setupSizeListener();
