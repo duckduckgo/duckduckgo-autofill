@@ -1,7 +1,9 @@
-const { readFileSync, writeFileSync, copyFileSync } = require('fs');
+const { readFileSync, writeFileSync, copyFileSync, readdirSync } = require('fs');
 const { join } = require('path');
 const cwd = join(__dirname, '..');
 const filepath = (...path) => join(cwd, ...path);
+const fs = require('fs');
+
 const srcPath = 'src';
 const distPath = 'dist';
 
@@ -9,6 +11,7 @@ copyAutofillCSS();
 copyAutofillScript();
 copyAutofillHTML();
 copySharedCredentials();
+copyImageAssets();
 
 function copyAutofillCSS() {
     const stylesPath = filepath(distPath, 'autofill.css');
@@ -66,4 +69,23 @@ function copyAutofillScript() {
 
     // extension output of integration-test/extension/autofill-debug.js
     writeFileSync(filepath('integration-test', 'extension', debugScriptFileName), replacedDebug);
+}
+
+function copyImageAssets() {
+    const imgSrcPath = filepath(srcPath, 'UI', 'img');
+    const imgRootPath = filepath('img');
+
+    // Ensure the destination directory exists
+    if (!fs.existsSync(imgRootPath)) {
+        fs.mkdirSync(imgRootPath, { recursive: true });
+    }
+
+    console.log(`This is for debug-ui assets`);
+    const images = readdirSync(imgSrcPath);
+    images.forEach((image) => {
+        const srcImagePath = join(imgSrcPath, image);
+        const rootImagePath = join(imgRootPath, image);
+        copyFileSync(srcImagePath, rootImagePath);
+        console.log(`✅ Copied ${image} to ${rootImagePath}`);
+    });
 }
