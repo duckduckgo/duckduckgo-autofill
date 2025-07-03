@@ -11631,6 +11631,10 @@ Source: "${matchedFrom}"`;
             form.activeInput?.focus();
             break;
           }
+          case "refreshAvailableInputTypes": {
+            device.credentialsImport.refresh();
+            break;
+          }
           case "acceptGeneratedPassword": {
             form.autofillData(
               {
@@ -17413,6 +17417,8 @@ Source: "${matchedFrom}"`;
       }
     }
     setupSizeListener() {
+      const innerNode = this.shadow.querySelector(".wrapper--data");
+      if (!innerNode) return;
       const observer = new PerformanceObserver(() => {
         this.setSize();
       });
@@ -17437,6 +17443,7 @@ Source: "${matchedFrom}"`;
         ]).then(() => {
           this.tooltip.parentNode.removeAttribute("hidden");
           this.checkPosition();
+          this.setSize();
         });
       });
       this.append();

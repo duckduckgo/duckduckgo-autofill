@@ -64,6 +64,7 @@ export class HTMLTooltip {
      */
     constructor(inputType, getPosition, options) {
         this.options = options;
+
         this.shadow = document.createElement('ddg-autofill').attachShadow({
             mode: options.testMode ? 'open' : 'closed',
         });
@@ -71,6 +72,7 @@ export class HTMLTooltip {
         this.subtype = getSubtypeFromType(inputType);
         this.variant = getVariantFromType(inputType);
         this.tooltip = null;
+
         this.getPosition = getPosition;
         const forcedVisibilityStyles = {
             display: 'block',
@@ -304,6 +306,9 @@ export class HTMLTooltip {
         }
     }
     setupSizeListener() {
+        const innerNode = this.shadow.querySelector('.wrapper--data');
+        if (!innerNode) return;
+
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
             this.setSize();
@@ -333,6 +338,11 @@ export class HTMLTooltip {
             ]).then(() => {
                 this.tooltip.parentNode.removeAttribute('hidden');
                 this.checkPosition();
+
+                // (Windows_ When chrome is forced to re-calculate style
+                // it seems to be a good point for us to set size as well, as performanceobserver
+                // doesn't seem to be triggered.
+                this.setSize();
             });
         });
 
@@ -340,6 +350,7 @@ export class HTMLTooltip {
         this.resObs.observe(document.body);
         this.mutObs.observe(document.body, { childList: true, subtree: true, attributes: true });
         window.addEventListener('scroll', this, { capture: true });
+
         this.setSize();
 
         if (typeof this.options.setSize === 'function') {
