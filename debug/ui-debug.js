@@ -80,8 +80,8 @@ const creditCards = [
             new CreditCardTooltipItem({
                 id: 'a',
                 displayNumber: '1234',
-                cardName: 'monzo',
-                title: 'Monzo',
+                cardName: 'generic',
+                title: 'Generic',
                 expirationMonth: '1',
                 expirationYear: '2025',
                 paymentProvider: 'whatever',
