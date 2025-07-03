@@ -94,6 +94,7 @@
   overflow-y: auto;
 }
 .top-autofill .tooltip--data {
+  min-height: 100vh;
 }
 .tooltip--data.tooltip--incontext-signup {
   width: 360px;
