@@ -345,7 +345,7 @@ export const getAutofillDataRequestSchema = z.object({
     inputType: z.string(),
     mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
     subType: z.string(),
-    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup")]).optional(),
+    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup"), z.literal("credentialsImport")]).optional(),
     serializedInputContext: z.string().optional(),
     triggerContext: triggerContextSchema.optional()
 });

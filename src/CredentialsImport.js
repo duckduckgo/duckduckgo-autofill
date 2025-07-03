@@ -1,8 +1,10 @@
 import {
     CloseAutofillParentCall,
     CredentialsImportFlowPermanentlyDismissedCall,
+    GetAutofillDataCall,
     StartCredentialsImportFlowCall,
 } from './deviceApiCalls/__generated__/deviceApiCalls.js';
+import { getInputType, getMainTypeFromType, getSubtypeFromType } from './Form/matching.js';
 
 /**
  * Use this as place to store any state or functionality related to password import promotion
@@ -58,6 +60,31 @@ class CredentialsImport {
 
         // Then focus to open the tooltip
         activeInput?.focus();
+
+        if (
+            this.device.globalConfig.isMobileApp &&
+            (this.device.settings.availableInputTypes.credentials?.username ||
+                this.device.settings.availableInputTypes.credentials?.password)
+        ) {
+            if (!activeInput) return;
+
+            const inputType = getInputType(activeInput);
+            const mainType = getMainTypeFromType(inputType);
+            const subType = getSubtypeFromType(inputType);
+
+            if (mainType === 'unknown') {
+                throw new Error('unreachable, should not be here if (mainType === "unknown")');
+            }
+
+            this.device.deviceApi.request(
+                new GetAutofillDataCall({
+                    inputType,
+                    mainType,
+                    subType,
+                    trigger: 'credentialsImport',
+                }),
+            );
+        }
     }
 
     async started() {

@@ -10506,7 +10506,7 @@ Source: "${matchedFrom}"`;
     inputType: external_exports.string(),
     mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards")]),
     subType: external_exports.string(),
-    trigger: external_exports.union([external_exports.literal("userInitiated"), external_exports.literal("autoprompt"), external_exports.literal("postSignup")]).optional(),
+    trigger: external_exports.union([external_exports.literal("userInitiated"), external_exports.literal("autoprompt"), external_exports.literal("postSignup"), external_exports.literal("credentialsImport")]).optional(),
     serializedInputContext: external_exports.string().optional(),
     triggerContext: triggerContextSchema.optional()
   });
@@ -16202,6 +16202,23 @@ Source: "${matchedFrom}"`;
       const activeInput = this.device.activeForm?.activeInput;
       activeInput?.blur();
       activeInput?.focus();
+      if (this.device.globalConfig.isMobileApp && (this.device.settings.availableInputTypes.credentials?.username || this.device.settings.availableInputTypes.credentials?.password)) {
+        if (!activeInput) return;
+        const inputType = getInputType(activeInput);
+        const mainType = getMainTypeFromType(inputType);
+        const subType = getSubtypeFromType(inputType);
+        if (mainType === "unknown") {
+          throw new Error('unreachable, should not be here if (mainType === "unknown")');
+        }
+        this.device.deviceApi.request(
+          new GetAutofillDataCall({
+            inputType,
+            mainType,
+            subType,
+            trigger: "credentialsImport"
+          })
+        );
+      }
     }
     async started() {
       this.device.deviceApi.notify(new StartCredentialsImportFlowCall({}));
@@ -19081,7 +19098,7 @@ ${this.options.css}
         return result;
       }
     };
-    const deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
+    const deviceApi = new DeviceApi(loggingTransport);
     const settings = new Settings(globalConfig, deviceApi);
     if (globalConfig.isWindows) {
       if (globalConfig.isTopFrame) {
