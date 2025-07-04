@@ -53,19 +53,9 @@ class CredentialsImport {
         this.device.uiController?.removeTooltip('interface');
 
         const activeInput = this.device.activeForm?.activeInput;
-        // First blur to make sure we're not already in focus
-        activeInput?.blur();
-
-        // Then focus to open the tooltip
-        activeInput?.focus();
 
         const availableCredentials = this.device.settings.availableInputTypes.credentials;
-        if (
-            this.device.activeForm &&
-            activeInput &&
-            this.device.globalConfig.isMobileApp &&
-            (availableCredentials?.username || availableCredentials?.password)
-        ) {
+        if (this.device.activeForm && activeInput && (availableCredentials?.username || availableCredentials?.password)) {
             // On mobile we explicitly attach the tooltip, as focus or click events are not enough to trigger the tooltip
             this.device.attachTooltip({
                 form: this.device.activeForm,

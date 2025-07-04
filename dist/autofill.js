@@ -11795,10 +11795,8 @@ Source: "${matchedFrom}"`;
       this.device.activeForm?.redecorateAllInputs();
       this.device.uiController?.removeTooltip("interface");
       const activeInput = this.device.activeForm?.activeInput;
-      activeInput?.blur();
-      activeInput?.focus();
       const availableCredentials = this.device.settings.availableInputTypes.credentials;
-      if (this.device.activeForm && activeInput && this.device.globalConfig.isMobileApp && (availableCredentials?.username || availableCredentials?.password)) {
+      if (this.device.activeForm && activeInput && (availableCredentials?.username || availableCredentials?.password)) {
         this.device.attachTooltip({
           form: this.device.activeForm,
           input: activeInput,
