@@ -59,13 +59,14 @@ class CredentialsImport {
         // Then focus to open the tooltip
         activeInput?.focus();
 
+        const availableCredentials = this.device.settings.availableInputTypes.credentials;
         if (
             this.device.activeForm &&
             activeInput &&
             this.device.globalConfig.isMobileApp &&
-            (this.device.settings.availableInputTypes.credentials?.username ||
-                this.device.settings.availableInputTypes.credentials?.password)
+            (availableCredentials?.username || availableCredentials?.password)
         ) {
+            // On mobile we explicitly attach the tooltip, as focus or click events are not enough to trigger the tooltip
             this.device.attachTooltip({
                 form: this.device.activeForm,
                 input: activeInput,

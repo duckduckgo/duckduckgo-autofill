@@ -16270,7 +16270,8 @@ Source: "${matchedFrom}"`;
       const activeInput = this.device.activeForm?.activeInput;
       activeInput?.blur();
       activeInput?.focus();
-      if (this.device.activeForm && activeInput && this.device.globalConfig.isMobileApp && (this.device.settings.availableInputTypes.credentials?.username || this.device.settings.availableInputTypes.credentials?.password)) {
+      const availableCredentials = this.device.settings.availableInputTypes.credentials;
+      if (this.device.activeForm && activeInput && this.device.globalConfig.isMobileApp && (availableCredentials?.username || availableCredentials?.password)) {
         this.device.attachTooltip({
           form: this.device.activeForm,
           input: activeInput,
