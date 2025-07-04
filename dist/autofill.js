@@ -11730,22 +11730,16 @@ Source: "${matchedFrom}"`;
       const activeInput = this.device.activeForm?.activeInput;
       activeInput?.blur();
       activeInput?.focus();
-      if (this.device.globalConfig.isMobileApp && (this.device.settings.availableInputTypes.credentials?.username || this.device.settings.availableInputTypes.credentials?.password)) {
-        if (!activeInput) return;
-        const inputType = getInputType(activeInput);
-        const mainType = getMainTypeFromType(inputType);
-        const subType = getSubtypeFromType(inputType);
-        if (mainType === "unknown") {
-          throw new Error('unreachable, should not be here if (mainType === "unknown")');
-        }
-        this.device.deviceApi.request(
-          new GetAutofillDataCall({
-            inputType,
-            mainType,
-            subType,
-            trigger: "credentialsImport"
-          })
-        );
+      if (this.device.activeForm && activeInput && this.device.globalConfig.isMobileApp && (this.device.settings.availableInputTypes.credentials?.username || this.device.settings.availableInputTypes.credentials?.password)) {
+        this.device.attachTooltip({
+          form: this.device.activeForm,
+          input: activeInput,
+          click: null,
+          trigger: "credentialsImport",
+          triggerMetaData: {
+            type: "transactional"
+          }
+        });
       }
     }
     async started() {
