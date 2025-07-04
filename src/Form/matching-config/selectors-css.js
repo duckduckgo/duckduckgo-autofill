@@ -10,8 +10,8 @@ const submitButtonSelector = `
 input[type=submit],
 input[type=button],
 input[type=image],
-button:not([role=switch]):not([role=link]),
-[role=button],
+button:not([role=switch]):not([role=link]):not([aria-label="clear" i]),
+[role=button]:not([aria-label="clear" i]),
 a[href="#"][id*=button i],
 a[href="#"][id*=btn i]`;
 
