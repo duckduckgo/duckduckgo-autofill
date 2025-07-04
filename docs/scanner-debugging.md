@@ -4,14 +4,14 @@ This guide covers debugging the Scanner functionality and using the Save Form fe
 
 ## Quick Start
 
-Use the `debugform` script that automatically starts both servers and opens your browser:
+Use the `debug-form` script that automatically starts both servers and opens your browser:
 
 ```bash
 # Start with no specific form
-npm run debugform
+npm run debug-form
 
 # Start with a specific form loaded
-npm run debugform test-forms/amazon_login.html
+npm run debug-form test-forms/amazon_login.html
 ```
 
 This will:

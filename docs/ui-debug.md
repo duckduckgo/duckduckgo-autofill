@@ -6,9 +6,20 @@ The `debug/ui-debug.js` file can be used to test and iterate on any web UI displ
 
 ```bash
 npm install
+npm run debug-ui
+```
+
+This will automatically:
+1. Build necessary assets for the debug UI
+2. Start a local server on port 3210
+3. Open your browser at http://127.0.0.1:3210/debug/index.html
+
+Alternatively, you can do it manually:
+```bash
+npm install
 npm run build
 npm run serve
-then visit http://127.0.0.1:3210/debug?locale=<locale>
+then visit http://127.0.0.1:3210/debug/index.html
 ```
 
 Translations can also be tested by passing the `locale` parameter.

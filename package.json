@@ -32,7 +32,8 @@
     "tsc:watch": "tsc --watch",
     "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration",
     "serve": "http-server -c-1 --port 3210 ./",
-    "debugform": "node scripts/debugform.js"
+    "debug-form": "node scripts/debug-form.js",
+    "debug-ui": "node scripts/debug-ui.js"
   },
   "license": "Apache-2.0",
   "devDependencies": {

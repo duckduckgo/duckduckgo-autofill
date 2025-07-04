@@ -1,14 +1,24 @@
-const { readFileSync, writeFileSync, copyFileSync } = require('fs');
+const { readFileSync, writeFileSync, copyFileSync, readdirSync } = require('fs');
 const { join } = require('path');
 const cwd = join(__dirname, '..');
 const filepath = (...path) => join(cwd, ...path);
+const fs = require('fs');
+
 const srcPath = 'src';
 const distPath = 'dist';
+
+// Check if DEBUG_UI environment variable is set
+const isDebugUI = process.env.DEBUG_UI === 'true';
 
 copyAutofillCSS();
 copyAutofillScript();
 copyAutofillHTML();
 copySharedCredentials();
+
+// Only copy image assets when in debug UI mode
+if (isDebugUI) {
+    copyImageAssets();
+}
 
 function copyAutofillCSS() {
     const stylesPath = filepath(distPath, 'autofill.css');
@@ -66,4 +76,27 @@ function copyAutofillScript() {
 
     // extension output of integration-test/extension/autofill-debug.js
     writeFileSync(filepath('integration-test', 'extension', debugScriptFileName), replacedDebug);
+}
+
+/**
+ * Copy image assets for debug UI
+ * This function is only called when the DEBUG_UI environment variable is set to 'true'
+ */
+function copyImageAssets() {
+    const imgSrcPath = filepath(srcPath, 'UI', 'img');
+    const imgRootPath = filepath('img');
+
+    // Ensure the destination directory exists
+    if (!fs.existsSync(imgRootPath)) {
+        fs.mkdirSync(imgRootPath, { recursive: true });
+    }
+
+    console.log(`Copying debug-ui assets to img folder`);
+    const images = readdirSync(imgSrcPath);
+    images.forEach((image) => {
+        const srcImagePath = join(imgSrcPath, image);
+        const rootImagePath = join(imgRootPath, image);
+        copyFileSync(srcImagePath, rootImagePath);
+        console.log(`✅ Copied ${image} to ${rootImagePath}`);
+    });
 }
