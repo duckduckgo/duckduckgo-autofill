@@ -251,7 +251,7 @@ const matchingConfiguration = {
                         '|correo electr|correo-e|^correo$' +
                         // Swedish
                         '|\\be.?post|e.?postadress',
-                    skip: 'phone|(first.?|last.?)name|number|code',
+                    skip: 'phone|(first.?|last.?)name|number|code|\\bdate\\b',
                     forceUnknown: 'search|filter|subject|title|\\btab\\b|otp',
                 },
                 password: {
