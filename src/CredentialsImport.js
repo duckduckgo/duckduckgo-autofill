@@ -40,9 +40,11 @@ class CredentialsImport {
         }
     }
 
-    async refresh() {
-        // Refresh all settings (e.g availableInputTypes)
-        await this.device.settings.refresh();
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+        this.device.settings.setAvailableInputTypes(availableInputTypes || (await this.device.settings.getAvailableInputTypes()));
 
         // Re-decorate all inputs to show the input decorations
         this.device.activeForm?.redecorateAllInputs();
@@ -51,11 +53,20 @@ class CredentialsImport {
         this.device.uiController?.removeTooltip('interface');
 
         const activeInput = this.device.activeForm?.activeInput;
-        // First blur to make sure we're not already in focus
-        activeInput?.blur();
 
-        // Then focus to open the tooltip
-        activeInput?.focus();
+        const availableCredentials = this.device.settings.availableInputTypes.credentials;
+        if (this.device.activeForm && activeInput && (availableCredentials?.username || availableCredentials?.password)) {
+            // On mobile we explicitly attach the tooltip, as focus or click events are not enough to trigger the tooltip
+            this.device.attachTooltip({
+                form: this.device.activeForm,
+                input: activeInput,
+                click: null,
+                trigger: 'credentialsImport',
+                triggerMetaData: {
+                    type: 'transactional',
+                },
+            });
+        }
     }
 
     async started() {

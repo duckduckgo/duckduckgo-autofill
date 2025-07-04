@@ -6236,6 +6236,7 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     get shouldAutoprompt() {
+      if (this.device.credentialsImport.isAvailable()) return false;
       return Date.now() - this.initTimeStamp <= 1500;
     }
     /**
@@ -6607,6 +6608,7 @@ Source: "${matchedFrom}"`;
   var getAutofillDataFocusResponseSchema = null;
   var getAutofillInitDataResponseSchema = null;
   var getAutofillCredentialsResultSchema = null;
+  var checkCredentialsProviderStatusResultSchema = null;
   var getIdentityResultSchema = null;
   var getCreditCardResultSchema = null;
   var emailProtectionGetIsLoggedInResultSchema = null;
@@ -6619,7 +6621,6 @@ Source: "${matchedFrom}"`;
   var storeFormDataSchema = null;
   var getAvailableInputTypesResultSchema = null;
   var askToUnlockProviderResultSchema = null;
-  var checkCredentialsProviderStatusResultSchema = null;
   var getRuntimeConfigurationResponseSchema = null;
 
   // packages/device-api/lib/device-api-call.js
@@ -7153,6 +7154,10 @@ Source: "${matchedFrom}"`;
           }
           case "focus": {
             form.activeInput?.focus();
+            break;
+          }
+          case "refreshAvailableInputTypes": {
+            device.credentialsImport.refresh(resp.availableInputTypes);
             break;
           }
           case "acceptGeneratedPassword": {
@@ -11782,13 +11787,26 @@ Source: "${matchedFrom}"`;
       } catch (e) {
       }
     }
-    async refresh() {
-      await this.device.settings.refresh();
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+      this.device.settings.setAvailableInputTypes(availableInputTypes || await this.device.settings.getAvailableInputTypes());
       this.device.activeForm?.redecorateAllInputs();
       this.device.uiController?.removeTooltip("interface");
       const activeInput = this.device.activeForm?.activeInput;
-      activeInput?.blur();
-      activeInput?.focus();
+      const availableCredentials = this.device.settings.availableInputTypes.credentials;
+      if (this.device.activeForm && activeInput && (availableCredentials?.username || availableCredentials?.password)) {
+        this.device.attachTooltip({
+          form: this.device.activeForm,
+          input: activeInput,
+          click: null,
+          trigger: "credentialsImport",
+          triggerMetaData: {
+            type: "transactional"
+          }
+        });
+      }
     }
     async started() {
       this.device.deviceApi.notify(new StartCredentialsImportFlowCall({}));
