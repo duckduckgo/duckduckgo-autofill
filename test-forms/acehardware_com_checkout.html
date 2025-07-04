@@ -1,0 +1,262 @@
+<!-- acehardware_com_checkout -->
+<div id="EditCardSlideTray" class="display-visibility rds-slide-in-tray-menu show right BasicSlideInTray" aria-hidden="false">
+    <div class="rds-slide-in-tray-menu-header">
+        <div class="rds-slide-in-header-row">
+            <div class="hide rds-slide-in-tray-back-button rds-btn-icon-wrapper"></div>
+            <div class="rds-slide-in-tray-header-title" tabindex="-1" aria-label="enter dialogAdd New Card">Add New Card</div>
+            <div class="rds-slide-in-close-button show rds-btn-icon-wrapper">
+                <button class="rds rds-btn-icon large" aria-label="close">
+                    <i class="fa-icon fa-regular fa-xmark"> </i>
+                </button>
+            </div>
+        </div>
+        <div class="rds-slide-in-header-row more-width">
+            <div class="rds-slide-in-tray-divider visible "></div>
+        </div>
+    </div>
+    <div class="slide-in-menu-content-holder ">
+        <div>
+            <h2 class="field-margin">* indicates required field</h2>
+            <div class="cc-card-input-section" style="padding: 24px 0px 6px;">
+                <div class="rds rds-input-payment ">
+                    <div class="cc-input-row card-number-row">
+                        <div class="input-wrap card-number">
+                            <img class="icon-credit-card " src="//cdn-tp3.mozu.com/24645-37138/resources/images/components/default-cc-icon.svg" alt="Credit Card" width="100%">
+                            <div class="rds rds-input-text ">
+                                <input type="text" class="undefined" name="cc-number" id="cc-number" placeholder="Card number *" maxlength="19" inputmode="numeric" autocomplete="cc-number" value="" autofocus="">
+                                <div class="label-wrap" id="cc-number-label-wrap">
+                                    <label for="cc-number" data-content="Card number *" tabindex="-1">
+                                        <span class="hidden-label">Card number *</span>
+                                    </label>
+                                </div>
+                                <button tabindex="-1" aria-label="clear" class="hide" id="cc-number-clear-btn">
+                                    <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                                </button>
+                                <div id="cc-number-validation-text" class="rds-input-validation-text error-text"></div>
+                                <div id="cc-number-helper-text" class="rds-input-helper-text">Enter your card number</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cc-input-row expdate-cvc-row">
+                        <div class="input-wrap exp-date">
+                            <div class="rds rds-input-text ">
+                                <input type="text" class="undefined" name="cc-exp" id="cc-exp" placeholder="MM/YY *" maxlength="5" inputmode="numeric" autocomplete="cc-exp" value="">
+                                <div class="label-wrap" id="cc-exp-label-wrap">
+                                    <label for="cc-exp" data-content="MM/YY *" tabindex="-1">
+                                        <span class="hidden-label">MM/YY *</span>
+                                    </label>
+                                </div>
+                                <button tabindex="-1" aria-label="clear" class="hide" id="cc-exp-clear-btn">
+                                    <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                                </button>
+                                <div id="cc-exp-validation-text" class="rds-input-validation-text error-text"></div>
+                                <div id="cc-exp-helper-text" class="rds-input-helper-text"></div>
+                            </div>
+                        </div>
+                        <div class="input-wrap cvc-code">
+                            <div class="rds rds-input-text ">
+                                <input type="text" class="undefined" name="cc-cvc" id="cc-cvc" placeholder="CVC *" maxlength="4" inputmode="numeric" autocomplete="off" value="">
+                                <div class="label-wrap" id="cc-cvc-label-wrap">
+                                    <label for="cc-cvc" data-content="CVC *" tabindex="-1">
+                                        <span class="hidden-label">CVC *</span>
+                                    </label>
+                                </div>
+                                <button tabindex="-1" aria-label="clear" class="hide" id="cc-cvc-clear-btn">
+                                    <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                                </button>
+                                <div id="cc-cvc-validation-text" class="rds-input-validation-text error-text"></div>
+                                <div id="cc-cvc-helper-text" class="rds-input-helper-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="address-margin">Billing Address</h2>
+            <div class="address-form">
+                <div class="rds-input-helper-text require-field"></div>
+                <div>
+                    <div class="rds rds-input-text ">
+                        <input type="text" class="undefined" name="firstName" id="new_firstName" placeholder="First name*" autocomplete="given-name" value="">
+                        <div class="label-wrap" id="new_firstName-label-wrap">
+                            <label for="new_firstName" data-content="First name*" tabindex="-1">
+                                <span class="hidden-label">First name*</span>
+                            </label>
+                        </div>
+                        <button tabindex="-1" aria-label="clear" class="hide" id="new_firstName-clear-btn">
+                            <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                        </button>
+                        <div id="new_firstName-validation-text" class="rds-input-validation-text error-text"></div>
+                        <div id="new_firstName-helper-text" class="rds-input-helper-text"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="rds rds-input-text ">
+                        <input type="text" class="undefined" name="lastNameOrSurname" id="new_lastNameOrSurname" placeholder="Last name*" autocomplete="family-name" value="">
+                        <div class="label-wrap" id="new_lastNameOrSurname-label-wrap">
+                            <label for="new_lastNameOrSurname" data-content="Last name*" tabindex="-1">
+                                <span class="hidden-label">Last name*</span>
+                            </label>
+                        </div>
+                        <button tabindex="-1" aria-label="clear" class="hide" id="new_lastNameOrSurname-clear-btn">
+                            <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                        </button>
+                        <div id="new_lastNameOrSurname-validation-text" class="rds-input-validation-text error-text"></div>
+                        <div id="new_lastNameOrSurname-helper-text" class="rds-input-helper-text"></div>
+                    </div>
+                </div>
+                <div>
+                    <div id="" class="rds-autocomplete search-input-container" style="width: 100%;">
+                        <div class="rds rds-input-text ">
+                            <input type="text" class="undefined" name="address1" id="a4086170-95d4-4799-84fe-80fe3ee3bc5b" placeholder="Street address" value="">
+                            <div class="label-wrap" id="a4086170-95d4-4799-84fe-80fe3ee3bc5b-label-wrap">
+                                <label for="a4086170-95d4-4799-84fe-80fe3ee3bc5b" data-content="Street address" tabindex="-1">
+                                    <span class="hidden-label">Street address</span>
+                                </label>
+                            </div>
+                            <button tabindex="-1" aria-label="clear" class="hide" id="a4086170-95d4-4799-84fe-80fe3ee3bc5b-clear-btn">
+                                <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                            </button>
+                            <div id="a4086170-95d4-4799-84fe-80fe3ee3bc5b-validation-text" class="rds-input-validation-text error-text"></div>
+                            <div id="a4086170-95d4-4799-84fe-80fe3ee3bc5b-helper-text" class="rds-input-helper-text"></div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="rds rds-input-text">
+                        <input type="text" class="undefined" name="address2" id="new_address2" placeholder="Address 2 (optional)" autocomplete="address-line2" value="">
+                        <div class="label-wrap" id="new_address2-label-wrap">
+                            <label for="new_address2" data-content="Address 2 (optional)" tabindex="-1">
+                                <span class="hidden-label">Address 2 (optional)</span>
+                            </label>
+                        </div>
+                        <button tabindex="-1" aria-label="clear" class="hide" id="new_address2-clear-btn">
+                            <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                        </button>
+                        <div id="new_address2-validation-text" class="rds-input-validation-text error-text"></div>
+                        <div id="new_address2-helper-text" class="rds-input-helper-text">e.g. Apt, Suite, Floor, etc.</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="rds rds-input-text ">
+                        <input type="text" class="undefined" name="cityOrTown" id="new_cityOrTown" placeholder="City*" autocomplete="locality" value="">
+                        <div class="label-wrap" id="new_cityOrTown-label-wrap">
+                            <label for="new_cityOrTown" data-content="City*" tabindex="-1">
+                                <span class="hidden-label">City*</span>
+                            </label>
+                        </div>
+                        <button tabindex="-1" aria-label="clear" class="hide" id="new_cityOrTown-clear-btn">
+                            <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                        </button>
+                        <div id="new_cityOrTown-validation-text" class="rds-input-validation-text error-text"></div>
+                        <div id="new_cityOrTown-helper-text" class="rds-input-helper-text"></div>
+                    </div>
+                </div>
+                <div class="dropdown-section">
+                    <div class="rds rds-select-menu us-states ">
+                        <select id="new_stateOrProvince" name="stateOrProvince">
+                            <option value="" disabled=""></option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="AR">Arkansas</option>
+                            <option value="CA">California</option>
+                            <option value="CO">Colorado</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="DE">Delaware</option>
+                            <option value="DC">District Of Columbia</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="HI">Hawaii</option>
+                            <option value="ID">Idaho</option>
+                            <option value="IL">Illinois</option>
+                            <option value="IN">Indiana</option>
+                            <option value="IA">Iowa</option>
+                            <option value="KS">Kansas</option>
+                            <option value="KY">Kentucky</option>
+                            <option value="LA">Louisiana</option>
+                            <option value="ME">Maine</option>
+                            <option value="MD">Maryland</option>
+                            <option value="MA">Massachusetts</option>
+                            <option value="MI">Michigan</option>
+                            <option value="MN">Minnesota</option>
+                            <option value="MS">Mississippi</option>
+                            <option value="MO">Missouri</option>
+                            <option value="MT">Montana</option>
+                            <option value="NE">Nebraska</option>
+                            <option value="NV">Nevada</option>
+                            <option value="NH">New Hampshire</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NM">New Mexico</option>
+                            <option value="NY">New York</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="ND">North Dakota</option>
+                            <option value="OH">Ohio</option>
+                            <option value="OK">Oklahoma</option>
+                            <option value="OR">Oregon</option>
+                            <option value="PA">Pennsylvania</option>
+                            <option value="RI">Rhode Island</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="SD">South Dakota</option>
+                            <option value="TN">Tennessee</option>
+                            <option value="TX">Texas</option>
+                            <option value="UT">Utah</option>
+                            <option value="VT">Vermont</option>
+                            <option value="VA">Virginia</option>
+                            <option value="WA">Washington</option>
+                            <option value="WV">West Virginia</option>
+                            <option value="WI">Wisconsin</option>
+                            <option value="WY">Wyoming</option>
+                        </select>
+                        <label for="new_stateOrProvince" class="floating-label">State</label>
+                        <div class="rds-input-validation-text error-text"></div>
+                        <div class="rds-input-helper-text"></div>
+                    </div>
+                    <div class="rds rds-input-text zip-code ">
+                        <input class="undefined" name="postalOrZipCode" id="new_postalOrZipCode" placeholder="ZIP code*" maxlength="10" pattern="\d*" inputmode="numeric" autocomplete="postal-code" value="">
+                        <div class="label-wrap" id="new_postalOrZipCode-label-wrap">
+                            <label for="new_postalOrZipCode" data-content="ZIP code*" tabindex="-1">
+                                <span class="hidden-label">ZIP code*</span>
+                            </label>
+                        </div>
+                        <button tabindex="-1" aria-label="clear" class="hide" id="new_postalOrZipCode-clear-btn">
+                            <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                        </button>
+                        <div id="new_postalOrZipCode-validation-text" class="rds-input-validation-text error-text"></div>
+                        <div id="new_postalOrZipCode-helper-text" class="rds-input-helper-text"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="rds rds-input-text phone-number ">
+                        <input type="tel" class="undefined" name="phoneNumbers" id="new_phoneNumbers" placeholder="Phone number*" maxlength="14" pattern="\d*" inputmode="numeric" autocomplete="off" value="">
+                        <div class="label-wrap" id="new_phoneNumbers-label-wrap">
+                            <label for="new_phoneNumbers" data-content="Phone number*" tabindex="-1">
+                                <span class="hidden-label">Phone number*</span>
+                            </label>
+                        </div>
+                        <button tabindex="-1" aria-label="clear" class="hide" id="new_phoneNumbers-clear-btn">
+                            <i class="fa-icon fa-regular fa-xmark" aria-label="clear" style="padding: 0px;"></i>
+                        </button>
+                        <div id="new_phoneNumbers-validation-text" class="rds-input-validation-text error-text"></div>
+                        <div id="new_phoneNumbers-helper-text" class="rds-input-helper-text">Used only to contact you about your order</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="rds-slide-in-tray-footer show">
+        <div class="rds rds-action-strip top-border">
+            <div class="container-button-wrapper side-tray slide-in-button-wrapper undefined">
+                <div class="container-button primary ">
+                    <button class="rds rds-btn primary expanded">
+                        <span>Save</span>
+                    </button>
+                </div>
+                <div class="container-button secondary ">
+                    <button class="rds rds-btn secondary expanded">
+                        <span>Cancel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
