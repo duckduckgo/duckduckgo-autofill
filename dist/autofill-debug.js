@@ -6597,121 +6597,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/v3/index.js
-  var v3_exports = {};
-  __export(v3_exports, {
-    BRAND: () => BRAND,
-    DIRTY: () => DIRTY,
-    EMPTY_PATH: () => EMPTY_PATH,
-    INVALID: () => INVALID,
-    NEVER: () => NEVER,
-    OK: () => OK,
-    ParseStatus: () => ParseStatus,
-    Schema: () => ZodType,
-    ZodAny: () => ZodAny,
-    ZodArray: () => ZodArray,
-    ZodBigInt: () => ZodBigInt,
-    ZodBoolean: () => ZodBoolean,
-    ZodBranded: () => ZodBranded,
-    ZodCatch: () => ZodCatch,
-    ZodDate: () => ZodDate,
-    ZodDefault: () => ZodDefault,
-    ZodDiscriminatedUnion: () => ZodDiscriminatedUnion,
-    ZodEffects: () => ZodEffects,
-    ZodEnum: () => ZodEnum,
-    ZodError: () => ZodError,
-    ZodFirstPartyTypeKind: () => ZodFirstPartyTypeKind,
-    ZodFunction: () => ZodFunction,
-    ZodIntersection: () => ZodIntersection,
-    ZodIssueCode: () => ZodIssueCode,
-    ZodLazy: () => ZodLazy,
-    ZodLiteral: () => ZodLiteral,
-    ZodMap: () => ZodMap,
-    ZodNaN: () => ZodNaN,
-    ZodNativeEnum: () => ZodNativeEnum,
-    ZodNever: () => ZodNever,
-    ZodNull: () => ZodNull,
-    ZodNullable: () => ZodNullable,
-    ZodNumber: () => ZodNumber,
-    ZodObject: () => ZodObject,
-    ZodOptional: () => ZodOptional,
-    ZodParsedType: () => ZodParsedType,
-    ZodPipeline: () => ZodPipeline,
-    ZodPromise: () => ZodPromise,
-    ZodReadonly: () => ZodReadonly,
-    ZodRecord: () => ZodRecord,
-    ZodSchema: () => ZodType,
-    ZodSet: () => ZodSet,
-    ZodString: () => ZodString,
-    ZodSymbol: () => ZodSymbol,
-    ZodTransformer: () => ZodEffects,
-    ZodTuple: () => ZodTuple,
-    ZodType: () => ZodType,
-    ZodUndefined: () => ZodUndefined,
-    ZodUnion: () => ZodUnion,
-    ZodUnknown: () => ZodUnknown,
-    ZodVoid: () => ZodVoid,
-    addIssueToContext: () => addIssueToContext,
-    any: () => anyType,
-    array: () => arrayType,
-    bigint: () => bigIntType,
-    boolean: () => booleanType,
-    coerce: () => coerce,
-    custom: () => custom,
-    date: () => dateType,
-    datetimeRegex: () => datetimeRegex,
-    default: () => v3_default,
-    defaultErrorMap: () => en_default,
-    discriminatedUnion: () => discriminatedUnionType,
-    effect: () => effectsType,
-    enum: () => enumType,
-    function: () => functionType,
-    getErrorMap: () => getErrorMap,
-    getParsedType: () => getParsedType,
-    instanceof: () => instanceOfType,
-    intersection: () => intersectionType,
-    isAborted: () => isAborted,
-    isAsync: () => isAsync,
-    isDirty: () => isDirty,
-    isValid: () => isValid,
-    late: () => late,
-    lazy: () => lazyType,
-    literal: () => literalType,
-    makeIssue: () => makeIssue,
-    map: () => mapType,
-    nan: () => nanType,
-    nativeEnum: () => nativeEnumType,
-    never: () => neverType,
-    null: () => nullType,
-    nullable: () => nullableType,
-    number: () => numberType,
-    object: () => objectType,
-    objectUtil: () => objectUtil,
-    oboolean: () => oboolean,
-    onumber: () => onumber,
-    optional: () => optionalType,
-    ostring: () => ostring,
-    pipeline: () => pipelineType,
-    preprocess: () => preprocessType,
-    promise: () => promiseType,
-    quotelessJson: () => quotelessJson,
-    record: () => recordType,
-    set: () => setType,
-    setErrorMap: () => setErrorMap,
-    strictObject: () => strictObjectType,
-    string: () => stringType,
-    symbol: () => symbolType,
-    transformer: () => effectsType,
-    tuple: () => tupleType,
-    undefined: () => undefinedType,
-    union: () => unionType,
-    unknown: () => unknownType,
-    util: () => util,
-    void: () => voidType,
-    z: () => external_exports
-  });
-
-  // node_modules/zod/v3/external.js
+  // node_modules/zod/dist/esm/v3/external.js
   var external_exports = {};
   __export(external_exports, {
     BRAND: () => BRAND,
@@ -6823,7 +6709,7 @@ Source: "${matchedFrom}"`;
     void: () => voidType
   });
 
-  // node_modules/zod/v3/helpers/util.js
+  // node_modules/zod/dist/esm/v3/helpers/util.js
   var util;
   (function(util2) {
     util2.assertEqual = (_) => {
@@ -6957,7 +6843,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/v3/ZodError.js
+  // node_modules/zod/dist/esm/v3/ZodError.js
   var ZodIssueCode = util.arrayToEnum([
     "invalid_type",
     "invalid_literal",
@@ -7057,9 +6943,8 @@ Source: "${matchedFrom}"`;
       const formErrors = [];
       for (const sub of this.issues) {
         if (sub.path.length > 0) {
-          const firstEl = sub.path[0];
-          fieldErrors[firstEl] = fieldErrors[firstEl] || [];
-          fieldErrors[firstEl].push(mapper(sub));
+          fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
+          fieldErrors[sub.path[0]].push(mapper(sub));
         } else {
           formErrors.push(mapper(sub));
         }
@@ -7075,7 +6960,7 @@ Source: "${matchedFrom}"`;
     return error;
   };
 
-  // node_modules/zod/v3/locales/en.js
+  // node_modules/zod/dist/esm/v3/locales/en.js
   var errorMap = (issue, _ctx) => {
     let message;
     switch (issue.code) {
@@ -7137,8 +7022,6 @@ Source: "${matchedFrom}"`;
           message = `String must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `over`} ${issue.minimum} character(s)`;
         else if (issue.type === "number")
           message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
-        else if (issue.type === "bigint")
-          message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
         else if (issue.type === "date")
           message = `Date must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${new Date(Number(issue.minimum))}`;
         else
@@ -7178,7 +7061,7 @@ Source: "${matchedFrom}"`;
   };
   var en_default = errorMap;
 
-  // node_modules/zod/v3/errors.js
+  // node_modules/zod/dist/esm/v3/errors.js
   var overrideErrorMap = en_default;
   function setErrorMap(map) {
     overrideErrorMap = map;
@@ -7187,7 +7070,7 @@ Source: "${matchedFrom}"`;
     return overrideErrorMap;
   }
 
-  // node_modules/zod/v3/helpers/parseUtil.js
+  // node_modules/zod/dist/esm/v3/helpers/parseUtil.js
   var makeIssue = (params) => {
     const { data, path, errorMaps, issueData } = params;
     const fullPath = [...path, ...issueData.path || []];
@@ -7297,14 +7180,14 @@ Source: "${matchedFrom}"`;
   var isValid = (x) => x.status === "valid";
   var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-  // node_modules/zod/v3/helpers/errorUtil.js
+  // node_modules/zod/dist/esm/v3/helpers/errorUtil.js
   var errorUtil;
   (function(errorUtil2) {
     errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
     errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
   })(errorUtil || (errorUtil = {}));
 
-  // node_modules/zod/v3/types.js
+  // node_modules/zod/dist/esm/v3/types.js
   var ParseInputLazyPath = class {
     constructor(parent, value, path, key) {
       this._cachedPath = [];
@@ -7703,8 +7586,6 @@ Source: "${matchedFrom}"`;
       return false;
     try {
       const [header] = jwt.split(".");
-      if (!header)
-        return false;
       const base64 = header.replace(/-/g, "+").replace(/_/g, "/").padEnd(header.length + (4 - header.length % 4) % 4, "=");
       const decoded = JSON.parse(atob(base64));
       if (typeof decoded !== "object" || decoded === null)
@@ -10752,470 +10633,467 @@ Source: "${matchedFrom}"`;
   };
   var NEVER = INVALID;
 
-  // node_modules/zod/v3/index.js
-  var v3_default = external_exports;
-
   // src/deviceApiCalls/__generated__/validators.zod.js
-  var sendJSPixelParamsSchema = v3_exports.union([v3_exports.object({
-    pixelName: v3_exports.literal("autofill_identity"),
-    params: v3_exports.object({
-      fieldType: v3_exports.string().optional()
+  var sendJSPixelParamsSchema = external_exports.union([external_exports.object({
+    pixelName: external_exports.literal("autofill_identity"),
+    params: external_exports.object({
+      fieldType: external_exports.string().optional()
     }).optional()
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("autofill_show")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("autofill_import_credentials_prompt_shown")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("autofill_personal_address")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("autofill_private_address")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("incontext_show")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("incontext_primary_cta")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("incontext_dismiss_persisted")
-  }), v3_exports.object({
-    pixelName: v3_exports.literal("incontext_close_x")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_show")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_import_credentials_prompt_shown")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_personal_address")
+  }), external_exports.object({
+    pixelName: external_exports.literal("autofill_private_address")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_show")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_primary_cta")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_dismiss_persisted")
+  }), external_exports.object({
+    pixelName: external_exports.literal("incontext_close_x")
   })]);
-  var addDebugFlagParamsSchema = v3_exports.object({
-    flag: v3_exports.string()
+  var addDebugFlagParamsSchema = external_exports.object({
+    flag: external_exports.string()
   });
-  var getAutofillDataFocusRequestSchema = v3_exports.object({
-    inputType: v3_exports.string(),
-    mainType: v3_exports.union([v3_exports.literal("credentials"), v3_exports.literal("identities"), v3_exports.literal("creditCards"), v3_exports.literal("unknown")])
+  var getAutofillDataFocusRequestSchema = external_exports.object({
+    inputType: external_exports.string(),
+    mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards"), external_exports.literal("unknown")])
   });
-  var getAutofillCredentialsParamsSchema = v3_exports.object({
-    id: v3_exports.string()
+  var getAutofillCredentialsParamsSchema = external_exports.object({
+    id: external_exports.string()
   });
-  var setSizeParamsSchema = v3_exports.object({
-    height: v3_exports.number(),
-    width: v3_exports.number()
+  var setSizeParamsSchema = external_exports.object({
+    height: external_exports.number(),
+    width: external_exports.number()
   });
-  var selectedDetailParamsSchema = v3_exports.object({
-    data: v3_exports.record(v3_exports.unknown()),
-    configType: v3_exports.string()
+  var selectedDetailParamsSchema = external_exports.object({
+    data: external_exports.record(external_exports.unknown()),
+    configType: external_exports.string()
   });
-  var setIncontextSignupPermanentlyDismissedAtSchema = v3_exports.object({
-    value: v3_exports.number().optional()
+  var setIncontextSignupPermanentlyDismissedAtSchema = external_exports.object({
+    value: external_exports.number().optional()
   });
-  var getIncontextSignupDismissedAtSchema = v3_exports.object({
-    success: v3_exports.object({
-      permanentlyDismissedAt: v3_exports.number().optional(),
-      isInstalledRecently: v3_exports.boolean().optional()
+  var getIncontextSignupDismissedAtSchema = external_exports.object({
+    success: external_exports.object({
+      permanentlyDismissedAt: external_exports.number().optional(),
+      isInstalledRecently: external_exports.boolean().optional()
     })
   });
-  var getAliasParamsSchema = v3_exports.object({
-    requiresUserPermission: v3_exports.boolean(),
-    shouldConsumeAliasIfProvided: v3_exports.boolean(),
-    isIncontextSignupAvailable: v3_exports.boolean().optional()
+  var getAliasParamsSchema = external_exports.object({
+    requiresUserPermission: external_exports.boolean(),
+    shouldConsumeAliasIfProvided: external_exports.boolean(),
+    isIncontextSignupAvailable: external_exports.boolean().optional()
   });
-  var getAliasResultSchema = v3_exports.object({
-    success: v3_exports.object({
-      alias: v3_exports.string().optional()
+  var getAliasResultSchema = external_exports.object({
+    success: external_exports.object({
+      alias: external_exports.string().optional()
     })
   });
-  var getIdentityParamSchema = v3_exports.object({
-    id: v3_exports.string()
+  var getIdentityParamSchema = external_exports.object({
+    id: external_exports.string()
   });
-  var getCreditCardParamSchema = v3_exports.object({
-    id: v3_exports.string()
+  var getCreditCardParamSchema = external_exports.object({
+    id: external_exports.string()
   });
-  var emailProtectionStoreUserDataParamsSchema = v3_exports.object({
-    token: v3_exports.string(),
-    userName: v3_exports.string(),
-    cohort: v3_exports.string()
+  var emailProtectionStoreUserDataParamsSchema = external_exports.object({
+    token: external_exports.string(),
+    userName: external_exports.string(),
+    cohort: external_exports.string()
   });
-  var showInContextEmailProtectionSignupPromptSchema = v3_exports.object({
-    success: v3_exports.object({
-      isSignedIn: v3_exports.boolean()
+  var showInContextEmailProtectionSignupPromptSchema = external_exports.object({
+    success: external_exports.object({
+      isSignedIn: external_exports.boolean()
     })
   });
-  var generatedPasswordSchema = v3_exports.object({
-    value: v3_exports.string(),
-    username: v3_exports.string()
+  var generatedPasswordSchema = external_exports.object({
+    value: external_exports.string(),
+    username: external_exports.string()
   });
-  var triggerContextSchema = v3_exports.object({
-    inputTop: v3_exports.number(),
-    inputLeft: v3_exports.number(),
-    inputHeight: v3_exports.number(),
-    inputWidth: v3_exports.number(),
-    wasFromClick: v3_exports.boolean()
+  var triggerContextSchema = external_exports.object({
+    inputTop: external_exports.number(),
+    inputLeft: external_exports.number(),
+    inputHeight: external_exports.number(),
+    inputWidth: external_exports.number(),
+    wasFromClick: external_exports.boolean()
   });
-  var credentialsSchema = v3_exports.object({
-    id: v3_exports.string().optional(),
-    username: v3_exports.string(),
-    password: v3_exports.string(),
-    origin: v3_exports.object({
-      url: v3_exports.string()
+  var credentialsSchema = external_exports.object({
+    id: external_exports.string().optional(),
+    username: external_exports.string(),
+    password: external_exports.string(),
+    origin: external_exports.object({
+      url: external_exports.string()
     }).optional(),
-    credentialsProvider: v3_exports.union([v3_exports.literal("duckduckgo"), v3_exports.literal("bitwarden")]).optional(),
-    providerStatus: v3_exports.union([v3_exports.literal("locked"), v3_exports.literal("unlocked")]).optional()
+    credentialsProvider: external_exports.union([external_exports.literal("duckduckgo"), external_exports.literal("bitwarden")]).optional(),
+    providerStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional()
   });
-  var creditCardObjectSchema = v3_exports.object({
-    id: v3_exports.string(),
-    title: v3_exports.string(),
-    displayNumber: v3_exports.string(),
-    cardName: v3_exports.string().optional(),
-    cardSecurityCode: v3_exports.string().optional(),
-    expirationMonth: v3_exports.string().optional(),
-    expirationYear: v3_exports.string().optional(),
-    cardNumber: v3_exports.string().optional(),
-    paymentProvider: v3_exports.string().optional()
+  var creditCardObjectSchema = external_exports.object({
+    id: external_exports.string(),
+    title: external_exports.string(),
+    displayNumber: external_exports.string(),
+    cardName: external_exports.string().optional(),
+    cardSecurityCode: external_exports.string().optional(),
+    expirationMonth: external_exports.string().optional(),
+    expirationYear: external_exports.string().optional(),
+    cardNumber: external_exports.string().optional(),
+    paymentProvider: external_exports.string().optional()
   });
-  var identityObjectSchema = v3_exports.object({
-    id: v3_exports.string(),
-    title: v3_exports.string(),
-    firstName: v3_exports.string().optional(),
-    middleName: v3_exports.string().optional(),
-    lastName: v3_exports.string().optional(),
-    birthdayDay: v3_exports.string().optional(),
-    birthdayMonth: v3_exports.string().optional(),
-    birthdayYear: v3_exports.string().optional(),
-    addressStreet: v3_exports.string().optional(),
-    addressStreet2: v3_exports.string().optional(),
-    addressCity: v3_exports.string().optional(),
-    addressProvince: v3_exports.string().optional(),
-    addressPostalCode: v3_exports.string().optional(),
-    addressCountryCode: v3_exports.string().optional(),
-    phone: v3_exports.string().optional(),
-    emailAddress: v3_exports.string().optional()
+  var identityObjectSchema = external_exports.object({
+    id: external_exports.string(),
+    title: external_exports.string(),
+    firstName: external_exports.string().optional(),
+    middleName: external_exports.string().optional(),
+    lastName: external_exports.string().optional(),
+    birthdayDay: external_exports.string().optional(),
+    birthdayMonth: external_exports.string().optional(),
+    birthdayYear: external_exports.string().optional(),
+    addressStreet: external_exports.string().optional(),
+    addressStreet2: external_exports.string().optional(),
+    addressCity: external_exports.string().optional(),
+    addressProvince: external_exports.string().optional(),
+    addressPostalCode: external_exports.string().optional(),
+    addressCountryCode: external_exports.string().optional(),
+    phone: external_exports.string().optional(),
+    emailAddress: external_exports.string().optional()
   });
-  var genericErrorSchema = v3_exports.object({
-    message: v3_exports.string()
+  var genericErrorSchema = external_exports.object({
+    message: external_exports.string()
   });
-  var getAutofillDataFocusResponseSchema = v3_exports.object({
-    type: v3_exports.literal("getAutofillDataFocusResponse").optional(),
-    success: v3_exports.object({
+  var getAutofillDataFocusResponseSchema = external_exports.object({
+    type: external_exports.literal("getAutofillDataFocusResponse").optional(),
+    success: external_exports.object({
       creditCards: creditCardObjectSchema.optional(),
-      action: v3_exports.union([v3_exports.literal("fill"), v3_exports.literal("none")])
+      action: external_exports.union([external_exports.literal("fill"), external_exports.literal("none")])
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var userPreferencesSchema = v3_exports.object({
-    globalPrivacyControlValue: v3_exports.boolean().optional(),
-    sessionKey: v3_exports.string(),
-    debug: v3_exports.boolean(),
-    language: v3_exports.string().optional(),
-    platform: v3_exports.object({
-      name: v3_exports.union([v3_exports.literal("ios"), v3_exports.literal("macos"), v3_exports.literal("windows"), v3_exports.literal("extension"), v3_exports.literal("android")])
+  var userPreferencesSchema = external_exports.object({
+    globalPrivacyControlValue: external_exports.boolean().optional(),
+    sessionKey: external_exports.string(),
+    debug: external_exports.boolean(),
+    language: external_exports.string().optional(),
+    platform: external_exports.object({
+      name: external_exports.union([external_exports.literal("ios"), external_exports.literal("macos"), external_exports.literal("windows"), external_exports.literal("extension"), external_exports.literal("android")])
     }),
-    features: v3_exports.record(v3_exports.object({
-      settings: v3_exports.record(v3_exports.unknown())
+    features: external_exports.record(external_exports.object({
+      settings: external_exports.record(external_exports.unknown())
     }))
   });
-  var outgoingCredentialsSchema = v3_exports.object({
-    username: v3_exports.string().optional(),
-    password: v3_exports.string().optional()
+  var outgoingCredentialsSchema = external_exports.object({
+    username: external_exports.string().optional(),
+    password: external_exports.string().optional()
   });
-  var availableInputTypesSchema = v3_exports.object({
-    credentials: v3_exports.object({
-      username: v3_exports.boolean().optional(),
-      password: v3_exports.boolean().optional()
+  var availableInputTypesSchema = external_exports.object({
+    credentials: external_exports.object({
+      username: external_exports.boolean().optional(),
+      password: external_exports.boolean().optional()
     }).optional(),
-    identities: v3_exports.object({
-      firstName: v3_exports.boolean().optional(),
-      middleName: v3_exports.boolean().optional(),
-      lastName: v3_exports.boolean().optional(),
-      birthdayDay: v3_exports.boolean().optional(),
-      birthdayMonth: v3_exports.boolean().optional(),
-      birthdayYear: v3_exports.boolean().optional(),
-      addressStreet: v3_exports.boolean().optional(),
-      addressStreet2: v3_exports.boolean().optional(),
-      addressCity: v3_exports.boolean().optional(),
-      addressProvince: v3_exports.boolean().optional(),
-      addressPostalCode: v3_exports.boolean().optional(),
-      addressCountryCode: v3_exports.boolean().optional(),
-      phone: v3_exports.boolean().optional(),
-      emailAddress: v3_exports.boolean().optional()
+    identities: external_exports.object({
+      firstName: external_exports.boolean().optional(),
+      middleName: external_exports.boolean().optional(),
+      lastName: external_exports.boolean().optional(),
+      birthdayDay: external_exports.boolean().optional(),
+      birthdayMonth: external_exports.boolean().optional(),
+      birthdayYear: external_exports.boolean().optional(),
+      addressStreet: external_exports.boolean().optional(),
+      addressStreet2: external_exports.boolean().optional(),
+      addressCity: external_exports.boolean().optional(),
+      addressProvince: external_exports.boolean().optional(),
+      addressPostalCode: external_exports.boolean().optional(),
+      addressCountryCode: external_exports.boolean().optional(),
+      phone: external_exports.boolean().optional(),
+      emailAddress: external_exports.boolean().optional()
     }).optional(),
-    creditCards: v3_exports.object({
-      cardName: v3_exports.boolean().optional(),
-      cardSecurityCode: v3_exports.boolean().optional(),
-      expirationMonth: v3_exports.boolean().optional(),
-      expirationYear: v3_exports.boolean().optional(),
-      cardNumber: v3_exports.boolean().optional()
+    creditCards: external_exports.object({
+      cardName: external_exports.boolean().optional(),
+      cardSecurityCode: external_exports.boolean().optional(),
+      expirationMonth: external_exports.boolean().optional(),
+      expirationYear: external_exports.boolean().optional(),
+      cardNumber: external_exports.boolean().optional()
     }).optional(),
-    email: v3_exports.boolean().optional(),
-    credentialsProviderStatus: v3_exports.union([v3_exports.literal("locked"), v3_exports.literal("unlocked")]).optional(),
-    credentialsImport: v3_exports.boolean().optional()
+    email: external_exports.boolean().optional(),
+    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
+    credentialsImport: external_exports.boolean().optional()
   });
-  var getAutofillInitDataResponseSchema = v3_exports.object({
-    type: v3_exports.literal("getAutofillInitDataResponse").optional(),
-    success: v3_exports.object({
-      credentials: v3_exports.array(credentialsSchema),
-      identities: v3_exports.array(identityObjectSchema),
-      creditCards: v3_exports.array(creditCardObjectSchema),
-      serializedInputContext: v3_exports.string()
+  var getAutofillInitDataResponseSchema = external_exports.object({
+    type: external_exports.literal("getAutofillInitDataResponse").optional(),
+    success: external_exports.object({
+      credentials: external_exports.array(credentialsSchema),
+      identities: external_exports.array(identityObjectSchema),
+      creditCards: external_exports.array(creditCardObjectSchema),
+      serializedInputContext: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var getAutofillCredentialsResultSchema = v3_exports.object({
-    type: v3_exports.literal("getAutofillCredentialsResponse").optional(),
-    success: v3_exports.object({
-      id: v3_exports.string().optional(),
-      autogenerated: v3_exports.boolean().optional(),
-      username: v3_exports.string(),
-      password: v3_exports.string().optional()
+  var getAutofillCredentialsResultSchema = external_exports.object({
+    type: external_exports.literal("getAutofillCredentialsResponse").optional(),
+    success: external_exports.object({
+      id: external_exports.string().optional(),
+      autogenerated: external_exports.boolean().optional(),
+      username: external_exports.string(),
+      password: external_exports.string().optional()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var availableInputTypes1Schema = v3_exports.object({
-    credentials: v3_exports.object({
-      username: v3_exports.boolean().optional(),
-      password: v3_exports.boolean().optional()
+  var availableInputTypes1Schema = external_exports.object({
+    credentials: external_exports.object({
+      username: external_exports.boolean().optional(),
+      password: external_exports.boolean().optional()
     }).optional(),
-    identities: v3_exports.object({
-      firstName: v3_exports.boolean().optional(),
-      middleName: v3_exports.boolean().optional(),
-      lastName: v3_exports.boolean().optional(),
-      birthdayDay: v3_exports.boolean().optional(),
-      birthdayMonth: v3_exports.boolean().optional(),
-      birthdayYear: v3_exports.boolean().optional(),
-      addressStreet: v3_exports.boolean().optional(),
-      addressStreet2: v3_exports.boolean().optional(),
-      addressCity: v3_exports.boolean().optional(),
-      addressProvince: v3_exports.boolean().optional(),
-      addressPostalCode: v3_exports.boolean().optional(),
-      addressCountryCode: v3_exports.boolean().optional(),
-      phone: v3_exports.boolean().optional(),
-      emailAddress: v3_exports.boolean().optional()
+    identities: external_exports.object({
+      firstName: external_exports.boolean().optional(),
+      middleName: external_exports.boolean().optional(),
+      lastName: external_exports.boolean().optional(),
+      birthdayDay: external_exports.boolean().optional(),
+      birthdayMonth: external_exports.boolean().optional(),
+      birthdayYear: external_exports.boolean().optional(),
+      addressStreet: external_exports.boolean().optional(),
+      addressStreet2: external_exports.boolean().optional(),
+      addressCity: external_exports.boolean().optional(),
+      addressProvince: external_exports.boolean().optional(),
+      addressPostalCode: external_exports.boolean().optional(),
+      addressCountryCode: external_exports.boolean().optional(),
+      phone: external_exports.boolean().optional(),
+      emailAddress: external_exports.boolean().optional()
     }).optional(),
-    creditCards: v3_exports.object({
-      cardName: v3_exports.boolean().optional(),
-      cardSecurityCode: v3_exports.boolean().optional(),
-      expirationMonth: v3_exports.boolean().optional(),
-      expirationYear: v3_exports.boolean().optional(),
-      cardNumber: v3_exports.boolean().optional()
+    creditCards: external_exports.object({
+      cardName: external_exports.boolean().optional(),
+      cardSecurityCode: external_exports.boolean().optional(),
+      expirationMonth: external_exports.boolean().optional(),
+      expirationYear: external_exports.boolean().optional(),
+      cardNumber: external_exports.boolean().optional()
     }).optional(),
-    email: v3_exports.boolean().optional(),
-    credentialsProviderStatus: v3_exports.union([v3_exports.literal("locked"), v3_exports.literal("unlocked")]).optional(),
-    credentialsImport: v3_exports.boolean().optional()
+    email: external_exports.boolean().optional(),
+    credentialsProviderStatus: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]).optional(),
+    credentialsImport: external_exports.boolean().optional()
   });
-  var providerStatusUpdatedSchema = v3_exports.object({
-    status: v3_exports.union([v3_exports.literal("locked"), v3_exports.literal("unlocked")]),
-    credentials: v3_exports.array(credentialsSchema),
+  var providerStatusUpdatedSchema = external_exports.object({
+    status: external_exports.union([external_exports.literal("locked"), external_exports.literal("unlocked")]),
+    credentials: external_exports.array(credentialsSchema),
     availableInputTypes: availableInputTypes1Schema
   });
-  var autofillFeatureTogglesSchema = v3_exports.object({
-    autocomplete_attribute_support: v3_exports.boolean().optional(),
-    inputType_credentials: v3_exports.boolean().optional(),
-    inputType_identities: v3_exports.boolean().optional(),
-    inputType_creditCards: v3_exports.boolean().optional(),
-    emailProtection: v3_exports.boolean().optional(),
-    emailProtection_incontext_signup: v3_exports.boolean().optional(),
-    password_generation: v3_exports.boolean().optional(),
-    credentials_saving: v3_exports.boolean().optional(),
-    inlineIcon_credentials: v3_exports.boolean().optional(),
-    third_party_credentials_provider: v3_exports.boolean().optional(),
-    unknown_username_categorization: v3_exports.boolean().optional(),
-    input_focus_api: v3_exports.boolean().optional(),
-    password_variant_categorization: v3_exports.boolean().optional(),
-    partial_form_saves: v3_exports.boolean().optional()
+  var autofillFeatureTogglesSchema = external_exports.object({
+    autocomplete_attribute_support: external_exports.boolean().optional(),
+    inputType_credentials: external_exports.boolean().optional(),
+    inputType_identities: external_exports.boolean().optional(),
+    inputType_creditCards: external_exports.boolean().optional(),
+    emailProtection: external_exports.boolean().optional(),
+    emailProtection_incontext_signup: external_exports.boolean().optional(),
+    password_generation: external_exports.boolean().optional(),
+    credentials_saving: external_exports.boolean().optional(),
+    inlineIcon_credentials: external_exports.boolean().optional(),
+    third_party_credentials_provider: external_exports.boolean().optional(),
+    unknown_username_categorization: external_exports.boolean().optional(),
+    input_focus_api: external_exports.boolean().optional(),
+    password_variant_categorization: external_exports.boolean().optional(),
+    partial_form_saves: external_exports.boolean().optional()
   });
-  var getIdentityResultSchema = v3_exports.object({
+  var getIdentityResultSchema = external_exports.object({
     success: identityObjectSchema
   });
-  var getCreditCardResultSchema = v3_exports.object({
+  var getCreditCardResultSchema = external_exports.object({
     success: creditCardObjectSchema
   });
-  var emailProtectionGetIsLoggedInResultSchema = v3_exports.object({
-    success: v3_exports.boolean().optional(),
+  var emailProtectionGetIsLoggedInResultSchema = external_exports.object({
+    success: external_exports.boolean().optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetUserDataResultSchema = v3_exports.object({
-    success: v3_exports.object({
-      userName: v3_exports.string(),
-      nextAlias: v3_exports.string(),
-      token: v3_exports.string()
+  var emailProtectionGetUserDataResultSchema = external_exports.object({
+    success: external_exports.object({
+      userName: external_exports.string(),
+      nextAlias: external_exports.string(),
+      token: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetCapabilitiesResultSchema = v3_exports.object({
-    success: v3_exports.object({
-      addUserData: v3_exports.boolean().optional(),
-      getUserData: v3_exports.boolean().optional(),
-      removeUserData: v3_exports.boolean().optional()
+  var emailProtectionGetCapabilitiesResultSchema = external_exports.object({
+    success: external_exports.object({
+      addUserData: external_exports.boolean().optional(),
+      getUserData: external_exports.boolean().optional(),
+      removeUserData: external_exports.boolean().optional()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionGetAddressesResultSchema = v3_exports.object({
-    success: v3_exports.object({
-      personalAddress: v3_exports.string(),
-      privateAddress: v3_exports.string()
+  var emailProtectionGetAddressesResultSchema = external_exports.object({
+    success: external_exports.object({
+      personalAddress: external_exports.string(),
+      privateAddress: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var emailProtectionRefreshPrivateAddressResultSchema = v3_exports.object({
-    success: v3_exports.object({
-      personalAddress: v3_exports.string(),
-      privateAddress: v3_exports.string()
+  var emailProtectionRefreshPrivateAddressResultSchema = external_exports.object({
+    success: external_exports.object({
+      personalAddress: external_exports.string(),
+      privateAddress: external_exports.string()
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var getAutofillDataRequestSchema = v3_exports.object({
+  var getAutofillDataRequestSchema = external_exports.object({
     generatedPassword: generatedPasswordSchema.optional(),
-    inputType: v3_exports.string(),
-    mainType: v3_exports.union([v3_exports.literal("credentials"), v3_exports.literal("identities"), v3_exports.literal("creditCards")]),
-    subType: v3_exports.string(),
-    trigger: v3_exports.union([v3_exports.literal("userInitiated"), v3_exports.literal("autoprompt"), v3_exports.literal("postSignup")]).optional(),
-    serializedInputContext: v3_exports.string().optional(),
+    inputType: external_exports.string(),
+    mainType: external_exports.union([external_exports.literal("credentials"), external_exports.literal("identities"), external_exports.literal("creditCards")]),
+    subType: external_exports.string(),
+    trigger: external_exports.union([external_exports.literal("userInitiated"), external_exports.literal("autoprompt"), external_exports.literal("postSignup")]).optional(),
+    serializedInputContext: external_exports.string().optional(),
     triggerContext: triggerContextSchema.optional()
   });
-  var getAutofillDataResponseSchema = v3_exports.object({
-    type: v3_exports.literal("getAutofillDataResponse").optional(),
-    success: v3_exports.object({
+  var getAutofillDataResponseSchema = external_exports.object({
+    type: external_exports.literal("getAutofillDataResponse").optional(),
+    success: external_exports.object({
       credentials: credentialsSchema.optional(),
       creditCards: creditCardObjectSchema.optional(),
       identities: identityObjectSchema.optional(),
-      action: v3_exports.union([v3_exports.literal("fill"), v3_exports.literal("focus"), v3_exports.literal("none"), v3_exports.literal("refreshAvailableInputTypes"), v3_exports.literal("acceptGeneratedPassword"), v3_exports.literal("rejectGeneratedPassword")])
+      action: external_exports.union([external_exports.literal("fill"), external_exports.literal("focus"), external_exports.literal("none"), external_exports.literal("refreshAvailableInputTypes"), external_exports.literal("acceptGeneratedPassword"), external_exports.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
   });
-  var storeFormDataSchema = v3_exports.object({
+  var storeFormDataSchema = external_exports.object({
     credentials: outgoingCredentialsSchema.optional(),
-    trigger: v3_exports.union([v3_exports.literal("partialSave"), v3_exports.literal("formSubmission"), v3_exports.literal("passwordGeneration"), v3_exports.literal("emailProtection")]).optional()
+    trigger: external_exports.union([external_exports.literal("partialSave"), external_exports.literal("formSubmission"), external_exports.literal("passwordGeneration"), external_exports.literal("emailProtection")]).optional()
   });
-  var getAvailableInputTypesResultSchema = v3_exports.object({
-    type: v3_exports.literal("getAvailableInputTypesResponse").optional(),
+  var getAvailableInputTypesResultSchema = external_exports.object({
+    type: external_exports.literal("getAvailableInputTypesResponse").optional(),
     success: availableInputTypesSchema,
     error: genericErrorSchema.optional()
   });
-  var askToUnlockProviderResultSchema = v3_exports.object({
-    type: v3_exports.literal("askToUnlockProviderResponse").optional(),
+  var askToUnlockProviderResultSchema = external_exports.object({
+    type: external_exports.literal("askToUnlockProviderResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
-  var checkCredentialsProviderStatusResultSchema = v3_exports.object({
-    type: v3_exports.literal("checkCredentialsProviderStatusResponse").optional(),
+  var checkCredentialsProviderStatusResultSchema = external_exports.object({
+    type: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
   });
-  var autofillSettingsSchema = v3_exports.object({
+  var autofillSettingsSchema = external_exports.object({
     featureToggles: autofillFeatureTogglesSchema
   });
-  var runtimeConfigurationSchema = v3_exports.object({
-    contentScope: v3_exports.record(v3_exports.unknown()),
-    userUnprotectedDomains: v3_exports.array(v3_exports.string()),
+  var runtimeConfigurationSchema = external_exports.object({
+    contentScope: external_exports.record(external_exports.unknown()),
+    userUnprotectedDomains: external_exports.array(external_exports.string()),
     userPreferences: userPreferencesSchema
   });
-  var getRuntimeConfigurationResponseSchema = v3_exports.object({
-    type: v3_exports.literal("getRuntimeConfigurationResponse").optional(),
+  var getRuntimeConfigurationResponseSchema = external_exports.object({
+    type: external_exports.literal("getRuntimeConfigurationResponse").optional(),
     success: runtimeConfigurationSchema.optional(),
     error: genericErrorSchema.optional()
   });
-  var apiSchema = v3_exports.object({
-    addDebugFlag: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
+  var apiSchema = external_exports.object({
+    addDebugFlag: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: addDebugFlagParamsSchema.optional()
     })).optional(),
-    getAutofillData: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getAutofillDataResponse").optional(),
+    getAutofillData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillDataResponse").optional(),
       paramsValidator: getAutofillDataRequestSchema.optional(),
       resultValidator: getAutofillDataResponseSchema.optional()
     })).optional(),
-    getAutofillDataFocus: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getAutofillDataFocusResponse").optional(),
+    getAutofillDataFocus: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillDataFocusResponse").optional(),
       paramsValidator: getAutofillDataFocusRequestSchema.optional(),
       resultValidator: getAutofillDataFocusResponseSchema.optional()
     })).optional(),
-    getRuntimeConfiguration: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getRuntimeConfigurationResponse").optional(),
+    getRuntimeConfiguration: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getRuntimeConfigurationResponse").optional(),
       resultValidator: getRuntimeConfigurationResponseSchema.optional()
     })).optional(),
-    storeFormData: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
+    storeFormData: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: storeFormDataSchema.optional()
     })).optional(),
-    getAvailableInputTypes: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getAvailableInputTypesResponse").optional(),
+    getAvailableInputTypes: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAvailableInputTypesResponse").optional(),
       resultValidator: getAvailableInputTypesResultSchema.optional()
     })).optional(),
-    getAutofillInitData: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getAutofillInitDataResponse").optional(),
+    getAutofillInitData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillInitDataResponse").optional(),
       resultValidator: getAutofillInitDataResponseSchema.optional()
     })).optional(),
-    getAutofillCredentials: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getAutofillCredentialsResponse").optional(),
+    getAutofillCredentials: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getAutofillCredentialsResponse").optional(),
       paramsValidator: getAutofillCredentialsParamsSchema.optional(),
       resultValidator: getAutofillCredentialsResultSchema.optional()
     })).optional(),
-    setSize: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
+    setSize: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: setSizeParamsSchema.optional()
     })).optional(),
-    selectedDetail: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
+    selectedDetail: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: selectedDetailParamsSchema.optional()
     })).optional(),
-    closeAutofillParent: v3_exports.record(v3_exports.unknown()).optional(),
-    askToUnlockProvider: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("askToUnlockProviderResponse").optional(),
+    closeAutofillParent: external_exports.record(external_exports.unknown()).optional(),
+    askToUnlockProvider: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("askToUnlockProviderResponse").optional(),
       resultValidator: askToUnlockProviderResultSchema.optional()
     })).optional(),
-    checkCredentialsProviderStatus: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("checkCredentialsProviderStatusResponse").optional(),
+    checkCredentialsProviderStatus: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("checkCredentialsProviderStatusResponse").optional(),
       resultValidator: checkCredentialsProviderStatusResultSchema.optional()
     })).optional(),
-    sendJSPixel: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
+    sendJSPixel: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: sendJSPixelParamsSchema.optional()
     })).optional(),
-    setIncontextSignupPermanentlyDismissedAt: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
+    setIncontextSignupPermanentlyDismissedAt: external_exports.record(external_exports.unknown()).and(external_exports.object({
       paramsValidator: setIncontextSignupPermanentlyDismissedAtSchema.optional()
     })).optional(),
-    getIncontextSignupDismissedAt: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getIncontextSignupDismissedAt").optional(),
+    getIncontextSignupDismissedAt: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getIncontextSignupDismissedAt").optional(),
       resultValidator: getIncontextSignupDismissedAtSchema.optional()
     })).optional(),
-    autofillSettings: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      validatorsOnly: v3_exports.literal(true).optional(),
+    autofillSettings: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      validatorsOnly: external_exports.literal(true).optional(),
       resultValidator: autofillSettingsSchema.optional()
     })).optional(),
-    getAlias: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      validatorsOnly: v3_exports.literal(true).optional(),
+    getAlias: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      validatorsOnly: external_exports.literal(true).optional(),
       paramValidator: getAliasParamsSchema.optional(),
       resultValidator: getAliasResultSchema.optional()
     })).optional(),
-    openManagePasswords: v3_exports.record(v3_exports.unknown()).optional(),
-    openManageCreditCards: v3_exports.record(v3_exports.unknown()).optional(),
-    openManageIdentities: v3_exports.record(v3_exports.unknown()).optional(),
-    startCredentialsImportFlow: v3_exports.record(v3_exports.unknown()).optional(),
-    getIdentity: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getIdentityResponse").optional(),
+    openManagePasswords: external_exports.record(external_exports.unknown()).optional(),
+    openManageCreditCards: external_exports.record(external_exports.unknown()).optional(),
+    openManageIdentities: external_exports.record(external_exports.unknown()).optional(),
+    startCredentialsImportFlow: external_exports.record(external_exports.unknown()).optional(),
+    getIdentity: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getIdentityResponse").optional(),
       paramValidator: getIdentityParamSchema.optional(),
       resultValidator: getIdentityResultSchema.optional()
     })).optional(),
-    getCreditCard: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("getCreditCardResponse").optional(),
+    getCreditCard: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("getCreditCardResponse").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
       resultValidator: getCreditCardResultSchema.optional()
     })).optional(),
-    credentialsImportFlowPermanentlyDismissed: v3_exports.record(v3_exports.unknown()).optional(),
-    emailProtectionStoreUserData: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("emailProtectionStoreUserDataResponse").optional(),
+    credentialsImportFlowPermanentlyDismissed: external_exports.record(external_exports.unknown()).optional(),
+    emailProtectionStoreUserData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionStoreUserDataResponse").optional(),
       paramsValidator: emailProtectionStoreUserDataParamsSchema.optional()
     })).optional(),
-    emailProtectionRemoveUserData: v3_exports.record(v3_exports.unknown()).optional(),
-    emailProtectionGetIsLoggedIn: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("emailProtectionGetIsLoggedInResponse").optional(),
+    emailProtectionRemoveUserData: external_exports.record(external_exports.unknown()).optional(),
+    emailProtectionGetIsLoggedIn: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetIsLoggedInResponse").optional(),
       resultValidator: emailProtectionGetIsLoggedInResultSchema.optional()
     })).optional(),
-    emailProtectionGetUserData: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("emailProtectionGetUserDataResponse").optional(),
+    emailProtectionGetUserData: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetUserDataResponse").optional(),
       resultValidator: emailProtectionGetUserDataResultSchema.optional()
     })).optional(),
-    emailProtectionGetCapabilities: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("emailProtectionGetCapabilitiesResponse").optional(),
+    emailProtectionGetCapabilities: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetCapabilitiesResponse").optional(),
       resultValidator: emailProtectionGetCapabilitiesResultSchema.optional()
     })).optional(),
-    emailProtectionGetAddresses: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("emailProtectionGetAddressesResponse").optional(),
+    emailProtectionGetAddresses: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionGetAddressesResponse").optional(),
       resultValidator: emailProtectionGetAddressesResultSchema.optional()
     })).optional(),
-    emailProtectionRefreshPrivateAddress: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
+    emailProtectionRefreshPrivateAddress: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("emailProtectionRefreshPrivateAddressResponse").optional(),
       resultValidator: emailProtectionRefreshPrivateAddressResultSchema.optional()
     })).optional(),
-    startEmailProtectionSignup: v3_exports.record(v3_exports.unknown()).optional(),
-    closeEmailProtectionTab: v3_exports.record(v3_exports.unknown()).optional(),
-    ShowInContextEmailProtectionSignupPrompt: v3_exports.record(v3_exports.unknown()).and(v3_exports.object({
-      id: v3_exports.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
+    startEmailProtectionSignup: external_exports.record(external_exports.unknown()).optional(),
+    closeEmailProtectionTab: external_exports.record(external_exports.unknown()).optional(),
+    ShowInContextEmailProtectionSignupPrompt: external_exports.record(external_exports.unknown()).and(external_exports.object({
+      id: external_exports.literal("ShowInContextEmailProtectionSignupPromptResponse").optional(),
       resultValidator: showInContextEmailProtectionSignupPromptSchema.optional()
     })).optional()
   });
