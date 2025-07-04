@@ -80,7 +80,7 @@ function copyImageAssets() {
         fs.mkdirSync(imgRootPath, { recursive: true });
     }
 
-    console.log(`This is for debug-ui assets`);
+    console.log(`This is for debug-ui assets - img folder`);
     const images = readdirSync(imgSrcPath);
     images.forEach((image) => {
         const srcImagePath = join(imgSrcPath, image);

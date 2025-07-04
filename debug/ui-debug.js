@@ -38,7 +38,7 @@ const credentials = [
     {
         title: "password only",
         data: [
-            createCredentialsTooltipItem({ id: 'def', password: '1234567', username: 'mscott@dundermifflinonline.com', origin: { url: 'fill.dev' } })
+            createCredentialsTooltipItem({ id: 'def', password: '12345678', username: 'mscott@dundermifflinonline.com', origin: { url: 'fill.dev' } })
         ],
         type: 'credentials.password',
         verticalSpacing: 1,

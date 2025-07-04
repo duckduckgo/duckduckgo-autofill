@@ -411,7 +411,7 @@ which has its own box-shadow and border-radius settings.
     background-image: url('../img/bitwarden.svg');
 }
 .tooltip__button--data--credentials.tooltip__button--data--bitwarden#provider_locked::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden#provider_locked::before{
+.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden#provider_locked::before {
     background-image: url('../img/bitwarden-locked.svg');
 }
 
