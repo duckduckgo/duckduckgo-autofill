@@ -12,7 +12,7 @@ console.log('🚀 Starting Debug UI Tool...');
 // First, ensure debug UI assets are copied
 console.log('📄 Copying debug UI assets...');
 process.env.DEBUG_UI = 'true';
-require('./copy-assets');
+require('./copy-assets.js');
 
 // Start the HTTP server
 console.log(`🌐 Starting server on port ${SERVER_PORT}...`);
