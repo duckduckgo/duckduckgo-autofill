@@ -371,7 +371,7 @@ which has its own box-shadow and border-radius settings.
 }
 .tooltip__button--data--credentials__new::before {
     background-size: 24px;
-    background-image: url('../img/key-login-autofill.svg');
+    background-image: url('../img/key-login.svg');
 }
 /* Payment Provider Icons */
 .tooltip__button--data--creditCards::before,
