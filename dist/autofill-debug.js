@@ -6240,7 +6240,9 @@ Source: "${matchedFrom}"`;
      * @returns {boolean}
      */
     get shouldAutoprompt() {
-      if (this.device.credentialsImport.isAvailable()) return false;
+      if (this.device.globalConfig.isMobileApp && this.device.credentialsImport.isAvailable()) {
+        return false;
+      }
       return Date.now() - this.initTimeStamp <= 1500;
     }
     /**
@@ -16268,8 +16270,8 @@ Source: "${matchedFrom}"`;
       this.device.activeForm?.redecorateAllInputs();
       this.device.uiController?.removeTooltip("interface");
       const activeInput = this.device.activeForm?.activeInput;
-      const availableCredentials = this.device.settings.availableInputTypes.credentials;
-      if (this.device.activeForm && activeInput && (availableCredentials?.username || availableCredentials?.password)) {
+      const { username, password } = this.device.settings.availableInputTypes.credentials || {};
+      if (this.device.activeForm && activeInput && (username || password)) {
         this.device.attachTooltip({
           form: this.device.activeForm,
           input: activeInput,

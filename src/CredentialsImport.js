@@ -54,9 +54,10 @@ class CredentialsImport {
 
         const activeInput = this.device.activeForm?.activeInput;
 
-        const availableCredentials = this.device.settings.availableInputTypes.credentials;
-        if (this.device.activeForm && activeInput && (availableCredentials?.username || availableCredentials?.password)) {
-            // On mobile we explicitly attach the tooltip, as focus or click events are not enough to trigger the tooltip
+        const { username, password } = this.device.settings.availableInputTypes.credentials || {};
+        if (this.device.activeForm && activeInput && (username || password)) {
+            // Attach tooltip again to force prompt the credentials prompt,
+            // if username or password become available.
             this.device.attachTooltip({
                 form: this.device.activeForm,
                 input: activeInput,
