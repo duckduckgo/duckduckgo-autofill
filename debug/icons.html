@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autofill Icons - Debug UI</title>
+    <script src="../src/UI/img/ddgPasswordIcon.js" type="module"></script>
+    <style>
+        :root {
+            --primary-color: #de5833;
+            --border-color: #e0e0e0;
+            --hover-color: #f5f5f5;
+            --text-color: #333333;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+            --input-focus-border: #4495d4;
+            --input-focus-shadow: rgba(68, 149, 212, 0.2);
+            --category-bg: #ffffff;
+        }
+
+        .dark-theme {
+            --primary-color: #ff6b40;
+            --border-color: #444444;
+            --hover-color: #333333;
+            --text-color: #f0f0f0;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            --input-bg: #333333;
+            --input-border: #555555;
+            --input-focus-border: #4495d4;
+            --input-focus-shadow: rgba(68, 149, 212, 0.4);
+            --category-bg: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+            padding: 2rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .dark-theme {
+            background-color: #222;
+            color: var(--text-color);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem auto 2rem;
+            max-width: 1200px;
+        }
+
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4495d4;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        .controls a {
+            color: #4495d4;
+            text-decoration: none;
+        }
+
+        .controls a:hover {
+            text-decoration: underline;
+        }
+
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .size-control select {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .categories-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category {
+            background-color: var(--category-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .icon-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow);
+            background-color: var(--hover-color);
+        }
+
+        .dark-theme .icon-card {
+            background-color: #333;
+            border-color: #444;
+        }
+
+        .dark-theme .icon-card:hover {
+            background-color: #3a3a3a;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 0.75rem;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            transition: width 0.3s, height 0.3s;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+        }
+
+        .dark-theme .icon {
+            background-color: rgba(60, 60, 60, 0.8);
+        }
+
+        .icon-name {
+            font-size: 0.85rem;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .icon-description {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+
+        .pair {
+            display: flex;
+            flex-direction: column;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .dark-theme footer {
+            color: #888;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Autofill Icons</h1>
+        <div class="controls">
+            <div class="size-control">
+                <label for="icon-size">Icon Size:</label>
+                <select id="icon-size">
+                    <option value="16">16×16</option>
+                    <option value="24" selected>24×24</option>
+                    <option value="32">32×32</option>
+                    <option value="48">48×48</option>
+                </select>
+            </div>
+            <a href="index.html">Back to Debug Home</a>
+        </div>
+    </header>
+
+
+
+    <div class="categories-container">
+        <!-- Password Management Icons -->
+        <section class="category">
+            <h2>Password Management</h2>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuOTk4IDJBNy4wMDUgNy4wMDUgMCAwIDEgMjIgOS4wMDdhNy4wMDQgNy4wMDQgMCAwIDEtOC43MDUgNi43OTdjLS4xNjMtLjA0MS0uMjg2LjAwOC0uMzQ1LjA2N2wtMi41NTcgMi41NTlhMiAyIDAgMCAxLTEuNDE1LjU4NmgtLjk4MnYuNzM0QTIuMjUgMi4yNSAwIDAgMSA1Ljc0NSAyMmgtLjk5M2EyLjc1IDIuNzUgMCAwIDEtMi43NS0yLjczNUwyIDE4Ljc3YTMuNzUgMy43NSAwIDAgMSAxLjA5OC0yLjY3bDUuMDQtNS4wNDNjLjA2LS4wNi4xMDctLjE4My4wNjYtLjM0NmE3IDcgMCAwIDEtLjIwOC0xLjcwNEE3LjAwNCA3LjAwNCAwIDAgMSAxNC45OTggMm0wIDEuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzNyA2Ljg0OGMuMTQ3LjU4OS4wMjcgMS4yNzktLjQ2MiAxLjc2OGwtNS4wNCA1LjA0NGEyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwM2wuMDAzLjQ5NGExLjI1IDEuMjUgMCAwIDAgMS4yNSAxLjI0M2guOTkyYS43NS43NSAwIDAgMCAuNzUtLjc1di0uNzM0YTEuNSAxLjUgMCAwIDEgMS41LTEuNWguOTgzYS41LjUgMCAwIDAgLjM1My0uMTQ3bDIuNTU4LTIuNTU5Yy40OS0uNDkgMS4xOC0uNjA5IDEuNzctLjQ2MWE1LjUwNCA1LjUwNCAwIDAgMCA2Ljg0LTUuMzQyQTUuNTA1IDUuNTA1IDAgMCAwIDE1IDMuNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4=');"></div>
+                    <span class="icon-name">Password Icon</span>
+                    <span class="icon-description">Default state</span>
+                </div>
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuOTk4IDJBNy4wMDUgNy4wMDUgMCAwIDEgMjIgOS4wMDdhNy4wMDQgNy4wMDQgMCAwIDEtOC43MDUgNi43OTdjLS4xNjMtLjA0MS0uMjg2LjAwOC0uMzQ1LjA2N2wtMi41NTcgMi41NTlhMiAyIDAgMCAxLTEuNDE1LjU4NmgtLjk4MnYuNzM0QTIuMjUgMi4yNSAwIDAgMSA1Ljc0NSAyMmgtLjk5M2EyLjc1IDIuNzUgMCAwIDEtMi43NS0yLjczNUwyIDE4Ljc3YTMuNzUgMy43NSAwIDAgMSAxLjA5OC0yLjY3bDUuMDQtNS4wNDNjLjA2LS4wNi4xMDctLjE4My4wNjYtLjM0NmE3IDcgMCAwIDEtLjIwOC0xLjcwNEE3LjAwNCA3LjAwNCAwIDAgMSAxNC45OTggMm0wIDEuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzNyA2Ljg0OGMuMTQ3LjU4OS4wMjcgMS4yNzktLjQ2MiAxLjc2OGwtNS4wNCA1LjA0NGEyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwM2wuMDAzLjQ5NGExLjI1IDEuMjUgMCAwIDAgMS4yNSAxLjI0M2guOTkyYS43NS43NSAwIDAgMCAuNzUtLjc1di0uNzM0YTEuNSAxLjUgMCAwIDEgMS41LTEuNWguOTgzYS41LjUgMCAwIDAgLjM1My0uMTQ3bDIuNTU4LTIuNTU5Yy40OS0uNDkgMS4xOC0uNjA5IDEuNzctLjQ2MWE1LjUwNCA1LjUwNCAwIDAgMCA2Ljg0LTUuMzQyQTUuNTA1IDUuNTA1IDAgMCAwIDE1IDMuNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4K');"></div>
+                    <span class="icon-name">Password Icon Filled</span>
+                    <span class="icon-description">Filled state</span>
+                </div>
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZD0iTTE0Ljk5OCAyQTcuMDA0IDcuMDA0IDAgMCAxIDIyIDkuMDA2YzAgMi0uODM4IDMuODA2LTIuMTgyIDUuMDgyYS42Ni42NiAwIDAgMS0uNzY4LjA5MmMtLjQ3Mi0uMjUxLS41MDctLjkzLS4xMzItMS4zMUE1LjUgNS41IDAgMCAwIDIwLjUgOS4wMDYgNS41MDQgNS41MDQgMCAwIDAgMTQuOTk4IDMuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzOCA2Ljg0N2wuMDI1LjExMmMuMTAzLjU0NC0uMDE4IDEuMTU2LS40NCAxLjYxMWwtLjA0Ni4wNDctNS4wNCA1LjA0M2EyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwMmwuMDAzLjQ5NC4wMDIuMDY1QTEuMjUgMS4yNSAwIDAgMCA0Ljc1MyAyMC41aC45OTNhLjc1Ljc1IDAgMCAwIC43NS0uNzV2LS43MzRhMS41IDEuNSAwIDAgMSAxLjUtMS41aC45ODJhLjUuNSAwIDAgMCAuMzU0LS4xNDdsMS4xNzgtMS4xNzhhLjczNi43MzYgMCAwIDEgMS4wNjIgMS4wMmwtLjUzMi41Ny0uNjQ3LjY0OWEyIDIgMCAwIDEtMS40MTUuNTg2aC0uOTgydi43MzRBMi4yNSAyLjI1IDAgMCAxIDUuNzQ2IDIyaC0uOTkzYTIuNzUgMi43NSAwIDAgMS0yLjc0Ni0yLjU5NWwtLjAwNC0uMTRMMiAxOC43N2EzLjc1IDMuNzUgMCAwIDEgMS4wOTgtMi42N2w1LjA0LTUuMDQ0LjAyMi0uMDI1YS4zNi4zNiAwIDAgMCAuMDU2LS4yNmwtLjAxMS0uMDZBNy4wMDQgNy4wMDQgMCAwIDEgMTQuOTk4IDIiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii45IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS41IDZhMi41IDIuNSAwIDEgMSAwIDUgMi41IDIuNSAwIDAgMSAwLTVtMCAxLjVhMSAxIDAgMSAwIDAgMiAxIDEgMCAwIDAgMC0yIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTMuMDAzIDE2LjE5cTAtLjAzLjAwMy0uMDU4YTEgMSAwIDAgMSAuMDE5LS4wOTdsLjAxLS4wNGExIDEgMCAwIDEgLjA0Ni0uMTEybC4wMDgtLjAxOS4wMDMtLjAwNi4wMDYtLjAwOWExIDEgMCAwIDEgLjA2NS0uMDk2bC4wMDgtLjAxMS4wMDMtLjAwNCAzLjEyNS0zLjc1YS43NS43NSAwIDAgMSAxLjE1Mi45NjFsLTIuMTI2IDIuNTVoNS4xNDRhLjc1Ljc1IDAgMCAxIDAgMS41aC01LjA5MmwyLjA3NCAyLjQ5LjA0Ni4wNmEuNzUuNzUgMCAwIDEtMS4xNDYuOTU2bC0uMDUyLS4wNTYtMy4xMjUtMy43NS0uMDAzLS4wMDMtLjAxNi0uMDIxLS4wMjctLjAzOC0uMDItLjAzNi0uMDM1LS4wNjNhLjguOCAwIDAgMS0uMDctLjI3MXoiLz4KPC9zdmc+');"></div>
+                    <span class="icon-name">Password Import Icon</span>
+                    <span class="icon-description">Key import functionality</span>
+                </div>
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTExLjIyNCA0LjY0YS45LjkgMCAwIDAgLjY0Ny0uMTY1IDUuNDcgNS40NyAwIDAgMSAzLjEyNy0uOTc1QTUuNTA0IDUuNTA0IDAgMCAxIDIwLjUgOS4wMDZhNS41MDQgNS41MDQgMCAwIDEtNi44NCA1LjM0M2MtLjU5LS4xNDgtMS4yODEtLjAyOC0xLjc3MS40NjJsLTIuNTU3IDIuNTU4YS41LjUgMCAwIDEtLjM1NC4xNDdoLS45ODJhMS41IDEuNSAwIDAgMC0xLjUgMS41di43MzRhLjc1Ljc1IDAgMCAxLS43NS43NWgtLjk5M2ExLjI1IDEuMjUgMCAwIDEtMS4yNS0xLjI0NGwtLjAwMy0uNDk0YTIuMjUgMi4yNSAwIDAgMSAuNjU5LTEuNjAybDUuMDQtNS4wNDNjLjM0My0uMzQ0LjQ2MS0uNzExLjQ3OS0xLjA5NS4wMjctLjU4Mi0uNzM3LS44NDctMS4xNzktLjQ2N2wtLjA2Ni4wNTZhLjcuNyAwIDAgMC0uMTU4LjIzMi44LjggMCAwIDEtLjEzNy4yMTNMMy4wOTggMTYuMUEzLjc1IDMuNzUgMCAwIDAgMiAxOC43N2wuMDAzLjQ5NEEyLjc1IDIuNzUgMCAwIDAgNC43NTMgMjJoLjk5MmEyLjI1IDIuMjUgMCAwIDAgMi4yNS0yLjI1di0uNzM0aC45ODNhMiAyIDAgMCAwIDEuNDE1LS41ODZsMi41NTctMi41NTljLjA1OS0uMDU5LjE4Mi0uMTA4LjM0Ni0uMDY3QTcuMDA0IDcuMDA0IDAgMCAwIDIyIDkuMDA2IDcuMDA0IDcuMDA0IDAgMCAwIDEwLjgyNiAzLjM4Yy0uNTMzLjM5NS0uMjYgMS4xNjYuMzk3IDEuMjZaIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTcuMTI1IDIuODA0QzcgMi4xNiA2LjkxNSAyIDYuNSAyYy0uNDE0IDAtLjUuMTYtLjYyNS44MDQtLjA4LjQxMy0uMjEyIDEuODItLjI5NiAyLjc3NS0uOTU0LjA4NC0yLjM2Mi4yMTYtMi43NzUuMjk2QzIuMTYgNiAyIDYuMDg1IDIgNi41YzAgLjQxNC4xNjEuNS44MDQuNjI1LjQxMi4wOCAxLjgxOC4yMTIgMi43NzIuMjk2LjA4My45ODkuMjE4IDIuNDYxLjMgMi43NzUuMTI0LjQ4My4yMS44MDQuNjI0LjgwNHMuNS0uMTYuNjI1LS44MDRjLjA4LS40MTIuMjEyLTEuODE3LjI5Ni0yLjc3MS45OS0uMDg0IDIuNDYyLS4yMTkgMi43NzYtLjNDMTAuNjc5IDcgMTEgNi45MTUgMTEgNi41YzAtLjQxNC0uMTYtLjUtLjgwMy0uNjI1LS40MTMtLjA4LTEuODIxLS4yMTItMi43NzUtLjI5Ni0uMDg1LS45NTQtLjIxNi0yLjM2Mi0uMjk3LTIuNzc1bS00LjM0MiA4Ljc2MWEuNzgzLjc4MyAwIDEgMCAwLTEuNTY1Ljc4My43ODMgMCAwIDAgMCAxLjU2NSIvPgo8L3N2Zz4K');"></div>
+                    <span class="icon-name">Password Generator</span>
+                    <span class="icon-description">Default state</span>
+                </div>
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZD0iTTExLjIyNCA0LjY0YS45LjkgMCAwIDAgLjY0Ny0uMTY1IDUuNDcgNS40NyAwIDAgMSAzLjEyNy0uOTc1QTUuNTA0IDUuNTA0IDAgMCAxIDIwLjUgOS4wMDZhNS41MDQgNS41MDQgMCAwIDEtNi44NCA1LjM0M2MtLjU5LS4xNDgtMS4yODEtLjAyOC0xLjc3MS40NjJsLTIuNTU3IDIuNTU4YS41LjUgMCAwIDEtLjM1NC4xNDdoLS45ODJhMS41IDEuNSAwIDAgMC0xLjUgMS41di43MzRhLjc1Ljc1IDAgMCAxLS43NS43NWgtLjk5M2ExLjI1IDEuMjUgMCAwIDEtMS4yNS0xLjI0NGwtLjAwMy0uNDk0YTIuMjUgMi4yNSAwIDAgMSAuNjU5LTEuNjAybDUuMDQtNS4wNDNjLjM0My0uMzQ0LjQ2MS0uNzExLjQ3OS0xLjA5NS4wMjctLjU4Mi0uNzM3LS44NDctMS4xNzktLjQ2N2wtLjA2Ni4wNTZhLjcuNyAwIDAgMC0uMTU4LjIzMi44LjggMCAwIDEtLjEzNy4yMTNMMy4wOTggMTYuMUEzLjc1IDMuNzUgMCAwIDAgMiAxOC43N2wuMDAzLjQ5NEEyLjc1IDIuNzUgMCAwIDAgNC43NTMgMjJoLjk5MmEyLjI1IDIuMjUgMCAwIDAgMi4yNS0yLjI1di0uNzM0aC45ODNhMiAyIDAgMCAwIDEuNDE1LS41ODZsMi41NTctMi41NTljLjA1OS0uMDU5LjE4Mi0uMTA4LjM0Ni0uMDY3QTcuMDA0IDcuMDA0IDAgMCAwIDIyIDkuMDA2IDcuMDA0IDcuMDA0IDAgMCAwIDEwLjgyNiAzLjM4Yy0uNTMzLjM5NS0uMjYgMS4xNjYuMzk3IDEuMjZaIi8+CiAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzc2NDMxMCIgZD0iTTcuMTI1IDIuODA0QzcgMi4xNiA2LjkxNSAyIDYuNSAyYy0uNDE0IDAtLjUuMTYtLjYyNS44MDQtLjA4LjQxMy0uMjEyIDEuODItLjI5NiAyLjc3NS0uOTU0LjA4NC0yLjM2Mi4yMTYtMi43NzUuMjk2QzIuMTYgNiAyIDYuMDg1IDIgNi41YzAgLjQxNC4xNjEuNS44MDQuNjI1LjQxMi4wOCAxLjgxOC4yMTIgMi43NzIuMjk2LjA4My45ODkuMjE4IDIuNDYxLjMgMi43NzUuMTI0LjQ4My4yMS44MDQuNjI0LjgwNHMuNS0uMTYuNjI1LS44MDRjLjA4LS40MTIuMjEyLTEuODE3LjI5Ni0yLjc3MS45OS0uMDg0IDIuNDYyLS4yMTkgMi43NzYtLjNDMTAuNjc5IDcgMTEgNi45MTUgMTEgNi41YzAtLjQxNC0uMTYtLjUtLjgwMy0uNjI1LS40MTMtLjA4LTEuODIxLS4yMTItMi43NzUtLjI5Ni0uMDg1LS45NTQtLjIxNi0yLjM2Mi0uMjk3LTIuNzc1bS00LjM0MiA4Ljc2MWEuNzgzLjc4MyAwIDEgMCAwLTEuNTY1Ljc4My43ODMgMCAwIDAgMCAxLjU2NSIvPgo8L3N2Zz4K');"></div>
+                    <span class="icon-name">Password Generator Filled</span>
+                    <span class="icon-description">Filled state</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Method Icons -->
+        <section class="category">
+            <h2>Payment Methods</h2>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');"></div>
+                    <span class="icon-name">Credit Card Icon</span>
+                    <span class="icon-description">Default state</span>
+                </div>
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzc2NDMxMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjNzY0MzEwIi8+Cjwvc3ZnPgo=');"></div>
+                    <span class="icon-name">Credit Card Icon Filled</span>
+                    <span class="icon-description">Filled state</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Identity Icons -->
+        <section class="category">
+            <h2>User Identity</h2>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTYgOS41YTQgNCAwIDEgMS04IDAgNCA0IDAgMCAxIDggMG0tMS41IDBhMi41IDIuNSAwIDEgMS01IDAgMi41IDIuNSAwIDAgMSA1IDAiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIyYzUuNTIzIDAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTBtMC0xLjVhOC40NyA4LjQ3IDAgMCAwIDUuNzA2LTIuMkE2LjU4IDYuNTggMCAwIDAgMTIgMTVhNi41OCA2LjU4IDAgMCAwLTUuNzA1IDMuM0E4LjQ3IDguNDcgMCAwIDAgMTIgMjAuNW0wLTdhOC4wNyA4LjA3IDAgMCAxIDYuNzYgMy42NTMgOC41IDguNSAwIDEgMC0xMy41MiAwQTguMDcgOC4wNyAwIDAgMSAxMiAxMy41IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==');"></div>
+                    <span class="icon-name">User Profile</span>
+                    <span class="icon-description">Identity information</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Autofill Icons</p>
+    </footer>
+
+    <script type="module">
+        // Import the icons from the JS module
+        import * as Icons from '../src/UI/img/ddgPasswordIcon.js';
+
+        // Set up the icon mapping
+        const icons = {
+            passwordIcons: {
+                'Password Icon (Base)': Icons.ddgPasswordIconBase,
+                'Password Icon (Filled)': Icons.ddgPasswordIconFilled,
+                'Password Generation Icon (Base)': Icons.ddgPasswordGenIconBase,
+                'Password Generation Icon (Filled)': Icons.ddgPasswordGenIconFilled,
+            },
+            creditCardIcons: {
+                'Credit Card Icon (Base)': Icons.ddgCcIconBase,
+                'Credit Card Icon (Filled)': Icons.ddgCcIconFilled,
+                'Credit Card - Visa': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTI2IDRDMjkuMzEzNyA0IDMyIDYuNjg2MjkgMzIgMTBMMzIgMjJDMzIgMjUuMzEzNyAyOS4zMTM3IDI4IDI2IDI4TDYgMjhDMi42ODYyOSAyOCA5Ljc1Njk3ZS0wNyAyNS4zMTM3IDEuMTIwNTRlLTA2IDIyTDEuNjQ1MDhlLTA2IDEwQzEuNzg5OTNlLTA2IDYuNjg2MjkgMi42ODYyOSA0IDYgNEwyNiA0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zMCAyMkwzMCAxMEMzMCA3Ljc5MDg2IDI4LjIwOTEgNiAyNiA2TDYgNkMzLjc5MDg2IDYgMiA3Ljc5MDg2IDIgMTBMMiAyMkMyIDI0LjIwOTEgMy43OTA4NiAyNiA2IDI2TDI2IDI2QzI4LjIwOTEgMjYgMzAgMjQuMjA5MSAzMCAyMlpNMzIgMTBDMzIgNi42ODYyOSAyOS4zMTM3IDQgMjYgNEw2IDRDMi42ODYyOSA0IDEuNzg5OTNlLTA2IDYuNjg2MjkgMS42NDUwOGUtMDYgMTBMMS4xMjA1NGUtMDYgMjJDOS43NTY5N2UtMDcgMjUuMzEzNyAyLjY4NjI5IDI4IDYgMjhMMjYgMjhDMjkuMzEzNyAyOCAzMiAyNS4zMTM3IDMyIDIyTDMyIDEwWiIgZmlsbD0iI0NDQ0NDQyIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE4Ljg5NTYgMTIuNUMxOS41ODQ5IDEyLjUgMjAuMTQyNSAxMi42NDQ1IDIwLjQ5NCAxMi43NzU0TDIwLjI1MTYgMTQuMTcyNEwyMC4wOTA0IDE0LjEwMzdDMTkuNzY4IDE0LjAzODkgMTkuMzQyMyAxMy44NDIyIDE4Ljc2MjkgMTMuODU2QzE4LjA1OTMgMTMuODU2IDE3Ljc0MzcgMTQuMTM4IDE3LjczNjQgMTQuNDEzM0MxNy43MzY0IDE0LjcxNjIgMTguMTE4MiAxNC45MTU4IDE4Ljc0MTUgMTUuMjExOEMxOS43NjgzIDE1LjY3MjkgMjAuMjQ0NSAxNi4yMzcyIDIwLjIzNzQgMTYuOTczN0MyMC4yMjMgMTguMzE1NyAxOS4wMDU2IDE5LjE4MyAxNy4xMzU2IDE5LjE4M0MxNi4zMzYxIDE5LjE3NiAxNS41NjYgMTkuMDE3NCAxNS4xNDggMTguODM4N0wxNS4zOTc0IDE3LjM4NjVMMTUuNjMyMSAxNy40ODk4QzE2LjIxMTUgMTcuNzMxIDE2LjU5MjcgMTcuODM0IDE3LjMwNDIgMTcuODM0QzE3LjgxNzMgMTcuODM0IDE4LjM2NzQgMTcuNjM0MiAxOC4zNzQ1IDE3LjIwMDhDMTguMzc0NSAxNi45MTg2IDE4LjE0MDEgMTYuNzExOSAxNy40NTA2IDE2LjM5NTRDMTYuNzc2IDE2LjA4NTUgMTUuODc0MSAxNS41Njk1IDE1Ljg4ODcgMTQuNjQwM0MxNS44OTYzIDEzLjM4MDkgMTcuMTM1NiAxMi41IDE4Ljg5NTYgMTIuNVpNMTIuMjUxMyAxOS4wODY3SDE0LjAzMzVMMTUuMTQ4IDEyLjYxNzRIMTMuMzY2TDEyLjI1MTMgMTkuMDg2N1pNMjMuNjgzNiAxMi42MTc0SDI1LjA2MjFMMjYuNDk5OSAxOS4wODY2SDI0Ljg0OThDMjQuODQ5OCAxOS4wODY2IDI0LjY4ODMgMTguMzQzMyAyNC42MzcxIDE4LjExNjFIMjIuMzQ5QzIyLjI4MjggMTguMjg4MSAyMS45NzQ5IDE5LjA4NjYgMjEuOTc0OSAxOS4wODY2SDIwLjEwNUwyMi43NTIxIDEzLjE1NDFDMjIuOTM1NiAxMi43MzQzIDIzLjI1ODUgMTIuNjE3NCAyMy42ODM2IDEyLjYxNzRaTTIzLjU3MzUgMTQuOTg0N0MyMy41NzM1IDE0Ljk4NDcgMjMuMDA4OCAxNi40MjMyIDIyLjg2MiAxNi43OTQ4SDI0LjM0MzNDMjQuMjcgMTYuNDcxNCAyMy45MzI2IDE0LjkyMjggMjMuOTMyNiAxNC45MjI4TDIzLjgwOCAxNC4zNjU0QzIzLjc1NTYgMTQuNTA4OSAyMy42Nzk3IDE0LjcwNjMgMjMuNjI4NiAxNC44Mzk0QzIzLjU5MzkgMTQuOTI5NiAyMy41NzA1IDE0Ljk5MDMgMjMuNTczNSAxNC45ODQ3Wk0xMC43NjI1IDEyLjYxNzRMOS4wMTcyIDE3LjAyODhMOC44MjY0OCAxNi4xMzQxTDguODI2NDUgMTYuMTM0TDguODI2NiAxNi4xMzQ0TDguMjAzMjggMTMuMTYxMkM4LjEwMDY2IDEyLjc0OCA3Ljc4NTMgMTIuNjMxIDcuMzk2NjUgMTIuNjE3NEg0LjUyOTMzTDQuNSAxMi43NDgxQzUuMTk5MjcgMTIuOTE1OSA1LjgyNDcxIDEzLjE1NzggNi4zNzI3MyAxMy40NTg1TDcuOTYxMTggMTkuMDc5OEg5Ljg0NTc2TDEyLjY0NyAxMi42MTc0SDEwLjc2MjVaIiBmaWxsPSIjMTQzNENCIi8+Cjwvc3ZnPgo='
+            },
+            identityIcons: {
+                'Identity Icon': Icons.ddgIdentityIconBase,
+            },
+            otherIcons: {}
+        };
+
+        // Update the demo icons
+        // Size control functionality
+        const sizeSelector = document.getElementById('icon-size');
+        const updateIconSize = (size) => {
+            const icons = document.querySelectorAll('.icon');
+            icons.forEach(icon => {
+                icon.style.width = `${size}px`;
+                icon.style.height = `${size}px`;
+            });
+        };
+
+        // Initialize with default size
+        updateIconSize(sizeSelector.value);
+
+        // Add event listener for size changes
+        sizeSelector.addEventListener('change', (e) => {
+            updateIconSize(e.target.value);
+        });
+
+    </script>
+</body>
+</html>
