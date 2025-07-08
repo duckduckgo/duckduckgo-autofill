@@ -44,22 +44,28 @@ class CredentialsImport {
      * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
      */
     async refresh(availableInputTypes) {
-        this.device.settings.setAvailableInputTypes(availableInputTypes || (await this.device.settings.getAvailableInputTypes()));
+        const inputTypes = availableInputTypes || (await this.device.settings.getAvailableInputTypes());
+        this.device.settings.setAvailableInputTypes(inputTypes);
 
         // Re-decorate all inputs to show the input decorations
-        this.device.activeForm?.redecorateAllInputs();
+        // Include other forms too, as credentials might now be available in other forms.
+        this.device.scanner.forms.forEach((form) => form.redecorateAllInputs());
 
         // Make sure the tooltip is closed before we try to open it
         this.device.uiController?.removeTooltip('interface');
 
-        const activeInput = this.device.activeForm?.activeInput;
+        const activeForm = this.device.activeForm;
+
+        if (!activeForm) return;
+
+        const activeInput = activeForm.activeInput;
 
         const { username, password } = this.device.settings.availableInputTypes.credentials || {};
-        if (this.device.activeForm && activeInput && (username || password)) {
+        if (activeInput && (username || password)) {
             // Attach tooltip again to force prompt the credentials prompt,
             // if username or password become available.
             this.device.attachTooltip({
-                form: this.device.activeForm,
+                form: activeForm,
                 input: activeInput,
                 click: null,
                 trigger: 'credentialsImport',
