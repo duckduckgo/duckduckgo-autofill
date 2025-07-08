@@ -2,6 +2,7 @@
 
 const { spawn, exec } = require('child_process');
 const path = require('path');
+const { argv } = process;
 
 // Configuration
 const SERVER_PORT = 3210;
@@ -12,6 +13,13 @@ console.log('🚀 Starting Debug UI Tool...');
 // First, ensure debug UI assets are copied
 console.log('📄 Copying debug UI assets...');
 process.env.DEBUG_UI = 'true';
+
+// Check for mode
+const showIcons = argv.includes('--icons');
+if (showIcons) {
+    console.log('🎨 Icon visualization mode activated');
+}
+
 require('./copy-assets.js');
 
 // Start the HTTP server
@@ -19,6 +27,7 @@ console.log(`🌐 Starting server on port ${SERVER_PORT}...`);
 const server = spawn('npx', ['http-server', '-c-1', '--port', SERVER_PORT.toString(), './'], {
     cwd: path.join(__dirname, '..'),
     stdio: 'pipe',
+    env: { ...process.env, OPEN_BROWSER: '1' },
 });
 
 server.stdout.on('data', (data) => {
@@ -28,8 +37,12 @@ server.stdout.on('data', (data) => {
     // Look for server ready message and open browser
     if (output.includes('Available on:') || output.includes('Hit CTRL-C')) {
         setTimeout(() => {
-            console.log(`🌐 Opening browser at: ${DEBUG_UI_URL}`);
-            openBrowser(DEBUG_UI_URL);
+            // Check if we have a page to open from CLI arguments
+            const iconPage = process.argv.includes('--icons');
+            const urlToOpen = iconPage ? `http://localhost:${SERVER_PORT}/debug/icons.html` : DEBUG_UI_URL;
+
+            console.log(`🌐 Opening browser at: ${urlToOpen}`);
+            openBrowser(urlToOpen);
         }, 50);
     }
 });

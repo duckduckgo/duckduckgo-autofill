@@ -9,6 +9,28 @@
             padding: 1rem 2rem;
             background-color: #CCC8C8;
             margin-bottom: 8rem;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+        nav a {
+            color: #4495d4;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            background-color: rgba(0,0,0,0.1);
+        }
+        nav a:hover {
+            background-color: rgba(0,0,0,0.2);
         }
         @media (prefers-color-scheme: dark) {
             body {
@@ -56,7 +78,15 @@
     </style>
 </head>
 <body>
+<header>
+    <h1>Autofill UI Debug</h1>
+    <nav>
+        <a href="icons.html">View Icons</a>
+
+    </nav>
+</header>
 <main></main>
 <script type="module" src="dist/ui-debug.js"></script>
+
 </body>
 </html>
