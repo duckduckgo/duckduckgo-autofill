@@ -185,7 +185,7 @@ export class Settings {
      * @returns {RuntimeConfiguration}
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
-        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
+        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV5<number>} */ (
             runtimeConfig.contentScope
         );
         const feature = contentScope.features?.autofill?.features?.[name];
