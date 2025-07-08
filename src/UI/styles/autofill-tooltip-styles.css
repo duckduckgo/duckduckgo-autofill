@@ -366,11 +366,11 @@ which has its own box-shadow and border-radius settings.
 /* Icons */
 .tooltip__button--data--credentials::before,
 .tooltip__button--data--credentials__current::before {
-    background-size: 24px;
+    background-size: 20px;
     background-image: url('../img/key.svg');
 }
 .tooltip__button--data--credentials__new::before {
-    background-size: 24px;
+    background-size: 20px;
     background-image: url('../img/key-login.svg');
 }
 /* Payment Provider Icons */
@@ -403,7 +403,7 @@ which has its own box-shadow and border-radius settings.
 /* /Payment Provider Icons */
 
 .tooltip__button--data--identities::before {
-    background-size: 24px;
+    background-size: 20px;
     background-image: url('../img/profile.svg');
 }
 .tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,
@@ -444,7 +444,7 @@ hr:first-child {
 #privateAddress.currentFocus::before,
 #privateAddress:hover::before {
     filter: none;
-    background-size: 28px;
+    background-size: 24px;
     background-image: url('../img/dax.svg');
 }
 
@@ -550,7 +550,7 @@ hr:first-child {
 /* Import promotion prompt icon style */
 
 .tooltip__button--credentials-import::before {
-    background-size: 24px;
+    background-size: 20px;
     background-image: url('../img/key-import.svg');
 }
 
