@@ -55,10 +55,10 @@ class CredentialsImport {
         this.device.uiController?.removeTooltip('interface');
 
         const activeForm = this.device.activeForm;
-
+        // If no active form, we can't show the prompt
         if (!activeForm) return;
 
-        const activeInput = activeForm.activeInput;
+        const { activeInput } = activeForm;
 
         const { username, password } = this.device.settings.availableInputTypes.credentials || {};
         if (activeInput && (username || password)) {

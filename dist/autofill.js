@@ -11799,7 +11799,7 @@ Source: "${matchedFrom}"`;
       this.device.uiController?.removeTooltip("interface");
       const activeForm = this.device.activeForm;
       if (!activeForm) return;
-      const activeInput = activeForm.activeInput;
+      const { activeInput } = activeForm;
       const { username, password } = this.device.settings.availableInputTypes.credentials || {};
       if (activeInput && (username || password)) {
         this.device.attachTooltip({
