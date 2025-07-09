@@ -101,7 +101,7 @@ const inputTypeConfig = {
             const { device } = form;
             if (!canBeInteractedWith(input)) return '';
 
-            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return '';
+            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return ddgPasswordIcons.ddgImportIcon;
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 const subtype = getInputSubtype(input);
