@@ -46,24 +46,31 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {number}
+     * @returns {any}
      */
-    get maxInputsPerPageFailsafe() {
-        return this.getFeatureSetting('maxInputsPerPageFailsafe');
+    get failSafeSettings() {
+        return this.getFeatureSetting('failSafeSettings');
     }
 
     /**
      * @returns {number}
      */
-    get maxFormsPerPageFailsafe() {
-        return this.getFeatureSetting('maxFormsFailsafe');
+    get maxInputsPerPage() {
+        return this.failSafeSettings?.maxInputsPerPage;
     }
 
     /**
      * @returns {number}
      */
-    get maxInputsPerFormFailsafe() {
-        return this.getFeatureSetting('maxInputsPerFormFailsafe');
+    get maxFormsPerPage() {
+        return this.failSafeSettings?.maxFormsPerPage;
+    }
+
+    /**
+     * @returns {number}
+     */
+    get maxInputsPerForm() {
+        return this.failSafeSettings?.maxInputsPerForm;
     }
 
     /**

@@ -5770,7 +5770,7 @@ Source: "${matchedFrom}"`;
       } else {
         const formControlElements = getFormControlElements(this.form, selector);
         const foundInputs = formControlElements != null ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)] : queryElementsWithShadow(this.form, selector, true);
-        if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerFormFailsafe || MAX_INPUTS_PER_FORM)) {
+        if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
           foundInputs.forEach((input) => this.addInput(input));
         } else {
           this.device.scanner.setMode("stopped", `The form has too many inputs (${foundInputs.length}), bailing.`);
@@ -5836,7 +5836,7 @@ Source: "${matchedFrom}"`;
     addInput(input) {
       if (this.inputs.all.has(input)) return this;
       const siteSpecificFeature = this.device.settings.siteSpecificFeature;
-      if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerFormFailsafe || MAX_INPUTS_PER_FORM)) {
+      if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
         this.device.scanner.setMode("stopped", "The form has too many inputs, bailing.");
         return this;
       }
@@ -6291,7 +6291,7 @@ Source: "${matchedFrom}"`;
         this.addInput(context);
       } else {
         const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-        if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPageFailsafe || this.options.maxInputsPerPage)) {
+        if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPage || this.options.maxInputsPerPage)) {
           this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
           return this;
         }
@@ -12633,22 +12633,28 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySelector");
     }
     /**
-     * @returns {number}
+     * @returns {any}
      */
-    get maxInputsPerPageFailsafe() {
-      return this.getFeatureSetting("maxInputsPerPageFailsafe");
+    get failSafeSettings() {
+      return this.getFeatureSetting("failSafeSettings");
     }
     /**
      * @returns {number}
      */
-    get maxFormsPerPageFailsafe() {
-      return this.getFeatureSetting("maxFormsFailsafe");
+    get maxInputsPerPage() {
+      return this.failSafeSettings?.maxInputsPerPage;
     }
     /**
      * @returns {number}
      */
-    get maxInputsPerFormFailsafe() {
-      return this.getFeatureSetting("maxInputsPerFormFailsafe");
+    get maxFormsPerPage() {
+      return this.failSafeSettings?.maxFormsPerPage;
+    }
+    /**
+     * @returns {number}
+     */
+    get maxInputsPerForm() {
+      return this.failSafeSettings?.maxInputsPerForm;
     }
     /**
      * Checks if there's a forced form type configuration for the given form element

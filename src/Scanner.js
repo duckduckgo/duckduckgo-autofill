@@ -162,7 +162,7 @@ class DefaultScanner {
             this.addInput(context);
         } else {
             const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-            if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPageFailsafe || this.options.maxInputsPerPage)) {
+            if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPage || this.options.maxInputsPerPage)) {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }

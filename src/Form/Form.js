@@ -495,7 +495,7 @@ class Form {
                     ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)]
                     : queryElementsWithShadow(this.form, selector, true);
 
-            if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerFormFailsafe || MAX_INPUTS_PER_FORM)) {
+            if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
                 foundInputs.forEach((input) => this.addInput(input));
             } else {
                 // This is rather extreme, but better safe than sorry
@@ -581,7 +581,7 @@ class Form {
         const siteSpecificFeature = this.device.settings.siteSpecificFeature;
 
         // If the form has too many inputs, destroy everything to avoid performance issues
-        if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerFormFailsafe || MAX_INPUTS_PER_FORM)) {
+        if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
             this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.');
             return this;
         }
