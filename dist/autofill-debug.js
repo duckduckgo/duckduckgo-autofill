@@ -6601,7 +6601,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/external.js
+  // node_modules/zod/v3/external.js
   var external_exports = {};
   __export(external_exports, {
     BRAND: () => BRAND,
@@ -6713,7 +6713,7 @@ Source: "${matchedFrom}"`;
     void: () => voidType
   });
 
-  // node_modules/zod/dist/esm/v3/helpers/util.js
+  // node_modules/zod/v3/helpers/util.js
   var util;
   (function(util2) {
     util2.assertEqual = (_) => {
@@ -6847,7 +6847,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/ZodError.js
+  // node_modules/zod/v3/ZodError.js
   var ZodIssueCode = util.arrayToEnum([
     "invalid_type",
     "invalid_literal",
@@ -6947,8 +6947,9 @@ Source: "${matchedFrom}"`;
       const formErrors = [];
       for (const sub of this.issues) {
         if (sub.path.length > 0) {
-          fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
-          fieldErrors[sub.path[0]].push(mapper(sub));
+          const firstEl = sub.path[0];
+          fieldErrors[firstEl] = fieldErrors[firstEl] || [];
+          fieldErrors[firstEl].push(mapper(sub));
         } else {
           formErrors.push(mapper(sub));
         }
@@ -6964,7 +6965,7 @@ Source: "${matchedFrom}"`;
     return error;
   };
 
-  // node_modules/zod/dist/esm/v3/locales/en.js
+  // node_modules/zod/v3/locales/en.js
   var errorMap = (issue, _ctx) => {
     let message;
     switch (issue.code) {
@@ -7026,6 +7027,8 @@ Source: "${matchedFrom}"`;
           message = `String must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `over`} ${issue.minimum} character(s)`;
         else if (issue.type === "number")
           message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
+        else if (issue.type === "bigint")
+          message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
         else if (issue.type === "date")
           message = `Date must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${new Date(Number(issue.minimum))}`;
         else
@@ -7065,7 +7068,7 @@ Source: "${matchedFrom}"`;
   };
   var en_default = errorMap;
 
-  // node_modules/zod/dist/esm/v3/errors.js
+  // node_modules/zod/v3/errors.js
   var overrideErrorMap = en_default;
   function setErrorMap(map) {
     overrideErrorMap = map;
@@ -7074,7 +7077,7 @@ Source: "${matchedFrom}"`;
     return overrideErrorMap;
   }
 
-  // node_modules/zod/dist/esm/v3/helpers/parseUtil.js
+  // node_modules/zod/v3/helpers/parseUtil.js
   var makeIssue = (params) => {
     const { data, path, errorMaps, issueData } = params;
     const fullPath = [...path, ...issueData.path || []];
@@ -7184,14 +7187,14 @@ Source: "${matchedFrom}"`;
   var isValid = (x) => x.status === "valid";
   var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-  // node_modules/zod/dist/esm/v3/helpers/errorUtil.js
+  // node_modules/zod/v3/helpers/errorUtil.js
   var errorUtil;
   (function(errorUtil2) {
     errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
     errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
   })(errorUtil || (errorUtil = {}));
 
-  // node_modules/zod/dist/esm/v3/types.js
+  // node_modules/zod/v3/types.js
   var ParseInputLazyPath = class {
     constructor(parent, value, path, key) {
       this._cachedPath = [];
@@ -7590,6 +7593,8 @@ Source: "${matchedFrom}"`;
       return false;
     try {
       const [header] = jwt.split(".");
+      if (!header)
+        return false;
       const base64 = header.replace(/-/g, "+").replace(/_/g, "/").padEnd(header.length + (4 - header.length % 4) % 4, "=");
       const decoded = JSON.parse(atob(base64));
       if (typeof decoded !== "object" || decoded === null)
@@ -12633,28 +12638,28 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySelector");
     }
     /**
-     * @returns {any}
+     * @returns {FailsafeSettings}
      */
-    get failSafeSettings() {
-      return this.getFeatureSetting("failSafeSettings");
+    get failsafeSettings() {
+      return this.getFeatureSetting("failsafeSettings");
     }
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxInputsPerPage() {
-      return this.failSafeSettings?.maxInputsPerPage;
+      return this.failsafeSettings?.maxInputsPerPage;
     }
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxFormsPerPage() {
-      return this.failSafeSettings?.maxFormsPerPage;
+      return this.failsafeSettings?.maxFormsPerPage;
     }
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxInputsPerForm() {
-      return this.failSafeSettings?.maxInputsPerForm;
+      return this.failsafeSettings?.maxInputsPerForm;
     }
     /**
      * Checks if there's a forced form type configuration for the given form element

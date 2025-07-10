@@ -7,6 +7,7 @@ const FEATURE_NAME = 'siteSpecificFixes';
  * @typedef {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').InputTypeSetting} InputTypeSetting
  * @typedef {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').FormTypeSetting} FormTypeSetting
  * @typedef {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').FormBoundarySelector} FormBoundarySelector
+ * @typedef {import('@duckduckgo/privacy-configuration/schema/features/autofill.js').FailsafeSettings} FailsafeSettings
  */
 
 export default class SiteSpecificFeature extends ConfigFeature {
@@ -46,31 +47,31 @@ export default class SiteSpecificFeature extends ConfigFeature {
     }
 
     /**
-     * @returns {any}
+     * @returns {FailsafeSettings}
      */
-    get failSafeSettings() {
-        return this.getFeatureSetting('failSafeSettings');
+    get failsafeSettings() {
+        return this.getFeatureSetting('failsafeSettings');
     }
 
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxInputsPerPage() {
-        return this.failSafeSettings?.maxInputsPerPage;
+        return this.failsafeSettings?.maxInputsPerPage;
     }
 
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxFormsPerPage() {
-        return this.failSafeSettings?.maxFormsPerPage;
+        return this.failsafeSettings?.maxFormsPerPage;
     }
 
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxInputsPerForm() {
-        return this.failSafeSettings?.maxInputsPerForm;
+        return this.failsafeSettings?.maxInputsPerForm;
     }
 
     /**

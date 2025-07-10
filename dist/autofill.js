@@ -8160,28 +8160,28 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySelector");
     }
     /**
-     * @returns {any}
+     * @returns {FailsafeSettings}
      */
-    get failSafeSettings() {
-      return this.getFeatureSetting("failSafeSettings");
+    get failsafeSettings() {
+      return this.getFeatureSetting("failsafeSettings");
     }
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxInputsPerPage() {
-      return this.failSafeSettings?.maxInputsPerPage;
+      return this.failsafeSettings?.maxInputsPerPage;
     }
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxFormsPerPage() {
-      return this.failSafeSettings?.maxFormsPerPage;
+      return this.failsafeSettings?.maxFormsPerPage;
     }
     /**
-     * @returns {number}
+     * @returns {number|undefined}
      */
     get maxInputsPerForm() {
-      return this.failSafeSettings?.maxInputsPerForm;
+      return this.failsafeSettings?.maxInputsPerForm;
     }
     /**
      * Checks if there's a forced form type configuration for the given form element
