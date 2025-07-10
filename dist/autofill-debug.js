@@ -5770,7 +5770,7 @@ Source: "${matchedFrom}"`;
       } else {
         const formControlElements = getFormControlElements(this.form, selector);
         const foundInputs = formControlElements != null ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)] : queryElementsWithShadow(this.form, selector, true);
-        if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+        if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
           foundInputs.forEach((input) => this.addInput(input));
         } else {
           this.device.scanner.setMode("stopped", `The form has too many inputs (${foundInputs.length}), bailing.`);
@@ -5835,12 +5835,13 @@ Source: "${matchedFrom}"`;
     }
     addInput(input) {
       if (this.inputs.all.has(input)) return this;
-      if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+      const siteSpecificFeature = this.device.settings.siteSpecificFeature;
+      if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
         this.device.scanner.setMode("stopped", "The form has too many inputs, bailing.");
         return this;
       }
       if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-        this.formAnalyzer = new FormAnalyzer_default(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
+        this.formAnalyzer = new FormAnalyzer_default(this.form, siteSpecificFeature, input, this.matching);
         this.recategorizeAllInputs();
         return this;
       }
@@ -6167,7 +6168,7 @@ Source: "${matchedFrom}"`;
   };
 
   // src/Scanner.js
-  var { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM: MAX_INPUTS_PER_FORM2, ATTR_INPUT_TYPE: ATTR_INPUT_TYPE3 } = constants;
+  var { ATTR_INPUT_TYPE: ATTR_INPUT_TYPE3, MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM: MAX_INPUTS_PER_FORM2 } = constants;
   var defaultScannerOptions = {
     // This buffer size is very large because it's an unexpected edge-case that
     // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
@@ -6290,7 +6291,7 @@ Source: "${matchedFrom}"`;
         this.addInput(context);
       } else {
         const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-        if (inputs.length > this.options.maxInputsPerPage) {
+        if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPage || this.options.maxInputsPerPage)) {
           this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
           return this;
         }
@@ -6403,7 +6404,7 @@ Source: "${matchedFrom}"`;
       const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
-        if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
+        if (foundForm && foundForm.inputs.all.size < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM2)) {
           foundForm.addInput(input);
         } else {
           this.setMode("stopped", "The form has too many inputs, destroying.");
@@ -6600,7 +6601,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/external.js
+  // node_modules/zod/v3/external.js
   var external_exports = {};
   __export(external_exports, {
     BRAND: () => BRAND,
@@ -6712,7 +6713,7 @@ Source: "${matchedFrom}"`;
     void: () => voidType
   });
 
-  // node_modules/zod/dist/esm/v3/helpers/util.js
+  // node_modules/zod/v3/helpers/util.js
   var util;
   (function(util2) {
     util2.assertEqual = (_) => {
@@ -6846,7 +6847,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/ZodError.js
+  // node_modules/zod/v3/ZodError.js
   var ZodIssueCode = util.arrayToEnum([
     "invalid_type",
     "invalid_literal",
@@ -6946,8 +6947,9 @@ Source: "${matchedFrom}"`;
       const formErrors = [];
       for (const sub of this.issues) {
         if (sub.path.length > 0) {
-          fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
-          fieldErrors[sub.path[0]].push(mapper(sub));
+          const firstEl = sub.path[0];
+          fieldErrors[firstEl] = fieldErrors[firstEl] || [];
+          fieldErrors[firstEl].push(mapper(sub));
         } else {
           formErrors.push(mapper(sub));
         }
@@ -6963,7 +6965,7 @@ Source: "${matchedFrom}"`;
     return error;
   };
 
-  // node_modules/zod/dist/esm/v3/locales/en.js
+  // node_modules/zod/v3/locales/en.js
   var errorMap = (issue, _ctx) => {
     let message;
     switch (issue.code) {
@@ -7025,6 +7027,8 @@ Source: "${matchedFrom}"`;
           message = `String must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `over`} ${issue.minimum} character(s)`;
         else if (issue.type === "number")
           message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
+        else if (issue.type === "bigint")
+          message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
         else if (issue.type === "date")
           message = `Date must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${new Date(Number(issue.minimum))}`;
         else
@@ -7064,7 +7068,7 @@ Source: "${matchedFrom}"`;
   };
   var en_default = errorMap;
 
-  // node_modules/zod/dist/esm/v3/errors.js
+  // node_modules/zod/v3/errors.js
   var overrideErrorMap = en_default;
   function setErrorMap(map) {
     overrideErrorMap = map;
@@ -7073,7 +7077,7 @@ Source: "${matchedFrom}"`;
     return overrideErrorMap;
   }
 
-  // node_modules/zod/dist/esm/v3/helpers/parseUtil.js
+  // node_modules/zod/v3/helpers/parseUtil.js
   var makeIssue = (params) => {
     const { data, path, errorMaps, issueData } = params;
     const fullPath = [...path, ...issueData.path || []];
@@ -7183,14 +7187,14 @@ Source: "${matchedFrom}"`;
   var isValid = (x) => x.status === "valid";
   var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-  // node_modules/zod/dist/esm/v3/helpers/errorUtil.js
+  // node_modules/zod/v3/helpers/errorUtil.js
   var errorUtil;
   (function(errorUtil2) {
     errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
     errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
   })(errorUtil || (errorUtil = {}));
 
-  // node_modules/zod/dist/esm/v3/types.js
+  // node_modules/zod/v3/types.js
   var ParseInputLazyPath = class {
     constructor(parent, value, path, key) {
       this._cachedPath = [];
@@ -7589,6 +7593,8 @@ Source: "${matchedFrom}"`;
       return false;
     try {
       const [header] = jwt.split(".");
+      if (!header)
+        return false;
       const base64 = header.replace(/-/g, "+").replace(/_/g, "/").padEnd(header.length + (4 - header.length % 4) % 4, "=");
       const decoded = JSON.parse(atob(base64));
       if (typeof decoded !== "object" || decoded === null)
@@ -12632,6 +12638,30 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySelector");
     }
     /**
+     * @returns {FailsafeSettings}
+     */
+    get failsafeSettings() {
+      return this.getFeatureSetting("failsafeSettings");
+    }
+    /**
+     * @returns {number|undefined}
+     */
+    get maxInputsPerPage() {
+      return this.failsafeSettings?.maxInputsPerPage;
+    }
+    /**
+     * @returns {number|undefined}
+     */
+    get maxFormsPerPage() {
+      return this.failsafeSettings?.maxFormsPerPage;
+    }
+    /**
+     * @returns {number|undefined}
+     */
+    get maxInputsPerForm() {
+      return this.failsafeSettings?.maxInputsPerForm;
+    }
+    /**
      * Checks if there's a forced form type configuration for the given form element
      * @param {HTMLElement} form
      * @returns {string|null|undefined}
@@ -12796,7 +12826,7 @@ Source: "${matchedFrom}"`;
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
       const contentScope = (
-        /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
+        /** @type {import("@duckduckgo/privacy-configuration/schema/config").CurrentGenericConfig} */
         runtimeConfig.contentScope
       );
       const feature = contentScope.features?.autofill?.features?.[name];

@@ -9,7 +9,7 @@ import {
     findElementsInShadowTree,
 } from './autofill-utils.js';
 
-const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants;
+const { ATTR_INPUT_TYPE, MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM } = constants;
 
 /**
  * @typedef {{
@@ -28,7 +28,7 @@ const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT
  *     debounceTimePeriod: number,
  *     maxInputsPerPage: number,
  *     maxFormsPerPage: number,
- *     maxInputsPerForm: number
+ *     maxInputsPerForm: number,
  * }} ScannerOptions
  *
  * @typedef {'scanning'|'on-click'|'stopped'} Mode
@@ -44,6 +44,7 @@ const defaultScannerOptions = {
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
     initialDelay: 0,
+
     // How many inputs is too many on the page. If we detect that there's above
     // this maximum, then we don't scan the page. This will prevent slowdowns on
     // large pages which are unlikely to require autofill anyway.
@@ -161,7 +162,7 @@ class DefaultScanner {
             this.addInput(context);
         } else {
             const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-            if (inputs.length > this.options.maxInputsPerPage) {
+            if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPage || this.options.maxInputsPerPage)) {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
@@ -312,7 +313,10 @@ class DefaultScanner {
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm);
             // We've met the form, add the input provided it's below the max input limit
-            if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
+            if (
+                foundForm &&
+                foundForm.inputs.all.size < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)
+            ) {
                 foundForm.addInput(input);
             } else {
                 this.setMode('stopped', 'The form has too many inputs, destroying.');

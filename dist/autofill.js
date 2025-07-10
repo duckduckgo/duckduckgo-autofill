@@ -5766,7 +5766,7 @@ Source: "${matchedFrom}"`;
       } else {
         const formControlElements = getFormControlElements(this.form, selector);
         const foundInputs = formControlElements != null ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)] : queryElementsWithShadow(this.form, selector, true);
-        if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+        if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
           foundInputs.forEach((input) => this.addInput(input));
         } else {
           this.device.scanner.setMode("stopped", `The form has too many inputs (${foundInputs.length}), bailing.`);
@@ -5831,12 +5831,13 @@ Source: "${matchedFrom}"`;
     }
     addInput(input) {
       if (this.inputs.all.has(input)) return this;
-      if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+      const siteSpecificFeature = this.device.settings.siteSpecificFeature;
+      if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
         this.device.scanner.setMode("stopped", "The form has too many inputs, bailing.");
         return this;
       }
       if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-        this.formAnalyzer = new FormAnalyzer_default(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
+        this.formAnalyzer = new FormAnalyzer_default(this.form, siteSpecificFeature, input, this.matching);
         this.recategorizeAllInputs();
         return this;
       }
@@ -6163,7 +6164,7 @@ Source: "${matchedFrom}"`;
   };
 
   // src/Scanner.js
-  var { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM: MAX_INPUTS_PER_FORM2, ATTR_INPUT_TYPE: ATTR_INPUT_TYPE3 } = constants;
+  var { ATTR_INPUT_TYPE: ATTR_INPUT_TYPE3, MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM: MAX_INPUTS_PER_FORM2 } = constants;
   var defaultScannerOptions = {
     // This buffer size is very large because it's an unexpected edge-case that
     // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
@@ -6286,7 +6287,7 @@ Source: "${matchedFrom}"`;
         this.addInput(context);
       } else {
         const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-        if (inputs.length > this.options.maxInputsPerPage) {
+        if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPage || this.options.maxInputsPerPage)) {
           this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
           return this;
         }
@@ -6399,7 +6400,7 @@ Source: "${matchedFrom}"`;
       const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
-        if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
+        if (foundForm && foundForm.inputs.all.size < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM2)) {
           foundForm.addInput(input);
         } else {
           this.setMode("stopped", "The form has too many inputs, destroying.");
@@ -8159,6 +8160,30 @@ Source: "${matchedFrom}"`;
       return this.getFeatureSetting("formBoundarySelector");
     }
     /**
+     * @returns {FailsafeSettings}
+     */
+    get failsafeSettings() {
+      return this.getFeatureSetting("failsafeSettings");
+    }
+    /**
+     * @returns {number|undefined}
+     */
+    get maxInputsPerPage() {
+      return this.failsafeSettings?.maxInputsPerPage;
+    }
+    /**
+     * @returns {number|undefined}
+     */
+    get maxFormsPerPage() {
+      return this.failsafeSettings?.maxFormsPerPage;
+    }
+    /**
+     * @returns {number|undefined}
+     */
+    get maxInputsPerForm() {
+      return this.failsafeSettings?.maxInputsPerForm;
+    }
+    /**
      * Checks if there's a forced form type configuration for the given form element
      * @param {HTMLElement} form
      * @returns {string|null|undefined}
@@ -8323,7 +8348,7 @@ Source: "${matchedFrom}"`;
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
       const contentScope = (
-        /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
+        /** @type {import("@duckduckgo/privacy-configuration/schema/config").CurrentGenericConfig} */
         runtimeConfig.contentScope
       );
       const feature = contentScope.features?.autofill?.features?.[name];
