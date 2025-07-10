@@ -96,6 +96,12 @@ class DefaultScanner {
      * @returns {boolean}
      */
     get shouldAutoprompt() {
+        // On mobile, if credentials import is available, we don't need an autoprompt
+        // We wait for the user to click on the input to show the prompt, for better UX.
+        if (this.device.globalConfig.isMobileApp && this.device.credentialsImport.isAvailable()) {
+            return false;
+        }
+
         return Date.now() - this.initTimeStamp <= 1500;
     }
 
