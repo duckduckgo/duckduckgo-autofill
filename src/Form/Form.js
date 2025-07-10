@@ -646,7 +646,6 @@ class Form {
         const config = getInputConfig(input);
 
         const shouldDecorate = await config.shouldDecorate(input, this);
-
         if (!shouldDecorate) return this;
 
         input.setAttribute(ATTR_AUTOFILL, 'true');

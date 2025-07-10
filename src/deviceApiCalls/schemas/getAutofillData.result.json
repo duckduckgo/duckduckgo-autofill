@@ -17,6 +17,7 @@
         "credentials": { "$ref": "./credentials.json" },
         "creditCards": { "$ref": "./creditCard.json" },
         "identities": { "$ref": "./identity.json" },
+        "availableInputTypes": { "$ref": "./availableInputTypes.json" },
         "action": {
           "type": "string",
           "enum": ["fill", "focus", "none", "refreshAvailableInputTypes", "acceptGeneratedPassword", "rejectGeneratedPassword"]
