@@ -6400,7 +6400,7 @@ Source: "${matchedFrom}"`;
       const parentForm = form || this.getParentForm(input);
       if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
         const foundForm = this.forms.get(parentForm);
-        if (foundForm && foundForm.inputs.all.size < this.options.maxInputsPerForm) {
+        if (foundForm && foundForm.inputs.all.size < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM2)) {
           foundForm.addInput(input);
         } else {
           this.setMode("stopped", "The form has too many inputs, destroying.");
@@ -8348,7 +8348,7 @@ Source: "${matchedFrom}"`;
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
       const contentScope = (
-        /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */
+        /** @type {import("@duckduckgo/privacy-configuration/schema/config").CurrentGenericConfig} */
         runtimeConfig.contentScope
       );
       const feature = contentScope.features?.autofill?.features?.[name];

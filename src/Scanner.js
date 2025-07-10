@@ -313,7 +313,10 @@ class DefaultScanner {
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm);
             // We've met the form, add the input provided it's below the max input limit
-            if (foundForm && foundForm.inputs.all.size < this.options.maxInputsPerForm) {
+            if (
+                foundForm &&
+                foundForm.inputs.all.size < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)
+            ) {
                 foundForm.addInput(input);
             } else {
                 this.setMode('stopped', 'The form has too many inputs, destroying.');
