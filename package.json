@@ -46,7 +46,7 @@
     "@duckduckgo/privacy-test-pages": "github:duckduckgo/privacy-test-pages#fb5a572ead9148cee807a9a6c69a25d8686d051f",
     "@playwright/test": "^1.53.0",
     "@types/jest": "^29.5.11",
-    "@types/node": "^22.15.31",
+    "@types/node": "^24.0.13",
     "asana": "^1.0.2",
     "babel-jest": "^30.0.0",
     "chokidar-cli": "^3.0.0",
