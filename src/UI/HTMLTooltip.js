@@ -339,9 +339,9 @@ export class HTMLTooltip {
                 this.tooltip.parentNode.removeAttribute('hidden');
                 this.checkPosition();
 
-                // (Windows_ When chrome is forced to re-calculate style
+                // (Windows) When chrome is forced to re-calculate style
                 // it seems to be a good point for us to set size as well, as performanceobserver
-                // doesn't seem to be triggered.
+                // doesn't seem to be triggered always.
                 this.setSize();
             });
         });
