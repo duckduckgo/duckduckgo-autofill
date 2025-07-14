@@ -3698,6 +3698,9 @@ Source: "${matchedFrom}"`;
     "app.parkmobile.io": {
       "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^&];"
     },
+    "app8menu.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [@$!%*?&];"
+    },
     "apple.com": {
       "password-rules": "minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;"
     },
