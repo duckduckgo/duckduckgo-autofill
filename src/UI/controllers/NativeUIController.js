@@ -77,7 +77,7 @@ export class NativeUIController extends UIController {
                     }
 
                     case 'refreshAvailableInputTypes': {
-                        device.credentialsImport.refresh();
+                        device.credentialsImport.refresh(resp.availableInputTypes);
                         break;
                     }
 

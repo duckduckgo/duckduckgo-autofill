@@ -26,3 +26,5 @@ playwright-report/
 /.index-build
 /.build
 /debug/dist
+
+/img/

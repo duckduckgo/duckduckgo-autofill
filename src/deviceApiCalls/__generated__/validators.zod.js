@@ -146,6 +146,39 @@ export const identityObjectSchema = z.object({
     emailAddress: z.string().optional()
 });
 
+export const availableInputTypesSchema = z.object({
+    credentials: z.object({
+        username: z.boolean().optional(),
+        password: z.boolean().optional()
+    }).optional(),
+    identities: z.object({
+        firstName: z.boolean().optional(),
+        middleName: z.boolean().optional(),
+        lastName: z.boolean().optional(),
+        birthdayDay: z.boolean().optional(),
+        birthdayMonth: z.boolean().optional(),
+        birthdayYear: z.boolean().optional(),
+        addressStreet: z.boolean().optional(),
+        addressStreet2: z.boolean().optional(),
+        addressCity: z.boolean().optional(),
+        addressProvince: z.boolean().optional(),
+        addressPostalCode: z.boolean().optional(),
+        addressCountryCode: z.boolean().optional(),
+        phone: z.boolean().optional(),
+        emailAddress: z.boolean().optional()
+    }).optional(),
+    creditCards: z.object({
+        cardName: z.boolean().optional(),
+        cardSecurityCode: z.boolean().optional(),
+        expirationMonth: z.boolean().optional(),
+        expirationYear: z.boolean().optional(),
+        cardNumber: z.boolean().optional()
+    }).optional(),
+    email: z.boolean().optional(),
+    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
+    credentialsImport: z.boolean().optional()
+});
+
 export const genericErrorSchema = z.object({
     message: z.string()
 });
@@ -177,7 +210,7 @@ export const outgoingCredentialsSchema = z.object({
     password: z.string().optional()
 });
 
-export const availableInputTypesSchema = z.object({
+export const availableInputTypes1Schema = z.object({
     credentials: z.object({
         username: z.boolean().optional(),
         password: z.boolean().optional()
@@ -232,43 +265,16 @@ export const getAutofillCredentialsResultSchema = z.object({
     error: genericErrorSchema.optional()
 });
 
-export const availableInputTypes1Schema = z.object({
-    credentials: z.object({
-        username: z.boolean().optional(),
-        password: z.boolean().optional()
-    }).optional(),
-    identities: z.object({
-        firstName: z.boolean().optional(),
-        middleName: z.boolean().optional(),
-        lastName: z.boolean().optional(),
-        birthdayDay: z.boolean().optional(),
-        birthdayMonth: z.boolean().optional(),
-        birthdayYear: z.boolean().optional(),
-        addressStreet: z.boolean().optional(),
-        addressStreet2: z.boolean().optional(),
-        addressCity: z.boolean().optional(),
-        addressProvince: z.boolean().optional(),
-        addressPostalCode: z.boolean().optional(),
-        addressCountryCode: z.boolean().optional(),
-        phone: z.boolean().optional(),
-        emailAddress: z.boolean().optional()
-    }).optional(),
-    creditCards: z.object({
-        cardName: z.boolean().optional(),
-        cardSecurityCode: z.boolean().optional(),
-        expirationMonth: z.boolean().optional(),
-        expirationYear: z.boolean().optional(),
-        cardNumber: z.boolean().optional()
-    }).optional(),
-    email: z.boolean().optional(),
-    credentialsProviderStatus: z.union([z.literal("locked"), z.literal("unlocked")]).optional(),
-    credentialsImport: z.boolean().optional()
-});
-
 export const providerStatusUpdatedSchema = z.object({
     status: z.union([z.literal("locked"), z.literal("unlocked")]),
     credentials: z.array(credentialsSchema),
-    availableInputTypes: availableInputTypes1Schema
+    availableInputTypes: availableInputTypesSchema
+});
+
+export const checkCredentialsProviderStatusResultSchema = z.object({
+    type: z.literal("checkCredentialsProviderStatusResponse").optional(),
+    success: providerStatusUpdatedSchema,
+    error: genericErrorSchema.optional()
 });
 
 export const autofillFeatureTogglesSchema = z.object({
@@ -340,7 +346,7 @@ export const getAutofillDataRequestSchema = z.object({
     inputType: z.string(),
     mainType: z.union([z.literal("credentials"), z.literal("identities"), z.literal("creditCards")]),
     subType: z.string(),
-    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup")]).optional(),
+    trigger: z.union([z.literal("userInitiated"), z.literal("autoprompt"), z.literal("postSignup"), z.literal("credentialsImport")]).optional(),
     serializedInputContext: z.string().optional(),
     triggerContext: triggerContextSchema.optional()
 });
@@ -351,6 +357,7 @@ export const getAutofillDataResponseSchema = z.object({
         credentials: credentialsSchema.optional(),
         creditCards: creditCardObjectSchema.optional(),
         identities: identityObjectSchema.optional(),
+        availableInputTypes: availableInputTypesSchema.optional(),
         action: z.union([z.literal("fill"), z.literal("focus"), z.literal("none"), z.literal("refreshAvailableInputTypes"), z.literal("acceptGeneratedPassword"), z.literal("rejectGeneratedPassword")])
     }).optional(),
     error: genericErrorSchema.optional()
@@ -363,18 +370,12 @@ export const storeFormDataSchema = z.object({
 
 export const getAvailableInputTypesResultSchema = z.object({
     type: z.literal("getAvailableInputTypesResponse").optional(),
-    success: availableInputTypesSchema,
+    success: availableInputTypes1Schema,
     error: genericErrorSchema.optional()
 });
 
 export const askToUnlockProviderResultSchema = z.object({
     type: z.literal("askToUnlockProviderResponse").optional(),
-    success: providerStatusUpdatedSchema,
-    error: genericErrorSchema.optional()
-});
-
-export const checkCredentialsProviderStatusResultSchema = z.object({
-    type: z.literal("checkCredentialsProviderStatusResponse").optional(),
     success: providerStatusUpdatedSchema,
     error: genericErrorSchema.optional()
 });

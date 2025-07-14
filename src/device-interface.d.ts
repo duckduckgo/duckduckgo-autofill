@@ -102,7 +102,7 @@ interface GlobalConfig {
     secret: string;
     supportsTopFrame: boolean;
     hasModernWebkitAPI: boolean;
-    contentScope: import('@duckduckgo/privacy-configuration/schema/config').ConfigV4<number> | null;
+    contentScope: import('@duckduckgo/privacy-configuration/schema/config').CurrentGenericConfig | null;
     userUnprotectedDomains: string[];
     userPreferences: Record<string, any> | null;
     isDDGTestMode: boolean;
