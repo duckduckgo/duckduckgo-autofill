@@ -838,7 +838,8 @@ class Form {
                 // Don't open the tooltip on input focus whenever it'll only show in-context signup
                 return false;
             } else {
-                return this.isCredentialsImportAvailable;
+                const isInputEmpty = input.value === '';
+                return this.isCredentialsImportAvailable && isInputEmpty;
             }
         }
 
