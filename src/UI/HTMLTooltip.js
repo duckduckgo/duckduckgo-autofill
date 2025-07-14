@@ -6,7 +6,7 @@ import CSS_STYLES from './styles/autofill-tooltip-styles.css';
  * @typedef {object} HTMLTooltipOptions
  * @property {boolean} testMode
  * @property {string | null} [wrapperClass]
- * @property {string | null} [platform]
+ * @property {'windows' | 'macos' | 'extension' | null} [platform]
  * @property {boolean} isTopAutofill
  * @property {(top: number, left: number) => string} [tooltipPositionClass]
  * @property {(top: number, left: number, isAboveInput: boolean) => string} [caretPositionClass]
@@ -27,7 +27,7 @@ import CSS_STYLES from './styles/autofill-tooltip-styles.css';
 /** @type {HTMLTooltipOptions} */
 export const defaultOptions = {
     wrapperClass: '',
-    platform: '',
+    platform: null,
     tooltipPositionClass: (top, left) => `
         .tooltip {
             transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;
