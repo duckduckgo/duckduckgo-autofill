@@ -6024,7 +6024,8 @@ Source: "${matchedFrom}"`;
         } else if (isIncontextSignupAvailable) {
           return false;
         } else {
-          return this.isCredentialsImportAvailable;
+          const isInputEmpty = input.value === "";
+          return this.isCredentialsImportAvailable && isInputEmpty;
         }
       }
       if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
