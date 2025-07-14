@@ -3694,6 +3694,9 @@ Source: "${matchedFrom}"`;
     "app.parkmobile.io": {
       "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^&];"
     },
+    "app8menu.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [@$!%*?&];"
+    },
     "apple.com": {
       "password-rules": "minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;"
     },
@@ -6021,7 +6024,8 @@ Source: "${matchedFrom}"`;
         } else if (isIncontextSignupAvailable) {
           return false;
         } else {
-          return this.isCredentialsImportAvailable;
+          const isInputEmpty = input.value === "";
+          return this.isCredentialsImportAvailable && isInputEmpty;
         }
       }
       if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
