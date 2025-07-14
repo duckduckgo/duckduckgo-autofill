@@ -17237,7 +17237,7 @@ Source: "${matchedFrom}"`;
   // src/UI/HTMLTooltip.js
   var defaultOptions = {
     wrapperClass: "",
-    platform: "",
+    platform: null,
     tooltipPositionClass: (top, left) => `
         .tooltip {
             transform: translate(${Math.floor(left)}px, ${Math.floor(top)}px) !important;

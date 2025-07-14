@@ -13,6 +13,7 @@ import { ThirdPartyProvider } from '../ThirdPartyProvider.js';
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
+ * @typedef {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} HTMLTooltipOptions
  */
 
 class AppleDeviceInterface extends InterfacePrototype {
@@ -40,6 +41,7 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         if (!this.globalConfig.supportsTopFrame) {
+            /** @type {HTMLTooltipOptions} */
             const options = {
                 ...defaultOptions,
                 platform: 'macos',
