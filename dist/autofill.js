@@ -13021,6 +13021,7 @@ Source: "${matchedFrom}"`;
         ]).then(() => {
           this.tooltip.parentNode.removeAttribute("hidden");
           this.checkPosition();
+          this.setSize();
         });
       });
       this.append();
