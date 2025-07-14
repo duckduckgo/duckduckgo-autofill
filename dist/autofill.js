@@ -12945,8 +12945,6 @@ Source: "${matchedFrom}"`;
       }
     }
     setupSizeListener() {
-      const innerNode = this.shadow.querySelector(".wrapper--data");
-      if (!innerNode) return;
       const observer = new PerformanceObserver(() => {
         this.setSize();
       });

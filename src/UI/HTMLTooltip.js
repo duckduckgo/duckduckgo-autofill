@@ -306,9 +306,6 @@ export class HTMLTooltip {
         }
     }
     setupSizeListener() {
-        const innerNode = this.shadow.querySelector('.wrapper--data');
-        if (!innerNode) return;
-
         // Listen to layout and paint changes to register the size
         const observer = new PerformanceObserver(() => {
             this.setSize();
