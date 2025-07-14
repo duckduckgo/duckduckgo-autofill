@@ -13017,7 +13017,7 @@ Source: "${matchedFrom}"`;
         ]).then(() => {
           this.tooltip.parentNode.removeAttribute("hidden");
           this.checkPosition();
-          if (this.options.platform === "windows") this.setSize();
+          this.setSize();
         });
       });
       this.append();

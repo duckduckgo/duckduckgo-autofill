@@ -337,7 +337,7 @@ export class HTMLTooltip {
                 // (Windows) When chrome is forced to re-calculate style
                 // it seems to be a good point for us to set size as well, as performanceobserver
                 // doesn't seem to be triggered always.
-                if (this.options.platform === 'windows') this.setSize();
+                this.setSize();
             });
         });
 
