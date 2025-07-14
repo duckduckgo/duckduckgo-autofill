@@ -346,7 +346,7 @@
       cssSelector: {
         selectors: {
           genericTextInputField: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([role=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])',
-          submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]), [role=button], a[href="#"][id*=button i], a[href="#"][id*=btn i]',
+          submitButtonSelector: 'input[type=submit], input[type=button], input[type=image], button:not([role=switch]):not([role=link]):not([aria-label="clear" i]), [role=button]:not([aria-label="clear" i]), a[href="#"][id*=button i], a[href="#"][id*=btn i]',
           formInputsSelectorWithoutSelect: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([role=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username]',
           formInputsSelector: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([role=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([name*=otp]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month]),[autocomplete=username],select',
           safeUniversalSelector: "*:not(select):not(option):not(script):not(noscript):not(style):not(br)",
@@ -383,7 +383,7 @@
           },
           emailAddress: {
             match: /.mail\b|apple.?id|posta elettronica|e.?mailadres|correo electr|correo-e|^correo$|\be.?post|e.?postadress/iu,
-            skip: /phone|(first.?|last.?)name|number|code/iu,
+            skip: /phone|(first.?|last.?)name|number|code|\bdate\b/iu,
             forceUnknown: /search|filter|subject|title|\btab\b|otp/iu
           },
           password: {
@@ -4625,6 +4625,9 @@ Source: "${matchedFrom}"`;
     "thameswater.co.uk": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
     },
+    "themovingportal.co.uk": {
+      "password-rules": `minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-@#$%^&*_+={}|\\:',?/'~" ();.[]];`
+    },
     "ticketweb.com": {
       "password-rules": "minlength: 12; maxlength: 15;"
     },
@@ -6163,7 +6166,438 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/external.js
+  // src/Scanner.js
+  var { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM: MAX_INPUTS_PER_FORM2, ATTR_INPUT_TYPE: ATTR_INPUT_TYPE3 } = constants;
+  var defaultScannerOptions = {
+    // This buffer size is very large because it's an unexpected edge-case that
+    // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
+    // new elements in the buffer however then this will prevent the algorithm from never ending.
+    bufferSize: 50,
+    // wait for a 500ms window of event silence before performing the scan
+    debounceTimePeriod: 500,
+    // how long to wait when performing the initial scan
+    initialDelay: 0,
+    // How many inputs is too many on the page. If we detect that there's above
+    // this maximum, then we don't scan the page. This will prevent slowdowns on
+    // large pages which are unlikely to require autofill anyway.
+    maxInputsPerPage: MAX_INPUTS_PER_PAGE,
+    maxFormsPerPage: MAX_FORMS_PER_PAGE,
+    maxInputsPerForm: MAX_INPUTS_PER_FORM2
+  };
+  var DefaultScanner = class {
+    /**
+     * @param {import("./DeviceInterface/InterfacePrototype").default} device
+     * @param {ScannerOptions} options
+     */
+    constructor(device, options) {
+      /** @type Map<HTMLElement, Form> */
+      __publicField(this, "forms", /* @__PURE__ */ new Map());
+      /** @type {any|undefined} the timer to reset */
+      __publicField(this, "debounceTimer");
+      /** @type {Set<HTMLElement|Document>} stored changed elements until they can be processed */
+      __publicField(this, "changedElements", /* @__PURE__ */ new Set());
+      /** @type {ScannerOptions} */
+      __publicField(this, "options");
+      /** @type {HTMLInputElement | null} */
+      __publicField(this, "activeInput", null);
+      /** @type {boolean} A flag to indicate the whole page will be re-scanned */
+      __publicField(this, "rescanAll", false);
+      /** @type {Mode} Indicates the mode in which the scanner is operating */
+      __publicField(this, "mode", "scanning");
+      /** @type {import("./Form/matching").Matching} matching */
+      __publicField(this, "matching");
+      /** @type {HTMLElement|null} */
+      __publicField(this, "_forcedForm", null);
+      /**
+       * Watch for changes in the DOM, and enqueue elements to be scanned
+       * @type {MutationObserver}
+       */
+      __publicField(this, "mutObs", new MutationObserver((mutationList) => {
+        if (this.rescanAll) {
+          this.enqueue([]);
+          return;
+        }
+        const outgoing = [];
+        for (const mutationRecord of mutationList) {
+          if (mutationRecord.type === "childList") {
+            for (const addedNode of mutationRecord.addedNodes) {
+              if (!(addedNode instanceof HTMLElement)) continue;
+              if (addedNode.nodeName === "DDG-AUTOFILL") continue;
+              outgoing.push(addedNode);
+            }
+          }
+        }
+        this.enqueue(outgoing);
+      }));
+      this.device = device;
+      this.matching = createMatching();
+      this.options = options;
+      this.initTimeStamp = Date.now();
+    }
+    /**
+     * Determine whether we should fire the credentials autoprompt. This is needed because some sites are blank
+     * on page load and load scripts asynchronously, so our initial scan didn't set the autoprompt correctly
+     * @returns {boolean}
+     */
+    get shouldAutoprompt() {
+      return Date.now() - this.initTimeStamp <= 1500;
+    }
+    /**
+     * Call this to scan once and then watch for changes.
+     *
+     * Call the returned function to remove listeners.
+     * @returns {(reason: string, ...rest) => void}
+     */
+    init() {
+      window.addEventListener("pointerdown", this, true);
+      if (!this.device.globalConfig.isMobileApp) {
+        window.addEventListener("focus", this, true);
+      }
+      const delay = this.options.initialDelay;
+      if (delay === 0) {
+        window.requestIdleCallback(() => this.scanAndObserve());
+      } else {
+        setTimeout(() => this.scanAndObserve(), delay);
+      }
+      return (reason, ...rest) => {
+        this.setMode("stopped", reason, ...rest);
+      };
+    }
+    /**
+     * Scan the page and begin observing changes
+     */
+    scanAndObserve() {
+      window.performance?.mark?.("initial_scanner:init:start");
+      this.findEligibleInputs(document);
+      window.performance?.mark?.("initial_scanner:init:end");
+      logPerformance("initial_scanner");
+      this.mutObs.observe(document.documentElement, { childList: true, subtree: true });
+    }
+    /**
+     * Core logic for find inputs that are eligible for autofill. If they are,
+     * then call addInput which will attempt to add the input to a parent form.
+     * @param context
+     */
+    findEligibleInputs(context) {
+      if (this.device.globalConfig.isDDGDomain) {
+        return this;
+      }
+      const formInputsSelectorWithoutSelect = this.matching.cssSelector("formInputsSelectorWithoutSelect");
+      if ("matches" in context && context.matches?.(formInputsSelectorWithoutSelect)) {
+        this.addInput(context);
+      } else {
+        const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
+        if (inputs.length > this.options.maxInputsPerPage) {
+          this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
+          return this;
+        }
+        inputs.forEach((input) => this.addInput(input));
+        if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
+          findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {
+            if (input instanceof HTMLInputElement) {
+              this.addInput(input, context);
+            }
+          });
+        }
+      }
+      return this;
+    }
+    /**
+     * Sets the scanner mode, logging the reason and any additional arguments.
+     * 'stopped', switches off the mutation observer and clears all forms and listeners,
+     * 'on-click', keeps event listeners so that scanning can continue on clicking,
+     * 'scanning', default operation triggered in normal conditions
+     * Keep the listener for pointerdown to scan on click if needed.
+     * @param {Mode} mode
+     * @param {string} reason
+     * @param {any} rest
+     */
+    setMode(mode, reason, ...rest) {
+      this.mode = mode;
+      if (shouldLog()) {
+        console.log(mode, reason, ...rest);
+      }
+      if (mode === "scanning") return;
+      if (mode === "stopped") {
+        window.removeEventListener("pointerdown", this, true);
+        window.removeEventListener("focus", this, true);
+      }
+      clearTimeout(this.debounceTimer);
+      this.changedElements.clear();
+      this.mutObs.disconnect();
+      this.forms.forEach((form) => {
+        form.destroy();
+      });
+      this.forms.clear();
+      const activeInput = this.device.activeForm?.activeInput;
+      activeInput?.focus();
+    }
+    get isStopped() {
+      return this.mode === "stopped";
+    }
+    /**
+     * @param {HTMLElement} input
+     * @returns {HTMLElement}
+     */
+    getParentForm(input) {
+      this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
+      if (this._forcedForm?.contains(input)) {
+        return this._forcedForm;
+      }
+      if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
+        if (input.form) {
+          if (this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
+          !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
+            return input.form;
+          }
+        }
+      }
+      let traversalLayerCount = 0;
+      let element = input;
+      while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
+        const siblingForm = element.parentElement?.querySelector("form");
+        if (siblingForm && siblingForm !== element) {
+          return element;
+        }
+        if (element instanceof HTMLFormElement) {
+          return element;
+        }
+        if (element.parentElement) {
+          element = element.parentElement;
+          if (element.childElementCount > 1) {
+            const inputs = element.querySelectorAll(this.matching.cssSelector("formInputsSelector"));
+            const buttons = element.querySelectorAll(this.matching.cssSelector("submitButtonSelector"));
+            if (inputs.length > 1 || buttons.length) {
+              return element;
+            }
+            traversalLayerCount++;
+          }
+        } else {
+          const root = element.getRootNode();
+          if (root instanceof ShadowRoot && root.host) {
+            element = root.host;
+          } else {
+            break;
+          }
+        }
+      }
+      return input;
+    }
+    /**
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @returns {boolean}
+     */
+    inputExistsInForms(input) {
+      return [...this.forms.values()].some((form) => form.inputs.all.has(input));
+    }
+    /**
+     * @param {HTMLInputElement|HTMLSelectElement} input
+     * @param {HTMLFormElement|null} form
+     */
+    addInput(input, form = null) {
+      if (this.isStopped) return;
+      if (this.inputExistsInForms(input)) return;
+      const parentForm = form || this.getParentForm(input);
+      if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
+        const foundForm = this.forms.get(parentForm);
+        if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
+          foundForm.addInput(input);
+        } else {
+          this.setMode("stopped", "The form has too many inputs, destroying.");
+        }
+        return;
+      }
+      if (parentForm.role === "search") return;
+      let previouslyFoundParent, childForm;
+      for (const [formEl] of this.forms) {
+        if (!formEl.isConnected) {
+          this.forms.delete(formEl);
+          continue;
+        }
+        if (formEl.contains(parentForm)) {
+          previouslyFoundParent = formEl;
+          break;
+        }
+        if (parentForm.contains(formEl)) {
+          childForm = formEl;
+          break;
+        }
+      }
+      if (previouslyFoundParent) {
+        if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
+          this.forms.delete(previouslyFoundParent);
+        } else {
+          this.forms.get(previouslyFoundParent)?.addInput(input);
+        }
+      } else {
+        if (childForm && childForm !== this._forcedForm) {
+          this.forms.get(childForm)?.destroy();
+          this.forms.delete(childForm);
+        }
+        if (this.forms.size < this.options.maxFormsPerPage) {
+          this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
+        } else {
+          this.setMode("on-click", "The page has too many forms, stop adding them.");
+        }
+      }
+    }
+    /**
+     * enqueue elements to be re-scanned after the given
+     * amount of time has elapsed.
+     *
+     * @param {(HTMLElement|Document)[]} htmlElements
+     */
+    enqueue(htmlElements) {
+      if (this.changedElements.size >= this.options.bufferSize) {
+        this.rescanAll = true;
+        this.changedElements.clear();
+      } else if (!this.rescanAll) {
+        for (const element of htmlElements) {
+          this.changedElements.add(element);
+        }
+      }
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        window.performance?.mark?.("scanner:init:start");
+        this.processChangedElements();
+        this.changedElements.clear();
+        this.rescanAll = false;
+        window.performance?.mark?.("scanner:init:end");
+        logPerformance("scanner");
+      }, this.options.debounceTimePeriod);
+    }
+    /**
+     * re-scan the changed elements, but only if they
+     * are still present in the DOM
+     */
+    processChangedElements() {
+      if (this.rescanAll) {
+        this.findEligibleInputs(document);
+        return;
+      }
+      for (const element of this.changedElements) {
+        if (element.isConnected) {
+          this.findEligibleInputs(element);
+        }
+      }
+    }
+    handleEvent(event) {
+      switch (event.type) {
+        case "pointerdown":
+        case "focus":
+          this.scanOnClick(event);
+          break;
+      }
+    }
+    /**
+     * Scan clicked input fields, even if they're within a shadow tree
+     * @param {FocusEvent | PointerEvent} event
+     */
+    scanOnClick(event) {
+      if (this.isStopped || !(event.target instanceof Element)) return;
+      window.performance?.mark?.("scan_shadow:init:start");
+      const realTarget = pierceShadowTree(event, HTMLInputElement);
+      if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
+        if (shouldLog()) console.log("scanOnClick executing for target", realTarget);
+        const parentForm = this.getParentForm(realTarget);
+        if (parentForm instanceof HTMLInputElement) return;
+        const hasShadowTree = event.target?.shadowRoot != null;
+        const form = this.forms.get(parentForm);
+        if (!form) {
+          this.forms.set(
+            parentForm,
+            new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
+          );
+        } else {
+          form.addInput(realTarget);
+        }
+        this.findEligibleInputs(parentForm);
+      }
+      window.performance?.mark?.("scan_shadow:init:end");
+      logPerformance("scan_shadow");
+    }
+  };
+  function createScanner(device, scannerOptions) {
+    return new DefaultScanner(device, {
+      ...defaultScannerOptions,
+      ...scannerOptions
+    });
+  }
+
+  // src/UI/controllers/UIController.js
+  var UIController = class {
+    /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to 'attach' a tooltip.
+     *
+     * @param {AttachTooltipArgs} _args
+     * @returns {void}
+     */
+    attachTooltip(_args2) {
+      throw new Error("must implement attachTooltip");
+    }
+    /**
+     * Implement this method to control what happen when Autofill
+     * has enough information to show the keyboard extension.
+     *
+     * @param {AttachKeyboardArgs} _args
+     * @returns {void}
+     */
+    attachKeyboard(_args2) {
+      throw new Error("must implement attachKeyboard");
+    }
+    /**
+     * Implement this if your tooltip can be created from positioning
+     * + topContextData.
+     *
+     * For example, in an 'overlay' on macOS/Windows this is needed since
+     * there's no page information to call 'attach' above.
+     *
+     * @param {import("../interfaces").PosFn} _pos
+     * @param {TopContextData} _topContextData
+     * @returns {any | null}
+     */
+    createTooltip(_pos, _topContextData) {
+    }
+    /**
+     * @param {string} _via
+     */
+    removeTooltip(_via) {
+    }
+    /**
+     * Set the currently open HTMLTooltip instance
+     *
+     * @param {import("../HTMLTooltip.js").HTMLTooltip} _tooltip
+     */
+    setActiveTooltip(_tooltip) {
+    }
+    /**
+     * Get the currently open HTMLTooltip instance, if one exists
+     *
+     * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
+     */
+    getActiveTooltip() {
+      return null;
+    }
+    /**
+     * Indicate whether the controller deems itself 'active'
+     *
+     * @returns {boolean}
+     */
+    isActive() {
+      return false;
+    }
+    /**
+     * Updates the items in the tooltip based on new data. Currently only supporting credentials.
+     * @param {CredentialsObject[]} _data
+     */
+    updateItems(_data7) {
+    }
+    destroy() {
+    }
+  };
+
+  // node_modules/zod/v3/external.js
   var external_exports = {};
   __export(external_exports, {
     BRAND: () => BRAND,
@@ -6275,7 +6709,7 @@ Source: "${matchedFrom}"`;
     void: () => voidType
   });
 
-  // node_modules/zod/dist/esm/v3/helpers/util.js
+  // node_modules/zod/v3/helpers/util.js
   var util;
   (function(util2) {
     util2.assertEqual = (_) => {
@@ -6409,7 +6843,7 @@ Source: "${matchedFrom}"`;
     }
   };
 
-  // node_modules/zod/dist/esm/v3/ZodError.js
+  // node_modules/zod/v3/ZodError.js
   var ZodIssueCode = util.arrayToEnum([
     "invalid_type",
     "invalid_literal",
@@ -6509,8 +6943,9 @@ Source: "${matchedFrom}"`;
       const formErrors = [];
       for (const sub of this.issues) {
         if (sub.path.length > 0) {
-          fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
-          fieldErrors[sub.path[0]].push(mapper(sub));
+          const firstEl = sub.path[0];
+          fieldErrors[firstEl] = fieldErrors[firstEl] || [];
+          fieldErrors[firstEl].push(mapper(sub));
         } else {
           formErrors.push(mapper(sub));
         }
@@ -6526,7 +6961,7 @@ Source: "${matchedFrom}"`;
     return error;
   };
 
-  // node_modules/zod/dist/esm/v3/locales/en.js
+  // node_modules/zod/v3/locales/en.js
   var errorMap = (issue, _ctx) => {
     let message;
     switch (issue.code) {
@@ -6588,6 +7023,8 @@ Source: "${matchedFrom}"`;
           message = `String must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `over`} ${issue.minimum} character(s)`;
         else if (issue.type === "number")
           message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
+        else if (issue.type === "bigint")
+          message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
         else if (issue.type === "date")
           message = `Date must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${new Date(Number(issue.minimum))}`;
         else
@@ -6627,7 +7064,7 @@ Source: "${matchedFrom}"`;
   };
   var en_default = errorMap;
 
-  // node_modules/zod/dist/esm/v3/errors.js
+  // node_modules/zod/v3/errors.js
   var overrideErrorMap = en_default;
   function setErrorMap(map) {
     overrideErrorMap = map;
@@ -6636,7 +7073,7 @@ Source: "${matchedFrom}"`;
     return overrideErrorMap;
   }
 
-  // node_modules/zod/dist/esm/v3/helpers/parseUtil.js
+  // node_modules/zod/v3/helpers/parseUtil.js
   var makeIssue = (params) => {
     const { data, path, errorMaps, issueData } = params;
     const fullPath = [...path, ...issueData.path || []];
@@ -6746,14 +7183,14 @@ Source: "${matchedFrom}"`;
   var isValid = (x) => x.status === "valid";
   var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-  // node_modules/zod/dist/esm/v3/helpers/errorUtil.js
+  // node_modules/zod/v3/helpers/errorUtil.js
   var errorUtil;
   (function(errorUtil2) {
     errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
     errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
   })(errorUtil || (errorUtil = {}));
 
-  // node_modules/zod/dist/esm/v3/types.js
+  // node_modules/zod/v3/types.js
   var ParseInputLazyPath = class {
     constructor(parent, value, path, key) {
       this._cachedPath = [];
@@ -7152,6 +7589,8 @@ Source: "${matchedFrom}"`;
       return false;
     try {
       const [header] = jwt.split(".");
+      if (!header)
+        return false;
       const base64 = header.replace(/-/g, "+").replace(/_/g, "/").padEnd(header.length + (4 - header.length % 4) % 4, "=");
       const decoded = JSON.parse(atob(base64));
       if (typeof decoded !== "object" || decoded === null)
@@ -10442,6 +10881,7 @@ Source: "${matchedFrom}"`;
     availableInputTypes: availableInputTypes1Schema
   });
   var autofillFeatureTogglesSchema = external_exports.object({
+    autocomplete_attribute_support: external_exports.boolean().optional(),
     inputType_credentials: external_exports.boolean().optional(),
     inputType_identities: external_exports.boolean().optional(),
     inputType_creditCards: external_exports.boolean().optional(),
@@ -11140,440 +11580,6 @@ Source: "${matchedFrom}"`;
       __publicField(this, "method", "ShowInContextEmailProtectionSignupPrompt");
       __publicField(this, "id", "ShowInContextEmailProtectionSignupPromptResponse");
       __publicField(this, "resultValidator", showInContextEmailProtectionSignupPromptSchema);
-    }
-  };
-
-  // src/Scanner.js
-  var { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM: MAX_INPUTS_PER_FORM2, ATTR_INPUT_TYPE: ATTR_INPUT_TYPE3 } = constants;
-  var defaultScannerOptions = {
-    // This buffer size is very large because it's an unexpected edge-case that
-    // a DOM will be continually modified over and over without ever stopping. If we do see 1000 unique
-    // new elements in the buffer however then this will prevent the algorithm from never ending.
-    bufferSize: 50,
-    // wait for a 500ms window of event silence before performing the scan
-    debounceTimePeriod: 500,
-    // how long to wait when performing the initial scan
-    initialDelay: 0,
-    // How many inputs is too many on the page. If we detect that there's above
-    // this maximum, then we don't scan the page. This will prevent slowdowns on
-    // large pages which are unlikely to require autofill anyway.
-    maxInputsPerPage: MAX_INPUTS_PER_PAGE,
-    maxFormsPerPage: MAX_FORMS_PER_PAGE,
-    maxInputsPerForm: MAX_INPUTS_PER_FORM2
-  };
-  var DefaultScanner = class {
-    /**
-     * @param {import("./DeviceInterface/InterfacePrototype").default} device
-     * @param {ScannerOptions} options
-     */
-    constructor(device, options) {
-      /** @type Map<HTMLElement, Form> */
-      __publicField(this, "forms", /* @__PURE__ */ new Map());
-      /** @type {any|undefined} the timer to reset */
-      __publicField(this, "debounceTimer");
-      /** @type {Set<HTMLElement|Document>} stored changed elements until they can be processed */
-      __publicField(this, "changedElements", /* @__PURE__ */ new Set());
-      /** @type {ScannerOptions} */
-      __publicField(this, "options");
-      /** @type {HTMLInputElement | null} */
-      __publicField(this, "activeInput", null);
-      /** @type {boolean} A flag to indicate the whole page will be re-scanned */
-      __publicField(this, "rescanAll", false);
-      /** @type {Mode} Indicates the mode in which the scanner is operating */
-      __publicField(this, "mode", "scanning");
-      /** @type {import("./Form/matching").Matching} matching */
-      __publicField(this, "matching");
-      /** @type {HTMLElement|null} */
-      __publicField(this, "_forcedForm", null);
-      /**
-       * Watch for changes in the DOM, and enqueue elements to be scanned
-       * @type {MutationObserver}
-       */
-      __publicField(this, "mutObs", new MutationObserver((mutationList) => {
-        if (this.rescanAll) {
-          this.enqueue([]);
-          return;
-        }
-        const outgoing = [];
-        for (const mutationRecord of mutationList) {
-          if (mutationRecord.type === "childList") {
-            for (const addedNode of mutationRecord.addedNodes) {
-              if (!(addedNode instanceof HTMLElement)) continue;
-              if (addedNode.nodeName === "DDG-AUTOFILL") continue;
-              outgoing.push(addedNode);
-            }
-          }
-        }
-        this.enqueue(outgoing);
-      }));
-      this.device = device;
-      this.matching = createMatching();
-      this.options = options;
-      this.initTimeStamp = Date.now();
-    }
-    /**
-     * Determine whether we should fire the credentials autoprompt. This is needed because some sites are blank
-     * on page load and load scripts asynchronously, so our initial scan didn't set the autoprompt correctly
-     * @returns {boolean}
-     */
-    get shouldAutoprompt() {
-      return Date.now() - this.initTimeStamp <= 1500;
-    }
-    /**
-     * Call this to scan once and then watch for changes.
-     *
-     * Call the returned function to remove listeners.
-     * @returns {(reason: string, ...rest) => void}
-     */
-    init() {
-      if (this.device.globalConfig.isExtension) {
-        this.device.deviceApi.notify(new AddDebugFlagCall({ flag: "autofill" }));
-      }
-      window.addEventListener("pointerdown", this, true);
-      if (!this.device.globalConfig.isMobileApp) {
-        window.addEventListener("focus", this, true);
-      }
-      const delay = this.options.initialDelay;
-      if (delay === 0) {
-        window.requestIdleCallback(() => this.scanAndObserve());
-      } else {
-        setTimeout(() => this.scanAndObserve(), delay);
-      }
-      return (reason, ...rest) => {
-        this.setMode("stopped", reason, ...rest);
-      };
-    }
-    /**
-     * Scan the page and begin observing changes
-     */
-    scanAndObserve() {
-      window.performance?.mark?.("initial_scanner:init:start");
-      this.findEligibleInputs(document);
-      window.performance?.mark?.("initial_scanner:init:end");
-      logPerformance("initial_scanner");
-      this.mutObs.observe(document.documentElement, { childList: true, subtree: true });
-    }
-    /**
-     * Core logic for find inputs that are eligible for autofill. If they are,
-     * then call addInput which will attempt to add the input to a parent form.
-     * @param context
-     */
-    findEligibleInputs(context) {
-      if (this.device.globalConfig.isDDGDomain) {
-        return this;
-      }
-      const formInputsSelectorWithoutSelect = this.matching.cssSelector("formInputsSelectorWithoutSelect");
-      if ("matches" in context && context.matches?.(formInputsSelectorWithoutSelect)) {
-        this.addInput(context);
-      } else {
-        const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-        if (inputs.length > this.options.maxInputsPerPage) {
-          this.setMode("stopped", `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
-          return this;
-        }
-        inputs.forEach((input) => this.addInput(input));
-        if (context instanceof HTMLFormElement && this.forms.get(context)?.hasShadowTree) {
-          findElementsInShadowTree(context, formInputsSelectorWithoutSelect).forEach((input) => {
-            if (input instanceof HTMLInputElement) {
-              this.addInput(input, context);
-            }
-          });
-        }
-      }
-      return this;
-    }
-    /**
-     * Sets the scanner mode, logging the reason and any additional arguments.
-     * 'stopped', switches off the mutation observer and clears all forms and listeners,
-     * 'on-click', keeps event listeners so that scanning can continue on clicking,
-     * 'scanning', default operation triggered in normal conditions
-     * Keep the listener for pointerdown to scan on click if needed.
-     * @param {Mode} mode
-     * @param {string} reason
-     * @param {any} rest
-     */
-    setMode(mode, reason, ...rest) {
-      this.mode = mode;
-      if (shouldLog()) {
-        console.log(mode, reason, ...rest);
-      }
-      if (mode === "scanning") return;
-      if (mode === "stopped") {
-        window.removeEventListener("pointerdown", this, true);
-        window.removeEventListener("focus", this, true);
-      }
-      clearTimeout(this.debounceTimer);
-      this.changedElements.clear();
-      this.mutObs.disconnect();
-      this.forms.forEach((form) => {
-        form.destroy();
-      });
-      this.forms.clear();
-      const activeInput = this.device.activeForm?.activeInput;
-      activeInput?.focus();
-    }
-    get isStopped() {
-      return this.mode === "stopped";
-    }
-    /**
-     * @param {HTMLElement} input
-     * @returns {HTMLElement}
-     */
-    getParentForm(input) {
-      this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
-      if (this._forcedForm?.contains(input)) {
-        return this._forcedForm;
-      }
-      if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
-        if (input.form) {
-          if (this.forms.has(input.form) || // If we've added the form we've already checked that it's not a page wrapper
-          !isFormLikelyToBeUsedAsPageWrapper(input.form)) {
-            return input.form;
-          }
-        }
-      }
-      let traversalLayerCount = 0;
-      let element = input;
-      while (traversalLayerCount <= 5 && element.parentElement !== document.documentElement) {
-        const siblingForm = element.parentElement?.querySelector("form");
-        if (siblingForm && siblingForm !== element) {
-          return element;
-        }
-        if (element instanceof HTMLFormElement) {
-          return element;
-        }
-        if (element.parentElement) {
-          element = element.parentElement;
-          if (element.childElementCount > 1) {
-            const inputs = element.querySelectorAll(this.matching.cssSelector("formInputsSelector"));
-            const buttons = element.querySelectorAll(this.matching.cssSelector("submitButtonSelector"));
-            if (inputs.length > 1 || buttons.length) {
-              return element;
-            }
-            traversalLayerCount++;
-          }
-        } else {
-          const root = element.getRootNode();
-          if (root instanceof ShadowRoot && root.host) {
-            element = root.host;
-          } else {
-            break;
-          }
-        }
-      }
-      return input;
-    }
-    /**
-     * @param {HTMLInputElement|HTMLSelectElement} input
-     * @returns {boolean}
-     */
-    inputExistsInForms(input) {
-      return [...this.forms.values()].some((form) => form.inputs.all.has(input));
-    }
-    /**
-     * @param {HTMLInputElement|HTMLSelectElement} input
-     * @param {HTMLFormElement|null} form
-     */
-    addInput(input, form = null) {
-      if (this.isStopped) return;
-      if (this.inputExistsInForms(input)) return;
-      const parentForm = form || this.getParentForm(input);
-      if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
-        const foundForm = this.forms.get(parentForm);
-        if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM2) {
-          foundForm.addInput(input);
-        } else {
-          this.setMode("stopped", "The form has too many inputs, destroying.");
-        }
-        return;
-      }
-      if (parentForm.role === "search") return;
-      let previouslyFoundParent, childForm;
-      for (const [formEl] of this.forms) {
-        if (!formEl.isConnected) {
-          this.forms.delete(formEl);
-          continue;
-        }
-        if (formEl.contains(parentForm)) {
-          previouslyFoundParent = formEl;
-          break;
-        }
-        if (parentForm.contains(formEl)) {
-          childForm = formEl;
-          break;
-        }
-      }
-      if (previouslyFoundParent) {
-        if (parentForm instanceof HTMLFormElement && parentForm !== previouslyFoundParent) {
-          this.forms.delete(previouslyFoundParent);
-        } else {
-          this.forms.get(previouslyFoundParent)?.addInput(input);
-        }
-      } else {
-        if (childForm && childForm !== this._forcedForm) {
-          this.forms.get(childForm)?.destroy();
-          this.forms.delete(childForm);
-        }
-        if (this.forms.size < this.options.maxFormsPerPage) {
-          this.forms.set(parentForm, new Form(parentForm, input, this.device, this.matching, this.shouldAutoprompt));
-        } else {
-          this.setMode("on-click", "The page has too many forms, stop adding them.");
-        }
-      }
-    }
-    /**
-     * enqueue elements to be re-scanned after the given
-     * amount of time has elapsed.
-     *
-     * @param {(HTMLElement|Document)[]} htmlElements
-     */
-    enqueue(htmlElements) {
-      if (this.changedElements.size >= this.options.bufferSize) {
-        this.rescanAll = true;
-        this.changedElements.clear();
-      } else if (!this.rescanAll) {
-        for (const element of htmlElements) {
-          this.changedElements.add(element);
-        }
-      }
-      clearTimeout(this.debounceTimer);
-      this.debounceTimer = setTimeout(() => {
-        window.performance?.mark?.("scanner:init:start");
-        this.processChangedElements();
-        this.changedElements.clear();
-        this.rescanAll = false;
-        window.performance?.mark?.("scanner:init:end");
-        logPerformance("scanner");
-      }, this.options.debounceTimePeriod);
-    }
-    /**
-     * re-scan the changed elements, but only if they
-     * are still present in the DOM
-     */
-    processChangedElements() {
-      if (this.rescanAll) {
-        this.findEligibleInputs(document);
-        return;
-      }
-      for (const element of this.changedElements) {
-        if (element.isConnected) {
-          this.findEligibleInputs(element);
-        }
-      }
-    }
-    handleEvent(event) {
-      switch (event.type) {
-        case "pointerdown":
-        case "focus":
-          this.scanOnClick(event);
-          break;
-      }
-    }
-    /**
-     * Scan clicked input fields, even if they're within a shadow tree
-     * @param {FocusEvent | PointerEvent} event
-     */
-    scanOnClick(event) {
-      if (this.isStopped || !(event.target instanceof Element)) return;
-      window.performance?.mark?.("scan_shadow:init:start");
-      const realTarget = pierceShadowTree(event, HTMLInputElement);
-      if (realTarget instanceof HTMLInputElement && realTarget.matches(this.matching.cssSelector("genericTextInputField")) && !realTarget.hasAttribute(ATTR_INPUT_TYPE3)) {
-        if (shouldLog()) console.log("scanOnClick executing for target", realTarget);
-        const parentForm = this.getParentForm(realTarget);
-        if (parentForm instanceof HTMLInputElement) return;
-        const hasShadowTree = event.target?.shadowRoot != null;
-        const form = this.forms.get(parentForm);
-        if (!form) {
-          this.forms.set(
-            parentForm,
-            new Form(parentForm, realTarget, this.device, this.matching, this.shouldAutoprompt, hasShadowTree)
-          );
-        } else {
-          form.addInput(realTarget);
-        }
-        this.findEligibleInputs(parentForm);
-      }
-      window.performance?.mark?.("scan_shadow:init:end");
-      logPerformance("scan_shadow");
-    }
-  };
-  function createScanner(device, scannerOptions) {
-    return new DefaultScanner(device, {
-      ...defaultScannerOptions,
-      ...scannerOptions
-    });
-  }
-
-  // src/UI/controllers/UIController.js
-  var UIController = class {
-    /**
-     * Implement this method to control what happen when Autofill
-     * has enough information to 'attach' a tooltip.
-     *
-     * @param {AttachTooltipArgs} _args
-     * @returns {void}
-     */
-    attachTooltip(_args2) {
-      throw new Error("must implement attachTooltip");
-    }
-    /**
-     * Implement this method to control what happen when Autofill
-     * has enough information to show the keyboard extension.
-     *
-     * @param {AttachKeyboardArgs} _args
-     * @returns {void}
-     */
-    attachKeyboard(_args2) {
-      throw new Error("must implement attachKeyboard");
-    }
-    /**
-     * Implement this if your tooltip can be created from positioning
-     * + topContextData.
-     *
-     * For example, in an 'overlay' on macOS/Windows this is needed since
-     * there's no page information to call 'attach' above.
-     *
-     * @param {import("../interfaces").PosFn} _pos
-     * @param {TopContextData} _topContextData
-     * @returns {any | null}
-     */
-    createTooltip(_pos, _topContextData) {
-    }
-    /**
-     * @param {string} _via
-     */
-    removeTooltip(_via) {
-    }
-    /**
-     * Set the currently open HTMLTooltip instance
-     *
-     * @param {import("../HTMLTooltip.js").HTMLTooltip} _tooltip
-     */
-    setActiveTooltip(_tooltip) {
-    }
-    /**
-     * Get the currently open HTMLTooltip instance, if one exists
-     *
-     * @returns {import("../HTMLTooltip.js").HTMLTooltip | null}
-     */
-    getActiveTooltip() {
-      return null;
-    }
-    /**
-     * Indicate whether the controller deems itself 'active'
-     *
-     * @returns {boolean}
-     */
-    isActive() {
-      return false;
-    }
-    /**
-     * Updates the items in the tooltip based on new data. Currently only supporting credentials.
-     * @param {CredentialsObject[]} _data
-     */
-    updateItems(_data7) {
-    }
-    destroy() {
     }
   };
 
@@ -12693,9 +12699,9 @@ Source: "${matchedFrom}"`;
       }
     }
     /**
-     * If the platform in question is happy to derive it's 'enabled' state from the RuntimeConfiguration,
-     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
-     * support this going forward.
+     * If the platform can derive its 'enabled' state from the RuntimeConfiguration,
+     * then it should use this. Currently, only Windows supports this, but we plan to extend support
+     * to all platforms in the future.
      * @returns {Promise<boolean|null>}
      */
     async getEnabled() {
@@ -12980,6 +12986,7 @@ Source: "${matchedFrom}"`;
     siteSpecificFeature: null,
     /** @type {AutofillFeatureToggles} */
     featureToggles: {
+      autocomplete_attribute_support: false,
       credentials_saving: false,
       password_generation: false,
       emailProtection: false,
@@ -13325,6 +13332,72 @@ Source: "${matchedFrom}"`;
       filledForm?.submitHandler("performance observer");
     });
     observer.observe({ entryTypes: ["resource"] });
+  }
+
+  // src/DeviceInterface/initFocusApi.js
+  function getAutocompleteValueFromInputType(inputType) {
+    const subtype = getSubtypeFromType(inputType);
+    const autocompleteMap = {
+      // Identities
+      emailAddress: "email",
+      fullName: "name",
+      firstName: "given-name",
+      middleName: "additional-name",
+      lastName: "family-name",
+      phone: "tel",
+      addressStreet: "street-address",
+      addressStreet2: "address-line2",
+      addressCity: "address-level2",
+      addressProvince: "address-level1",
+      addressPostalCode: "postal-code",
+      addressCountryCode: "country"
+    };
+    return autocompleteMap[subtype];
+  }
+  function setAutocompleteOnIdentityField(element) {
+    if (!(element instanceof HTMLInputElement) || element.hasAttribute("autocomplete")) {
+      return;
+    }
+    const inputType = getInputType(element);
+    const mainType = getMainTypeFromType(inputType);
+    if (mainType !== "identities") {
+      return;
+    }
+    const autocompleteValue = getAutocompleteValueFromInputType(inputType);
+    if (autocompleteValue) {
+      element.setAttribute("autocomplete", autocompleteValue);
+      element.addEventListener(
+        "blur",
+        () => {
+          element.removeAttribute("autocomplete");
+        },
+        { once: true }
+      );
+    }
+  }
+  function handleFocusEvent(forms, settings, attachKeyboardCallback, e) {
+    const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
+    if (isAnyFormAutofilling) return;
+    const targetElement = pierceShadowTree(e);
+    if (!targetElement || targetElement instanceof Window) return;
+    const form = [...forms.values()].find((form2) => form2.hasFocus());
+    if (settings.featureToggles.input_focus_api) {
+      attachKeyboardCallback({ form, element: targetElement });
+    }
+    if (settings.featureToggles.autocomplete_attribute_support) {
+      setAutocompleteOnIdentityField(targetElement);
+    }
+  }
+  function initFocusApi(forms, settings, attachKeyboardCallback) {
+    const boundHandleFocusEvent = handleFocusEvent.bind(null, forms, settings, attachKeyboardCallback);
+    window.addEventListener("focus", boundHandleFocusEvent, true);
+    return {
+      setAutocompleteOnIdentityField,
+      handleFocusEvent: boundHandleFocusEvent,
+      cleanup: () => {
+        window.removeEventListener("focus", boundHandleFocusEvent, true);
+      }
+    };
   }
 
   // src/EmailProtection.js
@@ -16229,6 +16302,8 @@ Source: "${matchedFrom}"`;
       __publicField(this, "passwordGenerator", new PasswordGenerator());
       __publicField(this, "emailProtection", new EmailProtection(this));
       __publicField(this, "credentialsImport", new CredentialsImport(this));
+      /** @type {Object | null} */
+      __publicField(this, "focusApi", null);
       /** @type {import("../InContextSignup.js").InContextSignup | null} */
       __publicField(this, "inContextSignup", null);
       /** @type {import("../ThirdPartyProvider.js").ThirdPartyProvider | null} */
@@ -16288,6 +16363,7 @@ Source: "${matchedFrom}"`;
     removeAutofillUIFromPage(reason) {
       this.uiController?.destroy();
       this._scannerCleanup?.(reason);
+      this.focusApi?.cleanup?.();
     }
     get hasLocalAddresses() {
       return !!(__privateGet(this, _addresses)?.privateAddress && __privateGet(this, _addresses)?.personalAddress);
@@ -16403,21 +16479,12 @@ Source: "${matchedFrom}"`;
       return __privateGet(this, _data6).creditCards;
     }
     /**
-     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms
+     * Initializes a global focus event handler that handles iOS keyboard and autocomplete functionality
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - Collection of form objects to monitor
+     * @returns {Object}
      */
     initGlobalFocusHandler(forms) {
-      window.addEventListener(
-        "focus",
-        (e) => {
-          const isAnyFormAutofilling = [...forms.values()].some((form2) => form2.isAutofilling);
-          const form = [...forms.values()].find((form2) => form2.hasFocus());
-          const targetElement = pierceShadowTree(e);
-          if (!isAnyFormAutofilling && this.globalConfig.isIOS && targetElement && !(targetElement instanceof Window)) {
-            this.attachKeyboard({ device: this, form, element: targetElement });
-          }
-        },
-        true
-      );
+      return initFocusApi(forms, this.settings, ({ form, element }) => this.attachKeyboard({ device: this, form, element }));
     }
     async startInit() {
       if (this.isInitializationStarted) return;
@@ -16433,8 +16500,8 @@ Source: "${matchedFrom}"`;
       if (this.settings.featureToggles.credentials_saving) {
         initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
       }
-      if (this.settings.featureToggles.input_focus_api) {
-        this.initGlobalFocusHandler(this.scanner.forms);
+      if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
+        this.focusApi = this.initGlobalFocusHandler(this.scanner.forms);
       }
     }
     async init() {

@@ -1,14 +1,12 @@
 ## `src/Settings.js`
 
-Autofill needs access to certain pieces of state before it can perform any page scanning, 
-therefor a 'Settings' object has been introduced to allow this state to be queried and updated before
-any page scanning occurs.
+Autofill requires access to specific state information before performing any page scanning. To facilitate this, a 'Settings' object has been introduced, enabling the state to be queried and updated prior to any page scanning
 
 ## Properties
 
-`settings.featureToggles` 
- 
-The platform in question will deliver feature toggles (boolean flags) based on device support, user preferences, or a combination of both. Inside Autofill we don't make any distinction about 'how' the toggles are set, we just ask the platform for them and then use them verbatim. This prevents additional logic from bleeding into the Autofill codebase.
+`settings.featureToggles`
+
+The platform will provide feature toggles (boolean flags) based on device support, user preferences, or a combination of both. Within Autofill, we do not differentiate *how* these toggles are set. We simply request them from the platform and use them as they are. This approach prevents additional logic from infiltrating the Autofill codebase.
 
 - `inputType_credentials` - whether the device can autofill credentials
 - `inputType_identities` - whether the device can autofill identities
@@ -16,10 +14,11 @@ The platform in question will deliver feature toggles (boolean flags) based on d
 - `emailProtection` - whether the device supports email protection
 - `password_generation` - if the device can offer generated passwords
 - `credentials_saving` - if the device should offer to capture submitted form data to save
+- `autocomplete_attribute_support` - enables adding HTML autocomplete attributes to form fields to enhance mobile autofill capabilities, particularly iOS QuickType keyboard suggestions
 
 ---
 
-`settings.availableInputTypes` 
+`settings.availableInputTypes`
 
 Another set of boolean flags, this time indicating which data types the current user can autofill.
 Credentials are domain-specific. These represent which input types we can autofill for the current user.
