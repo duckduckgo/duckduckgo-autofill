@@ -80,16 +80,10 @@ test.describe('macos', () => {
             });
         });
         test.describe('prompting to save an address form with additional inputs', () => {
-            const addressData = {
-                firstName: 'John',
-                lastName: 'Doe',
-                addressStreet: '123 Main St',
-                addressStreet2: 'Apt 4B',
-                addressCity: 'New York',
-                addressCountryCode: 'US',
-                addressProvince: 'NY',
-                addressPostalCode: '10001',
-                phone: '5550123',
+            const data = {
+                username: 'dax@wearejh.com',
+                password: '123456',
+                name: 'John Doe',
                 notes: 'Leave at door',
             };
             test('submitting address form with non-ddg inputs should not prompt', async ({ page }) => {
@@ -101,7 +95,7 @@ test.describe('macos', () => {
 
                 const address = addressPage(page);
                 await address.navigate();
-                await address.fillAddressForm(addressData);
+                await address.fillForm(data);
                 await address.submitFormViaTextbox();
                 await address.shouldNotPromptToSave();
             });

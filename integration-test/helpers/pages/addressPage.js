@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { mockedCalls } from '../harness.js';
 
 /**
- * A wrapper around interactions for `integration-test/pages/address-form.html`
+ * A wrapper around interactions for `integration-test/pages/form-save-via-textarea.html`
  *
  * @param {import("@playwright/test").Page} page
  */
@@ -12,22 +12,16 @@ export function addressPage(page) {
          * @return {Promise<void>}
          */
         async navigate() {
-            await page.goto('integration-test/pages/address-form.html');
+            await page.goto('integration-test/pages/form-save-via-textarea.html');
         }
 
         /**
          * Fill in all address form fields
          */
-        async fillAddressForm(data) {
-            await page.fill('#firstName', data.firstName);
-            await page.fill('#lastName', data.lastName);
-            await page.fill('#address1', data.addressStreet);
-            await page.fill('#address2', data.addressStreet2);
-            await page.fill('#city', data.addressCity);
-            await page.fill('#state', data.addressProvince);
-            await page.fill('#postalCode', data.addressPostalCode);
-            await page.fill('#country', data.addressCountryCode);
-            await page.fill('#phone', data.phone);
+        async fillForm(data) {
+            await page.fill('#username', data.username);
+            await page.fill('#password', data.password);
+            await page.fill('#name', data.name);
             await page.fill('#notes', data.notes);
         }
 
