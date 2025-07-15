@@ -2,17 +2,17 @@ import { expect } from '@playwright/test';
 import { mockedCalls } from '../harness.js';
 
 /**
- * A wrapper around interactions for `integration-test/pages/form-save-via-textarea.html`
+ * A wrapper around interactions for `integration-test/pages/login-with-textarea.html`
  *
  * @param {import("@playwright/test").Page} page
  */
-export function addressPage(page) {
-    class AddressPage {
+export function loginWithTextareaPage(page) {
+    class LoginWithTextareaPage {
         /**
          * @return {Promise<void>}
          */
         async navigate() {
-            await page.goto('integration-test/pages/form-save-via-textarea.html');
+            await page.goto('integration-test/pages/login-with-textarea.html');
         }
 
         /**
@@ -37,5 +37,5 @@ export function addressPage(page) {
         }
     }
 
-    return new AddressPage();
+    return new LoginWithTextareaPage();
 }

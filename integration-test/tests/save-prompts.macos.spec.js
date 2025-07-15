@@ -4,7 +4,7 @@ import { createWebkitMocks, macosContentScopeReplacements } from '../helpers/moc
 import { test as base } from '@playwright/test';
 import { signupPage } from '../helpers/pages/signupPage.js';
 import { loginPage } from '../helpers/pages/loginPage.js';
-import { addressPage } from '../helpers/pages/addressPage.js';
+import { loginWithTextareaPage } from '../helpers/pages/loginWithTextareaPage.js';
 /**
  *  Tests for various auto-fill scenarios on macos
  */
@@ -93,11 +93,11 @@ test.describe('macos', () => {
                 await createWebkitMocks().applyTo(page);
                 await defaultMacosScript(page);
 
-                const address = addressPage(page);
-                await address.navigate();
-                await address.fillForm(data);
-                await address.submitFormViaTextbox();
-                await address.shouldNotPromptToSave();
+                const login = loginWithTextareaPage(page);
+                await login.navigate();
+                await login.fillForm(data);
+                await login.submitFormViaTextbox();
+                await login.shouldNotPromptToSave();
             });
         });
     });
