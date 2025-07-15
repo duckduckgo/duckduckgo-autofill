@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Form Test</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <form id="addressForm" method="POST" action="#">
+            <h2>Test address form, with an arbitrary text field</h2>
+            <p>This form is used to test the address form, with an arbitrary text field</p>
+
+            <!-- Login Fields -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="loginusername">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="login-password">
+            </div>
+
+            <!-- Name Fields -->
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" autocomplete="name" required>
+            </div>
+
+            <!-- Additional Random Text Field -->
+            <div class="form-group">
+                <label for="notes">Random Notes</label>
+                <textarea id="notes" name="notes"></textarea>
+            </div>
+
+            <button type="submit">Save Address</button>
+        </form>
+    </div>
+    <script type="module">
+        [...document.forms].forEach((form) => {
+          form.addEventListener("submit", (e) => {
+            e.preventDefault();
+          })
+        })
+      </script>
+</body>
+</html> 

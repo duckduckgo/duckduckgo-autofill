@@ -5679,10 +5679,15 @@ Source: "${matchedFrom}"`;
       this.device.scanner.forms.delete(this.form);
     }
     initFormListeners() {
-      this.addListener(this.form, "input", () => {
+      this.addListener(this.form, "input", (e) => {
         if (!this.isAutofilling) {
           this.submitHandlerExecuted = false;
-          this.resetShouldPromptToStoreData();
+          const inputType = e.target.getAttribute(ATTR_INPUT_TYPE2);
+          if (inputType && inputType !== "unknown") {
+            this.resetShouldPromptToStoreData();
+          } else {
+            this.shouldPromptToStoreData = false;
+          }
         }
       });
       if (this.form instanceof HTMLFormElement && this.form.getRootNode()) {
