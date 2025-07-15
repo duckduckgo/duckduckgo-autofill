@@ -11,7 +11,7 @@ class CredentialsImportTooltip extends HTMLTooltip {
 
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--data top-autofill" hidden>
+<div class="wrapper wrapper--data ${this.options.isTopAutofill ? 'top-autofill' : ''}" hidden data-platform=${this.options.platform}>
     <div class="tooltip tooltip--data">
         <button class="tooltip__button tooltip__button--data tooltip__button--credentials-import js-promo-wrapper">
             <span class="tooltip__button__text-container">
@@ -45,4 +45,4 @@ ${this.options.css}
     }
 }
 
-export default CredentialsImportTooltip;
+export { CredentialsImportTooltip };

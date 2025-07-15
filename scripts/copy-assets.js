@@ -1,20 +1,27 @@
-const { readFileSync, writeFileSync, copyFileSync } = require('fs');
+const { readFileSync, writeFileSync, copyFileSync, readdirSync } = require('fs');
 const { join } = require('path');
 const cwd = join(__dirname, '..');
 const filepath = (...path) => join(cwd, ...path);
+const fs = require('fs');
+
 const srcPath = 'src';
 const distPath = 'dist';
-const appleDistPath = join('swift-package', 'Resources', 'assets');
+
+// Check if DEBUG_UI environment variable is set
+const isDebugUI = process.env.DEBUG_UI === 'true';
 
 copyAutofillCSS();
 copyAutofillScript();
 copyAutofillHTML();
 copySharedCredentials();
 
+// Only copy image assets when in debug UI mode
+if (isDebugUI) {
+    copyImageAssets();
+}
+
 function copyAutofillCSS() {
-    const stylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-tooltip-styles.css');
-    copyFileSync(stylesPath, filepath(distPath, 'autofill.css'));
-    copyFileSync(stylesPath, filepath(appleDistPath, 'autofill.css'));
+    const stylesPath = filepath(distPath, 'autofill.css');
     copyFileSync(stylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill.css'));
 
     const hostStylesPath = filepath(srcPath, 'UI', 'styles', 'autofill-host-styles.css');
@@ -25,13 +32,11 @@ function copyAutofillCSS() {
 
 function copyAutofillHTML() {
     const htmlFileName = 'TopAutofill.html';
-    copyFileSync(filepath(srcPath, htmlFileName), filepath(appleDistPath, htmlFileName));
     copyFileSync(filepath(srcPath, htmlFileName), filepath(distPath, htmlFileName));
 }
 
 function copySharedCredentials() {
     const sharedCredsFilePath = filepath('packages', 'password', 'shared-credentials.json');
-    copyFileSync(sharedCredsFilePath, filepath(appleDistPath, 'shared-credentials.json'));
     copyFileSync(sharedCredsFilePath, filepath(distPath, 'shared-credentials.json'));
 }
 
@@ -63,10 +68,6 @@ function copyAutofillScript() {
     const replaced = autofill.replace(source, replacement);
     const replacedDebug = autofillDebug.replace(source, replacement);
 
-    // regular output inside dist/*
-    writeFileSync(filepath(appleDistPath, scriptFileName), autofill);
-    writeFileSync(filepath(appleDistPath, debugScriptFileName), replacedDebug);
-
     // also overwrite the regular dist/autofill-debug.js to ensure all consumers of 'debug' also get isDDGTestMode=true
     writeFileSync(filepath(distPath, debugScriptFileName), replacedDebug);
 
@@ -75,4 +76,27 @@ function copyAutofillScript() {
 
     // extension output of integration-test/extension/autofill-debug.js
     writeFileSync(filepath('integration-test', 'extension', debugScriptFileName), replacedDebug);
+}
+
+/**
+ * Copy image assets for debug UI
+ * This function is only called when the DEBUG_UI environment variable is set to 'true'
+ */
+function copyImageAssets() {
+    const imgSrcPath = filepath(srcPath, 'UI', 'img');
+    const imgRootPath = filepath('img');
+
+    // Ensure the destination directory exists
+    if (!fs.existsSync(imgRootPath)) {
+        fs.mkdirSync(imgRootPath, { recursive: true });
+    }
+
+    console.log(`Copying debug-ui assets to img folder`);
+    const images = readdirSync(imgSrcPath);
+    images.forEach((image) => {
+        const srcImagePath = join(imgSrcPath, image);
+        const rootImagePath = join(imgRootPath, image);
+        copyFileSync(srcImagePath, rootImagePath);
+        console.log(`✅ Copied ${image} to ${rootImagePath}`);
+    });
 }

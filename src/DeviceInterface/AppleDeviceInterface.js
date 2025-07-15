@@ -13,6 +13,7 @@ import { ThirdPartyProvider } from '../ThirdPartyProvider.js';
 
 /**
  * @typedef {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest} GetAutofillDataRequest
+ * @typedef {import('../UI/HTMLTooltip.js').HTMLTooltipOptions} HTMLTooltipOptions
  */
 
 class AppleDeviceInterface extends InterfacePrototype {
@@ -40,8 +41,10 @@ class AppleDeviceInterface extends InterfacePrototype {
         }
 
         if (!this.globalConfig.supportsTopFrame) {
+            /** @type {HTMLTooltipOptions} */
             const options = {
                 ...defaultOptions,
+                platform: 'macos',
                 testMode: this.isTestMode(),
             };
             return new HTMLTooltipUIController(
@@ -247,7 +250,7 @@ class AppleDeviceInterface extends InterfacePrototype {
     /**
      * Gets a single complete credit card obj once the user requests it
      * @param {CreditCardObject['id']} id
-     * @returns {APIResponse<CreditCardObject>}
+     * @returns {APIResponseSingle<CreditCardObject>}
      */
     getAutofillCreditCard(id) {
         return this.deviceApi.request(createRequest('pmHandlerGetCreditCard', { id }));

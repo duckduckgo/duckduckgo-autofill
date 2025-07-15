@@ -26,9 +26,9 @@ const config = {
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: process.env.CI ? 5 : 0,
+    retries: process.env.CI ? 7 : 0,
     /* Opt out of parallel tests on CI. */
-    workers: process.env.CI ? 1 : 6,
+    workers: process.env.CI ? 3 : 6,
     // workers: 1,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: process.env.CI ? 'github' : [['html', { open: 'never' }]],
@@ -46,7 +46,7 @@ const config = {
     webServer: {
         port: 3210,
         reuseExistingServer: true,
-        command: 'npm run serve',
+        command: 'npm run build && npm run serve',
         ignoreHTTPSErrors: true,
     },
 

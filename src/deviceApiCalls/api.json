@@ -29,6 +29,21 @@
         }
       }
     },
+    "getAutofillDataFocus": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getAutofillDataFocusResponse"
+        },
+        "paramsValidator": {
+          "$ref": "./schemas/getAutofillDataFocus.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getAutofillDataFocus.result.json"
+        }
+      }
+    },
     "getRuntimeConfiguration": {
       "type": "object",
       "properties": {
@@ -206,6 +221,38 @@
     "startCredentialsImportFlow": {
       "type": "object",
       "description": "(macOS/Windows) Opens the native password import flow UI"
+    },
+    "getIdentity": {
+      "type": "object",
+      "description": "(Windows) Get a single identity",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getIdentityResponse"
+        },
+        "paramValidator": {
+          "$ref": "./schemas/getIdentity.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getIdentity.result.json"
+        }
+      }
+    },
+    "getCreditCard": {
+      "type": "object",
+      "description": "(Windows) Get a single credit card",
+      "properties": {
+        "id": {
+          "type": "string",
+          "const": "getCreditCardResponse"
+        },
+        "paramValidator": {
+          "$ref": "./schemas/getCreditCard.params.json"
+        },
+        "resultValidator": {
+          "$ref": "./schemas/getCreditCard.result.json"
+        }
+      }
     },
     "credentialsImportFlowPermanentlyDismissed": {
       "type": "object",

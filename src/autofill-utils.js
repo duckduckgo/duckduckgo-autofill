@@ -1,6 +1,6 @@
 import { getInputSubtype, removeExcessWhitespace } from './Form/matching.js';
 import { constants } from './constants.js';
-import { processConfig } from '@duckduckgo/content-scope-scripts/src/apple-utils';
+import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/utils';
 
 const SIGN_IN_MSG = { signMeIn: true };
 
@@ -50,7 +50,12 @@ const autofillEnabled = (globalConfig) => {
 
     const { contentScope, userUnprotectedDomains, userPreferences } = globalConfig;
 
+    // Note: This cannot occur, but this check helps Typescript
+    // todo: to be fixed in GlobalConfig
+    if (!userPreferences) return false;
+
     // Check config on Apple platforms
+    // @ts-ignore - TODO: C-S-S must be migrated to use the config from privacy-configuration
     const processedConfig = processConfig(contentScope, userUnprotectedDomains, userPreferences);
     return isAutofillEnabledFromProcessedConfig(processedConfig);
 };
@@ -92,9 +97,7 @@ const originalSet = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prot
  */
 const setValueForInput = (el, val, config) => {
     // Avoid keyboard flashing on Android
-    if (!config?.isAndroid) {
-        el.focus();
-    }
+    if (!config?.isAndroid) el.focus();
 
     // todo(Shane): Not sending a 'key' property on these events can cause exceptions on 3rd party listeners that expect it
     el.dispatchEvent(new Event('keydown', { bubbles: true }));
@@ -167,7 +170,11 @@ const setValueForSelect = (el, val) => {
     }
 
     for (const option of el.options) {
-        if (option.innerText === stringVal || Number(option.innerText) === numberVal) {
+        if (
+            option.innerText === stringVal ||
+            Number(option.innerText) === numberVal ||
+            safeRegexTest(new RegExp(stringVal, 'i'), option.innerText)
+        ) {
             if (option.selected) return false;
             option.selected = true;
             fireEventsOnSelect(el);
@@ -195,6 +202,9 @@ const setValue = (el, val, config) => {
 /**
  * Use IntersectionObserver v2 to make sure the element is visible when clicked
  * https://developers.google.com/web/updates/2019/02/intersectionobserver-v2
+ * @param {HTMLElement} el
+ * @param {Function} fn
+ * @param {{checkVisibility?: Boolean}} [_opts]
  */
 const safeExecute = (el, fn, _opts = {}) => {
     // TODO: temporary fix to misterious bug in Chrome
@@ -633,18 +643,18 @@ function queryElementsWithShadow(element, selector, forceScanShadowTree = false)
 /**
  * Checks if there is a single username-like identity, i.e. email or phone or credit card number
  * If there is then returns that, otherwise returns undefined
- * @param {InternalIdentityObject} identities
- * @param {InternalCreditCardObject} creditCards
+ * @param {InternalIdentityObject|undefined} identities
+ * @param {InternalCreditCardObject|undefined} creditCards
  * @returns {string | undefined}
  */
 function getUsernameLikeIdentity(identities, creditCards) {
     if (identities?.emailAddress) {
         return identities.emailAddress;
     }
-    if (Object.keys(identities ?? {}).length === 1 && Boolean(identities.phone)) {
+    if (identities && Object.keys(identities).length === 1 && Boolean(identities.phone)) {
         return identities.phone;
     }
-    if (Object.keys(creditCards ?? {}).length === 1 && Boolean(creditCards.cardNumber)) {
+    if (creditCards && Object.keys(creditCards).length === 1 && Boolean(creditCards.cardNumber)) {
         return creditCards.cardNumber;
     }
 }

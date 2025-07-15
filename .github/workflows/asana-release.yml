@@ -25,7 +25,7 @@ jobs:
     # Create initial Asana subtasks
     # ------------------------------------------------------------------------------
     create_asana_tasks:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             asana-output: ${{ steps.create-asana-tasks.outputs.ASANA_OUTPUT }}
         steps:
@@ -48,7 +48,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_android:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
         needs: create_asana_tasks
@@ -104,7 +104,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_apple:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
             pull-request-head-sha: ${{ steps.create-pr.outputs.pull-request-head-sha }}
@@ -141,7 +141,7 @@ jobs:
               id: create-pr
               with:
                   path: apple-monorepo/
-                  add-paths: BrowserServicesKit/Package.swift,BrowserServicesKit/Package.resolved
+                  add-paths: SharedPackages/BrowserServicesKit/Package.swift,SharedPackages/BrowserServicesKit/Package.resolved
                   commit-message: Update autofill to ${{ env.VERSION }}
                   branch: update-autofill-${{ env.VERSION }}
                   title: Update autofill to ${{ env.VERSION }}
@@ -153,7 +153,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_extensions:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
         needs: create_asana_tasks
@@ -208,7 +208,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_windows:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         outputs:
             pull-request-url: ${{ steps.create-pr.outputs.pull-request-url }}
         needs: create_asana_tasks
@@ -261,7 +261,7 @@ jobs:
     # ------------------------------------------------------------------------------
 
     update_asana_tasks:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-latest
         # Always run this final step, even if any of the updates have failed
         # unless the previous jobs were cancelled
         if: ${{ always() && !contains(needs.*.result, 'cancelled') }}

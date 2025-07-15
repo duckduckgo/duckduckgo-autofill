@@ -254,7 +254,10 @@ class Matching {
             if (this.subtypeFromMatchers('password', input)) {
                 // Any other input type is likely a false match
                 if (
-                    input.type === 'password' &&
+                    (input.type === 'password' ||
+                        // Some sites might not use the password type, but a placeholder should catch those cases
+                        // See test-forms/playpiknik_login.html
+                        safeRegexTest(/password/i, input.placeholder)) &&
                     input.name !== 'email' &&
                     // pcsretirement.com, improper use of the for attribute
                     input.name !== 'Username'
@@ -313,8 +316,9 @@ class Matching {
      *   isLogin?: boolean,
      *   isHybrid?: boolean,
      *   isCCForm?: boolean,
+     *   isSignup?: boolean,
      *   hasCredentials?: boolean,
-     *   supportsIdentitiesAutofill?: boolean
+     *   supportsIdentitiesAutofill?: boolean,
      * }} SetInputTypeOpts
      */
 
@@ -322,11 +326,13 @@ class Matching {
      * Sets the input type as a data attribute to the element and returns it
      * @param {HTMLInputElement} input
      * @param {HTMLElement} formEl
+     * @param {import('../site-specific-feature.js').default | null} siteSpecificFeature
      * @param {SetInputTypeOpts} [opts]
      * @returns {SupportedSubTypes | string}
      */
-    setInputType(input, formEl, opts = {}) {
-        const type = this.inferInputType(input, formEl, opts);
+    setInputType(input, formEl, siteSpecificFeature, opts = {}) {
+        const forcedInputType = siteSpecificFeature?.getForcedInputType(input);
+        const type = forcedInputType || this.inferInputType(input, formEl, opts);
         input.setAttribute(ATTR_INPUT_TYPE, type);
         return type;
     }
@@ -1020,4 +1026,5 @@ export {
     checkPlaceholderAndLabels,
     Matching,
     createMatching,
+    isValidSupportedType,
 };

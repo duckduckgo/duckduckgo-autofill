@@ -41,6 +41,7 @@ interface CreditCardObject {
     expirationMonth?: string;
     expirationYear?: string;
     cardNumber?: string;
+    paymentProvider?: string;
 }
 
 interface InternalCreditCardObject extends CreditCardObject {
@@ -92,6 +93,7 @@ interface GlobalConfig {
     isApp: boolean;
     isDDGApp: boolean;
     isAndroid: boolean;
+    isIOS: boolean;
     isFirefox: boolean;
     isMobileApp: boolean;
     isExtension: boolean;
@@ -100,8 +102,8 @@ interface GlobalConfig {
     secret: string;
     supportsTopFrame: boolean;
     hasModernWebkitAPI: boolean;
-    contentScope: Record<string, any> | null;
-    userUnprotectedDomains: string[] | null;
+    contentScope: import('@duckduckgo/privacy-configuration/schema/config').CurrentGenericConfig | null;
+    userUnprotectedDomains: string[];
     userPreferences: Record<string, any> | null;
     isDDGTestMode: boolean;
     isDDGDomain: boolean;

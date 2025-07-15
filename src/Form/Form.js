@@ -42,6 +42,7 @@ class Form {
     form;
     /** @type {HTMLInputElement | null} */
     activeInput;
+
     /**
      * @param {HTMLElement} form
      * @param {HTMLInputElement|HTMLSelectElement} input
@@ -53,11 +54,11 @@ class Form {
     constructor(form, input, deviceInterface, matching, shouldAutoprompt = false, hasShadowTree = false) {
         this.form = form;
         this.matching = matching || createMatching();
-        this.formAnalyzer = new FormAnalyzer(form, input, matching);
+        this.formAnalyzer = new FormAnalyzer(form, deviceInterface.settings.siteSpecificFeature, input, matching);
         this.device = deviceInterface;
         this.hasShadowTree = hasShadowTree;
 
-        /** @type Record<'all' | SupportedMainTypes, Set> */
+        /** @type {Record<'all' | SupportedMainTypes, Set>} */
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
@@ -100,7 +101,7 @@ class Form {
                     this.mutObs.disconnect();
                     // If any known input has been removed from the DOM, reanalyze the whole form
                     window.requestIdleCallback(() => {
-                        this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching);
+                        this.formAnalyzer = new FormAnalyzer(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
                         this.recategorizeAllInputs();
                     });
                 }
@@ -398,6 +399,10 @@ class Form {
         return this.device.settings.featureToggles.unknown_username_categorization && this.isLogin && this.ambiguousInputs?.length === 1;
     }
 
+    canCategorizePasswordVariant() {
+        return this.device.settings.featureToggles.password_variant_categorization;
+    }
+
     /**
      * Takes an ambiguous input and tries to get a target type that the input should be categorized to.
      * @param {HTMLInputElement} ambiguousInput
@@ -455,6 +460,33 @@ class Form {
         }
     }
 
+    /**
+     * Recategorizes the new/current password field variant
+     */
+    recategorizeInputVariantIfNeeded() {
+        let newPasswordFields = 0;
+        let currentPasswordFields = 0;
+        let firstNewPasswordField = null;
+
+        for (const credentialElement of this.inputs.credentials) {
+            const variant = getInputVariant(credentialElement);
+            if (variant === 'new') {
+                newPasswordFields++;
+                if (!firstNewPasswordField) firstNewPasswordField = credentialElement;
+            }
+            if (variant === 'current') currentPasswordFields++;
+
+            // Short circuit if the field counts wouldn't match the requirements
+            if (newPasswordFields > 3 || currentPasswordFields > 0) return;
+        }
+
+        // If a form has 3 new-password fields, but no current, the first is likely a current
+        if (newPasswordFields === 3 && currentPasswordFields === 0) {
+            if (shouldLog()) console.log('Recategorizing password variant to "current"', firstNewPasswordField);
+            firstNewPasswordField.setAttribute(ATTR_INPUT_TYPE, 'credentials.password.current');
+        }
+    }
+
     categorizeInputs() {
         const selector = this.matching.cssSelector('formInputsSelector');
         // If there's no form container and it's just a lonely input field (this.form is an input field)
@@ -469,7 +501,7 @@ class Form {
                     ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)]
                     : queryElementsWithShadow(this.form, selector, true);
 
-            if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+            if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
                 foundInputs.forEach((input) => this.addInput(input));
             } else {
                 // This is rather extreme, but better safe than sorry
@@ -479,6 +511,14 @@ class Form {
         }
 
         if (this.canCategorizeAmbiguousInput()) this.recategorizeInputToTargetType();
+
+        if (this.canCategorizePasswordVariant()) this.recategorizeInputVariantIfNeeded();
+
+        // If the form has only one input and it's unknown, discard the form
+        if (this.inputs.all.size === 1 && this.inputs.unknown.size === 1) {
+            this.destroy();
+            return;
+        }
 
         this.initialScanComplete = true;
 
@@ -544,15 +584,17 @@ class Form {
     addInput(input) {
         if (this.inputs.all.has(input)) return this;
 
+        const siteSpecificFeature = this.device.settings.siteSpecificFeature;
+
         // If the form has too many inputs, destroy everything to avoid performance issues
-        if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+        if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
             this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.');
             return this;
         }
 
         // When new inputs are added after the initial scan, reanalyze the whole form
         if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-            this.formAnalyzer = new FormAnalyzer(this.form, input, this.matching);
+            this.formAnalyzer = new FormAnalyzer(this.form, siteSpecificFeature, input, this.matching);
             this.recategorizeAllInputs();
             return this;
         }
@@ -569,7 +611,8 @@ class Form {
             hasCredentials: Boolean(this.device.settings.availableInputTypes.credentials?.username),
             supportsIdentitiesAutofill: this.device.settings.featureToggles.inputType_identities,
         };
-        this.matching.setInputType(input, this.form, opts);
+
+        this.matching.setInputType(input, this.form, this.device.settings.siteSpecificFeature, opts);
 
         const mainInputType = getInputMainType(input);
         this.inputs[mainInputType].add(input);
@@ -801,7 +844,8 @@ class Form {
                 // Don't open the tooltip on input focus whenever it'll only show in-context signup
                 return false;
             } else {
-                return this.isCredentialsImoprtAvailable;
+                const isInputEmpty = input.value === '';
+                return this.isCredentialsImportAvailable && isInputEmpty;
             }
         }
 
@@ -943,7 +987,7 @@ class Form {
         this.execOnInputs((input) => this.touched.add(input), dataType);
     }
 
-    get isCredentialsImoprtAvailable() {
+    get isCredentialsImportAvailable() {
         const isLoginOrHybrid = this.isLogin || this.isHybrid;
         return isLoginOrHybrid && this.device.credentialsImport.isAvailable();
     }
@@ -965,7 +1009,7 @@ class Form {
         await this.device.settings.populateDataIfNeeded({ mainType, subtype });
         if (
             this.device.settings.canAutofillType({ mainType, subtype, variant }, this.device.inContextSignup) ||
-            this.isCredentialsImoprtAvailable
+            this.isCredentialsImportAvailable
         ) {
             // The timeout is needed in case the page shows a cookie prompt with a slight delay
             setTimeout(() => {

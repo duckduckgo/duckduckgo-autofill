@@ -10,7 +10,7 @@ class EmailSignupHTMLTooltip extends HTMLTooltip {
 
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--email" hidden>
+<div class="wrapper wrapper--email" hidden data-platform=${this.options.platform}>
     <div class="tooltip tooltip--email tooltip--email-signup">
         <button class="close-tooltip js-close-email-signup" aria-label="Close"></button>
         <h1>${t('autofill:hideEmailAndBlockTrackers')}</h1>
@@ -49,4 +49,4 @@ ${this.options.css}
     }
 }
 
-export default EmailSignupHTMLTooltip;
+export { EmailSignupHTMLTooltip };

@@ -1,11 +1,11 @@
 import { isEventWithinDax } from '../../autofill-utils.js';
 import { getInputConfigFromType } from '../../Form/inputTypeConfig.js';
 import { getSubtypeFromType } from '../../Form/matching.js';
-import DataHTMLTooltip from '../DataHTMLTooltip.js';
-import EmailHTMLTooltip from '../EmailHTMLTooltip.js';
-import EmailSignupHTMLTooltip from '../EmailSignupHTMLTooltip.js';
+import { DataHTMLTooltip } from '../DataHTMLTooltip.js';
+import { EmailHTMLTooltip } from '../EmailHTMLTooltip.js';
+import { EmailSignupHTMLTooltip } from '../EmailSignupHTMLTooltip.js';
 import { defaultOptions } from '../HTMLTooltip.js';
-import CredentialsImportTooltip from '../CredentialsImportTooltip.js';
+import { CredentialsImportTooltip } from '../CredentialsImportTooltip.js';
 import { UIController } from './UIController.js';
 
 /**
@@ -68,9 +68,9 @@ export class HTMLTooltipUIController extends UIController {
     }
 
     /**
-     * @param {import('./UIController').AttachArgs} args
+     * @param {import('./UIController').AttachTooltipArgs} args
      */
-    attach(args) {
+    attachTooltip(args) {
         if (this.getActiveTooltip()) {
             return;
         }
@@ -111,27 +111,24 @@ export class HTMLTooltipUIController extends UIController {
         const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0;
         if (topContextData.credentialsImport && hasNoCredentialsData) {
             this._options.device.firePixel({ pixelName: 'autofill_import_credentials_prompt_shown' });
-            return new CredentialsImportTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(
-                this._options.device,
-                {
-                    onStarted: () => {
-                        this._options.device.credentialsImport.started();
-                    },
-                    onDismissed: () => {
-                        this._options.device.credentialsImport.dismissed();
-                    },
+            return new CredentialsImportTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
+                onStarted: () => {
+                    this._options.device.credentialsImport.started();
                 },
-            );
+                onDismissed: () => {
+                    this._options.device.credentialsImport.dismissed();
+                },
+            });
         }
 
         if (this._options.tooltipKind === 'legacy') {
             this._options.device.firePixel({ pixelName: 'autofill_show' });
-            return new EmailHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+            return new EmailHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
         }
 
         if (this._options.tooltipKind === 'emailsignup') {
             this._options.device.firePixel({ pixelName: 'incontext_show' });
-            return new EmailSignupHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+            return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
         }
 
         // collect the data for each item to display
@@ -140,7 +137,7 @@ export class HTMLTooltipUIController extends UIController {
         const asRenderers = data.map((d) => config.tooltipItem(d));
 
         // construct the autofill
-        return new DataHTMLTooltip(config, topContextData.inputType, getPosition, tooltipOptions).render(
+        return new DataHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(
             this._options.device,
             config,
             asRenderers,

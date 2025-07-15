@@ -23,3 +23,8 @@ playwright-report/
 
 .swiftpm/
 .vscode
+/.index-build
+/.build
+/debug/dist
+
+/img/
