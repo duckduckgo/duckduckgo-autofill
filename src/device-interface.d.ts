@@ -93,13 +93,14 @@ interface GlobalConfig {
     isApp: boolean;
     isDDGApp: boolean;
     isAndroid: boolean;
+    isIOS: boolean;
     isFirefox: boolean;
     isMobileApp: boolean;
     isExtension: boolean;
     isWindows: boolean;
     isTopFrame: boolean;
     supportsTopFrame: boolean;
-    contentScope: import('@duckduckgo/privacy-configuration/schema/config').ConfigV4<number> | null;
+    contentScope: import('@duckduckgo/privacy-configuration/schema/config').CurrentGenericConfig | null;
     userUnprotectedDomains: string[];
     userPreferences: Record<string, any> | null;
     isDDGTestMode: boolean;

@@ -58,7 +58,7 @@ class Form {
         this.device = deviceInterface;
         this.hasShadowTree = hasShadowTree;
 
-        /** @type Record<'all' | SupportedMainTypes, Set> */
+        /** @type {Record<'all' | SupportedMainTypes, Set>} */
         this.inputs = {
             all: new Set(),
             credentials: new Set(),
@@ -369,10 +369,16 @@ class Form {
 
     initFormListeners() {
         // This ensures we fire the handler again if the form is changed
-        this.addListener(this.form, 'input', () => {
+        this.addListener(this.form, 'input', (e) => {
             if (!this.isAutofilling) {
                 this.submitHandlerExecuted = false;
-                this.resetShouldPromptToStoreData();
+                /** @type {import('./matching.js').SupportedTypes} **/
+                const inputType = e.target.getAttribute(ATTR_INPUT_TYPE);
+                if (inputType && inputType !== 'unknown') {
+                    this.resetShouldPromptToStoreData();
+                } else {
+                    this.shouldPromptToStoreData = false;
+                }
             }
         });
 
@@ -495,7 +501,7 @@ class Form {
                     ? [...formControlElements, ...findElementsInShadowTree(this.form, selector)]
                     : queryElementsWithShadow(this.form, selector, true);
 
-            if (foundInputs.length < MAX_INPUTS_PER_FORM) {
+            if (foundInputs.length < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
                 foundInputs.forEach((input) => this.addInput(input));
             } else {
                 // This is rather extreme, but better safe than sorry
@@ -578,15 +584,17 @@ class Form {
     addInput(input) {
         if (this.inputs.all.has(input)) return this;
 
+        const siteSpecificFeature = this.device.settings.siteSpecificFeature;
+
         // If the form has too many inputs, destroy everything to avoid performance issues
-        if (this.inputs.all.size > MAX_INPUTS_PER_FORM) {
+        if (this.inputs.all.size > (siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)) {
             this.device.scanner.setMode('stopped', 'The form has too many inputs, bailing.');
             return this;
         }
 
         // When new inputs are added after the initial scan, reanalyze the whole form
         if (this.initialScanComplete && this.rescanCount < MAX_FORM_RESCANS) {
-            this.formAnalyzer = new FormAnalyzer(this.form, this.device.settings.siteSpecificFeature, input, this.matching);
+            this.formAnalyzer = new FormAnalyzer(this.form, siteSpecificFeature, input, this.matching);
             this.recategorizeAllInputs();
             return this;
         }
@@ -646,7 +654,6 @@ class Form {
         const config = getInputConfig(input);
 
         const shouldDecorate = await config.shouldDecorate(input, this);
-
         if (!shouldDecorate) return this;
 
         input.setAttribute(ATTR_AUTOFILL, 'true');
@@ -837,7 +844,8 @@ class Form {
                 // Don't open the tooltip on input focus whenever it'll only show in-context signup
                 return false;
             } else {
-                return this.isCredentialsImportAvailable;
+                const isInputEmpty = input.value === '';
+                return this.isCredentialsImportAvailable && isInputEmpty;
             }
         }
 

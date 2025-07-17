@@ -37,8 +37,13 @@ function createGlobalConfig(overrides) {
 
     // @ts-ignore
     const isAndroid = userPreferences?.platform.name === 'android';
+
+    // @ts-ignore
+    const isIOS = userPreferences?.platform.name === 'ios';
+
     // @ts-ignore
     const isDDGApp = ['ios', 'android', 'macos', 'windows'].includes(userPreferences?.platform.name) || isWindows;
+
     // @ts-ignore
     const isMobileApp = ['ios', 'android'].includes(userPreferences?.platform.name);
     const isFirefox = navigator.userAgent.includes('Firefox');
@@ -49,6 +54,7 @@ function createGlobalConfig(overrides) {
         isApp,
         isDDGApp,
         isAndroid,
+        isIOS,
         isFirefox,
         isMobileApp,
         isExtension,

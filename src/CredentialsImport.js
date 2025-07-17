@@ -38,22 +38,40 @@ class CredentialsImport {
         }
     }
 
-    async refresh() {
-        // Refresh all settings (e.g availableInputTypes)
-        await this.device.settings.refresh();
+    /**
+     * @param {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} [availableInputTypes]
+     */
+    async refresh(availableInputTypes) {
+        const inputTypes = availableInputTypes || (await this.device.settings.getAvailableInputTypes());
+        this.device.settings.setAvailableInputTypes(inputTypes);
 
         // Re-decorate all inputs to show the input decorations
-        this.device.activeForm?.redecorateAllInputs();
+        // Include other forms too, as credentials might now be available in other forms.
+        this.device.scanner.forms.forEach((form) => form.redecorateAllInputs());
 
         // Make sure the tooltip is closed before we try to open it
         this.device.uiController?.removeTooltip('interface');
 
-        const activeInput = this.device.activeForm?.activeInput;
-        // First blur to make sure we're not already in focus
-        activeInput?.blur();
+        const activeForm = this.device.activeForm;
+        // If no active form, we can't show the prompt
+        if (!activeForm) return;
 
-        // Then focus to open the tooltip
-        activeInput?.focus();
+        const { activeInput } = activeForm;
+
+        const { username, password } = this.device.settings.availableInputTypes.credentials || {};
+        if (activeInput && (username || password)) {
+            // Attach tooltip again to force prompt the credentials prompt,
+            // if username or password become available.
+            this.device.attachTooltip({
+                form: activeForm,
+                input: activeInput,
+                click: null,
+                trigger: 'credentialsImport',
+                triggerMetaData: {
+                    type: 'transactional',
+                },
+            });
+        }
     }
 
     async started() {

@@ -229,6 +229,7 @@
   { "html": "wikihow_login.html" },
   { "html": "wikihow_signup.html" },
   { "html": "airbnb_login_signup.html" },
+  { "html": "brctv_login.html", "title": "Blue Ridge Single Sign On Login" },
   { "html": "iqgunder_guest.html", "expectedFailures": ["fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName", "fullName"] },
   { "html": "iqgunder_guest_entry.html", "title": "Fund Formation Portal Login", "expectedFailures": ["emailAddress"] },
   { "html": "iqgunder_login.html" },
@@ -313,13 +314,13 @@
   { "html": "weblogin_utoronto_ca_login.html", "generated": true, "title": "weblogin | University of Toronto", "comment": "rank: 1280" },
   { "html": "customerportal_mastercard_com_login.html", "generated": true, "title": "Sign in - Mastercard", "comment": "rank: 1362" },
   { "html": "www_khanacademy_org_login.html", "generated": true, "title": "Khan Academy", "comment": "rank: 1379" },
-  { "html": "accounts_hindustantimes_com_login.html", "generated": true, "title": "Livemint Subscription Plan and Pricing", "comment": "rank: 1467"},
+  { "html": "accounts_hindustantimes_com_login.html", "generated": true, "title": "Livemint Subscription Plan and Pricing", "comment": "rank: 1467" },
   { "html": "rule34_us_signup.html", "generated": true, "title": "Rule34 - If it exists, there is porn of it", "comment": "rank: 1479" },
   { "html": "gsw_gda_pl_login.html", "generated": true, "title": "Log in | Gdańska Szkoła Wyższa", "comment": "rank: 1504" },
   { "html": "secure_xserver_ne_jp_login.html", "generated": true, "title": "Xserverアカウント - ログイン | レンタルサーバーならエックスサーバー", "comment": "rank: 1523" },
   { "html": "customer_globeandmail_ca_login.html", "generated": true, "title": "Login", "comment": "rank: 1539" },
   { "html": "tracker_moodle_org_login.html", "generated": true, "title": "Log in - Moodle Tracker", "comment": "rank: 1549" },
-  { "html": "www_drupal_org_signup.html", "generated": true, "title": "Create account | Drupal.org","comment": "rank: 1576" },
+  { "html": "www_drupal_org_signup.html", "generated": true, "title": "Create account | Drupal.org", "comment": "rank: 1576" },
   { "html": "sso_treasury_gov_login.html", "generated": true, "title": "U.S. Department of the Treasury - Single Sign-On", "comment": "rank: 1589" },
   { "html": "my_bigcartel_com_login.html", "generated": true, "title": "Big Cartel Login", "comment": "rank: 1609" },
   { "html": "www_energystar_gov_signup.html", "generated": true, "title": "Create Account : ENERGY STAR", "comment": "rank: 1660" },
@@ -383,13 +384,7 @@
   { "html": "cmypage_kuronekoyamato_co_jp_login.html", "generated": true, "title": "ログイン | クロネコメンバーズ", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 4979" },
   { "html": "web4_cc_ntu_edu_tw_login.html", "generated": true, "title": "Login - NTU Accounts", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 5003" },
   { "html": "signon_rug_nl_login.html", "generated": true, "title": "Single Sign-On", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 5101" },
-  {
-    "html": "r_forge_r_project_org_signup.html",
-    "generated": true,
-    "title": "R-Forge: User Account Registration",
-    "expectedFailures": ["username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress"],
-    "comment": "rank: 5121"
-  },
+  { "html": "r_forge_r_project_org_signup.html", "generated": true, "title": "R-Forge: User Account Registration", "expectedFailures": ["username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress"], "comment": "rank: 5121" },
   { "html": "www_portal_graduatecenter_uni_muenchen_de_login.html", "generated": true, "title": "GSN Application | MyGSN", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 5201" },
   { "html": "www_avangard_ru_login.html", "generated": true, "title": "Вход в интернет-банк | Банк Авангард", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 5204" },
   { "html": "www_splunk_com_signup.html", "generated": true, "title": "Get a Splunk.com Account | Splunk", "expectedFailures": ["username OR emailAddress", "username OR emailAddress", "username OR emailAddress", "username OR emailAddress"], "comment": "rank: 5227" },
@@ -433,13 +428,7 @@
   { "html": "www_e1_ru_signup.html", "generated": true, "title": "Форумы на E1.ru", "expectedFailures": ["username OR emailAddress", "username OR emailAddress"], "comment": "rank: 7766" },
   { "html": "www_ontvtime_ru_login.html", "generated": true, "title": "НТВ онлайн. Прямая трансляция телеканала", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 7777" },
   { "html": "www_umu_com_signup.html", "generated": true, "title": "UMU", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 7808" },
-  {
-    "html": "www_goethe_campus_uni_frankfurt_de_login.html",
-    "generated": true,
-    "title": "Goethe-Campus – alles rund um Bewerbung, Zulassung und Immatrikulation - Goethe-Campus",
-    "expectedFailures": ["username OR emailAddress", "username OR emailAddress"],
-    "comment": "rank: 7863"
-  },
+  { "html": "www_goethe_campus_uni_frankfurt_de_login.html", "generated": true, "title": "Goethe-Campus – alles rund um Bewerbung, Zulassung und Immatrikulation - Goethe-Campus", "expectedFailures": ["username OR emailAddress", "username OR emailAddress"], "comment": "rank: 7863" },
   { "html": "ficbook_net_login.html", "generated": true, "title": "Книга Фанфиков - более 25000 фэндомов, ориджиналы от популярных авторов", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 7873" },
   { "html": "midas_odu_edu_login.html", "generated": true, "title": "MIDAS - Old Dominion University", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 7912" },
   { "html": "www_justhost_com_login.html", "generated": true, "title": "Web Hosting : Professional Web Hosting from Just Host", "expectedFailures": ["username OR emailAddress"], "comment": "rank: 7944" },
@@ -566,5 +555,7 @@
   { "html": "peacocktv_payment-form.html" },
   { "html": "victoriassecret_payment-form.html" },
   { "html": "uhaul_payment-form.html" },
-  { "html": "sielte_change-password.html" }
+  { "html": "sielte_change-password.html" },
+  { "html": "myimmitracker_com_new.html", "title": "Immitracker - Track visa and immigration applications for Canada and Australia" },
+  { "html": "acehardware_com_checkout.html", "title": "Ace Hardware - Checkout", "expectedSubmitFalseNegatives": 1 }
 ]

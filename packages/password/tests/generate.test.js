@@ -134,10 +134,15 @@ describe('password generation', () => {
         });
         it('uses DDG default password rules when inputs are not in the required format', () => {
             fc.assert(
-                fc.property(fc.string(), (data) => {
-                    const pw = generate({ input: data });
-                    return typeof pw === 'string' && pw.length >= constants.DEFAULT_MIN_LENGTH && pw.length <= constants.DEFAULT_MAX_LENGTH;
-                }),
+                fc.property(
+                    fc.string(),
+                    /** @param {string} data */ (data) => {
+                        const pw = generate({ input: data });
+                        return (
+                            typeof pw === 'string' && pw.length >= constants.DEFAULT_MIN_LENGTH && pw.length <= constants.DEFAULT_MAX_LENGTH
+                        );
+                    },
+                ),
                 { seed: -1660958584, path: '0:0', endOnFailure: true },
             );
         });

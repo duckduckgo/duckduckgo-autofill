@@ -78,9 +78,9 @@ export class Settings {
     }
 
     /**
-     * If the platform in question is happy to derive it's 'enabled' state from the RuntimeConfiguration,
-     * then they should use this. Currently only Windows supports this, but we aim to move all platforms to
-     * support this going forward.
+     * If the platform can derive its 'enabled' state from the RuntimeConfiguration,
+     * then it should use this. Currently, only Windows supports this, but we plan to extend support
+     * to all platforms in the future.
      * @returns {Promise<boolean|null>}
      */
     async getEnabled() {
@@ -185,10 +185,10 @@ export class Settings {
      * @returns {RuntimeConfiguration}
      */
     setTopLevelFeatureInContentScopeIfNeeded(runtimeConfig, name) {
-        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").ConfigV4<number>} */ (
+        const contentScope = /** @type {import("@duckduckgo/privacy-configuration/schema/config").CurrentGenericConfig} */ (
             runtimeConfig.contentScope
         );
-        const feature = contentScope.features.autofill.features?.[name];
+        const feature = contentScope.features?.autofill?.features?.[name];
         // If the feature is not enabled or already exists, do nothing
         if (feature?.state !== 'enabled' || contentScope.features[name]) return runtimeConfig;
 
@@ -390,6 +390,7 @@ export class Settings {
         siteSpecificFeature: null,
         /** @type {AutofillFeatureToggles} */
         featureToggles: {
+            autocomplete_attribute_support: false,
             credentials_saving: false,
             password_generation: false,
             emailProtection: false,
@@ -397,6 +398,7 @@ export class Settings {
             inputType_identities: false,
             inputType_credentials: false,
             inputType_creditCards: false,
+            input_focus_api: false,
             inlineIcon_credentials: false,
             unknown_username_categorization: false,
             password_variant_categorization: false,

@@ -19,6 +19,7 @@ import { Settings } from '../Settings.js';
 import { DeviceApi } from '../../packages/device-api/index.js';
 import { GetAutofillCredentialsCall, StoreFormDataCall, SendJSPixelCall } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { initFormSubmissionsApi } from './initFormSubmissionsApi.js';
+import { initFocusApi } from './initFocusApi.js';
 import { EmailProtection } from '../EmailProtection.js';
 import { getTranslator } from '../locales/strings.js';
 import { CredentialsImport } from '../CredentialsImport.js';
@@ -46,6 +47,8 @@ class InterfacePrototype {
     passwordGenerator = new PasswordGenerator();
     emailProtection = new EmailProtection(this);
     credentialsImport = new CredentialsImport(this);
+    /** @type {Object | null} */
+    focusApi = null;
 
     /** @type {import("../InContextSignup.js").InContextSignup | null} */
     inContextSignup = null;
@@ -116,6 +119,7 @@ class InterfacePrototype {
     removeAutofillUIFromPage(reason) {
         this.uiController?.destroy();
         this._scannerCleanup?.(reason);
+        this.focusApi?.cleanup?.();
     }
 
     get hasLocalAddresses() {
@@ -262,6 +266,15 @@ class InterfacePrototype {
         return this.#data.creditCards;
     }
 
+    /**
+     * Initializes a global focus event handler that handles iOS keyboard and autocomplete functionality
+     * @param {Map<HTMLElement, import("../Form/Form").Form>} forms - Collection of form objects to monitor
+     * @returns {Object}
+     */
+    initGlobalFocusHandler(forms) {
+        return initFocusApi(forms, this.settings, ({ form, element }) => this.attachKeyboard({ device: this, form, element }));
+    }
+
     async startInit() {
         if (this.isInitializationStarted) return;
 
@@ -284,6 +297,10 @@ class InterfacePrototype {
 
         if (this.settings.featureToggles.credentials_saving) {
             initFormSubmissionsApi(this.scanner.forms, this.scanner.matching);
+        }
+
+        if (this.settings.featureToggles.input_focus_api || this.settings.featureToggles.autocomplete_attribute_support) {
+            this.focusApi = this.initGlobalFocusHandler(this.scanner.forms);
         }
     }
 
@@ -411,7 +428,7 @@ class InterfacePrototype {
      * @param {HTMLInputElement} params.input
      * @param {{ x: number; y: number; } | null} params.click
      * @param {import('../deviceApiCalls/__generated__/validators-ts').GetAutofillDataRequest['trigger']} params.trigger
-     * @param {import('../UI/controllers/UIController.js').AttachArgs["triggerMetaData"]} params.triggerMetaData
+     * @param {import('../UI/controllers/UIController.js').AttachTooltipArgs["triggerMetaData"]} params.triggerMetaData
      */
     attachTooltip(params) {
         const { form, input, click, trigger } = params;
@@ -465,7 +482,7 @@ class InterfacePrototype {
         // for example, generated passwords may get appended here
         const processedTopContext = this.preAttachTooltip(topContextData, input, form);
 
-        this.uiController?.attach({
+        this.uiController?.attachTooltip({
             input,
             form,
             click,
@@ -479,6 +496,13 @@ class InterfacePrototype {
         if (trigger === 'autoprompt') {
             this.autopromptFired = true;
         }
+    }
+
+    /**
+     * @param {import('../UI/controllers/UIController.js').AttachKeyboardArgs} args
+     */
+    attachKeyboard(args) {
+        this.uiController?.attachKeyboard(args);
     }
 
     /**

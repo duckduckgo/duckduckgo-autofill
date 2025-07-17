@@ -8,9 +8,8 @@ import {
     pierceShadowTree,
     findElementsInShadowTree,
 } from './autofill-utils.js';
-import { AddDebugFlagCall } from './deviceApiCalls/__generated__/deviceApiCalls.js';
 
-const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT_TYPE } = constants;
+const { ATTR_INPUT_TYPE, MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM } = constants;
 
 /**
  * @typedef {{
@@ -29,7 +28,7 @@ const { MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM, ATTR_INPUT
  *     debounceTimePeriod: number,
  *     maxInputsPerPage: number,
  *     maxFormsPerPage: number,
- *     maxInputsPerForm: number
+ *     maxInputsPerForm: number,
  * }} ScannerOptions
  *
  * @typedef {'scanning'|'on-click'|'stopped'} Mode
@@ -45,6 +44,7 @@ const defaultScannerOptions = {
     debounceTimePeriod: 500,
     // how long to wait when performing the initial scan
     initialDelay: 0,
+
     // How many inputs is too many on the page. If we detect that there's above
     // this maximum, then we don't scan the page. This will prevent slowdowns on
     // large pages which are unlikely to require autofill anyway.
@@ -97,6 +97,12 @@ class DefaultScanner {
      * @returns {boolean}
      */
     get shouldAutoprompt() {
+        // On mobile, if credentials import is available, we don't need an autoprompt
+        // We wait for the user to click on the input to show the prompt, for better UX.
+        if (this.device.globalConfig.isMobileApp && this.device.credentialsImport.isAvailable()) {
+            return false;
+        }
+
         return Date.now() - this.initTimeStamp <= 1500;
     }
 
@@ -107,10 +113,6 @@ class DefaultScanner {
      * @returns {(reason: string, ...rest) => void}
      */
     init() {
-        if (this.device.globalConfig.isExtension) {
-            this.device.deviceApi.notify(new AddDebugFlagCall({ flag: 'autofill' }));
-        }
-
         // Add the shadow DOM listener. Handlers in handleEvent
         window.addEventListener('pointerdown', this, true);
         // We don't listen for focus events on mobile, they can cause keyboard flashing
@@ -160,7 +162,7 @@ class DefaultScanner {
             this.addInput(context);
         } else {
             const inputs = context.querySelectorAll(formInputsSelectorWithoutSelect);
-            if (inputs.length > this.options.maxInputsPerPage) {
+            if (inputs.length > (this.device.settings.siteSpecificFeature?.maxInputsPerPage || this.options.maxInputsPerPage)) {
                 this.setMode('stopped', `Too many input fields in the given context (${inputs.length}), stop scanning`, context);
                 return this;
             }
@@ -311,7 +313,10 @@ class DefaultScanner {
         if (parentForm instanceof HTMLFormElement && this.forms.has(parentForm)) {
             const foundForm = this.forms.get(parentForm);
             // We've met the form, add the input provided it's below the max input limit
-            if (foundForm && foundForm.inputs.all.size < MAX_INPUTS_PER_FORM) {
+            if (
+                foundForm &&
+                foundForm.inputs.all.size < (this.device.settings.siteSpecificFeature?.maxInputsPerForm || MAX_INPUTS_PER_FORM)
+            ) {
                 foundForm.addInput(input);
             } else {
                 this.setMode('stopped', 'The form has too many inputs, destroying.');

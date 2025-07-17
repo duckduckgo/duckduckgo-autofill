@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autofill Icons - Debug UI</title>
+    <!-- Import the icons module -->
+    <script type="module">
+        import * as Icons from '../img/ddgPasswordIcon.js';
+        window.Icons = Icons; // Make icons available globally
+    </script>
+    <style>
+        :root {
+            --primary-color: #de5833;
+            --border-color: #e0e0e0;
+            --hover-color: #f5f5f5;
+            --text-color: #333333;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+            --input-focus-border: #4495d4;
+            --input-focus-shadow: rgba(68, 149, 212, 0.2);
+            --category-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+            padding: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem auto 2rem;
+            max-width: 1200px;
+        }
+
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4495d4;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        .controls a {
+            color: #4495d4;
+            text-decoration: none;
+        }
+
+        .controls a:hover {
+            text-decoration: underline;
+        }
+
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .size-control select {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .categories-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .category {
+            background-color: var(--category-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .icon-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .icon-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow);
+            background-color: var(--hover-color);
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 0.75rem;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            transition: width 0.3s, height 0.3s;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+        }
+
+        .icon-name {
+            font-size: 0.85rem;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .icon-description {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+
+        .pair {
+            display: flex;
+            flex-direction: column;
+        }
+
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Autofill Icons</h1>
+        <div class="controls">
+            <div class="size-control">
+                <label for="icon-size">Icon Size:</label>
+                <select id="icon-size">
+                    <option value="16">16×16</option>
+                    <option value="24" selected>24×24</option>
+                    <option value="32">32×32</option>
+                    <option value="48">48×48</option>
+                </select>
+            </div>
+            <a href="index.html">Back to Debug Home</a>
+        </div>
+    </header>
+
+
+
+    <div class="categories-container">
+        <!-- Password Management Icons -->
+        <section class="category">
+            <h2>Password Management</h2>
+            <div class="icons-grid" id="password-icons-grid">
+                <!-- Password icons will be dynamically inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Payment Method Icons -->
+        <section class="category">
+            <h2>Payment Methods</h2>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzAwMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjMDAwIi8+Cjwvc3ZnPgo=');"></div>
+                    <span class="icon-name">Credit Card Icon</span>
+                    <span class="icon-description">Default state</span>
+                </div>
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+CiAgICA8cGF0aCBkPSJNNSA5Yy0uNTUyIDAtMSAuNDQ4LTEgMXYyYzAgLjU1Mi40NDggMSAxIDFoM2MuNTUyIDAgMS0uNDQ4IDEtMXYtMmMwLS41NTItLjQ0OC0xLTEtMUg1eiIgZmlsbD0iIzc2NDMxMCIvPgogICAgPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xIDZjMC0yLjIxIDEuNzktNCA0LTRoMTRjMi4yMSAwIDQgMS43OSA0IDR2MTJjMCAyLjIxLTEuNzkgNC00IDRINWMtMi4yMSAwLTQtMS43OS00LTRWNnptNC0yYy0xLjEwNSAwLTIgLjg5NS0yIDJ2OWgxOFY2YzAtMS4xMDUtLjg5NS0yLTItMkg1em0wIDE2Yy0xLjEwNSAwLTItLjg5NS0yLTJoMThjMCAxLjEwNS0uODk1IDItMiAySDV6IiBmaWxsPSIjNzY0MzEwIi8+Cjwvc3ZnPgo=');"></div>
+                    <span class="icon-name">Credit Card Icon Filled</span>
+                    <span class="icon-description">Filled state</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Identity Icons -->
+        <section class="category">
+            <h2>User Identity</h2>
+            <div class="icons-grid">
+                <div class="icon-card">
+                    <div class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTYgOS41YTQgNCAwIDEgMS04IDAgNCA0IDAgMCAxIDggMG0tMS41IDBhMi41IDIuNSAwIDEgMS01IDAgMi41IDIuNSAwIDAgMSA1IDAiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIyYzUuNTIzIDAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTBtMC0xLjVhOC40NyA4LjQ3IDAgMCAwIDUuNzA2LTIuMkE2LjU4IDYuNTggMCAwIDAgMTIgMTVhNi41OCA2LjU4IDAgMCAwLTUuNzA1IDMuM0E4LjQ3IDguNDcgMCAwIDAgMTIgMjAuNW0wLTdhOC4wNyA4LjA3IDAgMCAxIDYuNzYgMy42NTMgOC41IDguNSAwIDEgMC0xMy41MiAwQTguMDcgOC4wNyAwIDAgMSAxMiAxMy41IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==');"></div>
+                    <span class="icon-name">User Profile</span>
+                    <span class="icon-description">Identity information</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Autofill Icons</p>
+    </footer>
+
+    <script type="module">
+        // The Icons object is now available globally from the script in the head
+
+        // Set up the icon mapping - all icons from the module
+        const icons = {
+            passwordIcons: {
+                'Password Icon (Base)': Icons.ddgPasswordIconBase,
+                'Password Icon (Filled)': Icons.ddgPasswordIconFilled,
+                'Password Generation Icon (Base)': Icons.ddgPasswordGenIconBase,
+                'Password Generation Icon (Filled)': Icons.ddgPasswordGenIconFilled,
+            },
+            creditCardIcons: {
+                'Credit Card Icon (Base)': Icons.ddgCcIconBase,
+                'Credit Card Icon (Filled)': Icons.ddgCcIconFilled,
+            },
+            identityIcons: {
+                'Identity Icon': Icons.ddgIdentityIconBase,
+            }
+        };
+
+        /**
+         * Creates an icon card element
+         * @param {string} name - The display name of the icon
+         * @param {string} url - The URL of the icon (base64 or file path)
+         * @param {string} description - The description text
+         * @returns {HTMLElement} The created icon card element
+         */
+        function createIconCard(name, url, description) {
+            const card = document.createElement('div');
+            card.className = 'icon-card';
+
+            const icon = document.createElement('div');
+            icon.className = 'icon';
+            icon.style.backgroundImage = `url(${url})`;
+
+            const nameElem = document.createElement('span');
+            nameElem.className = 'icon-name';
+            nameElem.textContent = name;
+
+            const descElem = document.createElement('span');
+            descElem.className = 'icon-description';
+            descElem.textContent = description;
+
+            card.appendChild(icon);
+            card.appendChild(nameElem);
+            card.appendChild(descElem);
+
+            return card;
+        }
+
+        /**
+         * Populate a grid with icons from a category
+         * @param {string} categoryId - The ID of the grid container
+         * @param {Object} iconList - Object containing icon name and URL pairs
+         * @param {string} categoryDescription - Description for this icon category
+         */
+        function populateIconGrid(categoryId, iconList, categoryDescription = '') {
+            const grid = document.getElementById(categoryId);
+            if (!grid) return;
+
+            // Clear existing content
+            grid.innerHTML = '';
+
+            // Add each icon to the grid
+            Object.entries(iconList).forEach(([name, url]) => {
+                const description = name.includes('Filled') ? 'Filled state' : 'Default state';
+                const card = createIconCard(name, url, description);
+                grid.appendChild(card);
+            });
+        }
+
+        // Size control functionality
+        const sizeSelector = document.getElementById('icon-size');
+        const updateIconSize = (size) => {
+            const iconElements = document.querySelectorAll('.icon');
+            iconElements.forEach(icon => {
+                icon.style.width = `${size}px`;
+                icon.style.height = `${size}px`;
+            });
+        };
+
+        // Initialize the UI
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate the icon grids
+            populateIconGrid('password-icons-grid', icons.passwordIcons);
+
+            // Add event listener
+            sizeSelector.addEventListener('change', (e) => updateIconSize(e.target.value));
+
+            // Initialize with default size
+            updateIconSize(sizeSelector.value);
+        });
+
+    </script>
+</body>
+</html>

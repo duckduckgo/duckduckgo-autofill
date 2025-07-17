@@ -59,6 +59,12 @@ export interface API {
     resultValidator?: GetAutofillDataResponse;
     [k: string]: unknown;
   };
+  getAutofillDataFocus?: {
+    id?: "getAutofillDataFocusResponse";
+    paramsValidator?: GetAutofillDataFocusRequest;
+    resultValidator?: GetAutofillDataFocusResponse;
+    [k: string]: unknown;
+  };
   getRuntimeConfiguration?: {
     id?: "getRuntimeConfigurationResponse";
     resultValidator?: GetRuntimeConfigurationResponse;
@@ -293,7 +299,7 @@ export interface GetAutofillDataRequest {
   /**
    * Signals that the prompt was triggered automatically rather than by user action
    */
-  trigger?: "userInitiated" | "autoprompt" | "postSignup";
+  trigger?: "userInitiated" | "autoprompt" | "postSignup" | "credentialsImport";
   /**
    * Serialized JSON that will be picked up once the 'parent' requests its initial data
    */
@@ -324,6 +330,9 @@ export interface GetAutofillDataResponse {
    */
   success?: {
     credentials?: Credentials;
+    creditCards?: CreditCardObject;
+    identities?: IdentityObject;
+    availableInputTypes?: AvailableInputTypes;
     action:
       | "fill"
       | "focus"
@@ -350,135 +359,43 @@ export interface Credentials {
   credentialsProvider?: "duckduckgo" | "bitwarden";
   providerStatus?: "locked" | "unlocked";
 }
-export interface GenericError {
-  message: string;
-}
-/**
- * Data that can be understood by @duckduckgo/content-scope-scripts
- */
-export interface GetRuntimeConfigurationResponse {
+export interface CreditCardObject {
   /**
-   * Required on Android + Windows devices, optional on iOS
+   * Unique identifier for the credit card
    */
-  type?: "getRuntimeConfigurationResponse";
-  success?: RuntimeConfiguration;
-  error?: GenericError;
-}
-/**
- * This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json
- */
-export interface RuntimeConfiguration {
-  contentScope: {
-    [k: string]: unknown;
-  };
-  userUnprotectedDomains: string[];
-  userPreferences: UserPreferences;
-}
-export interface UserPreferences {
-  globalPrivacyControlValue?: boolean;
-  sessionKey: string;
-  debug: boolean;
-  language?: string;
-  platform: {
-    name: "ios" | "macos" | "windows" | "extension" | "android";
-  };
-  features: {
-    [k: string]: {
-      settings: {
-        [k: string]: unknown;
-      };
-    };
-  };
-}
-/**
- * Autofill could send this data at any point.
- *
- * It will **not** listen for a response, it's expected that the native side will handle
- */
-export interface StoreFormData {
-  credentials?: OutgoingCredentials;
-  trigger?: "partialSave" | "formSubmission" | "passwordGeneration" | "emailProtection";
-}
-export interface OutgoingCredentials {
+  id: string;
   /**
-   * Optional username
+   * Title or name of the credit card
    */
-  username?: string;
+  title: string;
   /**
-   * Optional password
+   * Formatted display number of the credit card
    */
-  password?: string;
-}
-export interface GetAvailableInputTypesResult {
+  displayNumber: string;
   /**
-   * A string used to identify this result. It's optional
+   * Name on the credit card
    */
-  type?: "getAvailableInputTypesResponse";
-  success: AvailableInputTypes;
-  error?: GenericError;
-}
-/**
- * For each main autofill types, it maps specific fields to their availability
- */
-export interface AvailableInputTypes {
+  cardName?: string;
   /**
-   * maps field types and the availability of data for the current site
+   * Security code (CVV/CVC) of the credit card
    */
-  credentials?: {
-    username?: boolean;
-    password?: boolean;
-  };
+  cardSecurityCode?: string;
   /**
-   * maps field types and the availability of data saved by the user
+   * Expiration month of the credit card
    */
-  identities?: {
-    firstName?: boolean;
-    middleName?: boolean;
-    lastName?: boolean;
-    birthdayDay?: boolean;
-    birthdayMonth?: boolean;
-    birthdayYear?: boolean;
-    addressStreet?: boolean;
-    addressStreet2?: boolean;
-    addressCity?: boolean;
-    addressProvince?: boolean;
-    addressPostalCode?: boolean;
-    addressCountryCode?: boolean;
-    phone?: boolean;
-    emailAddress?: boolean;
-  };
+  expirationMonth?: string;
   /**
-   * maps field types and the availability of data saved by the user
+   * Expiration year of the credit card
    */
-  creditCards?: {
-    cardName?: boolean;
-    cardSecurityCode?: boolean;
-    expirationMonth?: boolean;
-    expirationYear?: boolean;
-    cardNumber?: boolean;
-  };
+  expirationYear?: string;
   /**
-   * true if signed in for Email Protection
+   * Full number of the credit card
    */
-  email?: boolean;
-  credentialsProviderStatus?: "locked" | "unlocked";
-  credentialsImport?: boolean;
-}
-export interface GetAutofillInitDataResponse {
+  cardNumber?: string;
   /**
-   * Required on Android + Windows devices, optional on iOS
+   * Payment provider associated with the credit card
    */
-  type?: "getAutofillInitDataResponse";
-  success?: {
-    credentials: Credentials[];
-    identities: IdentityObject[];
-    creditCards: CreditCardObject[];
-    /**
-     * A clone of the `serializedInputContext` that was sent in the request
-     */
-    serializedInputContext: string;
-  };
-  error?: GenericError;
+  paymentProvider?: string;
 }
 export interface IdentityObject {
   /**
@@ -546,43 +463,209 @@ export interface IdentityObject {
    */
   emailAddress?: string;
 }
-export interface CreditCardObject {
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes {
   /**
-   * Unique identifier for the credit card
+   * maps field types and the availability of data for the current site
    */
-  id: string;
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+  };
   /**
-   * Title or name of the credit card
+   * maps field types and the availability of data saved by the user
    */
-  title: string;
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+  };
   /**
-   * Formatted display number of the credit card
+   * maps field types and the availability of data saved by the user
    */
-  displayNumber: string;
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+  };
   /**
-   * Name on the credit card
+   * true if signed in for Email Protection
    */
-  cardName?: string;
+  email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
+}
+export interface GenericError {
+  message: string;
+}
+/**
+ * This describes the argument given to `getAutofillDataFocus(data)`
+ */
+export interface GetAutofillDataFocusRequest {
   /**
-   * Security code (CVV/CVC) of the credit card
+   * This is the combined input type, such as `credentials.username`
    */
-  cardSecurityCode?: string;
+  inputType: string;
   /**
-   * Expiration month of the credit card
+   * The main input type
    */
-  expirationMonth?: string;
+  mainType: "credentials" | "identities" | "creditCards" | "unknown";
+}
+export interface GetAutofillDataFocusResponse {
   /**
-   * Expiration year of the credit card
+   * Required on mobile, to show keyboard accessory
    */
-  expirationYear?: string;
+  type?: "getAutofillDataFocusResponse";
   /**
-   * Full number of the credit card
+   * The data returned, containing only fields that will be auto-filled
    */
-  cardNumber?: string;
+  success?: {
+    creditCards?: CreditCardObject;
+    action: "fill" | "none";
+  };
+  error?: GenericError;
+}
+/**
+ * Data that can be understood by @duckduckgo/content-scope-scripts
+ */
+export interface GetRuntimeConfigurationResponse {
   /**
-   * Payment provider associated with the credit card
+   * Required on Android + Windows devices, optional on iOS
    */
-  paymentProvider?: string;
+  type?: "getRuntimeConfigurationResponse";
+  success?: RuntimeConfiguration;
+  error?: GenericError;
+}
+/**
+ * This is loaded dynamically from @duckduckgo/content-scope-scripts/src/schema/runtime-configuration.schema.json
+ */
+export interface RuntimeConfiguration {
+  contentScope: {
+    [k: string]: unknown;
+  };
+  userUnprotectedDomains: string[];
+  userPreferences: UserPreferences;
+}
+export interface UserPreferences {
+  globalPrivacyControlValue?: boolean;
+  sessionKey: string;
+  debug: boolean;
+  language?: string;
+  platform: {
+    name: "ios" | "macos" | "windows" | "extension" | "android";
+  };
+  features: {
+    [k: string]: {
+      settings: {
+        [k: string]: unknown;
+      };
+    };
+  };
+}
+/**
+ * Autofill could send this data at any point.
+ *
+ * It will **not** listen for a response, it's expected that the native side will handle
+ */
+export interface StoreFormData {
+  credentials?: OutgoingCredentials;
+  trigger?: "partialSave" | "formSubmission" | "passwordGeneration" | "emailProtection";
+}
+export interface OutgoingCredentials {
+  /**
+   * Optional username
+   */
+  username?: string;
+  /**
+   * Optional password
+   */
+  password?: string;
+}
+export interface GetAvailableInputTypesResult {
+  /**
+   * A string used to identify this result. It's optional
+   */
+  type?: "getAvailableInputTypesResponse";
+  success: AvailableInputTypes1;
+  error?: GenericError;
+}
+/**
+ * For each main autofill types, it maps specific fields to their availability
+ */
+export interface AvailableInputTypes1 {
+  /**
+   * maps field types and the availability of data for the current site
+   */
+  credentials?: {
+    username?: boolean;
+    password?: boolean;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  identities?: {
+    firstName?: boolean;
+    middleName?: boolean;
+    lastName?: boolean;
+    birthdayDay?: boolean;
+    birthdayMonth?: boolean;
+    birthdayYear?: boolean;
+    addressStreet?: boolean;
+    addressStreet2?: boolean;
+    addressCity?: boolean;
+    addressProvince?: boolean;
+    addressPostalCode?: boolean;
+    addressCountryCode?: boolean;
+    phone?: boolean;
+    emailAddress?: boolean;
+  };
+  /**
+   * maps field types and the availability of data saved by the user
+   */
+  creditCards?: {
+    cardName?: boolean;
+    cardSecurityCode?: boolean;
+    expirationMonth?: boolean;
+    expirationYear?: boolean;
+    cardNumber?: boolean;
+  };
+  /**
+   * true if signed in for Email Protection
+   */
+  email?: boolean;
+  credentialsProviderStatus?: "locked" | "unlocked";
+  credentialsImport?: boolean;
+}
+export interface GetAutofillInitDataResponse {
+  /**
+   * Required on Android + Windows devices, optional on iOS
+   */
+  type?: "getAutofillInitDataResponse";
+  success?: {
+    credentials: Credentials[];
+    identities: IdentityObject[];
+    creditCards: CreditCardObject[];
+    /**
+     * A clone of the `serializedInputContext` that was sent in the request
+     */
+    serializedInputContext: string;
+  };
+  error?: GenericError;
 }
 /**
  * This describes the argument given to `getAutofillCredentials`
@@ -639,54 +722,7 @@ export interface AskToUnlockProviderResult {
 export interface ProviderStatusUpdated {
   status: "locked" | "unlocked";
   credentials: Credentials[];
-  availableInputTypes: AvailableInputTypes1;
-}
-/**
- * For each main autofill types, it maps specific fields to their availability
- */
-export interface AvailableInputTypes1 {
-  /**
-   * maps field types and the availability of data for the current site
-   */
-  credentials?: {
-    username?: boolean;
-    password?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  identities?: {
-    firstName?: boolean;
-    middleName?: boolean;
-    lastName?: boolean;
-    birthdayDay?: boolean;
-    birthdayMonth?: boolean;
-    birthdayYear?: boolean;
-    addressStreet?: boolean;
-    addressStreet2?: boolean;
-    addressCity?: boolean;
-    addressProvince?: boolean;
-    addressPostalCode?: boolean;
-    addressCountryCode?: boolean;
-    phone?: boolean;
-    emailAddress?: boolean;
-  };
-  /**
-   * maps field types and the availability of data saved by the user
-   */
-  creditCards?: {
-    cardName?: boolean;
-    cardSecurityCode?: boolean;
-    expirationMonth?: boolean;
-    expirationYear?: boolean;
-    cardNumber?: boolean;
-  };
-  /**
-   * true if signed in for Email Protection
-   */
-  email?: boolean;
-  credentialsProviderStatus?: "locked" | "unlocked";
-  credentialsImport?: boolean;
+  availableInputTypes: AvailableInputTypes;
 }
 /**
  * This is only used in macOS 10.15 Catalina
@@ -724,6 +760,10 @@ export interface AutofillSettings {
  * These are toggles used throughout the application to enable/disable features fully
  */
 export interface AutofillFeatureToggles {
+  /**
+   * Enables adding HTML autocomplete attributes to form fields to enhance mobile autofill capabilities, particularly iOS QuickType keyboard suggestions.
+   */
+  autocomplete_attribute_support?: boolean;
   inputType_credentials?: boolean;
   inputType_identities?: boolean;
   inputType_creditCards?: boolean;
@@ -737,6 +777,10 @@ export interface AutofillFeatureToggles {
    * If true, we will attempt re-categorizing username, based on the rest of the input fields in the form
    */
   unknown_username_categorization?: boolean;
+  /**
+   * If true, we will send extra calls (getAutofillDataFocused) to show the keyboard accessory
+   */
+  input_focus_api?: boolean;
   /**
    * If true, we will attempt re-categorizing the password variant, based on other fields in the form
    */

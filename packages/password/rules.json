@@ -92,6 +92,9 @@
   "app.parkmobile.io": {
     "password-rules": "minlength: 8; maxlength: 25; required: lower; required: upper; required: digit; required: [!@#$%^&];"
   },
+  "app8menu.com": {
+    "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [@$!%*?&];"
+  },
   "apple.com": {
     "password-rules": "minlength: 8; maxlength: 63; required: lower; required: upper; required: digit; allowed: ascii-printable;"
   },
@@ -1018,6 +1021,9 @@
   },
   "thameswater.co.uk": {
     "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: special;"
+  },
+  "themovingportal.co.uk": {
+    "password-rules": "minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; allowed: [-@#$%^&*_+={}|\\:',?/'~\" ();.[]];"
   },
   "ticketweb.com": {
     "password-rules": "minlength: 12; maxlength: 15;"

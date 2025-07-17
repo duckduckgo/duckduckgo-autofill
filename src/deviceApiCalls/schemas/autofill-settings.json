@@ -11,6 +11,10 @@
       "description": "These are toggles used throughout the application to enable/disable features fully",
       "type": "object",
       "properties": {
+        "autocomplete_attribute_support": {
+          "type": "boolean",
+          "description": "Enables adding HTML autocomplete attributes to form fields to enhance mobile autofill capabilities, particularly iOS QuickType keyboard suggestions."
+        },
         "inputType_credentials": {
           "type": "boolean"
         },
@@ -41,6 +45,10 @@
         "unknown_username_categorization": {
           "type": "boolean",
           "description": "If true, we will attempt re-categorizing username, based on the rest of the input fields in the form"
+        },
+        "input_focus_api": {
+          "type": "boolean",
+          "description": "If true, we will send extra calls (getAutofillDataFocused) to show the keyboard accessory"
         },
         "password_variant_categorization": {
           "type": "boolean",

@@ -251,7 +251,7 @@ const matchingConfiguration = {
                         '|correo electr|correo-e|^correo$' +
                         // Swedish
                         '|\\be.?post|e.?postadress',
-                    skip: 'phone|(first.?|last.?)name|number|code',
+                    skip: 'phone|(first.?|last.?)name|number|code|\\bdate\\b',
                     forceUnknown: 'search|filter|subject|title|\\btab\\b|otp',
                 },
                 password: {
@@ -416,7 +416,7 @@ const matchingConfiguration = {
                 },
                 resetPasswordLink: {
                     match:
-                        "(forgot(ten)?|reset|don't remember).?(your )?password|password forgotten" +
+                        "(forgot(ten)?|reset|don't remember).?(your )?(password|username)|password forgotten" +
                         // Italian
                         '|password dimenticata|reset(?:ta) password|recuper[ao] password' +
                         // German

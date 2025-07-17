@@ -139,6 +139,7 @@ describe('Settings', () => {
         expect(settings.availableInputTypes).toMatchObject(Settings.defaults.availableInputTypes);
         expect(settings.featureToggles).toMatchInlineSnapshot(`
       {
+        "autocomplete_attribute_support": false,
         "credentials_saving": false,
         "emailProtection": false,
         "emailProtection_incontext_signup": false,
@@ -146,6 +147,7 @@ describe('Settings', () => {
         "inputType_credentials": false,
         "inputType_creditCards": false,
         "inputType_identities": false,
+        "input_focus_api": false,
         "partial_form_saves": false,
         "password_generation": false,
         "password_variant_categorization": false,
