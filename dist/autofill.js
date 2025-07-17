@@ -396,7 +396,7 @@
           },
           cardName: {
             match: /(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)/iu,
-            skip: /email/iu
+            skip: /email|cardholder.?street|cardholder.?zip|cardholder.?city|cardholder.?state|cardholder.?address|card.?holder.?(street|zip|city|state|address)|card.?owner.?(street|zip|city|state|address)|street|zip|city|state|address/iu
           },
           cardNumber: {
             match: /card.*number|number.*card/iu,
@@ -920,11 +920,12 @@ Source: "${matchedFrom}"`;
             logMatching(el, result);
             return void 0;
           }
+          if (result?.skip) {
+            logMatching(el, result);
+            return void 0;
+          }
         }
-        if (result?.skip) {
-          logMatching(el, result);
-          break;
-        }
+        console.log("========OUT", result);
       }
       return void 0;
     }

@@ -258,7 +258,7 @@ const matchingConfiguration = {
         },
         cardName: {
           match: /(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)/iu,
-          skip: /email/iu
+          skip: /email|cardholder.?street|cardholder.?zip|cardholder.?city|cardholder.?state|cardholder.?address|card.?holder.?(street|zip|city|state|address)|card.?owner.?(street|zip|city|state|address)|street|zip|city|state|address/iu
         },
         cardNumber: {
           match: /card.*number|number.*card/iu,
@@ -278,7 +278,7 @@ const matchingConfiguration = {
         },
         expiration: {
           match: /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/iu,
-          skip: /invalid|^dd\/|check/iu
+          skip: /invalid|^dd\/|check|cardholder.?street|cardholder.?zip|cardholder.?city|cardholder.?state|cardholder.?address|card.?holder.?(street|zip|city|state|address)|card.?owner.?(street|zip|city|state|address)|street|zip|city|state|address/iu
         },
         firstName: {
           match: /(first|given|fore).?name|\bnome/iu,
