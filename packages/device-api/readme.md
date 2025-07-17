@@ -181,10 +181,7 @@ Implementors just override `send(deviceApiCall)` and can do whatever is needed o
 // an example transport 
 class AppleTransport extends DeviceApiTransport {
     async send (deviceApiCall) {
-        return wkSendAndWait(deviceApiCall.method, deviceApiCall.params, {
-            secret: this.config.secret,
-            hasModernWebkitAPI: this.config.hasModernWebkitAPI
-        })
+        return wkSendAndWait(deviceApiCall.method, deviceApiCall.params, {})
     }
 }
 ```

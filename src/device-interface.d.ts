@@ -99,16 +99,13 @@ interface GlobalConfig {
     isExtension: boolean;
     isWindows: boolean;
     isTopFrame: boolean;
-    secret: string;
     supportsTopFrame: boolean;
-    hasModernWebkitAPI: boolean;
     contentScope: import('@duckduckgo/privacy-configuration/schema/config').CurrentGenericConfig | null;
     userUnprotectedDomains: string[];
     userPreferences: Record<string, any> | null;
     isDDGTestMode: boolean;
     isDDGDomain: boolean;
     availableInputTypes: import('./deviceApiCalls/__generated__/validators-ts').AvailableInputTypes | null;
-    webkitMessageHandlerNames: string[];
 }
 
 interface GlobalConfigImpl {

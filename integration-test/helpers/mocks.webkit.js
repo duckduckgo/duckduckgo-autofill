@@ -105,7 +105,6 @@ export const macosContentScopeReplacements = (opts = {}) => {
  */
 export const macosWithOverlay = () => {
     return {
-        hasModernWebkitAPI: true,
         isTopFrame: false,
         supportsTopFrame: true,
     };
@@ -116,45 +115,8 @@ export const macosWithOverlay = () => {
  */
 export const macosWithoutOverlay = () => {
     return {
-        hasModernWebkitAPI: false,
         isTopFrame: false,
         supportsTopFrame: false,
-        webkitMessageHandlerNames: [
-            'emailHandlerStoreToken',
-            'emailHandlerRemoveToken',
-            'emailHandlerGetAlias',
-            'emailHandlerGetUserData',
-            'emailHandlerGetCapabilities',
-            'emailHandlerRefreshAlias',
-            'emailHandlerGetAddresses',
-            'emailHandlerCheckAppSignedInStatus',
-            'pmHandlerGetAutofillInitData',
-            'pmHandlerGetAccounts',
-            'pmHandlerGetAutofillCredentials',
-            'pmHandlerGetIdentity',
-            'pmHandlerGetCreditCard',
-            'pmHandlerOpenManageCreditCards',
-            'pmHandlerOpenManageIdentities',
-            'pmHandlerOpenManagePasswords',
-            'getAvailableInputTypes',
-            'getRuntimeConfiguration',
-            'getAutofillData',
-            'storeFormData',
-            'setSize',
-            'selectedDetail',
-            'closeAutofillParent',
-            'showAutofillParent',
-            'getSelectedCredentials',
-            'askToUnlockProvider',
-            'checkCredentialsProviderStatus',
-            'sendJSPixel',
-            'getIncontextSignupDismissedAt',
-            'setIncontextSignupPermanentlyDismissedAt',
-            'startEmailProtectionSignup',
-            'closeEmailProtectionTab',
-            'startCredentialsImportFlow',
-            'credentialsImportFlowPermanentlyDismissed',
-        ],
     };
 };
 
@@ -479,68 +441,8 @@ async function withMockedWebkit(page, mocks) {
                         }
                     }
 
-                    // If `data.messageHandling.methodName` exists, this means we're trying to use encryption
-                    // therefor we mimic what happens on the native side by calling the relevant window method
-                    // with the encrypted data
-                    const fn = window[data.messageHandling.methodName];
-                    if (typeof fn === 'function') {
-                        // @ts-ignore
-                        fn(encryptResponse(data, thisResponse));
-                        return;
-                    }
-
                     return JSON.stringify(thisResponse);
                 },
-            };
-        }
-
-        /**
-         * @param {{
-         *     "messageHandling": {
-         *         "methodName": string,
-         *         "secret": string,
-         *         "key": number[],
-         *         "iv": number[],
-         *     },
-         *     [index: string]: any,
-         * }} message - the incoming message. The encryption parts are within `messageHandling`
-         * @param {Record<string, any>} response - the data that will be encrypted and returned back to the page
-         * @returns {Promise<{ciphertext: *[], tag: *[]}>}
-         */
-        async function encryptResponse(message, response) {
-            /**
-             * Create a `CryptoKey` based on the incoming message's 'key' field
-             * @type {CryptoKey}
-             */
-            const keyEncoded = await crypto.subtle.importKey('raw', new Uint8Array(message.messageHandling.key), 'AES-GCM', false, [
-                'encrypt',
-                'decrypt',
-            ]);
-
-            /**
-             * Encode the response JSON
-             */
-            const enc = new TextEncoder();
-            const encodedJson = enc.encode(JSON.stringify(response));
-
-            /**
-             * Encrypt the JSON string
-             */
-            const encryptedContent = await window.crypto.subtle.encrypt(
-                {
-                    name: 'AES-GCM',
-                    iv: new Uint8Array(message.messageHandling.iv),
-                },
-                keyEncoded,
-                encodedJson,
-            );
-
-            /**
-             * Now return the encrypted data in the same shape that the native side would
-             */
-            return {
-                ciphertext: [...new Uint8Array(encryptedContent)],
-                tag: [],
             };
         }
     }, mocks);
