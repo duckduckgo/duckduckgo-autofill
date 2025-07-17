@@ -420,7 +420,7 @@
           },
           expiration: {
             match: /(\bmm\b|\b\d\d\b)[/\s.\-_—–](\byy|\bjj|\baa|\b\d\d)|\bexp|\bvalid(idity| through| until)/iu,
-            skip: /invalid|^dd\/|check/iu
+            skip: /invalid|^dd\/|check|cardholder.?street|cardholder.?zip|cardholder.?city|cardholder.?state|cardholder.?address|card.?holder.?(street|zip|city|state|address)|card.?owner.?(street|zip|city|state|address)|street|zip|city|state|address/iu
           },
           firstName: {
             match: /(first|given|fore).?name|\bnome/iu,
@@ -924,12 +924,11 @@ Source: "${matchedFrom}"`;
             logMatching(el, result);
             return void 0;
           }
-          if (result?.skip) {
-            logMatching(el, result);
-            return void 0;
-          }
         }
-        console.log("========OUT", result);
+        if (result?.skip) {
+          logMatching(el, result);
+          break;
+        }
       }
       return void 0;
     }
