@@ -4997,7 +4997,7 @@ Source: "${matchedFrom}"`;
      */
     isOutboundLink(el) {
       const tagName = el.nodeName.toLowerCase();
-      const isCustomWebElementLink = customElements?.get(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, "a").length > 0;
+      const isCustomWebElementLink = customElementsGet(tagName) != null && /-link$/.test(tagName) && findElementsInShadowTree(el, "a").length > 0;
       const isElementLikelyALink = (el2) => {
         if (el2 == null) return false;
         return el2 instanceof HTMLAnchorElement && el2.href && !el2.getAttribute("href")?.startsWith("#") || (el2.getAttribute("role") || "").toUpperCase() === "LINK" || el2.matches("button[class*=secondary]");
