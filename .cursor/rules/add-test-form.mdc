@@ -1,0 +1,9 @@
+---
+description: Apply when asked to add a test form. These are the tests used by the input-classifiers.test.js file.
+alwaysApply: false
+---
+
+- If the HTML is not provided, ask the user to provide it.
+- Create a file in the `test-forms` directory with the naming convention `<sitename>_<formtype>.html`, e.g. `instagram_login.html`.
+- Add an entry to the `test-forms/index.json` file.
+- Trim HTML based on `real-world-html-tests.md` file. Use only the subtype instead of the fully qualified type. E.g use `password.current` instead of `credentials.password.current`.
