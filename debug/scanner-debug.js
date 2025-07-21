@@ -44,7 +44,7 @@ loadList().then(() => {
 
 async function loadList() {
     // Initialize the combobox element references when DOM is ready
-    state.comboboxInput = document.getElementById('combobox-input');
+    state.comboboxInput = /** @type {HTMLInputElement | null} */ (document.getElementById('combobox-input'));
     state.comboboxDropdown = document.getElementById('combobox-dropdown');
 
     const url = new URL(`/test-forms/index.json`, window.location.href);
@@ -62,7 +62,7 @@ function populateDropdown(forms) {
     if (!state.comboboxDropdown) return;
 
     // Clear existing options
-    state.comboboxDropdown.innerHTML = '';
+    state.comboboxDropdown?.innerHTML && (state.comboboxDropdown.innerHTML = '');
 
     if (forms.length === 0) {
         const emptyDiv = document.createElement('div');
@@ -79,7 +79,7 @@ function populateDropdown(forms) {
         option.dataset.value = item.html;
         option.dataset.index = index.toString();
         option.addEventListener('click', () => selectOption(index));
-        state.comboboxDropdown.appendChild(option);
+        state.comboboxDropdown?.appendChild(option);
     });
 }
 
@@ -88,7 +88,7 @@ function setupCombobox() {
 
     // Input event handler for filtering
     state.comboboxInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
+        const searchTerm = /** @type {HTMLInputElement} */ (e.target)?.value?.toLowerCase() || '';
         filterAndUpdate(searchTerm);
         if (!state.isOpen) {
             openDropdown();
@@ -145,9 +145,10 @@ function setupCombobox() {
 
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
-        if (!state.comboboxInput?.contains(e.target) &&
-            !state.comboboxDropdown?.contains(e.target) &&
-            !e.target?.closest('.combobox-trigger')) {
+        const target = /** @type {Node} */ (e.target);
+        if (!state.comboboxInput?.contains(target) &&
+            !state.comboboxDropdown?.contains(target) &&
+            !/** @type {Element} */ (e.target)?.closest('.combobox-trigger')) {
             closeDropdown();
         }
     });
