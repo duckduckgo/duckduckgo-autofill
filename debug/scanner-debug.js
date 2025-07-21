@@ -15,8 +15,22 @@ import htmlPlugin from 'prettier/plugins/html';
 const state = {
     /** @type {import('../src/Scanner.js').Scanner | undefined} */
     scanner: undefined,
-    /** @type {HTMLSelectElement|null} */
-    list: document.querySelector('select[name="html-list"]'),
+    /** @type {HTMLInputElement|null} */
+    comboboxInput: null,
+    /** @type {HTMLElement|null} */
+    comboboxDropdown: null,
+    /** @type {Array<{html: string, title?: string}>} */
+    allForms: [],
+    /** @type {Array<{html: string, title?: string}>} */
+    filteredForms: [],
+    /** @type {'asc'|'desc'} */
+    sortOrder: 'asc',
+    /** @type {number} */
+    highlightedIndex: -1,
+    /** @type {string} */
+    selectedValue: '',
+    /** @type {boolean} */
+    isOpen: false,
 };
 
 const url = new URL(window.location.href);
@@ -29,17 +43,225 @@ loadList().then(() => {
 });
 
 async function loadList() {
+    // Initialize the combobox element references when DOM is ready
+    state.comboboxInput = document.getElementById('combobox-input');
+    state.comboboxDropdown = document.getElementById('combobox-dropdown');
+
     const url = new URL(`/test-forms/index.json`, window.location.href);
     return fetch(url)
         .then((response) => response.json())
         .then((testForms) => {
-            testForms.forEach((item) => {
-                const option = document.createElement('option');
-                option.value = item.html;
-                option.textContent = item.html;
-                state.list?.appendChild(option);
-            });
+            state.allForms = testForms;
+            state.filteredForms = sortForms(testForms, state.sortOrder);
+            setupCombobox();
+            updateSortButton();
         });
+}
+
+function populateDropdown(forms) {
+    if (!state.comboboxDropdown) return;
+
+    // Clear existing options
+    state.comboboxDropdown.innerHTML = '';
+
+    if (forms.length === 0) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.className = 'combobox-empty';
+        emptyDiv.textContent = 'No forms found';
+        state.comboboxDropdown.appendChild(emptyDiv);
+        return;
+    }
+
+    forms.forEach((item, index) => {
+        const option = document.createElement('button');
+        option.className = 'combobox-option';
+        option.textContent = item.title || item.html;
+        option.dataset.value = item.html;
+        option.dataset.index = index.toString();
+        option.addEventListener('click', () => selectOption(index));
+        state.comboboxDropdown.appendChild(option);
+    });
+}
+
+function setupCombobox() {
+    if (!state.comboboxInput || !state.comboboxDropdown) return;
+
+    // Input event handler for filtering
+    state.comboboxInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        filterAndUpdate(searchTerm);
+        if (!state.isOpen) {
+            openDropdown();
+        }
+    });
+
+    // Focus event handler
+    state.comboboxInput.addEventListener('focus', () => {
+        if (!state.isOpen) {
+            openDropdown();
+        }
+    });
+
+    // Click trigger button
+    const trigger = document.querySelector('.combobox-trigger');
+    if (trigger) {
+        trigger.addEventListener('click', () => {
+            if (state.isOpen) {
+                closeDropdown();
+            } else {
+                state.comboboxInput?.focus();
+                openDropdown();
+            }
+        });
+    }
+
+    // Keyboard navigation
+    state.comboboxInput.addEventListener('keydown', (e) => {
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                if (!state.isOpen) {
+                    openDropdown();
+                } else {
+                    highlightNext();
+                }
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                highlightPrevious();
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (state.isOpen && state.highlightedIndex >= 0) {
+                    selectOption(state.highlightedIndex);
+                }
+                break;
+            case 'Escape':
+                e.preventDefault();
+                closeDropdown();
+                break;
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!state.comboboxInput?.contains(e.target) &&
+            !state.comboboxDropdown?.contains(e.target) &&
+            !e.target?.closest('.combobox-trigger')) {
+            closeDropdown();
+        }
+    });
+
+    // Setup sort button
+    const sortButton = document.getElementById('sort-button');
+    if (sortButton) {
+        sortButton.addEventListener('click', () => {
+            state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc';
+            const searchTerm = state.comboboxInput?.value.toLowerCase() || '';
+            filterAndUpdate(searchTerm);
+            updateSortButton();
+        });
+    }
+
+    // Initial population
+    filterAndUpdate('');
+}
+
+function filterAndUpdate(searchTerm) {
+    let filtered = state.allForms;
+
+    if (searchTerm) {
+        filtered = state.allForms.filter(form => {
+            const displayName = (form.title || form.html).toLowerCase();
+            return displayName.includes(searchTerm);
+        });
+    }
+
+    state.filteredForms = sortForms(filtered, state.sortOrder);
+    state.highlightedIndex = -1;
+    populateDropdown(state.filteredForms);
+}
+
+function sortForms(forms, order = 'asc') {
+    return [...forms].sort((a, b) => {
+        const nameA = (a.title || a.html).toLowerCase();
+        const nameB = (b.title || b.html).toLowerCase();
+        const comparison = nameA.localeCompare(nameB);
+        return order === 'asc' ? comparison : -comparison;
+    });
+}
+
+function openDropdown() {
+    if (!state.comboboxDropdown || !state.comboboxInput) return;
+
+    state.isOpen = true;
+    state.comboboxDropdown.classList.add('open');
+    state.comboboxInput.setAttribute('aria-expanded', 'true');
+}
+
+function closeDropdown() {
+    if (!state.comboboxDropdown || !state.comboboxInput) return;
+
+    state.isOpen = false;
+    state.highlightedIndex = -1;
+    state.comboboxDropdown.classList.remove('open');
+    state.comboboxInput.setAttribute('aria-expanded', 'false');
+    updateHighlight();
+}
+
+function highlightNext() {
+    if (state.filteredForms.length === 0) return;
+
+    state.highlightedIndex = Math.min(
+        state.highlightedIndex + 1,
+        state.filteredForms.length - 1
+    );
+    updateHighlight();
+}
+
+function highlightPrevious() {
+    if (state.filteredForms.length === 0) return;
+
+    state.highlightedIndex = Math.max(state.highlightedIndex - 1, 0);
+    updateHighlight();
+}
+
+function updateHighlight() {
+    if (!state.comboboxDropdown) return;
+
+    const options = state.comboboxDropdown.querySelectorAll('.combobox-option');
+    options.forEach((option, index) => {
+        option.classList.toggle('highlighted', index === state.highlightedIndex);
+    });
+}
+
+function selectOption(index) {
+    if (!state.comboboxInput || index < 0 || index >= state.filteredForms.length) return;
+
+    const selected = state.filteredForms[index];
+    state.selectedValue = selected.html;
+    state.comboboxInput.value = selected.title || selected.html;
+
+    closeDropdown();
+
+    // Update URL and load the form
+    const next = new URL(window.location.href);
+    next.searchParams.set('form', selected.html);
+    window.location.href = next.href;
+}
+
+function updateSortButton() {
+    const sortButton = document.getElementById('sort-button');
+    if (sortButton) {
+        const isAsc = state.sortOrder === 'asc';
+        sortButton.innerHTML = `
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6,${isAsc ? '9' : '15'} 12,${isAsc ? '15' : '9'} 18,${isAsc ? '9' : '15'}"></polyline>
+            </svg>
+            ${isAsc ? 'A-Z' : 'Z-A'}
+        `;
+        sortButton.classList.toggle('desc', state.sortOrder === 'desc');
+    }
 }
 
 /**
@@ -198,24 +420,19 @@ function updateFrame(html) {
 }
 
 function setState(initial) {
-    const list = /** @type {HTMLSelectElement|null} */ (document.querySelector('select[name="html-list"]'));
-    if (!list) throw new Error("unreachable");
+    if (!state.comboboxInput) return;
+
     if (initial) {
-        list.value = initial;
+        // Find the form in our list and set the display value
+        const form = state.allForms.find(f => f.html === initial);
+        if (form) {
+            state.selectedValue = form.html;
+            state.comboboxInput.value = form.title || form.html;
+        }
         hidePrettifyButton();
     } else {
         showPrettifyButton();
     }
-    list.addEventListener('change', (e) => {
-        const elem = /** @type {HTMLSelectElement} */ (e.target);
-        const next = new URL(window.location.href);
-        if (elem.value) {
-            next.searchParams.set('form', elem.value);
-        } else {
-            next.searchParams.delete('form');
-        }
-        window.location.href = next.href;
-    });
 }
 
 // Add prettify button click handler

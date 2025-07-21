@@ -18,6 +18,124 @@
             padding: 1em;
             box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
             grid-area: header;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .form-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+        .combobox-container {
+            position: relative;
+            min-width: 300px;
+        }
+        .combobox-input {
+            width: 100%;
+            padding: 8px 32px 8px 40px;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .combobox-input:focus {
+            border-color: hsl(221.2, 83.2%, 53.3%);
+            box-shadow: 0 0 0 3px hsl(221.2, 83.2%, 53.3%, 0.1);
+        }
+        .combobox-input::placeholder {
+            color: hsl(215.4, 16.3%, 46.9%);
+        }
+        .combobox-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: hsl(215.4, 16.3%, 46.9%);
+        }
+        .combobox-trigger {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: hsl(215.4, 16.3%, 46.9%);
+        }
+        .combobox-trigger:hover {
+            color: hsl(222.2, 84%, 4.9%);
+        }
+        .combobox-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid hsl(214.3, 31.8%, 91.4%);
+            border-radius: 6px;
+            margin-top: 4px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            display: none;
+        }
+        .combobox-dropdown.open {
+            display: block;
+        }
+        .combobox-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            color: hsl(222.2, 84%, 4.9%);
+        }
+        .combobox-option:hover {
+            background: hsl(210, 40%, 98%);
+        }
+        .combobox-option.highlighted {
+            background: hsl(221.2, 83.2%, 53.3%);
+            color: white;
+        }
+        .combobox-option.selected {
+            background: hsl(221.2, 83.2%, 53.3%);
+            color: white;
+        }
+        .combobox-empty {
+            padding: 8px 12px;
+            color: hsl(215.4, 16.3%, 46.9%);
+            font-size: 14px;
+            text-align: center;
+        }
+        .sort-button {
+            padding: 6px 12px;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .sort-button:hover {
+            background: #005a99;
+        }
+        .sort-button.desc {
+            background: #ff9800;
         }
         .layout {
             border: 1px solid red;
@@ -108,12 +226,38 @@
 </div>
 <div class="layout">
     <header class="header">
-        <label>
-            Select a form:
-            <select name="html-list">
-                <option value="" selected>-- Select a form --</option>
-            </select>
-        </label>
+        <div class="form-selector">
+            <div class="combobox-container">
+                <svg class="combobox-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                    type="text"
+                    id="combobox-input"
+                    class="combobox-input"
+                    placeholder="Search forms..."
+                    autocomplete="off"
+                    role="combobox"
+                    aria-expanded="false"
+                    aria-haspopup="listbox"
+                >
+                <button type="button" class="combobox-trigger" aria-label="Toggle dropdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6,9 12,15 18,9"></polyline>
+                    </svg>
+                </button>
+                <div class="combobox-dropdown" id="combobox-dropdown" role="listbox">
+                    <div class="combobox-empty">No forms found</div>
+                </div>
+            </div>
+            <button type="button" id="sort-button" class="sort-button">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6,9 12,15 18,9"></polyline>
+                </svg>
+                A-Z
+            </button>
+        </div>
     </header>
     <main class="preview">
         <iframe frameborder="0"></iframe>
