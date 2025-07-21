@@ -301,7 +301,10 @@ const matchingConfiguration = {
                 },
 
                 // CC
-                cardName: { match: '(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)', skip: 'email' },
+                cardName: {
+                    match: '(card.*name|name.*card)|(card(.*)?holder|holder.*card)|(card.*owner|owner.*card)',
+                    skip: 'email|street|zip|city|state|address',
+                },
                 cardNumber: { match: 'card.*number|number.*card', skip: 'phone', forceUnknown: 'plus' },
                 cardSecurityCode: { match: 'security.?code|card.?verif|cvv|csc|cvc|cv2|card id' },
                 expirationMonth: {
@@ -311,7 +314,7 @@ const matchingConfiguration = {
                 expirationYear: { match: '(card|\\bcc\\b)?.?(exp(iry|iration)?)?.?(year|yy)', skip: 'mm[/\\s.\\-_—–]|check|month' },
                 expiration: {
                     match: '(\\bmm\\b|\\b\\d\\d\\b)[/\\s.\\-_—–](\\byy|\\bjj|\\baa|\\b\\d\\d)|\\bexp|\\bvalid(idity| through| until)',
-                    skip: 'invalid|^dd/|check',
+                    skip: 'invalid|^dd/|check|street|zip|city|state|address',
                 },
 
                 // Identities
@@ -620,6 +623,7 @@ const matchingConfiguration = {
                         '|card-?name' +
                         '|cardholder-?name' +
                         '|cardholder' +
+                        '|cardholder(?!.*(street|zip|city|state|address))' +
                         // "|(^name$)" + // Removed to avoid overwriting "name", above.
                         '|(^nom$)',
 
@@ -903,6 +907,7 @@ const matchingConfiguration = {
                     // ==== Name Fields ====
                     'cc-name':
                         'card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card' +
+                        'card.?(?:holder|owner)(?!.*(street|zip|city|state|address))|name.*(\\b)?on(\\b)?.*card(?!.*(street|zip|city|state|address))' +
                         '|(?:card|cc).?name|cc.?full.?name' +
                         '|karteninhaber' + // de-DE
                         '|nombre.*tarjeta' + // es

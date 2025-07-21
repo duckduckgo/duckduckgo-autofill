@@ -1,0 +1,242 @@
+<!-- qobuz.com/shopping-cart -->
+<form method="post" id="pay-submit" action="#">
+  <div class="left" id="mdp-form">
+    <div class="inner-wrap" id="title-left-wrap"></div>
+    <div class="inner-wrap" id="left-wrap">
+      <div class="qbz-logo"></div>
+      <div class="left-form">
+        <div
+          class="radio-input radio-input-cta display input-focus"
+          id="1576"
+          data-toggle="tooltip"
+          data-alias="0"
+          title=""
+        >
+          <input type="radio" name="radioName" id="14" class="mdpInput" data-mdp-id="1576" value="1576_14_0" />
+          <label class="pay-method">Card</label>
+          <img class="pay-logo card-logo" />
+        </div>
+        <div
+          class="radio-input radio-input-cta display"
+          id="1017"
+          data-toggle="tooltip"
+          data-alias="0"
+          title="You will be redirected to the payment page.&nbsp;"
+        >
+          <input type="radio" name="radioName" id="11" class="mdpInput" data-mdp-id="1017" value="1017_11_0" />
+          <label class="pay-method"
+            >Paypal
+            <span> +Payment fees:$0.75 + 0.50%</span>
+          </label>
+          <img class="pay-logo card-logo" />
+        </div>
+        <input type="hidden" name="tunnelNo" value="lMu31q3BSqH4r2lpb7PC7eSgp04lo5Wy" />
+        <input type="hidden" name="date" value="2025-07-17T17:21:42+02:00" />
+      </div>
+      <div class="wallet-banner"></div>
+      <div class="title-wrap" id="title-left">
+        <h1>Choose your payment method</h1>
+        <h2>Price:<span id="basket-price" class="line-price">$14.39</span></h2>
+        <h2 class="basket-line tax-amount-line">Sales Tax:<span class="line-price">$0.86</span></h2>
+        <h2 class="basket-line total-amount-line">Total price:<span class="total-line-price">$15.25</span></h2>
+      </div>
+    </div>
+    <div class="wallet-message">
+      <span class="promo-message">New release</span>
+      <h2 class="wallet-message-title">
+        <img class="sparks-img" />
+        Easy payment with Qobuz Coins
+      </h2>
+      <p>
+        We're excited to reveal our new Wallet feature that will allow you to buy your music in 1-clic directly through
+        our applications! Accessible on both the download store &amp; our apps.<br /><br />
+        To reload, click the "Add Qobuz Coins" button &amp; Qobuz Coins will be available to use immediately.
+      </p>
+      <div>
+        <span class="action-link-container">
+          <a class="action-link" href="/profile/wallet" target="_blank">Reload my wallet →</a>
+        </span>
+      </div>
+    </div>
+    <div class="safe-cards">
+      <div class="safe-cards-title">
+        SSL secure payment
+        <img class="picto-lock" />
+      </div>
+      <div class="safe-cards-text">
+        Your payment details are securely stored by our payment service provider, using banking-quality encription.
+      </div>
+      <div class="safe-cards-pictos">
+        <img class="safe-cards-card" />
+        <img class="safe-cards-card" />
+      </div>
+      <div class="safe-cards-title safe-cards-merchant">Xandrie</div>
+    </div>
+  </div>
+  <div class="right wrap right-pay" id="right-wrap">
+    <div class="safe-pay-container">
+      <img class="picto-lock" />
+      <p class="safe-pay">Secure payment</p>
+    </div>
+    <div class="picto-reset close-popin close" onclick="window.location.reload();"></div>
+    <div class="inner-wrap" id="right-side">
+      <input type="hidden" name="type" value="basket" />
+      <input type="hidden" name="confType" value="card" />
+      <div class="title-wrap" id="right-title">
+        <h3>Please proceed to payment</h3>
+      </div>
+      <div id="content-append-div">
+        <div id="formCardBlock">
+          <div class="dalenys-row">
+            <label>Card number</label>
+            <div class="input-container card-number">
+              <div class="card-number-frame input-container-dalenys frame--activated">
+                <input
+                  data-fieldidentifier="checkout-fake-input-cardNumber"
+                  aria-hidden="true"
+                  autocomplete="fake"
+                  readonly="true"
+                />
+                <iframe
+                  id="cardNumber"
+                  title="checkout-frames-cardNumber"
+                  name="checkout-frames-cardNumber"
+                  scrolling="no"
+                  tabindex="0"
+                ></iframe>
+              </div>
+              <div class="icon-container pm-logo-container">
+                <img id="logo-payment-method" />
+              </div>
+            </div>
+          </div>
+          <div class="dalenys-row">
+            <label>Card owner</label>
+            <input
+              type="text"
+              class="dalenys-cardHolderName input-container-dalenys"
+              name="cardHolderName"
+              id="checkoutCardHolderName"
+              value=""
+              autocomplete="cc-name"
+              data-manual-scoring="cardName"
+            />
+          </div>
+          <div class="dalenys-row avs-fields">
+            <label>Card owner street</label>
+            <input
+              type="text"
+              class="dalenys-cardHolderName input-container-dalenys"
+              name="cardHolderStreet"
+              id="checkoutCardHolderAddressLine1"
+              value=""
+              autocomplete="cc-address"
+              data-manual-scoring="addressStreet"
+            />
+          </div>
+          <div class="dalenys-row dalenys-row-hor avs-fields">
+            <div class="dalenys-cell cardHolder-field-half">
+              <label>Zipcode/Postal code</label>
+              <input
+                type="text"
+                class="dalenys-cardHolderName input-container-dalenys"
+                name="cardHolderZip"
+                id="checkoutCardHolderZip"
+                value=""
+                data-manual-scoring="addressPostalCode"
+              />
+            </div>
+            <div class="dalenys-cell cardHolder-field-half">
+              <label>Card owner city</label>
+              <input
+                type="text"
+                class="dalenys-cardHolderName input-container-dalenys"
+                name="cardHolderCity"
+                id="checkoutCardHolderCity"
+                value=""
+                data-manual-scoring="addressCity"
+              />
+            </div>
+          </div>
+          <div class="dalenys-row avs-fields">
+            <label>Card owner state</label>
+            <input
+              type="text"
+              class="dalenys-cardHolderName input-container-dalenys"
+              name="cardHolderState"
+              id="checkoutCardHolderState"
+              value=""
+              data-manual-scoring="addressProvince"
+            />
+          </div>
+          <div class="input-container" id="taxPayerIdField">
+            <label></label>
+            <input type="text" class="form-control" name="tax_payer_id" id="taxPayerId" value="" data-manual-scoring="unknown" />
+          </div>
+          <div class="dalenys-row dalenys-row-hor">
+            <div class="dalenys-cell">
+              <label>Expiration date</label>
+              <div class="input-container expiry-date">
+                <div class="expiry-date-frame input-container-dalenys input-container-dalenys-expiry frame--activated">
+                  <input
+                    data-fieldidentifier="checkout-fake-input-expiryDate"
+                    aria-hidden="true"
+                    autocomplete="fake"
+                    readonly="true"
+                  />
+                  <iframe
+                    id="expiryDate"
+                    title="checkout-frames-expiryDate"
+                    name="checkout-frames-expiryDate"
+                    scrolling="no"
+                    tabindex="0"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+            <div class="dalenys-cell">
+              <label>Verification code</label>
+              <div class="input-container cvv">
+                <div class="cvv-frame input-container-dalenys input-container-dalenys-cvv frame--activated">
+                  <input
+                    data-fieldidentifier="checkout-fake-input-cvv"
+                    aria-hidden="true"
+                    autocomplete="fake"
+                    readonly="true"
+                  />
+                  <iframe
+                    id="cvv"
+                    title="checkout-frames-cvv"
+                    name="checkout-frames-cvv"
+                    scrolling="no"
+                    tabindex="0"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dalenys-row">
+            <input type="checkbox" name="alias" id="alias" class="form-control" value="createAlias" />
+            <label>Register your card for future purchases</label>
+          </div>
+          <input type="hidden" name="cardEncryptedData" id="cardEncryptedData" value="" />
+          <input type="hidden" name="cardScheme" id="cardScheme" value="" />
+          <input type="hidden" name="cardIssuerCountry" id="cardIssuerCountry" value="" />
+          <input type="hidden" name="cardType" id="cardType" value="" />
+          <div class="payment-error--message hide"></div>
+        </div>
+      </div>
+      <div class="pay-div pay-height">
+        <button
+          class="pay-btn gtm_event_trigger"
+          gtm-data='{"product_list":[{"id":"mkmpn87r78rda","album":"Open Mike Eagle - Neighborhood Gods Unlimited","artistName":"Open Mike Eagle","category":"rap-hip-hop","subCategory":"rap-hip-hop","price":"15.25 USD","formula":"simple purchase","name":"Open Mike Eagle - Neighborhood Gods Unlimited","type":"Album"}],"basket":{"id":"54320169","totalPrice":"15.25 USD","quantity":1},"event":"shop_confirmPayment"}'
+          id="pay-button"
+          type="button"
+          data-manual-submit
+        >
+          Pay $15.25
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
