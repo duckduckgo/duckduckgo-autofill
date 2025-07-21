@@ -1,12 +1,20 @@
-<title>DistroKid Payout</title>
-
+<!-- URL: https://distrokid.com/payouts/ -->
 <form action="/payouts/?fwd=" method="post">
-  <div>
-    <div>For your protection, DistroKid requires password verification to access payout settings.</div>
-    <div class="bold">Please enter your password</div>
-    <input class="coolInput" name="password" id="payoutPsw" type="password" data-manual-scoring="password.current" />
-    <div>
-      <input class="buttonSmall" type="submit" value="Continue" data-manual-submit />
+    <div style="padding:1em;line-height: 1.5em;">
+        <div style="margin-bottom: 2em;">
+            For your protection, DistroKid requires password verification to access payout settings.
+        </div>
+        <div style="margin-bottom: 7px;" class="bold">
+            Please enter your password
+        </div>
+        <input style="box-sizing: border-box;height:30px;width: 100%;" class="coolInput" name="password" id="payoutPsw"
+            type="password" data-manual-scoring="password.current">
+        <div style="text-align: right;margin-top: 5px;">
+            <input style="box-sizing: border-box;" class="buttonSmall" type="submit" value="Continue"
+                data-manual-submit="true">
+        </div>
     </div>
-  </div>
+    <script>
+        $j('#payoutPsw').focus();
+    </script>
 </form>
