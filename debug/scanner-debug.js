@@ -5,8 +5,7 @@
  */
 
 import { Form } from '../src/Form/Form.js';
-import * as prettier from 'prettier/standalone';
-import htmlPlugin from 'prettier/plugins/html';
+import { prettifyAndCleanHTML } from '../scripts/html-prettifier.mjs';
 
 /**
  * @typedef {import('../src/Scanner.js').Scanner} Scanner
@@ -144,52 +143,7 @@ function showSaveButton() {
     if (prettifyBtn) prettifyBtn.hidden = true;
 }
 
-async function prettifyAndCleanHTML(html) {
-    if (!html.trim()) return '';
 
-    // Create a temporary DOM to parse and clean the HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-
-    // Remove all script tags
-    const scripts = tempDiv.querySelectorAll('script');
-    scripts.forEach(script => script.remove());
-
-    // Remove all style tags
-    const styles = tempDiv.querySelectorAll('style');
-    styles.forEach(style => style.remove());
-
-    // Remove all svg
-    const svgs = tempDiv.querySelectorAll('svg');
-    svgs.forEach(svg => svg.remove());
-
-    // Remove src attributes, style attributes, and data-ddg-inputtype attributes from all elements
-    const allElements = tempDiv.querySelectorAll('*');
-    allElements.forEach(element => {
-        element.removeAttribute('src');
-        element.removeAttribute('style');
-        element.removeAttribute('data-ddg-inputtype');
-        element.removeAttribute('data-ddg-autofill');
-    });
-
-    // Get the cleaned HTML
-    let cleanedHTML = tempDiv.innerHTML;
-
-    // Use prettier for proper HTML formatting
-    try {
-        return await prettier.format(cleanedHTML, {
-            parser: 'html',
-            plugins: [htmlPlugin],
-            printWidth: 120,
-            tabWidth: 2,
-            useTabs: false,
-            htmlWhitespaceSensitivity: 'css'
-        });
-    } catch (error) {
-        console.error('Prettier formatting failed:', error);
-        return cleanedHTML;
-    }
-}
 
 function updateFrame(html) {
     const code = document.querySelector('#code');
