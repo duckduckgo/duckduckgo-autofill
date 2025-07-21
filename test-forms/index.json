@@ -558,6 +558,6 @@
   { "html": "sielte_change-password.html" },
   { "html": "myimmitracker_com_new.html", "title": "Immitracker - Track visa and immigration applications for Canada and Australia" },
   { "html": "acehardware_com_checkout.html", "title": "Ace Hardware - Checkout", "expectedSubmitFalseNegatives": 1 },
-  { "html": "distrokid_payout.html" }
+  { "html": "distrokid_payout.html" },
   { "html": "qobuz_com_shopping_cart.html", "expectedSubmitFalseNegatives": 1 }
 ]
