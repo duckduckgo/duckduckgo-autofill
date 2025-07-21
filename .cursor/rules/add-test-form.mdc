@@ -4,6 +4,8 @@ alwaysApply: false
 ---
 
 - If the HTML is not provided, ask the user to provide it.
+- Do not add any standard HTML5 structure (DOCTYPE, html, head, body tags) - just keep the form element.
 - Create a file in the `test-forms` directory with the naming convention `<sitename>_<formtype>.html`, e.g. `instagram_login.html`.
-- Add an entry to the `test-forms/index.json` file.
-- Trim HTML based on `real-world-html-tests.md` file. Use only the subtype instead of the fully qualified type. E.g use `password.current` instead of `credentials.password.current`.
+- Add the new form in the `index.json` file using `scripts/save-form-to-test-suite.js`.
+- Remove the `data-ddg-autofilled` attribute, all `img` tags and all `svg` elements, and all inline `style` attributes. Remove all `script` tags and its content (Reference `prettifyAndCleanHTML` to do this).
+- Annotate the form's inputs and buttons, use examples from html files in `test-forms`. Use only the `subtype` instead of the fully qualified type. E.g use `password.current` instead of `credentials.password.current`.
