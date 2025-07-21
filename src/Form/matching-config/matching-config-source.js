@@ -381,7 +381,7 @@ const matchingConfiguration = {
                         // MFA/2FA specific
                         '|mfa-submit-form' + // fix chase.com
                         // Account access
-                        '|access(?:\\s\\w+)?\\ssettings' +
+                        '|access.+?settings' +
                         '|unlock|logged in as' + // fix bitwarden
                         // Italian
                         '|entra|accedi|accesso|resetta password|password dimenticata|dimenticato la password|recuper[ao] password' +
