@@ -1790,6 +1790,12 @@ Source: "${matchedFrom}"`;
       return creditCards.cardNumber;
     }
   }
+  function containsShadowedTarget(container, target) {
+    if (container.contains(target)) return true;
+    const targetRoot = target.getRootNode();
+    if (targetRoot instanceof ShadowRoot && container.contains(targetRoot.host)) return true;
+    return false;
+  }
 
   // src/Form/countryNames.js
   var COUNTRY_CODES_TO_NAMES = {
@@ -6354,7 +6360,7 @@ Source: "${matchedFrom}"`;
      */
     getParentForm(input) {
       this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
-      if (this._forcedForm?.contains(input)) {
+      if (this._forcedForm && containsShadowedTarget(this._forcedForm, input)) {
         return this._forcedForm;
       }
       if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
