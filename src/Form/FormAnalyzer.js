@@ -312,6 +312,9 @@ class FormAnalyzer {
                         likelyASubmit = false;
                     }
                 });
+
+                // If it's a reset password submit button, then flip the score
+                shouldFlip = likelyASubmit && safeRegexTest(this.matching.getDDGMatcherRegex('resetPasswordLink'), string);
             } else {
                 // Here we don't think this is a submit, so determine if we should flip the score
                 const hasAnotherSubmitButton = Boolean(this.form.querySelector('input[type=submit], button[type=submit]'));
