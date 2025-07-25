@@ -1,5 +1,5 @@
 ---
-description: Apply when asked to add a test form. These are the tests used by the input-classifiers.test.js file.
+description: Apply when asked to add a test form to the test suite. These are the tests used by the input-classifiers.test.js file.
 alwaysApply: false
 ---
 

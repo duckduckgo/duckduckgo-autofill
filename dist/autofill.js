@@ -5019,6 +5019,7 @@ Source: "${matchedFrom}"`;
               likelyASubmit = false;
             }
           });
+          shouldFlip = likelyASubmit && safeRegexTest(this.matching.getDDGMatcherRegex("resetPasswordLink"), string);
         } else {
           const hasAnotherSubmitButton = Boolean(this.form.querySelector("input[type=submit], button[type=submit]"));
           const buttonText = string;
