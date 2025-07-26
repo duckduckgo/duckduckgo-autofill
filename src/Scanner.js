@@ -7,6 +7,7 @@ import {
     shouldLog,
     pierceShadowTree,
     findElementsInShadowTree,
+    containsShadowedTarget,
 } from './autofill-utils.js';
 
 const { ATTR_INPUT_TYPE, MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM } = constants;
@@ -228,7 +229,7 @@ class DefaultScanner {
      */
     getParentForm(input) {
         this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
-        if (this._forcedForm?.contains(input)) {
+        if (this._forcedForm && containsShadowedTarget(this._forcedForm, input)) {
             return this._forcedForm;
         }
 
