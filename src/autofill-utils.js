@@ -659,6 +659,25 @@ function getUsernameLikeIdentity(identities, creditCards) {
     }
 }
 
+/**
+ * Check if an element contains another element, even across shadow DOM boundaries.
+ * For simplicity, we don't check nested shadow DOMs.
+ * @param {Element} container
+ * @param {Element} target
+ * @returns {boolean} - true if the target is contained within the container,
+ * even across shadow DOM boundaries
+ */
+function containsShadowedTarget(container, target) {
+    if (container.contains(target)) return true;
+
+    // If standard contains fails, check if target is in a shadow DOM
+    const targetRoot = target.getRootNode();
+
+    if (targetRoot instanceof ShadowRoot && container.contains(targetRoot.host)) return true;
+
+    return false;
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -695,4 +714,5 @@ export {
     queryElementsWithShadow,
     getFormControlElements,
     getUsernameLikeIdentity,
+    containsShadowedTarget,
 };
