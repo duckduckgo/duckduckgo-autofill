@@ -94,7 +94,10 @@ which has its own box-shadow and border-radius settings.
     --hover-effect: none;
     --hover-effect-dark: invert(100%);
 
-    /* Top autofill min height */
+    /* Top autofill min height, on windows 100vh causes the popup to be too tall for some reason.
+     * We don't know the root cause yet, but setting it to auto fixes the issue.
+     * https://app.asana.com/1/137249556945/task/1210848278309115/comment/1210997380754990?focus=true
+     */
     --top-autofill-min-height: auto;
 }
 
