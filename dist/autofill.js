@@ -4756,6 +4756,9 @@ Source: "${matchedFrom}"`;
     "yatra.com": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&'()+,.:?@[_`~]];"
     },
+    "yeti.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [#$%*];"
+    },
     "zara.com": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit;"
     },
