@@ -1752,16 +1752,23 @@ Source: "${matchedFrom}"`;
     }
     return innerActiveElement;
   }
-  function findElementsInShadowTree(root, selector) {
-    const shadowElements = [];
+  function runWithTreeWalker(root, callback) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
     let node = walker.currentNode;
     while (node) {
+      const result = callback(node);
+      if (result === true) return true;
+      node = walker.nextNode();
+    }
+    return false;
+  }
+  function findElementsInShadowTree(root, selector) {
+    const shadowElements = [];
+    runWithTreeWalker(root, (node) => {
       if (node instanceof HTMLElement && node.shadowRoot) {
         shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
       }
-      node = walker.nextNode();
-    }
+    });
     return shadowElements;
   }
   function getFormControlElements(form, selector) {
@@ -1789,6 +1796,17 @@ Source: "${matchedFrom}"`;
     if (creditCards && Object.keys(creditCards).length === 1 && Boolean(creditCards.cardNumber)) {
       return creditCards.cardNumber;
     }
+  }
+  function containsShadowedTarget(container, target) {
+    if (container.contains(target)) return true;
+    const targetRoot = target.getRootNode();
+    const foundInShadow = runWithTreeWalker(container, (node) => {
+      if (targetRoot instanceof ShadowRoot && node.contains(targetRoot.host)) {
+        return true;
+      }
+      return false;
+    });
+    return foundInShadow;
   }
 
   // src/Form/countryNames.js
@@ -4489,6 +4507,9 @@ Source: "${matchedFrom}"`;
     "propelfuels.com": {
       "password-rules": "minlength: 6; maxlength: 16;"
     },
+    "publix.com": {
+      "password-rules": "minlength: 8; maxlength: 28; required: upper; required: lower; allowed: digit,[!#$%*@^];"
+    },
     "qdosstatusreview.com": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&@^];"
     },
@@ -6354,7 +6375,7 @@ Source: "${matchedFrom}"`;
      */
     getParentForm(input) {
       this._forcedForm = this.device.settings.siteSpecificFeature?.getForcedForm() || null;
-      if (this._forcedForm?.contains(input)) {
+      if (this._forcedForm && containsShadowedTarget(this._forcedForm, input)) {
         return this._forcedForm;
       }
       if (input instanceof HTMLInputElement || input instanceof HTMLSelectElement) {
