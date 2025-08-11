@@ -1752,16 +1752,25 @@ Source: "${matchedFrom}"`;
     }
     return innerActiveElement;
   }
-  function findElementsInShadowTree(root, selector) {
-    const shadowElements = [];
+  function runWithTreeWalker(root, callback) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
     let node = walker.currentNode;
     while (node) {
-      if (node instanceof HTMLElement && node.shadowRoot) {
-        shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
+      const result = callback(node);
+      if (result === true) {
+        return true;
       }
       node = walker.nextNode();
     }
+    return false;
+  }
+  function findElementsInShadowTree(root, selector) {
+    const shadowElements = [];
+    runWithTreeWalker(root, (node) => {
+      if (node instanceof HTMLElement && node.shadowRoot) {
+        shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
+      }
+    });
     return shadowElements;
   }
   function getFormControlElements(form, selector) {
@@ -1793,8 +1802,13 @@ Source: "${matchedFrom}"`;
   function containsShadowedTarget(container, target) {
     if (container.contains(target)) return true;
     const targetRoot = target.getRootNode();
-    if (targetRoot instanceof ShadowRoot && container.contains(targetRoot.host)) return true;
-    return false;
+    const foundInShadow = runWithTreeWalker(container, (node) => {
+      if (targetRoot instanceof ShadowRoot && node.contains(targetRoot.host)) {
+        return true;
+      }
+      return false;
+    });
+    return foundInShadow;
   }
 
   // src/Form/countryNames.js
