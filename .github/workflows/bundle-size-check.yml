@@ -1,0 +1,84 @@
+name: Bundle Size Check
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    bundle-size-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22.0.0'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: |
+                  nvm use 22.0.0
+                  npm ci
+
+            - name: Build project
+              run: |
+                  nvm use 22.0.0
+                  npm run build
+
+            - name: Calculate current bundle size
+              id: current-size
+              run: |
+                  nvm use 22.0.0
+                  echo "current_size=$(du -sb dist/ | cut -f1)" >> $GITHUB_OUTPUT
+
+            - name: Get base commit and calculate base size
+              id: base-calc
+              run: |
+                  nvm use 22.0.0
+
+                  # Get base commit SHA
+                  BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
+                  # Checkout base commit
+                  git checkout $BASE_SHA
+
+                  # Install dependencies and build
+                  npm ci
+                  npm run build
+
+                  # Calculate base size
+                  echo "base_size=$(du -sb dist/ | cut -f1)" >> $GITHUB_OUTPUT
+
+                  # Return to current commit
+                  git checkout ${{ github.sha }}
+                  npm ci
+                  npm run build
+
+            - name: Comment on PR
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const baseSize = parseInt('${{ steps.base-calc.outputs.base_size }}');
+                      const currentSize = parseInt('${{ steps.current-size.outputs.current_size }}');
+
+                      const sizeDiff = currentSize - baseSize;
+                      const sizeDiffKB = (sizeDiff / 1024).toFixed(2);
+                      const percentChange = ((sizeDiff / baseSize) * 100).toFixed(2);
+
+                      const comment = `## Bundle Size Diff
+
+                      **Before:** ${(baseSize / 1024).toFixed(2)} KB
+                      **After:** ${(currentSize / 1024).toFixed(2)} KB
+                      **Change:** ${sizeDiff > 0 ? '+' : ''}${sizeDiffKB} KB (${sizeDiff > 0 ? '+' : ''}${percentChange}%)`;
+
+                      await github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: comment
+                      });
