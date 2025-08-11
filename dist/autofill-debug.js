@@ -1761,9 +1761,7 @@ Source: "${matchedFrom}"`;
     let node = walker.currentNode;
     while (node) {
       const result = callback(node);
-      if (result === true) {
-        return true;
-      }
+      if (result === true) return true;
       node = walker.nextNode();
     }
     return false;
