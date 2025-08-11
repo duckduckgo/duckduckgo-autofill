@@ -1,0 +1,94 @@
+name: Bundle Size Check
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    bundle-size-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22.0.0'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build project
+              run: npm run build
+
+            - name: Calculate current bundle size
+              id: current-size
+              run: |
+                  echo "current_size_js=$(du -sb dist/autofill.js | cut -f1)" >> $GITHUB_OUTPUT
+                  echo "current_size_js_debug=$(du -sb dist/autofill-debug.js | cut -f1)" >> $GITHUB_OUTPUT
+
+            - name: Get base commit and calculate base size
+              id: base-calc
+              run: |
+                  # Get base commit SHA
+                  BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
+                  # Checkout base commit
+                  git checkout $BASE_SHA
+
+                  # Install dependencies and build
+                  npm ci
+                  npm run build
+
+                  # Calculate base size
+                  echo "base_size_js=$(du -sb dist/autofill.js | cut -f1)" >> $GITHUB_OUTPUT
+                  echo "base_size_js_debug=$(du -sb dist/autofill-debug.js | cut -f1)" >> $GITHUB_OUTPUT
+
+                  # Return to current commit
+                  git checkout ${{ github.sha }}
+                  npm ci
+                  npm run build
+
+            - name: Comment on PR
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      // Helper function to convert bytes to human readable format
+                      function formatBytes(bytes) {
+                          if (bytes === 0) return '0 B';
+                          const k = 1024;
+                          const sizes = ['B', 'KB', 'MB', 'GB'];
+                          const i = Math.floor(Math.log(bytes) / Math.log(k));
+                          return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+                      }
+
+                      const baseSizeJs = parseInt('${{ steps.base-calc.outputs.base_size_js }}');
+                      const currentSizeJs = parseInt('${{ steps.current-size.outputs.current_size_js }}');
+
+                      const sizeDiffJs = currentSizeJs - baseSizeJs;
+                      const percentChangeJs = ((sizeDiffJs / baseSizeJs) * 100).toFixed(2);
+
+
+                      const baseSizeJsDebug = parseInt('${{ steps.base-calc.outputs.base_size_js_debug }}');
+                      const currentSizeJsDebug = parseInt('${{ steps.current-size.outputs.current_size_js_debug }}');
+                      const sizeDiffJsDebug = currentSizeJsDebug - baseSizeJsDebug;
+                      const percentChangeJsDebug = ((sizeDiffJsDebug / baseSizeJsDebug) * 100).toFixed(2);
+
+                      const comment = `## Bundle size 
+                      **autofill.js:** ${formatBytes(baseSizeJs)} -> ${formatBytes(currentSizeJs)}
+                      **Change:** ${sizeDiffJs > 0 ? '+' : ''}${formatBytes(Math.abs(sizeDiffJs))} (${sizeDiffJs > 0 ? '+' : ''}${percentChangeJs}%)
+                      <br>
+                      **autofill-debug.js:** ${formatBytes(baseSizeJsDebug)} -> ${formatBytes(currentSizeJsDebug)}
+                      **Change:** ${sizeDiffJsDebug > 0 ? '+' : ''}${formatBytes(Math.abs(sizeDiffJsDebug))} (${sizeDiffJsDebug > 0 ? '+' : ''}${percentChangeJsDebug}%)`;
+
+                      await github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: comment
+                      });

@@ -594,7 +594,7 @@ function runWithTreeWalker(root, callback) {
     let node = walker.currentNode;
     while (node) {
         const result = callback(node);
-        if (result === true) return true; // If the callback returns true, we stop iterating
+        if (result === true) return true;
 
         node = walker.nextNode();
     }
