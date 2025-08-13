@@ -23,7 +23,7 @@ function generateBundleSizeComment(baseSizes, currentSizes) {
     const sizeDiffJsDebug = currentSizeJsDebug - baseSizeJsDebug;
     const percentChangeJsDebug = ((sizeDiffJsDebug / baseSizeJsDebug) * 100).toFixed(2);
 
-    return `## Bundle size 
+    return `## Bundle size change (main vs. current) 
 **autofill.js:** ${formatBytes(baseSizeJs)} -> ${formatBytes(currentSizeJs)}
 **Change:** ${sizeDiffJs > 0 ? '+' : ''}${formatBytes(Math.abs(sizeDiffJs))} (${sizeDiffJs > 0 ? '+' : ''}${percentChangeJs}%)
 <br>
