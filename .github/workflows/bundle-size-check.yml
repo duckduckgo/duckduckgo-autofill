@@ -64,7 +64,10 @@ jobs:
                   export CURRENT_SIZE_JS_DEBUG="${{ steps.current-calculation.outputs.current_size_js_debug }}"
 
                   # Run the script and capture output
-                  npm run bundle-size-check > comment.txt
+                  # If there is a size change, run the script and capture output
+                  if [ "$BASE_SIZE_JS" != "$CURRENT_SIZE_JS" ] || [ "$BASE_SIZE_JS_DEBUG" != "$CURRENT_SIZE_JS_DEBUG" ]; then
+                      npm run bundle-size-check > comment.txt
+                  fi
 
                   # Read the comment content
                   echo "comment_body<<EOF" >> $GITHUB_OUTPUT

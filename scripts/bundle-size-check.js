@@ -5,7 +5,6 @@
  * This script generates comments for PRs showing bundle size differences
  */
 
-// Helper function to convert bytes to human readable format
 function formatBytes(bytes) {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -14,7 +13,6 @@ function formatBytes(bytes) {
     return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
 }
 
-// Main function to generate bundle size comment
 function generateBundleSizeComment(baseSizes, currentSizes) {
     const { js: baseSizeJs, jsDebug: baseSizeJsDebug } = baseSizes;
     const { js: currentSizeJs, jsDebug: currentSizeJsDebug } = currentSizes;
@@ -33,9 +31,7 @@ function generateBundleSizeComment(baseSizes, currentSizes) {
 **Change:** ${sizeDiffJsDebug > 0 ? '+' : ''}${formatBytes(Math.abs(sizeDiffJsDebug))} (${sizeDiffJsDebug > 0 ? '+' : ''}${percentChangeJsDebug}%)`;
 }
 
-// When run directly (from GitHub Actions), read from environment variables
 if (require.main === module) {
-    // Read sizes from environment variables
     const baseSizes = {
         js: parseInt(process.env.BASE_SIZE_JS || '0'),
         jsDebug: parseInt(process.env.BASE_SIZE_JS_DEBUG || '0'),
@@ -50,6 +46,3 @@ if (require.main === module) {
     const comment = generateBundleSizeComment(baseSizes, currentSizes);
     console.log(comment);
 }
-
-// Export for use as a module (for testing)
-module.exports = { generateBundleSizeComment, formatBytes };
