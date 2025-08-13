@@ -54,6 +54,15 @@ jobs:
                   npm ci
                   npm run build
 
+            - name: Find Previous Comment
+              uses: peter-evans/find-comment@v3
+              id: find_comment
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-author: 'github-actions[bot]'
+                  body-includes: 'Bundle size change'
+                  direction: last
+
             - name: Generate bundle size comment
               id: generate-comment
               run: |
@@ -78,6 +87,6 @@ jobs:
               uses: peter-evans/create-or-update-comment@v4
               with:
                   issue-number: ${{ github.event.pull_request.number }}
-                  comment-id: ${{ steps.generate-comment.outputs.comment-id }}
+                  comment-id: ${{ steps.find_comment.outputs.comment-id }}
                   body: ${{ steps.generate-comment.outputs.comment_body }}
                   edit-mode: replace
