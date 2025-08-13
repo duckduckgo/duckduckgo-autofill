@@ -14,7 +14,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
 (async () => {
     // default build
     Promise.all([
-        bundle({ minify: true }),
+        bundle({}),
         bundle({
             plugins: [cssPlugin()],
             outfile: join(ROOT, 'dist/autofill-debug.js'),
