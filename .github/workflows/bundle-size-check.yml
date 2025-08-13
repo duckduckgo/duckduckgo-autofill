@@ -58,10 +58,10 @@ jobs:
               id: generate-comment
               run: |
                   # Set environment variables for the script
-                  export BASE_SIZE_JS="${{ steps.base-calc.outputs.base_size_js }}"
-                  export CURRENT_SIZE_JS="${{ steps.current-size.outputs.current_size_js }}"
-                  export BASE_SIZE_JS_DEBUG="${{ steps.base-calc.outputs.base_size_js_debug }}"
-                  export CURRENT_SIZE_JS_DEBUG="${{ steps.current-size.outputs.current_size_js_debug }}"
+                  export BASE_SIZE_JS="${{ steps.base-calculation.outputs.base_size_js }}"
+                  export CURRENT_SIZE_JS="${{ steps.current-calculation.outputs.current_size_js }}"
+                  export BASE_SIZE_JS_DEBUG="${{ steps.base-calculation.outputs.base_size_js_debug }}"
+                  export CURRENT_SIZE_JS_DEBUG="${{ steps.current-calculation.outputs.current_size_js_debug }}"
 
                   # Run the script and capture output
                   npm run bundle-size-check > comment.txt
