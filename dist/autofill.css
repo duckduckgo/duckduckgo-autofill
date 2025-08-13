@@ -35,6 +35,7 @@
   --hover-bg-dark: var(--t-mac-interactive);
   --hover-effect: invert(100%);
   --hover-effect-dark: invert(100%);
+  --top-autofill-min-height: 100vh;
 }
 :host:has([data-platform=windows]) {
   --bg: var(--t-backdrop-windows);
@@ -53,6 +54,7 @@
   --hover-bg-dark: var(--t-windows-interactive-dark);
   --hover-effect: none;
   --hover-effect-dark: invert(100%);
+  --top-autofill-min-height: auto;
 }
 .wrapper *,
 .wrapper *::before,
@@ -94,7 +96,7 @@
   overflow-y: auto;
 }
 .top-autofill .tooltip--data {
-  min-height: 100vh;
+  min-height: var(--top-autofill-min-height);
 }
 .tooltip--data.tooltip--incontext-signup {
   width: 360px;
