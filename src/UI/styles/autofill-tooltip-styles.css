@@ -389,7 +389,7 @@ which has its own box-shadow and border-radius settings.
 }
 
 .tooltip__button--data--provider__dinersClub::before {
-    background-image: url('../img/credit-card-diners-club.svg');
+    background-image: url('../img/credit-card-diners-club.png');
 }
 .tooltip__button--data--provider__discover::before {
     background-image: url('../img/credit-card-discover.svg');
