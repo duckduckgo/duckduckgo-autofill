@@ -12,19 +12,12 @@ function createGlobalConfig(overrides) {
     let isTopFrame = false;
     let supportsTopFrame = false;
     // Do not remove -- Apple devices change this when they support modern webkit messaging
-    let hasModernWebkitAPI = false;
     //! INJECT isApp HERE
     //! INJECT isTopFrame HERE
     //! INJECT supportsTopFrame HERE
-    //! INJECT hasModernWebkitAPI HERE
 
     let isWindows = false;
     //! INJECT isWindows HERE
-
-    // This will be used when 'hasModernWebkitAPI' is false
-    /** @type {string[]} */
-    let webkitMessageHandlerNames = [];
-    //! INJECT webkitMessageHandlerNames HERE
 
     let isDDGTestMode = false;
     //! INJECT isDDGTestMode HERE
@@ -41,9 +34,6 @@ function createGlobalConfig(overrides) {
     /** @type {Record<string, any> | null} */
     let availableInputTypes = null;
     //! INJECT availableInputTypes HERE
-
-    // The native layer will inject a randomised secret here and use it to verify the origin
-    let secret = 'PLACEHOLDER_SECRET';
 
     // @ts-ignore
     const isAndroid = userPreferences?.platform.name === 'android';
@@ -70,16 +60,13 @@ function createGlobalConfig(overrides) {
         isExtension,
         isTopFrame,
         isWindows,
-        secret,
         supportsTopFrame,
-        hasModernWebkitAPI,
         contentScope,
         userUnprotectedDomains,
         userPreferences,
         isDDGTestMode,
         isDDGDomain,
         availableInputTypes,
-        webkitMessageHandlerNames,
         ...overrides,
     };
 
