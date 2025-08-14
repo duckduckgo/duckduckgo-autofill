@@ -67,7 +67,7 @@
     "through2": "^4.0.2",
     "ts-to-zod": "^3.14.0",
     "typescript": "^5.8.2",
-    "zod": "^3.25.64"
+    "zod": "^4.0.17"
   },
   "overrides": {
     "jest-chrome": {
