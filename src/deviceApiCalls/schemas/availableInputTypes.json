@@ -16,7 +16,7 @@
         "password": {
           "type": "boolean"
         },
-        "2fa": {
+        "totp": {
           "type": "boolean"
         }
       }

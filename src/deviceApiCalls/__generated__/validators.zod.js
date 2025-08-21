@@ -150,7 +150,7 @@ export const availableInputTypesSchema = z.object({
     credentials: z.object({
         username: z.boolean().optional(),
         password: z.boolean().optional(),
-        "2fa": z.boolean().optional()
+        totp: z.boolean().optional()
     }).optional(),
     identities: z.object({
         firstName: z.boolean().optional(),
@@ -215,7 +215,7 @@ export const availableInputTypes1Schema = z.object({
     credentials: z.object({
         username: z.boolean().optional(),
         password: z.boolean().optional(),
-        "2fa": z.boolean().optional()
+        totp: z.boolean().optional()
     }).optional(),
     identities: z.object({
         firstName: z.boolean().optional(),

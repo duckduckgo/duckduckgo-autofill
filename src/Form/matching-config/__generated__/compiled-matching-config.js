@@ -4,7 +4,7 @@
 const matchingConfiguration = {
   matchers: {
     fields: {
-      '2fa': { type: '2fa', strategies: { ddgMatcher: '2fa' } },
+      totp: { type: 'totp', strategies: { ddgMatcher: 'totp' } },
       unknown: { type: 'unknown', strategies: { ddgMatcher: 'unknown' } },
       emailAddress: {
         type: 'emailAddress',
@@ -171,7 +171,7 @@ const matchingConfiguration = {
       }
     },
     lists: {
-      '2fa': [ '2fa' ],
+      totp: [ 'totp' ],
       unknown: [ 'unknown' ],
       emailAddress: [ 'emailAddress' ],
       password: [ 'password' ],
@@ -237,8 +237,8 @@ const matchingConfiguration = {
     },
     ddgMatcher: {
       matchers: {
-        '2fa': {
-          match: /mfa|2fa|(two|2).?factor|one-time|otp/iu,
+        totp: {
+          match: /mfa|2fa|(two|2).?factor|one-time|otp|totp/iu,
           skip: /phone|mobile|email|password/iu
         },
         unknown: {

@@ -146,7 +146,7 @@
   var matchingConfiguration = {
     matchers: {
       fields: {
-        "2fa": { type: "2fa", strategies: { ddgMatcher: "2fa" } },
+        totp: { type: "totp", strategies: { ddgMatcher: "totp" } },
         unknown: { type: "unknown", strategies: { ddgMatcher: "unknown" } },
         emailAddress: {
           type: "emailAddress",
@@ -313,7 +313,7 @@
         }
       },
       lists: {
-        "2fa": ["2fa"],
+        totp: ["totp"],
         unknown: ["unknown"],
         emailAddress: ["emailAddress"],
         password: ["password"],
@@ -379,8 +379,8 @@
       },
       ddgMatcher: {
         matchers: {
-          "2fa": {
-            match: /mfa|2fa|(two|2).?factor|one-time|otp/iu,
+          totp: {
+            match: /mfa|2fa|(two|2).?factor|one-time|otp|totp/iu,
             skip: /phone|mobile|email|password/iu
           },
           unknown: {
@@ -688,7 +688,7 @@ Source: "${matchedFrom}"`;
         password: [],
         username: [],
         emailAddress: [],
-        "2fa": []
+        totp: []
       });
       for (const [listName, matcherNames] of Object.entries(__privateGet(this, _config).matchers.lists)) {
         for (const fieldName of matcherNames) {
@@ -869,8 +869,8 @@ Source: "${matchedFrom}"`;
         if (this.subtypeFromMatchers("username", input)) {
           return "credentials.username";
         }
-        if (this.subtypeFromMatchers("2fa", input)) {
-          return "credentials.2fa";
+        if (this.subtypeFromMatchers("totp", input)) {
+          return "credentials.totp";
         }
       }
       const idSubtype = this.subtypeFromMatchers("id", input);
@@ -1193,7 +1193,7 @@ Source: "${matchedFrom}"`;
   }
   var supportedCredentialsSubtypes = (
     /** @type {const} */
-    ["password", "password.new", "password.current", "username", "2fa"]
+    ["password", "password.new", "password.current", "username", "totp"]
   );
   var supportedVariants = (
     /** @type {const} */
@@ -10819,7 +10819,7 @@ Source: "${matchedFrom}"`;
     credentials: external_exports.object({
       username: external_exports.boolean().optional(),
       password: external_exports.boolean().optional(),
-      "2fa": external_exports.boolean().optional()
+      totp: external_exports.boolean().optional()
     }).optional(),
     identities: external_exports.object({
       firstName: external_exports.boolean().optional(),
@@ -10879,7 +10879,7 @@ Source: "${matchedFrom}"`;
     credentials: external_exports.object({
       username: external_exports.boolean().optional(),
       password: external_exports.boolean().optional(),
-      "2fa": external_exports.boolean().optional()
+      totp: external_exports.boolean().optional()
     }).optional(),
     identities: external_exports.object({
       firstName: external_exports.boolean().optional(),

@@ -64,7 +64,7 @@ class Matching {
             password: [],
             username: [],
             emailAddress: [],
-            '2fa': [],
+            totp: [],
         };
 
         /**
@@ -301,8 +301,8 @@ class Matching {
                 return 'credentials.username';
             }
 
-            if (this.subtypeFromMatchers('2fa', input)) {
-                return 'credentials.2fa';
+            if (this.subtypeFromMatchers('totp', input)) {
+                return 'credentials.totp';
             }
         }
 
@@ -745,7 +745,7 @@ function isValidCreditCardSubtype(supportedType) {
 }
 
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
-const supportedCredentialsSubtypes = /** @type {const} */ (['password', 'password.new', 'password.current', 'username', '2fa']);
+const supportedCredentialsSubtypes = /** @type {const} */ (['password', 'password.new', 'password.current', 'username', 'totp']);
 
 /** @typedef {supportedVariants[number]} SupportedVariants */
 const supportedVariants = /** @type {const} */ (['new', 'current']);

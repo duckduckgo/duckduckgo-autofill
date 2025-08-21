@@ -21,7 +21,7 @@ interface MatcherLists {
     username: Matcher[];
     cc: Matcher[];
     id: Matcher[];
-    '2fa': Matcher[];
+    totp: Matcher[];
 }
 
 interface MatcherConfiguration {
@@ -33,7 +33,7 @@ type MatcherTypeNames =
     | 'unknown'
     | 'emailAddress'
     | 'password'
-    | '2fa'
+    | 'totp'
     | 'newPassword'
     | 'currentPassword'
     | 'username'
