@@ -7,6 +7,7 @@ import { EmailSignupHTMLTooltip } from '../EmailSignupHTMLTooltip.js';
 import { defaultOptions } from '../HTMLTooltip.js';
 import { CredentialsImportTooltip } from '../CredentialsImportTooltip.js';
 import { UIController } from './UIController.js';
+import { TOTPHTMLTooltip } from '../TOTPHTMLTooltip.js';
 
 /**
  * @typedef HTMLTooltipControllerOptions
@@ -129,6 +130,10 @@ export class HTMLTooltipUIController extends UIController {
         if (this._options.tooltipKind === 'emailsignup') {
             this._options.device.firePixel({ pixelName: 'incontext_show' });
             return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
+        }
+
+        if (this._options.device.getLocalCredentials()[0].totp && topContextData.inputType === 'credentials.totp') {
+            return new TOTPHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
         }
 
         // collect the data for each item to display

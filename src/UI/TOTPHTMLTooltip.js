@@ -1,0 +1,39 @@
+import HTMLTooltip from './HTMLTooltip.js';
+
+/**
+ * TOTP HTML Tooltip class for displaying time-based one-time passwords
+ */
+class TOTPHTMLTooltip extends HTMLTooltip {
+    /**
+     * Render the TOTP tooltip with the current TOTP code
+     * @param {import("../DeviceInterface/InterfacePrototype").default} device - The device interface
+     * @param {Object} callbacks - Callback functions for the tooltip
+     * @returns {TOTPHTMLTooltip} The rendered tooltip instance
+     */
+    render(device, callbacks) {
+        const t = device.t;
+        this.shadow.innerHTML = `
+${this.options.css}
+<div class="wrapper wrapper--data top-autofill" data-platform=${this.options.platform}>
+    <div class="tooltip tooltip--data">
+        <button class="tooltip__button tooltip__button--data tooltip__button--totp">
+            <span class="tooltip__button__text-container">
+                <span class="label label--medium">${device.getLocalCredentials()[0].totp}</span>
+            </span>
+        </button>
+        <hr />
+        <button class="tooltip__button tooltip__button--secondary js-manage">
+            <span class="tooltip__button__text-container">
+                <span class="label label--medium">${t('autofill:managePasswords')}</span>
+            </span>
+        </button>
+    </div>
+</div>
+`;
+
+        this.init();
+        return this;
+    }
+}
+
+export { TOTPHTMLTooltip };
