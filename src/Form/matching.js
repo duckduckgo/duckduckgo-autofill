@@ -64,6 +64,7 @@ class Matching {
             password: [],
             username: [],
             emailAddress: [],
+            '2fa': [],
         };
 
         /**
@@ -298,6 +299,10 @@ class Matching {
 
             if (this.subtypeFromMatchers('username', input)) {
                 return 'credentials.username';
+            }
+
+            if (this.subtypeFromMatchers('2fa', input)) {
+                return 'credentials.2fa';
             }
         }
 
@@ -740,7 +745,7 @@ function isValidCreditCardSubtype(supportedType) {
 }
 
 /** @typedef {supportedCredentialsSubtypes[number]} SupportedCredentialsSubTypes */
-const supportedCredentialsSubtypes = /** @type {const} */ (['password', 'password.new', 'password.current', 'username']);
+const supportedCredentialsSubtypes = /** @type {const} */ (['password', 'password.new', 'password.current', 'username', '2fa']);
 
 /** @typedef {supportedVariants[number]} SupportedVariants */
 const supportedVariants = /** @type {const} */ (['new', 'current']);
@@ -755,7 +760,7 @@ function isValidCredentialsSubtype(supportedType) {
 
 /** @typedef {SupportedIdentitiesSubTypes | SupportedCreditCardSubTypes | SupportedCredentialsSubTypes} SupportedSubTypes */
 
-/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCards.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown'} SupportedTypes */
+/** @typedef {`identities.${SupportedIdentitiesSubTypes}` | `creditCards.${SupportedCreditCardSubTypes}` | `credentials.${SupportedCredentialsSubTypes}` | 'unknown' } SupportedTypes */
 const supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),

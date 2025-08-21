@@ -8,6 +8,12 @@ const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
     matchers: {
         fields: {
+            '2fa': {
+                type: '2fa',
+                strategies: {
+                    ddgMatcher: '2fa',
+                },
+            },
             unknown: {
                 type: 'unknown',
                 strategies: {
@@ -194,6 +200,7 @@ const matchingConfiguration = {
             },
         },
         lists: {
+            '2fa': ['2fa'],
             unknown: ['unknown'],
             emailAddress: ['emailAddress'],
             password: ['password'],
@@ -223,9 +230,13 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfigurationInternal} */
         ddgMatcher: {
             matchers: {
+                '2fa': {
+                    match: 'mfa|2fa|(two|2).?factor|one-time|otp',
+                    skip: 'phone|mobile|email|password',
+                },
                 unknown: {
                     match:
-                        'search|find|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp|social security number|ssn' +
+                        'search|find|filter|subject|title|captcha|social security number|ssn' +
                         // Italian
                         '|cerca|filtr|oggetto|titolo|(due|2|più).?fattori' +
                         // German
@@ -268,7 +279,7 @@ const matchingConfiguration = {
                         // Swedish
                         '|lösenord',
                     skip: 'email|one-time|error|hint|^username$',
-                    forceUnknown: 'search|captcha|mfa|2fa|two factor|otp|pin',
+                    forceUnknown: 'search|captcha|pin',
                 },
                 newPassword: {
                     match: 'new|confirm|re.?(enter|type)|repeat|update\\b',

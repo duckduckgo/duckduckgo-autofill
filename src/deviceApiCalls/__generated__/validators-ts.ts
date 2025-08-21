@@ -473,6 +473,7 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
+    "2fa"?: boolean;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -614,6 +615,7 @@ export interface AvailableInputTypes1 {
   credentials?: {
     username?: boolean;
     password?: boolean;
+    "2fa"?: boolean;
   };
   /**
    * maps field types and the availability of data saved by the user

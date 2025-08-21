@@ -15,6 +15,9 @@
         },
         "password": {
           "type": "boolean"
+        },
+        "2fa": {
+          "type": "boolean"
         }
       }
     },
