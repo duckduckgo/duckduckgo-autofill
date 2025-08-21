@@ -13413,7 +13413,7 @@ ${this.options.css}
         }
       };
       const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0;
-      if (topContextData.credentialsImport && hasNoCredentialsData) {
+      if (topContextData.credentialsImport && hasNoCredentialsData && topContextData.inputType !== "credentials.totp") {
         this._options.device.firePixel({ pixelName: "autofill_import_credentials_prompt_shown" });
         return new CredentialsImportTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
           onStarted: () => {
@@ -14761,7 +14761,7 @@ ${this.options.css}
         return result;
       }
     };
-    const deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
+    const deviceApi = new DeviceApi(loggingTransport);
     const settings = new Settings(globalConfig, deviceApi);
     if (globalConfig.isWindows) {
       if (globalConfig.isTopFrame) {
