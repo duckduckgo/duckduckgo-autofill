@@ -10780,6 +10780,7 @@ Source: "${matchedFrom}"`;
     id: external_exports.string().optional(),
     username: external_exports.string(),
     password: external_exports.string(),
+    totp: external_exports.string().optional(),
     origin: external_exports.object({
       url: external_exports.string()
     }).optional(),

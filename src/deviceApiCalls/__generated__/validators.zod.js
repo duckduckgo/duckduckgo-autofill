@@ -108,6 +108,7 @@ export const credentialsSchema = z.object({
     id: z.string().optional(),
     username: z.string(),
     password: z.string(),
+    totp: z.string().optional(),
     origin: z.object({
         url: z.string()
     }).optional(),
