@@ -695,6 +695,7 @@ export interface GetAutofillCredentialsResult {
      */
     username: string;
     password?: string;
+    totp?: string;
   };
   error?: GenericError;
 }

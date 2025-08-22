@@ -131,13 +131,23 @@ export class HTMLTooltipUIController extends UIController {
             this._options.device.firePixel({ pixelName: 'incontext_show' });
             return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
         }
-
-        if (this._options.device.getLocalCredentials()[0].totp && topContextData.inputType === 'credentials.totp') {
-            return new TOTPHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
-        }
-
         // collect the data for each item to display
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
+
+        console.log('DEEP DEBUG', data);
+
+        const hasTotp = this._options.device.getLocalCredentials().some((cred) => cred.totp);
+        if (hasTotp && topContextData.inputType === 'credentials.totp') {
+            return new TOTPHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, config, {
+                onSelect: (id) => {
+                    this._onSelect(topContextData.inputType, data, id);
+                },
+                onManage: (type) => {
+                    this._onManage(type);
+                },
+            });
+        }
+
         // convert the data into tool tip item renderers
         const asRenderers = data.map((d) => config.tooltipItem(d));
 

@@ -101,12 +101,17 @@ const inputTypeConfig = {
             const { device } = form;
             if (!canBeInteractedWith(input)) return '';
 
-            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return '';
+            const subtype = getInputSubtype(input);
+            const variant = getInputVariant(input);
+
+            const isLoginOrHybrid = form?.isLogin || form?.isHybrid;
+
+            if (subtype === 'totp' && device.settings.availableInputTypes.credentials?.totp && isLoginOrHybrid)
+                return ddgPasswordIcons.ddgTOTPIcon;
+
+            if (device.credentialsImport?.isAvailable() && isLoginOrHybrid) return '';
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
-                const subtype = getInputSubtype(input);
-                const variant = getInputVariant(input);
-
                 if (subtype === 'password' && variant === 'new') {
                     return ddgPasswordIcons.ddgPasswordGenIconBase;
                 }
