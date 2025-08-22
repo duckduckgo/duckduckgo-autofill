@@ -563,6 +563,12 @@ hr:first-child {
     background-image: url('../img/key-import.svg');
 }
 
+/* TOTP tooltip specific */
+.tooltip__button--totp::before {
+    background-size: 20px;
+    background-image: url('../img/totp.svg');
+}
+
 .truncate {
     display: block;
     width: 0;

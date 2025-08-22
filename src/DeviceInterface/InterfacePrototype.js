@@ -237,6 +237,7 @@ class InterfacePrototype {
     get hasLocalCredentials() {
         return this.#data.credentials.length > 0;
     }
+
     getLocalCredentials() {
         return this.#data.credentials.map((cred) => {
             const { password, ...rest } = cred;
