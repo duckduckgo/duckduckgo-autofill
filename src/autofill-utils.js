@@ -238,7 +238,7 @@ const safeExecute = (el, fn, _opts = {}) => {
 
 /**
  * Checks that an element is potentially viewable (even if off-screen)
- * @param {HTMLElement} el
+ * @param {HTMLElement|Element} el
  * @return {boolean}
  */
 const isPotentiallyViewable = (el) => {

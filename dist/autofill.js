@@ -5084,7 +5084,9 @@ Source: "${matchedFrom}"`;
         const displayValue = window.getComputedStyle(element, null).getPropertyValue("display");
         if (displayValue !== "none") this.evaluateElement(element);
       }
-      const relevantFields = this.form.querySelectorAll(this.matching.cssSelector("genericTextInputField"));
+      const relevantFields = Array.from(this.form.querySelectorAll(this.matching.cssSelector("genericTextInputField"))).filter(
+        (field) => isPotentiallyViewable(field)
+      );
       if (relevantFields.length >= 4) {
         this.increaseSignalBy(relevantFields.length * 1.5, "many fields: it is probably not a login");
       }
