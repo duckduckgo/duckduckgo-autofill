@@ -3817,6 +3817,9 @@ Source: "${matchedFrom}"`;
     "cardbenefitservices.com": {
       "password-rules": "minlength: 7; maxlength: 100; required: lower, upper; required: digit;"
     },
+    "cardcash.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!$%&*?@];"
+    },
     "carrefour.it": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
     },
@@ -4237,8 +4240,14 @@ Source: "${matchedFrom}"`;
     "ichunqiu.com": {
       "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit;"
     },
+    "id.nfpa.org": {
+      "password-rules": `minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [-"^#$%&'()*+:=@[_|{}~]];`
+    },
     "id.sonyentertainmentnetwork.com": {
       "password-rules": "minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
+    },
+    "id.westfield.com": {
+      "password-rules": "minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; required: [!\"#&'()*,./:;?@[\\^_`{|}~];"
     },
     "identity.codesignal.com": {
       "password-rules": "minlength: 14; required: digit; required: lower, upper; required: [!#$%&*@^]"
@@ -4402,11 +4411,17 @@ Source: "${matchedFrom}"`;
     "myaccess.dmdc.osd.mil": {
       "password-rules": "minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
     },
+    "mybam.bcbsnm.com": {
+      "password-rules": "minlength: 8; maxlength: 64; max-consecutive: 2; required: lower; required: upper; required: digit; allowed: [!#$%&()*@[^{}~];"
+    },
     "mygoodtogo.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower, upper, digit;"
     },
     "myhealthrecord.com": {
       "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
+    },
+    "mypatientvisit.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*+.;?@^_~];"
     },
     "mypay.dfas.mil": {
       "password-rules": "minlength: 9; maxlength: 30; required: lower; required: upper; required: digit; required: [#@$%^!*+=_];"
