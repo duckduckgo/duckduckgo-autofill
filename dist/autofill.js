@@ -1808,6 +1808,9 @@ Source: "${matchedFrom}"`;
     });
     return foundInShadow;
   }
+  function isGoogleAccountsDomain() {
+    return window.location.hostname === "accounts.google.com";
+  }
 
   // src/Form/countryNames.js
   var COUNTRY_CODES_TO_NAMES = {
@@ -6135,9 +6138,12 @@ Source: "${matchedFrom}"`;
       }, dataType);
       this.isAutofilling = false;
       const formValues = this.getValuesReadyForStorage();
-      const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
-        (subtype) => formValues[dataType][subtype] === data[subtype]
-      );
+      const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every((subtype) => {
+        const formValue = formValues[dataType][subtype];
+        const storedValue = data[subtype];
+        if (isGoogleAccountsDomain()) return formValue.startsWith(storedValue);
+        return formValue === storedValue;
+      });
       if (areAllFormValuesKnown) {
         this.shouldPromptToStoreData = false;
         this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
@@ -6277,7 +6283,7 @@ Source: "${matchedFrom}"`;
       if (this.device.globalConfig.isMobileApp && this.device.credentialsImport.isAvailable()) {
         return false;
       }
-      return Date.now() - this.initTimeStamp <= 1500;
+      return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 2e3;
     }
     /**
      * Call this to scan once and then watch for changes.
@@ -12219,7 +12225,7 @@ Source: "${matchedFrom}"`;
       const { form, input, click, trigger } = params;
       if (document.visibilityState !== "visible" && trigger !== "postSignup") return;
       if (trigger === "autoprompt" && !this.globalConfig.isMobileApp) return;
-      if (trigger === "autoprompt" && this.autopromptFired) return;
+      if (trigger === "autoprompt" && this.autopromptFired && !isGoogleAccountsDomain()) return;
       form.activeInput = input;
       this.activeForm = form;
       const inputType = getInputType(input);

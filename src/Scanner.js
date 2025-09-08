@@ -8,6 +8,7 @@ import {
     pierceShadowTree,
     findElementsInShadowTree,
     containsShadowedTarget,
+    isGoogleAccountsDomain,
 } from './autofill-utils.js';
 
 const { ATTR_INPUT_TYPE, MAX_INPUTS_PER_PAGE, MAX_FORMS_PER_PAGE, MAX_INPUTS_PER_FORM } = constants;
@@ -104,7 +105,9 @@ class DefaultScanner {
             return false;
         }
 
-        return Date.now() - this.initTimeStamp <= 1500;
+        // The google password page is pretty slow, so we make an except here to always return true
+
+        return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 2000;
     }
 
     /**

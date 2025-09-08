@@ -17,6 +17,7 @@ import {
     queryElementsWithShadow,
     findElementsInShadowTree,
     getFormControlElements,
+    isGoogleAccountsDomain,
 } from '../autofill-utils.js';
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
@@ -959,9 +960,18 @@ class Form {
 
         // After autofill we check if form values match the data provided…
         const formValues = this.getValuesReadyForStorage();
-        const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
-            (subtype) => formValues[dataType][subtype] === data[subtype],
-        );
+        const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every((subtype) => {
+            const formValue = formValues[dataType][subtype];
+            const storedValue = data[subtype];
+            /*
+             * On google accounts, username and email can be equivalent
+             * So we need to check if the form value starts with the stored value.
+             * E.g. formValue = "myusername@gmail.com" and storedValue = "myusername"
+             */
+            if (isGoogleAccountsDomain()) return formValue.startsWith(storedValue);
+
+            return formValue === storedValue;
+        });
         if (areAllFormValuesKnown) {
             // …if we know all the values do not prompt to store data
             this.shouldPromptToStoreData = false;
