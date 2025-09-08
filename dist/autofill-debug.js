@@ -3737,6 +3737,9 @@ Source: "${matchedFrom}"`;
     "auth.readymag.com": {
       "password-rules": "minlength: 8; maxlength: 128; required: lower; required: upper; allowed: special;"
     },
+    "auth.zennioptical.com": {
+      "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; allowed: special;"
+    },
     "autify.com": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
     },
@@ -4522,6 +4525,9 @@ Source: "${matchedFrom}"`;
     },
     "pret.com": {
       "password-rules": "minlength: 12; required: lower; required: digit; required: [@$!%*#?&]; allowed: upper;"
+    },
+    "promozoneapp.nmlottery.com": {
+      "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
     },
     "propelfuels.com": {
       "password-rules": "minlength: 6; maxlength: 16;"
