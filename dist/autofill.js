@@ -6153,13 +6153,10 @@ Source: "${matchedFrom}"`;
       }, dataType);
       this.isAutofilling = false;
       const formValues = this.getValuesReadyForStorage();
-      const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every((subtype) => {
-        const formValue = formValues[dataType][subtype];
-        const storedValue = data[subtype];
-        if (isGoogleAccountsDomain()) return formValue.startsWith(storedValue);
-        return formValue === storedValue;
-      });
-      if (areAllFormValuesKnown) {
+      const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
+        (subtype) => formValues[dataType][subtype] === data[subtype]
+      );
+      if (areAllFormValuesKnown || isGoogleAccountsDomain()) {
         this.shouldPromptToStoreData = false;
         this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
       } else {
