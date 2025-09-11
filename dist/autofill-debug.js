@@ -6299,7 +6299,7 @@ Source: "${matchedFrom}"`;
       if (this.device.globalConfig.isMobileApp && this.device.credentialsImport.isAvailable()) {
         return false;
       }
-      return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 2e3;
+      return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 1500;
     }
     /**
      * Call this to scan once and then watch for changes.
