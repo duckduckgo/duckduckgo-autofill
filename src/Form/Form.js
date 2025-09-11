@@ -17,6 +17,7 @@ import {
     queryElementsWithShadow,
     findElementsInShadowTree,
     getFormControlElements,
+    isGoogleAccountsDomain,
 } from '../autofill-utils.js';
 
 import { getInputSubtype, getInputMainType, createMatching, getInputVariant, getInputType, getMainTypeFromType } from './matching.js';
@@ -962,7 +963,9 @@ class Form {
         const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
             (subtype) => formValues[dataType][subtype] === data[subtype],
         );
-        if (areAllFormValuesKnown) {
+
+        // Always autosubmit on google accounts, mainly to facilitate export/import automated flows
+        if (areAllFormValuesKnown || isGoogleAccountsDomain()) {
             // …if we know all the values do not prompt to store data
             this.shouldPromptToStoreData = false;
             // reset this to its initial value

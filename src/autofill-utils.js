@@ -699,6 +699,10 @@ function containsShadowedTarget(container, target) {
     return foundInShadow;
 }
 
+function isGoogleAccountsDomain() {
+    return window.location.hostname === 'accounts.google.com';
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -736,4 +740,5 @@ export {
     getFormControlElements,
     getUsernameLikeIdentity,
     containsShadowedTarget,
+    isGoogleAccountsDomain,
 };
