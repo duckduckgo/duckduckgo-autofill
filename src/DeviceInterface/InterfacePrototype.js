@@ -437,8 +437,8 @@ class InterfacePrototype {
         if (document.visibilityState !== 'visible' && trigger !== 'postSignup') return;
         // Only autoprompt on mobile devices
         if (trigger === 'autoprompt' && !this.globalConfig.isMobileApp) return;
-        // Only fire autoprompt once, unless if it's google accounts domain since there
-        // we need to prompt for both inputs, since SPA navigation only shows one input at a time
+        // Only fire autoprompt once, unless it's google accounts domain. There we want to autoprompt
+        // on both inputs, mainly to facilitate export/import automated flows
         if (trigger === 'autoprompt' && this.autopromptFired && !isGoogleAccountsDomain()) return;
 
         form.activeInput = input;

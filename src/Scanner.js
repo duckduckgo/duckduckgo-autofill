@@ -107,7 +107,7 @@ class DefaultScanner {
 
         // The google password page is pretty slow, so we make an except here to always return true
 
-        return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 1500;
+        return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 2000;
     }
 
     /**

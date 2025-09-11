@@ -964,7 +964,7 @@ class Form {
             (subtype) => formValues[dataType][subtype] === data[subtype],
         );
 
-        // Always autosubmit on google accounts
+        // Always autosubmit on google accounts, mainly to facilitate export/import automated flows
         if (areAllFormValuesKnown || isGoogleAccountsDomain()) {
             // …if we know all the values do not prompt to store data
             this.shouldPromptToStoreData = false;
