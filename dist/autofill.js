@@ -1191,7 +1191,8 @@ Source: "${matchedFrom}"`;
   var supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
-    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`),
+    "unknown"
   ];
   function getSubtypeFromType(type) {
     const subType = type?.split(".")[1];
