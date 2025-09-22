@@ -29,9 +29,9 @@ export default class SiteSpecificFeature extends ConfigFeature {
     getForcedInputType(input) {
         const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
 
-        if (!isValidSupportedType(setting?.type)) return null;
+        if (setting?.type != null && !isValidSupportedType(setting.type)) return null;
 
-        return setting?.type;
+        return setting?.type || null;
     }
 
     /**

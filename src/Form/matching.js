@@ -661,11 +661,12 @@ class Matching {
 }
 
 /**
+ *  @param {Element} input
  *  @returns {SupportedTypes}
  */
 function getInputType(input) {
     const attr = input?.getAttribute(ATTR_INPUT_TYPE);
-    if (isValidSupportedType(attr)) {
+    if (attr && isValidSupportedType(attr)) {
         return attr;
     }
     return 'unknown';
@@ -798,7 +799,7 @@ function isValidSubtype(supportedSubType) {
 }
 
 /**
- * @param {SupportedTypes | any} supportedType
+ * @param {SupportedTypes | string} supportedType
  * @returns {supportedType is SupportedTypes}
  */
 function isValidSupportedType(supportedType) {
