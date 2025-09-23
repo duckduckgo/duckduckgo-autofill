@@ -661,7 +661,7 @@ class Matching {
 }
 
 /**
- *  @param {Element} input
+ *  @param {HTMLInputElement|HTMLSelectElement} input
  *  @returns {SupportedTypes}
  */
 function getInputType(input) {
@@ -816,7 +816,7 @@ function isValidVariant(supportedVariant) {
 
 /**
  * Retrieves the input subtype
- * @param {HTMLInputElement|Element} input
+ * @param {HTMLInputElement|HTMLSelectElement} input
  * @returns {SupportedSubTypes | 'unknown'}
  */
 function getInputSubtype(input) {
@@ -826,7 +826,7 @@ function getInputSubtype(input) {
 
 /**
  * Retrieves the input variant
- * @param {HTMLInputElement|Element} input
+ * @param {HTMLInputElement|HTMLSelectElement} input
  * @returns {SupportedVariants | ''}
  */
 function getInputVariant(input) {
