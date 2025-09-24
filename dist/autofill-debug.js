@@ -19322,7 +19322,7 @@ ${this.options.css}
         return result;
       }
     };
-    const deviceApi = new DeviceApi(loggingTransport);
+    const deviceApi = new DeviceApi(globalConfig.isDDGTestMode ? loggingTransport : transport);
     const settings = new Settings(globalConfig, deviceApi);
     if (globalConfig.isWindows) {
       if (globalConfig.isTopFrame) {
