@@ -1822,6 +1822,9 @@ Source: "${matchedFrom}"`;
     });
     return foundInShadow;
   }
+  function isGoogleAccountsDomain() {
+    return window.location.hostname === "accounts.google.com";
+  }
 
   // src/Form/countryNames.js
   var COUNTRY_CODES_TO_NAMES = {
@@ -3747,6 +3750,9 @@ Source: "${matchedFrom}"`;
     "auth.readymag.com": {
       "password-rules": "minlength: 8; maxlength: 128; required: lower; required: upper; allowed: special;"
     },
+    "auth.zennioptical.com": {
+      "password-rules": "minlength: 8; maxlength: 14; required: lower; required: upper; required: digit; allowed: special;"
+    },
     "autify.com": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!\"#$%&'()*+,./:;<=>?@[^_`{|}~]];"
     },
@@ -3830,6 +3836,9 @@ Source: "${matchedFrom}"`;
     },
     "cardbenefitservices.com": {
       "password-rules": "minlength: 7; maxlength: 100; required: lower, upper; required: digit;"
+    },
+    "cardcash.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!$%&*?@];"
     },
     "carrefour.it": {
       "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*?@_];"
@@ -4251,8 +4260,14 @@ Source: "${matchedFrom}"`;
     "ichunqiu.com": {
       "password-rules": "minlength: 8; maxlength: 20; required: lower; required: upper; required: digit;"
     },
+    "id.nfpa.org": {
+      "password-rules": `minlength: 8; maxlength: 16; required: lower; required: upper; required: digit; required: [-"^#$%&'()*+:=@[_|{}~]];`
+    },
     "id.sonyentertainmentnetwork.com": {
       "password-rules": "minlength: 8; maxlength: 30; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
+    },
+    "id.westfield.com": {
+      "password-rules": "minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; required: [!\"#&'()*,./:;?@[\\^_`{|}~];"
     },
     "identity.codesignal.com": {
       "password-rules": "minlength: 14; required: digit; required: lower, upper; required: [!#$%&*@^]"
@@ -4416,11 +4431,17 @@ Source: "${matchedFrom}"`;
     "myaccess.dmdc.osd.mil": {
       "password-rules": "minlength: 9; maxlength: 20; required: lower; required: upper; required: digit; allowed: [-@_#!&$`%*+()./,;~:{}|?>=<^'[]];"
     },
+    "mybam.bcbsnm.com": {
+      "password-rules": "minlength: 8; maxlength: 64; max-consecutive: 2; required: lower; required: upper; required: digit; allowed: [!#$%&()*@[^{}~];"
+    },
     "mygoodtogo.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: lower, upper, digit;"
     },
     "myhealthrecord.com": {
       "password-rules": "minlength: 8; maxlength: 20; allowed: lower, upper, digit, [_.!$*=];"
+    },
+    "mypatientvisit.com": {
+      "password-rules": "minlength: 8; required: lower; required: upper; required: digit; required: [!#$%&*+.;?@^_~];"
     },
     "mypay.dfas.mil": {
       "password-rules": "minlength: 9; maxlength: 30; required: lower; required: upper; required: digit; required: [#@$%^!*+=_];"
@@ -4517,6 +4538,9 @@ Source: "${matchedFrom}"`;
     },
     "pret.com": {
       "password-rules": "minlength: 12; required: lower; required: digit; required: [@$!%*#?&]; allowed: upper;"
+    },
+    "promozoneapp.nmlottery.com": {
+      "password-rules": "minlength: 6; maxlength: 16; required: lower; required: upper; required: digit; allowed: special;"
     },
     "propelfuels.com": {
       "password-rules": "minlength: 6; maxlength: 16;"
@@ -6156,7 +6180,7 @@ Source: "${matchedFrom}"`;
       const areAllFormValuesKnown = Object.keys(formValues[dataType] || {}).every(
         (subtype) => formValues[dataType][subtype] === data[subtype]
       );
-      if (areAllFormValuesKnown) {
+      if (areAllFormValuesKnown || isGoogleAccountsDomain()) {
         this.shouldPromptToStoreData = false;
         this.shouldAutoSubmit = this.device.globalConfig.isMobileApp;
       } else {
@@ -6295,7 +6319,7 @@ Source: "${matchedFrom}"`;
       if (this.device.globalConfig.isMobileApp && this.device.credentialsImport.isAvailable()) {
         return false;
       }
-      return Date.now() - this.initTimeStamp <= 1500;
+      return isGoogleAccountsDomain() || Date.now() - this.initTimeStamp <= 1500;
     }
     /**
      * Call this to scan once and then watch for changes.
@@ -16715,7 +16739,7 @@ Source: "${matchedFrom}"`;
       const { form, input, click, trigger } = params;
       if (document.visibilityState !== "visible" && trigger !== "postSignup") return;
       if (trigger === "autoprompt" && !this.globalConfig.isMobileApp) return;
-      if (trigger === "autoprompt" && this.autopromptFired) return;
+      if (trigger === "autoprompt" && this.autopromptFired && !isGoogleAccountsDomain()) return;
       form.activeInput = input;
       this.activeForm = form;
       const inputType = getInputType(input);
