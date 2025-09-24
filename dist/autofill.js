@@ -13505,7 +13505,6 @@ ${this.options.css}
         return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
       }
       const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
-      console.log("DEEP DEBUG", data);
       const hasTotp = this._options.device.getLocalCredentials().some((cred) => cred.totp);
       if (hasTotp && topContextData.inputType === "credentials.totp") {
         return new TOTPHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, config, {
