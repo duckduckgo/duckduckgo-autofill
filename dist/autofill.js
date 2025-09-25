@@ -1124,7 +1124,7 @@ Source: "${matchedFrom}"`;
   });
   function getInputType(input) {
     const attr = input?.getAttribute(ATTR_INPUT_TYPE);
-    if (isValidSupportedType(attr)) {
+    if (attr && isValidSupportedType(attr)) {
       return attr;
     }
     return "unknown";
@@ -1191,7 +1191,8 @@ Source: "${matchedFrom}"`;
   var supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
-    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`),
+    "unknown"
   ];
   function getSubtypeFromType(type) {
     const subType = type?.split(".")[1];
@@ -8205,8 +8206,8 @@ Source: "${matchedFrom}"`;
      */
     getForcedInputType(input) {
       const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
-      if (!isValidSupportedType(setting?.type)) return null;
-      return setting?.type;
+      if (setting?.type != null && !isValidSupportedType(setting.type)) return null;
+      return setting?.type || null;
     }
     /**
      * @returns {FormTypeSetting[]}
@@ -14280,6 +14281,7 @@ ${this.options.css}
     }
     getCurrentInputType() {
       const topContextData = this.getTopContextData();
+      if (!this.activeForm?.activeInput) return "unknown";
       return topContextData?.inputType ? topContextData.inputType : getInputType(this.activeForm?.activeInput);
     }
     /**
