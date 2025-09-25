@@ -14,6 +14,7 @@ import {
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
+import { formatFullName } from '../Form/formatters.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -181,7 +182,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
     /**
      * Gets a single identity obj once the user requests it
      * @param {IdentityObject['id']} id
-     * @returns {Promise<{success: IdentityObject|undefined}>}
+     * @returns {Promise<{success: InternalIdentityObject|undefined}>}
      */
     async getAutofillIdentity(id) {
         const PRIVATE_ADDRESS_ID = 'privateAddress';
@@ -192,7 +193,7 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
             return { success: identity };
         }
         const result = await this.deviceApi.request(new GetIdentityCall({ id }));
-        return { success: result };
+        return { success: { ...result, fullName: formatFullName(result) } };
     }
 
     /**

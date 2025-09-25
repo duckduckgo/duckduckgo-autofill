@@ -19214,7 +19214,7 @@ ${this.options.css}
     /**
      * Gets a single identity obj once the user requests it
      * @param {IdentityObject['id']} id
-     * @returns {Promise<{success: IdentityObject|undefined}>}
+     * @returns {Promise<{success: InternalIdentityObject|undefined}>}
      */
     async getAutofillIdentity(id) {
       const PRIVATE_ADDRESS_ID = "privateAddress";
@@ -19224,7 +19224,7 @@ ${this.options.css}
         return { success: identity };
       }
       const result = await this.deviceApi.request(new GetIdentityCall({ id }));
-      return { success: result };
+      return { success: { ...result, fullName: formatFullName(result) } };
     }
     /**
      * Gets a single complete credit card obj once the user requests it
