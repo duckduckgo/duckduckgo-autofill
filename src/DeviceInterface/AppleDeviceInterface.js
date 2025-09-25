@@ -258,6 +258,9 @@ class AppleDeviceInterface extends InterfacePrototype {
 
     getCurrentInputType() {
         const topContextData = this.getTopContextData();
+
+        if (!this.activeForm?.activeInput) return 'unknown';
+
         return topContextData?.inputType ? topContextData.inputType : getInputType(this.activeForm?.activeInput);
     }
 
