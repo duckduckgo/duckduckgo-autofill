@@ -10,11 +10,9 @@ import {
     OpenManageIdentitiesCall,
     CloseAutofillParentCall,
     GetCreditCardCall,
-    GetIdentityCall,
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
-import { formatFullName } from '../Form/formatters.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -177,23 +175,6 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
 
         this.storeLocalAddresses(addresses);
         return addresses;
-    }
-
-    /**
-     * Gets a single identity obj once the user requests it
-     * @param {IdentityObject['id']} id
-     * @returns {Promise<{success: InternalIdentityObject|undefined}>}
-     */
-    async getAutofillIdentity(id) {
-        const PRIVATE_ADDRESS_ID = 'privateAddress';
-        const PERSONAL_ADDRESS_ID = 'personalAddress';
-
-        if (id === PRIVATE_ADDRESS_ID || id === PERSONAL_ADDRESS_ID) {
-            const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
-            return { success: identity };
-        }
-        const result = await this.deviceApi.request(new GetIdentityCall({ id }));
-        return { success: { ...result, fullName: formatFullName(result) } };
     }
 
     /**
