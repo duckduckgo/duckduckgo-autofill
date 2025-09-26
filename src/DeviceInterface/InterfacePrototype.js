@@ -731,9 +731,14 @@ class InterfacePrototype {
     async getAutofillCreditCard(_id) {
         throw new Error('getAutofillCreditCard unimplemented');
     }
-    /** @returns {Promise<{success: IdentityObject|undefined}>} */
-    async getAutofillIdentity(_id) {
-        throw new Error('getAutofillIdentity unimplemented');
+
+    /**
+     * @param {IdentityObject['id']} id
+     * @returns {Promise<{success: InternalIdentityObject|undefined}>}
+     */
+    async getAutofillIdentity(id) {
+        const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
+        return { success: identity };
     }
 
     openManagePasswords() {}
