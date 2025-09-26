@@ -18,7 +18,6 @@ import {
     sendJSPixelParamsSchema,
     setIncontextSignupPermanentlyDismissedAtSchema,
     getIncontextSignupDismissedAtSchema,
-    getIdentityResultSchema,
     getCreditCardResultSchema,
     emailProtectionStoreUserDataParamsSchema,
     emailProtectionGetIsLoggedInResultSchema,
@@ -176,14 +175,6 @@ export class OpenManageIdentitiesCall extends DeviceApiCall {
  */
 export class StartCredentialsImportFlowCall extends DeviceApiCall {
   method = "startCredentialsImportFlow"
-}
-/**
- * @extends {DeviceApiCall<any, getIdentityResultSchema>} 
- */
-export class GetIdentityCall extends DeviceApiCall {
-  method = "getIdentity"
-  id = "getIdentityResponse"
-  resultValidator = getIdentityResultSchema
 }
 /**
  * @extends {DeviceApiCall<any, getCreditCardResultSchema>} 

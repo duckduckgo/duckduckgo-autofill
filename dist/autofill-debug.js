@@ -10764,9 +10764,6 @@ Source: "${matchedFrom}"`;
       alias: external_exports.string().optional()
     })
   });
-  var getIdentityParamSchema = external_exports.object({
-    id: external_exports.string()
-  });
   var getCreditCardParamSchema = external_exports.object({
     id: external_exports.string()
   });
@@ -10967,9 +10964,6 @@ Source: "${matchedFrom}"`;
     password_variant_categorization: external_exports.boolean().optional(),
     partial_form_saves: external_exports.boolean().optional()
   });
-  var getIdentityResultSchema = external_exports.object({
-    success: identityObjectSchema
-  });
   var getCreditCardResultSchema = external_exports.object({
     success: creditCardObjectSchema
   });
@@ -11126,11 +11120,6 @@ Source: "${matchedFrom}"`;
     openManageCreditCards: external_exports.record(external_exports.unknown()).optional(),
     openManageIdentities: external_exports.record(external_exports.unknown()).optional(),
     startCredentialsImportFlow: external_exports.record(external_exports.unknown()).optional(),
-    getIdentity: external_exports.record(external_exports.unknown()).and(external_exports.object({
-      id: external_exports.literal("getIdentityResponse").optional(),
-      paramValidator: getIdentityParamSchema.optional(),
-      resultValidator: getIdentityResultSchema.optional()
-    })).optional(),
     getCreditCard: external_exports.record(external_exports.unknown()).and(external_exports.object({
       id: external_exports.literal("getCreditCardResponse").optional(),
       paramValidator: getCreditCardParamSchema.optional(),
