@@ -71,10 +71,6 @@ export const getAliasResultSchema = z.object({
     })
 });
 
-export const getIdentityParamSchema = z.object({
-    id: z.string()
-});
-
 export const getCreditCardParamSchema = z.object({
     id: z.string()
 });
@@ -294,10 +290,6 @@ export const autofillFeatureTogglesSchema = z.object({
     partial_form_saves: z.boolean().optional()
 });
 
-export const getIdentityResultSchema = z.object({
-    success: identityObjectSchema
-});
-
 export const getCreditCardResultSchema = z.object({
     success: creditCardObjectSchema
 });
@@ -468,11 +460,6 @@ export const apiSchema = z.object({
     openManageCreditCards: z.record(z.unknown()).optional(),
     openManageIdentities: z.record(z.unknown()).optional(),
     startCredentialsImportFlow: z.record(z.unknown()).optional(),
-    getIdentity: z.record(z.unknown()).and(z.object({
-        id: z.literal("getIdentityResponse").optional(),
-        paramValidator: getIdentityParamSchema.optional(),
-        resultValidator: getIdentityResultSchema.optional()
-    })).optional(),
     getCreditCard: z.record(z.unknown()).and(z.object({
         id: z.literal("getCreditCardResponse").optional(),
         paramValidator: getCreditCardParamSchema.optional(),
