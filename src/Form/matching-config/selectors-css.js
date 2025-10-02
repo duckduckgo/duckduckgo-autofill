@@ -2,6 +2,13 @@
 const genericTextInputField = `
 input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([role=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])`;
 
+const totp = `
+input[name*=otp i],
+input[name*=otpCode i]
+input[aria-describedby=otpCode],
+input[autocomplete="one-time-code"],
+`;
+
 const formInputsSelectorWithoutSelect = [genericTextInputField, '[autocomplete=username]'];
 
 const formInputsSelector = [...formInputsSelectorWithoutSelect, 'select'];
@@ -302,6 +309,7 @@ const selectors = {
     emailAddress,
     username,
     password,
+    totp,
 
     // Credit Card
     cardName,

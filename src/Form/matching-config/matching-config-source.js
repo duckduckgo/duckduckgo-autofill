@@ -8,16 +8,17 @@ const matchingConfiguration = {
     /** @type {MatcherConfiguration} */
     matchers: {
         fields: {
-            totp: {
-                type: 'totp',
-                strategies: {
-                    ddgMatcher: 'totp',
-                },
-            },
             unknown: {
                 type: 'unknown',
                 strategies: {
                     ddgMatcher: 'unknown',
+                },
+            },
+            totp: {
+                type: 'totp',
+                strategies: {
+                    cssSelector: 'totp',
+                    ddgMatcher: 'totp',
                 },
             },
             emailAddress: {
@@ -230,10 +231,6 @@ const matchingConfiguration = {
         /** @type {DDGMatcherConfigurationInternal} */
         ddgMatcher: {
             matchers: {
-                totp: {
-                    match: 'mfa|2fa|(two|2).?factor|one-time|otp|totp',
-                    skip: 'phone|mobile|email|password',
-                },
                 unknown: {
                     match:
                         'search|find|filter|subject|title|captcha|social security number|ssn' +
@@ -249,6 +246,10 @@ const matchingConfiguration = {
                         '|busca|busqueda|filtra|dos pasos|un solo uso' +
                         // Swedish
                         '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
+                    skip: 'phone|mobile|email|password',
+                },
+                totp: {
+                    match: 'mfa|2fa|(two|2).?factor|one-time|otp|totp',
                     skip: 'phone|mobile|email|password',
                 },
                 emailAddress: {

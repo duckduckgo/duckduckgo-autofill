@@ -104,12 +104,11 @@ const inputTypeConfig = {
             const subtype = getInputSubtype(input);
             const variant = getInputVariant(input);
 
-            const isLoginOrHybrid = form?.isLogin || form?.isHybrid;
 
-            if (subtype === 'totp' && device.settings.availableInputTypes.credentials?.totp && isLoginOrHybrid)
+            if (subtype === 'totp' && device.settings.availableInputTypes.credentials?.totp)
                 return ddgPasswordIcons.ddgTOTPIcon;
 
-            if (device.credentialsImport?.isAvailable() && isLoginOrHybrid) return '';
+            if (device.credentialsImport?.isAvailable()) return '';
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 if (subtype === 'password' && variant === 'new') {

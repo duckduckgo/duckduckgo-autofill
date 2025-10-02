@@ -146,8 +146,11 @@
   var matchingConfiguration = {
     matchers: {
       fields: {
-        totp: { type: "totp", strategies: { ddgMatcher: "totp" } },
         unknown: { type: "unknown", strategies: { ddgMatcher: "unknown" } },
+        totp: {
+          type: "totp",
+          strategies: { cssSelector: "totp", ddgMatcher: "totp" }
+        },
         emailAddress: {
           type: "emailAddress",
           strategies: {
@@ -355,6 +358,7 @@
           emailAddress: 'input:not([type])[name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=""][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([type=tel]), input[type=text][name*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=title i]):not([name*=tab i]):not([name*=code i]), input:not([type])[placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]):not([name*=code i]), input[type=text][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=""][placeholder*=email i]:not([placeholder*=search i]):not([placeholder*=filter i]):not([placeholder*=subject i]), input[type=email], input[type=text][aria-label*=email i]:not([aria-label*=search i]), input:not([type])[aria-label*=email i]:not([aria-label*=search i]), input[name=username][type=email], input[autocomplete=username][type=email], input[autocomplete=username][placeholder*=email i], input[autocomplete=email],input[name="mail_tel" i],input[value=email i]',
           username: 'input:not([type=button]):not([type=checkbox]):not([type=color]):not([type=file]):not([type=hidden]):not([type=radio]):not([type=range]):not([type=reset]):not([type=image]):not([type=search]):not([role=search]):not([type=submit]):not([type=time]):not([type=url]):not([type=week]):not([name^=fake i]):not([data-description^=dummy i]):not([autocomplete="fake"]):not([placeholder^=search i]):not([type=date]):not([type=datetime-local]):not([type=datetime]):not([type=month])[autocomplete^=user i],input[name=username i],input[name="loginId" i],input[name="userid" i],input[id="userid" i],input[name="user_id" i],input[name="user-id" i],input[id="login-id" i],input[id="login_id" i],input[id="loginid" i],input[name="login" i],input[name=accountname i],input[autocomplete=username i],input[name*=accountid i],input[name="j_username" i],input[id="j_username" i],input[name="uwinid" i],input[name="livedoor_id" i],input[name="ssousername" i],input[name="j_userlogin_pwd" i],input[name="user[login]" i],input[name="user" i],input[name$="_username" i],input[id="lmSsoinput" i],input[name="account_subdomain" i],input[name="masterid" i],input[name="tridField" i],input[id="signInName" i],input[id="w3c_accountsbundle_accountrequeststep1_login" i],input[id="username" i],input[name="_user" i],input[name="login_username" i],input[name^="login-user-account" i],input[id="loginusuario" i],input[name="usuario" i],input[id="UserLoginFormUsername" i],input[id="nw_username" i],input[can-field="accountName"],input[name="login[username]"],input[placeholder^="username" i]',
           password: "input[type=password]:not([autocomplete*=cc]):not([autocomplete=one-time-code]):not([name*=answer i]):not([name*=mfa i]):not([name*=tin i]):not([name*=card i]):not([name*=cvv i]),input.js-cloudsave-phrase",
+          totp: 'input[name*=otp i], input[name*=otpCode i] input[aria-describedby=otpCode], input[autocomplete="one-time-code"],',
           cardName: 'input[autocomplete="cc-name" i], input[autocomplete="ccname" i], input[name="ccname" i], input[name="cc-name" i], input[name="ppw-accountHolderName" i], input[name="payment[name]"], input[id="cc-name" i], input[id="ccname" i], input[id*=cardname i], input[id*=card-name i], input[id*=card_name i]',
           cardNumber: 'input[autocomplete="cc-number" i], input[autocomplete="ccnumber" i], input[autocomplete="cardnumber" i], input[autocomplete="card-number" i], input[name="ccnumber" i], input[name="cc-number" i], input[name*=card i][name*=number i]:not([name*=verif i]):not([name*=phone i]):not([name*=secur i]), input[name*=cardnumber i], input[name="payment[card_no]"], input[id="cc-number" i], input[id="ccnumber" i], input[id*=cardnumber i], input[id*=card-number i], input[id*=card_number i]',
           cardSecurityCode: 'input[autocomplete="cc-csc" i], input[autocomplete="csc" i], input[autocomplete="cc-cvc" i], input[autocomplete="cvc" i], input[name*="cvc" i], input[name*="cvv" i], input[name="cc-cvc" i], input[name="cc-csc" i], input[name="csc" i], input[name*=security i][name*=code i], input[id="cc-csc" i], input[id="csc" i], input[id="cc-cvc" i], input[id="cvc" i]',
@@ -379,12 +383,12 @@
       },
       ddgMatcher: {
         matchers: {
-          totp: {
-            match: /mfa|2fa|(two|2).?factor|one-time|otp|totp/iu,
-            skip: /phone|mobile|email|password/iu
-          },
           unknown: {
             match: /search|find|filter|subject|title|captcha|social security number|ssn|cerca|filtr|oggetto|titolo|(due|2|più).?fattori|suche|filtern|betreff|zoeken|filter|onderwerp|titel|chercher|filtrer|objet|titre|authentification multifacteur|double authentification|à usage unique|busca|busqueda|filtra|dos pasos|un solo uso|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs/iu,
+            skip: /phone|mobile|email|password/iu
+          },
+          totp: {
+            match: /mfa|2fa|(two|2).?factor|one-time|otp|totp/iu,
             skip: /phone|mobile|email|password/iu
           },
           emailAddress: {
@@ -5325,10 +5329,9 @@ Source: "${matchedFrom}"`;
         if (!canBeInteractedWith(input)) return "";
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
-        const isLoginOrHybrid = form?.isLogin || form?.isHybrid;
-        if (subtype === "totp" && device.settings.availableInputTypes.credentials?.totp && isLoginOrHybrid)
+        if (subtype === "totp" && device.settings.availableInputTypes.credentials?.totp)
           return ddgTOTPIcon;
-        if (device.credentialsImport?.isAvailable() && isLoginOrHybrid) return "";
+        if (device.credentialsImport?.isAvailable()) return "";
         if (device.settings.featureToggles.inlineIcon_credentials) {
           if (subtype === "password" && variant === "new") {
             return ddgPasswordGenIconBase;
@@ -6096,7 +6099,8 @@ Source: "${matchedFrom}"`;
           return false;
         } else {
           const isInputEmpty = input.value === "";
-          return this.isCredentialsImportAvailable && isInputEmpty;
+          const isTotp = subtype === "totp";
+          return this.isCredentialsImportAvailable && isInputEmpty && !isTotp;
         }
       }
       if (this.device.globalConfig.isExtension || this.device.globalConfig.isMobileApp) {
