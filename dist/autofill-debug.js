@@ -316,8 +316,8 @@
         }
       },
       lists: {
-        totp: ["totp"],
         unknown: ["unknown"],
+        totp: ["totp"],
         emailAddress: ["emailAddress"],
         password: ["password"],
         username: ["username"],
