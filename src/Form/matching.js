@@ -661,11 +661,12 @@ class Matching {
 }
 
 /**
+ *  @param {HTMLInputElement|HTMLSelectElement} input
  *  @returns {SupportedTypes}
  */
 function getInputType(input) {
     const attr = input?.getAttribute(ATTR_INPUT_TYPE);
-    if (isValidSupportedType(attr)) {
+    if (attr && isValidSupportedType(attr)) {
         return attr;
     }
     return 'unknown';
@@ -760,6 +761,7 @@ const supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
     ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`),
+    'unknown',
 ];
 
 /**
@@ -797,7 +799,7 @@ function isValidSubtype(supportedSubType) {
 }
 
 /**
- * @param {SupportedTypes | any} supportedType
+ * @param {SupportedTypes | string} supportedType
  * @returns {supportedType is SupportedTypes}
  */
 function isValidSupportedType(supportedType) {
@@ -814,7 +816,7 @@ function isValidVariant(supportedVariant) {
 
 /**
  * Retrieves the input subtype
- * @param {HTMLInputElement|Element} input
+ * @param {HTMLInputElement|HTMLSelectElement} input
  * @returns {SupportedSubTypes | 'unknown'}
  */
 function getInputSubtype(input) {
@@ -824,7 +826,7 @@ function getInputSubtype(input) {
 
 /**
  * Retrieves the input variant
- * @param {HTMLInputElement|Element} input
+ * @param {HTMLInputElement|HTMLSelectElement} input
  * @returns {SupportedVariants | ''}
  */
 function getInputVariant(input) {
