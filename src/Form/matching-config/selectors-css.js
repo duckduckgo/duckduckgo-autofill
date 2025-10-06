@@ -6,7 +6,7 @@ const totp = `
 input[name*=otp i],
 input[name*=otpCode i]
 input[aria-describedby=otpCode],
-input[autocomplete="one-time-code"],
+input[autocomplete="one-time-code"]
 `;
 
 const formInputsSelectorWithoutSelect = [genericTextInputField, '[autocomplete=username]'];
