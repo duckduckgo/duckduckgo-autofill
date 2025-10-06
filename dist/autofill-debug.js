@@ -5329,8 +5329,7 @@ Source: "${matchedFrom}"`;
         if (!canBeInteractedWith(input)) return "";
         const subtype = getInputSubtype(input);
         const variant = getInputVariant(input);
-        if (subtype === "totp" && device.settings.availableInputTypes.credentials?.totp)
-          return ddgTOTPIcon;
+        if (subtype === "totp" && device.settings.availableInputTypes.credentials?.totp) return ddgTOTPIcon;
         if (device.credentialsImport?.isAvailable()) return "";
         if (device.settings.featureToggles.inlineIcon_credentials) {
           if (subtype === "password" && variant === "new") {

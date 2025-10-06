@@ -134,7 +134,6 @@ export class HTMLTooltipUIController extends UIController {
         // collect the data for each item to display
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
 
-
         const hasTotp = this._options.device.getLocalCredentials().some((cred) => cred.totp);
         if (hasTotp && topContextData.inputType === 'credentials.totp') {
             return new TOTPHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, config, {

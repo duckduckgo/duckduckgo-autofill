@@ -104,9 +104,7 @@ const inputTypeConfig = {
             const subtype = getInputSubtype(input);
             const variant = getInputVariant(input);
 
-
-            if (subtype === 'totp' && device.settings.availableInputTypes.credentials?.totp)
-                return ddgPasswordIcons.ddgTOTPIcon;
+            if (subtype === 'totp' && device.settings.availableInputTypes.credentials?.totp) return ddgPasswordIcons.ddgTOTPIcon;
 
             if (device.credentialsImport?.isAvailable()) return '';
 
