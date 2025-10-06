@@ -1138,7 +1138,7 @@ Source: "${matchedFrom}"`;
   });
   function getInputType(input) {
     const attr = input?.getAttribute(ATTR_INPUT_TYPE);
-    if (isValidSupportedType(attr)) {
+    if (attr && isValidSupportedType(attr)) {
       return attr;
     }
     return "unknown";
@@ -1205,7 +1205,8 @@ Source: "${matchedFrom}"`;
   var supportedTypes = [
     ...supportedIdentitiesSubtypes.map((type) => `identities.${type}`),
     ...supportedCreditCardSubtypes.map((type) => `creditCards.${type}`),
-    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`)
+    ...supportedCredentialsSubtypes.map((type) => `credentials.${type}`),
+    "unknown"
   ];
   function getSubtypeFromType(type) {
     const subType = type?.split(".")[1];
@@ -4629,6 +4630,9 @@ Source: "${matchedFrom}"`;
     "signin.ea.com": {
       "password-rules": "minlength: 8; maxlength: 64; required: lower, upper; required: digit; allowed: [-!@#^&*=+;:];"
     },
+    "sjwaterhub.com": {
+      "password-rules": "minlength: 8; maxlength: 30; required: digit, lower, upper; allowed: [!#%&*.];"
+    },
     "southwest.com": {
       "password-rules": "minlength: 8; maxlength: 16; required: upper; required: digit; allowed: lower, [!@#$%^*(),.;:/\\];"
     },
@@ -6690,7 +6694,6 @@ Source: "${matchedFrom}"`;
   var getAutofillInitDataResponseSchema = null;
   var getAutofillCredentialsResultSchema = null;
   var checkCredentialsProviderStatusResultSchema = null;
-  var getIdentityResultSchema = null;
   var getCreditCardResultSchema = null;
   var emailProtectionGetIsLoggedInResultSchema = null;
   var emailProtectionGetUserDataResultSchema = null;
@@ -7085,14 +7088,6 @@ Source: "${matchedFrom}"`;
     constructor() {
       super(...arguments);
       __publicField(this, "method", "startCredentialsImportFlow");
-    }
-  };
-  var GetIdentityCall = class extends DeviceApiCall {
-    constructor() {
-      super(...arguments);
-      __publicField(this, "method", "getIdentity");
-      __publicField(this, "id", "getIdentityResponse");
-      __publicField(this, "resultValidator", getIdentityResultSchema);
     }
   };
   var GetCreditCardCall = class extends DeviceApiCall {
@@ -8222,8 +8217,8 @@ Source: "${matchedFrom}"`;
      */
     getForcedInputType(input) {
       const setting = this.inputTypeSettings.find((config) => input.matches(config.selector));
-      if (!isValidSupportedType(setting?.type)) return null;
-      return setting?.type;
+      if (setting?.type != null && !isValidSupportedType(setting.type)) return null;
+      return setting?.type || null;
     }
     /**
      * @returns {FormTypeSetting[]}
@@ -12499,9 +12494,13 @@ Source: "${matchedFrom}"`;
     async getAutofillCreditCard(_id) {
       throw new Error("getAutofillCreditCard unimplemented");
     }
-    /** @returns {Promise<{success: IdentityObject|undefined}>} */
-    async getAutofillIdentity(_id) {
-      throw new Error("getAutofillIdentity unimplemented");
+    /**
+     * @param {IdentityObject['id']} id
+     * @returns {Promise<{success: InternalIdentityObject|undefined}>}
+     */
+    async getAutofillIdentity(id) {
+      const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
+      return { success: identity };
     }
     openManagePasswords() {
     }
@@ -14334,15 +14333,6 @@ ${this.options.css}
       return this.deviceApi.notify(createNotification("pmHandlerOpenManageCreditCards"));
     }
     /**
-     * Gets a single identity obj once the user requests it
-     * @param {IdentityObject['id']} id
-     * @returns {Promise<{success: IdentityObject|undefined}>}
-     */
-    getAutofillIdentity(id) {
-      const identity = this.getLocalIdentities().find(({ id: identityId }) => `${identityId}` === `${id}`);
-      return Promise.resolve({ success: identity });
-    }
-    /**
      * Gets a single complete credit card obj once the user requests it
      * @param {CreditCardObject['id']} id
      * @returns {APIResponseSingle<CreditCardObject>}
@@ -14352,6 +14342,7 @@ ${this.options.css}
     }
     getCurrentInputType() {
       const topContextData = this.getTopContextData();
+      if (!this.activeForm?.activeInput) return "unknown";
       return topContextData?.inputType ? topContextData.inputType : getInputType(this.activeForm?.activeInput);
     }
     /**
@@ -14808,21 +14799,6 @@ ${this.options.css}
       const addresses = await this.deviceApi.request(new EmailProtectionGetAddressesCall({}));
       this.storeLocalAddresses(addresses);
       return addresses;
-    }
-    /**
-     * Gets a single identity obj once the user requests it
-     * @param {IdentityObject['id']} id
-     * @returns {Promise<{success: IdentityObject|undefined}>}
-     */
-    async getAutofillIdentity(id) {
-      const PRIVATE_ADDRESS_ID = "privateAddress";
-      const PERSONAL_ADDRESS_ID = "personalAddress";
-      if (id === PRIVATE_ADDRESS_ID || id === PERSONAL_ADDRESS_ID) {
-        const identity = this.getLocalIdentities().find(({ id: identityId }) => identityId === id);
-        return { success: identity };
-      }
-      const result = await this.deviceApi.request(new GetIdentityCall({ id }));
-      return { success: result };
     }
     /**
      * Gets a single complete credit card obj once the user requests it

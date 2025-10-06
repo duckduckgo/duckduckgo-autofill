@@ -175,15 +175,6 @@ export interface API {
     [k: string]: unknown;
   };
   /**
-   * (Windows) Get a single identity
-   */
-  getIdentity?: {
-    id?: "getIdentityResponse";
-    paramValidator?: GetIdentityParam;
-    resultValidator?: GetIdentityResult;
-    [k: string]: unknown;
-  };
-  /**
    * (Windows) Get a single credit card
    */
   getCreditCard?: {
@@ -803,12 +794,6 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
-}
-export interface GetIdentityParam {
-  id: string;
-}
-export interface GetIdentityResult {
-  success: IdentityObject;
 }
 export interface GetCreditCardParam {
   id: string;
