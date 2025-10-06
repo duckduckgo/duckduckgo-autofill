@@ -15,56 +15,6 @@ const { personalAddress } = constants.fields.email;
 const password = '123456';
 
 test.describe('When Bitwarden is the password provider', () => {
-    test('When the native layer calls to unblock provider UI (on Catalina)', async ({ page }) => {
-        // enable in-terminal exceptions
-        await forwardConsoleMessages(page);
-
-        await createWebkitMocks()
-            .withFeatureToggles({
-                third_party_credentials_provider: true,
-            })
-            .withAvailableInputTypes(
-                createAvailableInputTypes({
-                    credentialsProviderStatus: 'locked',
-                }),
-            )
-            .withCredentials({
-                id: 'provider_locked',
-                username: '',
-                password: '',
-                credentialsProvider: 'bitwarden',
-            })
-            .withCheckCredentialsProviderStatus?.()
-            .applyTo(page);
-
-        // Load the autofill.js script with replacements
-        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page);
-
-        const login = loginPage(page);
-        await login.navigate();
-        await login.fieldsContainIcons();
-
-        await login.assertTooltipNotOpen(personalAddress);
-
-        // The call is executed every 2s and we have encoded responses in mocks.webkit.js
-        await page.waitForTimeout(2000);
-
-        // unlocked with no credentials available
-        await login.fieldsDoNotContainIcons();
-        await page.waitForTimeout(2000);
-
-        // unlocked with credentials available
-        await login.fieldsContainIcons();
-        await page.waitForTimeout(2000);
-
-        // unlocked with only a password field
-        await login.onlyPasswordFieldHasIcon();
-        await page.waitForTimeout(2000);
-
-        // back to being locked
-        await login.fieldsContainIcons();
-    });
-
     test('When we have Bitwarden credentials', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page);
@@ -154,9 +104,9 @@ test.describe('When Bitwarden is the password provider', () => {
                 .applyTo(page);
 
             // Load the autofill.js script with replacements
+            // prettier-ignore
             await createAutofillScript()
                 .replaceAll(macosContentScopeReplacements())
-                .replace('hasModernWebkitAPI', true)
                 .platform('macos')
                 .applyTo(page);
 

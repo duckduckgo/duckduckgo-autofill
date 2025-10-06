@@ -48,15 +48,11 @@
     let isApp = false;
     let isTopFrame = false;
     let supportsTopFrame = false;
-    let hasModernWebkitAPI = false;
     // INJECT isApp HERE
     // INJECT isTopFrame HERE
     // INJECT supportsTopFrame HERE
-    // INJECT hasModernWebkitAPI HERE
     let isWindows = false;
     // INJECT isWindows HERE
-    let webkitMessageHandlerNames = [];
-    // INJECT webkitMessageHandlerNames HERE
     let isDDGTestMode = false;
     // INJECT isDDGTestMode HERE
     let contentScope = null;
@@ -67,7 +63,6 @@
     // INJECT userPreferences HERE
     let availableInputTypes = null;
     // INJECT availableInputTypes HERE
-    let secret = "PLACEHOLDER_SECRET";
     const isAndroid = userPreferences?.platform.name === "android";
     const isIOS = userPreferences?.platform.name === "ios";
     const isDDGApp = ["ios", "android", "macos", "windows"].includes(userPreferences?.platform.name) || isWindows;
@@ -85,16 +80,13 @@
       isExtension,
       isTopFrame,
       isWindows,
-      secret,
       supportsTopFrame,
-      hasModernWebkitAPI,
       contentScope,
       userUnprotectedDomains,
       userPreferences,
       isDDGTestMode,
       isDDGDomain,
       availableInputTypes,
-      webkitMessageHandlerNames,
       ...overrides
     };
     return config;
@@ -7322,16 +7314,10 @@ Source: "${matchedFrom}"`;
     constructor(config) {
       /** @type {WebkitMessagingConfig} */
       __publicField(this, "config");
+      /** @type {{window: Window}} */
       __publicField(this, "globals");
-      /**
-       * @type {{name: string, length: number}}
-       */
-      __publicField(this, "algoObj", { name: "AES-GCM", length: 256 });
       this.config = config;
       this.globals = captureGlobals();
-      if (!this.config.hasModernWebkitAPI) {
-        this.captureWebkitHandlers(this.config.webkitMessageHandlerNames);
-      }
     }
     /**
      * Sends message to the webkit layer (fire and forget)
@@ -7343,57 +7329,7 @@ Source: "${matchedFrom}"`;
       if (!(handler in this.globals.window.webkit.messageHandlers)) {
         throw new MissingHandler(`Missing webkit handler: '${handler}'`, handler);
       }
-      const outgoing = {
-        ...data,
-        messageHandling: { ...data.messageHandling, secret: this.config.secret }
-      };
-      if (!this.config.hasModernWebkitAPI) {
-        if (!(handler in this.globals.capturedWebkitHandlers)) {
-          throw new MissingHandler(`cannot continue, method ${handler} not captured on macos < 11`, handler);
-        } else {
-          return this.globals.capturedWebkitHandlers[handler](outgoing);
-        }
-      }
-      return this.globals.window.webkit.messageHandlers[handler].postMessage?.(outgoing);
-    }
-    /**
-     * Sends message to the webkit layer and waits for the specified response
-     * @param {String} handler
-     * @param {*} data
-     * @returns {Promise<*>}
-     * @internal
-     */
-    async wkSendAndWait(handler, data = {}) {
-      if (this.config.hasModernWebkitAPI) {
-        const response = await this.wkSend(handler, data);
-        return this.globals.JSONparse(response || "{}");
-      }
-      try {
-        const randMethodName = this.createRandMethodName();
-        const key2 = await this.createRandKey();
-        const iv = this.createRandIv();
-        const { ciphertext, tag } = await new this.globals.Promise((resolve) => {
-          this.generateRandomMethod(randMethodName, resolve);
-          data.messageHandling = new SecureMessagingParams({
-            methodName: randMethodName,
-            secret: this.config.secret,
-            key: this.globals.Arrayfrom(key2),
-            iv: this.globals.Arrayfrom(iv)
-          });
-          this.wkSend(handler, data);
-        });
-        const cipher = new this.globals.Uint8Array([...ciphertext, ...tag]);
-        const decrypted = await this.decrypt(cipher, key2, iv);
-        return this.globals.JSONparse(decrypted || "{}");
-      } catch (e) {
-        if (e instanceof MissingHandler) {
-          throw e;
-        } else {
-          console.error("decryption failed", e);
-          console.error(e);
-          return { error: e };
-        }
-      }
+      return this.globals.window.webkit.messageHandlers[handler].postMessage?.(data);
     }
     /**
      * @param {string} name
@@ -7406,133 +7342,16 @@ Source: "${matchedFrom}"`;
      * @param {string} name
      * @param {Record<string, any>} [data]
      */
-    request(name, data = {}) {
-      return this.wkSendAndWait(name, data);
-    }
-    /**
-     * Generate a random method name and adds it to the global scope
-     * The native layer will use this method to send the response
-     * @param {string | number} randomMethodName
-     * @param {Function} callback
-     */
-    generateRandomMethod(randomMethodName, callback) {
-      this.globals.ObjectDefineProperty(this.globals.window, randomMethodName, {
-        enumerable: false,
-        // configurable, To allow for deletion later
-        configurable: true,
-        writable: false,
-        /**
-         * @param {any[]} args
-         */
-        value: (...args) => {
-          callback(...args);
-          delete this.globals.window[randomMethodName];
-        }
-      });
-    }
-    randomString() {
-      return "" + this.globals.getRandomValues(new this.globals.Uint32Array(1))[0];
-    }
-    createRandMethodName() {
-      return "_" + this.randomString();
-    }
-    /**
-     * @returns {Promise<Uint8Array>}
-     */
-    async createRandKey() {
-      const key2 = await this.globals.generateKey(this.algoObj, true, ["encrypt", "decrypt"]);
-      const exportedKey = await this.globals.exportKey("raw", key2);
-      return new this.globals.Uint8Array(exportedKey);
-    }
-    /**
-     * @returns {Uint8Array}
-     */
-    createRandIv() {
-      return this.globals.getRandomValues(new this.globals.Uint8Array(12));
-    }
-    /**
-     * @param {BufferSource} ciphertext
-     * @param {BufferSource} key
-     * @param {Uint8Array} iv
-     * @returns {Promise<string>}
-     */
-    async decrypt(ciphertext, key2, iv) {
-      const cryptoKey = await this.globals.importKey("raw", key2, "AES-GCM", false, ["decrypt"]);
-      const algo = { name: "AES-GCM", iv };
-      const decrypted = await this.globals.decrypt(algo, cryptoKey, ciphertext);
-      const dec = new this.globals.TextDecoder();
-      return dec.decode(decrypted);
-    }
-    /**
-     * When required (such as on macos 10.x), capture the `postMessage` method on
-     * each webkit messageHandler
-     *
-     * @param {string[]} handlerNames
-     */
-    captureWebkitHandlers(handlerNames) {
-      const handlers = window.webkit.messageHandlers;
-      if (!handlers) throw new MissingHandler("window.webkit.messageHandlers was absent", "all");
-      for (const webkitMessageHandlerName of handlerNames) {
-        if (typeof handlers[webkitMessageHandlerName]?.postMessage === "function") {
-          const original = handlers[webkitMessageHandlerName];
-          const bound = handlers[webkitMessageHandlerName].postMessage?.bind(original);
-          this.globals.capturedWebkitHandlers[webkitMessageHandlerName] = bound;
-          delete handlers[webkitMessageHandlerName].postMessage;
-        }
-      }
+    async request(name, data = {}) {
+      const response = await this.wkSend(name, data);
+      return JSON.parse(response || "{}");
     }
   };
   var WebkitMessagingConfig = class {
-    /**
-     * @param {object} params
-     * @param {boolean} params.hasModernWebkitAPI
-     * @param {string[]} params.webkitMessageHandlerNames
-     * @param {string} params.secret
-     */
-    constructor(params) {
-      this.hasModernWebkitAPI = params.hasModernWebkitAPI;
-      this.webkitMessageHandlerNames = params.webkitMessageHandlerNames;
-      this.secret = params.secret;
-    }
-  };
-  var SecureMessagingParams = class {
-    /**
-     * @param {object} params
-     * @param {string} params.methodName
-     * @param {string} params.secret
-     * @param {number[]} params.key
-     * @param {number[]} params.iv
-     */
-    constructor(params) {
-      this.methodName = params.methodName;
-      this.secret = params.secret;
-      this.key = params.key;
-      this.iv = params.iv;
-    }
   };
   function captureGlobals() {
     return {
-      window,
-      // Methods must be bound to their interface, otherwise they throw Illegal invocation
-      encrypt: window.crypto.subtle.encrypt.bind(window.crypto.subtle),
-      decrypt: window.crypto.subtle.decrypt.bind(window.crypto.subtle),
-      generateKey: window.crypto.subtle.generateKey.bind(window.crypto.subtle),
-      exportKey: window.crypto.subtle.exportKey.bind(window.crypto.subtle),
-      importKey: window.crypto.subtle.importKey.bind(window.crypto.subtle),
-      getRandomValues: window.crypto.getRandomValues.bind(window.crypto),
-      TextEncoder,
-      TextDecoder,
-      Uint8Array,
-      Uint16Array,
-      Uint32Array,
-      JSONstringify: window.JSON.stringify,
-      JSONparse: window.JSON.parse,
-      Arrayfrom: window.Array.from,
-      Promise: window.Promise,
-      ObjectDefineProperty: window.Object.defineProperty,
-      addEventListener: window.addEventListener.bind(window),
-      /** @type {Record<string, any>} */
-      capturedWebkitHandlers: {}
+      window
     };
   }
 
@@ -7603,11 +7422,7 @@ Source: "${matchedFrom}"`;
     constructor(globalConfig) {
       super();
       this.config = globalConfig;
-      const webkitConfig = new WebkitMessagingConfig({
-        hasModernWebkitAPI: this.config.hasModernWebkitAPI,
-        webkitMessageHandlerNames: this.config.webkitMessageHandlerNames,
-        secret: this.config.secret
-      });
+      const webkitConfig = new WebkitMessagingConfig();
       this.messaging = new Messaging(webkitConfig);
     }
     async send(deviceApiCall) {
@@ -11857,7 +11672,6 @@ Source: "${matchedFrom}"`;
       return Boolean(this.device.settings.availableInputTypes.credentialsImport);
     }
     init() {
-      if (!this.device.globalConfig.hasModernWebkitAPI) return;
       try {
         Object.defineProperty(window, "credentialsImportFinished", {
           enumerable: false,
@@ -12613,7 +12427,6 @@ Source: "${matchedFrom}"`;
       this.addNativeAccessibleGlobalFunctions();
     }
     addNativeAccessibleGlobalFunctions() {
-      if (!this.device.globalConfig.hasModernWebkitAPI) return;
       try {
         Object.defineProperty(window, "openAutofillAfterClosingEmailProtectionTab", {
           enumerable: false,
@@ -14011,18 +13824,14 @@ ${this.options.css}
     }
     init() {
       if (this.device.settings.featureToggles.third_party_credentials_provider) {
-        if (this.device.globalConfig.hasModernWebkitAPI) {
-          Object.defineProperty(window, "providerStatusUpdated", {
-            enumerable: false,
-            configurable: false,
-            writable: false,
-            value: (data) => {
-              this.providerStatusUpdated(data);
-            }
-          });
-        } else {
-          setTimeout(() => this._pollForUpdatesToCredentialsProvider(), 2e3);
-        }
+        Object.defineProperty(window, "providerStatusUpdated", {
+          enumerable: false,
+          configurable: false,
+          writable: false,
+          value: (data) => {
+            this.providerStatusUpdated(data);
+          }
+        });
       }
     }
     async askToUnlockProvider() {
