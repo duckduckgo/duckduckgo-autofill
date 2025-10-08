@@ -106,7 +106,7 @@ const inputTypeConfig = {
 
             if (subtype === 'totp' && device.settings.availableInputTypes.credentials?.totp) return ddgPasswordIcons.ddgTOTPIcon;
 
-            if (device.credentialsImport?.isAvailable()) return '';
+            if (device.credentialsImport?.isAvailable() && (form?.isLogin || form?.isHybrid)) return '';
 
             if (device.settings.featureToggles.inlineIcon_credentials) {
                 if (subtype === 'password' && variant === 'new') {
