@@ -5589,6 +5589,9 @@ Source: "${matchedFrom}"`;
           if (subtype === "password" && value?.length <= 3) {
             value = void 0;
           }
+          if (subtype === "totp") {
+            value = void 0;
+          }
           if (value) {
             output[mainType][subtype] = value;
           }
