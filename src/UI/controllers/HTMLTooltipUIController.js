@@ -7,6 +7,7 @@ import { EmailSignupHTMLTooltip } from '../EmailSignupHTMLTooltip.js';
 import { defaultOptions } from '../HTMLTooltip.js';
 import { CredentialsImportTooltip } from '../CredentialsImportTooltip.js';
 import { UIController } from './UIController.js';
+import { TOTPHTMLTooltip } from '../TOTPHTMLTooltip.js';
 
 /**
  * @typedef HTMLTooltipControllerOptions
@@ -109,7 +110,7 @@ export class HTMLTooltipUIController extends UIController {
         };
 
         const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0;
-        if (topContextData.credentialsImport && hasNoCredentialsData) {
+        if (topContextData.credentialsImport && hasNoCredentialsData && topContextData.inputType !== 'credentials.totp') {
             this._options.device.firePixel({ pixelName: 'autofill_import_credentials_prompt_shown' });
             return new CredentialsImportTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
                 onStarted: () => {
@@ -130,9 +131,21 @@ export class HTMLTooltipUIController extends UIController {
             this._options.device.firePixel({ pixelName: 'incontext_show' });
             return new EmailSignupHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device);
         }
-
         // collect the data for each item to display
         const data = this._dataForAutofill(config, topContextData.inputType, topContextData);
+
+        const hasTotp = this._options.device.getLocalCredentials().some((cred) => cred.totp);
+        if (hasTotp && topContextData.inputType === 'credentials.totp') {
+            return new TOTPHTMLTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, config, {
+                onSelect: (id) => {
+                    this._onSelect(topContextData.inputType, data, id);
+                },
+                onManage: (type) => {
+                    this._onManage(type);
+                },
+            });
+        }
+
         // convert the data into tool tip item renderers
         const asRenderers = data.map((d) => config.tooltipItem(d));
 

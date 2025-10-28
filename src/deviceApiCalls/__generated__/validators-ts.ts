@@ -344,6 +344,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
+  totp?: string;
   origin?: {
     url: string;
   };
@@ -464,6 +465,7 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
+    totp?: boolean;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -605,6 +607,7 @@ export interface AvailableInputTypes1 {
   credentials?: {
     username?: boolean;
     password?: boolean;
+    totp?: boolean;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -683,6 +686,7 @@ export interface GetAutofillCredentialsResult {
      */
     username: string;
     password?: string;
+    totp?: string;
   };
   error?: GenericError;
 }

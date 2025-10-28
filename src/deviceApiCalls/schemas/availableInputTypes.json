@@ -15,6 +15,9 @@
         },
         "password": {
           "type": "boolean"
+        },
+        "totp": {
+          "type": "boolean"
         }
       }
     },
