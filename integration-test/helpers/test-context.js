@@ -40,9 +40,20 @@ export function testContext(test) {
                     };
                     context = await browserTypes[browserName].launchPersistentContext(dataDir, launchOptions);
 
-                    // don't allow tests to run until the background page is ready
-                    if (context.backgroundPages().length === 0) {
-                        await new Promise((resolve) => context.on('backgroundpage', resolve));
+                    // For manifest v3, we need to wait for service workers instead of background pages
+                    if (context.backgroundPages().length === 0 && context.serviceWorkers().length === 0) {
+                        await new Promise((resolve) => {
+                            const checkReady = () => {
+                                if (context.backgroundPages().length > 0 || context.serviceWorkers().length > 0) {
+                                    resolve(null);
+                                } else {
+                                    setTimeout(checkReady, 100);
+                                }
+                            };
+                            context.on('backgroundpage', resolve);
+                            context.on('serviceworker', resolve);
+                            checkReady();
+                        });
                     }
                 }
             }

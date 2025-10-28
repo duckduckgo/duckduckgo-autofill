@@ -2,15 +2,15 @@
   "name": "integration-test-extension",
   "description": "integration-test-extension",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-      "scripts": [
-          "background.js"
-      ]
+      "service_worker": "background.js"
   },
   "permissions": [
-      "<all_urls>",
       "tabs"
+  ],
+  "host_permissions": [
+      "<all_urls>"
   ],
   "content_scripts": [
     {
@@ -23,8 +23,13 @@
     }
   ],
   "web_accessible_resources": [
-      "public/css/autofill.css",
-      "img/logo-small.svg",
-      "img/logo-small-grayscale.svg"
+    {
+      "resources": [
+        "public/css/autofill.css",
+        "img/logo-small.svg",
+        "img/logo-small-grayscale.svg"
+      ],
+      "matches": ["<all_urls>"]
+    }
   ]
 }

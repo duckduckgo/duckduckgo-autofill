@@ -69,12 +69,26 @@ export function emailAutofillPage(page) {
         }
 
         async assertExtensionPixelsCaptured(expectedPixels) {
-            const [backgroundPage] = page.context().backgroundPages();
-            const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
-                return globalThis.pixels;
-            });
+            const backgroundPages = page.context().backgroundPages();
+            const serviceWorkers = page.context().serviceWorkers();
 
-            const pixels = await backgroundPagePixels.jsonValue();
+            let pixels;
+            if (backgroundPages.length > 0) {
+                const [backgroundPage] = backgroundPages;
+                const backgroundPagePixels = await backgroundPage.evaluateHandle(() => {
+                    return globalThis.pixels;
+                });
+                pixels = await backgroundPagePixels.jsonValue();
+            } else if (serviceWorkers.length > 0) {
+                const [serviceWorker] = serviceWorkers;
+                const serviceWorkerPixels = await serviceWorker.evaluateHandle(() => {
+                    return globalThis.pixels;
+                });
+                pixels = await serviceWorkerPixels.jsonValue();
+            } else {
+                throw new Error('No background page or service worker found for extension');
+            }
+
             expect(pixels).toEqual(expectedPixels);
         }
 

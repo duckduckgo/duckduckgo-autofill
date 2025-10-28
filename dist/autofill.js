@@ -7432,7 +7432,7 @@ Source: "${matchedFrom}"`;
           this.wkSend(handler, data);
         });
         const cipher = new this.globals.Uint8Array([...ciphertext, ...tag]);
-        const decrypted = await this.decrypt(cipher, key2, iv);
+        const decrypted = await this.decrypt(cipher, new this.globals.Uint8Array(key2), iv);
         return this.globals.JSONparse(decrypted || "{}");
       } catch (e) {
         if (e instanceof MissingHandler) {
