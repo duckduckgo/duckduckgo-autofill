@@ -191,6 +191,9 @@ class Form {
                 if (subtype === 'password' && value?.length <= 3) {
                     value = undefined;
                 }
+                if (subtype === 'totp') {
+                    value = undefined;
+                }
                 if (value) {
                     output[mainType][subtype] = value;
                 }
@@ -846,7 +849,8 @@ class Form {
                 return false;
             } else {
                 const isInputEmpty = input.value === '';
-                return this.isCredentialsImportAvailable && isInputEmpty;
+                const isTotp = subtype === 'totp';
+                return this.isCredentialsImportAvailable && isInputEmpty && !isTotp;
             }
         }
 

@@ -301,9 +301,29 @@ describe('Test the form class reading values correctly', () => {
                 credentials: { username: 'dax@mcdax.com', password: '123456' },
             },
         },
+        {
+            testCase: 'form with username, password and TOTP field where TOTP should be ignored',
+            form: `
+<form>
+    <input type="text" value="testUsername" name="username" />
+    <input type="password" value="password" name="password" />
+    <input type="text" value="123456" autocomplete="one-time-code" />
+    <button type="submit">Log in</button>
+</form>`,
+            expHasValues: true,
+            expExact: true,
+            expValues: {
+                credentials: {
+                    username: 'testUsername',
+                    password: 'password',
+                },
+                identities: undefined,
+                creditCards: undefined,
+            },
+        },
     ];
 
-    test.each(testCases)('Test $testCase', ({ form, expHasValues, expValues }) => {
+    test.each(testCases)('Test $testCase', ({ form, expHasValues, expValues, expExact }) => {
         const formEl = attachAndReturnGenericForm(form);
         const scanner = createScanner(InterfacePrototype.default()).findEligibleInputs(document);
         const formClass = scanner.forms.get(formEl);
@@ -311,7 +331,11 @@ describe('Test the form class reading values correctly', () => {
         const formValues = formClass?.getValuesReadyForStorage();
 
         expect(hasValues).toBe(expHasValues);
-        expect(formValues).toMatchObject(expValues);
+        if (expExact) {
+            expect(formValues).toEqual(expValues);
+        } else {
+            expect(formValues).toMatchObject(expValues);
+        }
     });
 });
 

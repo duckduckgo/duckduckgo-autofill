@@ -14,6 +14,13 @@ const matchingConfiguration = {
                     ddgMatcher: 'unknown',
                 },
             },
+            totp: {
+                type: 'totp',
+                strategies: {
+                    cssSelector: 'totp',
+                    ddgMatcher: 'totp',
+                },
+            },
             emailAddress: {
                 type: 'emailAddress',
                 strategies: {
@@ -195,6 +202,7 @@ const matchingConfiguration = {
         },
         lists: {
             unknown: ['unknown'],
+            totp: ['totp'],
             emailAddress: ['emailAddress'],
             password: ['password'],
             username: ['username'],
@@ -225,7 +233,7 @@ const matchingConfiguration = {
             matchers: {
                 unknown: {
                     match:
-                        'search|find|filter|subject|title|captcha|mfa|2fa|(two|2).?factor|one-time|otp|social security number|ssn' +
+                        'search|find|filter|subject|title|captcha|social security number|ssn' +
                         // Italian
                         '|cerca|filtr|oggetto|titolo|(due|2|più).?fattori' +
                         // German
@@ -238,6 +246,10 @@ const matchingConfiguration = {
                         '|busca|busqueda|filtra|dos pasos|un solo uso' +
                         // Swedish
                         '|sök|filter|ämne|multifaktorsautentisering|tvåfaktorsautentisering|två.?faktor|engångs',
+                    skip: 'phone|mobile|email|password',
+                },
+                totp: {
+                    match: 'mfa|2fa|(two|2).?factor|one-time|otp|totp',
                     skip: 'phone|mobile|email|password',
                 },
                 emailAddress: {
@@ -268,7 +280,7 @@ const matchingConfiguration = {
                         // Swedish
                         '|lösenord',
                     skip: 'email|one-time|error|hint|^username$',
-                    forceUnknown: 'search|captcha|mfa|2fa|two factor|otp|pin',
+                    forceUnknown: 'search|captcha|pin',
                 },
                 newPassword: {
                     match: 'new|confirm|re.?(enter|type)|repeat|update\\b',
