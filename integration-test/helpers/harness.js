@@ -25,13 +25,20 @@ export async function setupMockedDomain(page, domain) {
 }
 
 export async function withEmailProtectionExtensionSignedInAs(page, username) {
-    const [backgroundPage] = page.context().backgroundPages();
-    await backgroundPage.evaluateHandle(
-        (personalAddress) => {
-            globalThis.setEmailProtectionUserData(personalAddress);
-        },
-        [username],
-    );
+    // Only support manifest v3: use service worker
+    const serviceWorkers = page.context().serviceWorkers();
+
+    if (serviceWorkers.length > 0) {
+        const [serviceWorker] = serviceWorkers;
+        await serviceWorker.evaluateHandle(
+            (personalAddress) => {
+                globalThis.setEmailProtectionUserData(personalAddress);
+            },
+            [username],
+        );
+    } else {
+        throw new Error('No service worker found for extension');
+    }
 }
 
 /**

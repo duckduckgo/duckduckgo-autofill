@@ -76,6 +76,8 @@ jobs:
                   # If there is a size change, run the script and capture output
                   if [ "$BASE_SIZE_JS" != "$CURRENT_SIZE_JS" ] || [ "$BASE_SIZE_JS_DEBUG" != "$CURRENT_SIZE_JS_DEBUG" ]; then
                       npm run bundle-size-check > comment.txt
+                  else
+                      echo "No bundle size change detected." > comment.txt
                   fi
 
                   commentBody=$(cat comment.txt)
