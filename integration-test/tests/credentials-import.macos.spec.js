@@ -5,6 +5,7 @@ import { expect, test as base } from '@playwright/test';
 import { loginPage } from '../helpers/pages/loginPage.js';
 import { overlayPage } from '../helpers/pages/overlayPage.js';
 import { signupPage } from '../helpers/pages/signupPage.js';
+import { loginWithIdentityPage } from '../helpers/pages/loginWithIdentityPage.js';
 
 /**
  *  Tests for credentials import promotion prompt on macos
@@ -12,6 +13,29 @@ import { signupPage } from '../helpers/pages/signupPage.js';
 const test = base.extend({});
 
 test.describe('Import credentials prompt', () => {
+    test('when credentialsImport is true, input is identities.firstName, credentials import prompt is not shown', async ({ page }) => {
+        // enable in-terminal exceptions
+        await forwardConsoleMessages(page);
+
+        await createWebkitMocks()
+            .withAvailableInputTypes(
+                createAvailableInputTypes({
+                    credentialsImport: true,
+                }),
+            )
+            .applyTo(page);
+
+        // Load the autofill.js script with replacements
+        await createAutofillScript().replaceAll(macosContentScopeReplacements()).platform('macos').applyTo(page);
+
+        const login = loginWithIdentityPage(page);
+        await login.navigate();
+        await login.clickIntoFirstNameInput();
+        await login.credentialsImportPromptIsNotShown();
+        await login.clickIntoUsernameInput();
+        await login.credentialsImportPromptIsShown();
+    });
+
     test('when availableInputTypes is set for credentials import, credentials import prompt is shown', async ({ page }) => {
         // enable in-terminal exceptions
         await forwardConsoleMessages(page);

@@ -14521,7 +14521,7 @@ ${this.options.css}
         }
       };
       const hasNoCredentialsData = this._options.device.getLocalCredentials().length === 0;
-      if (topContextData.credentialsImport && hasNoCredentialsData && topContextData.inputType !== "credentials.totp") {
+      if (topContextData.credentialsImport && hasNoCredentialsData && topContextData.inputType.includes("credentials")) {
         this._options.device.firePixel({ pixelName: "autofill_import_credentials_prompt_shown" });
         return new CredentialsImportTooltip(topContextData.inputType, getPosition, tooltipOptions).render(this._options.device, {
           onStarted: () => {

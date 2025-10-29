@@ -44,7 +44,7 @@
     "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#11.44.0",
     "@duckduckgo/eslint-config": "github:duckduckgo/eslint-config#v0.1.0",
     "@duckduckgo/privacy-configuration": "github:duckduckgo/privacy-configuration#main",
-    "@duckduckgo/privacy-test-pages": "github:duckduckgo/privacy-test-pages#fb5a572ead9148cee807a9a6c69a25d8686d051f",
+    "@duckduckgo/privacy-test-pages": "github:duckduckgo/privacy-test-pages#e2f0116ddde6866a93da45814dd8237262d82cc4",
     "@playwright/test": "^1.53.0",
     "@types/jest": "^29.5.11",
     "@types/node": "^22.15.31",
