@@ -20,6 +20,7 @@ export const constants = {
         loginWithPoorForm: `${localPagesPrefix}/login-poor-form.html`,
         loginWithText: `${localPagesPrefix}/login-with-text.html`,
         loginWithFormInModal: `${privacyTestPagesPrefix}/autoprompt/2-form-in-modal.html`,
+        loginWithIdentity: `${privacyTestPagesPrefix}/login-with-identity.html`,
         signupWithFormInModal: `${localPagesPrefix}/signup-in-modal.html`,
         loginCovered: `${localPagesPrefix}/login-covered.html`,
         loginMultistep: `${privacyTestPagesPrefix}/autoprompt/3-multistep-form.html`,
