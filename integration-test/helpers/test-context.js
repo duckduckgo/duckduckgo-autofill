@@ -40,17 +40,16 @@ export function testContext(test) {
                     };
                     context = await browserTypes[browserName].launchPersistentContext(dataDir, launchOptions);
 
-                    // For manifest v3, we need to wait for service workers instead of background pages
-                    if (context.backgroundPages().length === 0 && context.serviceWorkers().length === 0) {
+                    // For manifest v3, we need to wait for service workers
+                    if (context.serviceWorkers().length === 0) {
                         await new Promise((resolve) => {
                             const checkReady = () => {
-                                if (context.backgroundPages().length > 0 || context.serviceWorkers().length > 0) {
+                                if (context.serviceWorkers().length > 0) {
                                     resolve(null);
                                 } else {
                                     setTimeout(checkReady, 100);
                                 }
                             };
-                            context.on('backgroundpage', resolve);
                             context.on('serviceworker', resolve);
                             checkReady();
                         });
