@@ -1,0 +1,11 @@
+---
+description: Apply when asked to add a test form. These are the tests used by the input-classifiers.test.js file.
+alwaysApply: false
+---
+
+- If the HTML is not provided, ask the user to provide it.
+- Do not add any standard HTML5 structure (DOCTYPE, html, head, body tags) - just keep the form element.
+- Create a file in the `test-forms` directory with the naming convention `<sitename>_<formtype>.html`, e.g. `instagram_login.html`.
+- Add the new form in the `index.json` file using `scripts/save-form-to-test-suite.js`.
+- Remove the `data-ddg-autofilled` attribute, all `img` tags and all `svg` elements, and all inline `style` attributes. Remove all `script` tags and its content (Reference `prettifyAndCleanHTML` to do this).
+- Annotate the form's inputs and buttons, use examples from html files in `test-forms`. Use only the `subtype` instead of the fully qualified type. E.g use `password.current` instead of `credentials.password.current`.

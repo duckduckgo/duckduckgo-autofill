@@ -583,6 +583,27 @@ function getActiveElement(root = document) {
 }
 
 /**
+ * Runs a callback with a tree walker
+ * @param {Element|HTMLFormElement} root
+ * @param {(node: Node) => boolean|void} callback - Return true to stop iteration early
+ * @returns {boolean} - true if callback returned true (early termination), false if completed all nodes
+ */
+function runWithTreeWalker(root, callback) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    /** @type {Node|null} */
+    let node = walker.currentNode;
+    while (node) {
+        const result = callback(node);
+        if (result === true) return true; // If the callback returns true, we stop iterating
+
+        node = walker.nextNode();
+    }
+
+    // If we've completed all nodes, return false
+    return false;
+}
+
+/**
  * Takes a root element and tries to find elements in shadow DOMs that match the selector
  * @param {HTMLElement|HTMLFormElement} root
  * @param {string} selector
@@ -590,16 +611,11 @@ function getActiveElement(root = document) {
  */
 function findElementsInShadowTree(root, selector) {
     const shadowElements = [];
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-    /** @type {Node|null} */
-    let node = walker.currentNode;
-    while (node) {
+    runWithTreeWalker(root, (node) => {
         if (node instanceof HTMLElement && node.shadowRoot) {
             shadowElements.push(...node.shadowRoot.querySelectorAll(selector));
         }
-        node = walker.nextNode();
-    }
-
+    });
     return shadowElements;
 }
 
@@ -659,6 +675,34 @@ function getUsernameLikeIdentity(identities, creditCards) {
     }
 }
 
+/**
+ * Check if an element contains another element, even across shadow DOM boundaries.
+ * For simplicity, we don't check nested shadow DOMs.
+ * @param {Element|HTMLFormElement} container
+ * @param {Element} target
+ * @returns {boolean} - true if the target is contained within the container,
+ * even across shadow DOM boundaries
+ */
+function containsShadowedTarget(container, target) {
+    // If the target is already in the container, we can return early
+    if (container.contains(target)) return true;
+
+    // Otherwise check if the target is in the shadow tree of the container
+    const targetRoot = target.getRootNode();
+    const foundInShadow = runWithTreeWalker(container, (node) => {
+        if (targetRoot instanceof ShadowRoot && node.contains(targetRoot.host)) {
+            return true; // Found the target in shadow tree, stop searching
+        }
+        return false; // Continue searching
+    });
+
+    return foundInShadow;
+}
+
+function isGoogleAccountsDomain() {
+    return window.location.hostname === 'accounts.google.com';
+}
+
 export {
     notifyWebApp,
     sendAndWaitForAnswer,
@@ -695,4 +739,6 @@ export {
     queryElementsWithShadow,
     getFormControlElements,
     getUsernameLikeIdentity,
+    containsShadowedTarget,
+    isGoogleAccountsDomain,
 };

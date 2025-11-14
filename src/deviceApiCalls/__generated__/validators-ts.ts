@@ -175,15 +175,6 @@ export interface API {
     [k: string]: unknown;
   };
   /**
-   * (Windows) Get a single identity
-   */
-  getIdentity?: {
-    id?: "getIdentityResponse";
-    paramValidator?: GetIdentityParam;
-    resultValidator?: GetIdentityResult;
-    [k: string]: unknown;
-  };
-  /**
    * (Windows) Get a single credit card
    */
   getCreditCard?: {
@@ -353,6 +344,7 @@ export interface Credentials {
    */
   username: string;
   password: string;
+  totp?: string;
   origin?: {
     url: string;
   };
@@ -473,6 +465,7 @@ export interface AvailableInputTypes {
   credentials?: {
     username?: boolean;
     password?: boolean;
+    totp?: boolean;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -614,6 +607,7 @@ export interface AvailableInputTypes1 {
   credentials?: {
     username?: boolean;
     password?: boolean;
+    totp?: boolean;
   };
   /**
    * maps field types and the availability of data saved by the user
@@ -692,6 +686,7 @@ export interface GetAutofillCredentialsResult {
      */
     username: string;
     password?: string;
+    totp?: string;
   };
   error?: GenericError;
 }
@@ -799,12 +794,6 @@ export interface GetAliasResult {
   success: {
     alias?: string;
   };
-}
-export interface GetIdentityParam {
-  id: string;
-}
-export interface GetIdentityResult {
-  success: IdentityObject;
 }
 export interface GetCreditCardParam {
   id: string;

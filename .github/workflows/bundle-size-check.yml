@@ -1,0 +1,94 @@
+name: Bundle Size Check
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    bundle-size-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22.0.0'
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build project
+              run: npm run build
+
+            - name: Calculate current bundle size
+              id: current-calculation
+              run: |
+                  echo "current_size_js=$(du -sb dist/autofill.js | cut -f1)" >> $GITHUB_OUTPUT
+                  echo "current_size_js_debug=$(du -sb dist/autofill-debug.js | cut -f1)" >> $GITHUB_OUTPUT
+
+            - name: Get base commit and calculate base size
+              id: base-calculation
+              run: |
+                  # Get base commit SHA
+                  BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
+                  # Checkout base commit
+                  git checkout $BASE_SHA
+
+                  # Install dependencies and build
+                  npm ci
+                  npm run build
+
+                  # Calculate base size
+                  echo "base_size_js=$(du -sb dist/autofill.js | cut -f1)" >> $GITHUB_OUTPUT
+                  echo "base_size_js_debug=$(du -sb dist/autofill-debug.js | cut -f1)" >> $GITHUB_OUTPUT
+
+                  # Return to current commit
+                  git checkout ${{ github.sha }}
+                  npm ci
+                  npm run build
+
+            - name: Find Previous Comment
+              uses: peter-evans/find-comment@v3
+              id: find_comment
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-author: 'github-actions[bot]'
+                  body-includes: 'Bundle size change'
+                  direction: last
+
+            - name: Generate bundle size comment
+              id: generate-comment
+              run: |
+                  # Set environment variables for the script
+                  export BASE_SIZE_JS="${{ steps.base-calculation.outputs.base_size_js }}"
+                  export CURRENT_SIZE_JS="${{ steps.current-calculation.outputs.current_size_js }}"
+                  export BASE_SIZE_JS_DEBUG="${{ steps.base-calculation.outputs.base_size_js_debug }}"
+                  export CURRENT_SIZE_JS_DEBUG="${{ steps.current-calculation.outputs.current_size_js_debug }}"
+
+                  # Run the script and capture output
+                  # If there is a size change, run the script and capture output
+                  if [ "$BASE_SIZE_JS" != "$CURRENT_SIZE_JS" ] || [ "$BASE_SIZE_JS_DEBUG" != "$CURRENT_SIZE_JS_DEBUG" ]; then
+                      npm run bundle-size-check > comment.txt
+                  else
+                      echo "No bundle size change detected." > comment.txt
+                  fi
+
+                  commentBody=$(cat comment.txt)
+                  echo "comment_body<<EOF" >> $GITHUB_OUTPUT
+                  echo "$commentBody" >> $GITHUB_OUTPUT
+                  echo "EOF" >> $GITHUB_OUTPUT
+
+            - name: Create, or Update the Comment
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-id: ${{ steps.find_comment.outputs.comment-id }}
+                  body: ${{ steps.generate-comment.outputs.comment_body }}
+                  edit-mode: replace

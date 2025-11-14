@@ -148,7 +148,7 @@ export class WebkitMessagingTransport {
             });
 
             const cipher = new this.globals.Uint8Array([...ciphertext, ...tag]);
-            const decrypted = await this.decrypt(cipher, key, iv);
+            const decrypted = await this.decrypt(cipher, new this.globals.Uint8Array(key), iv);
             return this.globals.JSONparse(decrypted || '{}');
         } catch (e) {
             // re-throw when the error is just a 'MissingHandler'

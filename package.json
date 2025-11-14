@@ -33,17 +33,18 @@
     "verify:local": "npm run lint:fix && npm run tsc && npm run test:unit && npm run test:integration",
     "serve": "http-server -c-1 --port 3210 ./",
     "debug-form": "node scripts/debug-form.js",
-    "debug-ui": "node scripts/debug-ui.js"
+    "debug-ui": "node scripts/debug-ui.js",
+    "bundle-size-check": "node scripts/bundle-size-check.js"
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/eslint-parser": "^7.27.5",
     "@babel/preset-env": "^7.27.2",
-    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#8.1.0",
+    "@duckduckgo/content-scope-scripts": "github:duckduckgo/content-scope-scripts#11.44.0",
     "@duckduckgo/eslint-config": "github:duckduckgo/eslint-config#v0.1.0",
     "@duckduckgo/privacy-configuration": "github:duckduckgo/privacy-configuration#main",
-    "@duckduckgo/privacy-test-pages": "github:duckduckgo/privacy-test-pages#fb5a572ead9148cee807a9a6c69a25d8686d051f",
+    "@duckduckgo/privacy-test-pages": "github:duckduckgo/privacy-test-pages#e2f0116ddde6866a93da45814dd8237262d82cc4",
     "@playwright/test": "^1.53.0",
     "@types/jest": "^29.5.11",
     "@types/node": "^22.15.31",
