@@ -19428,14 +19428,6 @@ ${this.options.css}
       });
       this._mutObs.observe(document.body, { childList: true, subtree: true });
       const position = getPosition();
-      if (!click && !this.elementIsInViewport(position)) {
-        input.scrollIntoView(true);
-        this._mutObs?.disconnect();
-        setTimeout(() => {
-          this.attachTooltip(args);
-        }, 50);
-        return;
-      }
       __privateSet(this, _state, "parentShown");
       this.showTopTooltip(click, position, topContextData).catch((e) => {
         console.error("error from showTopTooltip", e);
