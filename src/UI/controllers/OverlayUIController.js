@@ -117,9 +117,6 @@ export class OverlayUIController extends UIController {
         if (click) {
             diffX -= click.x;
             diffY -= click.y;
-        } else if (!this.elementIsInViewport(inputDimensions)) {
-            // If the focus event is outside the viewport ignore, we've already tried to scroll to it
-            return;
         }
 
         if (!data.inputType) {

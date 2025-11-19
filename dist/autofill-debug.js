@@ -19459,8 +19459,6 @@ ${this.options.css}
       if (click) {
         diffX -= click.x;
         diffY -= click.y;
-      } else if (!this.elementIsInViewport(inputDimensions)) {
-        return;
       }
       if (!data.inputType) {
         throw new Error("No input type found");
