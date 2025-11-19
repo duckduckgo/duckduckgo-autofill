@@ -76,16 +76,6 @@ export class OverlayUIController extends UIController {
         this._mutObs.observe(document.body, { childList: true, subtree: true });
 
         const position = getPosition();
-
-        // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
-        if (!click && !this.elementIsInViewport(position)) {
-            input.scrollIntoView(true);
-            this._mutObs?.disconnect();
-            setTimeout(() => {
-                this.attachTooltip(args);
-            }, 50);
-            return;
-        }
         this.#state = 'parentShown';
         this.showTopTooltip(click, position, topContextData).catch((e) => {
             console.error('error from showTopTooltip', e);
