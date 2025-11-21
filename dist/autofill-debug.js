@@ -19435,20 +19435,6 @@ ${this.options.css}
       });
     }
     /**
-     * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-     * @returns {boolean}
-     */
-    elementIsInViewport(inputDimensions) {
-      if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
-        return false;
-      }
-      const viewport = document.documentElement;
-      if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
-        return false;
-      }
-      return true;
-    }
-    /**
      * @param {{ x: number; y: number; } | null} click
      * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
      * @param {TopContextData} data
