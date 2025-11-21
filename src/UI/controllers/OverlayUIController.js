@@ -76,44 +76,11 @@ export class OverlayUIController extends UIController {
         this._mutObs.observe(document.body, { childList: true, subtree: true });
 
         const position = getPosition();
-
-        // If the element is not in viewport, scroll there and recurse. 50ms is arbitrary
-        if (!click && !this.elementIsInViewport(position)) {
-            input.scrollIntoView(true);
-            this._mutObs?.disconnect();
-            setTimeout(() => {
-                this.attachTooltip(args);
-            }, 50);
-            return;
-        }
         this.#state = 'parentShown';
         this.showTopTooltip(click, position, topContextData).catch((e) => {
             console.error('error from showTopTooltip', e);
             this.#state = 'idle';
         });
-    }
-
-    /**
-     * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-     * @returns {boolean}
-     */
-    elementIsInViewport(inputDimensions) {
-        if (
-            inputDimensions.x < 0 ||
-            inputDimensions.y < 0 ||
-            inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth ||
-            inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight
-        ) {
-            return false;
-        }
-        const viewport = document.documentElement;
-        if (
-            inputDimensions.x + inputDimensions.width > viewport.clientWidth ||
-            inputDimensions.y + inputDimensions.height > viewport.clientHeight
-        ) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -127,9 +94,6 @@ export class OverlayUIController extends UIController {
         if (click) {
             diffX -= click.x;
             diffY -= click.y;
-        } else if (!this.elementIsInViewport(inputDimensions)) {
-            // If the focus event is outside the viewport ignore, we've already tried to scroll to it
-            return;
         }
 
         if (!data.inputType) {

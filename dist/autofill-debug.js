@@ -19428,33 +19428,11 @@ ${this.options.css}
       });
       this._mutObs.observe(document.body, { childList: true, subtree: true });
       const position = getPosition();
-      if (!click && !this.elementIsInViewport(position)) {
-        input.scrollIntoView(true);
-        this._mutObs?.disconnect();
-        setTimeout(() => {
-          this.attachTooltip(args);
-        }, 50);
-        return;
-      }
       __privateSet(this, _state, "parentShown");
       this.showTopTooltip(click, position, topContextData).catch((e) => {
         console.error("error from showTopTooltip", e);
         __privateSet(this, _state, "idle");
       });
-    }
-    /**
-     * @param {{ x: number; y: number; height: number; width: number; }} inputDimensions
-     * @returns {boolean}
-     */
-    elementIsInViewport(inputDimensions) {
-      if (inputDimensions.x < 0 || inputDimensions.y < 0 || inputDimensions.x + inputDimensions.width > document.documentElement.clientWidth || inputDimensions.y + inputDimensions.height > document.documentElement.clientHeight) {
-        return false;
-      }
-      const viewport = document.documentElement;
-      if (inputDimensions.x + inputDimensions.width > viewport.clientWidth || inputDimensions.y + inputDimensions.height > viewport.clientHeight) {
-        return false;
-      }
-      return true;
     }
     /**
      * @param {{ x: number; y: number; } | null} click
@@ -19467,8 +19445,6 @@ ${this.options.css}
       if (click) {
         diffX -= click.x;
         diffY -= click.y;
-      } else if (!this.elementIsInViewport(inputDimensions)) {
-        return;
       }
       if (!data.inputType) {
         throw new Error("No input type found");
