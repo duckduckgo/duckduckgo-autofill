@@ -390,7 +390,6 @@ export class Settings {
         siteSpecificFeature: null,
         /** @type {AutofillFeatureToggles} */
         featureToggles: {
-            autocomplete_attribute_support: false,
             credentials_saving: false,
             password_generation: false,
             emailProtection: false,

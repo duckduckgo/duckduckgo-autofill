@@ -755,10 +755,6 @@ export interface AutofillSettings {
  * These are toggles used throughout the application to enable/disable features fully
  */
 export interface AutofillFeatureToggles {
-  /**
-   * Enables adding HTML autocomplete attributes to form fields to enhance mobile autofill capabilities, particularly iOS QuickType keyboard suggestions.
-   */
-  autocomplete_attribute_support?: boolean;
   inputType_credentials?: boolean;
   inputType_identities?: boolean;
   inputType_creditCards?: boolean;
