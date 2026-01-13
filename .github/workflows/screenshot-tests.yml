@@ -1,0 +1,54 @@
+name: Screenshot Tests
+description: |
+    Runs screenshot tests and uploads test reports as artifacts.
+
+    If this workflow fails, you can trigger `screenshot-tests-update.yml` from the GitHub UI.
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    screenshot-tests:
+        timeout-minutes: 5
+        runs-on: macos-14
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+
+            - uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.npm
+                      ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-node-playwright-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-playwright-
+                      ${{ runner.os }}-node-
+
+            - run: npm ci
+
+            - run: npm run build
+
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps chromium
+
+            - run: npm run test:screenshots
+
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: screenshot-tests-playwright-report
+                  path: |
+                      playwright-report/**
+                      test-results/**
+                  retention-days: 5
