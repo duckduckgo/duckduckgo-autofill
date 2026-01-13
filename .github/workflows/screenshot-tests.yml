@@ -1,0 +1,59 @@
+name: Screenshot Tests
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+jobs:
+    screenshots:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version-file: '.nvmrc'
+            - uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.npm
+                      node_modules
+                      packages/*/node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+            - name: npm ci
+              run: 'npm ci'
+            - name: Cache Playwright browsers
+              uses: actions/cache@v3
+              id: playwright-cache
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-playwright-
+            - name: Install Playwright + DEPS
+              run: npx playwright install --with-deps
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
+            - name: Install only system dependencies if browsers are cached
+              run: npx playwright install-deps
+              if: steps.playwright-cache.outputs.cache-hit == 'true'
+            - name: Install xvfb for headless browser support
+              run: sudo apt-get install -y xvfb
+            - name: Run screenshot tests
+              run: npm run test:screenshots:ci
+            - name: Upload screenshot test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: screenshot-test-results
+                  path: test-results
+            - name: Upload screenshot diff artifacts
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: screenshot-diffs
+                  path: |
+                      integration-test/screenshots/__screenshots__/**/*-actual.png
+                      integration-test/screenshots/__screenshots__/**/*-expected.png
+                      integration-test/screenshots/__screenshots__/**/*-diff.png
