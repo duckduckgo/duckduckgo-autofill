@@ -5,8 +5,14 @@
     :root { color-scheme: light dark; }
     html, body {
         margin: 0;
-        background-color: rgba(242, 240, 240, 0.9);
+        --loading-color: $LOADING_COLOR$;
+        background-color: var(--loading-color, rgba(242, 240, 240, 0.9));
         overscroll-behavior: none;
+    }
+    @media (prefers-color-scheme: dark) {
+        html, body {
+            background-color: var(--loading-color, rgba(100, 98, 100, 0.9));
+        }
     }
 </style>
 </head>

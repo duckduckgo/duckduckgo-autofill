@@ -16,7 +16,7 @@ class TOTPHTMLTooltip extends HTMLTooltip {
         const t = device.t;
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--data top-autofill" data-platform=${this.options.platform}>
+<div class="wrapper wrapper--data top-autofill" data-platform="${this.options.platform}" data-theme-variant="${this.options.themeVariant}">
     <div class="tooltip tooltip--data">
         <button id=${localCredential.id} class="tooltip__button tooltip__button--data tooltip__button--totp js-select">
             <span class="tooltip__button__text-container">

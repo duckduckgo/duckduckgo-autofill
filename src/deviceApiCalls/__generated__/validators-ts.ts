@@ -7,6 +7,10 @@
  */
 
 /**
+ * The user's selected theme variant for visual styling
+ */
+export type ThemeVariant = "default" | "coolGray" | "slateBlue" | "green" | "violet" | "rose" | "orange" | "desert";
+/**
  * Send pixels data to be fired from the native layer
  */
 export type SendJSPixelParams =
@@ -559,6 +563,7 @@ export interface UserPreferences {
   sessionKey: string;
   debug: boolean;
   language?: string;
+  themeVariant?: ThemeVariant;
   platform: {
     name: "ios" | "macos" | "windows" | "extension" | "android";
   };

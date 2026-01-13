@@ -1,3 +1,1471 @@
+/* node_modules/@duckduckgo/design-tokens/build/desktop-browsers/tokens.css */
+:root,
+:host {
+  --ds-color-palette-black: #000000;
+  --ds-color-palette-white: #ffffff;
+  --ds-color-palette-transparent: rgba(0, 0, 0, 0);
+  --ds-color-palette-gray-0: #fafafa;
+  --ds-color-palette-gray-10: #f5f5f5;
+  --ds-color-palette-gray-20: #eeeeee;
+  --ds-color-palette-gray-30: #dddddd;
+  --ds-color-palette-gray-40: #cccccc;
+  --ds-color-palette-gray-50: #aaaaaa;
+  --ds-color-palette-gray-60: #888888;
+  --ds-color-palette-gray-70: #666666;
+  --ds-color-palette-gray-80: #444444;
+  --ds-color-palette-gray-85: #333333;
+  --ds-color-palette-gray-90: #222222;
+  --ds-color-palette-gray-100: #111111;
+  --ds-color-palette-red-0: #ffd7cc;
+  --ds-color-palette-red-10: #f8bbaa;
+  --ds-color-palette-red-20: #f2a18a;
+  --ds-color-palette-red-30: #eb876c;
+  --ds-color-palette-red-40: #e46f4f;
+  --ds-color-palette-red-50: #de5833;
+  --ds-color-palette-red-60: #bc4423;
+  --ds-color-palette-red-70: #9a3216;
+  --ds-color-palette-red-80: #77230c;
+  --ds-color-palette-red-90: #551605;
+  --ds-color-palette-red-100: #330b01;
+  --ds-color-palette-red-alert-20: #ff545a;
+  --ds-color-palette-red-alert-30: #e04a4f;
+  --ds-color-palette-red-alert-40: #d1454a;
+  --ds-color-palette-red-alert-50: #eb102d;
+  --ds-color-palette-red-alert-60: #cf0e28;
+  --ds-color-palette-red-alert-70: #c10d25;
+  --ds-color-palette-blue-0: #ccdaff;
+  --ds-color-palette-blue-10: #adc2fc;
+  --ds-color-palette-blue-20: #8fabf9;
+  --ds-color-palette-blue-30: #7295f6;
+  --ds-color-palette-blue-40: #557ff3;
+  --ds-color-palette-blue-50: #3969ef;
+  --ds-color-palette-blue-60: #2b55ca;
+  --ds-color-palette-blue-70: #1e42a4;
+  --ds-color-palette-blue-80: #14307e;
+  --ds-color-palette-blue-90: #0b2059;
+  --ds-color-palette-blue-100: #051133;
+  --ds-color-palette-blue-0-transparency-01: rgba(204, 218, 255, 0.4);
+  --ds-color-palette-blue-0-transparency-02: rgba(204, 218, 255, 0.8);
+  --ds-color-palette-blue-30-transparency-01: rgba(114, 149, 246, 0.15);
+  --ds-color-palette-blue-30-transparency-02: rgba(114, 149, 246, 0.3);
+  --ds-color-palette-blue-30-transparency-03: rgba(114, 149, 246, 0.6);
+  --ds-color-palette-blue-30-transparency-04: rgba(114, 149, 246, 0.2);
+  --ds-color-palette-blue-50-transparency-01: rgba(57, 105, 239, 0.36);
+  --ds-color-palette-blue-50-transparency-02: rgba(57, 105, 239, 0.2);
+  --ds-color-palette-blue-hyperlink: #1a0dab;
+  --ds-color-palette-purple-0: #ece6ff;
+  --ds-color-palette-purple-10: #c7b9ee;
+  --ds-color-palette-purple-20: #a591dc;
+  --ds-color-palette-purple-30: #876ecb;
+  --ds-color-palette-purple-40: #6b4eba;
+  --ds-color-palette-purple-50: #5132a9;
+  --ds-color-palette-purple-60: #3e228c;
+  --ds-color-palette-purple-70: #2c146f;
+  --ds-color-palette-purple-80: #1d0a53;
+  --ds-color-palette-purple-90: #110336;
+  --ds-color-palette-purple-100: #070019;
+  --ds-color-palette-purple-hyperlink: #6c00a2;
+  --ds-color-palette-yellow-0: #fff7e0;
+  --ds-color-palette-yellow-10: #fff0c2;
+  --ds-color-palette-yellow-20: #ffe8a3;
+  --ds-color-palette-yellow-30: #ffde7a;
+  --ds-color-palette-yellow-40: #ffd65c;
+  --ds-color-palette-yellow-50: #ffcc33;
+  --ds-color-palette-yellow-60: #f9be1a;
+  --ds-color-palette-yellow-70: #e2a412;
+  --ds-color-palette-yellow-80: #c18010;
+  --ds-color-palette-yellow-90: #92540c;
+  --ds-color-palette-yellow-100: #5a2807;
+  --ds-color-palette-green-0: #d3ffcc;
+  --ds-color-palette-green-10: #b3f1aa;
+  --ds-color-palette-green-20: #96e38a;
+  --ds-color-palette-green-30: #7bd66d;
+  --ds-color-palette-green-40: #63c853;
+  --ds-color-palette-green-50: #4cba3c;
+  --ds-color-palette-green-60: #399f29;
+  --ds-color-palette-green-70: #288419;
+  --ds-color-palette-green-80: #1a690d;
+  --ds-color-palette-green-90: #0f4e05;
+  --ds-color-palette-green-100: #073300;
+  --ds-color-palette-green-alert-50: #21c000;
+  --ds-color-palette-shade-12: rgba(0, 0, 0, 0.12);
+  --ds-color-palette-shade-18: rgba(0, 0, 0, 0.18);
+  --ds-color-palette-shade-24: rgba(0, 0, 0, 0.24);
+  --ds-color-palette-shade-30: rgba(0, 0, 0, 0.3);
+  --ds-color-palette-shade-36: rgba(0, 0, 0, 0.36);
+  --ds-color-palette-shade-42: rgba(0, 0, 0, 0.42);
+  --ds-color-palette-shade-48: rgba(0, 0, 0, 0.48);
+  --ds-color-palette-shade-54: rgba(0, 0, 0, 0.54);
+  --ds-color-palette-shade-60: rgba(0, 0, 0, 0.6);
+  --ds-color-palette-shade-66: rgba(0, 0, 0, 0.66);
+  --ds-color-palette-shade-72: rgba(0, 0, 0, 0.72);
+  --ds-color-palette-shade-78: rgba(0, 0, 0, 0.78);
+  --ds-color-palette-shade-84: rgba(0, 0, 0, 0.84);
+  --ds-color-palette-shade-90: rgba(0, 0, 0, 0.9);
+  --ds-color-palette-shade-96: rgba(0, 0, 0, 0.96);
+  --ds-color-palette-shade-01: rgba(0, 0, 0, 0.01);
+  --ds-color-palette-shade-03: rgba(0, 0, 0, 0.03);
+  --ds-color-palette-shade-06: rgba(0, 0, 0, 0.06);
+  --ds-color-palette-shade-09: rgba(0, 0, 0, 0.09);
+  --ds-color-palette-red-shade-10: rgba(235, 16, 45, 0.1);
+  --ds-color-palette-red-shade-25: rgba(235, 16, 45, 0.25);
+  --ds-color-palette-red-tint-15: rgba(255, 84, 90, 0.15);
+  --ds-color-palette-red-tint-30: rgba(255, 84, 90, 0.3);
+  --ds-color-palette-blue-shade-40: rgba(204, 218, 255, 0.4);
+  --ds-color-palette-blue-shade-80: rgba(204, 218, 255, 0.8);
+  --ds-color-palette-blue-tint-15: rgba(114, 149, 246, 0.15);
+  --ds-color-palette-blue-tint-30: rgba(114, 149, 246, 0.3);
+  --ds-color-palette-tint-12: rgba(255, 255, 255, 0.12);
+  --ds-color-palette-tint-18: rgba(255, 255, 255, 0.18);
+  --ds-color-palette-tint-24: rgba(255, 255, 255, 0.24);
+  --ds-color-palette-tint-30: rgba(255, 255, 255, 0.3);
+  --ds-color-palette-tint-36: rgba(255, 255, 255, 0.36);
+  --ds-color-palette-tint-42: rgba(255, 255, 255, 0.42);
+  --ds-color-palette-tint-48: rgba(255, 255, 255, 0.48);
+  --ds-color-palette-tint-54: rgba(255, 255, 255, 0.54);
+  --ds-color-palette-tint-60: rgba(255, 255, 255, 0.6);
+  --ds-color-palette-tint-66: rgba(255, 255, 255, 0.66);
+  --ds-color-palette-tint-72: rgba(255, 255, 255, 0.72);
+  --ds-color-palette-tint-78: rgba(255, 255, 255, 0.78);
+  --ds-color-palette-tint-84: rgba(255, 255, 255, 0.84);
+  --ds-color-palette-tint-90: rgba(255, 255, 255, 0.9);
+  --ds-color-palette-tint-96: rgba(255, 255, 255, 0.96);
+  --ds-color-palette-tint-01: rgba(255, 255, 255, 0.01);
+  --ds-color-palette-tint-03: rgba(255, 255, 255, 0.03);
+  --ds-color-palette-tint-06: rgba(255, 255, 255, 0.06);
+  --ds-color-palette-tint-09: rgba(255, 255, 255, 0.09);
+  --ds-color-theme-cool-gray-dark-accent-alt-content-primary: #eeeff7;
+  --ds-color-theme-cool-gray-dark-accent-alt-content-secondary: rgba(238, 239, 247, 0.7);
+  --ds-color-theme-cool-gray-dark-accent-alt-content-tertiary: rgba(238, 239, 247, 0.5);
+  --ds-color-theme-cool-gray-dark-accent-alt-glow-primary: rgba(160, 182, 227, 0.2);
+  --ds-color-theme-cool-gray-dark-accent-alt-glow-secondary: rgba(160, 182, 227, 0.12);
+  --ds-color-theme-cool-gray-dark-accent-alt-primary: #516590;
+  --ds-color-theme-cool-gray-dark-accent-alt-secondary: #414f6b;
+  --ds-color-theme-cool-gray-dark-accent-alt-tertiary: #364563;
+  --ds-color-theme-cool-gray-dark-accent-alt-text-primary: #b5c7ec;
+  --ds-color-theme-cool-gray-dark-accent-alt-text-secondary: #a0b6e3;
+  --ds-color-theme-cool-gray-dark-accent-alt-text-tertiary: #829bce;
+  --ds-color-theme-cool-gray-dark-accent-content-primary: #050614;
+  --ds-color-theme-cool-gray-dark-accent-content-secondary: rgba(5, 6, 20, 0.7);
+  --ds-color-theme-cool-gray-dark-accent-content-tertiary: rgba(5, 6, 20, 0.5);
+  --ds-color-theme-cool-gray-dark-accent-glow-primary: rgba(160, 182, 227, 0.2);
+  --ds-color-theme-cool-gray-dark-accent-glow-secondary: rgba(160, 182, 227, 0.12);
+  --ds-color-theme-cool-gray-dark-accent-primary: #a0b6e3;
+  --ds-color-theme-cool-gray-dark-accent-quaternary: #5d76ab;
+  --ds-color-theme-cool-gray-dark-accent-secondary: #829bce;
+  --ds-color-theme-cool-gray-dark-accent-tertiary: #708ac1;
+  --ds-color-theme-cool-gray-dark-accent-text-primary: #b5c7ec;
+  --ds-color-theme-cool-gray-dark-accent-text-secondary: #a0b6e3;
+  --ds-color-theme-cool-gray-dark-accent-text-tertiary: #829bce;
+  --ds-color-theme-cool-gray-dark-container-border-primary: rgba(244, 244, 246, 0.09);
+  --ds-color-theme-cool-gray-dark-container-border-secondary: rgba(244, 244, 246, 0.12);
+  --ds-color-theme-cool-gray-dark-container-border-tertiary: rgba(244, 244, 246, 0.16);
+  --ds-color-theme-cool-gray-dark-container-fill-primary: rgba(244, 244, 246, 0.03);
+  --ds-color-theme-cool-gray-dark-container-fill-secondary: rgba(244, 244, 246, 0.06);
+  --ds-color-theme-cool-gray-dark-container-fill-tertiary: rgba(244, 244, 246, 0.09);
+  --ds-color-theme-cool-gray-dark-control-border-primary: rgba(198, 211, 241, 0.48);
+  --ds-color-theme-cool-gray-dark-control-border-quaternary: rgba(198, 211, 241, 0.8);
+  --ds-color-theme-cool-gray-dark-control-border-secondary: rgba(198, 211, 241, 0.64);
+  --ds-color-theme-cool-gray-dark-control-border-tertiary: rgba(198, 211, 241, 0.72);
+  --ds-color-theme-cool-gray-dark-control-fill-primary: rgba(198, 211, 241, 0.12);
+  --ds-color-theme-cool-gray-dark-control-fill-secondary: rgba(198, 211, 241, 0.18);
+  --ds-color-theme-cool-gray-dark-control-fill-tertiary: rgba(198, 211, 241, 0.24);
+  --ds-color-theme-cool-gray-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-cool-gray-dark-control-raised-fill-primary: rgba(221, 224, 238, 0.18);
+  --ds-color-theme-cool-gray-dark-destructive-content-primary: #000000;
+  --ds-color-theme-cool-gray-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-cool-gray-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-cool-gray-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-cool-gray-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-cool-gray-dark-destructive-primary: #ee1025;
+  --ds-color-theme-cool-gray-dark-destructive-secondary: #d11527;
+  --ds-color-theme-cool-gray-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-cool-gray-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-cool-gray-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-cool-gray-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-cool-gray-dark-highlight-primary: rgba(221, 224, 238, 0.12);
+  --ds-color-theme-cool-gray-dark-icons-primary: rgba(237, 239, 246, 0.78);
+  --ds-color-theme-cool-gray-dark-icons-secondary: rgba(238, 239, 247, 0.48);
+  --ds-color-theme-cool-gray-dark-icons-tertiary: rgba(238, 239, 247, 0.24);
+  --ds-color-theme-cool-gray-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-cool-gray-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-cool-gray-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-cool-gray-dark-surface-backdrop: #070a16;
+  --ds-color-theme-cool-gray-dark-surface-canvas: #272a3e;
+  --ds-color-theme-cool-gray-dark-surface-decoration-primary: rgba(221, 224, 238, 0.16);
+  --ds-color-theme-cool-gray-dark-surface-decoration-secondary: rgba(221, 224, 238, 0.24);
+  --ds-color-theme-cool-gray-dark-surface-decoration-tertiary: rgba(221, 224, 238, 0.32);
+  --ds-color-theme-cool-gray-dark-surface-primary: #2b2f45;
+  --ds-color-theme-cool-gray-dark-surface-secondary: #393d55;
+  --ds-color-theme-cool-gray-dark-surface-tertiary: #414662;
+  --ds-color-theme-cool-gray-dark-text-primary: rgba(237, 239, 246, 0.96);
+  --ds-color-theme-cool-gray-dark-text-secondary: rgba(238, 239, 247, 0.66);
+  --ds-color-theme-cool-gray-dark-text-tertiary: rgba(238, 239, 247, 0.36);
+  --ds-color-theme-cool-gray-dark-tone-shade-primary: rgba(11, 14, 20, 0.12);
+  --ds-color-theme-cool-gray-dark-tone-tint-primary: rgba(238, 238, 241, 0.06);
+  --ds-color-theme-cool-gray-light-accent-alt-content-primary: #1e2534;
+  --ds-color-theme-cool-gray-light-accent-alt-content-secondary: rgba(30, 37, 52, 0.7);
+  --ds-color-theme-cool-gray-light-accent-alt-content-tertiary: rgba(30, 37, 52, 0.5);
+  --ds-color-theme-cool-gray-light-accent-alt-glow-primary: rgba(160, 182, 227, 0.2);
+  --ds-color-theme-cool-gray-light-accent-alt-glow-secondary: rgba(160, 182, 227, 0.12);
+  --ds-color-theme-cool-gray-light-accent-alt-primary: #bccdf0;
+  --ds-color-theme-cool-gray-light-accent-alt-secondary: #a0b6e3;
+  --ds-color-theme-cool-gray-light-accent-alt-tertiary: #829bce;
+  --ds-color-theme-cool-gray-light-accent-alt-text-primary: #2d3a53;
+  --ds-color-theme-cool-gray-light-accent-alt-text-secondary: #242e42;
+  --ds-color-theme-cool-gray-light-accent-alt-text-tertiary: #1e2534;
+  --ds-color-theme-cool-gray-light-accent-content-primary: #eeeff7;
+  --ds-color-theme-cool-gray-light-accent-content-secondary: rgba(238, 239, 247, 0.7);
+  --ds-color-theme-cool-gray-light-accent-content-tertiary: rgba(238, 239, 247, 0.5);
+  --ds-color-theme-cool-gray-light-accent-glow-primary: rgba(40, 50, 70, 0.2);
+  --ds-color-theme-cool-gray-light-accent-glow-secondary: rgba(40, 50, 70, 0.12);
+  --ds-color-theme-cool-gray-light-accent-primary: #273145;
+  --ds-color-theme-cool-gray-light-accent-quaternary: #0a0d13;
+  --ds-color-theme-cool-gray-light-accent-secondary: #1e2534;
+  --ds-color-theme-cool-gray-light-accent-tertiary: #121720;
+  --ds-color-theme-cool-gray-light-accent-text-primary: #354463;
+  --ds-color-theme-cool-gray-light-accent-text-secondary: #2d3952;
+  --ds-color-theme-cool-gray-light-accent-text-tertiary: #242e42;
+  --ds-color-theme-cool-gray-light-container-border-primary: rgba(5, 6, 20, 0.06);
+  --ds-color-theme-cool-gray-light-container-border-secondary: rgba(5, 6, 20, 0.09);
+  --ds-color-theme-cool-gray-light-container-border-tertiary: rgba(5, 6, 20, 0.12);
+  --ds-color-theme-cool-gray-light-container-fill-primary: rgba(5, 6, 20, 0.01);
+  --ds-color-theme-cool-gray-light-container-fill-secondary: rgba(5, 6, 20, 0.03);
+  --ds-color-theme-cool-gray-light-container-fill-tertiary: rgba(5, 6, 20, 0.06);
+  --ds-color-theme-cool-gray-light-control-border-primary: rgba(33, 45, 68, 0.48);
+  --ds-color-theme-cool-gray-light-control-border-quaternary: rgba(33, 45, 69, 0.72);
+  --ds-color-theme-cool-gray-light-control-border-secondary: rgba(33, 45, 68, 0.56);
+  --ds-color-theme-cool-gray-light-control-border-tertiary: rgba(33, 45, 69, 0.64);
+  --ds-color-theme-cool-gray-light-control-fill-primary: rgba(33, 45, 69, 0.09);
+  --ds-color-theme-cool-gray-light-control-fill-secondary: rgba(33, 45, 69, 0.12);
+  --ds-color-theme-cool-gray-light-control-fill-tertiary: rgba(33, 45, 69, 0.18);
+  --ds-color-theme-cool-gray-light-control-raised-backdrop: rgba(5, 6, 20, 0.09);
+  --ds-color-theme-cool-gray-light-control-raised-fill-primary: #edeef2;
+  --ds-color-theme-cool-gray-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-cool-gray-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-cool-gray-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-cool-gray-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-cool-gray-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-cool-gray-light-destructive-primary: #ee1025;
+  --ds-color-theme-cool-gray-light-destructive-secondary: #d11527;
+  --ds-color-theme-cool-gray-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-cool-gray-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-cool-gray-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-cool-gray-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-cool-gray-light-highlight-primary: rgba(244, 244, 246, 0.24);
+  --ds-color-theme-cool-gray-light-icons-primary: rgba(33, 45, 69, 0.84);
+  --ds-color-theme-cool-gray-light-icons-secondary: rgba(33, 45, 69, 0.6);
+  --ds-color-theme-cool-gray-light-icons-tertiary: rgba(33, 45, 69, 0.36);
+  --ds-color-theme-cool-gray-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-cool-gray-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-cool-gray-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-cool-gray-light-surface-backdrop: #a7aabd;
+  --ds-color-theme-cool-gray-light-surface-canvas: #e3e5ec;
+  --ds-color-theme-cool-gray-light-surface-decoration-primary: rgba(42, 65, 111, 0.09);
+  --ds-color-theme-cool-gray-light-surface-decoration-secondary: rgba(42, 65, 111, 0.2);
+  --ds-color-theme-cool-gray-light-surface-decoration-tertiary: rgba(42, 65, 111, 0.32);
+  --ds-color-theme-cool-gray-light-surface-primary: #d2d5e3;
+  --ds-color-theme-cool-gray-light-surface-secondary: #e0e2ea;
+  --ds-color-theme-cool-gray-light-surface-tertiary: #edeef2;
+  --ds-color-theme-cool-gray-light-text-primary: rgba(5, 6, 20, 0.96);
+  --ds-color-theme-cool-gray-light-text-secondary: rgba(5, 6, 20, 0.6);
+  --ds-color-theme-cool-gray-light-text-tertiary: rgba(5, 6, 20, 0.36);
+  --ds-color-theme-cool-gray-light-tone-shade-primary: rgba(11, 14, 20, 0.03);
+  --ds-color-theme-cool-gray-light-tone-tint-primary: rgba(244, 244, 246, 0.4);
+  --ds-color-theme-default-dark-accent-alt-content-primary: #ccdaff;
+  --ds-color-theme-default-dark-accent-alt-content-secondary: #e5edff;
+  --ds-color-theme-default-dark-accent-alt-content-tertiary: #ffffff;
+  --ds-color-theme-default-dark-accent-alt-glow-primary: rgba(143, 171, 249, 0.2);
+  --ds-color-theme-default-dark-accent-alt-glow-secondary: rgba(143, 171, 249, 0.12);
+  --ds-color-theme-default-dark-accent-alt-primary: #2b55ca;
+  --ds-color-theme-default-dark-accent-alt-secondary: #1e42a4;
+  --ds-color-theme-default-dark-accent-alt-tertiary: #14307e;
+  --ds-color-theme-default-dark-accent-alt-text-primary: #ccdaff;
+  --ds-color-theme-default-dark-accent-alt-text-secondary: #adc2fc;
+  --ds-color-theme-default-dark-accent-alt-text-tertiary: #8fabf9;
+  --ds-color-theme-default-dark-accent-content-primary: #051133;
+  --ds-color-theme-default-dark-accent-content-secondary: rgba(5, 17, 51, 0.7);
+  --ds-color-theme-default-dark-accent-content-tertiary: rgba(5, 17, 51, 0.5);
+  --ds-color-theme-default-dark-accent-glow-primary: rgba(114, 149, 246, 0.2);
+  --ds-color-theme-default-dark-accent-glow-secondary: rgba(114, 149, 246, 0.12);
+  --ds-color-theme-default-dark-accent-primary: #8fabf9;
+  --ds-color-theme-default-dark-accent-quaternary: #2b55ca;
+  --ds-color-theme-default-dark-accent-secondary: #7295f6;
+  --ds-color-theme-default-dark-accent-tertiary: #557ff3;
+  --ds-color-theme-default-dark-accent-text-primary: #adc2fc;
+  --ds-color-theme-default-dark-accent-text-secondary: #8fabf9;
+  --ds-color-theme-default-dark-accent-text-tertiary: #7295f6;
+  --ds-color-theme-default-dark-container-border-primary: rgba(255, 255, 255, 0.09);
+  --ds-color-theme-default-dark-container-border-secondary: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-default-dark-container-border-tertiary: rgba(255, 255, 255, 0.16);
+  --ds-color-theme-default-dark-container-fill-primary: rgba(255, 255, 255, 0.03);
+  --ds-color-theme-default-dark-container-fill-secondary: rgba(255, 255, 255, 0.06);
+  --ds-color-theme-default-dark-container-fill-tertiary: rgba(255, 255, 255, 0.09);
+  --ds-color-theme-default-dark-control-border-primary: rgba(255, 255, 255, 0.36);
+  --ds-color-theme-default-dark-control-border-quaternary: rgba(255, 255, 255, 0.8);
+  --ds-color-theme-default-dark-control-border-secondary: rgba(255, 255, 255, 0.64);
+  --ds-color-theme-default-dark-control-border-tertiary: rgba(255, 255, 255, 0.72);
+  --ds-color-theme-default-dark-control-fill-primary: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-default-dark-control-fill-secondary: rgba(255, 255, 255, 0.18);
+  --ds-color-theme-default-dark-control-fill-tertiary: rgba(255, 255, 255, 0.24);
+  --ds-color-theme-default-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-default-dark-control-raised-fill-primary: rgba(255, 255, 255, 0.18);
+  --ds-color-theme-default-dark-destructive-content-primary: #000000;
+  --ds-color-theme-default-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-default-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-default-dark-destructive-glow-primary: rgba(255, 84, 90, 0.2);
+  --ds-color-theme-default-dark-destructive-glow-secondary: rgba(255, 84, 90, 0.12);
+  --ds-color-theme-default-dark-destructive-primary: #ff5359;
+  --ds-color-theme-default-dark-destructive-secondary: #d11527;
+  --ds-color-theme-default-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-default-dark-destructive-text-primary: #ff5359;
+  --ds-color-theme-default-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-default-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-default-dark-highlight-primary: rgba(249, 249, 249, 0.12);
+  --ds-color-theme-default-dark-icons-primary: rgba(255, 255, 255, 0.78);
+  --ds-color-theme-default-dark-icons-secondary: rgba(255, 255, 255, 0.48);
+  --ds-color-theme-default-dark-icons-tertiary: rgba(255, 255, 255, 0.24);
+  --ds-color-theme-default-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-default-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-default-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-default-dark-surface-backdrop: #050505;
+  --ds-color-theme-default-dark-surface-canvas: #1c1c1c;
+  --ds-color-theme-default-dark-surface-decoration-primary: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-default-dark-surface-decoration-secondary: rgba(255, 255, 255, 0.2);
+  --ds-color-theme-default-dark-surface-decoration-tertiary: rgba(255, 255, 255, 0.32);
+  --ds-color-theme-default-dark-surface-primary: #282828;
+  --ds-color-theme-default-dark-surface-secondary: #333333;
+  --ds-color-theme-default-dark-surface-tertiary: #3d3d3d;
+  --ds-color-theme-default-dark-text-primary: rgba(255, 255, 255, 0.96);
+  --ds-color-theme-default-dark-text-secondary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-default-dark-text-tertiary: rgba(255, 255, 255, 0.36);
+  --ds-color-theme-default-dark-tone-shade-primary: rgba(0, 0, 0, 0.12);
+  --ds-color-theme-default-dark-tone-tint-primary: rgba(255, 255, 255, 0.06);
+  --ds-color-theme-default-light-accent-alt-content-primary: #0b2059;
+  --ds-color-theme-default-light-accent-alt-content-secondary: rgba(11, 32, 89, 0.7);
+  --ds-color-theme-default-light-accent-alt-content-tertiary: rgba(11, 32, 89, 0.5);
+  --ds-color-theme-default-light-accent-alt-glow-primary: rgba(114, 149, 246, 0.2);
+  --ds-color-theme-default-light-accent-alt-glow-secondary: rgba(114, 149, 246, 0.12);
+  --ds-color-theme-default-light-accent-alt-primary: #ccdaff;
+  --ds-color-theme-default-light-accent-alt-secondary: #adc2fc;
+  --ds-color-theme-default-light-accent-alt-tertiary: #8fabf9;
+  --ds-color-theme-default-light-accent-alt-text-primary: #1e42a4;
+  --ds-color-theme-default-light-accent-alt-text-secondary: #14307e;
+  --ds-color-theme-default-light-accent-alt-text-tertiary: #0b2059;
+  --ds-color-theme-default-light-accent-content-primary: #ffffff;
+  --ds-color-theme-default-light-accent-content-secondary: rgba(255, 255, 255, 0.7);
+  --ds-color-theme-default-light-accent-content-tertiary: rgba(255, 255, 255, 0.5);
+  --ds-color-theme-default-light-accent-glow-primary: rgba(57, 105, 239, 0.2);
+  --ds-color-theme-default-light-accent-glow-secondary: rgba(57, 105, 239, 0.12);
+  --ds-color-theme-default-light-accent-primary: #3869ef;
+  --ds-color-theme-default-light-accent-quaternary: #14307e;
+  --ds-color-theme-default-light-accent-secondary: #2b55ca;
+  --ds-color-theme-default-light-accent-tertiary: #1e42a4;
+  --ds-color-theme-default-light-accent-text-primary: #3869ef;
+  --ds-color-theme-default-light-accent-text-secondary: #2b55ca;
+  --ds-color-theme-default-light-accent-text-tertiary: #1e42a4;
+  --ds-color-theme-default-light-container-border-primary: rgba(0, 0, 0, 0.06);
+  --ds-color-theme-default-light-container-border-secondary: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-default-light-container-border-tertiary: rgba(0, 0, 0, 0.12);
+  --ds-color-theme-default-light-container-fill-primary: rgba(0, 0, 0, 0.01);
+  --ds-color-theme-default-light-container-fill-secondary: rgba(0, 0, 0, 0.03);
+  --ds-color-theme-default-light-container-fill-tertiary: rgba(0, 0, 0, 0.06);
+  --ds-color-theme-default-light-control-border-primary: rgba(0, 0, 0, 0.3);
+  --ds-color-theme-default-light-control-border-quaternary: rgba(0, 0, 0, 0.72);
+  --ds-color-theme-default-light-control-border-secondary: rgba(0, 0, 0, 0.48);
+  --ds-color-theme-default-light-control-border-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-default-light-control-fill-primary: rgba(0, 0, 0, 0.06);
+  --ds-color-theme-default-light-control-fill-secondary: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-default-light-control-fill-tertiary: rgba(0, 0, 0, 0.12);
+  --ds-color-theme-default-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-default-light-control-raised-fill-primary: #ffffff;
+  --ds-color-theme-default-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-default-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-default-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-default-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-default-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-default-light-destructive-primary: #ee1025;
+  --ds-color-theme-default-light-destructive-secondary: #d11527;
+  --ds-color-theme-default-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-default-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-default-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-default-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-default-light-highlight-primary: rgba(255, 255, 255, 0.24);
+  --ds-color-theme-default-light-icons-primary: rgba(0, 0, 0, 0.84);
+  --ds-color-theme-default-light-icons-secondary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-default-light-icons-tertiary: rgba(0, 0, 0, 0.36);
+  --ds-color-theme-default-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-default-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-default-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-default-light-surface-backdrop: #e0e0e0;
+  --ds-color-theme-default-light-surface-canvas: #fafafa;
+  --ds-color-theme-default-light-surface-decoration-primary: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-default-light-surface-decoration-secondary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-default-light-surface-decoration-tertiary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-default-light-surface-primary: #f2f2f2;
+  --ds-color-theme-default-light-surface-secondary: #fafafa;
+  --ds-color-theme-default-light-surface-tertiary: #ffffff;
+  --ds-color-theme-default-light-text-primary: rgba(0, 0, 0, 0.96);
+  --ds-color-theme-default-light-text-secondary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-default-light-text-tertiary: rgba(0, 0, 0, 0.36);
+  --ds-color-theme-default-light-tone-shade-primary: rgba(0, 0, 0, 0.03);
+  --ds-color-theme-default-light-tone-tint-primary: rgba(255, 255, 255, 0.32);
+  --ds-color-theme-desert-dark-accent-alt-content-primary: #fdfaf7;
+  --ds-color-theme-desert-dark-accent-alt-content-secondary: rgba(253, 250, 247, 0.7);
+  --ds-color-theme-desert-dark-accent-alt-content-tertiary: rgba(253, 250, 247, 0.5);
+  --ds-color-theme-desert-dark-accent-alt-glow-primary: rgba(255, 165, 61, 0.2);
+  --ds-color-theme-desert-dark-accent-alt-glow-secondary: rgba(255, 165, 61, 0.12);
+  --ds-color-theme-desert-dark-accent-alt-primary: #d14200;
+  --ds-color-theme-desert-dark-accent-alt-secondary: #c13600;
+  --ds-color-theme-desert-dark-accent-alt-tertiary: #b73000;
+  --ds-color-theme-desert-dark-accent-alt-text-primary: #ffcc66;
+  --ds-color-theme-desert-dark-accent-alt-text-secondary: #ffa43d;
+  --ds-color-theme-desert-dark-accent-alt-text-tertiary: #ff6a00;
+  --ds-color-theme-desert-dark-accent-content-primary: #17150f;
+  --ds-color-theme-desert-dark-accent-content-secondary: rgba(23, 21, 15, 0.7);
+  --ds-color-theme-desert-dark-accent-content-tertiary: rgba(23, 21, 15, 0.5);
+  --ds-color-theme-desert-dark-accent-glow-primary: rgba(255, 165, 61, 0.2);
+  --ds-color-theme-desert-dark-accent-glow-secondary: rgba(255, 165, 61, 0.12);
+  --ds-color-theme-desert-dark-accent-primary: #ffa43d;
+  --ds-color-theme-desert-dark-accent-quaternary: #d65900;
+  --ds-color-theme-desert-dark-accent-secondary: #ff8914;
+  --ds-color-theme-desert-dark-accent-tertiary: #ff6a00;
+  --ds-color-theme-desert-dark-accent-text-primary: #ffcc66;
+  --ds-color-theme-desert-dark-accent-text-secondary: #ffa43d;
+  --ds-color-theme-desert-dark-accent-text-tertiary: #ff6a00;
+  --ds-color-theme-desert-dark-container-border-primary: rgba(249, 248, 246, 0.09);
+  --ds-color-theme-desert-dark-container-border-secondary: rgba(249, 248, 246, 0.12);
+  --ds-color-theme-desert-dark-container-border-tertiary: rgba(249, 248, 246, 0.16);
+  --ds-color-theme-desert-dark-container-fill-primary: rgba(249, 248, 246, 0.03);
+  --ds-color-theme-desert-dark-container-fill-secondary: rgba(249, 248, 246, 0.06);
+  --ds-color-theme-desert-dark-container-fill-tertiary: rgba(249, 248, 246, 0.09);
+  --ds-color-theme-desert-dark-control-border-primary: rgba(237, 232, 222, 0.32);
+  --ds-color-theme-desert-dark-control-border-quaternary: rgba(237, 232, 222, 0.72);
+  --ds-color-theme-desert-dark-control-border-secondary: rgba(237, 232, 222, 0.48);
+  --ds-color-theme-desert-dark-control-border-tertiary: rgba(237, 232, 222, 0.64);
+  --ds-color-theme-desert-dark-control-fill-primary: rgba(237, 232, 222, 0.12);
+  --ds-color-theme-desert-dark-control-fill-secondary: rgba(237, 232, 222, 0.18);
+  --ds-color-theme-desert-dark-control-fill-tertiary: rgba(237, 232, 222, 0.24);
+  --ds-color-theme-desert-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-desert-dark-control-raised-fill-primary: rgba(245, 250, 244, 0.18);
+  --ds-color-theme-desert-dark-destructive-content-primary: #000000;
+  --ds-color-theme-desert-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-desert-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-desert-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-desert-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-desert-dark-destructive-primary: #ee1025;
+  --ds-color-theme-desert-dark-destructive-secondary: #d11527;
+  --ds-color-theme-desert-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-desert-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-desert-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-desert-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-desert-dark-highlight-primary: rgba(245, 250, 244, 0.12);
+  --ds-color-theme-desert-dark-icons-primary: rgba(253, 250, 247, 0.78);
+  --ds-color-theme-desert-dark-icons-secondary: rgba(253, 250, 247, 0.48);
+  --ds-color-theme-desert-dark-icons-tertiary: rgba(253, 250, 247, 0.24);
+  --ds-color-theme-desert-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-desert-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-desert-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-desert-dark-surface-backdrop: #1c1916;
+  --ds-color-theme-desert-dark-surface-canvas: #312e2a;
+  --ds-color-theme-desert-dark-surface-decoration-primary: rgba(237, 232, 222, 0.12);
+  --ds-color-theme-desert-dark-surface-decoration-secondary: rgba(237, 232, 222, 0.2);
+  --ds-color-theme-desert-dark-surface-decoration-tertiary: rgba(237, 232, 222, 0.32);
+  --ds-color-theme-desert-dark-surface-primary: #37332e;
+  --ds-color-theme-desert-dark-surface-secondary: #423e38;
+  --ds-color-theme-desert-dark-surface-tertiary: #4a453f;
+  --ds-color-theme-desert-dark-text-primary: rgba(253, 252, 250, 0.96);
+  --ds-color-theme-desert-dark-text-secondary: rgba(254, 252, 251, 0.66);
+  --ds-color-theme-desert-dark-text-tertiary: rgba(254, 252, 251, 0.36);
+  --ds-color-theme-desert-dark-tone-shade-primary: rgba(18, 16, 12, 0.16);
+  --ds-color-theme-desert-dark-tone-tint-primary: rgba(237, 232, 222, 0.06);
+  --ds-color-theme-desert-light-accent-alt-content-primary: #331100;
+  --ds-color-theme-desert-light-accent-alt-content-secondary: rgba(51, 17, 0, 0.7);
+  --ds-color-theme-desert-light-accent-alt-content-tertiary: rgba(51, 17, 0, 0.5);
+  --ds-color-theme-desert-light-accent-alt-glow-primary: rgba(255, 165, 61, 0.2);
+  --ds-color-theme-desert-light-accent-alt-glow-secondary: rgba(255, 165, 61, 0.12);
+  --ds-color-theme-desert-light-accent-alt-primary: #ffb766;
+  --ds-color-theme-desert-light-accent-alt-secondary: #ffa43d;
+  --ds-color-theme-desert-light-accent-alt-tertiary: #ff8914;
+  --ds-color-theme-desert-light-accent-alt-text-primary: #c13600;
+  --ds-color-theme-desert-light-accent-alt-text-secondary: #b73000;
+  --ds-color-theme-desert-light-accent-alt-text-tertiary: #a32b00;
+  --ds-color-theme-desert-light-accent-content-primary: #fcfcfb;
+  --ds-color-theme-desert-light-accent-content-secondary: rgba(253, 253, 252, 0.7);
+  --ds-color-theme-desert-light-accent-content-tertiary: rgba(253, 253, 252, 0.5);
+  --ds-color-theme-desert-light-accent-glow-primary: rgba(209, 66, 0, 0.2);
+  --ds-color-theme-desert-light-accent-glow-secondary: rgba(209, 66, 0, 0.12);
+  --ds-color-theme-desert-light-accent-primary: #d14200;
+  --ds-color-theme-desert-light-accent-quaternary: #a32b00;
+  --ds-color-theme-desert-light-accent-secondary: #c13600;
+  --ds-color-theme-desert-light-accent-tertiary: #b73000;
+  --ds-color-theme-desert-light-accent-text-primary: #c13600;
+  --ds-color-theme-desert-light-accent-text-secondary: #b73000;
+  --ds-color-theme-desert-light-accent-text-tertiary: #a32b00;
+  --ds-color-theme-desert-light-container-border-primary: rgba(23, 21, 15, 0.06);
+  --ds-color-theme-desert-light-container-border-secondary: rgba(23, 21, 15, 0.09);
+  --ds-color-theme-desert-light-container-border-tertiary: rgba(23, 21, 15, 0.12);
+  --ds-color-theme-desert-light-container-fill-primary: rgba(23, 21, 15, 0.01);
+  --ds-color-theme-desert-light-container-fill-secondary: rgba(23, 21, 15, 0.03);
+  --ds-color-theme-desert-light-container-fill-tertiary: rgba(23, 21, 15, 0.06);
+  --ds-color-theme-desert-light-control-border-primary: rgba(115, 98, 73, 0.32);
+  --ds-color-theme-desert-light-control-border-quaternary: rgba(115, 98, 73, 0.72);
+  --ds-color-theme-desert-light-control-border-secondary: rgba(115, 98, 73, 0.48);
+  --ds-color-theme-desert-light-control-border-tertiary: rgba(115, 98, 73, 0.64);
+  --ds-color-theme-desert-light-control-fill-primary: rgba(115, 98, 73, 0.09);
+  --ds-color-theme-desert-light-control-fill-secondary: rgba(115, 98, 73, 0.12);
+  --ds-color-theme-desert-light-control-fill-tertiary: rgba(115, 98, 73, 0.18);
+  --ds-color-theme-desert-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-desert-light-control-raised-fill-primary: #fbfaf9;
+  --ds-color-theme-desert-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-desert-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-desert-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-desert-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-desert-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-desert-light-destructive-primary: #ee1025;
+  --ds-color-theme-desert-light-destructive-secondary: #d11527;
+  --ds-color-theme-desert-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-desert-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-desert-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-desert-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-desert-light-highlight-primary: rgba(253, 250, 247, 0.24);
+  --ds-color-theme-desert-light-icons-primary: rgba(23, 21, 15, 0.84);
+  --ds-color-theme-desert-light-icons-secondary: rgba(23, 21, 15, 0.66);
+  --ds-color-theme-desert-light-icons-tertiary: rgba(23, 21, 15, 0.36);
+  --ds-color-theme-desert-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-desert-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-desert-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-desert-light-surface-backdrop: #c6b99e;
+  --ds-color-theme-desert-light-surface-canvas: #f5f4ef;
+  --ds-color-theme-desert-light-surface-decoration-primary: rgba(115, 98, 73, 0.12);
+  --ds-color-theme-desert-light-surface-decoration-secondary: rgba(115, 98, 73, 0.2);
+  --ds-color-theme-desert-light-surface-decoration-tertiary: rgba(115, 98, 73, 0.32);
+  --ds-color-theme-desert-light-surface-primary: #eee9e1;
+  --ds-color-theme-desert-light-surface-secondary: #f5f3ef;
+  --ds-color-theme-desert-light-surface-tertiary: #fafaf8;
+  --ds-color-theme-desert-light-text-primary: rgba(23, 21, 15, 0.96);
+  --ds-color-theme-desert-light-text-secondary: rgba(23, 21, 15, 0.6);
+  --ds-color-theme-desert-light-text-tertiary: rgba(23, 21, 15, 0.36);
+  --ds-color-theme-desert-light-tone-shade-primary: rgba(0, 0, 0, 0.06);
+  --ds-color-theme-desert-light-tone-tint-primary: rgba(255, 255, 255, 0.32);
+  --ds-color-theme-green-dark-accent-alt-content-primary: #e6f2ea;
+  --ds-color-theme-green-dark-accent-alt-content-secondary: rgba(230, 242, 234, 0.7);
+  --ds-color-theme-green-dark-accent-alt-content-tertiary: rgba(230, 242, 234, 0.5);
+  --ds-color-theme-green-dark-accent-alt-glow-primary: rgba(110, 199, 162, 0.2);
+  --ds-color-theme-green-dark-accent-alt-glow-secondary: rgba(110, 199, 162, 0.12);
+  --ds-color-theme-green-dark-accent-alt-primary: #2c6645;
+  --ds-color-theme-green-dark-accent-alt-secondary: #235136;
+  --ds-color-theme-green-dark-accent-alt-tertiary: #193926;
+  --ds-color-theme-green-dark-accent-alt-text-primary: #85e0ba;
+  --ds-color-theme-green-dark-accent-alt-text-secondary: #6ec7a2;
+  --ds-color-theme-green-dark-accent-alt-text-tertiary: #48b186;
+  --ds-color-theme-green-dark-accent-content-primary: #0b1914;
+  --ds-color-theme-green-dark-accent-content-secondary: rgba(11, 25, 20, 0.7);
+  --ds-color-theme-green-dark-accent-content-tertiary: rgba(11, 25, 20, 0.5);
+  --ds-color-theme-green-dark-accent-glow-primary: rgba(110, 199, 162, 0.2);
+  --ds-color-theme-green-dark-accent-glow-secondary: rgba(110, 199, 162, 0.12);
+  --ds-color-theme-green-dark-accent-primary: #6ec7a2;
+  --ds-color-theme-green-dark-accent-quaternary: #21815a;
+  --ds-color-theme-green-dark-accent-secondary: #48b186;
+  --ds-color-theme-green-dark-accent-tertiary: #299c6d;
+  --ds-color-theme-green-dark-accent-text-primary: #85e0ba;
+  --ds-color-theme-green-dark-accent-text-secondary: #6ec7a2;
+  --ds-color-theme-green-dark-accent-text-tertiary: #48b186;
+  --ds-color-theme-green-dark-container-border-primary: rgba(217, 242, 229, 0.09);
+  --ds-color-theme-green-dark-container-border-secondary: rgba(217, 242, 229, 0.12);
+  --ds-color-theme-green-dark-container-border-tertiary: rgba(217, 242, 229, 0.16);
+  --ds-color-theme-green-dark-container-fill-primary: rgba(217, 242, 229, 0.02);
+  --ds-color-theme-green-dark-container-fill-secondary: rgba(217, 242, 229, 0.04);
+  --ds-color-theme-green-dark-container-fill-tertiary: rgba(217, 242, 229, 0.06);
+  --ds-color-theme-green-dark-control-border-primary: rgba(136, 221, 186, 0.24);
+  --ds-color-theme-green-dark-control-border-quaternary: rgba(136, 221, 186, 0.8);
+  --ds-color-theme-green-dark-control-border-secondary: rgba(136, 221, 186, 0.64);
+  --ds-color-theme-green-dark-control-border-tertiary: rgba(136, 221, 186, 0.72);
+  --ds-color-theme-green-dark-control-fill-primary: rgba(136, 221, 186, 0.12);
+  --ds-color-theme-green-dark-control-fill-secondary: rgba(136, 221, 186, 0.18);
+  --ds-color-theme-green-dark-control-fill-tertiary: rgba(136, 221, 186, 0.24);
+  --ds-color-theme-green-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-green-dark-control-raised-fill-primary: rgba(230, 242, 234, 0.18);
+  --ds-color-theme-green-dark-destructive-content-primary: #000000;
+  --ds-color-theme-green-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-green-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-green-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-green-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-green-dark-destructive-primary: #ee1025;
+  --ds-color-theme-green-dark-destructive-secondary: #d11527;
+  --ds-color-theme-green-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-green-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-green-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-green-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-green-dark-highlight-primary: rgba(230, 242, 234, 0.12);
+  --ds-color-theme-green-dark-icons-primary: rgba(230, 242, 234, 0.78);
+  --ds-color-theme-green-dark-icons-secondary: rgba(230, 242, 234, 0.48);
+  --ds-color-theme-green-dark-icons-tertiary: rgba(230, 242, 234, 0.24);
+  --ds-color-theme-green-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-green-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-green-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-green-dark-surface-backdrop: #0f241c;
+  --ds-color-theme-green-dark-surface-canvas: #1c342b;
+  --ds-color-theme-green-dark-surface-decoration-primary: rgba(136, 221, 186, 0.16);
+  --ds-color-theme-green-dark-surface-decoration-secondary: rgba(136, 221, 186, 0.24);
+  --ds-color-theme-green-dark-surface-decoration-tertiary: rgba(136, 221, 186, 0.32);
+  --ds-color-theme-green-dark-surface-primary: #203b30;
+  --ds-color-theme-green-dark-surface-secondary: #244133;
+  --ds-color-theme-green-dark-surface-tertiary: #2d4d3e;
+  --ds-color-theme-green-dark-text-primary: rgba(242, 248, 244, 0.96);
+  --ds-color-theme-green-dark-text-secondary: rgba(242, 248, 244, 0.66);
+  --ds-color-theme-green-dark-text-tertiary: rgba(242, 248, 244, 0.36);
+  --ds-color-theme-green-dark-tone-shade-primary: rgba(9, 21, 16, 0.16);
+  --ds-color-theme-green-dark-tone-tint-primary: rgba(230, 248, 241, 0.06);
+  --ds-color-theme-green-light-accent-alt-content-primary: #193926;
+  --ds-color-theme-green-light-accent-alt-content-secondary: rgba(25, 57, 38, 0.7);
+  --ds-color-theme-green-light-accent-alt-content-tertiary: rgba(25, 57, 38, 0.5);
+  --ds-color-theme-green-light-accent-alt-glow-primary: rgba(133, 224, 186, 0.2);
+  --ds-color-theme-green-light-accent-alt-glow-secondary: rgba(133, 224, 186, 0.12);
+  --ds-color-theme-green-light-accent-alt-primary: #99eac8;
+  --ds-color-theme-green-light-accent-alt-secondary: #85e0ba;
+  --ds-color-theme-green-light-accent-alt-tertiary: #6ec7a2;
+  --ds-color-theme-green-light-accent-alt-text-primary: #2c6645;
+  --ds-color-theme-green-light-accent-alt-text-secondary: #235136;
+  --ds-color-theme-green-light-accent-alt-text-tertiary: #193926;
+  --ds-color-theme-green-light-accent-content-primary: #f5fbf4;
+  --ds-color-theme-green-light-accent-content-secondary: rgba(245, 251, 244, 0.7);
+  --ds-color-theme-green-light-accent-content-tertiary: rgba(245, 251, 244, 0.5);
+  --ds-color-theme-green-light-accent-glow-primary: rgba(56, 128, 86, 0.2);
+  --ds-color-theme-green-light-accent-glow-secondary: rgba(56, 128, 86, 0.12);
+  --ds-color-theme-green-light-accent-primary: #377f55;
+  --ds-color-theme-green-light-accent-quaternary: #183826;
+  --ds-color-theme-green-light-accent-secondary: #2c6645;
+  --ds-color-theme-green-light-accent-tertiary: #235136;
+  --ds-color-theme-green-light-accent-text-primary: #2c6645;
+  --ds-color-theme-green-light-accent-text-secondary: #235136;
+  --ds-color-theme-green-light-accent-text-tertiary: #193926;
+  --ds-color-theme-green-light-container-border-primary: rgba(6, 37, 4, 0.09);
+  --ds-color-theme-green-light-container-border-secondary: rgba(6, 37, 4, 0.12);
+  --ds-color-theme-green-light-container-border-tertiary: rgba(6, 37, 4, 0.16);
+  --ds-color-theme-green-light-container-fill-primary: rgba(6, 37, 4, 0.02);
+  --ds-color-theme-green-light-container-fill-secondary: rgba(6, 37, 4, 0.04);
+  --ds-color-theme-green-light-container-fill-tertiary: rgba(6, 37, 4, 0.06);
+  --ds-color-theme-green-light-control-border-primary: rgba(40, 138, 81, 0.32);
+  --ds-color-theme-green-light-control-border-quaternary: rgba(40, 138, 81, 0.72);
+  --ds-color-theme-green-light-control-border-secondary: rgba(40, 138, 81, 0.56);
+  --ds-color-theme-green-light-control-border-tertiary: rgba(40, 138, 81, 0.64);
+  --ds-color-theme-green-light-control-fill-primary: rgba(40, 138, 81, 0.09);
+  --ds-color-theme-green-light-control-fill-secondary: rgba(40, 138, 81, 0.12);
+  --ds-color-theme-green-light-control-fill-tertiary: rgba(40, 138, 81, 0.18);
+  --ds-color-theme-green-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-green-light-control-raised-fill-primary: #f8fcf7;
+  --ds-color-theme-green-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-green-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-green-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-green-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-green-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-green-light-destructive-primary: #ee1025;
+  --ds-color-theme-green-light-destructive-secondary: #d11527;
+  --ds-color-theme-green-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-green-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-green-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-green-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-green-light-highlight-primary: rgba(245, 250, 244, 0.24);
+  --ds-color-theme-green-light-icons-primary: rgba(6, 37, 4, 0.84);
+  --ds-color-theme-green-light-icons-secondary: rgba(6, 37, 4, 0.6);
+  --ds-color-theme-green-light-icons-tertiary: rgba(6, 37, 4, 0.36);
+  --ds-color-theme-green-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-green-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-green-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-green-light-surface-backdrop: #b5d0ad;
+  --ds-color-theme-green-light-surface-canvas: #ecf5ea;
+  --ds-color-theme-green-light-surface-decoration-primary: rgba(31, 147, 80, 0.12);
+  --ds-color-theme-green-light-surface-decoration-secondary: rgba(31, 147, 80, 0.2);
+  --ds-color-theme-green-light-surface-decoration-tertiary: rgba(31, 147, 80, 0.32);
+  --ds-color-theme-green-light-surface-primary: #e3eee1;
+  --ds-color-theme-green-light-surface-secondary: #ecf4eb;
+  --ds-color-theme-green-light-surface-tertiary: #f8fcf7;
+  --ds-color-theme-green-light-text-primary: rgba(4, 28, 3, 0.96);
+  --ds-color-theme-green-light-text-secondary: rgba(4, 28, 3, 0.6);
+  --ds-color-theme-green-light-text-tertiary: rgba(4, 28, 3, 0.36);
+  --ds-color-theme-green-light-tone-shade-primary: rgba(6, 37, 4, 0.06);
+  --ds-color-theme-green-light-tone-tint-primary: rgba(247, 252, 250, 0.4);
+  --ds-color-theme-orange-dark-accent-alt-content-primary: #fff9f0;
+  --ds-color-theme-orange-dark-accent-alt-content-secondary: rgba(255, 249, 240, 0.7);
+  --ds-color-theme-orange-dark-accent-alt-content-tertiary: rgba(255, 249, 240, 0.5);
+  --ds-color-theme-orange-dark-accent-alt-glow-primary: rgba(255, 129, 51, 0.2);
+  --ds-color-theme-orange-dark-accent-alt-glow-secondary: rgba(255, 129, 51, 0.12);
+  --ds-color-theme-orange-dark-accent-alt-primary: #ef5300;
+  --ds-color-theme-orange-dark-accent-alt-secondary: #c64200;
+  --ds-color-theme-orange-dark-accent-alt-tertiary: #d65200;
+  --ds-color-theme-orange-dark-accent-alt-text-primary: #ff9f19;
+  --ds-color-theme-orange-dark-accent-alt-text-secondary: #f48200;
+  --ds-color-theme-orange-dark-accent-alt-text-tertiary: #ef6b00;
+  --ds-color-theme-orange-dark-accent-content-primary: #1a0900;
+  --ds-color-theme-orange-dark-accent-content-secondary: rgba(26, 9, 0, 0.7);
+  --ds-color-theme-orange-dark-accent-content-tertiary: rgba(26, 9, 0, 0.5);
+  --ds-color-theme-orange-dark-accent-glow-primary: rgba(255, 129, 51, 0.2);
+  --ds-color-theme-orange-dark-accent-glow-secondary: rgba(255, 129, 51, 0.12);
+  --ds-color-theme-orange-dark-accent-primary: #ff8133;
+  --ds-color-theme-orange-dark-accent-quaternary: #d65200;
+  --ds-color-theme-orange-dark-accent-secondary: #ff6200;
+  --ds-color-theme-orange-dark-accent-tertiary: #ef5300;
+  --ds-color-theme-orange-dark-accent-text-primary: #ff9f19;
+  --ds-color-theme-orange-dark-accent-text-secondary: #f48200;
+  --ds-color-theme-orange-dark-accent-text-tertiary: #ef6b00;
+  --ds-color-theme-orange-dark-container-border-primary: rgba(255, 251, 245, 0.09);
+  --ds-color-theme-orange-dark-container-border-secondary: rgba(255, 251, 245, 0.12);
+  --ds-color-theme-orange-dark-container-border-tertiary: rgba(255, 251, 245, 0.16);
+  --ds-color-theme-orange-dark-container-fill-primary: rgba(255, 251, 245, 0.03);
+  --ds-color-theme-orange-dark-container-fill-secondary: rgba(255, 251, 245, 0.06);
+  --ds-color-theme-orange-dark-container-fill-tertiary: rgba(255, 251, 245, 0.09);
+  --ds-color-theme-orange-dark-control-border-primary: rgba(255, 165, 77, 0.48);
+  --ds-color-theme-orange-dark-control-border-quaternary: rgba(255, 165, 77, 0.8);
+  --ds-color-theme-orange-dark-control-border-secondary: rgba(255, 165, 77, 0.64);
+  --ds-color-theme-orange-dark-control-border-tertiary: rgba(255, 165, 77, 0.72);
+  --ds-color-theme-orange-dark-control-fill-primary: rgba(255, 165, 77, 0.12);
+  --ds-color-theme-orange-dark-control-fill-secondary: rgba(255, 165, 77, 0.18);
+  --ds-color-theme-orange-dark-control-fill-tertiary: rgba(255, 165, 77, 0.24);
+  --ds-color-theme-orange-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-orange-dark-control-raised-fill-primary: rgba(255, 249, 240, 0.18);
+  --ds-color-theme-orange-dark-destructive-content-primary: #000000;
+  --ds-color-theme-orange-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-orange-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-orange-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-orange-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-orange-dark-destructive-primary: #ee1025;
+  --ds-color-theme-orange-dark-destructive-secondary: #d11527;
+  --ds-color-theme-orange-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-orange-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-orange-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-orange-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-orange-dark-highlight-primary: rgba(255, 249, 240, 0.12);
+  --ds-color-theme-orange-dark-icons-primary: rgba(253, 234, 206, 0.78);
+  --ds-color-theme-orange-dark-icons-secondary: rgba(253, 234, 206, 0.48);
+  --ds-color-theme-orange-dark-icons-tertiary: rgba(253, 234, 206, 0.24);
+  --ds-color-theme-orange-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-orange-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-orange-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-orange-dark-surface-backdrop: #330d00;
+  --ds-color-theme-orange-dark-surface-canvas: #4a200c;
+  --ds-color-theme-orange-dark-surface-decoration-primary: rgba(255, 165, 77, 0.16);
+  --ds-color-theme-orange-dark-surface-decoration-secondary: rgba(255, 165, 77, 0.24);
+  --ds-color-theme-orange-dark-surface-decoration-tertiary: rgba(255, 165, 77, 0.32);
+  --ds-color-theme-orange-dark-surface-primary: #54240c;
+  --ds-color-theme-orange-dark-surface-secondary: #622e0e;
+  --ds-color-theme-orange-dark-surface-tertiary: #6e350c;
+  --ds-color-theme-orange-dark-text-primary: rgba(255, 244, 229, 0.96);
+  --ds-color-theme-orange-dark-text-secondary: rgba(255, 244, 229, 0.66);
+  --ds-color-theme-orange-dark-text-tertiary: rgba(255, 245, 229, 0.36);
+  --ds-color-theme-orange-dark-tone-shade-primary: rgba(26, 9, 0, 0.16);
+  --ds-color-theme-orange-dark-tone-tint-primary: rgba(254, 238, 215, 0.06);
+  --ds-color-theme-orange-light-accent-alt-content-primary: #331100;
+  --ds-color-theme-orange-light-accent-alt-content-secondary: rgba(51, 17, 0, 0.7);
+  --ds-color-theme-orange-light-accent-alt-content-tertiary: rgba(51, 17, 0, 0.5);
+  --ds-color-theme-orange-light-accent-alt-glow-primary: rgba(255, 159, 26, 0.2);
+  --ds-color-theme-orange-light-accent-alt-glow-secondary: rgba(255, 159, 26, 0.12);
+  --ds-color-theme-orange-light-accent-alt-primary: #ffbf66;
+  --ds-color-theme-orange-light-accent-alt-secondary: #ff9f19;
+  --ds-color-theme-orange-light-accent-alt-tertiary: #ef6b00;
+  --ds-color-theme-orange-light-accent-alt-text-primary: #c64200;
+  --ds-color-theme-orange-light-accent-alt-text-secondary: #ad3400;
+  --ds-color-theme-orange-light-accent-alt-text-tertiary: #932900;
+  --ds-color-theme-orange-light-accent-content-primary: #331100;
+  --ds-color-theme-orange-light-accent-content-secondary: rgba(51, 17, 0, 0.7);
+  --ds-color-theme-orange-light-accent-content-tertiary: rgba(51, 17, 0, 0.5);
+  --ds-color-theme-orange-light-accent-glow-primary: rgba(255, 159, 26, 0.2);
+  --ds-color-theme-orange-light-accent-glow-secondary: rgba(255, 159, 26, 0.12);
+  --ds-color-theme-orange-light-accent-primary: #ff9f19;
+  --ds-color-theme-orange-light-accent-quaternary: #ef5300;
+  --ds-color-theme-orange-light-accent-secondary: #f48200;
+  --ds-color-theme-orange-light-accent-tertiary: #ef6b00;
+  --ds-color-theme-orange-light-accent-text-primary: #c64200;
+  --ds-color-theme-orange-light-accent-text-secondary: #ad3400;
+  --ds-color-theme-orange-light-accent-text-tertiary: #932900;
+  --ds-color-theme-orange-light-container-border-primary: rgba(41, 14, 0, 0.06);
+  --ds-color-theme-orange-light-container-border-secondary: rgba(41, 14, 0, 0.09);
+  --ds-color-theme-orange-light-container-border-tertiary: rgba(41, 14, 0, 0.12);
+  --ds-color-theme-orange-light-container-fill-primary: rgba(41, 14, 0, 0.02);
+  --ds-color-theme-orange-light-container-fill-secondary: rgba(41, 14, 0, 0.04);
+  --ds-color-theme-orange-light-container-fill-tertiary: rgba(41, 14, 0, 0.06);
+  --ds-color-theme-orange-light-control-border-primary: rgba(204, 85, 0, 0.32);
+  --ds-color-theme-orange-light-control-border-quaternary: rgba(204, 85, 0, 0.72);
+  --ds-color-theme-orange-light-control-border-secondary: rgba(204, 85, 0, 0.56);
+  --ds-color-theme-orange-light-control-border-tertiary: rgba(204, 85, 0, 0.64);
+  --ds-color-theme-orange-light-control-fill-primary: rgba(204, 85, 0, 0.09);
+  --ds-color-theme-orange-light-control-fill-secondary: rgba(204, 85, 0, 0.12);
+  --ds-color-theme-orange-light-control-fill-tertiary: rgba(204, 85, 0, 0.18);
+  --ds-color-theme-orange-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-orange-light-control-raised-fill-primary: #fff9f0;
+  --ds-color-theme-orange-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-orange-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-orange-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-orange-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-orange-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-orange-light-destructive-primary: #ee1025;
+  --ds-color-theme-orange-light-destructive-secondary: #d11527;
+  --ds-color-theme-orange-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-orange-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-orange-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-orange-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-orange-light-highlight-primary: rgba(255, 249, 240, 0.24);
+  --ds-color-theme-orange-light-icons-primary: rgba(26, 9, 0, 0.84);
+  --ds-color-theme-orange-light-icons-secondary: rgba(26, 9, 0, 0.66);
+  --ds-color-theme-orange-light-icons-tertiary: rgba(26, 9, 0, 0.36);
+  --ds-color-theme-orange-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-orange-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-orange-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-orange-light-surface-backdrop: #f5bc89;
+  --ds-color-theme-orange-light-surface-canvas: #fdf4e6;
+  --ds-color-theme-orange-light-surface-decoration-primary: rgba(204, 85, 0, 0.12);
+  --ds-color-theme-orange-light-surface-decoration-secondary: rgba(204, 85, 0, 0.2);
+  --ds-color-theme-orange-light-surface-decoration-tertiary: rgba(204, 85, 0, 0.32);
+  --ds-color-theme-orange-light-surface-primary: #fcebd3;
+  --ds-color-theme-orange-light-surface-secondary: #fdf3e1;
+  --ds-color-theme-orange-light-surface-tertiary: #fff9f0;
+  --ds-color-theme-orange-light-text-primary: rgba(26, 9, 0, 0.96);
+  --ds-color-theme-orange-light-text-secondary: rgba(26, 9, 0, 0.6);
+  --ds-color-theme-orange-light-text-tertiary: rgba(26, 9, 0, 0.36);
+  --ds-color-theme-orange-light-tone-shade-primary: rgba(81, 27, 0, 0.06);
+  --ds-color-theme-orange-light-tone-tint-primary: rgba(255, 250, 244, 0.56);
+  --ds-color-theme-rose-dark-accent-alt-content-primary: #fffafe;
+  --ds-color-theme-rose-dark-accent-alt-content-secondary: rgba(255, 250, 254, 0.7);
+  --ds-color-theme-rose-dark-accent-alt-content-tertiary: rgba(255, 250, 254, 0.5);
+  --ds-color-theme-rose-dark-accent-alt-glow-primary: rgba(250, 125, 221, 0.2);
+  --ds-color-theme-rose-dark-accent-alt-glow-secondary: rgba(250, 125, 221, 0.12);
+  --ds-color-theme-rose-dark-accent-alt-primary: #c1008e;
+  --ds-color-theme-rose-dark-accent-alt-secondary: #a30074;
+  --ds-color-theme-rose-dark-accent-alt-tertiary: #84005c;
+  --ds-color-theme-rose-dark-accent-alt-text-primary: #ffa8ea;
+  --ds-color-theme-rose-dark-accent-alt-text-secondary: #fa7ddd;
+  --ds-color-theme-rose-dark-accent-alt-text-tertiary: #f249c5;
+  --ds-color-theme-rose-dark-accent-content-primary: #30031e;
+  --ds-color-theme-rose-dark-accent-content-secondary: rgba(48, 3, 30, 0.7);
+  --ds-color-theme-rose-dark-accent-content-tertiary: rgba(48, 3, 30, 0.5);
+  --ds-color-theme-rose-dark-accent-glow-primary: rgba(250, 125, 221, 0.2);
+  --ds-color-theme-rose-dark-accent-glow-secondary: rgba(250, 125, 221, 0.12);
+  --ds-color-theme-rose-dark-accent-primary: #fa7ddd;
+  --ds-color-theme-rose-dark-accent-quaternary: #d91ba0;
+  --ds-color-theme-rose-dark-accent-secondary: #f249c5;
+  --ds-color-theme-rose-dark-accent-tertiary: #e52eae;
+  --ds-color-theme-rose-dark-accent-text-primary: #ffa8ea;
+  --ds-color-theme-rose-dark-accent-text-secondary: #fa7ddd;
+  --ds-color-theme-rose-dark-accent-text-tertiary: #f249c5;
+  --ds-color-theme-rose-dark-container-border-primary: rgba(255, 250, 254, 0.09);
+  --ds-color-theme-rose-dark-container-border-secondary: rgba(255, 250, 254, 0.12);
+  --ds-color-theme-rose-dark-container-border-tertiary: rgba(255, 250, 254, 0.16);
+  --ds-color-theme-rose-dark-container-fill-primary: rgba(255, 250, 254, 0.03);
+  --ds-color-theme-rose-dark-container-fill-secondary: rgba(255, 250, 254, 0.06);
+  --ds-color-theme-rose-dark-container-fill-tertiary: rgba(255, 250, 254, 0.09);
+  --ds-color-theme-rose-dark-control-border-primary: rgba(252, 156, 230, 0.48);
+  --ds-color-theme-rose-dark-control-border-quaternary: rgba(252, 156, 230, 0.8);
+  --ds-color-theme-rose-dark-control-border-secondary: rgba(252, 156, 230, 0.64);
+  --ds-color-theme-rose-dark-control-border-tertiary: rgba(252, 156, 230, 0.72);
+  --ds-color-theme-rose-dark-control-fill-primary: rgba(252, 156, 230, 0.12);
+  --ds-color-theme-rose-dark-control-fill-secondary: rgba(252, 156, 230, 0.18);
+  --ds-color-theme-rose-dark-control-fill-tertiary: rgba(252, 156, 230, 0.24);
+  --ds-color-theme-rose-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-rose-dark-control-raised-fill-primary: rgba(255, 250, 254, 0.18);
+  --ds-color-theme-rose-dark-destructive-content-primary: #000000;
+  --ds-color-theme-rose-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-rose-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-rose-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-rose-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-rose-dark-destructive-primary: #ee1025;
+  --ds-color-theme-rose-dark-destructive-secondary: #d11527;
+  --ds-color-theme-rose-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-rose-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-rose-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-rose-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-rose-dark-highlight-primary: rgba(255, 250, 254, 0.12);
+  --ds-color-theme-rose-dark-icons-primary: rgba(255, 250, 254, 0.78);
+  --ds-color-theme-rose-dark-icons-secondary: rgba(255, 250, 254, 0.66);
+  --ds-color-theme-rose-dark-icons-tertiary: rgba(255, 250, 254, 0.36);
+  --ds-color-theme-rose-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-rose-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-rose-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-rose-dark-surface-backdrop: #2d0525;
+  --ds-color-theme-rose-dark-surface-canvas: #511442;
+  --ds-color-theme-rose-dark-surface-decoration-primary: rgba(250, 125, 221, 0.16);
+  --ds-color-theme-rose-dark-surface-decoration-secondary: rgba(250, 125, 221, 0.24);
+  --ds-color-theme-rose-dark-surface-decoration-tertiary: rgba(250, 125, 221, 0.32);
+  --ds-color-theme-rose-dark-surface-primary: #5b194b;
+  --ds-color-theme-rose-dark-surface-secondary: #692055;
+  --ds-color-theme-rose-dark-surface-tertiary: #72265e;
+  --ds-color-theme-rose-dark-text-primary: rgba(255, 250, 254, 0.96);
+  --ds-color-theme-rose-dark-text-secondary: rgba(255, 250, 254, 0.66);
+  --ds-color-theme-rose-dark-text-tertiary: rgba(255, 250, 254, 0.36);
+  --ds-color-theme-rose-dark-tone-shade-primary: rgba(28, 1, 18, 0.16);
+  --ds-color-theme-rose-dark-tone-tint-primary: rgba(255, 234, 250, 0.06);
+  --ds-color-theme-rose-light-accent-alt-content-primary: #660047;
+  --ds-color-theme-rose-light-accent-alt-content-secondary: rgba(102, 0, 71, 0.7);
+  --ds-color-theme-rose-light-accent-alt-content-tertiary: rgba(102, 0, 71, 0.5);
+  --ds-color-theme-rose-light-accent-alt-glow-primary: rgba(250, 125, 221, 0.2);
+  --ds-color-theme-rose-light-accent-alt-glow-secondary: rgba(250, 125, 221, 0.12);
+  --ds-color-theme-rose-light-accent-alt-primary: #fbb0ea;
+  --ds-color-theme-rose-light-accent-alt-secondary: #fa7ddd;
+  --ds-color-theme-rose-light-accent-alt-tertiary: #f249c5;
+  --ds-color-theme-rose-light-accent-alt-text-primary: #a30074;
+  --ds-color-theme-rose-light-accent-alt-text-secondary: #84005c;
+  --ds-color-theme-rose-light-accent-alt-text-tertiary: #660047;
+  --ds-color-theme-rose-light-accent-content-primary: #fffafe;
+  --ds-color-theme-rose-light-accent-content-secondary: rgba(255, 250, 254, 0.7);
+  --ds-color-theme-rose-light-accent-content-tertiary: rgba(255, 250, 254, 0.5);
+  --ds-color-theme-rose-light-accent-glow-primary: rgba(217, 0, 144, 0.2);
+  --ds-color-theme-rose-light-accent-glow-secondary: rgba(217, 0, 144, 0.12);
+  --ds-color-theme-rose-light-accent-primary: #c1008e;
+  --ds-color-theme-rose-light-accent-quaternary: #660047;
+  --ds-color-theme-rose-light-accent-secondary: #a30074;
+  --ds-color-theme-rose-light-accent-tertiary: #84005c;
+  --ds-color-theme-rose-light-accent-text-primary: #a30074;
+  --ds-color-theme-rose-light-accent-text-secondary: #84005c;
+  --ds-color-theme-rose-light-accent-text-tertiary: #660047;
+  --ds-color-theme-rose-light-container-border-primary: rgba(43, 8, 28, 0.06);
+  --ds-color-theme-rose-light-container-border-secondary: rgba(43, 8, 28, 0.09);
+  --ds-color-theme-rose-light-container-border-tertiary: rgba(43, 8, 28, 0.12);
+  --ds-color-theme-rose-light-container-fill-primary: rgba(43, 8, 28, 0.02);
+  --ds-color-theme-rose-light-container-fill-secondary: rgba(43, 8, 28, 0.04);
+  --ds-color-theme-rose-light-container-fill-tertiary: rgba(43, 8, 28, 0.06);
+  --ds-color-theme-rose-light-control-border-primary: rgba(163, 0, 117, 0.32);
+  --ds-color-theme-rose-light-control-border-quaternary: rgba(163, 0, 117, 0.72);
+  --ds-color-theme-rose-light-control-border-secondary: rgba(163, 0, 117, 0.56);
+  --ds-color-theme-rose-light-control-border-tertiary: rgba(163, 0, 117, 0.64);
+  --ds-color-theme-rose-light-control-fill-primary: rgba(163, 0, 117, 0.09);
+  --ds-color-theme-rose-light-control-fill-secondary: rgba(163, 0, 117, 0.12);
+  --ds-color-theme-rose-light-control-fill-tertiary: rgba(163, 0, 117, 0.18);
+  --ds-color-theme-rose-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-rose-light-control-raised-fill-primary: #ffffff;
+  --ds-color-theme-rose-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-rose-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-rose-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-rose-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-rose-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-rose-light-destructive-primary: #ee1025;
+  --ds-color-theme-rose-light-destructive-secondary: #d11527;
+  --ds-color-theme-rose-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-rose-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-rose-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-rose-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-rose-light-highlight-primary: rgba(255, 250, 254, 0.24);
+  --ds-color-theme-rose-light-icons-primary: rgba(48, 2, 30, 0.84);
+  --ds-color-theme-rose-light-icons-secondary: rgba(48, 3, 30, 0.66);
+  --ds-color-theme-rose-light-icons-tertiary: rgba(48, 3, 30, 0.36);
+  --ds-color-theme-rose-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-rose-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-rose-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-rose-light-surface-backdrop: #ee9fd9;
+  --ds-color-theme-rose-light-surface-canvas: #fcf3fa;
+  --ds-color-theme-rose-light-surface-decoration-primary: rgba(163, 0, 117, 0.12);
+  --ds-color-theme-rose-light-surface-decoration-secondary: rgba(163, 0, 117, 0.2);
+  --ds-color-theme-rose-light-surface-decoration-tertiary: rgba(163, 0, 117, 0.32);
+  --ds-color-theme-rose-light-surface-primary: #f6e4f1;
+  --ds-color-theme-rose-light-surface-secondary: #faeef8;
+  --ds-color-theme-rose-light-surface-tertiary: #fffafe;
+  --ds-color-theme-rose-light-text-primary: rgba(48, 2, 30, 0.96);
+  --ds-color-theme-rose-light-text-secondary: rgba(48, 3, 30, 0.6);
+  --ds-color-theme-rose-light-text-tertiary: rgba(48, 3, 30, 0.36);
+  --ds-color-theme-rose-light-tone-shade-primary: rgba(26, 5, 17, 0.06);
+  --ds-color-theme-rose-light-tone-tint-primary: rgba(255, 250, 254, 0.48);
+  --ds-color-theme-slate-blue-dark-accent-alt-content-primary: #f7fbfd;
+  --ds-color-theme-slate-blue-dark-accent-alt-content-secondary: rgba(247, 251, 253, 0.7);
+  --ds-color-theme-slate-blue-dark-accent-alt-content-tertiary: rgba(247, 251, 253, 0.5);
+  --ds-color-theme-slate-blue-dark-accent-alt-glow-primary: rgba(103, 174, 228, 0.2);
+  --ds-color-theme-slate-blue-dark-accent-alt-glow-secondary: rgba(103, 174, 228, 0.12);
+  --ds-color-theme-slate-blue-dark-accent-alt-primary: #2b5c82;
+  --ds-color-theme-slate-blue-dark-accent-alt-secondary: #1d4766;
+  --ds-color-theme-slate-blue-dark-accent-alt-tertiary: #143852;
+  --ds-color-theme-slate-blue-dark-accent-alt-text-primary: #75baef;
+  --ds-color-theme-slate-blue-dark-accent-alt-text-secondary: #51a9ec;
+  --ds-color-theme-slate-blue-dark-accent-alt-text-tertiary: #3d9fe9;
+  --ds-color-theme-slate-blue-dark-accent-content-primary: #060a0e;
+  --ds-color-theme-slate-blue-dark-accent-content-secondary: rgba(6, 10, 14, 0.7);
+  --ds-color-theme-slate-blue-dark-accent-content-tertiary: rgba(6, 10, 14, 0.5);
+  --ds-color-theme-slate-blue-dark-accent-glow-primary: rgba(103, 174, 228, 0.2);
+  --ds-color-theme-slate-blue-dark-accent-glow-secondary: rgba(103, 174, 228, 0.12);
+  --ds-color-theme-slate-blue-dark-accent-primary: #74b5e6;
+  --ds-color-theme-slate-blue-dark-accent-quaternary: #2380c7;
+  --ds-color-theme-slate-blue-dark-accent-secondary: #499ede;
+  --ds-color-theme-slate-blue-dark-accent-tertiary: #2f90da;
+  --ds-color-theme-slate-blue-dark-accent-text-primary: #87c3f1;
+  --ds-color-theme-slate-blue-dark-accent-text-secondary: #50a8eb;
+  --ds-color-theme-slate-blue-dark-accent-text-tertiary: #2b96e7;
+  --ds-color-theme-slate-blue-dark-container-border-primary: rgba(247, 251, 253, 0.09);
+  --ds-color-theme-slate-blue-dark-container-border-secondary: rgba(247, 251, 253, 0.12);
+  --ds-color-theme-slate-blue-dark-container-border-tertiary: rgba(247, 251, 253, 0.16);
+  --ds-color-theme-slate-blue-dark-container-fill-primary: rgba(247, 251, 253, 0.03);
+  --ds-color-theme-slate-blue-dark-container-fill-secondary: rgba(247, 251, 253, 0.06);
+  --ds-color-theme-slate-blue-dark-container-fill-tertiary: rgba(247, 251, 253, 0.09);
+  --ds-color-theme-slate-blue-dark-control-border-primary: rgba(130, 170, 201, 0.48);
+  --ds-color-theme-slate-blue-dark-control-border-quaternary: rgba(130, 170, 201, 0.8);
+  --ds-color-theme-slate-blue-dark-control-border-secondary: rgba(130, 170, 201, 0.64);
+  --ds-color-theme-slate-blue-dark-control-border-tertiary: rgba(130, 170, 201, 0.72);
+  --ds-color-theme-slate-blue-dark-control-fill-primary: rgba(129, 170, 201, 0.12);
+  --ds-color-theme-slate-blue-dark-control-fill-secondary: rgba(130, 170, 201, 0.18);
+  --ds-color-theme-slate-blue-dark-control-fill-tertiary: rgba(130, 170, 201, 0.24);
+  --ds-color-theme-slate-blue-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-slate-blue-dark-control-raised-fill-primary: rgba(247, 251, 253, 0.18);
+  --ds-color-theme-slate-blue-dark-destructive-content-primary: #000000;
+  --ds-color-theme-slate-blue-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-slate-blue-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-slate-blue-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-slate-blue-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-slate-blue-dark-destructive-primary: #ee1025;
+  --ds-color-theme-slate-blue-dark-destructive-secondary: #d11527;
+  --ds-color-theme-slate-blue-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-slate-blue-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-slate-blue-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-slate-blue-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-slate-blue-dark-highlight-primary: rgba(247, 251, 253, 0.12);
+  --ds-color-theme-slate-blue-dark-icons-primary: rgba(247, 251, 253, 0.78);
+  --ds-color-theme-slate-blue-dark-icons-secondary: rgba(247, 251, 253, 0.48);
+  --ds-color-theme-slate-blue-dark-icons-tertiary: rgba(247, 251, 253, 0.24);
+  --ds-color-theme-slate-blue-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-slate-blue-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-slate-blue-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-slate-blue-dark-surface-backdrop: #0c151c;
+  --ds-color-theme-slate-blue-dark-surface-canvas: #1e3042;
+  --ds-color-theme-slate-blue-dark-surface-decoration-primary: rgba(103, 174, 228, 0.16);
+  --ds-color-theme-slate-blue-dark-surface-decoration-secondary: rgba(103, 174, 228, 0.24);
+  --ds-color-theme-slate-blue-dark-surface-decoration-tertiary: rgba(103, 174, 228, 0.32);
+  --ds-color-theme-slate-blue-dark-surface-primary: #1e3347;
+  --ds-color-theme-slate-blue-dark-surface-secondary: #2b4259;
+  --ds-color-theme-slate-blue-dark-surface-tertiary: #324a61;
+  --ds-color-theme-slate-blue-dark-text-primary: rgba(247, 251, 253, 0.96);
+  --ds-color-theme-slate-blue-dark-text-secondary: rgba(247, 251, 253, 0.66);
+  --ds-color-theme-slate-blue-dark-text-tertiary: rgba(247, 251, 253, 0.36);
+  --ds-color-theme-slate-blue-dark-tone-shade-primary: rgba(6, 10, 14, 0.12);
+  --ds-color-theme-slate-blue-dark-tone-tint-primary: rgba(230, 242, 248, 0.06);
+  --ds-color-theme-slate-blue-light-accent-alt-content-primary: #143852;
+  --ds-color-theme-slate-blue-light-accent-alt-content-secondary: rgba(20, 56, 82, 0.7);
+  --ds-color-theme-slate-blue-light-accent-alt-content-tertiary: rgba(20, 56, 82, 0.5);
+  --ds-color-theme-slate-blue-light-accent-alt-glow-primary: rgba(117, 187, 240, 0.2);
+  --ds-color-theme-slate-blue-light-accent-alt-glow-secondary: rgba(117, 187, 240, 0.12);
+  --ds-color-theme-slate-blue-light-accent-alt-primary: #94cdf9;
+  --ds-color-theme-slate-blue-light-accent-alt-secondary: #75baef;
+  --ds-color-theme-slate-blue-light-accent-alt-tertiary: #499ede;
+  --ds-color-theme-slate-blue-light-accent-alt-text-primary: #2b5c82;
+  --ds-color-theme-slate-blue-light-accent-alt-text-secondary: #1d4766;
+  --ds-color-theme-slate-blue-light-accent-alt-text-tertiary: #143852;
+  --ds-color-theme-slate-blue-light-accent-content-primary: #f0f8ff;
+  --ds-color-theme-slate-blue-light-accent-content-secondary: rgba(240, 248, 255, 0.7);
+  --ds-color-theme-slate-blue-light-accent-content-tertiary: rgba(240, 248, 255, 0.5);
+  --ds-color-theme-slate-blue-light-accent-glow-primary: rgba(58, 114, 156, 0.2);
+  --ds-color-theme-slate-blue-light-accent-glow-secondary: rgba(58, 114, 156, 0.12);
+  --ds-color-theme-slate-blue-light-accent-primary: #39719c;
+  --ds-color-theme-slate-blue-light-accent-quaternary: #143851;
+  --ds-color-theme-slate-blue-light-accent-secondary: #2b5c82;
+  --ds-color-theme-slate-blue-light-accent-tertiary: #1d4766;
+  --ds-color-theme-slate-blue-light-accent-text-primary: #2b5c82;
+  --ds-color-theme-slate-blue-light-accent-text-secondary: #1d4766;
+  --ds-color-theme-slate-blue-light-accent-text-tertiary: #143852;
+  --ds-color-theme-slate-blue-light-container-border-primary: rgba(6, 15, 24, 0.06);
+  --ds-color-theme-slate-blue-light-container-border-secondary: rgba(6, 15, 24, 0.09);
+  --ds-color-theme-slate-blue-light-container-border-tertiary: rgba(6, 15, 24, 0.12);
+  --ds-color-theme-slate-blue-light-container-fill-primary: rgba(6, 15, 24, 0.01);
+  --ds-color-theme-slate-blue-light-container-fill-secondary: rgba(6, 15, 24, 0.03);
+  --ds-color-theme-slate-blue-light-container-fill-tertiary: rgba(6, 15, 24, 0.06);
+  --ds-color-theme-slate-blue-light-control-border-primary: rgba(33, 88, 131, 0.32);
+  --ds-color-theme-slate-blue-light-control-border-quaternary: rgba(33, 88, 131, 0.72);
+  --ds-color-theme-slate-blue-light-control-border-secondary: rgba(33, 88, 131, 0.56);
+  --ds-color-theme-slate-blue-light-control-border-tertiary: rgba(33, 88, 131, 0.64);
+  --ds-color-theme-slate-blue-light-control-fill-primary: rgba(33, 88, 131, 0.09);
+  --ds-color-theme-slate-blue-light-control-fill-secondary: rgba(33, 88, 131, 0.12);
+  --ds-color-theme-slate-blue-light-control-fill-tertiary: rgba(33, 88, 131, 0.18);
+  --ds-color-theme-slate-blue-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-slate-blue-light-control-raised-fill-primary: #eef7fc;
+  --ds-color-theme-slate-blue-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-slate-blue-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-slate-blue-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-slate-blue-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-slate-blue-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-slate-blue-light-destructive-primary: #ee1025;
+  --ds-color-theme-slate-blue-light-destructive-secondary: #d11527;
+  --ds-color-theme-slate-blue-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-slate-blue-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-slate-blue-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-slate-blue-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-slate-blue-light-highlight-primary: rgba(247, 251, 253, 0.24);
+  --ds-color-theme-slate-blue-light-icons-primary: rgba(6, 10, 14, 0.84);
+  --ds-color-theme-slate-blue-light-icons-secondary: rgba(6, 10, 14, 0.6);
+  --ds-color-theme-slate-blue-light-icons-tertiary: rgba(6, 10, 14, 0.36);
+  --ds-color-theme-slate-blue-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-slate-blue-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-slate-blue-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-slate-blue-light-surface-backdrop: #8aa5c0;
+  --ds-color-theme-slate-blue-light-surface-canvas: #dceaf3;
+  --ds-color-theme-slate-blue-light-surface-decoration-primary: rgba(33, 88, 131, 0.09);
+  --ds-color-theme-slate-blue-light-surface-decoration-secondary: rgba(33, 88, 131, 0.2);
+  --ds-color-theme-slate-blue-light-surface-decoration-tertiary: rgba(33, 88, 131, 0.32);
+  --ds-color-theme-slate-blue-light-surface-primary: #d2e5f3;
+  --ds-color-theme-slate-blue-light-surface-secondary: #ddedf7;
+  --ds-color-theme-slate-blue-light-surface-tertiary: #eef6fb;
+  --ds-color-theme-slate-blue-light-text-primary: rgba(6, 10, 14, 0.96);
+  --ds-color-theme-slate-blue-light-text-secondary: rgba(6, 10, 14, 0.6);
+  --ds-color-theme-slate-blue-light-text-tertiary: rgba(6, 10, 14, 0.36);
+  --ds-color-theme-slate-blue-light-tone-shade-primary: rgba(20, 51, 81, 0.06);
+  --ds-color-theme-slate-blue-light-tone-tint-primary: rgba(247, 251, 253, 0.4);
+  --ds-color-theme-violet-dark-accent-alt-content-primary: #f5f5fe;
+  --ds-color-theme-violet-dark-accent-alt-content-secondary: rgba(245, 245, 254, 0.7);
+  --ds-color-theme-violet-dark-accent-alt-content-tertiary: rgba(245, 245, 254, 0.5);
+  --ds-color-theme-violet-dark-accent-alt-glow-primary: rgba(162, 128, 255, 0.2);
+  --ds-color-theme-violet-dark-accent-alt-glow-secondary: rgba(162, 128, 255, 0.12);
+  --ds-color-theme-violet-dark-accent-alt-primary: #5c17e5;
+  --ds-color-theme-violet-dark-accent-alt-secondary: #470fbf;
+  --ds-color-theme-violet-dark-accent-alt-tertiary: #3b0da6;
+  --ds-color-theme-violet-dark-accent-alt-text-primary: #c6b2ff;
+  --ds-color-theme-violet-dark-accent-alt-text-secondary: #a17fff;
+  --ds-color-theme-violet-dark-accent-alt-text-tertiary: #8f69fb;
+  --ds-color-theme-violet-dark-accent-content-primary: #030109;
+  --ds-color-theme-violet-dark-accent-content-secondary: rgba(3, 1, 9, 0.7);
+  --ds-color-theme-violet-dark-accent-content-tertiary: rgba(3, 1, 9, 0.5);
+  --ds-color-theme-violet-dark-accent-glow-primary: rgba(162, 128, 255, 0.2);
+  --ds-color-theme-violet-dark-accent-glow-secondary: rgba(162, 128, 255, 0.2);
+  --ds-color-theme-violet-dark-accent-primary: #a17fff;
+  --ds-color-theme-violet-dark-accent-quaternary: #6e29ee;
+  --ds-color-theme-violet-dark-accent-secondary: #8f69fb;
+  --ds-color-theme-violet-dark-accent-tertiary: #7f55f6;
+  --ds-color-theme-violet-dark-accent-text-primary: #c6b2ff;
+  --ds-color-theme-violet-dark-accent-text-secondary: #a17fff;
+  --ds-color-theme-violet-dark-accent-text-tertiary: #8f69fb;
+  --ds-color-theme-violet-dark-container-border-primary: rgba(245, 245, 254, 0.09);
+  --ds-color-theme-violet-dark-container-border-secondary: rgba(245, 245, 254, 0.12);
+  --ds-color-theme-violet-dark-container-border-tertiary: rgba(245, 245, 254, 0.16);
+  --ds-color-theme-violet-dark-container-fill-primary: rgba(245, 245, 254, 0.03);
+  --ds-color-theme-violet-dark-container-fill-secondary: rgba(245, 245, 254, 0.06);
+  --ds-color-theme-violet-dark-container-fill-tertiary: rgba(245, 245, 254, 0.09);
+  --ds-color-theme-violet-dark-control-border-primary: rgba(192, 165, 253, 0.48);
+  --ds-color-theme-violet-dark-control-border-quaternary: rgba(192, 165, 253, 0.8);
+  --ds-color-theme-violet-dark-control-border-secondary: rgba(192, 165, 253, 0.64);
+  --ds-color-theme-violet-dark-control-border-tertiary: rgba(192, 165, 253, 0.72);
+  --ds-color-theme-violet-dark-control-fill-primary: rgba(191, 165, 252, 0.12);
+  --ds-color-theme-violet-dark-control-fill-secondary: rgba(192, 165, 253, 0.18);
+  --ds-color-theme-violet-dark-control-fill-tertiary: rgba(192, 165, 253, 0.24);
+  --ds-color-theme-violet-dark-control-raised-backdrop: rgba(255, 255, 255, 0.12);
+  --ds-color-theme-violet-dark-control-raised-fill-primary: rgba(243, 242, 250, 0.18);
+  --ds-color-theme-violet-dark-destructive-content-primary: #000000;
+  --ds-color-theme-violet-dark-destructive-content-secondary: rgba(0, 0, 0, 0.9);
+  --ds-color-theme-violet-dark-destructive-content-tertiary: rgba(0, 0, 0, 0.6);
+  --ds-color-theme-violet-dark-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-violet-dark-destructive-glow-secondary: rgba(238, 16, 37, 0.12);
+  --ds-color-theme-violet-dark-destructive-primary: #ee1025;
+  --ds-color-theme-violet-dark-destructive-secondary: #d11527;
+  --ds-color-theme-violet-dark-destructive-tertiary: #aa1926;
+  --ds-color-theme-violet-dark-destructive-text-primary: #ee1025;
+  --ds-color-theme-violet-dark-destructive-text-secondary: #d11527;
+  --ds-color-theme-violet-dark-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-violet-dark-highlight-primary: rgba(243, 242, 250, 0.12);
+  --ds-color-theme-violet-dark-icons-primary: rgba(239, 239, 255, 0.78);
+  --ds-color-theme-violet-dark-icons-secondary: rgba(245, 245, 254, 0.48);
+  --ds-color-theme-violet-dark-icons-tertiary: rgba(245, 245, 254, 0.24);
+  --ds-color-theme-violet-dark-shadow-primary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-violet-dark-shadow-secondary: rgba(0, 0, 0, 0.24);
+  --ds-color-theme-violet-dark-shadow-tertiary: rgba(0, 0, 0, 0.32);
+  --ds-color-theme-violet-dark-surface-backdrop: #120b27;
+  --ds-color-theme-violet-dark-surface-canvas: #271c49;
+  --ds-color-theme-violet-dark-surface-decoration-primary: rgba(192, 165, 253, 0.16);
+  --ds-color-theme-violet-dark-surface-decoration-secondary: rgba(192, 165, 253, 0.24);
+  --ds-color-theme-violet-dark-surface-decoration-tertiary: rgba(192, 165, 253, 0.32);
+  --ds-color-theme-violet-dark-surface-primary: #2e2158;
+  --ds-color-theme-violet-dark-surface-secondary: #3a2a63;
+  --ds-color-theme-violet-dark-surface-tertiary: #433270;
+  --ds-color-theme-violet-dark-text-primary: rgba(239, 239, 255, 0.96);
+  --ds-color-theme-violet-dark-text-secondary: rgba(245, 245, 254, 0.66);
+  --ds-color-theme-violet-dark-text-tertiary: rgba(245, 245, 254, 0.36);
+  --ds-color-theme-violet-dark-tone-shade-primary: rgba(12, 9, 21, 0.16);
+  --ds-color-theme-violet-dark-tone-tint-primary: rgba(233, 231, 248, 0.06);
+  --ds-color-theme-violet-light-accent-alt-content-primary: #2b097a;
+  --ds-color-theme-violet-light-accent-alt-content-secondary: rgba(44, 10, 123, 0.7);
+  --ds-color-theme-violet-light-accent-alt-content-tertiary: rgba(44, 10, 123, 0.5);
+  --ds-color-theme-violet-light-accent-alt-glow-primary: rgba(162, 128, 255, 0.2);
+  --ds-color-theme-violet-light-accent-alt-glow-secondary: rgba(162, 128, 255, 0.12);
+  --ds-color-theme-violet-light-accent-alt-primary: #c6b2ff;
+  --ds-color-theme-violet-light-accent-alt-secondary: #a17fff;
+  --ds-color-theme-violet-light-accent-alt-tertiary: #8f69fb;
+  --ds-color-theme-violet-light-accent-alt-text-primary: #470fbf;
+  --ds-color-theme-violet-light-accent-alt-text-secondary: #3b0da6;
+  --ds-color-theme-violet-light-accent-alt-text-tertiary: #2b097a;
+  --ds-color-theme-violet-light-accent-content-primary: #f5f5fe;
+  --ds-color-theme-violet-light-accent-content-secondary: rgba(245, 245, 254, 0.7);
+  --ds-color-theme-violet-light-accent-content-tertiary: rgba(245, 245, 254, 0.5);
+  --ds-color-theme-violet-light-accent-glow-primary: rgba(92, 23, 229, 0.2);
+  --ds-color-theme-violet-light-accent-glow-secondary: rgba(92, 23, 229, 0.12);
+  --ds-color-theme-violet-light-accent-primary: #5c17e5;
+  --ds-color-theme-violet-light-accent-quaternary: #2b097a;
+  --ds-color-theme-violet-light-accent-secondary: #470fbf;
+  --ds-color-theme-violet-light-accent-tertiary: #3b0da6;
+  --ds-color-theme-violet-light-accent-text-primary: #470fbf;
+  --ds-color-theme-violet-light-accent-text-secondary: #3b0da6;
+  --ds-color-theme-violet-light-accent-text-tertiary: #2b097a;
+  --ds-color-theme-violet-light-container-border-primary: rgba(7, 5, 13, 0.06);
+  --ds-color-theme-violet-light-container-border-secondary: rgba(7, 5, 13, 0.09);
+  --ds-color-theme-violet-light-container-border-tertiary: rgba(7, 5, 13, 0.12);
+  --ds-color-theme-violet-light-container-fill-primary: rgba(7, 5, 13, 0.01);
+  --ds-color-theme-violet-light-container-fill-secondary: rgba(7, 5, 13, 0.03);
+  --ds-color-theme-violet-light-container-fill-tertiary: rgba(7, 5, 13, 0.06);
+  --ds-color-theme-violet-light-control-border-primary: rgba(87, 11, 218, 0.32);
+  --ds-color-theme-violet-light-control-border-quaternary: rgba(87, 11, 218, 0.72);
+  --ds-color-theme-violet-light-control-border-secondary: rgba(87, 11, 218, 0.56);
+  --ds-color-theme-violet-light-control-border-tertiary: rgba(87, 11, 218, 0.64);
+  --ds-color-theme-violet-light-control-fill-primary: rgba(87, 11, 218, 0.09);
+  --ds-color-theme-violet-light-control-fill-secondary: rgba(87, 11, 218, 0.12);
+  --ds-color-theme-violet-light-control-fill-tertiary: rgba(87, 11, 218, 0.18);
+  --ds-color-theme-violet-light-control-raised-backdrop: rgba(0, 0, 0, 0.09);
+  --ds-color-theme-violet-light-control-raised-fill-primary: #f6f6fc;
+  --ds-color-theme-violet-light-destructive-content-primary: #ffffff;
+  --ds-color-theme-violet-light-destructive-content-secondary: rgba(255, 255, 255, 0.9);
+  --ds-color-theme-violet-light-destructive-content-tertiary: rgba(255, 255, 255, 0.6);
+  --ds-color-theme-violet-light-destructive-glow-primary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-violet-light-destructive-glow-secondary: rgba(238, 16, 37, 0.2);
+  --ds-color-theme-violet-light-destructive-primary: #ee1025;
+  --ds-color-theme-violet-light-destructive-secondary: #d11527;
+  --ds-color-theme-violet-light-destructive-tertiary: #aa1826;
+  --ds-color-theme-violet-light-destructive-text-primary: #ee1025;
+  --ds-color-theme-violet-light-destructive-text-secondary: #d11527;
+  --ds-color-theme-violet-light-destructive-text-tertiary: #aa1926;
+  --ds-color-theme-violet-light-highlight-primary: rgba(245, 245, 254, 0.24);
+  --ds-color-theme-violet-light-icons-primary: rgba(7, 5, 13, 0.84);
+  --ds-color-theme-violet-light-icons-secondary: rgba(7, 5, 13, 0.6);
+  --ds-color-theme-violet-light-icons-tertiary: rgba(7, 5, 13, 0.36);
+  --ds-color-theme-violet-light-shadow-primary: rgba(0, 0, 0, 0.05);
+  --ds-color-theme-violet-light-shadow-secondary: rgba(0, 0, 0, 0.08);
+  --ds-color-theme-violet-light-shadow-tertiary: rgba(0, 0, 0, 0.16);
+  --ds-color-theme-violet-light-surface-backdrop: #c0b9e3;
+  --ds-color-theme-violet-light-surface-canvas: #edecf9;
+  --ds-color-theme-violet-light-surface-decoration-primary: rgba(87, 11, 218, 0.09);
+  --ds-color-theme-violet-light-surface-decoration-secondary: rgba(87, 11, 218, 0.2);
+  --ds-color-theme-violet-light-surface-decoration-tertiary: rgba(87, 11, 218, 0.32);
+  --ds-color-theme-violet-light-surface-primary: #e7e4f5;
+  --ds-color-theme-violet-light-surface-secondary: #edebf8;
+  --ds-color-theme-violet-light-surface-tertiary: #f6f6fc;
+  --ds-color-theme-violet-light-text-primary: rgba(7, 5, 13, 0.96);
+  --ds-color-theme-violet-light-text-secondary: rgba(7, 5, 13, 0.6);
+  --ds-color-theme-violet-light-text-tertiary: rgba(7, 5, 13, 0.36);
+  --ds-color-theme-violet-light-tone-shade-primary: rgba(35, 20, 81, 0.06);
+  --ds-color-theme-violet-light-tone-tint-primary: rgba(245, 245, 254, 0.56);
+}
+
+/* src/UI/styles/autofill-theme-mapping.css */
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows]) {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-default-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-default-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-default-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-default-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-default-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-default-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-default-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-default-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-default-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-default-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows]) {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-default-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-default-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-default-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-default-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-default-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-default-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-default-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-default-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-default-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-default-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=coolGray] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-cool-gray-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-cool-gray-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-cool-gray-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-cool-gray-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-cool-gray-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-cool-gray-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-cool-gray-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-cool-gray-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-cool-gray-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-cool-gray-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=coolGray] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-cool-gray-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-cool-gray-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-cool-gray-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-cool-gray-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-cool-gray-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-cool-gray-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-cool-gray-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-cool-gray-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-cool-gray-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-cool-gray-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=slateBlue] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-slate-blue-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-slate-blue-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-slate-blue-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-slate-blue-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-slate-blue-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-slate-blue-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-slate-blue-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-slate-blue-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-slate-blue-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-slate-blue-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=slateBlue] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-slate-blue-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-slate-blue-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-slate-blue-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-slate-blue-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-slate-blue-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-slate-blue-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-slate-blue-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-slate-blue-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-slate-blue-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-slate-blue-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=green] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-green-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-green-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-green-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-green-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-green-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-green-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-green-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-green-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-green-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-green-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=green] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-green-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-green-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-green-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-green-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-green-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-green-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-green-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-green-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-green-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-green-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=violet] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-violet-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-violet-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-violet-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-violet-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-violet-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-violet-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-violet-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-violet-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-violet-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-violet-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=violet] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-violet-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-violet-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-violet-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-violet-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-violet-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-violet-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-violet-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-violet-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-violet-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-violet-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=rose] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-rose-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-rose-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-rose-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-rose-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-rose-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-rose-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-rose-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-rose-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-rose-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-rose-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=rose] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-rose-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-rose-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-rose-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-rose-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-rose-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-rose-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-rose-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-rose-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-rose-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-rose-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=orange] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-orange-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-orange-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-orange-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-orange-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-orange-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-orange-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-orange-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-orange-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-orange-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-orange-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=orange] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-orange-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-orange-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-orange-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-orange-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-orange-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-orange-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-orange-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-orange-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-orange-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-orange-dark-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=desert] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-desert-light-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-desert-light-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-desert-light-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-desert-light-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-desert-light-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-desert-light-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-desert-light-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-desert-light-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-desert-light-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-desert-light-control-fill-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:is([data-platform=macos], [data-platform=windows])[data-theme-variant=desert] {
+    --ds-color-theme-surface-tertiary: var(--ds-color-theme-desert-dark-surface-tertiary);
+    --ds-color-theme-surface-decoration-primary: var(--ds-color-theme-desert-dark-surface-decoration-primary);
+    --ds-color-theme-text-primary: var(--ds-color-theme-desert-dark-text-primary);
+    --ds-color-theme-text-secondary: var(--ds-color-theme-desert-dark-text-secondary);
+    --ds-color-theme-icons-primary: var(--ds-color-theme-desert-dark-icons-primary);
+    --ds-color-theme-accent-primary: var(--ds-color-theme-desert-dark-accent-primary);
+    --ds-color-theme-accent-secondary: var(--ds-color-theme-desert-dark-accent-secondary);
+    --ds-color-theme-accent-content-primary: var(--ds-color-theme-desert-dark-accent-content-primary);
+    --ds-color-theme-accent-content-secondary: var(--ds-color-theme-desert-dark-accent-content-secondary);
+    --ds-color-theme-control-fill-secondary: var(--ds-color-theme-desert-dark-control-fill-secondary);
+  }
+}
+
 /* src/UI/styles/autofill-tooltip-styles.css */
 :root {
   color-scheme: light dark;
@@ -33,8 +1501,16 @@
   --hover-color-secondary-dark: var(--t-mac-interactive-text);
   --hover-bg: var(--t-mac-interactive);
   --hover-bg-dark: var(--t-mac-interactive);
-  --hover-effect: invert(100%);
-  --hover-effect-dark: invert(100%);
+  --press-bg: var(--t-mac-interactive);
+  --press-bg-dark: var(--t-mac-interactive);
+  --press-color-primary: var(--t-mac-interactive-text);
+  --press-color-secondary: var(--t-mac-interactive-text);
+  --press-color-primary-dark: var(--t-mac-interactive-text);
+  --press-color-secondary-dark: var(--t-mac-interactive-text);
+  --divider-color: rgba(0,0,0,.1);
+  --divider-color-dark: rgba(255,255,255,.2);
+  --icon-color: rgba(0,0,0,.84);
+  --icon-color-dark: rgba(255,255,255,.84);
   --top-autofill-min-height: 100vh;
 }
 :host:has([data-platform=windows]) {
@@ -52,9 +1528,37 @@
   --hover-color-secondary-dark: var(--t-text-secondary-dark);
   --hover-bg: var(--t-windows-interactive);
   --hover-bg-dark: var(--t-windows-interactive-dark);
-  --hover-effect: none;
-  --hover-effect-dark: invert(100%);
+  --press-color-primary: var(--t-text-primary);
+  --press-color-secondary: var(--t-text-secondary);
+  --press-color-primary-dark: var(--t-text-primary-dark);
+  --press-color-secondary-dark: var(--t-text-secondary-dark);
+  --press-bg: var(--t-windows-interactive);
+  --press-bg-dark: var(--t-windows-interactive-dark);
   --top-autofill-min-height: auto;
+}
+.wrapper:is([data-platform=macos], [data-platform=windows]) {
+  --color-primary: var(--ds-color-theme-text-primary);
+  --color-secondary: var(--ds-color-theme-text-secondary);
+  --color-primary-dark: var(--ds-color-theme-text-primary);
+  --color-secondary-dark: var(--ds-color-theme-text-secondary);
+  --bg: var(--ds-color-theme-surface-tertiary);
+  --bg-dark: var(--ds-color-theme-surface-tertiary);
+  --divider-color: var(--ds-color-theme-surface-decoration-primary);
+  --divider-color-dark: var(--ds-color-theme-surface-decoration-primary);
+  --icon-color: var(--ds-color-theme-icons-primary);
+  --icon-color-dark: var(--ds-color-theme-icons-primary);
+  --hover-bg: var(--ds-color-theme-accent-primary);
+  --hover-bg-dark: var(--ds-color-theme-accent-primary);
+  --hover-color-primary: var(--ds-color-theme-accent-content-primary);
+  --hover-color-primary-dark: var(--ds-color-theme-accent-content-primary);
+  --hover-color-secondary: var(--ds-color-theme-accent-content-secondary);
+  --hover-color-secondary-dark: var(--ds-color-theme-accent-content-secondary);
+  --press-bg: var(--ds-color-theme-accent-secondary);
+  --press-bg-dark: var(--ds-color-theme-accent-secondary);
+  --press-color-primary: var(--ds-color-theme-accent-content-primary);
+  --press-color-primary-dark: var(--ds-color-theme-accent-content-primary);
+  --press-color-secondary: var(--ds-color-theme-accent-content-secondary);
+  --press-color-secondary-dark: var(--ds-color-theme-accent-content-secondary);
 }
 .wrapper *,
 .wrapper *::before,
@@ -164,6 +1668,16 @@
     background-color: var(--hover-bg-dark);
   }
 }
+.wrapper:not(.top-autofill) .tooltip__button:active {
+  background-color: var(--press-bg);
+  color: var(--press-color-primary);
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:not(.top-autofill) .tooltip__button:active {
+    background-color: var(--press-bg-dark);
+    color: var(--press-color-primary-dark);
+  }
+}
 .tooltip__button--data {
   position: relative;
   min-height: 48px;
@@ -195,35 +1709,9 @@
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: center center;
-}
-.tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
-.wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-  filter: var(--hover-effect);
-}
-.tooltip__button--data.currentFocus.no-hover-effect::before,
-.wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before,
-.tooltip__button--data.no-hover-effect:hover::before {
-  filter: none;
-}
-@media (prefers-color-scheme: dark) {
-  .tooltip__button--data:not(.tooltip__button--data--bitwarden)::before {
-    filter: var(--hover-effect-dark);
-    opacity: .9;
-  }
-  .tooltip__button--data.no-hover-effect::before,
-  .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect::before {
-    filter: none;
-    opacity: 1;
-  }
-  .tooltip__button--data.currentFocus:not(.tooltip__button--data--bitwarden)::before,
-  .wrapper:not(.top-autofill) .tooltip__button--data:not(.tooltip__button--data--bitwarden):hover::before {
-    filter: var(--hover-effect-dark);
-  }
-  .tooltip__button--data.currentFocus.no-hover-effect::before,
-  .tooltip__button--data.no-hover-effect:hover::before,
-  .wrapper:not(.top-autofill) .tooltip__button--data.no-hover-effect:hover::before {
-    filter: none;
-  }
+  mask-size: 20px 20px;
+  mask-repeat: no-repeat;
+  mask-position: center center;
 }
 .tooltip__button__text-container {
   margin: auto 0;
@@ -277,20 +1765,59 @@
     }
   }
 }
+.wrapper:not(.top-autofill) .tooltip__button:active .label {
+  color: var(--press-color-primary);
+  &.label--small {
+    color: var(--press-color-secondary);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .wrapper:not(.top-autofill) .tooltip__button:active .label {
+    color: var(--press-color-primary-dark);
+    &.label--small {
+      color: var(--press-color-secondary-dark);
+    }
+  }
+}
 .tooltip__button--secondary {
   font-size: 13px;
   padding: 5px 9px;
   border-radius: var(--border-radius);
   margin: 0;
 }
-.tooltip__button--data--credentials::before,
-.tooltip__button--data--credentials__current::before {
-  background-size: 20px;
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuOTk4IDJBNy4wMDUgNy4wMDUgMCAwIDEgMjIgOS4wMDdhNy4wMDQgNy4wMDQgMCAwIDEtOC43MDUgNi43OTdjLS4xNjMtLjA0MS0uMjg2LjAwOC0uMzQ1LjA2N2wtMi41NTcgMi41NTlhMiAyIDAgMCAxLTEuNDE1LjU4NmgtLjk4MnYuNzM0QTIuMjUgMi4yNSAwIDAgMSA1Ljc0NSAyMmgtLjk5M2EyLjc1IDIuNzUgMCAwIDEtMi43NS0yLjczNUwyIDE4Ljc3YTMuNzUgMy43NSAwIDAgMSAxLjA5OC0yLjY3bDUuMDQtNS4wNDNjLjA2LS4wNi4xMDctLjE4My4wNjYtLjM0NmE3IDcgMCAwIDEtLjIwOC0xLjcwNEE3LjAwNCA3LjAwNCAwIDAgMSAxNC45OTggMm0wIDEuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzNyA2Ljg0OGMuMTQ3LjU4OS4wMjcgMS4yNzktLjQ2MiAxLjc2OGwtNS4wNCA1LjA0NGEyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwM2wuMDAzLjQ5NGExLjI1IDEuMjUgMCAwIDAgMS4yNSAxLjI0M2guOTkyYS43NS43NSAwIDAgMCAuNzUtLjc1di0uNzM0YTEuNSAxLjUgMCAwIDEgMS41LTEuNWguOTgzYS41LjUgMCAwIDAgLjM1My0uMTQ3bDIuNTU4LTIuNTU5Yy40OS0uNDkgMS4xOC0uNjA5IDEuNzctLjQ2MWE1LjUwNCA1LjUwNCAwIDAgMCA2Ljg0LTUuMzQyQTUuNTA1IDUuNTA1IDAgMCAwIDE1IDMuNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4K);
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before {
+  background-color: var(--icon-color);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuOTk4IDJBNy4wMDUgNy4wMDUgMCAwIDEgMjIgOS4wMDdhNy4wMDQgNy4wMDQgMCAwIDEtOC43MDUgNi43OTdjLS4xNjMtLjA0MS0uMjg2LjAwOC0uMzQ1LjA2N2wtMi41NTcgMi41NTlhMiAyIDAgMCAxLTEuNDE1LjU4NmgtLjk4MnYuNzM0QTIuMjUgMi4yNSAwIDAgMSA1Ljc0NSAyMmgtLjk5M2EyLjc1IDIuNzUgMCAwIDEtMi43NS0yLjczNUwyIDE4Ljc3YTMuNzUgMy43NSAwIDAgMSAxLjA5OC0yLjY3bDUuMDQtNS4wNDNjLjA2LS4wNi4xMDctLjE4My4wNjYtLjM0NmE3IDcgMCAwIDEtLjIwOC0xLjcwNEE3LjAwNCA3LjAwNCAwIDAgMSAxNC45OTggMm0wIDEuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzNyA2Ljg0OGMuMTQ3LjU4OS4wMjcgMS4yNzktLjQ2MiAxLjc2OGwtNS4wNCA1LjA0NGEyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwM2wuMDAzLjQ5NGExLjI1IDEuMjUgMCAwIDAgMS4yNSAxLjI0M2guOTkyYS43NS43NSAwIDAgMCAuNzUtLjc1di0uNzM0YTEuNSAxLjUgMCAwIDEgMS41LTEuNWguOTgzYS41LjUgMCAwIDAgLjM1My0uMTQ3bDIuNTU4LTIuNTU5Yy40OS0uNDkgMS4xOC0uNjA5IDEuNzctLjQ2MWE1LjUwNCA1LjUwNCAwIDAgMCA2Ljg0LTUuMzQyQTUuNTA1IDUuNTA1IDAgMCAwIDE1IDMuNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4K);
+  mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTQuOTk4IDJBNy4wMDUgNy4wMDUgMCAwIDEgMjIgOS4wMDdhNy4wMDQgNy4wMDQgMCAwIDEtOC43MDUgNi43OTdjLS4xNjMtLjA0MS0uMjg2LjAwOC0uMzQ1LjA2N2wtMi41NTcgMi41NTlhMiAyIDAgMCAxLTEuNDE1LjU4NmgtLjk4MnYuNzM0QTIuMjUgMi4yNSAwIDAgMSA1Ljc0NSAyMmgtLjk5M2EyLjc1IDIuNzUgMCAwIDEtMi43NS0yLjczNUwyIDE4Ljc3YTMuNzUgMy43NSAwIDAgMSAxLjA5OC0yLjY3bDUuMDQtNS4wNDNjLjA2LS4wNi4xMDctLjE4My4wNjYtLjM0NmE3IDcgMCAwIDEtLjIwOC0xLjcwNEE3LjAwNCA3LjAwNCAwIDAgMSAxNC45OTggMm0wIDEuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzNyA2Ljg0OGMuMTQ3LjU4OS4wMjcgMS4yNzktLjQ2MiAxLjc2OGwtNS4wNCA1LjA0NGEyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwM2wuMDAzLjQ5NGExLjI1IDEuMjUgMCAwIDAgMS4yNSAxLjI0M2guOTkyYS43NS43NSAwIDAgMCAuNzUtLjc1di0uNzM0YTEuNSAxLjUgMCAwIDEgMS41LTEuNWguOTgzYS41LjUgMCAwIDAgLjM1My0uMTQ3bDIuNTU4LTIuNTU5Yy40OS0uNDkgMS4xOC0uNjA5IDEuNzctLjQ2MWE1LjUwNCA1LjUwNCAwIDAgMCA2Ljg0LTUuMzQyQTUuNTA1IDUuNTA1IDAgMCAwIDE1IDMuNVoiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgo8L3N2Zz4K);
 }
 .tooltip__button--data--credentials__new::before {
-  background-size: 20px;
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTExLjIyNCA0LjY0YS45LjkgMCAwIDAgLjY0Ny0uMTY1IDUuNDcgNS40NyAwIDAgMSAzLjEyNy0uOTc1QTUuNTA0IDUuNTA0IDAgMCAxIDIwLjUgOS4wMDZhNS41MDQgNS41MDQgMCAwIDEtNi44NCA1LjM0M2MtLjU5LS4xNDgtMS4yODEtLjAyOC0xLjc3MS40NjJsLTIuNTU3IDIuNTU4YS41LjUgMCAwIDEtLjM1NC4xNDdoLS45ODJhMS41IDEuNSAwIDAgMC0xLjUgMS41di43MzRhLjc1Ljc1IDAgMCAxLS43NS43NWgtLjk5M2ExLjI1IDEuMjUgMCAwIDEtMS4yNS0xLjI0NGwtLjAwMy0uNDk0YTIuMjUgMi4yNSAwIDAgMSAuNjU5LTEuNjAybDUuMDQtNS4wNDNjLjM0My0uMzQ0LjQ2MS0uNzExLjQ3OS0xLjA5NS4wMjctLjU4Mi0uNzM3LS44NDctMS4xNzktLjQ2N2wtLjA2Ni4wNTZhLjcuNyAwIDAgMC0uMTU4LjIzMi44LjggMCAwIDEtLjEzNy4yMTNMMy4wOTggMTYuMUEzLjc1IDMuNzUgMCAwIDAgMiAxOC43N2wuMDAzLjQ5NEEyLjc1IDIuNzUgMCAwIDAgNC43NTMgMjJoLjk5MmEyLjI1IDIuMjUgMCAwIDAgMi4yNS0yLjI1di0uNzM0aC45ODNhMiAyIDAgMCAwIDEuNDE1LS41ODZsMi41NTctMi41NTljLjA1OS0uMDU5LjE4Mi0uMTA4LjM0Ni0uMDY3QTcuMDA0IDcuMDA0IDAgMCAwIDIyIDkuMDA2IDcuMDA0IDcuMDA0IDAgMCAwIDEwLjgyNiAzLjM4Yy0uNTMzLjM5NS0uMjYgMS4xNjYuMzk3IDEuMjZaIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTcuMTI1IDIuODA0QzcgMi4xNiA2LjkxNSAyIDYuNSAyYy0uNDE0IDAtLjUuMTYtLjYyNS44MDQtLjA4LjQxMy0uMjEyIDEuODItLjI5NiAyLjc3NS0uOTU0LjA4NC0yLjM2Mi4yMTYtMi43NzUuMjk2QzIuMTYgNiAyIDYuMDg1IDIgNi41YzAgLjQxNC4xNjEuNS44MDQuNjI1LjQxMi4wOCAxLjgxOC4yMTIgMi43NzIuMjk2LjA4My45ODkuMjE4IDIuNDYxLjMgMi43NzUuMTI0LjQ4My4yMS44MDQuNjI0LjgwNHMuNS0uMTYuNjI1LS44MDRjLjA4LS40MTIuMjEyLTEuODE3LjI5Ni0yLjc3MS45OS0uMDg0IDIuNDYyLS4yMTkgMi43NzYtLjNDMTAuNjc5IDcgMTEgNi45MTUgMTEgNi41YzAtLjQxNC0uMTYtLjUtLjgwMy0uNjI1LS40MTMtLjA4LTEuODIxLS4yMTItMi43NzUtLjI5Ni0uMDg1LS45NTQtLjIxNi0yLjM2Mi0uMjk3LTIuNzc1bS00LjM0MiA4Ljc2MWEuNzgzLjc4MyAwIDEgMCAwLTEuNTY1Ljc4My43ODMgMCAwIDAgMCAxLjU2NSIvPgo8L3N2Zz4K);
+  background-color: var(--icon-color);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTExLjIyNCA0LjY0YS45LjkgMCAwIDAgLjY0Ny0uMTY1IDUuNDcgNS40NyAwIDAgMSAzLjEyNy0uOTc1QTUuNTA0IDUuNTA0IDAgMCAxIDIwLjUgOS4wMDZhNS41MDQgNS41MDQgMCAwIDEtNi44NCA1LjM0M2MtLjU5LS4xNDgtMS4yODEtLjAyOC0xLjc3MS40NjJsLTIuNTU3IDIuNTU4YS41LjUgMCAwIDEtLjM1NC4xNDdoLS45ODJhMS41IDEuNSAwIDAgMC0xLjUgMS41di43MzRhLjc1Ljc1IDAgMCAxLS43NS43NWgtLjk5M2ExLjI1IDEuMjUgMCAwIDEtMS4yNS0xLjI0NGwtLjAwMy0uNDk0YTIuMjUgMi4yNSAwIDAgMSAuNjU5LTEuNjAybDUuMDQtNS4wNDNjLjM0My0uMzQ0LjQ2MS0uNzExLjQ3OS0xLjA5NS4wMjctLjU4Mi0uNzM3LS44NDctMS4xNzktLjQ2N2wtLjA2Ni4wNTZhLjcuNyAwIDAgMC0uMTU4LjIzMi44LjggMCAwIDEtLjEzNy4yMTNMMy4wOTggMTYuMUEzLjc1IDMuNzUgMCAwIDAgMiAxOC43N2wuMDAzLjQ5NEEyLjc1IDIuNzUgMCAwIDAgNC43NTMgMjJoLjk5MmEyLjI1IDIuMjUgMCAwIDAgMi4yNS0yLjI1di0uNzM0aC45ODNhMiAyIDAgMCAwIDEuNDE1LS41ODZsMi41NTctMi41NTljLjA1OS0uMDU5LjE4Mi0uMTA4LjM0Ni0uMDY3QTcuMDA0IDcuMDA0IDAgMCAwIDIyIDkuMDA2IDcuMDA0IDcuMDA0IDAgMCAwIDEwLjgyNiAzLjM4Yy0uNTMzLjM5NS0uMjYgMS4xNjYuMzk3IDEuMjZaIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTcuMTI1IDIuODA0QzcgMi4xNiA2LjkxNSAyIDYuNSAyYy0uNDE0IDAtLjUuMTYtLjYyNS44MDQtLjA4LjQxMy0uMjEyIDEuODItLjI5NiAyLjc3NS0uOTU0LjA4NC0yLjM2Mi4yMTYtMi43NzUuMjk2QzIuMTYgNiAyIDYuMDg1IDIgNi41YzAgLjQxNC4xNjEuNS44MDQuNjI1LjQxMi4wOCAxLjgxOC4yMTIgMi43NzIuMjk2LjA4My45ODkuMjE4IDIuNDYxLjMgMi43NzUuMTI0LjQ4My4yMS44MDQuNjI0LjgwNHMuNS0uMTYuNjI1LS44MDRjLjA4LS40MTIuMjEyLTEuODE3LjI5Ni0yLjc3MS45OS0uMDg0IDIuNDYyLS4yMTkgMi43NzYtLjNDMTAuNjc5IDcgMTEgNi45MTUgMTEgNi41YzAtLjQxNC0uMTYtLjUtLjgwMy0uNjI1LS40MTMtLjA4LTEuODIxLS4yMTItMi43NzUtLjI5Ni0uMDg1LS45NTQtLjIxNi0yLjM2Mi0uMjk3LTIuNzc1bS00LjM0MiA4Ljc2MWEuNzgzLjc4MyAwIDEgMCAwLTEuNTY1Ljc4My43ODMgMCAwIDAgMCAxLjU2NSIvPgo8L3N2Zz4K);
+  mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTExLjIyNCA0LjY0YS45LjkgMCAwIDAgLjY0Ny0uMTY1IDUuNDcgNS40NyAwIDAgMSAzLjEyNy0uOTc1QTUuNTA0IDUuNTA0IDAgMCAxIDIwLjUgOS4wMDZhNS41MDQgNS41MDQgMCAwIDEtNi44NCA1LjM0M2MtLjU5LS4xNDgtMS4yODEtLjAyOC0xLjc3MS40NjJsLTIuNTU3IDIuNTU4YS41LjUgMCAwIDEtLjM1NC4xNDdoLS45ODJhMS41IDEuNSAwIDAgMC0xLjUgMS41di43MzRhLjc1Ljc1IDAgMCAxLS43NS43NWgtLjk5M2ExLjI1IDEuMjUgMCAwIDEtMS4yNS0xLjI0NGwtLjAwMy0uNDk0YTIuMjUgMi4yNSAwIDAgMSAuNjU5LTEuNjAybDUuMDQtNS4wNDNjLjM0My0uMzQ0LjQ2MS0uNzExLjQ3OS0xLjA5NS4wMjctLjU4Mi0uNzM3LS44NDctMS4xNzktLjQ2N2wtLjA2Ni4wNTZhLjcuNyAwIDAgMC0uMTU4LjIzMi44LjggMCAwIDEtLjEzNy4yMTNMMy4wOTggMTYuMUEzLjc1IDMuNzUgMCAwIDAgMiAxOC43N2wuMDAzLjQ5NEEyLjc1IDIuNzUgMCAwIDAgNC43NTMgMjJoLjk5MmEyLjI1IDIuMjUgMCAwIDAgMi4yNS0yLjI1di0uNzM0aC45ODNhMiAyIDAgMCAwIDEuNDE1LS41ODZsMi41NTctMi41NTljLjA1OS0uMDU5LjE4Mi0uMTA4LjM0Ni0uMDY3QTcuMDA0IDcuMDA0IDAgMCAwIDIyIDkuMDA2IDcuMDA0IDcuMDA0IDAgMCAwIDEwLjgyNiAzLjM4Yy0uNTMzLjM5NS0uMjYgMS4xNjYuMzk3IDEuMjZaIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTUuNSA2YTIuNSAyLjUgMCAxIDEgMCA1IDIuNSAyLjUgMCAwIDEgMC01bTAgMS41YTEgMSAwIDEgMCAwIDIgMSAxIDAgMCAwIDAtMiIgY2xpcC1ydWxlPSJldmVub2RkIi8+CiAgPHBhdGggZmlsbD0iIzAwMCIgZD0iTTcuMTI1IDIuODA0QzcgMi4xNiA2LjkxNSAyIDYuNSAyYy0uNDE0IDAtLjUuMTYtLjYyNS44MDQtLjA4LjQxMy0uMjEyIDEuODItLjI5NiAyLjc3NS0uOTU0LjA4NC0yLjM2Mi4yMTYtMi43NzUuMjk2QzIuMTYgNiAyIDYuMDg1IDIgNi41YzAgLjQxNC4xNjEuNS44MDQuNjI1LjQxMi4wOCAxLjgxOC4yMTIgMi43NzIuMjk2LjA4My45ODkuMjE4IDIuNDYxLjMgMi43NzUuMTI0LjQ4My4yMS44MDQuNjI0LjgwNHMuNS0uMTYuNjI1LS44MDRjLjA4LS40MTIuMjEyLTEuODE3LjI5Ni0yLjc3MS45OS0uMDg0IDIuNDYyLS4yMTkgMi43NzYtLjNDMTAuNjc5IDcgMTEgNi45MTUgMTEgNi41YzAtLjQxNC0uMTYtLjUtLjgwMy0uNjI1LS40MTMtLjA4LTEuODIxLS4yMTItMi43NzUtLjI5Ni0uMDg1LS45NTQtLjIxNi0yLjM2Mi0uMjk3LTIuNzc1bS00LjM0MiA4Ljc2MWEuNzgzLjc4MyAwIDEgMCAwLTEuNTY1Ljc4My43ODMgMCAwIDAgMCAxLjU2NSIvPgo8L3N2Zz4K);
+}
+.tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before {
+  background-color: var(--icon-color);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTYgOS41YTQgNCAwIDEgMS04IDAgNCA0IDAgMCAxIDggMG0tMS41IDBhMi41IDIuNSAwIDEgMS01IDAgMi41IDIuNSAwIDAgMSA1IDAiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIyYzUuNTIzIDAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTBtMC0xLjVhOC40NyA4LjQ3IDAgMCAwIDUuNzA2LTIuMkE2LjU4IDYuNTggMCAwIDAgMTIgMTVhNi41OCA2LjU4IDAgMCAwLTUuNzA1IDMuM0E4LjQ3IDguNDcgMCAwIDAgMTIgMjAuNW0wLTdhOC4wNyA4LjA3IDAgMCAxIDYuNzYgMy42NTMgOC41IDguNSAwIDEgMC0xMy41MiAwQTguMDcgOC4wNyAwIDAgMSAxMiAxMy41IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==);
+  mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTYgOS41YTQgNCAwIDEgMS04IDAgNCA0IDAgMCAxIDggMG0tMS41IDBhMi41IDIuNSAwIDEgMS01IDAgMi41IDIuNSAwIDAgMSA1IDAiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIyYzUuNTIzIDAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTBtMC0xLjVhOC40NyA4LjQ3IDAgMCAwIDUuNzA2LTIuMkE2LjU4IDYuNTggMCAwIDAgMTIgMTVhNi41OCA2LjU4IDAgMCAwLTUuNzA1IDMuM0E4LjQ3IDguNDcgMCAwIDAgMTIgMjAuNW0wLTdhOC4wNyA4LjA3IDAgMCAxIDYuNzYgMy42NTMgOC41IDguNSAwIDEgMC0xMy41MiAwQTguMDcgOC4wNyAwIDAgMSAxMiAxMy41IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==);
+}
+.tooltip__button--credentials-import::before {
+  background-color: var(--icon-color);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZD0iTTE0Ljk5OCAyQTcuMDA0IDcuMDA0IDAgMCAxIDIyIDkuMDA2YzAgMi0uODM4IDMuODA2LTIuMTgyIDUuMDgyYS42Ni42NiAwIDAgMS0uNzY4LjA5MmMtLjQ3Mi0uMjUxLS41MDctLjkzLS4xMzItMS4zMUE1LjUgNS41IDAgMCAwIDIwLjUgOS4wMDYgNS41MDQgNS41MDQgMCAwIDAgMTQuOTk4IDMuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzOCA2Ljg0N2wuMDI1LjExMmMuMTAzLjU0NC0uMDE4IDEuMTU2LS40NCAxLjYxMWwtLjA0Ni4wNDctNS4wNCA1LjA0M2EyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwMmwuMDAzLjQ5NC4wMDIuMDY1QTEuMjUgMS4yNSAwIDAgMCA0Ljc1MyAyMC41aC45OTNhLjc1Ljc1IDAgMCAwIC43NS0uNzV2LS43MzRhMS41IDEuNSAwIDAgMSAxLjUtMS41aC45ODJhLjUuNSAwIDAgMCAuMzU0LS4xNDdsMS4xNzgtMS4xNzhhLjczNi43MzYgMCAwIDEgMS4wNjIgMS4wMmwtLjUzMi41Ny0uNjQ3LjY0OWEyIDIgMCAwIDEtMS40MTUuNTg2aC0uOTgydi43MzRBMi4yNSAyLjI1IDAgMCAxIDUuNzQ2IDIyaC0uOTkzYTIuNzUgMi43NSAwIDAgMS0yLjc0Ni0yLjU5NWwtLjAwNC0uMTRMMiAxOC43N2EzLjc1IDMuNzUgMCAwIDEgMS4wOTgtMi42N2w1LjA0LTUuMDQ0LjAyMi0uMDI1YS4zNi4zNiAwIDAgMCAuMDU2LS4yNmwtLjAxMS0uMDZBNy4wMDQgNy4wMDQgMCAwIDEgMTQuOTk4IDIiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii45IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS41IDZhMi41IDIuNSAwIDEgMSAwIDUgMi41IDIuNSAwIDAgMSAwLTVtMCAxLjVhMSAxIDAgMSAwIDAgMiAxIDEgMCAwIDAgMC0yIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTMuMDAzIDE2LjE5cTAtLjAzLjAwMy0uMDU4YTEgMSAwIDAgMSAuMDE5LS4wOTdsLjAxLS4wNGExIDEgMCAwIDEgLjA0Ni0uMTEybC4wMDgtLjAxOS4wMDMtLjAwNi4wMDYtLjAwOWExIDEgMCAwIDEgLjA2NS0uMDk2bC4wMDgtLjAxMS4wMDMtLjAwNCAzLjEyNS0zLjc1YS43NS43NSAwIDAgMSAxLjE1Mi45NjFsLTIuMTI2IDIuNTVoNS4xNDRhLjc1Ljc1IDAgMCAxIDAgMS41aC01LjA5MmwyLjA3NCAyLjQ5LjA0Ni4wNmEuNzUuNzUgMCAwIDEtMS4xNDYuOTU2bC0uMDUyLS4wNTYtMy4xMjUtMy43NS0uMDAzLS4wMDMtLjAxNi0uMDIxLS4wMjctLjAzOC0uMDItLjAzNi0uMDM1LS4wNjNhLjguOCAwIDAgMS0uMDctLjI3MXoiLz4KPC9zdmc+Cg==);
+  mask-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZD0iTTE0Ljk5OCAyQTcuMDA0IDcuMDA0IDAgMCAxIDIyIDkuMDA2YzAgMi0uODM4IDMuODA2LTIuMTgyIDUuMDgyYS42Ni42NiAwIDAgMS0uNzY4LjA5MmMtLjQ3Mi0uMjUxLS41MDctLjkzLS4xMzItMS4zMUE1LjUgNS41IDAgMCAwIDIwLjUgOS4wMDYgNS41MDQgNS41MDQgMCAwIDAgMTQuOTk4IDMuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzOCA2Ljg0N2wuMDI1LjExMmMuMTAzLjU0NC0uMDE4IDEuMTU2LS40NCAxLjYxMWwtLjA0Ni4wNDctNS4wNCA1LjA0M2EyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwMmwuMDAzLjQ5NC4wMDIuMDY1QTEuMjUgMS4yNSAwIDAgMCA0Ljc1MyAyMC41aC45OTNhLjc1Ljc1IDAgMCAwIC43NS0uNzV2LS43MzRhMS41IDEuNSAwIDAgMSAxLjUtMS41aC45ODJhLjUuNSAwIDAgMCAuMzU0LS4xNDdsMS4xNzgtMS4xNzhhLjczNi43MzYgMCAwIDEgMS4wNjIgMS4wMmwtLjUzMi41Ny0uNjQ3LjY0OWEyIDIgMCAwIDEtMS40MTUuNTg2aC0uOTgydi43MzRBMi4yNSAyLjI1IDAgMCAxIDUuNzQ2IDIyaC0uOTkzYTIuNzUgMi43NSAwIDAgMS0yLjc0Ni0yLjU5NWwtLjAwNC0uMTRMMiAxOC43N2EzLjc1IDMuNzUgMCAwIDEgMS4wOTgtMi42N2w1LjA0LTUuMDQ0LjAyMi0uMDI1YS4zNi4zNiAwIDAgMCAuMDU2LS4yNmwtLjAxMS0uMDZBNy4wMDQgNy4wMDQgMCAwIDEgMTQuOTk4IDIiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii45IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS41IDZhMi41IDIuNSAwIDEgMSAwIDUgMi41IDIuNSAwIDAgMSAwLTVtMCAxLjVhMSAxIDAgMSAwIDAgMiAxIDEgMCAwIDAgMC0yIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTMuMDAzIDE2LjE5cTAtLjAzLjAwMy0uMDU4YTEgMSAwIDAgMSAuMDE5LS4wOTdsLjAxLS4wNGExIDEgMCAwIDEgLjA0Ni0uMTEybC4wMDgtLjAxOS4wMDMtLjAwNi4wMDYtLjAwOWExIDEgMCAwIDEgLjA2NS0uMDk2bC4wMDgtLjAxMS4wMDMtLjAwNCAzLjEyNS0zLjc1YS43NS43NSAwIDAgMSAxLjE1Mi45NjFsLTIuMTI2IDIuNTVoNS4xNDRhLjc1Ljc1IDAgMCAxIDAgMS41aC01LjA5MmwyLjA3NCAyLjQ5LjA0Ni4wNmEuNzUuNzUgMCAwIDEtMS4xNDYuOTU2bC0uMDUyLS4wNTYtMy4xMjUtMy43NS0uMDAzLS4wMDMtLjAxNi0uMDIxLS4wMjctLjAzOC0uMDItLjAzNi0uMDM1LS4wNjNhLjguOCAwIDAgMS0uMDctLjI3MXoiLz4KPC9zdmc+Cg==);
+}
+.tooltip__button--totp::before {
+  background-color: var(--icon-color);
+  -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIgogICAgICAgIGQ9Ik0zIDQuOTQ4MjhWNy4wMjA5NEMxLjg3MDY0IDcuMTczNSAxIDguMTQxMzIgMSA5LjMxMjVWMTMuNjg3NUMxIDE0Ljk2NDcgMi4wMzUzNCAxNiAzLjMxMjUgMTZIMTIuNjg3NUMxMy45NjQ3IDE2IDE1IDE0Ljk2NDcgMTUgMTMuNjg3NVY5LjMxMjVDMTUgOC4xNDEzMiAxNC4xMjk0IDcuMTczNSAxMyA3LjAyMDk0VjQuOTQ4MjhDMTMgMi4yMDg0MyAxMC43NTQ0IDAgOCAwQzUuMjQ1NiAwIDMgMi4yMDg0MyAzIDQuOTQ4MjhaTTggMS4yNUM1LjkyMTkgMS4yNSA0LjI1IDIuOTEyNzYgNC4yNSA0Ljk0ODI4VjdIMTEuNzVWNC45NDgyOEMxMS43NSAyLjkxMjc2IDEwLjA3ODEgMS4yNSA4IDEuMjVaTTIuMjUgOS4zMTI1QzIuMjUgOC43MjU3IDIuNzI1NyA4LjI1IDMuMzEyNSA4LjI1SDEyLjY4NzVDMTMuMjc0MyA4LjI1IDEzLjc1IDguNzI1NyAxMy43NSA5LjMxMjVWMTMuNjg3NUMxMy43NSAxNC4yNzQzIDEzLjI3NDMgMTQuNzUgMTIuNjg3NSAxNC43NUgzLjMxMjVDMi43MjU3IDE0Ljc1IDIuMjUgMTQuMjc0MyAyLjI1IDEzLjY4NzVWOS4zMTI1WiIKICAgICAgICBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0IiBzdHlsZT0iZmlsbDpibGFjaztmaWxsLW9wYWNpdHk6MC44NDsiIC8+CiAgICA8cGF0aAogICAgICAgIGQ9Ik0zLjUgMTEuNUMzLjUgMTAuOTQ3NyAzLjk0NzcyIDEwLjUgNC41IDEwLjVDNS4wNTIyOCAxMC41IDUuNSAxMC45NDc3IDUuNSAxMS41QzUuNSAxMi4wNTIzIDUuMDUyMjggMTIuNSA0LjUgMTIuNUMzLjk0NzcyIDEyLjUgMy41IDEyLjA1MjMgMy41IDExLjVaIgogICAgICAgIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjAuODQiIHN0eWxlPSJmaWxsOmJsYWNrO2ZpbGwtb3BhY2l0eTowLjg0OyIgLz4KICAgIDxwYXRoCiAgICAgICAgZD0iTTcgMTEuNUM3IDEwLjk0NzcgNy40NDc3MiAxMC41IDggMTAuNUM4LjU1MjI4IDEwLjUgOSAxMC45NDc3IDkgMTEuNUM5IDEyLjA1MjMgOC41NTIyOCAxMi41IDggMTIuNUM3LjQ0NzcyIDEyLjUgNyAxMi4wNTIzIDcgMTEuNVoiCiAgICAgICAgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC44NCIgc3R5bGU9ImZpbGw6YmxhY2s7ZmlsbC1vcGFjaXR5OjAuODQ7IiAvPgogICAgPHBhdGgKICAgICAgICBkPSJNMTAuNSAxMS41QzEwLjUgMTAuOTQ3NyAxMC45NDc3IDEwLjUgMTEuNSAxMC41QzEyLjA1MjMgMTAuNSAxMi41IDEwLjk0NzcgMTIuNSAxMS41QzEyLjUgMTIuMDUyMyAxMi4wNTIzIDEyLjUgMTEuNSAxMi41QzEwLjk0NzcgMTIuNSAxMC41IDEyLjA1MjMgMTAuNSAxMS41WiIKICAgICAgICBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0IiBzdHlsZT0iZmlsbDpibGFjaztmaWxsLW9wYWNpdHk6MC44NDsiIC8+Cjwvc3ZnPg==);
+  mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIgogICAgICAgIGQ9Ik0zIDQuOTQ4MjhWNy4wMjA5NEMxLjg3MDY0IDcuMTczNSAxIDguMTQxMzIgMSA5LjMxMjVWMTMuNjg3NUMxIDE0Ljk2NDcgMi4wMzUzNCAxNiAzLjMxMjUgMTZIMTIuNjg3NUMxMy45NjQ3IDE2IDE1IDE0Ljk2NDcgMTUgMTMuNjg3NVY5LjMxMjVDMTUgOC4xNDEzMiAxNC4xMjk0IDcuMTczNSAxMyA3LjAyMDk0VjQuOTQ4MjhDMTMgMi4yMDg0MyAxMC43NTQ0IDAgOCAwQzUuMjQ1NiAwIDMgMi4yMDg0MyAzIDQuOTQ4MjhaTTggMS4yNUM1LjkyMTkgMS4yNSA0LjI1IDIuOTEyNzYgNC4yNSA0Ljk0ODI4VjdIMTEuNzVWNC45NDgyOEMxMS43NSAyLjkxMjc2IDEwLjA3ODEgMS4yNSA4IDEuMjVaTTIuMjUgOS4zMTI1QzIuMjUgOC43MjU3IDIuNzI1NyA4LjI1IDMuMzEyNSA4LjI1SDEyLjY4NzVDMTMuMjc0MyA4LjI1IDEzLjc1IDguNzI1NyAxMy43NSA5LjMxMjVWMTMuNjg3NUMxMy43NSAxNC4yNzQzIDEzLjI3NDMgMTQuNzUgMTIuNjg3NSAxNC43NUgzLjMxMjVDMi43MjU3IDE0Ljc1IDIuMjUgMTQuMjc0MyAyLjI1IDEzLjY4NzVWOS4zMTI1WiIKICAgICAgICBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0IiBzdHlsZT0iZmlsbDpibGFjaztmaWxsLW9wYWNpdHk6MC44NDsiIC8+CiAgICA8cGF0aAogICAgICAgIGQ9Ik0zLjUgMTEuNUMzLjUgMTAuOTQ3NyAzLjk0NzcyIDEwLjUgNC41IDEwLjVDNS4wNTIyOCAxMC41IDUuNSAxMC45NDc3IDUuNSAxMS41QzUuNSAxMi4wNTIzIDUuMDUyMjggMTIuNSA0LjUgMTIuNUMzLjk0NzcyIDEyLjUgMy41IDEyLjA1MjMgMy41IDExLjVaIgogICAgICAgIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjAuODQiIHN0eWxlPSJmaWxsOmJsYWNrO2ZpbGwtb3BhY2l0eTowLjg0OyIgLz4KICAgIDxwYXRoCiAgICAgICAgZD0iTTcgMTEuNUM3IDEwLjk0NzcgNy40NDc3MiAxMC41IDggMTAuNUM4LjU1MjI4IDEwLjUgOSAxMC45NDc3IDkgMTEuNUM5IDEyLjA1MjMgOC41NTIyOCAxMi41IDggMTIuNUM3LjQ0NzcyIDEyLjUgNyAxMi4wNTIzIDcgMTEuNVoiCiAgICAgICAgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC44NCIgc3R5bGU9ImZpbGw6YmxhY2s7ZmlsbC1vcGFjaXR5OjAuODQ7IiAvPgogICAgPHBhdGgKICAgICAgICBkPSJNMTAuNSAxMS41QzEwLjUgMTAuOTQ3NyAxMC45NDc3IDEwLjUgMTEuNSAxMC41QzEyLjA1MjMgMTAuNSAxMi41IDEwLjk0NzcgMTIuNSAxMS41QzEyLjUgMTIuMDUyMyAxMi4wNTIzIDEyLjUgMTEuNSAxMi41QzEwLjk0NzcgMTIuNSAxMC41IDEyLjA1MjMgMTAuNSAxMS41WiIKICAgICAgICBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0IiBzdHlsZT0iZmlsbDpibGFjaztmaWxsLW9wYWNpdHk6MC44NDsiIC8+Cjwvc3ZnPg==);
+}
+.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTkuMzM3IDNINC42ODRjLS40MTgtLjAxNC0uODA3LjMyNy0uODA5Ljc0OHY5LjAxYy4wMDQuNjg2LjE1IDEuMzY1LjQyOCAyIC41MjggMS4yOSAxLjQ2NSAyLjM4IDIuNTQ1IDMuMjUzLjk2NC44MzggMi4wNDUgMS41IDMuMTY0IDIuMTEuNTIzLjI4NSAxLjM0OC44NzkgMS45NzQuODc5LjY0MyAwIDEuNDYtLjU4NSAxLjk5OS0uODc5IDEuMTItLjYxMSAyLjE5MS0xLjI4MyAzLjE2My0yLjExIDEuMDgtLjg5MyAxLjk5NC0xLjk2IDIuNTQ2LTMuMjUzYTUuMDQ4IDUuMDQ4IDAgMCAwIC40MjgtMnYtOS4wMWMuMDQ0LS40My0uMzgtLjc1NC0uNzg1LS43NDhaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI0JpdHdhcmRlbi1Db2xvci0yNF9zdmdfX2EpIiBkPSJNNS4wMzMgMmgxMy45NjVhMi4wNDcgMi4wNDcgMCAwIDEgMS4zNzMuNTI4Yy4zNjYuMzMuNjYyLjg1NC42MjYgMS40OXY4LjcyN2E2LjIzOCA2LjIzOCAwIDAgMS0uNTEgMi40MzFjLS42MjEgMS40NzYtMS42MyAyLjY2LTIuNzU4IDMuNjEzLS45NTMuODI2LTEuOTgxIDEuNDkzLTMuMDIgMi4wODJsLS4yMDguMTE3Yy0uMTAzLjA1Ny0uMjIuMTI5LS4zOS4yMzFhMTEuMyAxMS4zIDAgMCAxLS41NDguMzE1Yy0uMzU3LjE5LS45NC40NjYtMS41NzYuNDY2LS42MzUgMC0xLjIyLS4yODUtMS41Ny0uNDcyYTExLjYzIDExLjYzIDAgMCAxLS41NDItLjMxNGMtLjEyNi0uMDc2LS4yMjEtLjEzNS0uMzAyLS4xODJsLS4wNzctLjA0NGMtMS4wOTItLjYwOC0yLjIwOC0xLjI5OS0zLjIyMi0yLjE5NC0xLjEzMS0uOTM1LTIuMTY5LTIuMTQ1LTIuNzY5LTMuNjNBNi4yMzYgNi4yMzYgMCAwIDEgMyAxMi43NDVWMy45NzNjLjAwNC0xLjE0Ny45ODYtMS45OSAyLjAzMy0xLjk3MlptLS4wMTIgMS4yNWMtLjM5OC0uMDE0LS43Ny4zMTgtLjc3MS43Mjd2OC43NmMuMDA0LjY2Ny4xNDMgMS4zMjcuNDA4IDEuOTQ1LjUwMyAxLjI1NCAxLjM5OCAyLjMxNCAyLjQyOCAzLjE2Mi45Mi44MTQgMS45NSAxLjQ1NyAzLjAxOCAyLjA1MS40OTguMjc4IDEuMjg2Ljg1NSAxLjg4My44NTUuNjEzIDAgMS4zOTMtLjU3IDEuOTA2LS44NTUgMS4wNjgtLjU5NCAyLjA5LTEuMjQ3IDMuMDE4LTIuMDUgMS4wMjktLjg2OSAxLjkwMi0xLjkwNyAyLjQyOC0zLjE2M2E0Ljk4NiA0Ljk4NiAwIDAgMCAuNDA4LTEuOTQ1di04Ljc2Yy4wNDItLjQxNy0uMzYyLS43MzMtLjc0OS0uNzI3SDUuMDIxWm0xMi45NzYgOS40NzdjLS4wMDIuNDMtLjA5Mi44NTgtLjI2NiAxLjI2My0uNDI4Ljk5NC0xLjEyNiAxLjgyMi0xLjk0OCAyLjUxNmExNi4zNCAxNi4zNCAwIDAgMS0yLjU1MyAxLjc1NWMtLjQxLjIzLS44LjUwNy0xLjIzLjdWNS4wMDFoNS45OTd2Ny43MjZaIi8+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9IkJpdHdhcmRlbi1Db2xvci0yNF9zdmdfX2EiIHgxPSIxMiIgeDI9IjEyIiB5MT0iMiIgeTI9IjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIHN0b3AtY29sb3I9IiM1NTdGRjMiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMkI1NUNBIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KPC9zdmc+Cg==);
+}
+.tooltip__button--data--credentials.tooltip__button--data--bitwarden#provider_locked::before,
+.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden#provider_locked::before {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIxMiIgeDI9IjEyIiB5MT0iMiIgeTI9IjIxLjg0MSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTU3ZmYzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMmI1NWNhIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTciIHgyPSIxNyIgeTE9IjE5LjI1IiB5Mj0iMTEuNjI1Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4ODgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhYWEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIxNi45ODYiIHgyPSIxNi45ODYiIHkxPSIxNy4wMzciIHkyPSIyMS4xNTQiPjxzdG9wIG9mZnNldD0iLjAwOCIgc3RvcC1jb2xvcj0iI2UyYTQxMiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2MxODAxMCIvPjwvbGluZWFyR3JhZGllbnQ+PHBhdGggZD0ibTE5LjMzNyAzYy40MDUtLjAwNi44MjkuMzE5Ljc4NS43NDh2NC4yNTJjMCAuNTY4LS4zMjYgMi44LS4zMjYgMi44YTQuMjMyIDQuMjMyIDAgMCAwIC0yLjY4Ny0xLjA0OGwtLjEwOS0uMDAyYTQuMjUgNC4yNSAwIDAgMCAtNC4yNSA0LjI1di44NjVhMi43OTggMi43OTggMCAwIDAgLTIgMi42ODJ2Mi43NDhzLS41My0uMDYtLjczOC0uMTc0Yy0xLjExOS0uNjExLTIuMi0xLjI3Mi0zLjE2My0yLjExLTEuMDgtLjg3Mi0yLjAxOS0xLjk2My0yLjU0Ni0zLjI1M2E1LjA0OCA1LjA0OCAwIDAgMSAtLjQyOC0ydi05LjAxYy4wMDItLjQyMS4zOS0uNzYyLjgwOS0uNzQ3aDE0LjY1M3oiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJtMTkuMTkgMi4wMWMuNDQ2LjA0Ljg2My4yMyAxLjE4MS41MTguMzY2LjMzLjY2Mi44NTQuNjI2IDEuNDl2Ni4zMjJjMCAuNDM1LS45MTguNjk5LTEuMjUuNDE4di02Ljc4Yy4wNDItLjQxOC0uMzYzLS43MzMtLjc0OS0uNzI3aC0xMy45NzdjLS4zOTgtLjAxNS0uNzcuMzE3LS43NzEuNzI2djguNzYxYy4wMDQuNjY3LjE0MiAxLjMyNy40MDggMS45NDQuNTAzIDEuMjU0IDEuMzk4IDIuMzE0IDIuNDI4IDMuMTYyLjkyLjgxNCAxLjk1IDEuNDU3IDMuMDE4IDIuMDUxLjE4My4xMDMuNDA4LjI0NS42NDYuMzg1IDAgLjU2NC0uNTgzIDEuMTAyLTEuMDcuODE1YTEyLjgzMyAxMi44MzMgMCAwIDAgLS4xODQtLjEwN2MtMS4wOTItLjYwOC0yLjIwOC0xLjMtMy4yMjMtMi4xOTQtMS4xMy0uOTM1LTIuMTY3LTIuMTQ1LTIuNzY3LTMuNjNhNi4yMzggNi4yMzggMCAwIDEgLS41MDYtMi40MTl2LTguNzcyYy4wMDQtMS4xNDcuOTg2LTEuOTkgMi4wMzMtMS45NzFoMTMuOTY1eiIgZmlsbD0idXJsKCNhKSIvPjxwYXRoIGQ9Im0xNy45OTcgOS44NjhhNC4yNTcgNC4yNTcgMCAwIDAgLS44ODgtLjExNmwtLjEwOS0uMDAyYTQuMjUgNC4yNSAwIDAgMCAtNC4yNSA0LjI1di44NjVjLS4yNy4wOC0uNTIxLjItLjc1LjM1MnYtMTAuMjE1aDUuOTk3djQuODY3eiIgZmlsbD0idXJsKCNhKSIvPjxnIHN0cm9rZS13aWR0aD0iMS4yNSI+PHJlY3QgaGVpZ2h0PSI3LjYyNSIgcng9IjIuMzc1IiBzdHJva2U9InVybCgjYikiIHdpZHRoPSI0Ljc1IiB4PSIxNC42MjUiIHk9IjExLjYyNSIvPjxwYXRoIGQ9Im0xMi42MjUgMTcuNTQ2YS45Mi45MiAwIDAgMSAuOTIxLS45MjFoNi45MDhhLjkyLjkyIDAgMCAxIC45MjEuOTIxdjIuOTA4YS45MjEuOTIxIDAgMCAxIC0uOTIxLjkyMWgtNi45MDhhLjkyMS45MjEgMCAwIDEgLS45MjEtLjkyMXoiIGZpbGw9IiNmYzMiIHN0cm9rZT0idXJsKCNjKSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPjwvc3ZnPg==);
 }
 .tooltip__button--data--creditCards::before,
 .tooltip__button--data--provider__generic::before {
@@ -317,30 +1844,58 @@
 .tooltip__button--data--provider__amex::before {
   background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMjYgNGMzLjMxMzcgMCA2IDIuNjg2MjkgNiA2djEyYzAgMy4zMTM3LTIuNjg2MyA2LTYgNmgtMjBjLTMuMzEzNzEgMC01Ljk5OTk5OTAyLTIuNjg2My01Ljk5OTk5ODg4LTZsLjAwMDAwMDUzLTEyYy4wMDAwMDAxNC0zLjMxMzcxIDIuNjg2Mjg4MzUtNiA1Ljk5OTk5ODM1LTZ6IiBmaWxsPSIjMDA2ZmNmIi8+PHBhdGggY2xpcC1ydWxlPSJldmVub2RkIiBkPSJtMzAgMjJ2LTEyYzAtMi4yMDkxNC0xLjc5MDktNC00LTRoLTIwYy0yLjIwOTE0IDAtNCAxLjc5MDg2LTQgNHYxMmMwIDIuMjA5MSAxLjc5MDg2IDQgNCA0aDIwYzIuMjA5MSAwIDQtMS43OTA5IDQtNHptMi0xMmMwLTMuMzEzNzEtMi42ODYzLTYtNi02aC0yMGMtMy4zMTM3MSAwLTUuOTk5OTk4MjEgMi42ODYyOS01Ljk5OTk5ODM1IDZsLS4wMDAwMDA1MyAxMmMtLjAwMDAwMDE0IDMuMzEzNyAyLjY4NjI4ODg4IDYgNS45OTk5OTg4OCA2aDIwYzMuMzEzNyAwIDYtMi42ODYzIDYtNnoiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iLjE4IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48cGF0aCBkPSJtMjYuNTcwMiAxNC45MjY1aDIuMTIwMnYtNC45MjY1aC0yLjMwNzN2LjY4NmwtLjQzNjYtLjY4NmgtMS45OTU1di44NzMxbC0uMzc0Mi0uODczMWgtMy42NzkyYy0uMTI0OCAwLS4yNDk1LjA2MjQtLjM3NDIuMDYyNHMtLjE4NzEuMDYyMy0uMzExOC4xMjQ3Yy0uMTI0Ny4wNjIzLS4xODcxLjA2MjMtLjMxMTguMTI0N3YtLjMxMThoLTEwLjUzOWwtLjMxMTguODEwNy0uMzExODEtLjgxMDdoLTIuNDk0NDN2Ljg3MzFsLS4zNzQxNi0uODczMWgtMS45OTU1NWwtLjg3MzA1IDIuMTIwM3YyLjgwNjJoMS40MzQzbC4yNDk0NC0uNjg2aC40OTg4OWwuMjQ5NDQuNjg2aDEwLjk3NTUzdi0uNjIzNmwuNDM2NS42MjM2aDMuMDU1N3YtLjM3NDJjLjA2MjMuMDYyNC4xODcxLjA2MjQuMjQ5NC4xMjQ4LjA2MjQuMDYyMy4xODcxLjA2MjMuMjQ5NS4xMjQ3LjEyNDcuMDYyMy4yNDk0LjA2MjMuMzc0MS4wNjIzaDIuMjQ1bC4yNDk1LS42ODU5aC40OTg4bC4yNDk1LjY4NTloMy4wNTU3di0uNjIzNnptMy40Mjk4IDYuMjM2MXYtNC42MTQ3aC0xNy4xNDkybC0uNDM2NS42MjM2LS40MzY2LS42MjM2aC00Ljk4ODg0djQuOTI2NWg0Ljk4ODg0bC40MzY2LS42MjM2LjQzNjUuNjIzNmgzLjExOHYtMS4wNjAxaC0uMTI0N2MuNDM2NSAwIC44MTA3LS4wNjI0IDEuMTIyNS0uMTg3MXYxLjMwOTVoMi4yNDV2LS42MjM2bC40MzY1LjYyMzZoOS4yOTE4Yy4zNzQxLS4xMjQ3Ljc0ODMtLjE4NyAxLjA2MDEtLjM3NDF6IiBmaWxsPSIjZmZmIi8+PHBhdGggZD0ibTI4LjkzOTkgMTkuOTc3N2gtMS42ODM4di42ODZoMS42MjE0Yy42ODYgMCAxLjEyMjUtLjQzNjYgMS4xMjI1LTEuMDYwMnMtLjM3NDItLjkzNTQtLjk5NzgtLjkzNTRoLS43NDgzYy0uMTg3MSAwLS4zMTE4LS4xMjQ3LS4zMTE4LS4zMTE4cy4xMjQ3LS4zMTE4LjMxMTgtLjMxMThoMS40MzQzbC4zMTE4LS42ODU5aC0xLjY4MzdjLS42ODYgMC0xLjEyMjUuNDM2NS0xLjEyMjUuOTk3NyAwIC42MjM2LjM3NDEuOTM1NC45OTc3LjkzNTRoLjc0ODRjLjE4NyAwIC4zMTE4LjEyNDguMzExOC4zMTE4LjA2MjMuMjQ5NS0uMDYyNC4zNzQyLS4zMTE4LjM3NDJ6bS0zLjA1NTcgMGgtMS42ODM4di42ODZoMS42MjE0Yy42ODYgMCAxLjEyMjUtLjQzNjYgMS4xMjI1LTEuMDYwMnMtLjM3NDEtLjkzNTQtLjk5NzgtLjkzNTRoLS43NDgzYy0uMTg3MSAwLS4zMTE4LS4xMjQ3LS4zMTE4LS4zMTE4cy4xMjQ3LS4zMTE4LjMxMTgtLjMxMThoMS40MzQzbC4zMTE4LS42ODU5aC0xLjY4MzdjLS42ODYgMC0xLjEyMjUuNDM2NS0xLjEyMjUuOTk3NyAwIC42MjM2LjM3NDEuOTM1NC45OTc4LjkzNTRoLjc0ODNjLjE4NzEgMCAuMzExOC4xMjQ4LjMxMTguMzExOC4wNjI0LjI0OTUtLjEyNDcuMzc0Mi0uMzExOC4zNzQyem0tMi4xODI2LTEuOTk1NXYtLjY4NmgtMi42MTkydjMuMzA1MWgyLjYxOTJ2LS42ODZoLTEuODcwOXYtLjY4NTloMS44MDg1di0uNjg2aC0xLjgwODV2LS42MjM2aDEuODcwOXptLTQuMjQwNiAwYy4zMTE4IDAgLjQzNjYuMTg3LjQzNjYuMzc0MXMtLjEyNDguMzc0Mi0uNDM2Ni4zNzQyaC0uOTM1NHYtLjgxMDd6bS0uOTM1NCAxLjQzNDNoLjM3NDJsLjk5NzggMS4xODQ4aC45MzU0bC0xLjEyMjUtMS4yNDcyYy41NjEyLS4xMjQ3Ljg3My0uNDk4OS44NzMtLjk5NzggMC0uNjIzNi0uNDM2NS0xLjA2MDEtMS4xMjI1LTEuMDYwMWgtMS43NDYxdjMuMzA1MWguNzQ4NHptLTEuOTk1NS0uOTk3OGMwIC4yNDk0LS4xMjQ4LjQzNjUtLjQzNjYuNDM2NWgtLjk5Nzd2LS44NzNoLjkzNTRjLjMxMTggMCAuNDk4OS4xODcuNDk4OS40MzY1em0tMi4xODI3LTEuMTIyNXYzLjMwNTFoLjc0ODR2LTEuMTIyNWguOTk3N2MuNjg2IDAgMS4xODQ5LS40MzY1IDEuMTg0OS0xLjEyMjUgMC0uNjIzNi0uNDM2NS0xLjEyMjUtMS4xMjI1LTEuMTIyNXptLTEuMTIyNSAzLjMwNTFoLjkzNTVsLTEuMzA5Ni0xLjY4MzcgMS4zMDk2LTEuNjIxNGgtLjkzNTVsLS44MTA2IDEuMDYwMS0uODEwNy0xLjA2MDFoLS45MzU0bDEuMzA5NSAxLjYyMTQtMS4zMDk1IDEuNjIxNGguOTM1NGwuODEwNy0xLjA2MDJ6bS0yLjgwNjItMi42MTkxdi0uNjg2aC0yLjYxOTE1djMuMzA1MWgyLjYxOTE1di0uNjg2aC0xLjg3MDgydi0uNjg1OWgxLjgwODQydi0uNjg2aC0xLjgwODQydi0uNjIzNmgxLjg3MDgyem0xNS4xNTM3LTUuODYyIDEuMzA5NiAxLjk5NTZoLjkzNTR2LTMuMzA1MWgtLjc0ODR2Mi4xODI2bC0uMTg3LS4zMTE4LTEuMTg0OS0xLjg3MDhoLS45OTc4djMuMzA1MWguNzQ4NHYtMi4yNDV6bS0zLjI0MjgtLjA2MjMuMjQ5NS0uNjg2LjI0OTQuNjg2LjMxMTguNzQ4M2gtMS4xMjI1em0xLjMwOTYgMi4wNTc5aC44MTA3bC0xLjQzNDMtMy4zMDUxaC0uOTk3OGwtMS40MzQzIDMuMzA1MWguODEwN2wuMzExOC0uNjg2aDEuNjIxNHptLTMuNDkyMiAwIC4zMTE4LS42ODZoLS4xODcxYy0uNTYxMiAwLS44NzMtLjM3NDEtLjg3My0uOTM1NHYtLjA2MjRjMC0uNTYxMi4zMTE4LS45MzU0Ljg3My0uOTM1NGguODEwN3YtLjY4NTloLS44NzNjLS45OTc4IDAtMS41NTkxLjY4NTktMS41NTkxIDEuNjIxM3YuMDYyNGMwIC45OTc4LjU2MTMgMS42MjE0IDEuNDk2NyAxLjYyMTR6bS0yLjgwNjIgMGguNzQ4M3YtMy4yNDI4aC0uNzQ4M3ptLTEuNjIxNC0yLjYxOTJjLjMxMTggMCAuNDM2NS4xODcxLjQzNjUuMzc0MnMtLjEyNDcuMzc0Mi0uNDM2NS4zNzQyaC0uOTM1NHYtLjgxMDd6bS0uOTM1NCAxLjQzNDNoLjM3NDFsLjk5NzggMS4xODQ5aC45MzU0bC0xLjEyMjUtMS4yNDcyYy41NjEzLS4xMjQ3Ljg3MzEtLjQ5ODkuODczMS0uOTk3OCAwLS42MjM2LS40MzY2LTEuMDYwMS0xLjEyMjUtMS4wNjAxaC0xLjc0NjF2My4zMDUxaC43NDgzem0tMS4zNzItMS40MzQzdi0uNjg1OWgtMi42MTkxdjMuMzA1MWgyLjYxOTF2LS42ODZoLTEuODcwOHYtLjY4NTloMS44MDg1di0uNjg2aC0xLjgwODV2LS42MjM2aDEuODcwOHptLTUuNjc0ODEgMi42MTkyaC42ODU5N2wuOTM1NDEtMi42ODE1djIuNjgxNWguNzQ4MzN2LTMuMzA1MWgtMS4yNDcyMWwtLjc0ODMzIDIuMjQ1LS43NDgzMy0yLjI0NWgtMS4yNDcyMnYzLjMwNTFoLjc0ODMzdi0yLjY4MTV6bS00LjA1MzQ1LTIuMDU3OS4yNDk0NC0uNjg2LjI0OTQ1LjY4Ni4zMTE4Ljc0ODNoLTEuMTIyNDl6bTEuMzA5NTggMi4wNTc5aC44MTA2OWwtMS40MzQzLTMuMzA1MWgtLjkzNTQxbC0xLjQzNDMgMy4zMDUxaC44MTA2OWwuMzExOC0uNjg2aDEuNjIxMzl6IiBmaWxsPSIjMDA2ZmNmIi8+PC9zdmc+);
 }
-.tooltip__button--data--identities::before {
-  background-size: 20px;
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTYgOS41YTQgNCAwIDEgMS04IDAgNCA0IDAgMCAxIDggMG0tMS41IDBhMi41IDIuNSAwIDEgMS01IDAgMi41IDIuNSAwIDAgMSA1IDAiIGNsaXAtcnVsZT0iZXZlbm9kZCIvPgogIDxwYXRoIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTEyIDIyYzUuNTIzIDAgMTAtNC40NzcgMTAtMTBTMTcuNTIzIDIgMTIgMiAyIDYuNDc3IDIgMTJzNC40NzcgMTAgMTAgMTBtMC0xLjVhOC40NyA4LjQ3IDAgMCAwIDUuNzA2LTIuMkE2LjU4IDYuNTggMCAwIDAgMTIgMTVhNi41OCA2LjU4IDAgMCAwLTUuNzA1IDMuM0E4LjQ3IDguNDcgMCAwIDAgMTIgMjAuNW0wLTdhOC4wNyA4LjA3IDAgMCAxIDYuNzYgMy42NTMgOC41IDguNSAwIDEgMC0xMy41MiAwQTguMDcgOC4wNyAwIDAgMSAxMiAxMy41IiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==);
+@media (prefers-color-scheme: dark) {
+  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden)::before,
+  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden)::before,
+  .tooltip__button--data--credentials__new::before,
+  .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup)::before,
+  .tooltip__button--credentials-import::before,
+  .tooltip__button--totp::before {
+    background-color: var(--icon-color-dark);
+  }
 }
-.tooltip__button--data--credentials.tooltip__button--data--bitwarden::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden::before {
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTkuMzM3IDNINC42ODRjLS40MTgtLjAxNC0uODA3LjMyNy0uODA5Ljc0OHY5LjAxYy4wMDQuNjg2LjE1IDEuMzY1LjQyOCAyIC41MjggMS4yOSAxLjQ2NSAyLjM4IDIuNTQ1IDMuMjUzLjk2NC44MzggMi4wNDUgMS41IDMuMTY0IDIuMTEuNTIzLjI4NSAxLjM0OC44NzkgMS45NzQuODc5LjY0MyAwIDEuNDYtLjU4NSAxLjk5OS0uODc5IDEuMTItLjYxMSAyLjE5MS0xLjI4MyAzLjE2My0yLjExIDEuMDgtLjg5MyAxLjk5NC0xLjk2IDIuNTQ2LTMuMjUzYTUuMDQ4IDUuMDQ4IDAgMCAwIC40MjgtMnYtOS4wMWMuMDQ0LS40My0uMzgtLjc1NC0uNzg1LS43NDhaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI0JpdHdhcmRlbi1Db2xvci0yNF9zdmdfX2EpIiBkPSJNNS4wMzMgMmgxMy45NjVhMi4wNDcgMi4wNDcgMCAwIDEgMS4zNzMuNTI4Yy4zNjYuMzMuNjYyLjg1NC42MjYgMS40OXY4LjcyN2E2LjIzOCA2LjIzOCAwIDAgMS0uNTEgMi40MzFjLS42MjEgMS40NzYtMS42MyAyLjY2LTIuNzU4IDMuNjEzLS45NTMuODI2LTEuOTgxIDEuNDkzLTMuMDIgMi4wODJsLS4yMDguMTE3Yy0uMTAzLjA1Ny0uMjIuMTI5LS4zOS4yMzFhMTEuMyAxMS4zIDAgMCAxLS41NDguMzE1Yy0uMzU3LjE5LS45NC40NjYtMS41NzYuNDY2LS42MzUgMC0xLjIyLS4yODUtMS41Ny0uNDcyYTExLjYzIDExLjYzIDAgMCAxLS41NDItLjMxNGMtLjEyNi0uMDc2LS4yMjEtLjEzNS0uMzAyLS4xODJsLS4wNzctLjA0NGMtMS4wOTItLjYwOC0yLjIwOC0xLjI5OS0zLjIyMi0yLjE5NC0xLjEzMS0uOTM1LTIuMTY5LTIuMTQ1LTIuNzY5LTMuNjNBNi4yMzYgNi4yMzYgMCAwIDEgMyAxMi43NDVWMy45NzNjLjAwNC0xLjE0Ny45ODYtMS45OSAyLjAzMy0xLjk3MlptLS4wMTIgMS4yNWMtLjM5OC0uMDE0LS43Ny4zMTgtLjc3MS43Mjd2OC43NmMuMDA0LjY2Ny4xNDMgMS4zMjcuNDA4IDEuOTQ1LjUwMyAxLjI1NCAxLjM5OCAyLjMxNCAyLjQyOCAzLjE2Mi45Mi44MTQgMS45NSAxLjQ1NyAzLjAxOCAyLjA1MS40OTguMjc4IDEuMjg2Ljg1NSAxLjg4My44NTUuNjEzIDAgMS4zOTMtLjU3IDEuOTA2LS44NTUgMS4wNjgtLjU5NCAyLjA5LTEuMjQ3IDMuMDE4LTIuMDUgMS4wMjktLjg2OSAxLjkwMi0xLjkwNyAyLjQyOC0zLjE2M2E0Ljk4NiA0Ljk4NiAwIDAgMCAuNDA4LTEuOTQ1di04Ljc2Yy4wNDItLjQxNy0uMzYyLS43MzMtLjc0OS0uNzI3SDUuMDIxWm0xMi45NzYgOS40NzdjLS4wMDIuNDMtLjA5Mi44NTgtLjI2NiAxLjI2My0uNDI4Ljk5NC0xLjEyNiAxLjgyMi0xLjk0OCAyLjUxNmExNi4zNCAxNi4zNCAwIDAgMS0yLjU1MyAxLjc1NWMtLjQxLjIzLS44LjUwNy0xLjIzLjdWNS4wMDFoNS45OTd2Ny43MjZaIi8+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9IkJpdHdhcmRlbi1Db2xvci0yNF9zdmdfX2EiIHgxPSIxMiIgeDI9IjEyIiB5MT0iMiIgeTI9IjIyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIHN0b3AtY29sb3I9IiM1NTdGRjMiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMkI1NUNBIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KPC9zdmc+Cg==);
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
+.tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
+.tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
+.tooltip__button--totp:is(:hover, .currentFocus)::before,
+.tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
+.tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
+.tooltip__button--data--credentials__new:active::before,
+.tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
+.tooltip__button--credentials-import:active::before,
+.tooltip__button--totp:active::before {
+  background-color: var(--hover-color-primary);
 }
-.tooltip__button--data--credentials.tooltip__button--data--bitwarden#provider_locked::before,
-.tooltip__button--data--credentials__current.tooltip__button--data--bitwarden#provider_locked::before {
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIxMiIgeDI9IjEyIiB5MT0iMiIgeTI9IjIxLjg0MSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTU3ZmYzIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMmI1NWNhIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMTciIHgyPSIxNyIgeTE9IjE5LjI1IiB5Mj0iMTEuNjI1Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4ODgiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNhYWEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIxNi45ODYiIHgyPSIxNi45ODYiIHkxPSIxNy4wMzciIHkyPSIyMS4xNTQiPjxzdG9wIG9mZnNldD0iLjAwOCIgc3RvcC1jb2xvcj0iI2UyYTQxMiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2MxODAxMCIvPjwvbGluZWFyR3JhZGllbnQ+PHBhdGggZD0ibTE5LjMzNyAzYy40MDUtLjAwNi44MjkuMzE5Ljc4NS43NDh2NC4yNTJjMCAuNTY4LS4zMjYgMi44LS4zMjYgMi44YTQuMjMyIDQuMjMyIDAgMCAwIC0yLjY4Ny0xLjA0OGwtLjEwOS0uMDAyYTQuMjUgNC4yNSAwIDAgMCAtNC4yNSA0LjI1di44NjVhMi43OTggMi43OTggMCAwIDAgLTIgMi42ODJ2Mi43NDhzLS41My0uMDYtLjczOC0uMTc0Yy0xLjExOS0uNjExLTIuMi0xLjI3Mi0zLjE2My0yLjExLTEuMDgtLjg3Mi0yLjAxOS0xLjk2My0yLjU0Ni0zLjI1M2E1LjA0OCA1LjA0OCAwIDAgMSAtLjQyOC0ydi05LjAxYy4wMDItLjQyMS4zOS0uNzYyLjgwOS0uNzQ3aDE0LjY1M3oiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJtMTkuMTkgMi4wMWMuNDQ2LjA0Ljg2My4yMyAxLjE4MS41MTguMzY2LjMzLjY2Mi44NTQuNjI2IDEuNDl2Ni4zMjJjMCAuNDM1LS45MTguNjk5LTEuMjUuNDE4di02Ljc4Yy4wNDItLjQxOC0uMzYzLS43MzMtLjc0OS0uNzI3aC0xMy45NzdjLS4zOTgtLjAxNS0uNzcuMzE3LS43NzEuNzI2djguNzYxYy4wMDQuNjY3LjE0MiAxLjMyNy40MDggMS45NDQuNTAzIDEuMjU0IDEuMzk4IDIuMzE0IDIuNDI4IDMuMTYyLjkyLjgxNCAxLjk1IDEuNDU3IDMuMDE4IDIuMDUxLjE4My4xMDMuNDA4LjI0NS42NDYuMzg1IDAgLjU2NC0uNTgzIDEuMTAyLTEuMDcuODE1YTEyLjgzMyAxMi44MzMgMCAwIDAgLS4xODQtLjEwN2MtMS4wOTItLjYwOC0yLjIwOC0xLjMtMy4yMjMtMi4xOTQtMS4xMy0uOTM1LTIuMTY3LTIuMTQ1LTIuNzY3LTMuNjNhNi4yMzggNi4yMzggMCAwIDEgLS41MDYtMi40MTl2LTguNzcyYy4wMDQtMS4xNDcuOTg2LTEuOTkgMi4wMzMtMS45NzFoMTMuOTY1eiIgZmlsbD0idXJsKCNhKSIvPjxwYXRoIGQ9Im0xNy45OTcgOS44NjhhNC4yNTcgNC4yNTcgMCAwIDAgLS44ODgtLjExNmwtLjEwOS0uMDAyYTQuMjUgNC4yNSAwIDAgMCAtNC4yNSA0LjI1di44NjVjLS4yNy4wOC0uNTIxLjItLjc1LjM1MnYtMTAuMjE1aDUuOTk3djQuODY3eiIgZmlsbD0idXJsKCNhKSIvPjxnIHN0cm9rZS13aWR0aD0iMS4yNSI+PHJlY3QgaGVpZ2h0PSI3LjYyNSIgcng9IjIuMzc1IiBzdHJva2U9InVybCgjYikiIHdpZHRoPSI0Ljc1IiB4PSIxNC42MjUiIHk9IjExLjYyNSIvPjxwYXRoIGQ9Im0xMi42MjUgMTcuNTQ2YS45Mi45MiAwIDAgMSAuOTIxLS45MjFoNi45MDhhLjkyLjkyIDAgMCAxIC45MjEuOTIxdjIuOTA4YS45MjEuOTIxIDAgMCAxIC0uOTIxLjkyMWgtNi45MDhhLjkyMS45MjEgMCAwIDEgLS45MjEtLjkyMXoiIGZpbGw9IiNmYzMiIHN0cm9rZT0idXJsKCNjKSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPjwvc3ZnPg==);
+@media (prefers-color-scheme: dark) {
+  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):is(:hover, .currentFocus)::before,
+  .tooltip__button--data--credentials__new:is(:hover, .currentFocus)::before,
+  .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):is(:hover, .currentFocus)::before,
+  .tooltip__button--credentials-import:is(:hover, .currentFocus)::before,
+  .tooltip__button--totp:is(:hover, .currentFocus)::before,
+  .tooltip__button--data--credentials:not(.tooltip__button--data--bitwarden):active::before,
+  .tooltip__button--data--credentials__current:not(.tooltip__button--data--bitwarden):active::before,
+  .tooltip__button--data--credentials__new:active::before,
+  .tooltip__button--data--identities:not(#personalAddress):not(#privateAddress):not(#incontextSignup):active::before,
+  .tooltip__button--credentials-import:active::before,
+  .tooltip__button--totp:active::before {
+    background-color: var(--hover-color-primary-dark);
+  }
 }
 hr {
   display: block;
   margin: var(--hr-margin);
   border: none;
-  border-top: 1px solid rgba(0, 0, 0, .1);
+  border-top: 1px solid var(--divider-color);
 }
 hr:first-child {
   display: none;
 }
 @media (prefers-color-scheme: dark) {
   hr {
-    border-top: 1px solid rgba(255, 255, 255, .2);
+    border-top: 1px solid var(--divider-color-dark);
   }
 }
 #privateAddress {
@@ -439,14 +1994,6 @@ hr:first-child {
   position: absolute;
   right: 12px;
   top: 12px;
-}
-.tooltip__button--credentials-import::before {
-  background-size: 20px;
-  background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZmlsbD0iIzAwMCIgZmlsbC1vcGFjaXR5PSIuOSIgZD0iTTE0Ljk5OCAyQTcuMDA0IDcuMDA0IDAgMCAxIDIyIDkuMDA2YzAgMi0uODM4IDMuODA2LTIuMTgyIDUuMDgyYS42Ni42NiAwIDAgMS0uNzY4LjA5MmMtLjQ3Mi0uMjUxLS41MDctLjkzLS4xMzItMS4zMUE1LjUgNS41IDAgMCAwIDIwLjUgOS4wMDYgNS41MDQgNS41MDQgMCAwIDAgMTQuOTk4IDMuNWE1LjUwNCA1LjUwNCAwIDAgMC01LjMzOCA2Ljg0N2wuMDI1LjExMmMuMTAzLjU0NC0uMDE4IDEuMTU2LS40NCAxLjYxMWwtLjA0Ni4wNDctNS4wNCA1LjA0M2EyLjI1IDIuMjUgMCAwIDAtLjY1OSAxLjYwMmwuMDAzLjQ5NC4wMDIuMDY1QTEuMjUgMS4yNSAwIDAgMCA0Ljc1MyAyMC41aC45OTNhLjc1Ljc1IDAgMCAwIC43NS0uNzV2LS43MzRhMS41IDEuNSAwIDAgMSAxLjUtMS41aC45ODJhLjUuNSAwIDAgMCAuMzU0LS4xNDdsMS4xNzgtMS4xNzhhLjczNi43MzYgMCAwIDEgMS4wNjIgMS4wMmwtLjUzMi41Ny0uNjQ3LjY0OWEyIDIgMCAwIDEtMS40MTUuNTg2aC0uOTgydi43MzRBMi4yNSAyLjI1IDAgMCAxIDUuNzQ2IDIyaC0uOTkzYTIuNzUgMi43NSAwIDAgMS0yLjc0Ni0yLjU5NWwtLjAwNC0uMTRMMiAxOC43N2EzLjc1IDMuNzUgMCAwIDEgMS4wOTgtMi42N2w1LjA0LTUuMDQ0LjAyMi0uMDI1YS4zNi4zNiAwIDAgMCAuMDU2LS4yNmwtLjAxMS0uMDZBNy4wMDQgNy4wMDQgMCAwIDEgMTQuOTk4IDIiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9Ii45IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNS41IDZhMi41IDIuNSAwIDEgMSAwIDUgMi41IDIuNSAwIDAgMSAwLTVtMCAxLjVhMSAxIDAgMSAwIDAgMiAxIDEgMCAwIDAgMC0yIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiLz4KICA8cGF0aCBmaWxsPSIjMDAwIiBkPSJNMTMuMDAzIDE2LjE5cTAtLjAzLjAwMy0uMDU4YTEgMSAwIDAgMSAuMDE5LS4wOTdsLjAxLS4wNGExIDEgMCAwIDEgLjA0Ni0uMTEybC4wMDgtLjAxOS4wMDMtLjAwNi4wMDYtLjAwOWExIDEgMCAwIDEgLjA2NS0uMDk2bC4wMDgtLjAxMS4wMDMtLjAwNCAzLjEyNS0zLjc1YS43NS43NSAwIDAgMSAxLjE1Mi45NjFsLTIuMTI2IDIuNTVoNS4xNDRhLjc1Ljc1IDAgMCAxIDAgMS41aC01LjA5MmwyLjA3NCAyLjQ5LjA0Ni4wNmEuNzUuNzUgMCAwIDEtMS4xNDYuOTU2bC0uMDUyLS4wNTYtMy4xMjUtMy43NS0uMDAzLS4wMDMtLjAxNi0uMDIxLS4wMjctLjAzOC0uMDItLjAzNi0uMDM1LS4wNjNhLjguOCAwIDAgMS0uMDctLjI3MXoiLz4KPC9zdmc+Cg==);
-}
-.tooltip__button--totp::before {
-  background-size: 20px;
-  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIgogICAgICAgIGQ9Ik0zIDQuOTQ4MjhWNy4wMjA5NEMxLjg3MDY0IDcuMTczNSAxIDguMTQxMzIgMSA5LjMxMjVWMTMuNjg3NUMxIDE0Ljk2NDcgMi4wMzUzNCAxNiAzLjMxMjUgMTZIMTIuNjg3NUMxMy45NjQ3IDE2IDE1IDE0Ljk2NDcgMTUgMTMuNjg3NVY5LjMxMjVDMTUgOC4xNDEzMiAxNC4xMjk0IDcuMTczNSAxMyA3LjAyMDk0VjQuOTQ4MjhDMTMgMi4yMDg0MyAxMC43NTQ0IDAgOCAwQzUuMjQ1NiAwIDMgMi4yMDg0MyAzIDQuOTQ4MjhaTTggMS4yNUM1LjkyMTkgMS4yNSA0LjI1IDIuOTEyNzYgNC4yNSA0Ljk0ODI4VjdIMTEuNzVWNC45NDgyOEMxMS43NSAyLjkxMjc2IDEwLjA3ODEgMS4yNSA4IDEuMjVaTTIuMjUgOS4zMTI1QzIuMjUgOC43MjU3IDIuNzI1NyA4LjI1IDMuMzEyNSA4LjI1SDEyLjY4NzVDMTMuMjc0MyA4LjI1IDEzLjc1IDguNzI1NyAxMy43NSA5LjMxMjVWMTMuNjg3NUMxMy43NSAxNC4yNzQzIDEzLjI3NDMgMTQuNzUgMTIuNjg3NSAxNC43NUgzLjMxMjVDMi43MjU3IDE0Ljc1IDIuMjUgMTQuMjc0MyAyLjI1IDEzLjY4NzVWOS4zMTI1WiIKICAgICAgICBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0IiBzdHlsZT0iZmlsbDpibGFjaztmaWxsLW9wYWNpdHk6MC44NDsiIC8+CiAgICA8cGF0aAogICAgICAgIGQ9Ik0zLjUgMTEuNUMzLjUgMTAuOTQ3NyAzLjk0NzcyIDEwLjUgNC41IDEwLjVDNS4wNTIyOCAxMC41IDUuNSAxMC45NDc3IDUuNSAxMS41QzUuNSAxMi4wNTIzIDUuMDUyMjggMTIuNSA0LjUgMTIuNUMzLjk0NzcyIDEyLjUgMy41IDEyLjA1MjMgMy41IDExLjVaIgogICAgICAgIGZpbGw9ImJsYWNrIiBmaWxsLW9wYWNpdHk9IjAuODQiIHN0eWxlPSJmaWxsOmJsYWNrO2ZpbGwtb3BhY2l0eTowLjg0OyIgLz4KICAgIDxwYXRoCiAgICAgICAgZD0iTTcgMTEuNUM3IDEwLjk0NzcgNy40NDc3MiAxMC41IDggMTAuNUM4LjU1MjI4IDEwLjUgOSAxMC45NDc3IDkgMTEuNUM5IDEyLjA1MjMgOC41NTIyOCAxMi41IDggMTIuNUM3LjQ0NzcyIDEyLjUgNyAxMi4wNTIzIDcgMTEuNVoiCiAgICAgICAgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC44NCIgc3R5bGU9ImZpbGw6YmxhY2s7ZmlsbC1vcGFjaXR5OjAuODQ7IiAvPgogICAgPHBhdGgKICAgICAgICBkPSJNMTAuNSAxMS41QzEwLjUgMTAuOTQ3NyAxMC45NDc3IDEwLjUgMTEuNSAxMC41QzEyLjA1MjMgMTAuNSAxMi41IDEwLjk0NzcgMTIuNSAxMS41QzEyLjUgMTIuMDUyMyAxMi4wNTIzIDEyLjUgMTEuNSAxMi41QzEwLjk0NzcgMTIuNSAxMC41IDEyLjA1MjMgMTAuNSAxMS41WiIKICAgICAgICBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjg0IiBzdHlsZT0iZmlsbDpibGFjaztmaWxsLW9wYWNpdHk6MC44NDsiIC8+Cjwvc3ZnPg==);
 }
 .truncate {
   display: block;

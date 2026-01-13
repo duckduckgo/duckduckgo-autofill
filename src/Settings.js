@@ -10,6 +10,7 @@ import { processConfig } from '@duckduckgo/content-scope-scripts/injected/src/ut
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AutofillFeatureToggles} AutofillFeatureToggles
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").AvailableInputTypes} AvailableInputTypes
  * @typedef {import("./deviceApiCalls/__generated__/validators-ts").RuntimeConfiguration} RuntimeConfiguration
+ * @typedef {import("./deviceApiCalls/__generated__/validators-ts").ThemeVariant} ThemeVariant
  * @typedef {import("../packages/device-api").DeviceApi} DeviceApi
  */
 
@@ -38,6 +39,8 @@ export class Settings {
     _enabled = null;
     /** @type {string} */
     _language = 'en';
+    /** @type {ThemeVariant} */
+    _themeVariant = 'default';
 
     /** @type {SiteSpecificFeature | null} */
     _siteSpecificFeature = null;
@@ -126,6 +129,22 @@ export class Settings {
                 console.log('isDDGTestMode: getLanguage: ❌', e);
             }
             return 'en';
+        }
+    }
+
+    /**
+     * Retrieves the theme variant from RuntimeConfiguration.
+     * @returns {Promise<ThemeVariant>} the theme variant, or 'default' if not set
+     */
+    async getThemeVariant() {
+        try {
+            const conf = await this._getRuntimeConfiguration();
+            return conf.userPreferences.themeVariant ?? 'default';
+        } catch (e) {
+            if (this.globalConfig.isDDGTestMode) {
+                console.log('isDDGTestMode: getThemeVariant: ❌', e);
+            }
+            return 'default';
         }
     }
 
@@ -245,6 +264,7 @@ export class Settings {
         this.setFeatureToggles(await this.getFeatureToggles());
         this.setAvailableInputTypes(await this.getAvailableInputTypes());
         this.setLanguage(await this.getLanguage());
+        this.setThemeVariant(await this.getThemeVariant());
 
         // If 'this.enabled' is a boolean it means we were able to set it correctly and therefor respect its value
         if (typeof this.enabled === 'boolean') {
@@ -383,6 +403,16 @@ export class Settings {
      */
     setLanguage(language) {
         this._language = language;
+    }
+
+    /** @returns {ThemeVariant} */
+    get themeVariant() {
+        return this._themeVariant;
+    }
+
+    /** @param {ThemeVariant} value */
+    setThemeVariant(value) {
+        this._themeVariant = value;
     }
 
     static defaults = {

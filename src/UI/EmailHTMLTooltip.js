@@ -11,7 +11,7 @@ class EmailHTMLTooltip extends HTMLTooltip {
 
         this.shadow.innerHTML = `
 ${this.options.css}
-<div class="wrapper wrapper--email" hidden data-platform=${this.options.platform}>
+<div class="wrapper wrapper--email" hidden data-platform="${this.options.platform}" data-theme-variant="${this.options.themeVariant}">
     <div class="tooltip tooltip--email">
         <button class="tooltip__button tooltip__button--email js-use-personal">
             <span class="tooltip__button--email__primary-text">

@@ -111,9 +111,7 @@ async function uiPreview() {
         legalComments: 'inline',
         outfile: join(ROOT, 'debug/dist/ui-debug.js'),
         metafile: true,
-        loader: {
-            '.css': 'text',
-        },
+        plugins: [cssPlugin()],
     };
     await esbuild.build(config);
 }

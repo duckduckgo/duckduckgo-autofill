@@ -102,6 +102,7 @@ export class HTMLTooltipUIController extends UIController {
          */
         const tooltipOptions = {
             ...this._htmlTooltipOptions,
+            themeVariant: this._options.device.settings.themeVariant,
             remove: () => this.removeTooltip(),
             isIncontextSignupAvailable: () => {
                 const subtype = getSubtypeFromType(topContextData.inputType);
