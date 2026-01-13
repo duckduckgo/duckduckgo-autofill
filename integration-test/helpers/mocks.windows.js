@@ -100,6 +100,10 @@ export function createWindowsMocks() {
             Object.assign(mocks.getRuntimeConfiguration.userPreferences.features.autofill.settings.featureToggles, featureToggles);
             return this;
         },
+        withThemeVariant(themeVariant) {
+            mocks.getRuntimeConfiguration.userPreferences.themeVariant = themeVariant;
+            return this;
+        },
         /**
          * @param {'enabled' | 'disabled'} state
          * @returns {builder}

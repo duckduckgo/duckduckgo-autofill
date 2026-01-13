@@ -94,5 +94,28 @@ test.describe('Auto-fill a login form on windows', () => {
             await overlay.clickButtonWithText(personalAddress);
             await overlay.assertSelectedDetail();
         });
+        test('themeVariant is applied to overlay wrapper', async ({ page }) => {
+            await forwardConsoleMessages(page);
+
+            const { personalAddress } = constants.fields.email;
+            const password = '123456';
+
+            const overlay = overlayPage(page);
+            await overlay.navigate();
+
+            await createWindowsMocks()
+                .withCredentials({
+                    id: '01',
+                    username: personalAddress,
+                    password,
+                })
+                .withThemeVariant('rose')
+                .applyTo(page);
+
+            // Pretend we're running in a top-frame scenario
+            await createAutofillScript().replace('isTopFrame', true).platform('windows').applyTo(page);
+
+            await overlay.assertThemeVariant('rose');
+        });
     });
 });

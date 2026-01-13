@@ -53,12 +53,13 @@ export const iosContentScopeReplacements = (overrides = {}) => {
  * @param {{
  *      overlay?: boolean,
  *      featureToggles?: AutofillFeatureToggles,
- *      availableInputTypes?: AvailableInputTypes
+ *      availableInputTypes?: AvailableInputTypes,
+ *      themeVariant?: import('../../src/deviceApiCalls/__generated__/validators-ts').ThemeVariant
  *  }} opts
  * @returns {Partial<Replacements>}
  */
 export const macosContentScopeReplacements = (opts = {}) => {
-    const { overlay = false, featureToggles, availableInputTypes } = opts;
+    const { overlay = false, featureToggles, availableInputTypes, themeVariant } = opts;
     return {
         isApp: true,
         contentScope: {
@@ -74,6 +75,7 @@ export const macosContentScopeReplacements = (opts = {}) => {
         userPreferences: {
             debug: true,
             platform: { name: 'macos' },
+            ...(themeVariant && { themeVariant }),
             features: {
                 autofill: {
                     settings: {
@@ -358,6 +360,10 @@ export function createWebkitMocks(platform = 'macos') {
                 webkitBase.getRuntimeConfiguration.success.userPreferences.features.autofill.settings.featureToggles,
                 featureToggles,
             );
+            return this;
+        },
+        withThemeVariant: function (themeVariant) {
+            webkitBase.getRuntimeConfiguration.success.userPreferences.themeVariant = themeVariant;
             return this;
         },
         withAskToUnlockProvider: function () {

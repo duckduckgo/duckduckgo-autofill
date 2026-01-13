@@ -175,6 +175,32 @@ test.describe('Auto-fill a login form on macOS', () => {
             await overlay.clickButtonWithText(personalAddress);
             await overlay.doesNotCloseParentAfterCall('pmHandlerGetAutofillCredentials');
         });
+        test('themeVariant is applied to overlay wrapper', async ({ page }) => {
+            await forwardConsoleMessages(page);
+
+            // Set up mocks with themeVariant
+            await createWebkitMocks()
+                .withAvailableInputTypes(createAvailableInputTypes())
+                .withCredentials({
+                    id: '01',
+                    username: personalAddress,
+                    password,
+                    credentialsProvider: 'duckduckgo',
+                })
+                .withThemeVariant('rose')
+                .applyTo(page);
+
+            // Pretend we're running in a top-frame scenario
+            await createAutofillScript()
+                .replaceAll(macosContentScopeReplacements({ overlay: true }))
+                .replace('isTopFrame', true)
+                .platform('macos')
+                .applyTo(page);
+
+            const overlay = overlayPage(page);
+            await overlay.navigate();
+            await overlay.assertThemeVariant('rose');
+        });
     });
     test.describe('Displays the correct button text', () => {
         /** @type {CredentialsMock} */
