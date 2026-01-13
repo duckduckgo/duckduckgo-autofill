@@ -3,7 +3,7 @@ description: |
     Runs screenshot tests and uploads test reports as artifacts.
 
     If this workflow fails, you can trigger `screenshot-tests-update.yml` from the
-    GitHub UI.
+    GitHub UI (once this PR is merged to main).
 
 on:
     push:
@@ -12,7 +12,8 @@ on:
     merge_group:
 
 permissions:
-    contents: read
+    contents: write
+    pull-requests: write
 
 jobs:
     screenshots:
@@ -20,6 +21,9 @@ jobs:
         runs-on: macos-14
         steps:
             - uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.head_ref || github.ref_name }}
+                  fetch-depth: 0
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
@@ -38,7 +42,28 @@ jobs:
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Run screenshot tests
+              id: screenshot_tests
+              continue-on-error: true
               run: npm run test:screenshots
+            - name: Update screenshots if tests failed
+              id: update_screenshots
+              if: steps.screenshot_tests.outcome == 'failure' && github.event_name == 'pull_request'
+              run: npm run test:screenshots:update
+            - name: Commit updated screenshots
+              if: steps.update_screenshots.outcome == 'success'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git add "*.png"
+                  if git diff --staged --quiet; then
+                    echo "No screenshot changes to commit"
+                  else
+                    git commit -m "Update baseline screenshots from CI"
+                    git push origin HEAD:${{ github.head_ref }}
+                  fi
+            - name: Fail if tests failed and no update was made
+              if: steps.screenshot_tests.outcome == 'failure' && steps.update_screenshots.outcome != 'success'
+              run: exit 1
             - name: Upload screenshot test results
               if: always()
               uses: actions/upload-artifact@v4
