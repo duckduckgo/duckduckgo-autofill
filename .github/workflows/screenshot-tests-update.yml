@@ -1,8 +1,9 @@
-name: Update Screenshots on a PR
-description: |
-    Runs previously failed screenshot tests, and commits the changes.
+# Update Screenshots on a PR
+#
+# Runs previously failed screenshot tests, and commits the changes.
+# Your PR will receive a commit with the changes so you can manually verify before merging.
 
-    Your PR will receive a commit with the changes so you can manually verify before merging.
+name: Update Screenshots on a PR
 
 on:
     workflow_dispatch:

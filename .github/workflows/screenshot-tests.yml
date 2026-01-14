@@ -1,8 +1,9 @@
-name: Screenshot Tests
-description: |
-    Runs screenshot tests and uploads test reports as artifacts.
+# Screenshot Tests
+#
+# Runs screenshot tests and uploads test reports as artifacts.
+# If this workflow fails, you can trigger `screenshot-tests-update.yml` from the GitHub UI.
 
-    If this workflow fails, you can trigger `screenshot-tests-update.yml` from the GitHub UI.
+name: Screenshot Tests
 
 on:
     push:
