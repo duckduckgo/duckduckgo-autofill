@@ -67,5 +67,8 @@ export class DebugUIPage {
     async waitForTooltipsToRender() {
         // Wait for the last tooltip to be rendered (importTooltips is the last section created)
         await this.page.locator('#importTooltips-0').waitFor({ state: 'visible' });
+
+        // Wait for network idle to ensure all CSS background images (icons) are loaded
+        await this.page.waitForLoadState('networkidle');
     }
 }
