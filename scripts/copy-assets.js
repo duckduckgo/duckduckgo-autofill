@@ -12,7 +12,7 @@ const isDebugUI = process.env.DEBUG_UI === 'true';
 
 copyAutofillCSS();
 copyAutofillScript();
-copyAutofillHTML();
+// Note: TopAutofill.html is now built by build-top-autofill.mjs with inlined design tokens
 copySharedCredentials();
 
 // Only copy image assets when in debug UI mode
@@ -30,10 +30,8 @@ function copyAutofillCSS() {
     copyFileSync(hostStylesPath, filepath('integration-test', 'extension', 'public', 'css', 'autofill-host-styles_chrome.css'));
 }
 
-function copyAutofillHTML() {
-    const htmlFileName = 'TopAutofill.html';
-    copyFileSync(filepath(srcPath, htmlFileName), filepath(distPath, htmlFileName));
-}
+// Note: copyAutofillHTML has been removed.
+// TopAutofill.html is now built by build-top-autofill.mjs with inlined design tokens.
 
 function copySharedCredentials() {
     const sharedCredsFilePath = filepath('packages', 'password', 'shared-credentials.json');

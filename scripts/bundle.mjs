@@ -2,6 +2,8 @@ import esbuild from 'esbuild';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, relative } from 'path';
 import { cwd } from './utils.mjs';
+import { buildTopAutofill } from './build-top-autofill.mjs';
+
 const CWD = cwd(import.meta.url);
 const ROOT = join(CWD, '..');
 const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
@@ -23,6 +25,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
         bundleCSSForExtension(),
         scannerDebug(),
         scannerRunner(),
+        buildTopAutofill(),
     ]);
 })();
 
