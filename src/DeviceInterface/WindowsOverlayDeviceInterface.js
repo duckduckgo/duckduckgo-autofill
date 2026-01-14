@@ -13,6 +13,7 @@ import {
 } from '../deviceApiCalls/__generated__/deviceApiCalls.js';
 import { overlayApi } from './overlayApi.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
+import { loadDesignTokens } from '../UI/loadTokens.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -131,6 +132,9 @@ export class WindowsOverlayDeviceInterface extends InterfacePrototype {
      * @returns {Promise<void>}
      */
     async setupAutofill() {
+        // Load design tokens before setting up UI
+        await loadDesignTokens();
+
         const loggedIn = await this._getIsLoggedIn();
         if (loggedIn) {
             await this.getAddresses();

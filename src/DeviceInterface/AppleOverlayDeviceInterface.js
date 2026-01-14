@@ -3,6 +3,7 @@ import { HTMLTooltipUIController } from '../UI/controllers/HTMLTooltipUIControll
 import { overlayApi } from './overlayApi.js';
 import { createNotification } from '../../packages/device-api/index.js';
 import { defaultOptions } from '../UI/HTMLTooltip.js';
+import { loadDesignTokens } from '../UI/loadTokens.js';
 
 /**
  * This subclass is designed to separate code that *only* runs inside the
@@ -96,6 +97,9 @@ class AppleOverlayDeviceInterface extends AppleDeviceInterface {
      * @returns {Promise<void>}
      */
     async setupAutofill() {
+        // Load design tokens before setting up UI
+        await loadDesignTokens();
+
         await this._getAutofillInitData();
         await this.inContextSignup.init();
         const signedIn = await this._checkDeviceSignedIn();

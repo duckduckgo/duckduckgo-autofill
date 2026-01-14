@@ -14,6 +14,7 @@ copyAutofillCSS();
 copyAutofillScript();
 copyAutofillHTML();
 copySharedCredentials();
+copyTokensCSS();
 
 // Only copy image assets when in debug UI mode
 if (isDebugUI) {
@@ -38,6 +39,19 @@ function copyAutofillHTML() {
 function copySharedCredentials() {
     const sharedCredsFilePath = filepath('packages', 'password', 'shared-credentials.json');
     copyFileSync(sharedCredsFilePath, filepath(distPath, 'shared-credentials.json'));
+}
+
+/**
+ * Copy design tokens CSS to integration test locations.
+ * tokens.css is built by bundle.mjs and needs to be available alongside TopAutofill.html.
+ */
+function copyTokensCSS() {
+    const tokensFileName = 'tokens.css';
+    const tokensPath = filepath(distPath, tokensFileName);
+    if (fs.existsSync(tokensPath)) {
+        // Copy to integration test extension folder
+        copyFileSync(tokensPath, filepath('integration-test', 'extension', 'public', 'css', tokensFileName));
+    }
 }
 
 function copyFirefoxCSSFile(pathIn, pathOut) {

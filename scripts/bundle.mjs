@@ -21,6 +21,7 @@ const SHOW_METAFILE = process.argv.some((string) => string === '--metafile');
         }),
         uiPreview(),
         bundleCSSForExtension(),
+        bundleTokensCSS(),
         scannerDebug(),
         scannerRunner(),
     ]);
@@ -99,6 +100,24 @@ async function bundleCSSForExtension() {
     if (SHOW_METAFILE && 'metafile' in buildOutput && buildOutput.metafile) {
         console.log(await esbuild.analyzeMetafile(buildOutput.metafile));
     }
+}
+
+/**
+ * Bundle design tokens as a separate CSS file for lazy-loading.
+ * These tokens are only needed for overlay platforms (macOS/Windows) that use theming.
+ */
+async function bundleTokensCSS() {
+    const outFile = join(ROOT, 'dist/tokens.css');
+    /** @type {import("esbuild").BuildOptions} */
+    const config = {
+        entryPoints: [join(ROOT, 'node_modules/@duckduckgo/design-tokens/build/desktop-browsers/tokens.css')],
+        bundle: true,
+        outfile: outFile,
+        loader: { '.css': 'css' },
+    };
+
+    await esbuild.build(config);
+    console.log('✅', relative(ROOT, outFile));
 }
 
 async function uiPreview() {

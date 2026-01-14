@@ -1,13 +1,15 @@
- /**
-  * Theme Mappings (macOS and Windows only)
-  *
-  * These mappings allow use of semantic theme variables (e.g., --ds-color-theme-surface-primary)
-  * that automatically resolve to the correct values based on:
-  * - browser theme (light mode, dark mode)
-  * - data-theme-variant (default, coolGray, slateBlue, green, violet, rose, orange, desert)
-  */
-
-@import '@duckduckgo/design-tokens/build/desktop-browsers/tokens.css';
+/**
+ * Theme Mappings (macOS and Windows only)
+ *
+ * These mappings allow use of semantic theme variables (e.g., --ds-color-theme-surface-primary)
+ * that automatically resolve to the correct values based on:
+ * - browser theme (light mode, dark mode)
+ * - data-theme-variant (default, coolGray, slateBlue, green, violet, rose, orange, desert)
+ *
+ * NOTE: Design tokens are loaded dynamically at runtime for overlay platforms.
+ * This file only contains the semantic mappings that reference those tokens.
+ * See src/UI/loadTokens.js for the dynamic loading logic.
+ */
 
 @media (prefers-color-scheme: light) {
     .wrapper:is([data-platform="macos"], [data-platform="windows"]) {
